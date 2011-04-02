@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -329,17 +329,17 @@ public class LruCache extends BaseCache {
 
         if (stat == null && key != null) {
             if (key.equals(Constants.STAT_LRUCACHE_LIST_LENGTH))
-                stat = new Integer(listSize);
+                stat = listSize;
             else if (key.equals(Constants.STAT_LRUCACHE_TRIM_COUNT))
-                stat = new Integer(trimCount);
+                stat = trimCount;
         }
         return stat;
     }
 
     public Map getStats() {
         Map stats = super.getStats();
-        stats.put(Constants.STAT_LRUCACHE_LIST_LENGTH, new Integer(listSize));
-        stats.put(Constants.STAT_LRUCACHE_TRIM_COUNT, new Integer(trimCount));
+        stats.put(Constants.STAT_LRUCACHE_LIST_LENGTH, listSize);
+        stats.put(Constants.STAT_LRUCACHE_TRIM_COUNT, trimCount);
 
         return stats;
     }

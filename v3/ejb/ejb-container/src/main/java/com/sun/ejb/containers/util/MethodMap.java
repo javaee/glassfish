@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -180,7 +180,7 @@ public final class MethodMap extends HashMap {
 
             int bucket = getBucket(next);
             
-            if( !occupied.contains(new Integer(bucket)) ) {
+            if( !occupied.contains(bucket) ) {
 
                 MethodInfo methodInfo = new MethodInfo();
                 methodInfo.key = next;
@@ -192,7 +192,7 @@ public final class MethodMap extends HashMap {
 
                 methodInfo_[bucket] = methodInfo;
               
-                occupied.add(new Integer(bucket));
+                occupied.add(bucket);
 
             } else {                
                 // there's a clash for this bucket, so null it out and

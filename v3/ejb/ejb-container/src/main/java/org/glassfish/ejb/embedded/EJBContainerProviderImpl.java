@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -200,7 +200,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                 ejbAnnotations = sniffer.getAnnotationTypes();
                 archiveFactory = habitat.getComponent(ArchiveFactory.class);
 
-                container = new EJBContainerImpl(habitat, server, ejbContainer, deployer);
+                container = new EJBContainerImpl(habitat, server, deployer);
             // }
         }
 
@@ -416,6 +416,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                     for (String skipValue : ATTRIBUTE_VALUES_SKIP) {
                         if (value.startsWith(skipValue)) {
                             for (String okValue : ATTRIBUTE_VALUES_OK) {
+                                // value starts with one of the ATTRIBUTE_VALUES_SKIP but contains an okValue further down
                                 if (value.indexOf(okValue) > 0) {
                                     // Still OK
                                     return false;
@@ -609,7 +610,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
         return result;
     }
 
-    private class Locations {
+    private static class Locations {
         final File installed_root;
         final File instance_root;
         final File domain_file;

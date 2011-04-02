@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -162,7 +162,7 @@ public class EjbApplication
                 for (EjbApplication app : ejbAppList) {
                     app.markAllContainersAsStarted();
                 }
-                dc.addTransientAppMetaData(EJB_APP_MARKED_AS_STARTED_STATUS, new Boolean(true));
+                dc.addTransientAppMetaData(EJB_APP_MARKED_AS_STARTED_STATUS, Boolean.TRUE);
             }
         }
         
@@ -198,10 +198,6 @@ public class EjbApplication
 
         DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
 
-        // If true the application is being deployed.  If false, it's
-        // an initialization after the app was already deployed. 
-        boolean deploy = params.origin.isDeploy();
-
         String dcMapToken = "org.glassfish.ejb.startup.SingletonLCM";
         singletonLCM = dc.getTransientAppMetaData(dcMapToken, SingletonLifeCycleManager.class);
         if (singletonLCM == null) {
@@ -210,7 +206,7 @@ public class EjbApplication
         }
 
         if (! initializeInOrder) {
-            dc.addTransientAppMetaData(EJB_APP_MARKED_AS_STARTED_STATUS, new Boolean(false));
+            dc.addTransientAppMetaData(EJB_APP_MARKED_AS_STARTED_STATUS, Boolean.FALSE);
             List<EjbApplication> ejbAppList = dc.getTransientAppMetaData(CONTAINER_LIST_KEY, List.class);
             if (ejbAppList == null) {
                 ejbAppList = new ArrayList<EjbApplication>();

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -844,12 +844,11 @@ public class TimerSchedule implements Serializable {
         boolean changed = false;
 
         int currvalue = date.get(field);
-        int nextvalue = currvalue;
         if (field == Calendar.DAY_OF_MONTH) {
              bits = populateCurrentMonthBits(date);
         }
         if (!bits.get(currvalue)) {
-            nextvalue = bits.nextSetBit(currvalue);
+            int nextvalue = bits.nextSetBit(currvalue);
             if (nextvalue == -1 || nextvalue > date.getActualMaximum(field)) {
                 //System.out.println("==> Incrementing ...");
                 date.add(highfiled, 1);
@@ -896,7 +895,7 @@ public class TimerSchedule implements Serializable {
      */
     private int getNumericValue(String s, int start, int size, String field) {
 
-        int i = start;
+        int i;
         if (positivePattern.matcher(s).matches()) {
             i = parseInt(s, field);
             if (!isDayOfWeek(field) && (i < start || i > (start + size -1))) {

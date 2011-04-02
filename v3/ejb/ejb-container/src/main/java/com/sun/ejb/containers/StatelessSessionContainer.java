@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -793,13 +793,13 @@ public class StatelessSessionContainer
 
         public PoolProperties() {
 
-            maxPoolSize = new Integer(ejbContainer.getMaxPoolSize()).intValue();
-            poolIdleTimeoutInSeconds = new Integer(
-                ejbContainer.getPoolIdleTimeoutInSeconds()).intValue();
-            poolResizeQuantity = new Integer(
-                ejbContainer.getPoolResizeQuantity()).intValue();
-            steadyPoolSize = new Integer(
-                ejbContainer.getSteadyPoolSize()).intValue();
+            maxPoolSize = Integer.parseInt(ejbContainer.getMaxPoolSize());
+            poolIdleTimeoutInSeconds = Integer.parseInt(
+                ejbContainer.getPoolIdleTimeoutInSeconds());
+            poolResizeQuantity = Integer.parseInt(
+                ejbContainer.getPoolResizeQuantity());
+            steadyPoolSize = Integer.parseInt(
+                ejbContainer.getSteadyPoolSize());
             if(beanPoolDes != null) {
                 int temp = 0;
                 if (( temp = beanPoolDes.getMaxPoolSize()) != -1) {

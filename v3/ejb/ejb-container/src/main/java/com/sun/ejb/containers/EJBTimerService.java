@@ -2427,7 +2427,7 @@ public class EJBTimerService
     //
     // Note : this class supports concurrent access.
     //
-    private class TimerCache {
+    private static class TimerCache {
 
         // Maps timer id to timer state.
         private Map timers_;
@@ -2468,7 +2468,7 @@ public class EJBTimerService
                 nonpersistentTimers_.put(timerId, timerState);
             }
 
-            Long containerId = new Long(timerState.getContainerId());
+            Long containerId = timerState.getContainerId();
 
             Object containerInfo = containerTimers_.get(containerId);
 
@@ -2485,8 +2485,8 @@ public class EJBTimerService
                 }
                 entityBeans.add(timerState.getTimedObjectPrimaryKey());
             } else {
-                Long timerCount = (containerInfo == null) ? new Long(1) :
-                    new Long(((Long) containerInfo).longValue() + 1);
+                Long timerCount = (containerInfo == null) ? 1 :
+                    ((Long) containerInfo).longValue() + 1;
                 containerTimers_.put(containerId, timerCount);
             }
 
@@ -2512,7 +2512,7 @@ public class EJBTimerService
             if (!timerState.isPersistent()) {
                 nonpersistentTimers_.remove(timerId);
             }
-            Long containerId = new Long(timerState.getContainerId());
+            Long containerId = timerState.getContainerId();
             Object containerInfo = containerTimers_.get(containerId);
                 
             if( containerInfo != null ) {
@@ -2534,7 +2534,7 @@ public class EJBTimerService
                         // Only one left -- blow away the container
                         containerTimers_.remove(containerId);
                     } else {
-                        Long newCount = new Long(timerCount - 1);
+                        Long newCount = timerCount - 1;
                         containerTimers_.put(containerId, newCount);
                     }                         
                 }
@@ -2554,7 +2554,7 @@ public class EJBTimerService
         // True if the given entity bean has any timers and false otherwise.
         public synchronized boolean entityBeanHasTimers(long containerId, 
                                                         Object pkey) {
-            Object containerInfo = containerTimers_.get(new Long(containerId));
+            Object containerInfo = containerTimers_.get(containerId);
             return (containerInfo != null) ?
                 ((Collection) containerInfo).contains(pkey) : false;
         }
@@ -2562,7 +2562,7 @@ public class EJBTimerService
         // True if the ejb represented by this container id has any timers
         // and false otherwise.  
         public synchronized boolean containerHasTimers(long containerId) {
-            return containerTimers_.containsKey(new Long(containerId));
+            return containerTimers_.containsKey(containerId);
         }
 
         // Placeholder for logic to ensure timer cache consistency.
@@ -2780,6 +2780,9 @@ public class EJBTimerService
                     timerService_.expungeTimer(timerId_);
                     container_.incrementRemovedTimedObject();
                 }
+                break;
+            default :
+                // do nothing if the state is not one of the above
                 break;
             }
         }

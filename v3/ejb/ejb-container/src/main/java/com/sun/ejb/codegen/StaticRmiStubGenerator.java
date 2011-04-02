@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -111,22 +111,20 @@ public class StaticRmiStubGenerator {
             }
         }
 
+/** XXX ???
         if(jdkDir == null) {
             //Somehow, JAVA_HOME is not set. Try the "well-known" location...
-/** XXX ???
             if(installRoot != null) {
                 jdkDir = getValidDirectory(new File(installRoot + "/jdk"));
 
             }
-** XXX **/
         }
+** XXX **/
 
         if(jdkDir == null) {
             _logger.warning("Cannot identify JDK location.");
             toolsJarPath = null;
         } else {
-            String javaName = (OS.isWindows())? "java.exe" : "java";
-            File javaExe = new File(jdkDir + "/bin/" + javaName);
             File toolsJar = new File(jdkDir + "/lib/tools.jar" );
             if (toolsJar != null && toolsJar.exists()) {
                 toolsJarPath = toolsJar.getPath();
