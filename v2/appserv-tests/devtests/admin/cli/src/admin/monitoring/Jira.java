@@ -128,7 +128,7 @@ public class Jira extends MonTest {
         asadmin("ping-jdbc-connection-pool", RESOURCE_NAME_WITH_SLASH);
 
     }
-    private static final File earFile = new File("apps/webapp2.ear");
+    private static final File earFile = new File(RESOURCES_DIR, "webapp2.ear");
     private static final String MAGIC_NAME_IN_APP = "webapp2webmod1_Servlet2";
     private static final String RESOURCE_NAME_WITH_SLASH = "jdbc/test";
 

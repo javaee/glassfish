@@ -35,6 +35,8 @@
  */
 package admin.monitoring;
 
+import java.io.*;
+
 /**
  * @author Byron Nevins
  */
@@ -83,4 +85,6 @@ class Constants {
         "web-container",
         "web-services-container"
     };
+    final static File RESOURCES_DIR = new File("resources").getAbsoluteFile();
+    final static File BUILT_RESOURCES_DIR = new File("apps").getAbsoluteFile();
 }

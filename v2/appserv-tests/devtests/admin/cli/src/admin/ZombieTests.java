@@ -37,14 +37,12 @@ package admin;
 
 import java.io.*;
 import java.net.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ZombieTests extends AdminBaseDevTest {
 
     public ZombieTests() {
         glassFishHome = getGlassFishHome();
-        zombieWarFile = new File("apps/Zombie/target/Zombie.war");
+        zombieWarFile = new File("apps/Zombie/target/Zombie.war").getAbsoluteFile();
         System.out.println("GF HOME = " + glassFishHome);
         System.out.println("CWD: " + System.getProperty("user.dir"));
         System.out.println("Zombie War File = " + zombieWarFile);

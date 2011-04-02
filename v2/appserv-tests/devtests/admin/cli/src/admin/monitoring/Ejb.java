@@ -132,10 +132,10 @@ public class Ejb extends MonTest {
         AsadminReturn ret = asadminWithOutput("list", "-m", name);
         report(matchString(desiredValue, ret.outAndErr), "verify-list");
     }
-    private static final File blackBoxRar = new File("apps/blackbox-tx.rar");
-    private static final File conApp1 = new File("apps/conapp1.ear");
-    private static final File ejbsfapp1 = new File("apps/ejbsfapp1.ear");
-    private static final File myejbear = new File("apps/MyEjb.ear");
+    private static final File blackBoxRar = new File(RESOURCES_DIR, "blackbox-tx.rar");
+    private static final File conApp1 = new File(RESOURCES_DIR, "conapp1.ear");
+    private static final File ejbsfapp1 = new File(RESOURCES_DIR, "ejbsfapp1.ear");
+    private static final File myejbear = new File(BUILT_RESOURCES_DIR, "MyEjb/dist/MyEjb.ear");
 }
 /**
  * NOTES

@@ -37,6 +37,7 @@ package admin.monitoring;
 
 import java.io.*;
 import java.sql.*;
+import static admin.monitoring.Constants.*;
 
 /**
  * Tests JDBC monitoring.  Note that this requires a running JavaDB database.
@@ -236,7 +237,7 @@ public class Jdbc extends MonTest {
 
     }
     
-    private static final File connApp = new File("apps/jdbc-onlygetconnection-servletApp.ear");
+    private static final File connApp = new File(RESOURCES_DIR, "jdbc-onlygetconnection-servletApp.ear");
     private static final String connectionURL = "jdbc:derby://localhost:1527/testdb;create=true;";
     private static final String dbDriver ="org.apache.derby.jdbc.ClientDriver";
     private static Connection connection = null;
