@@ -346,7 +346,6 @@
         <ant dir="crossContextDispatchLongestContextRootMatch" target="all"/> 
         <ant dir="delegate" target="all"/>
         <ant dir="disableDefaultErrorPage" target="all"/>
-        <ant dir="embeddedAddServlet" target="all"/>
         <ant dir="emptyContextRoot" target="all"/>
         <ant dir="errorPageExceptionTypeMapping" target="all"/>
         <ant dir="explodedWar" target="all"/>
