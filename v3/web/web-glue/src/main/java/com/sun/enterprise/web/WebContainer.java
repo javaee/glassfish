@@ -1198,6 +1198,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
          * whether a new Host needs to be added to the HTTP listener's Mapper.
          */
         configureHost(vs, securityService);
+        vs.setServerEnvironment(instance);
+        vs.setDomain(domain);
 
         // Add Host to Engine
         engine.addChild(vs);

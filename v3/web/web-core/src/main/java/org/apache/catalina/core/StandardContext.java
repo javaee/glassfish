@@ -70,6 +70,7 @@ import org.apache.catalina.mbeans.MBeanUtils;
 import org.apache.catalina.session.ManagerBase;
 import org.apache.catalina.session.PersistentManagerBase;
 import org.apache.catalina.session.StandardManager;
+import org.apache.catalina.servlets.DefaultServlet;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.util.*;
 import org.apache.naming.ContextBindings;
@@ -1848,6 +1849,33 @@ public class StandardContext
         return isEmbedded;
     }
 
+    /**
+     * Should we generate directory listings?
+     */
+    protected boolean directoryListing = false;
+
+    /**
+     * Enables or disables directory listings on this <tt>Context</tt>.
+     */
+    public void setDirectoryListing(boolean directoryListing) {
+        this.directoryListing = directoryListing;
+        Wrapper wrapper = (Wrapper) findChild(
+                org.apache.catalina.core.Constants.DEFAULT_SERVLET_NAME);
+        if (wrapper !=null) {
+            Servlet servlet = ((StandardWrapper)wrapper).getServlet();
+            if (servlet instanceof DefaultServlet) {
+                ((DefaultServlet)servlet).setListings(directoryListing);
+            }
+        }
+    }
+
+    /**
+     * Checks whether directory listings are enabled or disabled on this
+     * <tt>Context</tt>.
+     */
+    public boolean isDirectoryListing() {
+        return directoryListing;
+    }
 
     // ------------------------------------------------------ Public Properties
 
@@ -3216,8 +3244,7 @@ public class StandardContext
         synchronized (servletMappings) {
             String existing = servletMappings.get(pattern);
             if (existing != null) {
-                if (!isEmbedded &&
-                        !existing.equals(Constants.DEFAULT_SERVLET_NAME) &&
+                if (!existing.equals(Constants.DEFAULT_SERVLET_NAME) &&
                         !existing.equals(Constants.JSP_SERVLET_NAME) &&
                         !name.equals(Constants.DEFAULT_SERVLET_NAME) &&
                         !name.equals(Constants.JSP_SERVLET_NAME)) {
@@ -6131,7 +6158,7 @@ public class StandardContext
      *
      * @param urlPattern URL pattern to be validated
      */
-    private boolean validateURLPattern(String urlPattern) {
+    protected boolean validateURLPattern(String urlPattern) {
         if (urlPattern == null) {
             return false;
         }

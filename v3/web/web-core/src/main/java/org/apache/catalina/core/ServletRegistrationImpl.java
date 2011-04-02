@@ -58,7 +58,7 @@ public class ServletRegistrationImpl implements ServletRegistration {
     /**
      * Constructor
      */
-    protected ServletRegistrationImpl(StandardWrapper wrapper,
+    public ServletRegistrationImpl(StandardWrapper wrapper,
                                       StandardContext ctx) {
         this.wrapper = wrapper;
         this.ctx = ctx;
@@ -107,7 +107,7 @@ public class ServletRegistrationImpl implements ServletRegistration {
     }
 
     public Set<String> addMapping(String... urlPatterns) {
-        if (!ctx.isEmbedded() && ctx.isContextInitializedCalled()) {
+        if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
                 sm.getString("servletRegistration.alreadyInitialized",
                              "mapping", wrapper.getName(), ctx.getName()));

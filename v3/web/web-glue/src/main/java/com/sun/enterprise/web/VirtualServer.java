@@ -61,6 +61,7 @@ import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.web.session.SessionCookieConfig;
 import com.sun.logging.LogDomains;
 import com.sun.web.security.RealmAdapter;
+
 import org.apache.catalina.*;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.authenticator.SingleSignOn;
@@ -69,7 +70,11 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.ErrorPage;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
+
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.deployment.versioning.VersioningUtils;
 import org.glassfish.embeddable.*;
+import org.glassfish.embeddable.Deployer;
 import org.glassfish.embeddable.web.Context;
 import org.glassfish.embeddable.web.ConfigException;
 import org.glassfish.embeddable.web.WebListener;
@@ -81,11 +86,10 @@ import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.web.loader.WebappClassLoader;
 import org.glassfish.web.valve.GlassFishValve;
+
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.types.Property;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.*;
 import java.util.logging.Handler;
@@ -93,6 +97,20 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.logging.LogRecord;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 
 /**
  * Standard implementation of a virtual server (aka virtual host) in
@@ -189,6 +207,10 @@ public class VirtualServer extends StandardHost
     private boolean allowLinking = false;
 
     private String[] cacheControls;
+
+    private Domain domain;
+
+    private ServerEnvironment instance;
 
     // Is this virtual server active?
     private boolean isActive;
@@ -345,6 +367,14 @@ public class VirtualServer extends StandardHost
 
     public void setFileLoggerHandlerFactory(FileLoggerHandlerFactory factory) {
         fileLoggerHandlerFactory = factory;
+    }
+
+    public void setServerEnvironment(ServerEnvironment instance) {
+        this.instance = instance;
+    }
+
+    public void setDomain(Domain domain) {
+        this.domain = domain;
     }
 
     @Override
@@ -1888,18 +1918,68 @@ public class VirtualServer extends StandardHost
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "Virtual server "+getName()+" added context "+contextRoot);
         }
-        if (!contextRoot.startsWith("/")) {
-            contextRoot = "/"+ contextRoot;
-        }
+
         if (getContext(contextRoot)!=null) {
             throw new ConfigException("Context with contextRoot "+
                     contextRoot+" is already registered");
         }
-        WebModule wm = ((WebModule)context);
-        wm.setPath(contextRoot);
-        wm.getWebBundleDescriptor().setContextRoot(contextRoot);
-        wm.updateObjectName();
-        addChild(wm);
+
+        try {
+            ContextFacade facade = (ContextFacade) context;
+            File docRoot = facade.getDocRoot();
+            ClassLoader classLoader = facade.getClassLoader();
+
+            Deployer deployer = Globals.getDefaultHabitat().getComponent(Deployer.class);
+            String appName = deployer.deploy(docRoot, "--name", contextRoot);
+            //String appName = deployer.deploy(docRoot, "--name", contextRoot, "--enabled", "false");
+            String contextName = "/"+appName;
+
+            Map<String, String> servlets = facade.getAddedServlets();
+            Map<String, String[]> mappings = facade.getServletMappings();
+            File webXml = null;
+
+            if (!servlets.isEmpty()) {
+                Applications apps = domain.getApplications();
+                com.sun.enterprise.config.serverbeans.Application app = apps.getApplication(contextRoot);
+                if (app != null) {
+                    webXml = new File(app.application().getAbsolutePath(), "/WEB-INF/web.xml");
+                }
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "Modifying web.xml "+webXml.getAbsolutePath());
+                }
+                updateWebXml(webXml, servlets, mappings);
+
+                String repositoryBitName = VersioningUtils.getRepositoryName(appName);
+                File webInf = new File(instance.getApplicationRepositoryPath(), repositoryBitName+"/WEB-INF");
+                webInf.mkdirs();
+                webXml = new File(webInf, "web.xml");
+
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "Modifying web.xml "+webXml.getAbsolutePath());
+                }
+            }
+
+            // enable the deployapp
+            //((com.sun.enterprise.admin.cli.embeddable.DeployerImpl) deployer).enable(appName);
+            //webXml.delete();
+
+            WebModule wm = (WebModule) findChild(contextName);
+            if (wm != null) {
+                if (classLoader != null) {
+                    wm.setParentClassLoader(classLoader);
+                } else {
+                    wm.setParentClassLoader(serverContext.getSharedClassLoader());
+                }
+                facade.setUnwrappedContext(wm);
+                wm.setEmbedded(true);
+                if (config != null) {
+                    wm.setDefaultWebXml(config.getDefaultWebXml());
+                }
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -2010,4 +2090,66 @@ public class VirtualServer extends StandardHost
             throw new GlassFishException(e);
         }        
     }
+
+	public static void updateWebXml(File file, Map<String, String> servlets, Map<String, String[]> mappings) {
+
+		try {
+
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = null;
+            Element webapp = null;
+
+            if ((file != null) && (file.exists())) {
+			    doc = dBuilder.parse(file);
+                webapp = doc.getDocumentElement();
+                // doc.getDocumentElement().normalize();
+            } else {
+                doc = dBuilder.newDocument();
+                webapp = doc.createElement("web-app");
+                webapp.setAttribute("xmln", "http://java.sun.com/xml/ns/j2ee");
+                webapp.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+                webapp.setAttribute("xsi:schemaLocation",
+                        "http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd");
+                webapp.setAttribute("version", "2.4");
+                doc.appendChild(webapp);
+            }
+
+			for (String name : servlets.keySet()) {
+				Element servlet = doc.createElement("servlet");
+				webapp.appendChild(servlet);
+                Element servletName = doc.createElement("servlet-name");
+                servletName.setTextContent(name);
+                servlet.appendChild(servletName);
+                Element servletClass = doc.createElement("servlet-class");
+                servletClass.setTextContent(servlets.get(name));
+                servlet.appendChild(servletClass);
+			}
+
+            for (String mapping : mappings.keySet()) {
+                Element servletMapping = doc.createElement("servlet-mapping");
+                webapp.appendChild(servletMapping);
+                for (String pattern : mappings.get(mapping)) {
+                    Element servletName = doc.createElement("servlet-name");
+                    servletName.setTextContent(mapping);
+                    Element urlPattern = doc.createElement("url-pattern");
+                    urlPattern.setTextContent(pattern);
+                    servletMapping.appendChild(servletName);
+                    servletMapping.appendChild(urlPattern);
+                }
+                webapp.appendChild(servletMapping);
+            }
+
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+            DOMSource src = new DOMSource(doc);
+            StreamResult result = new StreamResult(file);
+            transformer.transform(src, result);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 }

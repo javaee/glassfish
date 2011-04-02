@@ -47,6 +47,7 @@ import java.util.*;
 import java.util.logging.*;
 
 import com.sun.enterprise.web.EmbeddedWebContainer;
+import com.sun.enterprise.web.ContextFacade;
 import com.sun.enterprise.web.WebModule;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.config.serverbeans.HttpService;
@@ -562,41 +563,6 @@ public class WebContainerImpl implements WebContainer {
         return createContext(docRoot, null);
 
     }
-    
-    /**
-     * Creates a <tt>Context</tt>, configures it with the given
-     * docroot and classloader, and registers it with the default
-     * <tt>VirtualServer</tt>.
-     *
-     * <p>The given classloader will be set as the thread's context
-     * classloader whenever the new <tt>Context</tt> or any of its
-     * resources are asked to process a request.
-     * If a <tt>null</tt> classloader is passed, the classloader of the
-     * class on which this method is called will be used.
-     *
-     * @param docRoot the docroot of the <tt>Context</tt>
-     * @param contextRoot
-     * @param classLoader the classloader of the <tt>Context</tt>
-     *
-     * @return the new <tt>Context</tt>
-     */
-    public Context createContext(File docRoot, String contextRoot, 
-            ClassLoader classLoader) {
-
-        Context context = createContext(docRoot, classLoader);
-
-        try {
-            for (VirtualServer vs : getVirtualServers()) {
-                vs.addContext(context, contextRoot);
-            }
-        } catch (Exception ex) {
-            log.severe("Couldn't add context " + context + " using " + contextRoot);
-            ex.printStackTrace();
-        }
-        
-        return context;
-        
-    }
 
     /**
      * Creates a <tt>Context</tt> and configures it with the given
@@ -608,7 +574,7 @@ public class WebContainerImpl implements WebContainer {
      * If a <tt>null</tt> classloader is passed, the classloader of the
      * class on which this method is called will be used.
      *
-     * <p>In order to access the new <tt>Context</tt> or any of its 
+     * <p>In order to access the new <tt>Context</tt> or any of its
      * resources, the <tt>Context</tt> must be registered with a
      * <tt>VirtualServer</tt> that has been started.
      *
@@ -635,41 +601,39 @@ public class WebContainerImpl implements WebContainer {
                     docRoot.getPath() + "'");
         }
 
-        String appName;
-        WebModule context = null;
+        return new ContextFacade(docRoot, null, classLoader);
+
+    }
+    
+    /**
+     * Creates a <tt>Context</tt>, configures it with the given
+     * docroot and classloader, and registers it with all
+     * <tt>VirtualServer</tt>.
+     *
+     * <p>The given classloader will be set as the thread's context
+     * classloader whenever the new <tt>Context</tt> or any of its
+     * resources are asked to process a request.
+     * If a <tt>null</tt> classloader is passed, the classloader of the
+     * class on which this method is called will be used.
+     *
+     * @param docRoot the docroot of the <tt>Context</tt>
+     * @param contextRoot the contextroot at which to register
+     * @param classLoader the classloader of the <tt>Context</tt>
+     *
+     * @return the new <tt>Context</tt>
+     */
+    public Context createContext(File docRoot, String contextRoot, 
+            ClassLoader classLoader) {
+
+        Context context = createContext(docRoot, classLoader);
 
         try {
-
-            Deployer deployer = habitat.getComponent(Deployer.class);
-            appName = deployer.deploy(docRoot, "--name", docRoot.getName());
-            if (!appName.startsWith("/")) {
-                appName = "/"+appName;
-            }
-            WebModule ctx = null;
-            for (VirtualServer virtualServer : getVirtualServers()) {
-                ctx = (WebModule) ((StandardHost)virtualServer).findChild(appName);
-                if (log.isLoggable(Level.INFO)) {
-                    log.info("Virtual server " + virtualServer.getID() + " deployed " + ctx.getName());
-                }
-
-            }
-            VirtualServer vs = getVirtualServer(config.getVirtualServerId());
-            context = (WebModule) ((StandardHost)vs).findChild(appName);
-            if (context != null) {
-                if (classLoader != null) {
-                    context.setParentClassLoader(classLoader);
-                } else {
-                    context.setParentClassLoader(serverContext.getSharedClassLoader());
-                }
-                context.setEmbedded(true);
-                context.setDefaultWebXml(config.getDefaultWebXml().getPath());
-                ((StandardHost)vs).removeChild(context);
-            }
-
+            addContext(context, contextRoot);
         } catch (Exception ex) {
+            log.severe("Couldn't add context " + context + " using " + contextRoot);
             ex.printStackTrace();
         }
-
+        
         return context;
         
     }
@@ -691,10 +655,6 @@ public class WebContainerImpl implements WebContainer {
      */
     public void addContext(Context context, String contextRoot)
             throws ConfigException, GlassFishException {
-
-        if (!contextRoot.startsWith("/")) {
-            contextRoot = "/"+ contextRoot;
-        }
 
         for (VirtualServer vs : getVirtualServers()) {
             if (vs.getContext(contextRoot)!=null) {
