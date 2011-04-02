@@ -1,1 +1,3 @@
 singleengine # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=7548 is fixed
+servlet-3.0/servletMappingEmptyString
+embeddedAddServlet
