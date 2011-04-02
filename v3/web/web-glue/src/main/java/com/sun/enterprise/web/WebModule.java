@@ -1260,33 +1260,6 @@ public class WebModule extends PwcWebModule {
         return uris;
     }
 
-    protected boolean validateURLPattern(String urlPattern) {
-
-        if (urlPattern == null) {
-            return (false);
-	}
-
-        if (urlPattern.indexOf('\n') >= 0 || urlPattern.indexOf('\r') >= 0) {
-            logger.log(Level.WARNING,
-                       "webmodule.alternateDocBase.crlfInUrlPattern",
-                       urlPattern);
-            return false;
-        }
-
-        if (urlPattern.startsWith("*.")) {
-            if (urlPattern.indexOf('/') < 0) {
-                return (true);
-            } else {
-                return (false);
-            }
-        }
-        if ( (urlPattern.startsWith("/")) &&
-	     (!urlPattern.contains("*."))) {
-            return (true);
-        } else {
-            return (false);
-        }
-    }
 
     /**
      * Configure miscellaneous settings such as the pool size for
