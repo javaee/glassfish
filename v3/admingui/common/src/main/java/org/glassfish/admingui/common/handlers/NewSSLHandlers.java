@@ -54,6 +54,7 @@ import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
+import org.glassfish.admingui.common.util.GuiUtil;
 
 /**
  *
@@ -157,22 +158,23 @@ public class NewSSLHandlers {
             }
             return ciphers;
         }
-        
-        private static String processDeletedCiphers(String[] oldCiphers, String ciphers){
-            if(oldCiphers != null){
-                for (int i = 0; i < oldCiphers.length; i++) {
-                    String cipVal = oldCiphers[i];
-                    if(ciphers.indexOf(cipVal) != -1){
-                        if(! ciphers.equals("")){
-                            ciphers += ",";
-                        }
-                        ciphers += "-" + cipVal;
-                    }
+
+        private static String processSelectedCiphers2(String[] selectedCiphers, String ciphers){
+            StringBuilder sb = new StringBuilder();
+            String sep = "";
+            if ( ! GuiUtil.isEmpty(ciphers)){
+                sb.append(ciphers);
+                sep = ",";
+            }
+            if(selectedCiphers != null){
+                for (int i = 0; i < selectedCiphers.length; i++) {
+                    sb.append(sep).append(selectedCiphers[i]);
+                    sep = ",";
                 }
             }
-            return ciphers;
+            return sb.toString();
         }
-        
+
         private static Vector getCiphersVector(String[] allCiphers){
             Vector ciphers = new Vector();
             if (allCiphers != null){

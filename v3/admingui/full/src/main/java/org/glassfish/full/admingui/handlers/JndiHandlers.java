@@ -130,17 +130,17 @@ public class JndiHandlers {
         handlerCtx.setOutputValue("attrMap", attrMap);
     }
 
-    private static String getFactoryMap(Map emap){
+    private static String getFactoryMap(Map<String,String> emap){
         String factMap = null;
         StringBuilder factoryMap = new StringBuilder();
         if(emap != null) {
             String sep = "";
-            for (String key : (Set<String>)emap.keySet()) {
+            for(Map.Entry<String,String> e : emap.entrySet()){
                     factoryMap.append(sep)
                             .append("\"")
-                            .append(key)
+                            .append(e.getKey())
                             .append("\": '")
-                            .append(emap.get(key))
+                            .append(e.getValue())
                             .append("'");
                     sep = ",";
             }
@@ -161,7 +161,7 @@ public class JndiHandlers {
             String entry = (String) handlerCtx.getInputValue("entries");
             String option = (String) handlerCtx.getInputValue("classnameOption");
             Map<String,String> attrMap = (Map)handlerCtx.getInputValue("attrMap");
-            String restype = "";
+            String restype ;
             if (option.equals("predefine")) {
                 restype = attrMap.get("classname");
             } else {

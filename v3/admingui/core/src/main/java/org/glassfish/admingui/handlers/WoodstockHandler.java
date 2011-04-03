@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -229,33 +229,14 @@ public class WoodstockHandler {
         handlerCtx.setOutputValue("links", arr);
     }
 
-    @Handler(id = "StringArrayToSelectItemArray",
+    @Handler(id = "gf.stringArrayToSelectItemArray",
         input = {
             @HandlerInput(name = "stringArray", type = String[].class, required = true)},
         output = {
             @HandlerOutput(name = "item", type = SelectItem[].class)})
-    public static void StringArrayToSelectItemArray(HandlerContext handlerCtx) {
+    public static void stringArrayToSelectItemArray(HandlerContext handlerCtx) {
 
         String[] stringArray = (String[]) handlerCtx.getInputValue("stringArray");
-        handlerCtx.setOutputValue("item", SunOptionUtil.getOptions(stringArray));
-
-    }
-
-    @Handler(id = "StringToSelectItemArray",
-        input = {
-            @HandlerInput(name = "string", type = String.class, required = true)},
-        output = {
-            @HandlerOutput(name = "item", type = SelectItem[].class)})
-    public static void StringToSelectItemArray(HandlerContext handlerCtx) {
-
-        String string = (String) handlerCtx.getInputValue("string");
-        if (string.startsWith("[")) {
-            string = string.substring(1);
-        }
-        if (string.endsWith("]")) {
-            string = string.substring(0, string.length()-1);
-        }
-        String[] stringArray = string.split(",");
         handlerCtx.setOutputValue("item", SunOptionUtil.getOptions(stringArray));
 
     }
@@ -385,7 +366,6 @@ public class WoodstockHandler {
          ArrayList menuList = new ArrayList();
         // Menu for Resources
         ArrayList resList = new ArrayList();
-        Option[] groupedOptions1 = new Option[0];
         String firstItem = null;
         if (rList != null) {
         ListIterator rl = rList.listIterator();
@@ -397,7 +377,7 @@ public class WoodstockHandler {
                 }
             }
         }
-        groupedOptions1 = (Option[]) resList.toArray(new Option[resList.size()]);
+        Option[] groupedOptions1 = (Option[]) resList.toArray(new Option[resList.size()]);
         OptionGroup jumpGroup1 = new OptionGroup();
         jumpGroup1.setLabel("resources");
         jumpGroup1.setOptions(groupedOptions1);
@@ -491,9 +471,9 @@ public class WoodstockHandler {
             //EJB Menu options.
             Map<String, Object> compsMap = MonitoringHandlers.getSubComponents(appname, moduleName);
             if (compsMap != null && compsMap.size() > 0) {
-                for (String comp : compsMap.keySet()) {
-                    if (!compsMap.get(comp).equals("Servlet")) {
-                        List compMenuOptions = getEJBComponentMenuOptions(appname, moduleName, comp, monitorURL, handlerCtx);
+                for(Map.Entry<String,Object> e : compsMap.entrySet()){
+                    if (!e.getValue().equals("Servlet")) {
+                        List compMenuOptions = getEJBComponentMenuOptions(appname, moduleName, e.getKey(), monitorURL, handlerCtx);
                         menuList.addAll(compMenuOptions);
                     }
                 }                               
@@ -517,14 +497,15 @@ public class WoodstockHandler {
         } catch (Exception ex) {
             GuiUtil.getLogger().severe("Error in getEJBComponentMenuOptions ; \nendpoint = " + endpoint + "method=GET");
         }
-        for (String child : compChildSet) {
+        if (compChildSet != null){
+          for (String child : compChildSet) {
             Set<String> subCompChildSet = null;
             try {
                 subCompChildSet = RestUtil.getChildMap(endpoint + "/" + child).keySet();
             } catch (Exception ex) {
                 GuiUtil.getLogger().severe("Error in getEJBComponentMenuOptions ; \nendpoint = " + endpoint + "/" + child + "method=GET");
             }
-            if (subCompChildSet.size() > 0) {
+            if ( (subCompChildSet!= null) && subCompChildSet.size() > 0) {
                 //For ex: bean-methods
                 OptionGroup childCompMenuOptions = getMenuOptions(new ArrayList(subCompChildSet), child, compName, true);
                 menuList.add(childCompMenuOptions);
@@ -532,6 +513,7 @@ public class WoodstockHandler {
                 //For ex: bean-cache and bean-
                 compMenuList.add(child);
             }
+          }
         }
         compMenuList.add(0, compName);
         OptionGroup compMenuOptions = getMenuOptions(compMenuList, compName, "", true);
@@ -566,7 +548,6 @@ public class WoodstockHandler {
 	    return null;
 	}
         ArrayList nList = new ArrayList();
-        Option[] groupedOptions3 = new Option[0];
         Collections.sort(values);
         ListIterator nl = values.listIterator();
 	while (nl.hasNext()) {
@@ -584,7 +565,7 @@ public class WoodstockHandler {
 		nList.add(new Option(name, name));
 	    }
 	}
-	groupedOptions3 = (Option[]) nList.toArray(new Option[nList.size()]);
+	Option[] groupedOptions3 = (Option[]) nList.toArray(new Option[nList.size()]);
 	OptionGroup jumpGroup3 = new OptionGroup();
 	jumpGroup3.setLabel(label);
 	jumpGroup3.setOptions(groupedOptions3);

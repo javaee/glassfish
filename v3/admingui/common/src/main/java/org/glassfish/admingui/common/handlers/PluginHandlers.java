@@ -502,7 +502,7 @@ public class PluginHandlers {
 	UIComponent comp = handlerCtx.getFacesContext().getViewRoot().findComponent(id);
 	String urlContents = "";
 	if (comp != null) {
-	    String url = url = (String) comp.getAttributes().get(NavigationNodeFactory.REAL_URL);
+	    String url = (String) comp.getAttributes().get(NavigationNodeFactory.REAL_URL);
 	    try {
 		// Read from the URL...
 		URL contentUrl = FileUtil.searchForFile(url, null);
