@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -186,6 +186,11 @@ public interface Payload {
          * for the file relativized according to the specified file URI.  The
          * properties which indicate that this is file transfer data request
          * are set automatically.
+         * <p>
+         * If the <code>file</code> argument specifies a directory, only the
+         * directory - not its contents - are attached to the payload.  To 
+         * include the directory and its contents use {@link #attachFile(java.lang.String, java.net.URI, java.lang.String, java.io.File, boolean) }
+         * and specify the <code>recursive</code> argument as <code>true</code>.
          * @param contentType content type of the part
          * @param fileURI URI relative to which the part's name should be computed
          * @param dataRequestName name identifying which part of a request this file answers
