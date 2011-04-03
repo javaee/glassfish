@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -145,21 +145,6 @@ public class NewSSLHandlers {
         }
         
         private static String processSelectedCiphers(String[] selectedCiphers, String ciphers){
-            if(selectedCiphers != null){
-                if (ciphers == null){
-                    ciphers = "";
-                }
-                for (int i = 0; i < selectedCiphers.length; i++) {
-                    if(! ciphers.equals("")){
-                        ciphers += ",";
-                    }
-                    ciphers += "+" + selectedCiphers[i];
-                }
-            }
-            return ciphers;
-        }
-
-        private static String processSelectedCiphers2(String[] selectedCiphers, String ciphers){
             StringBuilder sb = new StringBuilder();
             String sep = "";
             if ( ! GuiUtil.isEmpty(ciphers)){
@@ -168,7 +153,7 @@ public class NewSSLHandlers {
             }
             if(selectedCiphers != null){
                 for (int i = 0; i < selectedCiphers.length; i++) {
-                    sb.append(sep).append(selectedCiphers[i]);
+                    sb.append(sep).append("+").append(selectedCiphers[i]);
                     sep = ",";
                 }
             }
