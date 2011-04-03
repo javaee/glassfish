@@ -166,7 +166,7 @@ final class WebModuleListener
         ServletContext servletContext = webModule.getServletContext();
         servletContext.setAttribute(
             "org.glassfish.jsp.isStandaloneWebapp",
-            new Boolean(webModule.isStandalone()));
+            Boolean.valueOf(webModule.isStandalone()));
 
         // Find tld URI and set it to ServletContext attribute
         List<URI> appLibUris = webModule.getDeployAppLibs();
