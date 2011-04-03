@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -95,6 +95,8 @@ public class AppclientCommandArguments {
     private final static String TARGETSERVER = "targetserver";
     private final static String USAGE = "usage";
     private final static String HELP = "help";
+    
+    final static String PASSWORD_FILE_PASSWORD_KEYWORD = "PASSWORD";
 
     /* names of options that take a value */
     private final static String[] valuedArgNames =
@@ -333,14 +335,22 @@ public class AppclientCommandArguments {
     }
 
     private char[] loadPasswordFromFile(final File pwFile)
-            throws IOException {
+            throws IOException, UserError {
         InputStream inputStream = null;
         try {
             inputStream = new BufferedInputStream(new FileInputStream(pwFile));
             // XXX Should change this so we don't store the pw in a String even temporarily (as in the Props object)
             Properties props = new Properties();
             props.load(inputStream);
-            return props.getProperty("PASSWORD").toCharArray();
+            if (props.containsKey(PASSWORD_FILE_PASSWORD_KEYWORD)) {
+                return props.getProperty(PASSWORD_FILE_PASSWORD_KEYWORD).toCharArray();
+            } else {
+                final String msg = localStrings.getLocalString(getClass(),
+                        "appclient.noPasswordInFile",
+                        "The file {0} specified by the -passwordfile option should contain a setting PASSWORD=client-password-to-use but does not",
+                        new Object[] {pwFile.getAbsolutePath()});
+                throw new UserError(msg);
+            }
         } finally {
             if (inputStream != null) {
                 inputStream.close();
