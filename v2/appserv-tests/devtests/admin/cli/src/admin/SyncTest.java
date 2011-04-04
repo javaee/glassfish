@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010-2011 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -73,6 +73,7 @@ public class SyncTest extends AdminBaseDevTest {
         startDomain();
         testCleanupofStaleFiles();
         testStartWithDASDown();
+        testConfigDirSync();
         stopDomain();
         stat.printSummary();
     }
@@ -260,6 +261,80 @@ public class SyncTest extends AdminBaseDevTest {
         report(tn + "delete-local-instance1", asadmin("delete-local-instance", i1name));
         report(tn + "delete-cluster", asadmin("delete-cluster", cname));
         foo.delete();
+    }
+
+    void testConfigDirSync() {
+        final String tn = "config-dir-sync";
+        final String i1name = "synci4";
+
+        // create a cluster and an instance
+        report(tn + "create-instance1", asadmin("create-instance",
+                "--node", "localhost-domain1", i1name));
+
+        // synchronize the instance without starting it
+        report(tn + "_synchronize-instance1",
+            asadmin("_synchronize-instance", i1name));
+
+        // create a file in the config-specific docroot directory
+        File foo = new File(getGlassFishHome(), "domains/domain1/config/" +
+                                        i1name + "-config/docroot/foo.html");
+        try {
+            FileWriter fw = new FileWriter(foo, true);
+            fw.write("<html><body>Foo file</body></html>");
+            fw.close();
+        } catch (IOException ioe) {
+            report(tn + "file-create", false);
+            ioe.printStackTrace();
+        }
+
+        // touch domain.xml
+        File dxml = new File(getGlassFishHome(),
+                                "domains/domain1/config/domain.xml");
+        touch(dxml);
+
+        // synchronize the instance without starting it
+        report(tn + "_synchronize-instance1-1",
+            asadmin("_synchronize-instance", i1name));
+
+        // is the file on the instance?
+        File fooOnInstance = new File(getGlassFishHome() +
+                        "/nodes/localhost-domain1/" + i1name + "/config/" +
+                        i1name + "-config/docroot/foo.html");
+        report(tn + "instance-file-exists", fooOnInstance.exists());
+
+        // now remove the file and make sure it disappears from the instance
+        foo.delete();
+        touch(dxml);
+
+        // synchronize the instance without starting it
+        report(tn + "_synchronize-instance1-2",
+            asadmin("_synchronize-instance", i1name));
+
+        // is the file on the instance?
+        report(tn + "instance-file-does-not-exist", !fooOnInstance.exists());
+
+        // delete the instance
+        report(tn + "delete-instance1", asadmin("delete-instance", i1name));
+    }
+
+    /**
+     * Touch the file, making sure the last modified time changes.
+     */
+    private static void touch(File f) {
+        long mod = f.lastModified();
+        long time = System.currentTimeMillis();
+        f.setLastModified(time);
+        if (f.lastModified() != mod)        // did it change?
+            return;
+        try {
+            Thread.sleep(1000);             // wait for a second
+        } catch (InterruptedException ex) {
+        }
+        time = System.currentTimeMillis();
+        f.setLastModified(time);
+        if (f.lastModified() != mod)        // did it change?
+            return;
+        throw new RuntimeException("Can't touch file: " + f);
     }
 
     private final String host;
