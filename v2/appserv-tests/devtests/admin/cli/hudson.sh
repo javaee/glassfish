@@ -25,6 +25,7 @@ unzip -q glassfish.zip
 export S1AS_HOME="$ROOT/glassfish3/glassfish"
 export APS_HOME="$ROOT/appserv-tests"
 export AS_LOGFILE="$S1AS_HOME/cli.log"
+export APS_NO_WAIT="true"
 
 cd "$APS_HOME"
 (jps |grep Main |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true

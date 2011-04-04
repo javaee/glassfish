@@ -39,12 +39,16 @@ import com.sun.appserv.test.BaseDevTest.AsadminReturn;
 import java.io.*;
 import java.net.*;
 import static admin.monitoring.Constants.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * ALL Monitoring DevTests must implement this interface
  * @author Byron Nevins
  */
 abstract class MonTest {
+    private static boolean stopWaiting = false;
+
     abstract void runTests(TestDriver driver);
 
     final void setDriver(TestDriver td) {
@@ -66,6 +70,9 @@ abstract class MonTest {
             Runtime.getRuntime().halt(1);
         }
         driver.report(join(names), b);
+
+        if (!b)
+            handleBadTest();
     }
 
     final boolean asadmin(String... cmd) {
@@ -210,13 +217,13 @@ abstract class MonTest {
         // in case you forget the correct order of args
         return (b.indexOf(a) >= 0) || (a.indexOf(b) >= 0);
     }
+
     void setupJvmMemory() {
-        report(asadmin("delete-jvm-options", "--target", "server",         "\\-Xmx512m"), "remove-Xmx512m-das");
+        report(asadmin("delete-jvm-options", "--target", "server", "\\-Xmx512m"), "remove-Xmx512m-das");
         report(asadmin("delete-jvm-options", "--target", "default-config", "\\-Xmx512m"), "remove-Xmx512m-def-cfg");
-        report(asadmin("create-jvm-options", "--target", "server",         "\\-Xmx1024m"), "add-Xmx1024m-das");
+        report(asadmin("create-jvm-options", "--target", "server", "\\-Xmx1024m"), "add-Xmx1024m-das");
         report(asadmin("create-jvm-options", "--target", "default-config", "\\-Xmx1024m"), "add-Xmx1024m-def-cfg");
     }
-
 
     static boolean ok(String s) {
         return s != null && s.length() > 0;
@@ -230,32 +237,32 @@ abstract class MonTest {
         if (r.outAndErr == null)
             return false;
 
-        if(howMany <= 0) {
+        if (howMany <= 0) {
             report(false, "Bad arg to checkForString");
             return false;
         }
 
         String output = r.outAndErr;
 
-        if(howMany == 1)
+        if (howMany == 1)
             return output.indexOf(findme) >= 0;
 
         final int findmelength = findme.length();
 
-        while(howMany-- > 0) {
+        while (howMany-- > 0) {
             int index = output.indexOf(findme);
 
-            if(index < 0)
+            if (index < 0)
                 return false;
 
             // got them at least the given number
-            if(howMany == 0)
+            if (howMany == 0)
                 return true;
 
             index += findmelength;
 
             // moved past the end of the string -- not a match
-            if(index >= output.length())
+            if (index >= output.length())
                 return false;
 
             output = output.substring(index);
@@ -293,7 +300,6 @@ abstract class MonTest {
     ///////////////////////////////////////////////////////////////
     ///   private below
     ///////////////////////////////////////////////////////////////
-
     private String join(String[] names) {
         StringBuilder sb = new StringBuilder(name);
 
@@ -301,9 +307,45 @@ abstract class MonTest {
             sb.append(SEP).append(name);
         return sb.toString();
     }
-
     private TestDriver driver;
     private String name;
     private static final String SEP = "::";
 
+    private void handleBadTest() {
+        // note that we MUST be running with a debug port for this to work!
+        // build.xml should have it set...
+
+        if(Boolean.parseBoolean(System.getenv("APS_NO_WAIT")))
+                return;
+
+        for (String s : ERROR) {
+            System.out.print(s);
+        }
+        for (int i = 1; i < 60; i++) {
+            if (stopWaiting)
+                break;
+            try {
+                Thread.sleep(1000);
+
+                if(i % 10 == 0)
+                    System.out.println(i);
+            }
+            catch (InterruptedException ex) {
+                // don't care...
+            }
+        }
+        System.out.println("");
+    }
+    private static final String[] ERROR = new String[]{
+        "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+        "***************************************************************\n",
+        "***************************************************************\n",
+        "***************************************************************\n",
+        "*******   TEST ERROR!!   Attach a Debugger NOW at port 9999 \n",
+        "*******   To stop the timeout: \n",
+        "******* Set the \"stopWaiting\" variable to true in MonTest\n",
+        "*******  I'll wait for 60 seconds...    \n",
+        "***************************************************************\n",
+        "***************************************************************\n",
+        "***************************************************************\n\n\n",};
 }

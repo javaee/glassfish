@@ -290,7 +290,8 @@
     <target name="monitoring" depends="init,setup">
         <java classname="admin.monitoring.TestDriver"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
-            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9999"/>
         </java>
     </target>
 
@@ -299,7 +300,8 @@
     <target name="monitoringverbose" depends="init,setup">
         <java classname="admin.monitoring.TestDriver"  fork="true" classpath="${test}">
             <jvmarg value="-Dverbose=true"/>
-            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9999"/>
         </java>
     </target>
 
