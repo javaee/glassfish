@@ -79,7 +79,7 @@ public class EmbeddedSetSecurityTest {
         System.out.println("Starting Web "+embedded);
         embedded.setLogLevel(Level.INFO);
         WebContainerConfig config = new WebContainerConfig();
-        root = new File("/Users/Amy/tests/security");
+        root = new File("/tests/security");
         config.setDocRootDir(root);
         config.setListings(true);
         config.setPort(8080);
@@ -146,8 +146,8 @@ public class EmbeddedSetSecurityTest {
         embedded.removeContext(context);
 
         } catch (Exception ex) {
-            ex.printStackTrace();
             //ignore for now
+            //ex.printStackTrace();
         }
 
     } 
