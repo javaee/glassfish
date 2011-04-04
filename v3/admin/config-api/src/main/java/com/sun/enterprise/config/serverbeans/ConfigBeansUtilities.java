@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -111,16 +111,18 @@ public final class ConfigBeansUtilities {
      *
      * @return true if the value is one of true, on, yes, 1. Note
      *         that the values are case sensitive. If it is not one of these
-     *         values, then, it returns false. A finest message is printed if
-     *         the value is null or a info message if the values are
-     *         wrong cases for valid true values.
+     *         values, then, it returns false.
      */
     public static boolean toBoolean(final String value) {
-        final String v = null != value ? value.trim() : value;
-        return null != v && ("true".equals(v)
+        if (value != null) {
+            final String v = value.trim();
+            return "true".equals(v)
                 || "yes".equals(v)
                 || "on".equals(v)
-                || "1".equals(v));
+                || "1".equals(v);
+        } else {
+            return false;
+        }
     }
 
     /** Returns the list of system-applications that are referenced from the given server.
@@ -135,8 +137,9 @@ public final class ConfigBeansUtilities {
         if (domain == null || sn == null)
             throw new IllegalArgumentException("Null argument");
         List<Application> allApps = getAllDefinedSystemApplications();
-        if (allApps.isEmpty())
-            return (allApps); //if there are no sys-apps, none can reference one :)
+        if (allApps.isEmpty()) {
+            return allApps; //if there are no sys-apps, none can reference one :)
+        }
         //allApps now contains ALL the system applications
         Server s = getServerNamed(sn);
         List<Application> referencedApps = new ArrayList<Application>();
@@ -148,7 +151,7 @@ public final class ConfigBeansUtilities {
                 }
             }
         }
-        return ( referencedApps );
+        return referencedApps;
     }
     
     public static Application getSystemApplicationReferencedFrom(String sn, String appName) {
@@ -156,18 +159,18 @@ public final class ConfigBeansUtilities {
         List<Application> allApps = getSystemApplicationsReferencedFrom(sn);
         for (Application app : allApps) {
             if (app.getName().equals(appName)) {
-                return ( app );
+                return app;
             }
         }
-        return ( null );
+        return null;
     }
     public static boolean isNamedSystemApplicationReferencedFrom(String appName, String serverName) {
         List <Application> referencedApps = getSystemApplicationsReferencedFrom(serverName);
         for (Application app : referencedApps) {
             if (app.getName().equals(appName))
-                return ( true );
+                return true;
         }
-        return ( false );
+        return false;
     }
     
     public static List<Server> getServers() {
@@ -182,10 +185,10 @@ public final class ConfigBeansUtilities {
         List<Server> servers = domain.getServers().getServer();
         for (Server s : servers) {
             if (name.equals(s.getName().trim())) {
-                return ( s );
+                return s;
             }
         }
-        return ( null );
+        return null;
     }
     
     public static List<Application> getAllDefinedSystemApplications() {
@@ -197,7 +200,7 @@ public final class ConfigBeansUtilities {
                     allSysApps.add((Application)m);
             }
         }
-        return ( allSysApps );
+        return allSysApps;
     }
 
    /**
@@ -271,7 +274,7 @@ public final class ConfigBeansUtilities {
                 }
             }
         }
-        return ( aref );
+        return aref;
     }
 
     public static ApplicationName getModule(String moduleID) {

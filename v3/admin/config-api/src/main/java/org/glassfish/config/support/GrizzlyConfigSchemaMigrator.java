@@ -273,7 +273,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
     private void createPortUnification(final NetworkListener listener) throws TransactionFailure {
         ConfigSupport.apply(new SingleConfigCode<Protocols>() {
             @Override
-            public Object run(final Protocols protocols) throws PropertyVetoException, TransactionFailure {
+            public Object run(final Protocols protocols) throws TransactionFailure {
                 final Protocol puProtocol = createProtocol(protocols, "pu-" + listener.getName());
                 final PortUnification pu = puProtocol.createChild(PortUnification.class);
                 puProtocol.setPortUnification(pu);
@@ -624,8 +624,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                 if (ssl != null && ssl.getClassname() == null) {
                     ConfigSupport.apply(new SingleConfigCode<Ssl>() {
                         @Override
-                        public Object run(final Ssl param)
-                            throws PropertyVetoException, TransactionFailure {
+                        public Object run(final Ssl param) {
                             param.setClassname("com.sun.enterprise.security.ssl.GlassfishSSLImpl");
                             return null;
                         }
@@ -826,18 +825,6 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
         netListener.setPort(listener.getPort());
         netListener.setProtocol(protocol.getName());
         netListener.setTransport("tcp");
-    }
-
-    private void updateNetworkListener(NetworkConfig config, final Transport transport) throws TransactionFailure {
-        for (NetworkListener listener : config.getNetworkListeners().getNetworkListener()) {
-            ConfigSupport.apply(new SingleConfigCode<NetworkListener>() {
-                @Override
-                public Object run(NetworkListener param) {
-                    param.setTransport(transport.getName());
-                    return null;
-                }
-            }, listener);
-        }
     }
 
     private void updateSsl(final String propName, final String value) throws TransactionFailure {

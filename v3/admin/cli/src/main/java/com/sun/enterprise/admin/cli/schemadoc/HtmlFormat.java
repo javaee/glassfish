@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,7 +46,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -55,13 +54,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.glassfish.api.admin.config.PropertyDesc;
-import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.types.Property;
 
 @Service(name = "html")
-public class HtmlFormat implements SchemaOutputFormat, Comparable<HtmlFormat> {
+public class HtmlFormat implements SchemaOutputFormat {
     private PrintWriter tocWriter;
     private PrintWriter detail;
     private Set<ClassDef> toc = new HashSet<ClassDef>();
@@ -240,10 +238,5 @@ public class HtmlFormat implements SchemaOutputFormat, Comparable<HtmlFormat> {
             writer.println(String.format("<th>%s</th>", value != null ? value.trim() : " "));
         }
         writer.println("</tr>");
-    }
-
-    @Override
-    public int compareTo(final HtmlFormat o) {
-        return 0;
     }
 }
