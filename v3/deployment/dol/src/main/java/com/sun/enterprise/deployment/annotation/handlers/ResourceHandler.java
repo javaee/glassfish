@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -260,6 +260,17 @@ public class ResourceHandler extends AbstractResourceHandler {
                         rdesc.setAuthorization(
                          ResourceReferenceDescriptor.CONTAINER_AUTHORIZATION);
                         break;
+                    default:    // should never happen
+                        Class c = (Class) ainfo.getAnnotatedElement();
+                        log(Level.SEVERE, ainfo,
+                            localStrings.getLocalString(
+        "enterprise.deployment.annotation.handlers.invalidauthenticationtype",
+                            "Invalid AuthenticationType [{0}] in @Resource " +
+                            "with name() = [{1}] and " +
+                            "type = [{1}] in {2}.",
+                            new Object[] { resourceAn.authenticationType(),
+                                    resourceAn.name(), resourceAn.type(), c }));
+                        return getDefaultFailedResult();
                     }
                 }
                 if (!rdesc.hasSharingScope()) {
