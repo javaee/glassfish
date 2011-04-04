@@ -79,7 +79,7 @@ import org.glassfish.deployment.versioning.VersioningUtils;
  */
 @Service
 @Scoped(PerLookup.class)
-public class ServerSynchronizer implements PostConstruct {
+public final class ServerSynchronizer implements PostConstruct {
 
     @Inject
     private ServerEnvironment env;
@@ -257,7 +257,6 @@ public class ServerSynchronizer implements PostConstruct {
             File rfile = new File(file);
             if (!rfile.exists())        // skip if file doesn't exist
                 continue;
-            URI rURI = rfile.toURI();
             URI f = configURI.relativize(rfile.toURI());
             if (!f.isAbsolute())        // if file is in config dir, add it
                 files.add(f.toString());
@@ -382,6 +381,7 @@ public class ServerSynchronizer implements PostConstruct {
         return apps;
     }
 
+    /*
     private Map<String, Application> getAllApps() {
         Map<String, Application> apps = new HashMap<String, Application>();
         if (applications == null)
@@ -407,6 +407,7 @@ public class ServerSynchronizer implements PostConstruct {
         }
         return apps;
     }
+    */
 
     /**
      * Synchronize the application named by mt.name in the
