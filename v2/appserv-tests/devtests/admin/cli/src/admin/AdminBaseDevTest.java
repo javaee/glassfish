@@ -88,8 +88,6 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
             name = name.substring(0, MAX_LENGTH - 3);
         String name2 = name.replace(' ', '_');
         if (!name2.equals(name)) {
-            write("Found spaces in the name.  Replaced with underscore. "
-                    + "before: " + name + ", after: " + name2);
             name = name2;   // don't foul logic below!
         }
 

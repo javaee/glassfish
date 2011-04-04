@@ -56,6 +56,8 @@ public class Jira extends MonTest {
         test14748();
         test15895();
         test14461();
+        test13905();
+
     }
 
     private void test15397() {
@@ -155,7 +157,7 @@ public class Jira extends MonTest {
         final String prepend = "test14461::";
         AsadminReturn r = null;
 
-        for(int i = 0; i < KEYS14461_GET.length; i++) {
+        for (int i = 0; i < KEYS14461_GET.length; i++) {
             String label = prepend + "GET-";
             String goodkey = KEYS14461_GET[i];
             String badkey = KEYS14461_GET_BAD[i];
@@ -165,7 +167,7 @@ public class Jira extends MonTest {
             report(r.err.indexOf(badkey) >= 0, label);
         }
 
-        for(int i = 0; i < KEYS14461_GET_M.length; i++) {
+        for (int i = 0; i < KEYS14461_GET_M.length; i++) {
             String label = prepend + "GET-M-";
             String goodkey = KEYS14461_GET_M[i];
             String badkey = KEYS14461_GET_M_BAD[i];
@@ -180,39 +182,77 @@ public class Jira extends MonTest {
 
     }
 
+    /*
+     * Nothing should be logged at the INFO level when the monitoring level is changed.
+     * At the FINE level we should see it.
+     */
+    private void test13905() {
+        final String prepend = "test13905::";
+        File logfile = new File(System.getenv("S1AS_HOME"));
+        logfile = new File(logfile, "domains/" + DOMAIN_NAME + "/logs/server.log");
+        report(logfile.exists(), prepend + "logfile exists");
+        report(logfile.isFile(), prepend + "logfile is-a-file");
+        report(logfile.canRead(), prepend + "logfile is readable");
 
-    private final static String[] KEYS14461_GET = new String[] {
-      STAND_ALONE_INSTANCE_NAME + ".monitoring-service.monitoring-enabled",
-      CLUSTERED_INSTANCE_NAME1 + ".monitoring-service.monitoring-enabled",
-      CLUSTERED_INSTANCE_NAME2 + ".monitoring-service.monitoring-enabled",
-      CLUSTER_NAME + ".monitoring-service.monitoring-enabled",
-      "server.monitoring-service.monitoring-enabled",
-      STAND_ALONE_INSTANCE_NAME + ".network-config.protocols.protocol.admin-listener.http.adapter",
-      CLUSTERED_INSTANCE_NAME1 + ".network-config.protocols.protocol.admin-listener.http.adapter",
-      CLUSTERED_INSTANCE_NAME2 + ".network-config.protocols.protocol.admin-listener.http.adapter",
-      CLUSTER_NAME + ".network-config.protocols.protocol.admin-listener.http.adapter",
-      "server.network-config.protocols.protocol.admin-listener.http.adapter",
-    };
+        long prevLen = logfile.length();
+        long len = prevLen;
 
-    private final static String[] KEYS14461_GET_BAD = new String[] {
-      STAND_ALONE_INSTANCE_NAME + ".server.monitoring-service.monitoring-enabled",
-      CLUSTERED_INSTANCE_NAME1 + ".server.monitoring-service.monitoring-enabled",
-      CLUSTERED_INSTANCE_NAME2 + ".server.monitoring-service.monitoring-enabled",
-      CLUSTER_NAME + ".server.monitoring-service.monitoring-enabled",
-      "server.server.monitoring-service.monitoring-enabled",
-      STAND_ALONE_INSTANCE_NAME + ".server.network-config.protocols.protocol.admin-listener.http.adapter",
-      CLUSTERED_INSTANCE_NAME1 + ".server.network-config.protocols.protocol.admin-listener.http.adapter",
-      CLUSTERED_INSTANCE_NAME2 + ".server.network-config.protocols.protocol.admin-listener.http.adapter",
-      CLUSTER_NAME + ".server.network-config.protocols.protocol.admin-listener.http.adapter",
-      "server.server.network-config.protocols.protocol.admin-listener.http.adapter",
-    };
-    private final static String[] KEYS14461_GET_M = new String[] {
-      STAND_ALONE_INSTANCE_NAME + ".jvm.class-loading-system.totalloadedclass-count-count",
-    };
-    private final static String[] KEYS14461_GET_M_BAD = new String[] {
-      STAND_ALONE_INSTANCE_NAME + ".server.jvm.class-loading-system.totalloadedclass-count-count",
-    };
-    private final static String[] KEYS14461_GET_M_VERY_BAD = new String[] {
-      STAND_ALONE_INSTANCE_NAME + ".server.server.jvm.class-loading-system.totalloadedclass-count-count",
-    };
+        report(prevLen > 0, prepend + "logfile is not empty");
+        // verify that changing mon-level does not cause any logging
+        report(asadmin("enable-monitoring", "--modules", "web-container=LOW"), prepend + "change-mon-level-nolog-");
+        len = logfile.length();
+        report(len == prevLen, prepend + "no-log-output");
+        report(asadmin("enable-monitoring", "--modules", "web-container=HIGH"), prepend + "change-mon-level-nolog-");
+        len = logfile.length();
+        report(len == prevLen, prepend + "no-log-output");
+        report(asadmin("set-log-levels", "javax.enterprise.system.tools.monitor=FINE"), "set-log-level-to-fine");
+        try {
+            Thread.sleep(5000); // wait for it to get logged!
+        }
+        catch (InterruptedException ex) {
+            // don't care
+        }
+
+        len = logfile.length();
+        report(len > prevLen, prepend + "set-log-level was noticed");
+        prevLen = len;
+        report(asadmin("enable-monitoring", "--modules", "web-container=LOW"), prepend + "change-mon-level-yeslog-");
+        len = logfile.length();
+        report(len > prevLen, prepend + "yes-log-output");
+        prevLen = len;
+        report(asadmin("enable-monitoring", "--modules", "web-container=HIGH"), prepend + "change-mon-level-yeslog-");
+        len = logfile.length();
+        report(len > prevLen, prepend + "yes-log-output");
+
+        // return to original state
+        report(asadmin("set-log-levels", "javax.enterprise.system.tools.monitor=INFO"), "set-log-level-back");
+    }
+    private final static String[] KEYS14461_GET = new String[]{
+        STAND_ALONE_INSTANCE_NAME + ".monitoring-service.monitoring-enabled",
+        CLUSTERED_INSTANCE_NAME1 + ".monitoring-service.monitoring-enabled",
+        CLUSTERED_INSTANCE_NAME2 + ".monitoring-service.monitoring-enabled",
+        CLUSTER_NAME + ".monitoring-service.monitoring-enabled",
+        "server.monitoring-service.monitoring-enabled",
+        STAND_ALONE_INSTANCE_NAME + ".network-config.protocols.protocol.admin-listener.http.adapter",
+        CLUSTERED_INSTANCE_NAME1 + ".network-config.protocols.protocol.admin-listener.http.adapter",
+        CLUSTERED_INSTANCE_NAME2 + ".network-config.protocols.protocol.admin-listener.http.adapter",
+        CLUSTER_NAME + ".network-config.protocols.protocol.admin-listener.http.adapter",
+        "server.network-config.protocols.protocol.admin-listener.http.adapter",};
+    private final static String[] KEYS14461_GET_BAD = new String[]{
+        STAND_ALONE_INSTANCE_NAME + ".server.monitoring-service.monitoring-enabled",
+        CLUSTERED_INSTANCE_NAME1 + ".server.monitoring-service.monitoring-enabled",
+        CLUSTERED_INSTANCE_NAME2 + ".server.monitoring-service.monitoring-enabled",
+        CLUSTER_NAME + ".server.monitoring-service.monitoring-enabled",
+        "server.server.monitoring-service.monitoring-enabled",
+        STAND_ALONE_INSTANCE_NAME + ".server.network-config.protocols.protocol.admin-listener.http.adapter",
+        CLUSTERED_INSTANCE_NAME1 + ".server.network-config.protocols.protocol.admin-listener.http.adapter",
+        CLUSTERED_INSTANCE_NAME2 + ".server.network-config.protocols.protocol.admin-listener.http.adapter",
+        CLUSTER_NAME + ".server.network-config.protocols.protocol.admin-listener.http.adapter",
+        "server.server.network-config.protocols.protocol.admin-listener.http.adapter",};
+    private final static String[] KEYS14461_GET_M = new String[]{
+        STAND_ALONE_INSTANCE_NAME + ".jvm.class-loading-system.totalloadedclass-count-count",};
+    private final static String[] KEYS14461_GET_M_BAD = new String[]{
+        STAND_ALONE_INSTANCE_NAME + ".server.jvm.class-loading-system.totalloadedclass-count-count",};
+    private final static String[] KEYS14461_GET_M_VERY_BAD = new String[]{
+        STAND_ALONE_INSTANCE_NAME + ".server.server.jvm.class-loading-system.totalloadedclass-count-count",};
 }
