@@ -160,7 +160,7 @@ public class BackupCommandsTest extends AdminBaseDevTest {
     }
 
     private void cleanupBackupDir() {
-        File path = new File(BACKUP_DIR);
+        File path = new File(BACKUP_DIR, DOMAIN1);
         for(File f : path.listFiles()) {
             f.delete();
         }
@@ -242,6 +242,6 @@ public class BackupCommandsTest extends AdminBaseDevTest {
     private static final String FORCE_OPTION = "--force";
     private static final String FILENAME_OPTION = "--filename";
     private static final String BACKUP_FILE = "resources/backups/domain2_2010_07_19_v00001.zip";
-    private static final String BACKUP_DIR = System.getenv("APS_HOME") + "devtests/admin/cli/backupdir";
+    private static final String BACKUP_DIR = System.getenv("APS_HOME") + "/devtests/admin/cli/backupdir";
 
 }
