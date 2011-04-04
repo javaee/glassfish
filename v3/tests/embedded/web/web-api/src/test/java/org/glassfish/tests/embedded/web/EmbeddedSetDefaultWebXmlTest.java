@@ -108,7 +108,7 @@ public class EmbeddedSetDefaultWebXmlTest {
         }
         in.close();
         
-        Thread.sleep(100);
+        embedded.removeContext(context);
         
      }
 

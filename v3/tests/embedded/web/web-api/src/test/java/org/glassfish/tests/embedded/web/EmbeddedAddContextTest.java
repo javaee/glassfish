@@ -104,7 +104,7 @@ public class EmbeddedAddContextTest {
         }
         in.close();
 
-        //embedded.removeContext(context);
+        embedded.removeContext(context);
     } 
 
     @AfterClass

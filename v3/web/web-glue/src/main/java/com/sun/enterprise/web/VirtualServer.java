@@ -1867,6 +1867,8 @@ public class VirtualServer extends StandardHost
     
     private List<WebListener> listeners = new ArrayList<WebListener>();
 
+    protected Map<String, Context> contexts = new LinkedHashMap<String, Context>();
+
     /**
      * Sets the docroot of this <tt>VirtualServer</tt>.
      *
@@ -1972,6 +1974,7 @@ public class VirtualServer extends StandardHost
                 }
                 facade.setUnwrappedContext(wm);
                 wm.setEmbedded(true);
+                contexts.put(contextName, facade);
                 if (config != null) {
                     wm.setDefaultWebXml(config.getDefaultWebXml());
                 }
@@ -1986,21 +1989,24 @@ public class VirtualServer extends StandardHost
      * Stops the given <tt>context</tt> and removes it from this
      * <tt>VirtualServer</tt>.
      */
-    public void removeContext(Context context) {
-        removeChild((Container)context);
+    public void removeContext(Context context)
+            throws GlassFishException {
+        try {
+            Deployer deployer = Globals.getDefaultHabitat().getComponent(Deployer.class);
+            deployer.undeploy(context.getContextPath());
+            contexts.remove(context);
+        } catch (Exception ex) {
+            throw new GlassFishException(new ConfigException(
+                    "Context with context path " + context.getContextPath() +
+                            " cannot be removed from virtual server " + getID()));
+        }
     }
 
     /**
      * Finds the <tt>Context</tt> registered at the given context root.
      */
     public Context getContext(String contextRoot) {
-        Context context = null;
-        for (Context c : getContexts()) {
-            if (c.getPath().equals(contextRoot)) {
-                context = c;
-            }
-        }
-        return context;
+        return contexts.get(contextRoot);
     }
 
     /**
@@ -2008,13 +2014,7 @@ public class VirtualServer extends StandardHost
      * this <tt>VirtualServer</tt>.
      */
     public Collection<Context> getContexts() {
-        List<Context> contexts = new ArrayList<Context>();
-        for (Container child : findChildren()) {
-            if (child instanceof Context) {
-                contexts.add((Context)child);
-            }
-        }
-        return contexts;
+        return contexts.values();
     }
 
     /**

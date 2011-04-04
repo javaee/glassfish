@@ -148,7 +148,9 @@ public class EmbeddedWebTest {
         System.out.println("Network listener size after deletion " + listenerList.size());
         Assert.assertTrue(listenerList.size()==1);
         for (WebListener listener : embedded.getWebListeners())
-            System.out.println("Web listener "+listener.getId()+" "+listener.getPort());     
+            System.out.println("Web listener "+listener.getId()+" "+listener.getPort());
+
+        virtualServer.removeContext(context);
 
     } 
 

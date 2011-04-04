@@ -113,6 +113,8 @@ public class EmbeddedAddServletDefaultVSTest {
             sb.append(inputLine);
         }
         in.close();
+
+        vs.removeContext(context);
         
      }
 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -114,33 +114,12 @@ public class EmbeddedCreateVirtualServerTest {
         VirtualServer vs = embedded.getVirtualServer(virtualServerId);
         Assert.assertEquals(virtualServerId,vs.getID());
 
-        //Context context = (Context) embedded.createContext(root, null);
-        //virtualServer.addContext(context, "");
+        String p = System.getProperty("buildDir");
+        System.out.println("Root is " + p);
+        File docRoot = new File(p);
+        Context context = (Context) embedded.createContext(docRoot);
+        vs.addContext(context, contextRoot);
 
-        Deployer deployer = glassfish.getDeployer();
-
-        URL source = WebHello.class.getClassLoader().getResource(
-                "org/glassfish/tests/embedded/web/WebHello.class");
-        String p = source.getPath().substring(0, source.getPath().length() -
-                "org/glassfish/tests/embedded/web/WebHello.class".length());
-        File path = new File(p).getParentFile().getParentFile();
-
-        String name = null;
-
-        if (path.getName().lastIndexOf('.') != -1) {
-            name = path.getName().substring(0, path.getName().lastIndexOf('.'));
-        } else {
-            name = path.getName();
-        }
-
-        System.out.println("Deploying " + path + ", name = " + name);
-
-        String appName = deployer.deploy(path.toURI(), "--contextroot", contextRoot, "--name=" + name);
-
-        System.out.println("Deployed " + appName);
-
-        Assert.assertTrue(appName != null);
- 
         URL servlet = new URL("http://localhost:"+newPort+"/"+contextRoot+"/hello");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
@@ -153,6 +132,7 @@ public class EmbeddedCreateVirtualServerTest {
         System.out.println(inputLine);
         Assert.assertEquals("Hello World!", sb.toString());
 
+        vs.removeContext(context);
         System.out.println("Removing web listener "+testListener.getId());
         embedded.removeWebListener(testListener);                       
 
@@ -161,10 +141,6 @@ public class EmbeddedCreateVirtualServerTest {
         Assert.assertTrue(listenerList.size()==1);
         for (WebListener listener : embedded.getWebListeners())
             System.out.println("Web listener "+listener.getId()+" "+listener.getPort());
-
-        if (appName!=null)
-            deployer.undeploy(appName);
-
     } 
 
     @AfterClass

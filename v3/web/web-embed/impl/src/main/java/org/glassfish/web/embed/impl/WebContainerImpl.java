@@ -48,8 +48,6 @@ import java.util.logging.*;
 
 import com.sun.enterprise.web.EmbeddedWebContainer;
 import com.sun.enterprise.web.ContextFacade;
-import com.sun.enterprise.web.WebModule;
-import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.grizzly.config.dom.FileCache;
 import com.sun.grizzly.config.dom.Http;
@@ -68,7 +66,6 @@ import org.glassfish.embeddable.web.config.SslConfig;
 import org.glassfish.embeddable.web.config.SslType;
 import org.glassfish.internal.embedded.Port;
 import org.glassfish.internal.embedded.Ports;
-import org.glassfish.embeddable.Deployer;
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.web.ConfigException;
 import org.glassfish.embeddable.web.Context;
@@ -679,10 +676,6 @@ public class WebContainerImpl implements WebContainer {
             throws ConfigException, GlassFishException {
 
         String contextRoot = context.getPath();
-        if (!contextRoot.startsWith("/")) {
-            contextRoot = "/"+ contextRoot;
-        }
-
         for (VirtualServer vs : getVirtualServers()) {
             if (vs.getContext(contextRoot)!=null) {
                 vs.removeContext(context);
@@ -690,6 +683,10 @@ public class WebContainerImpl implements WebContainer {
                     log.info("Removed context with path " + contextRoot +
                             " from virtual server " + vs.getID());
                 }
+            } else {
+                throw new GlassFishException(new ConfigException(
+                    "Context with context path " + context.getContextPath() +
+                            " does not exist on virtual server " + vs.getID()));
             }
         }
 

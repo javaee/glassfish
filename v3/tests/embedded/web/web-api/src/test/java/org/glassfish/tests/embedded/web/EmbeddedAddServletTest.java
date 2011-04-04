@@ -129,6 +129,7 @@ public class EmbeddedAddServletTest {
             sb.append(inputLine);
         }
         in.close();
+        vs.removeContext(context);
         
      }
 

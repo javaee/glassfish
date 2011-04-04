@@ -95,9 +95,6 @@ public class EmbeddedSetSecurityTest {
         Context context = embedded.createContext(root);
         embedded.addContext(context, contextRoot);
 
-        //Deployer deployer = glassfish.getDeployer();
-        //String appName = deployer.deploy(root, "--name=security");
-
         FormLoginConfig form = new FormLoginConfig("/login.html", "/error.html");
 
         LoginConfig loginConfig = new LoginConfig();
@@ -144,6 +141,8 @@ public class EmbeddedSetSecurityTest {
             sb.append(inputLine);
         }
         in.close();
+
+        embedded.removeContext(context);
 
         } catch (Exception ex) {
             //ignore for now
