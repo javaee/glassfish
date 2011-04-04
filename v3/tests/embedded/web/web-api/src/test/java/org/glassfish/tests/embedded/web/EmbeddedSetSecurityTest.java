@@ -129,7 +129,6 @@ public class EmbeddedSetSecurityTest {
 
         context.setSecurityConfig(securityConfig);
 
-        //    Thread.sleep(100000000);
           /*
         URL servlet = new URL("http://localhost:8080/"+contextRoot+"/ServletTest");
         URLConnection yc = servlet.openConnection();
