@@ -66,6 +66,15 @@
                 <role>developer</role>
             </roles>
         </developer>
+        <developer>
+            <id>hzhang_jn</id>
+            <name>Hong Zhang</name>
+            <url>http://blogs.sun.com/misty</url>
+            <organization>Oracle, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
     <build>
     	<sourceDirectory>src/main/java</sourceDirectory>
