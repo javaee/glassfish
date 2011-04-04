@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -74,7 +74,7 @@ import java.util.Locale;
  * @version $Revision: 1.6 $ $Date: 2003/07/20 07:35:13 $
  */
 
-public class OperationInfo extends FeatureInfo implements Serializable {
+public class OperationInfo extends FeatureInfo {
     static final long serialVersionUID = 4418342922072614875L;
     // ----------------------------------------------------------- Constructors
 

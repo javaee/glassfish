@@ -119,7 +119,7 @@ import java.util.logging.Logger;
 
 public class StandardContext
     extends ContainerBase
-    implements Context, Serializable, ServletContext
+    implements Context, ServletContext
 {
     private static final transient Logger log = Logger.getLogger(
         StandardContext.class.getName());
