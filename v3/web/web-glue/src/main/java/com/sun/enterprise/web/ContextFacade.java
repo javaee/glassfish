@@ -99,9 +99,6 @@ public class ContextFacade extends StandardContext implements Context {
 
     protected Map<String, StandardWrapper> wrappers = new HashMap<String, StandardWrapper>();
 
-    protected ConcurrentHashMap<String, ServletRegistrationImpl> servletRegisMap =
-        new ConcurrentHashMap<String, ServletRegistrationImpl>();
-
     // ------------------------------------------------------------- Properties
 
     public File getDocRoot() {
