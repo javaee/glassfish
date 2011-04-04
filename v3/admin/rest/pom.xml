@@ -67,9 +67,8 @@
             </roles>
         </developer>
         <developer>
-            <id>rajeshwar</id>
-            <name>Rajeshwar Patil</name>
-            <url>http://blogs.sun.com/aquatic/</url>
+            <id>jdlee</id>
+            <name>Jason Lee</name>
             <organization>Oracle, Inc.</organization>
             <roles>
                 <role>lead</role>
