@@ -457,7 +457,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                             " since value is unresolved symbolic token=" +
                             value);
                     }
-                } else if (name != null ) {
+                } else {
                         if (name.startsWith(GMS_PROPERTY_PREFIX)) {
                             name = name.replaceFirst(GMS_PROPERTY_PREFIX_REGEXP, "");
                         }
@@ -490,15 +490,18 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
     private boolean validateGMSProperty(String propertyName) {
         boolean result = false;
+        Object key = null;
         try {
-            GrizzlyConfigConstants key = GrizzlyConfigConstants.valueOf(propertyName);
+            key = GrizzlyConfigConstants.valueOf(propertyName);
             result = true;
         } catch (Throwable t) {}
-        try {
-            ServiceProviderConfigurationKeys key = ServiceProviderConfigurationKeys.valueOf(propertyName);
-            result = true;
-        } catch (Throwable t) {}
-        return result;
+        if (key == null) {
+            try {
+                key = ServiceProviderConfigurationKeys.valueOf(propertyName);
+                result = true;
+            } catch (Throwable t) {}
+        }
+        return key != null && result;
     }
 
     private void initializeGMS() throws GMSException{
@@ -584,22 +587,6 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 new Object[] {instanceName, clusterName});
 
         } else throw new GMSException("gms object is null.");
-    }
-
-    private void validateCoreMembers() {
-        List<String> currentCoreMembers = gms.getGroupHandle().getCurrentCoreMembers();
-        SortedSet<String> unknownMembers = new TreeSet<String>();
-        for (String member : currentCoreMembers) {
-            MemberStates state = gms.getGroupHandle().getMemberState(member, 10000, 0);
-            if (state == MemberStates.UNKNOWN) {
-                unknownMembers.add(member);
-
-            }
-        }
-        if (unknownMembers.size() > 0) {
-            logger.log(Level.INFO,
-                "gmsservice.member.state.unknown", unknownMembers);
-        }
     }
 
     private void printProps(Properties prop) {
