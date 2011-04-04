@@ -51,7 +51,10 @@ class Constants {
     final static String LOW = "LOW";
     final static String OFF = "OFF";
     final static boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+
+    // this is annoying!!!
     final static String STAR = isWindows ? "\"*\"" : "*";
+    final static String SERVERDOTSTAR = isWindows ? "\"server.*\"" : "server.*";
 
     final static String[] INSTANCES = new String[]{
         CLUSTERED_INSTANCE_NAME1,

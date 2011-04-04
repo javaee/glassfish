@@ -57,6 +57,7 @@ public class Jira extends MonTest {
         test15895();
         test14461();
         test13905();
+        test13723();
 
     }
 
@@ -227,6 +228,16 @@ public class Jira extends MonTest {
         // return to original state
         report(asadmin("set-log-levels", "javax.enterprise.system.tools.monitor=INFO"), "set-log-level-back");
     }
+
+    /*
+     * this test is in Setup.java
+     * This fake version is here just so you will find it when cross-checking
+     * against issues so you know that there *is* a regression test somewhere...
+     */
+    private void test13723() {
+        report(true, "this test had to run earlier");
+    }
+
     private final static String[] KEYS14461_GET = new String[]{
         STAND_ALONE_INSTANCE_NAME + ".monitoring-service.monitoring-enabled",
         CLUSTERED_INSTANCE_NAME1 + ".monitoring-service.monitoring-enabled",

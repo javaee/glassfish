@@ -34,7 +34,9 @@
  * holder.
  */
 package admin.monitoring;
+
 import static admin.monitoring.Constants.*;
+
 /**
  * Setup the outside world for Monitoring Dev Tests
  * @author Byron Nevins
@@ -49,8 +51,38 @@ public class Setup extends MonTest {
         setupJvmMemory();
         report(asadmin("stop-domain", DOMAIN_NAME), "stop-with-new-jvm-memory");
         startDomain();
+        test13723();
         createCluster();
         createInstances();
         startInstances();
+    }
+
+    /**
+     * The test is here - not in Jira.java because we can NOT have any instances
+     * running for this test to work.
+     * list -m "*" did not work
+     * list -m "server.*" was needed
+     */
+    private void test13723() {
+        final String prepend = "test13723::";
+
+        // before the fix server.jvm would NOT be in there
+        report(!checkForString(asadminWithOutput("list", "-m", STAR), "server.jvm"),
+                prepend + "just star");
+        report(!checkForString(asadminWithOutput("list", "-m", SERVERDOTSTAR), "server.jvm"),
+                prepend + "server dot star");
+
+        report(asadmin("enable-monitoring", "--modules", "jvm=HIGH"), prepend + "enable-mon");
+        report(checkForString(asadminWithOutput("list", "-m", STAR), "server.jvm"),
+                prepend + "just star");
+        report(checkForString(asadminWithOutput("list", "-m", SERVERDOTSTAR), "server.jvm"),
+                prepend + "server dot star");
+
+        // return to original state!
+        report(asadmin("enable-monitoring", "--modules", "jvm=OFF"), prepend + "disable-mon");
+        report(!checkForString(asadminWithOutput("list", "-m", STAR), "server.jvm"),
+                prepend + "just star");
+        report(!checkForString(asadminWithOutput("list", "-m", SERVERDOTSTAR), "server.jvm"),
+                prepend + "server dot star");
     }
 }
