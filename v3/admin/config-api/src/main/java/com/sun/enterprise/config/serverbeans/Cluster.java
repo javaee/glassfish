@@ -554,7 +554,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                 instance.setGmsMulticastAddress(generateHeartbeatAddress());
             }
             if (instance.getGmsMulticastPort() == null) {
-                instance.setGmsMulticastPort(Integer.toString(generateHeartbeatPort()));
+                instance.setGmsMulticastPort(generateHeartbeatPort());
             }
 
             Property gmsListenerPort = instance.createChild(Property.class);
@@ -628,15 +628,15 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
             }
         }
 
-        private int generateHeartbeatPort () {
-            final long MIN_GMS_MULTICAST_PORT = 2048;
-            final long MAX_GMS_MULTICAST_PORT = 32000;
-            long portInterval = MAX_GMS_MULTICAST_PORT - MIN_GMS_MULTICAST_PORT;
-            return new Long(Math.round(Math.random()*portInterval)+ MIN_GMS_MULTICAST_PORT)
-                      .intValue();
-        }
+    private String generateHeartbeatPort() {
+        final int MIN_GMS_MULTICAST_PORT = 2048;
+        final int MAX_GMS_MULTICAST_PORT = 32000;
 
-        private String generateHeartbeatAddress () {
+        int portInterval = MAX_GMS_MULTICAST_PORT - MIN_GMS_MULTICAST_PORT;
+        return Integer.valueOf(Math.round((float)(Math.random() * portInterval)) + MIN_GMS_MULTICAST_PORT).toString();
+    }
+
+    private String generateHeartbeatAddress () {
             final int MAX_GMS_MULTICAST_ADDRESS_SUBRANGE = 255;
 
             final StringBuffer heartbeatAddressBfr = new StringBuffer( "228.9.");
