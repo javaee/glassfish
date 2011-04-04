@@ -315,8 +315,8 @@ abstract class MonTest {
         // note that we MUST be running with a debug port for this to work!
         // build.xml should have it set...
 
-        if(Boolean.parseBoolean(System.getenv("APS_NO_WAIT")))
-                return;
+        if (!WAIT)
+            return;
 
         for (String s : ERROR) {
             System.out.print(s);
@@ -327,7 +327,7 @@ abstract class MonTest {
             try {
                 Thread.sleep(1000);
 
-                if(i % 10 == 0)
+                if (i % 10 == 0)
                     System.out.println(i);
             }
             catch (InterruptedException ex) {
@@ -348,4 +348,9 @@ abstract class MonTest {
         "***************************************************************\n",
         "***************************************************************\n",
         "***************************************************************\n\n\n",};
+
+    // you must set this env. variable or sys property to get the JIT debugging to work
+    private static final boolean WAIT =
+            Boolean.getBoolean("APS_WAIT") ||
+            Boolean.parseBoolean(System.getenv("APS_WAIT"));
 }
