@@ -72,8 +72,8 @@ public class BaseSeleniumTestClass {
     protected static final int BUTTON_TIMEOUT = 750;
     protected static final Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
     
-    private static Selenium selenium;
-    private static WebDriver driver;
+    protected static Selenium selenium;
+    protected static WebDriver driver;
     private static String currentTestClass = "";
     private boolean processingLogin = false;
     private static final String AJAX_INDICATOR = "ajaxIndicator";
@@ -452,20 +452,23 @@ public class BaseSeleniumTestClass {
                 Assert.fail("The operation timed out waiting for the page to load.");
             }
 
-            RenderedWebElement ajaxPanel = (RenderedWebElement)
-                    elementFinder.findElement(By.id(AJAX_INDICATOR), TIMEOUT,
+            RenderedWebElement ajaxPanel = (RenderedWebElement) elementFinder.findElement(By.id(AJAX_INDICATOR), TIMEOUT,
                     new ExpectedCondition<Boolean>() {
-                @Override
-                public Boolean apply(WebDriver driver) {
-                    RenderedWebElement ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
-                    return !ajaxPanel.isDisplayed();
-                }
 
-            });
+                        @Override
+                        public Boolean apply(WebDriver driver) {
+                            try {
+                                RenderedWebElement ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
+                                return !ajaxPanel.isDisplayed();
+                            } catch (Exception e) {
+                                return false;
+                            }
+                        }
+                    });
 //                if (!ajaxPanel.isDisplayed()) {
-                if (callback.executeTest()) {
-                    break;
-                }
+            if (callback.executeTest()) {
+                break;
+            }
 //                }
 
             sleep(TIMEOUT_CALLBACK_LOOP);
