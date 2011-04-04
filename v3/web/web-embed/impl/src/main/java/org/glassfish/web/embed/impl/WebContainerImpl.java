@@ -302,7 +302,7 @@ public class WebContainerImpl implements WebContainer {
                 newSsl.setKeyStore(sslConfig.getKeyStore());
             }
             if (sslConfig.getKeyPassword() != null) {
-                newSsl.setKeyStorePassword(sslConfig.getKeyPassword());
+                newSsl.setKeyStorePassword(new String(sslConfig.getKeyPassword()));
             }
             if (sslConfig.getTrustStore() != null) {
                 newSsl.setTrustStore(sslConfig.getTrustStore());

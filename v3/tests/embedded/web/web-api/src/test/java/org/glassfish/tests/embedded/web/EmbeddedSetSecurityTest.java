@@ -79,7 +79,7 @@ public class EmbeddedSetSecurityTest {
         System.out.println("Starting Web "+embedded);
         embedded.setLogLevel(Level.INFO);
         WebContainerConfig config = new WebContainerConfig();
-        root = new File("/tests/security");
+        root = new File("/Users/Amy/tests/security");
         config.setDocRootDir(root);
         config.setListings(true);
         config.setPort(8080);
@@ -100,7 +100,6 @@ public class EmbeddedSetSecurityTest {
         LoginConfig loginConfig = new LoginConfig();
         loginConfig.setAuthMethod(AuthMethod.FORM);
         loginConfig.setRealmName("default");
-        //loginConfig.setRealmType(RealmType.BASIC);
         loginConfig.setFormLoginConfig(form);
 
         WebResourceCollection webResource = new WebResourceCollection();
@@ -112,13 +111,14 @@ public class EmbeddedSetSecurityTest {
         httpMethods.add("GET");
         httpMethods.add("POST");
         webResource.setHttpMethods(httpMethods);
-        //webResource.setHttpMethodOmissions();
+        // This should throw Exception if uncommented
+        //webResource.setHttpMethodOmissions(httpMethods);
 
         SecurityConstraint securityConstraint = new SecurityConstraint();
         Set<WebResourceCollection> webResources = new HashSet<WebResourceCollection>();
         webResources.add(webResource);
         securityConstraint.setWebResourceCollection(webResources);
-        securityConstraint.setAuthConstraint("tomcat");
+        securityConstraint.setAuthConstraint("administrator");
         //securityConstraint.setUserDataConstraint(TransportGuarantee.NONE);
 
         SecurityConfig securityConfig = new SecurityConfig();
@@ -129,7 +129,9 @@ public class EmbeddedSetSecurityTest {
 
         context.setSecurityConfig(securityConfig);
 
-        URL servlet = new URL("http://localhost:8080/"+contextRoot);
+        //    Thread.sleep(100000000);
+          /*
+        URL servlet = new URL("http://localhost:8080/"+contextRoot+"/ServletTest");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(
@@ -140,11 +142,12 @@ public class EmbeddedSetSecurityTest {
         while ((inputLine = in.readLine()) != null){
             sb.append(inputLine);
         }
-        in.close();
+        in.close();   */
 
         embedded.removeContext(context);
 
         } catch (Exception ex) {
+            ex.printStackTrace();
             //ignore for now
         }
 

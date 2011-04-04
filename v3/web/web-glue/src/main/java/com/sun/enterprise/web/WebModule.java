@@ -46,13 +46,13 @@ import com.sun.enterprise.container.common.spi.util.JavaEEIOUtils;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.annotation.handlers.ServletSecurityHandler;
 import com.sun.enterprise.deployment.runtime.web.*;
-import com.sun.enterprise.deployment.web.SecurityConstraint;
-import com.sun.enterprise.deployment.web.ServletFilterMapping;
-import com.sun.enterprise.deployment.web.WebResourceCollection;
+import com.sun.enterprise.deployment.runtime.web.SessionConfig;
+import com.sun.enterprise.deployment.web.*;
 import com.sun.enterprise.security.integration.RealmInitializer;
 import com.sun.enterprise.universal.GFBase64Decoder;
 import com.sun.enterprise.universal.GFBase64Encoder;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.web.deploy.LoginConfigDecorator;
 import com.sun.enterprise.web.pwc.PwcWebModule;
 import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.enterprise.web.session.SessionCookieConfig;
@@ -67,6 +67,10 @@ import org.apache.catalina.servlets.DefaultServlet;
 import org.apache.catalina.session.StandardManager;
 import org.apache.jasper.servlet.JspServlet;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.embeddable.web.config.FormLoginConfig;
+import org.glassfish.embeddable.web.config.LoginConfig;
+import org.glassfish.embeddable.web.config.SecurityConfig;
+import org.glassfish.embeddable.web.config.TransportGuarantee;
 import org.glassfish.hk2.classmodel.reflect.Types;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
@@ -87,10 +91,7 @@ import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.lang.ClassLoader;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
@@ -2087,6 +2088,108 @@ public class WebModule extends PwcWebModule {
                 webResColl.addHttpMethodOmission(httpMethod);
             }
         }
+    }
+
+    public void setSecurityConfig(SecurityConfig config) {
+
+        if (config == null) {
+            return;
+        }
+
+        LoginConfig lc = config.getLoginConfig();
+        if (lc != null) {
+            LoginConfiguration loginConf = new LoginConfigurationImpl();
+            loginConf.setAuthenticationMethod(lc.getAuthMethod().name());
+            loginConf.setRealmName(lc.getRealmName());
+
+            FormLoginConfig form = lc.getFormLoginConfig();
+            if (form != null) {
+                loginConf.setFormErrorPage(form.getFormErrorPage());
+                loginConf.setFormLoginPage(form.getFormLoginPage());
+            }
+
+            LoginConfigDecorator decorator = new LoginConfigDecorator(loginConf);
+            setLoginConfig(decorator);
+            getWebBundleDescriptor().setLoginConfiguration(loginConf);
+        }
+
+        Set<org.glassfish.embeddable.web.config.SecurityConstraint> securityConstraints =
+                config.getSecurityConstraints();
+        for (org.glassfish.embeddable.web.config.SecurityConstraint sc : securityConstraints) {
+
+            com.sun.enterprise.deployment.web.SecurityConstraint securityConstraint = new SecurityConstraintImpl();
+
+            Set<org.glassfish.embeddable.web.config.WebResourceCollection> wrcs =
+                        sc.getWebResourceCollection();
+            for (org.glassfish.embeddable.web.config.WebResourceCollection wrc : wrcs) {
+
+                WebResourceCollectionImpl webResourceColl = new WebResourceCollectionImpl();
+                webResourceColl.setDisplayName(wrc.getName());
+                for (String urlPattern : wrc.getUrlPatterns()) {
+                    webResourceColl.addUrlPattern(urlPattern);
+                }
+                securityConstraint.addWebResourceCollection(webResourceColl);
+
+                AuthorizationConstraintImpl ac = null;
+                if (sc.getAuthConstraint() != null && sc.getAuthConstraint().length > 0) {
+                    ac = new AuthorizationConstraintImpl();
+                    for (String roleName : sc.getAuthConstraint()) {
+                        Role role = new Role(roleName);
+                        getWebBundleDescriptor().addRole(role);
+                        ac.addSecurityRole(roleName);
+                    }
+                } else { // DENY
+                    ac = new AuthorizationConstraintImpl();
+                }
+                securityConstraint.setAuthorizationConstraint(ac);
+
+                UserDataConstraint udc = new UserDataConstraintImpl();
+                udc.setTransportGuarantee(
+                        ((sc.getDataConstraint() == TransportGuarantee.CONFIDENTIAL) ?
+                                UserDataConstraint.CONFIDENTIAL_TRANSPORT :
+                                UserDataConstraint.NONE_TRANSPORT));
+                securityConstraint.setUserDataConstraint(udc);
+
+                if (wrc.getHttpMethods() != null) {
+                    for (String httpMethod : wrc.getHttpMethods()) {
+                        webResourceColl.addHttpMethod(httpMethod);
+                    }
+                }
+
+                if (wrc.getHttpMethodOmissions() != null) {
+                    for (String httpMethod :  wrc.getHttpMethodOmissions()) {
+                        webResourceColl.addHttpMethodOmission(httpMethod);
+                    }
+                }
+
+                getWebBundleDescriptor().addSecurityConstraint(securityConstraint);
+                TomcatDeploymentConfig.configureSecurityConstraint(this, getWebBundleDescriptor());
+            }
+        }
+
+        if (pipeline != null) {
+            GlassFishValve basic = pipeline.getBasic();
+            if ((basic != null) && (basic instanceof java.net.Authenticator)) {
+                removeValve(basic);
+            }
+            GlassFishValve valves[] = pipeline.getValves();
+            for (int i = 0; i < valves.length; i++) {
+                if (valves[i] instanceof java.net.Authenticator) {
+                    removeValve(valves[i]);
+                }
+            }
+        }
+
+        if (realm != null && realm instanceof RealmInitializer) {
+            ((RealmInitializer) realm).initializeRealm(
+                    this.getWebBundleDescriptor(),
+                    false,
+                    ((VirtualServer)parent).getAuthRealmName());
+            ((RealmInitializer)realm).setVirtualServer(getParent());
+            ((RealmInitializer)realm).updateWebSecurityManager();
+            setRealm(realm);
+        }
+
     }
     
 }

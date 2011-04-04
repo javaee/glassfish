@@ -1994,7 +1994,7 @@ public class VirtualServer extends StandardHost
         try {
             Deployer deployer = Globals.getDefaultHabitat().getComponent(Deployer.class);
             deployer.undeploy(context.getContextPath());
-            contexts.remove(context);
+            contexts.remove(context.getContextPath());
         } catch (Exception ex) {
             throw new GlassFishException(new ConfigException(
                     "Context with context path " + context.getContextPath() +

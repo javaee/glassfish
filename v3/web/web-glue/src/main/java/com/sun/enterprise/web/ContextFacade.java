@@ -85,7 +85,7 @@ public class ContextFacade extends StandardContext implements Context {
     /**
      * Wrapped web module.
      */
-    private StandardContext context = null;
+    private WebModule context = null;
 
     private File docRoot;
 
@@ -426,7 +426,7 @@ public class ContextFacade extends StandardContext implements Context {
      *
      * @return The underlying StandardContext
      */
-    public StandardContext getUnwrappedContext() {
+    public WebModule getUnwrappedContext() {
         return context;
     }
 
@@ -453,103 +453,12 @@ public class ContextFacade extends StandardContext implements Context {
      * Set the security related configuration for this context
      */
     public void setSecurityConfig(SecurityConfig config) {
-        // TBD
-        return;
-    }
-
-
-        /*
         this.config = config;
         if (config == null) {
             return;
+        } else if (context != null) {
+            context.setSecurityConfig(config);
         }
-
-        LoginConfig lc = config.getLoginConfig();
-        if (lc != null) {
-            LoginConfiguration loginConf = new LoginConfigurationImpl();
-            loginConf.setAuthenticationMethod(lc.getAuthMethod().name());
-            loginConf.setRealmName(lc.getRealmName());
-
-            FormLoginConfig form = lc.getFormLoginConfig();
-            if (form != null) {
-                loginConf.setFormErrorPage(form.getFormErrorPage());
-                loginConf.setFormLoginPage(form.getFormLoginPage());
-            }
-
-            LoginConfigDecorator decorator = new LoginConfigDecorator(loginConf);
-            setLoginConfig(decorator);
-            getWebBundleDescriptor().setLoginConfiguration(loginConf);
-        }
-
-        Set<org.glassfish.embeddable.web.config.SecurityConstraint> securityConstraints =
-                config.getSecurityConstraints();
-        for (org.glassfish.embeddable.web.config.SecurityConstraint sc : securityConstraints) {
-
-            com.sun.enterprise.deployment.web.SecurityConstraint securityConstraint = new SecurityConstraintImpl();
-
-            Set<org.glassfish.embeddable.web.config.WebResourceCollection> wrcs =
-                        sc.getWebResourceCollection();
-            for (org.glassfish.embeddable.web.config.WebResourceCollection wrc : wrcs) {
-
-                WebResourceCollectionImpl webResourceColl = new WebResourceCollectionImpl();
-                webResourceColl.setDisplayName(wrc.getName());
-                for (String urlPattern : wrc.getUrlPatterns()) {
-                    webResourceColl.addUrlPattern(urlPattern);
-                }
-                securityConstraint.addWebResourceCollection(webResourceColl);
-
-                AuthorizationConstraintImpl ac = null;
-                if (sc.getAuthConstraint() != null && sc.getAuthConstraint().length > 0) {
-                    ac = new AuthorizationConstraintImpl();
-                    for (String roleName : sc.getAuthConstraint()) {
-                        Role role = new Role(roleName);
-                        getWebBundleDescriptor().addRole(role);
-                        ac.addSecurityRole(roleName);
-                    }
-                } else { // DENY
-                    ac = new AuthorizationConstraintImpl();
-                }
-                securityConstraint.setAuthorizationConstraint(ac);
-
-                UserDataConstraint udc = new UserDataConstraintImpl();
-                udc.setTransportGuarantee(
-                        ((sc.getDataConstraint() == TransportGuarantee.CONFIDENTIAL) ?
-                                UserDataConstraint.CONFIDENTIAL_TRANSPORT :
-                                UserDataConstraint.NONE_TRANSPORT));
-                securityConstraint.setUserDataConstraint(udc);
-
-                for (String httpMethod : wrc.getHttpMethods()) {
-                    webResourceColl.addHttpMethod(httpMethod);
-                }
-
-                getWebBundleDescriptor().addSecurityConstraint(securityConstraint);
-                TomcatDeploymentConfig.configureSecurityConstraint(this, getWebBundleDescriptor());
-            }
-        }
-
-        if (pipeline != null) {
-            GlassFishValve basic = pipeline.getBasic();
-            if ((basic != null) && (basic instanceof Authenticator)) {
-                removeValve(basic);
-            }
-            GlassFishValve valves[] = pipeline.getValves();
-            for (int i = 0; i < valves.length; i++) {
-                if (valves[i] instanceof Authenticator) {
-                    removeValve(valves[i]);
-                }
-            }
-        }
-
-        if (realm != null && realm instanceof RealmInitializer) {
-            ((RealmInitializer) realm).initializeRealm(
-                    this.getWebBundleDescriptor(),
-                    false,
-                    ((VirtualServer)parent).getAuthRealmName());
-            ((RealmInitializer)realm).setVirtualServer(getParent());
-            ((RealmInitializer)realm).updateWebSecurityManager();
-            setRealm(realm);
-        }
-
     }
 
     /**

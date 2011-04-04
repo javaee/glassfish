@@ -52,7 +52,7 @@ public class SslConfig {
 
     private String keyStore;
     private String trustStore;
-    private String keyPassword;
+    private char[] keyPassword;
     private int timeoutMilliSeconds;
     private Set<SslType> algorithms;
 
@@ -86,7 +86,7 @@ public class SslConfig {
      *
      * @param keyPassword The password of the keystore file
      */
-    public void setKeyPassword(String keyPassword) {
+    public void setKeyPassword(char[] keyPassword) {
         this.keyPassword = keyPassword;
     }
 
@@ -131,7 +131,7 @@ public class SslConfig {
      *
      * @return the password of the keystore file
      */
-    public String getKeyPassword() {
+    public char[] getKeyPassword() {
         return this.keyPassword;
     }
 
