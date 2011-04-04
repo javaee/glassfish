@@ -251,30 +251,6 @@ public abstract class AppClientInfo {
         return classLoader;
     }
 
-    protected File createTmpArchiveDir(File forArchive) 
-        throws IOException {
-        /*
-         *Create a temporary file (cannot create temp directories directly),
-         *use the unique file name as a directory name.
-         */
-        String name = forArchive.getName();
-        
-        File tmpDir = File.createTempFile("acc-" + name, "");
-        tmpDir.delete();
-
-        tmpDir.mkdirs();
-
-        /*
-         *We will try to delete the directory when we finish with it, but this
-         *is a back-up.
-         */
-        if (!_keepExplodedDir) {
-            tmpDir.deleteOnExit();
-        }
-
-        return tmpDir;
-    }
-
     protected void close() throws IOException {
 
     }
