@@ -1019,7 +1019,7 @@ public class StandardSession
 
         if (maxInactiveInterval >= 0
                 && (System.currentTimeMillis() - thisAccessedTime >=
-                    maxInactiveInterval * 1000)) {
+                    maxInactiveInterval * 1000L)) {
             return true;
         } else {
             return false;
