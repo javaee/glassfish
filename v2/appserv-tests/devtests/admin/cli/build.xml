@@ -99,9 +99,12 @@
         </java>
     </target>
     <target name="sync" depends="init">
-        <java classname="admin.SyncTest"  fork="true" classpath="${test}">
+	<echo message="temporarily turned off"/>
+        <!--
+		<java classname="admin.SyncTest"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
         </java>
+		-->
     </target>
     <target name="domain" depends="init">
         <java classname="admin.DomainTest"  fork="true" classpath="${test}">
