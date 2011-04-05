@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -286,8 +286,8 @@ public class ConnectionDefinitionUtils {
                 .getConnectionDefinitionPropertiesAndDefaults(
                 "sun.jdbc.odbc.ee.DataSource", "javax.sql.DataSource");
 
-        for (Iterator iter= m.keySet().iterator(); iter.hasNext();) {
-            String element= (String) iter.next();
+        Set<String> keys = m.keySet();
+        for(String element : keys) {
             System.out.println(element + " : " + m.get(element));
         }
     }

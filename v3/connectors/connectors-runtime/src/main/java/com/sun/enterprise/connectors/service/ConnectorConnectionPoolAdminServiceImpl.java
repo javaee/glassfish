@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -174,8 +174,15 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
     public void createConnectorConnectionPool(ConnectorConnectionPool connectorPoolObj)
             throws ConnectorRuntimeException {
 
+        if(connectorPoolObj == null) {
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Wrong parameters for pool creation ");
+            }
+            String i18nMsg = localStrings.getString("ccp_adm.wrong_params_for_create");
+            throw new ConnectorRuntimeException(i18nMsg);
+        }
         PoolInfo poolInfo = connectorPoolObj.getPoolInfo();
-        if (connectorPoolObj == null || poolInfo == null) {
+        if (poolInfo == null) {
             if(_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "Wrong parameters for pool creation ");
             }
