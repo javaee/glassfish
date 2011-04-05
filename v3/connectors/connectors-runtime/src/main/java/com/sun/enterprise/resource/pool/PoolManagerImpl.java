@@ -695,6 +695,11 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
      */
     public PoolStatus getPoolStatus(PoolInfo poolInfo) {
         ResourcePool pool = poolTable.get(poolInfo);
-        return pool.getPoolStatus();
+        if(pool != null) {
+            return pool.getPoolStatus();
+        } else {
+            //TODO log exception
+            return null;
+        }
     }
 }

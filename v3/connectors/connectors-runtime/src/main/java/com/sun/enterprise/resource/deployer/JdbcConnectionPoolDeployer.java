@@ -428,11 +428,11 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                             adminPool.getProperty(), conConnPool);
                     logFine("LAZYCONNECTIONASSOCIATION");
 
-                } else if ("LAZYCONNECTIONENLISTMENT".equals(name.toUpperCase())) {
+                } else if ("LAZYCONNECTIONENLISTMENT".equals(name.toUpperCase(Locale.getDefault()))) {
                     conConnPool.setLazyConnectionEnlist(toBoolean(rp.getValue(), false));
                     logFine("LAZYCONNECTIONENLISTMENT");
 
-                } else if ("POOLDATASTRUCTURE".equals(name.toUpperCase())) {
+                } else if ("POOLDATASTRUCTURE".equals(name.toUpperCase(Locale.getDefault()))) {
                     conConnPool.setPoolDataStructureType(rp.getValue());
                     logFine("POOLDATASTRUCTURE");
 
@@ -453,7 +453,7 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                     conConnPool.setDataStructureParameters(rp.getValue());
                     logFine("DATASTRUCTUREPARAMETERS");
 
-                } else if ("USERNAME".equals(name.toUpperCase())
+                } else if ("USERNAME".equals(name.toUpperCase(Locale.getDefault()))
                         || "USER".equals(name.toUpperCase())) {
 
                     propList.add(new ConnectorConfigProperty("User",
@@ -469,30 +469,30 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                     propList.add(new ConnectorConfigProperty("JDBC30DataSource",
                             rp.getValue(), "JDBC30DataSource", "java.lang.String"));
 
-                } else if ("PREFER-VALIDATE-OVER-RECREATE".equals(name.toUpperCase())) {
+                } else if ("PREFER-VALIDATE-OVER-RECREATE".equals(name.toUpperCase(Locale.getDefault()))) {
                     String value = rp.getValue();
                     conConnPool.setPreferValidateOverRecreate(toBoolean(value, false));
                     logFine("PREFER-VALIDATE-OVER-RECREATE : " + value);
 
-                } else if ("STATEMENT-CACHE-TYPE".equals(name.toUpperCase())) {
+                } else if ("STATEMENT-CACHE-TYPE".equals(name.toUpperCase(Locale.getDefault()))) {
 
                     propList.add(new ConnectorConfigProperty("StatementCacheType",
                             rp.getValue(), "StatementCacheType", "java.lang.String"));
 
-                } else if ("NUMBER-OF-TOP-QUERIES-TO-REPORT".equals(name.toUpperCase())) {
+                } else if ("NUMBER-OF-TOP-QUERIES-TO-REPORT".equals(name.toUpperCase(Locale.getDefault()))) {
 
                     propList.add(new ConnectorConfigProperty("NumberOfTopQueriesToReport",
                             rp.getValue(), "NumberOfTopQueriesToReport", "java.lang.String"));
 
-                } else if ("TIME-TO-KEEP-QUERIES-IN-MINUTES".equals(name.toUpperCase())) {
+                } else if ("TIME-TO-KEEP-QUERIES-IN-MINUTES".equals(name.toUpperCase(Locale.getDefault()))) {
 
                     propList.add(new ConnectorConfigProperty("TimeToKeepQueriesInMinutes",
                             rp.getValue(), "TimeToKeepQueriesInMinutes", "java.lang.String"));
 
-                } else if (mcfConPropKeys.containsKey(name.toUpperCase())) {
+                } else if (mcfConPropKeys.containsKey(name.toUpperCase(Locale.getDefault()))) {
 
                     propList.add(new ConnectorConfigProperty(
-                            (String) mcfConPropKeys.get(name.toUpperCase()),
+                            (String) mcfConPropKeys.get(name.toUpperCase(Locale.getDefault())),
                             rp.getValue() == null ? "" : rp.getValue(),
                             "Some property",
                             "java.lang.String"));

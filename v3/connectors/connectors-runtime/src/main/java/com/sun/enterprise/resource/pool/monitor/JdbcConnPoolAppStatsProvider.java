@@ -79,13 +79,11 @@ public class JdbcConnPoolAppStatsProvider {
     private CountStatisticImpl numConnReleased = new CountStatisticImpl(
             "NumConnReleased", StatisticImpl.UNIT_COUNT, "Number of logical " +
             "connections released to the pool.");
-    private final String JDBC_APP_PROBE_LISTENER = "glassfish:jdbc-pool:applications:";
-    private PoolInfo poolInfo;
+    private static final String JDBC_APP_PROBE_LISTENER = "glassfish:jdbc-pool:applications:";
     private String appName;
     private String poolName;
 
     public JdbcConnPoolAppStatsProvider(PoolInfo poolInfo, String appName) {
-        this.poolInfo = poolInfo;
         this.poolName = poolInfo.getName();
         this.appName = appName;
     }

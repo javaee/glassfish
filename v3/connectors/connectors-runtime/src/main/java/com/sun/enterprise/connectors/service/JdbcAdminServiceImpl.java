@@ -224,9 +224,10 @@ public class JdbcAdminServiceImpl extends ConnectorService {
     private static boolean isPingable(String tableName, java.sql.Connection con) {
         java.sql.Statement stmt = null;
         java.sql.ResultSet rs = null;
+        final String sql = "SELECT COUNT(*) FROM " + tableName;
         try {
             stmt = con.createStatement();
-            rs = stmt.executeQuery("SELECT COUNT(*) FROM " + tableName);
+            rs = stmt.executeQuery(sql);
         } catch (Exception sqle) {
             _logger.log(Level.INFO, "pool.exc_is_pingable", tableName);
             return false;

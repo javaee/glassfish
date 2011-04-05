@@ -80,14 +80,12 @@ public class ConnectorConnPoolAppStatsProvider {
     private CountStatisticImpl numConnReleased = new CountStatisticImpl(
             "NumConnReleased", StatisticImpl.UNIT_COUNT, "Number of logical " +
             "connections released to the pool.");
-    private final String JCA_APP_PROBE_LISTENER = "glassfish:connector-pool:applications:";
+    private static final String JCA_APP_PROBE_LISTENER = "glassfish:connector-pool:applications:";
 
     private String poolName;
     private String appName;
-    private PoolInfo poolInfo;
 
     public ConnectorConnPoolAppStatsProvider(PoolInfo poolInfo, String appName) {
-        this.poolInfo = poolInfo;
         this.poolName = poolInfo.getName();
         this.appName = appName;
     }

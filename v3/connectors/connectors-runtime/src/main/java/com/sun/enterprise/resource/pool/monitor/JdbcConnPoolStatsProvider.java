@@ -136,7 +136,7 @@ public class JdbcConnPoolStatsProvider {
     private CountStatisticImpl waitQueueLength = new CountStatisticImpl(
             "WaitQueueLength", StatisticImpl.UNIT_COUNT, 
             "Number of connection requests in the queue waiting to be serviced.");
-    private final String JDBC_PROBE_LISTENER = "glassfish:jdbc:connection-pool:";
+    private static final String JDBC_PROBE_LISTENER = "glassfish:jdbc:connection-pool:";
 
 
     public JdbcConnPoolStatsProvider(PoolInfo poolInfo, Logger logger) {

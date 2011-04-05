@@ -747,7 +747,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         while (mcfConfPropsIter.hasNext()) {
             ConnectorConfigProperty  envProp = (ConnectorConfigProperty ) mcfConfPropsIter.next();
 
-            if (envProp.getName().toUpperCase().equals(prop)) {
+            if (envProp.getName().toUpperCase(Locale.getDefault()).equals(prop)) {
                 result = envProp.getValue();
             } 
         }

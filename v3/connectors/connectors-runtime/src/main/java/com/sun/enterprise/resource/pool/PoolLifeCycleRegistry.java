@@ -99,11 +99,12 @@ public class PoolLifeCycleRegistry implements PoolLifeCycle {
      * listeners need not be stored.
      */
     public void unRegisterPoolLifeCycle(PoolLifeCycle listener) {
-        if (lifeCycleListeners != null && !lifeCycleListeners.isEmpty()) {
-            lifeCycleListeners.remove(listener);
-        }
-        if (lifeCycleListeners.isEmpty()) {
-            //TODO V3 : think about unregistering the registry?
+        if (lifeCycleListeners != null) {
+            if(!lifeCycleListeners.isEmpty()) {
+                lifeCycleListeners.remove(listener);
+            } else {
+                //TODO V3 : think about unregistering the registry?
+            }
         }
     }
     

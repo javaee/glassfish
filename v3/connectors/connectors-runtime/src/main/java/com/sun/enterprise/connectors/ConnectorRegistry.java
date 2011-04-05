@@ -303,8 +303,7 @@ public class ConnectorRegistry {
         } else {
             if(_logger.isLoggable(Level.FINE)) {
                 _logger.fine(
-                    "Resourceadapter not found in connector registry.Returning null" +
-                            rarModuleName);
+                    "Resourceadapter not found in connector registry.Returning null");
             }
             return null;
         }
@@ -381,7 +380,7 @@ public class ConnectorRegistry {
         } else {
             if(_logger.isLoggable(Level.FINE)) {
                 _logger.fine(
-                    "bean validator for RAR [ "+rarModuleName+" ] not found in connector registry.Returning null");
+                    "bean validator for RAR not found in connector registry.Returning null");
             }
             return null;
         }

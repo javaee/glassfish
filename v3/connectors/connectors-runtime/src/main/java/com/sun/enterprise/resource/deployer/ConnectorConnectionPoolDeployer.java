@@ -66,6 +66,7 @@ import com.sun.logging.LogDomains;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -565,7 +566,7 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
                     if(_logger.isLoggable(Level.FINE)) {
                         _logger.fine("DATASTRUCTUREPARAMETERS");
                     }
-                } else if ("PREFER-VALIDATE-OVER-RECREATE".equals(ep.getName().toUpperCase())) {
+                } else if ("PREFER-VALIDATE-OVER-RECREATE".equals(ep.getName().toUpperCase(Locale.getDefault()))) {
                     String value = ep.getValue();
                     if (_logger.isLoggable(Level.FINE)) {
                         _logger.fine(" ConnectorConnectionPoolDeployer::  " +
