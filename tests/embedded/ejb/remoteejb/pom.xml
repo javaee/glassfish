@@ -46,7 +46,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.tests.embedded.ejb</groupId>
     <artifactId>remoteejb</artifactId>
-    <version>3.2-SNAPSHOT</version>
+    <version>3.1.1-SNAPSHOT</version>
     <name>Test remote EJB deployment with org.glassfish.embeddable APIs</name>
     <build>
         <finalName>remoteejb</finalName>

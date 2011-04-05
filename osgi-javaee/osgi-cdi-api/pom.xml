@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish</groupId>
         <artifactId>glassfish-parent</artifactId>
-        <version>3.2-SNAPSHOT</version>
+        <version>3.1.1-SNAPSHOT</version>
     </parent>
     <artifactId>osgi-cdi-api</artifactId>
     <!-- We use simple jar packaging as opposed to bundle, as there are some issues in multiple extensions
