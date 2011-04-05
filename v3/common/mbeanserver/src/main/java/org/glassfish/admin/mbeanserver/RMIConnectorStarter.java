@@ -252,7 +252,7 @@ final class RMIConnectorStarter extends ConnectorStarter {
      * @throws MalformedURLException
      * @throws IOException
      */
-    public JMXConnectorServer start() throws MalformedURLException, IOException {
+    public JMXConnectorServer start() throws MalformedURLException, IOException, UnknownHostException {
 
         final String name = "jmxrmi";
         final String hostname = hostname();
@@ -330,16 +330,16 @@ final class RMIConnectorStarter extends ConnectorStarter {
     private SslRMIClientSocketFactory getClientSocketFactory(Ssl sslConfig) {
         // create SSLParams
         SSLParams sslParams = convertToSSLParams(sslConfig);
-
-        // configure the context using these params
-        SSLClientConfigurator sslCC = SSLClientConfigurator.getInstance();
-        sslCC.setSSLParams(sslParams);
         if (sslParams == null) {
             sslParams = new SSLParams(new File(System.getProperty("javax.net.ssl.trustStore")),
                     System.getProperty("javax.net.ssl.trustStoreType", "JKS"),
                     masterPassword);
 
         }
+
+        // configure the context using these params
+        SSLClientConfigurator sslCC = SSLClientConfigurator.getInstance();
+        sslCC.setSSLParams(sslParams);
         SSLContext sslContext = sslCC.configure(sslParams);
 
         // Now pass this context to the ClientSocketFactory

@@ -101,7 +101,7 @@ public class J2EEDomainImpl extends J2EEManagedObjectImplBase {
             meta.setCorrespondingConfig(getDomainConfig().getServers().getServer().get(serverKey).objectName());
             final DASJ2EEServerImpl impl = new DASJ2EEServerImpl(getObjectName(), meta);
             ObjectName serverObjectName = getObjectNames().buildChildObjectName(J2EETypes.J2EE_SERVER, serverKey.toString());
-            serverObjectName = registerChild(impl, serverObjectName);
+            registerChild(impl, serverObjectName);
         }
         //ImplUtil.getLogger().info( "Registered J2EEDomain as " + getObjectName() + " with J2EEServer of " + serverObjectName);
     }

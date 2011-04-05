@@ -1291,6 +1291,11 @@ public final class AMXProxyHandler extends MBeanProxyHandler
         }
         return null;
     }
+
+    public boolean equals(final Object rhs)
+    {
+        return super.equals(rhs);
+    }
 }
 
 

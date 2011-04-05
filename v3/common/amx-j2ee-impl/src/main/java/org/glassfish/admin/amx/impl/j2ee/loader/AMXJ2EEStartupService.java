@@ -147,10 +147,7 @@ public final class AMXJ2EEStartupService
 
     class PropertyChangeHandler implements Changed {
 
-        PropertyChangeEvent[] events;
-
         private PropertyChangeHandler(PropertyChangeEvent[] events) {
-            this.events = events;
         }
 
         /**
@@ -176,7 +173,7 @@ public final class AMXJ2EEStartupService
                         final DASJ2EEServerImpl impl = new DASJ2EEServerImpl(getJ2EEDomain(), meta);
                         ObjectName serverObjectName = new ObjectNameBuilder(mMBeanServer, getJ2EEDomain()).buildChildObjectName(J2EETypes.J2EE_SERVER, serverName);
                         try {
-                            serverObjectName = mMBeanServer.registerMBean(impl, serverObjectName).getObjectName();
+                            mMBeanServer.registerMBean(impl, serverObjectName).getObjectName();
                         }
                         catch (JMException e) {
                             throw new Error(e);
