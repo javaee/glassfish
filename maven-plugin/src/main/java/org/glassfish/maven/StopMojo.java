@@ -46,9 +46,11 @@ import org.apache.maven.plugin.MojoFailureException;
 import java.lang.reflect.Method;
 
 /**
+ * This Mojo stops the Embedded GlassFish server.
+ *
  * @author bhavanishankar@dev.java.net
  * @goal stop
- * @phase post-integration-test 
+ * @phase post-integration-test
  */
 
 public class StopMojo extends AbstractServerMojo {

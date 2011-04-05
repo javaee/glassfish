@@ -48,6 +48,12 @@ import java.io.File;
 import java.io.InputStreamReader;
 
 /**
+ * This Mojo starts Embedded GlassFish and deploys the application
+ * with the configured parameters supplied by the user in the
+ * embedded-glassfish-maven-plugin configuration.
+ * <p/>
+ * User must enter 'X' in their console for this Mojo to exit.
+ *
  * @author bhavanishankar@dev.java.net
  * @goal run
  * @phase pre-integration-test

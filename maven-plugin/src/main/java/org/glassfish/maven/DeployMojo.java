@@ -47,9 +47,14 @@ import java.io.File;
 
 
 /**
+ * This Mojo deploys the application to the Embedded GlassFish server.
+ * <p/>
+ * The deployment artifact's location can be specified using 'app' configuration and
+ * the deployment parameters can be specified in 'deploymentParams' configuration.
+ *
  * @author bhavanishankar@dev.java.net
  * @goal deploy
- * @phase pre-integration-test 
+ * @phase pre-integration-test
  */
 public class DeployMojo extends AbstractDeployMojo {
 

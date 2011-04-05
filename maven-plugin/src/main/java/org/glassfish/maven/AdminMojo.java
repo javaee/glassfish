@@ -46,7 +46,8 @@ import org.apache.maven.plugin.MojoFailureException;
 import java.lang.reflect.Method;
 
 /**
- * Mojo for running the administration commands.
+ * This Mojo runs post startup adminstrative commands on the Embedded GlassFish.
+ * The commands should be specified in the commands string array.
  *
  * @author bhavanishankar@dev.java.net
  * @goal admin
@@ -55,6 +56,15 @@ import java.lang.reflect.Method;
 public class AdminMojo extends AbstractServerMojo {
 
     /**
+     * The set of post startup commands to be run on Embedded GlassFish.
+     * <p/>
+     * For example:
+     * <pre>
+     * &lt;commands&gt;
+     *      &lt;command&gt;set configs.config.server-config.network-config.protocols.protocol.http-listener.http.websockets-support-enabled=true&lt;/command&gt;
+     * &lt;/commands&gt;
+     * </pre>
+     *
      * @parameter expression="${commands}"
      */
     protected String[] commands;

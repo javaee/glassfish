@@ -48,8 +48,8 @@ import java.lang.reflect.Method;
 import java.util.Properties;
 
 /**
- * This Mojo starts the GlassFish server with the configured parameters eg., port,
- * containerType as supplied by the user in the glassfish-maven-plugin configuration.
+ * This Mojo starts the Embedded GlassFish with the configured parameters
+ * supplied by the user in the embedded-glassfish-maven-plugin configuration.
  *
  * @author bhavanishankar@dev.java.net
  * @goal start

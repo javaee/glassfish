@@ -100,78 +100,171 @@ public abstract class AbstractServerMojo extends AbstractMojo {
 //            "org.glassfish.embedded.osgimain.autostartBundles";
 
     /**
-     * The remote repositories where artifacts are located
+     * The remote repositories where artifacts are located.
+     * This is automatically injected by the Maven framework.
      *
      * @parameter expression="${project.remoteArtifactRepositories}"
      */
     protected List remoteRepositories;
 
     /**
+     * Identifier of the Embedded GlassFish server.
+     *
      * @parameter expression="${serverID}" default-value="maven"
      */
     protected String serverID;
 
     /**
+     * <b><i>Note : Using &lt;ports&gt; configuration is preferred over this configuration.</b></i>
+     * <p/>
+     * Specify the HTTP port number.
+     * <p/>
+     * For example:
+     * &lt;port&gt;8080&lt;/port&gt;
+     * <p/>
+     * This setting is ignored when configFile option is used.
+     * <p/>
+     *
      * @parameter expression="${port}" default-value="-1"
      */
     protected int port;
 
 
     /**
+     * Location of valid GlassFish installation.
+     *
      * @parameter expression="${installRoot}"
      */
     protected String installRoot;
 
     /**
+     * Location of valid GlassFish domain.
+     *
      * @parameter expression="${instanceRoot}"
      */
     protected String instanceRoot;
+
     /**
+     * Location of custom configuration file (i.e., location of custom domain.xml).
+     *
      * @parameter expression="${configFile}"
      */
     protected String configFile;
 
     /**
+     * Specify whether the custom configuration file or config/domain.xml at
+     * the specified instance root is operated read only or not.
+     *
      * @parameter expression="${configFileReadOnly}" default-value="true"
      */
     protected Boolean configFileReadOnly;
 
     /**
+     * Specify the port numbers for the network listeners.
+     * <p/>
+     * Built-in domain.xml has HTTP and HTTPS network listeners by names
+     * http-listener and https-listener respectively.
+     * That allows you to configure the ports like this:
+     * <p/>
+     * <pre>
+     * &lt;ports&gt;
+     *      &lt;http-listener&gt;8080&lt;/http-listener&gt;
+     *      &lt;https-listener&gt;8181&lt;/http-listener&gt;
+     * &lt;/ports&gt;
+     * </pre>
+     * <p/>
+     * If you are using custom domain.xml, you can either configure the ports
+     * directy in your domain.xml or configure using this configuration parameter by
+     * correctly specifying port numbers for the the names of the network-listener element
+     * of your domain.xml.
+     *
      * @parameter
      */
     protected Map<String, String> ports;
 
     /**
+     * Specify the set of properties required to bootstrap GlassFishRuntime.
+     * For example:
+     * <pre>
+     * &lt;bootstrapProperties&gt;
+     *      &lt;property>GlassFish_Platform=felix&lt;/property&gt;
+     * &lt;/bootstrapProperties&gt;
+     * </pre>
+     *
      * @parameter
      */
     protected List<String> bootstrapProperties;
 
     /**
+     * Specify the location of the properties file which has the properties required to bootstrap GlassFishRuntime.
+     * For example:
+     * <p/>
+     * &lt;bootstrapPropertiesFile&gt;bootstrap.properties&lt;/bootstrapPropertiesFile&gt;
+     * <p/>
+     * where bootstrap.properties is a file containing the bootstrap properties.
+     *
      * @parameter
      */
     protected File bootstrapPropertiesFile;
 
     /**
+     * Specify the set of properties required to create a new Embedded GlassFish.
+     * <p/>
+     * For example:
+     * <pre>
+     * &lt;glassfishProperties&gt;
+     *      &lt;property>embedded-glassfish-config.server.jms-service.jms-host.default_JMS_host.port=17676&lt;/property&gt;
+     * &lt;/glassfishProperties&gt;
+     * </pre>
+     *
      * @parameter
      */
     protected List<String> glassfishProperties;
 
     /**
+     * Specify the location of the properties file which has the properties required to create a new GlassFish.
+     * For example:
+     * <p/>
+     * &lt;glassfishPropertiesFile&gt;glassfish.properties&lt;/glassfishPropertiesFile&gt;
+     * <p/>
+     * where glassfish.properties is a file containing the GlassFish properties.
+     *
      * @parameter
      */
     protected File glassfishPropertiesFile;
 
     /**
+     * Specify the system properties.
+     * For example:
+     * <pre>
+     * &lt;systemProperties&gt;
+     *      &lt;property&gt;com.sun.aas.imqLib=${env.S1AS_HOME}/../mq/lib&lt;/property&gt;
+     *      &lt;property&gt;com.sun.aas.imqBin=${env.S1AS_HOME}/../mq/bin&lt;/property&gt;
+     * &lt;/systemProperties>
+     * </pre>
+     *
      * @parameter
      */
     protected List<String> systemProperties;
 
     /**
+     * Specify the location of the properties file which has the system properties.
+     * <p/>
+     * For example:
+     * &lt;systemPropertiesFile&gt;/tmp/system.properties&lt;/systemPropertiesFile&gt;
+     *
      * @parameter
      */
     protected File systemPropertiesFile;
 
     /**
+     * Specify whether the temporary file system created by Embedded GlassFish
+     * should be deleted when Maven exits.
+     * <p/>
+     * Embedded GlassFish creates the temporary
+     * file system under java.io.tmpdir unless a different directory is specified with
+     * glassfish.embedded.tmpdir system property.
+     *
      * @parameter expression="${autoDelete}" default-value="true"
      */
     protected Boolean autoDelete;
@@ -186,6 +279,8 @@ public abstract class AbstractServerMojo extends AbstractMojo {
     protected MavenProject project;
 
     /**
+     * This is automatically injected by the Maven framework.
+     *
      * @parameter default-value="${plugin.artifacts}"
      */
     private java.util.List<Artifact> artifacts; // pluginDependencies
@@ -196,6 +291,8 @@ public abstract class AbstractServerMojo extends AbstractMojo {
     protected MavenProjectBuilder projectBuilder;
 
     /**
+     * This is automatically injected by the Maven framework.
+     *
      * @parameter expression="${localRepository}"
      * @required
      */
@@ -215,6 +312,7 @@ public abstract class AbstractServerMojo extends AbstractMojo {
 
     /**
      * @parameter expression="${containerType}" default-value="all"
+     * @deprecated This is a deprecated and unused configuration. Likely to be removed in the next version of the plugin.
      */
     protected String containerType;
 
@@ -274,7 +372,7 @@ public abstract class AbstractServerMojo extends AbstractMojo {
         System.out.println(msg);
         ClassLoader cl = classLoader;
         while (cl != null && cl instanceof URLClassLoader) {
-            for (URL u : ((URLClassLoader)cl).getURLs()) {
+            for (URL u : ((URLClassLoader) cl).getURLs()) {
                 System.out.println("ClassPath Element : " + u);
             }
             cl = cl.getParent();

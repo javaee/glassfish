@@ -47,6 +47,48 @@
   <version>3.2-SNAPSHOT</version>
 
   <name>Maven Embedded GlassFish Plugin</name>
+  <description>Maven Embedded GlassFish Plugin</description>
+
+  <developers>
+    <developer>
+      <id>Bhavanishankar</id>
+      <name>Bhavanishankar</name>
+      <email>bhavanishankar@java.net</email>
+      <organization>Oracle</organization>
+      <organizationUrl>http://www.oracle.com</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>+5.30</timezone>
+    </developer>
+  </developers>
+
+  <mailingLists>
+    <mailingList>
+      <name>GlassFish Users List</name>
+      <subscribe>user-subscribe@users@glassfish.java.net</subscribe>
+      <unsubscribe>user-unsubscribe@glassfish.java.net</unsubscribe>
+      <post>users@glassfish.java.net</post>
+      <archive>http://java.net/projects/glassfish/lists/users/archive</archive>
+    </mailingList>
+    <mailingList>
+      <name>Embedded GlassFish Users List</name>
+      <subscribe>user-subscribe@users@embedded-glassfish.java.net</subscribe>
+      <unsubscribe>user-unsubscribe@embedded-glassfish.java.net</unsubscribe>
+      <post>users@embedded-glassfish.java.net</post>
+      <archive>http://java.net/projects/embedded-glassfish/lists/users/archive</archive>
+    </mailingList>
+  </mailingLists>
+
+  <issueManagement>
+    <system>JIRA</system>
+    <url>http://java.net/jira/browse/EMBEDDED_GLASSFISH</url>
+  </issueManagement>
+
+  <organization>
+    <name>Oracle</name>
+    <url>http://www.oracle.com</url>
+  </organization>
 
   <scm>
       <connection>scm:svn:svn+ssh://janey@svn.java.net/glassfish~svn/trunk/maven-plugin</connection>

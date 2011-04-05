@@ -48,6 +48,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
+ * This goal is not implemented. There is no usecase/requirement in support of this goal.
+ *
  * @author bhavanishankar@dev.java.net
  * @goal runscatteredarchive
  */

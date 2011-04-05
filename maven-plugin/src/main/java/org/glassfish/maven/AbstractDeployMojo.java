@@ -54,59 +54,127 @@ import java.util.Properties;
  */
 public abstract class AbstractDeployMojo extends AbstractServerMojo {
     /**
+     * <b><i>Note : &lt;deploymentParams&gt; configuration can be used instead of this.</i></b>
+     * <p/>
+     * Name of the application.
+     *
      * @parameter expression="${name}" default-value="myapp"
      */
     protected String name;
 
     /**
+     * <b><i>Note : &lt;deploymentParams&gt; configuration can be used instead of this.</i></b>
+     * <p/>
+     * Context root of the web application.
+     *
      * @parameter expression="${contextRoot}"
      */
     protected String contextRoot;
+
     /**
+     * <b><i>Note : &lt;deploymentParams&gt; configuration can be used instead of this.</i></b>
+     * <p/>
+     * Specify whether the JSPs should be precompiled during deployment.
+     *
      * @parameter expression="${precompileJsp}"
      */
     protected Boolean precompileJsp;
 
     /**
+     * <b><i>Note : &lt;deploymentParams&gt; configuration can be used instead of this.</i></b>
+     * <p/>
+     * Name of the database vendor.
+     *
      * @parameter expression="${dbVendorName}"
      */
     protected String dbVendorName;
 
     /**
+     * <b><i>Note : &lt;deploymentParams&gt; configuration can be used instead of this.</i></b>
+     * <p/>
+     * Specify whether the tables should be created during deployment.
+     *
      * @parameter expression="${createTables}"
      */
     protected Boolean createTables;
 
     /**
+     * <b><i>Note : &lt;deploymentParams&gt; configuration can be used instead of this.</i></b>
+     * <p/>
+     * A comma-separated list of library JAR files.
+     *
      * @parameter expression="${libraries}"
      */
     protected String libraries;
     /**
+     * Build directory of the maven project. Automatically injected by
+     * Maven framework.
+     *
      * @parameter expression="${project.build.directory}"
      */
     String buildDirectory;
 
     /**
+     * Base directory of the maven project. Automatically injected by
+     * Maven framework.
+     *
      * @parameter expression="${basedir}"
      */
     String baseDirectory;
 
     /**
+     * Name of the file to be deployed to Embedded GlassFish.
+     * <p/>
+     * Use app configuration instead of this.
+     *
      * @parameter expression="${project.build.finalName}"
      */
     String fileName;
 
     /**
+     * Location of the application to be deployed.
+     * <p/>
+     * Location could be a Java EE file archive or a directory.
+     *
      * @parameter expression="${app}"
      */
     protected String app;
 
     /**
+     * Deployment parameters to be used while deploying the application to Embedded GlassFish.
+     * <p/>
+     * The deployment parameters are same as how they would be passed to
+     * 'asadmin deploy' command while using standalone GlassFish.
+     * <p/>
+     * For example:
+     * <pre>
+     * &lt;deploymentParams&gt;
+     *      &lt;param&gt;--contextroot=greetings&lt;/param&gt;
+     *      &lt;param&gt;--name=test&lt;/param&gt;*
+     *      &lt;param&gt;--createtables=true&lt;/param&gt;
+     *      &lt;param&gt;--force=true&lt;/param&gt;
+     *      &lt;param&gt;--precompilejsp=true&lt;/param&gt;
+     * &lt;/deploymentParams&gt;
+     * </pre>
+     *
      * @parameter expression="${deploymentParams}"
      */
     protected String[] deploymentParams;
 
     /**
+     * Undeployment parameters to be used while undeploying the application
+     * from Embedded GlassFish.
+     * <p/>
+     * The undeployment parameters are same as how they would be passed to
+     * 'asadmin undeploy' command while using standalone GlassFish.
+     * <p/>
+     * For example:
+     * <pre>
+     * &lt;undeploymentParams&gt;
+     *      &lt;param&gt;--droptables=true&lt;/param&gt;
+     * &lt;/undeploymentParams&gt;
+     * </pre>
+     *
      * @parameter expression="${undeploymentParams}"
      */
     protected String[] undeploymentParams;
