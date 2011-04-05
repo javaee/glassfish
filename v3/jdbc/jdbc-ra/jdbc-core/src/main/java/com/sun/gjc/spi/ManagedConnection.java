@@ -202,7 +202,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         return leakDetector;
     }
 
-    private void executeInitSql(String initSql) {
+    private void executeInitSql(final String initSql) {
         if(_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "jdbc.execute_init_sql_start");
         }

@@ -63,6 +63,7 @@ import java.sql.Connection;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Timer;
@@ -305,13 +306,13 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         String conVal = spec.getDetail(DataSourceSpec.CONNECTIONVALIDATIONREQUIRED);
 
         boolean connectionValidationRequired =
-                (conVal == null) ? false : Boolean.valueOf(conVal.toLowerCase());
+                (conVal == null) ? false : Boolean.valueOf(conVal.toLowerCase(Locale.getDefault()));
         if (!connectionValidationRequired) {
             return;
         }
 
 
-        String validationMethod = spec.getDetail(DataSourceSpec.VALIDATIONMETHOD).toLowerCase();
+        String validationMethod = spec.getDetail(DataSourceSpec.VALIDATIONMETHOD).toLowerCase(Locale.getDefault());
 
         mc.checkIfValid();
         /**
@@ -441,7 +442,8 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         java.sql.PreparedStatement stmt = null;
         java.sql.ResultSet rs = null;
         try {
-            stmt = con.prepareStatement("SELECT COUNT(*) FROM " + tableName);
+            final String statement = "SELECT COUNT(*) FROM " + tableName;
+            stmt = con.prepareStatement(statement);
             rs = stmt.executeQuery();
         } catch (Exception sqle) {
             _logger.log(Level.INFO, "jdbc.exc_table_validation", tableName);
@@ -517,7 +519,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
             String guaranteeIsolationLevel = spec.getDetail(DataSourceSpec.GUARANTEEISOLATIONLEVEL);
 
             if (guaranteeIsolationLevel != null && !guaranteeIsolationLevel.equals("")) {
-                boolean guarantee = Boolean.valueOf(guaranteeIsolationLevel.toLowerCase());
+                boolean guarantee = Boolean.valueOf(guaranteeIsolationLevel.toLowerCase(Locale.getDefault()));
 
                 if (guarantee) {
                     int tranIsolationInt = getTransactionIsolationInt(tranIsolation);

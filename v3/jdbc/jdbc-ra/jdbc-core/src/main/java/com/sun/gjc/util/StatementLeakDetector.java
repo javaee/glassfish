@@ -90,9 +90,7 @@ public class StatementLeakDetector {
         statementLeakTimeoutInMillis = leakTimeoutInMillis;
         statementLeakReclaim = leakReclaim;
         this.timer = timer;
-        if(stmtLeakProbeProvider == null) {
-            stmtLeakProbeProvider = new StatementLeakProbeProvider();
-        }
+        stmtLeakProbeProvider = new StatementLeakProbeProvider();
     }
 
     public void reset(boolean leakTracing, long leakTimeoutInMillis, boolean leakReclaim) {

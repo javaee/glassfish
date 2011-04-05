@@ -78,9 +78,7 @@ public class LRUCacheImpl implements Cache {
         this.poolInfo = poolInfo;
         list = new LinkedHashMap<CacheObjectKey, CacheEntry>();
         try {
-            if(probeProvider == null) {
-                probeProvider = new StatementCacheProbeProvider();
-            }
+            probeProvider = new StatementCacheProbeProvider();
         } catch(Exception ex) {
             //TODO logger
         }

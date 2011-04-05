@@ -197,7 +197,7 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
                     _logger.log(Level.FINE, "jdbc.exc_caught_ign", iobe.getMessage());
                 }
             }
-            if (parsedKey.equals("")) {
+            if (parsedKey != null && parsedKey.equals("")) {
                 throw new ResourceException("Invalid driver properties string - " +
                         "Key cannot be an empty string");
             }
@@ -267,7 +267,7 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
                         _logger.log(Level.FINE, "jdbc.exc_caught_ign", iobe.getMessage());
                     }
                 }
-                if (key.equals("")) {
+                if (key != null && key.equals("")) {
                     throw new ResourceException("Invalid driver properties string - " +
                             "Key cannot be an empty string");
                 }

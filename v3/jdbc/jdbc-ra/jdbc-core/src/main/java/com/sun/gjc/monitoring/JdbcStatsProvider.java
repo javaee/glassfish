@@ -81,13 +81,11 @@ public class JdbcStatsProvider {
             "NumPotentialStatementLeak", StatisticImpl.UNIT_COUNT,
             "The total number of potential Statement leaks");
 
-    private String poolName;
     private PoolInfo poolInfo;
     private SQLTraceCache sqlTraceCache;
 
     public JdbcStatsProvider(String poolName, String appName, String moduleName, int sqlTraceCacheSize,
             long timeToKeepQueries) {
-        this.poolName = poolName;
         poolInfo = new PoolInfo(poolName, appName, moduleName);
         if(sqlTraceCacheSize > 0) {
             this.sqlTraceCache = new SQLTraceCache(poolName, appName, moduleName, sqlTraceCacheSize, timeToKeepQueries);
