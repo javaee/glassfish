@@ -132,7 +132,7 @@ public class LBCommandsTest extends AdminBaseDevTest {
         runTest(i++ + ".re-create-http-lb-server-ref", !asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE1));
 
         //enable/disable servers for LB
-        runTest(i++ + ".enable-http-lb-server", !asadmin("enable-http-lb-server", STANDALONE_INSTANCE2));
+        runTest(i++ + ".enable-http-lb-server", asadmin("enable-http-lb-server", STANDALONE_INSTANCE2));
 
         runTest(i++ + ".delete-http-lb-server-ref", !asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
 
@@ -171,7 +171,7 @@ public class LBCommandsTest extends AdminBaseDevTest {
         asadmin("create-application-ref", "--target", STANDALONE_INSTANCE2, "helloworld");
 
         //disable/enable application for LB
-        runTest(i++ + ".enable-http-lb-application", !asadmin("enable-http-lb-application", NAME_OPTION , "helloworld", STANDALONE_INSTANCE1));
+        runTest(i++ + ".enable-http-lb-application", asadmin("enable-http-lb-application", NAME_OPTION , "helloworld", STANDALONE_INSTANCE1));
 
         runTest(i++ + "create-http-lb-server-ref", asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
         runTest(i++ + ".delete-http-lb-server-ref", !asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
@@ -189,7 +189,7 @@ public class LBCommandsTest extends AdminBaseDevTest {
         runTest(i++ + ".enable-http-lb-application", asadmin("enable-http-lb-application", NAME_OPTION , "helloworld", STANDALONE_INSTANCE2));
 
         //disable/enable application for LB
-        runTest(i++ + ".enable-http-lb-application-for-cluster", !asadmin("enable-http-lb-application", NAME_OPTION , "helloworld", CLUSTER));
+        runTest(i++ + ".enable-http-lb-application-for-cluster", asadmin("enable-http-lb-application", NAME_OPTION , "helloworld", CLUSTER));
         //deleting cluster ref while app is enabled won't fail
         runTest(i++ + ".create-http-lb-cluster-ref", asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
         runTest(i++ + ".delete-http-lb-cluster-ref", asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
