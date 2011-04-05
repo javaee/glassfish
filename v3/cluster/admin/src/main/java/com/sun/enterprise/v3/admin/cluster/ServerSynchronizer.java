@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -114,7 +114,6 @@ public final class ServerSynchronizer implements PostConstruct {
                             Payload.Outbound payload,
                             ActionReport report, Logger logger) {
         this.logger = logger;
-        logger.setLevel(Level.FINEST);
         try {
             logger.fine("ServerSynchronizer: synchronization request for " +
                         "server " + server.getName() + ", directory " + sr.dir);
@@ -222,12 +221,9 @@ public final class ServerSynchronizer implements PostConstruct {
             String line;
             if (in != null) {
                 while ((line = in.readLine()) != null) {
-                    if (line.startsWith("#"))   // ignore comment lines
+                    if (line.startsWith("#"))
                         continue;
-                    line = line.trim();
-                    if (line.length() == 0)     // ignore blank lines
-                        continue;
-                    files.add(line);
+                    files.add(line.trim());
                 }
             }
         } catch (IOException ex) {
@@ -266,10 +262,7 @@ public final class ServerSynchronizer implements PostConstruct {
     /**
      * Sync an individual file.  Return true if the file changed.
      * The file is named by mt.name, relative to base.  The name
-     * used in the response will be relative to root.  In case the
-     * file is a directory, tell the payload to include it recursively,
-     * and replace the entire contents of the directory in case any
-     * files were removed.
+     * used in the response will be relative to root.
      */
     private boolean syncFile(URI root, File base, ModTime mt,
                             Payload.Outbound payload)
@@ -289,9 +282,9 @@ public final class ServerSynchronizer implements PostConstruct {
             else
                 logger.fine("ServerSynchronizer: sending file " + f +
                             " because it was out of date");
-            payload.requestFileReplacement("application/octet-stream",
+            payload.attachFile("application/octet-stream",
                 root.relativize(f.toURI()),
-                "configChange", null, f, true);
+                "configChange", f);
         } catch (IOException ioex) {
             logger.fine("ServerSynchronizer: IOException attaching file: " + f);
             logger.fine(ioex.toString());
@@ -612,7 +605,7 @@ public final class ServerSynchronizer implements PostConstruct {
         }
         payload.attachFile("application/octet-stream",
             domainRootUri.relativize(file.toURI()),
-            "configChange", file, true);
+            "configChange", file);
     }
 
     /**
