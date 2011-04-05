@@ -55,7 +55,7 @@ import java.sql.Statement;
  * @author Shalini M
  */
 public class DerbyConnectionValidation implements ConnectionValidation {
-    private String SQL = "VALUES(1)";
+    private static final String SQL = "VALUES(1)";
     
     /**
      * Check for validity of <code>java.sql.Connection</code>

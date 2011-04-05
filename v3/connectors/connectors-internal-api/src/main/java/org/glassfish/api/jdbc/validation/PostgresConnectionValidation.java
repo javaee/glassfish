@@ -56,7 +56,7 @@ import java.sql.Statement;
  */
 public class PostgresConnectionValidation implements ConnectionValidation {
 
-    private String SQL = "SELECT 1";
+    private static final String SQL = "SELECT 1";
     
     /**
      * Check for validity of <code>java.sql.Connection</code>

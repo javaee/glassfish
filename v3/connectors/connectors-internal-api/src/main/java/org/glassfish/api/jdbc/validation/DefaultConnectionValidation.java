@@ -55,7 +55,7 @@ import org.glassfish.api.jdbc.ConnectionValidation;
  * @author Shalini M
  */
 public class DefaultConnectionValidation implements ConnectionValidation {
-    private String SQL = "SELECT '1'";
+    private static final String SQL = "SELECT '1'";
 
     /**
      * Check for validity of <code>java.sql.Connection</code>

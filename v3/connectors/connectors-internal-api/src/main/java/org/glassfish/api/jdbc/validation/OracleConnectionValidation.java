@@ -56,7 +56,7 @@ import java.sql.Statement;
  */
 public class OracleConnectionValidation implements ConnectionValidation {
 
-    private String SQL = "select sysdate from dual";
+    private static final String SQL = "select sysdate from dual";
     
     /**
      * Check for validity of <code>java.sql.Connection</code>

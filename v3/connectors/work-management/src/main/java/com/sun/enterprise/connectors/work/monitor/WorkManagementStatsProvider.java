@@ -63,7 +63,7 @@ import org.glassfish.external.probe.provider.annotations.ProbeParam;
 public class WorkManagementStatsProvider {
 
     private String moduleName; //ra-name
-    private final String DOTTED_NAME = "glassfish:jca:work-management:";
+    private static final String DOTTED_NAME = "glassfish:jca:work-management:";
 
     public WorkManagementStatsProvider(String moduleName) {
         this.moduleName = moduleName;
