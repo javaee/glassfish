@@ -193,9 +193,9 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     }
 
     /**
-     * Get the <code>ResourceAdapter</code> for this <code>ManagedConnectionFactory</code> instance.
+     * Get the <code>ResourceAdapterImpl</code> for this <code>ManagedConnectionFactory</code> instance.
      *
-     * @return <code>ResourceAdapter</code> associated with this <code>ManagedConnectionFactory</code> instance
+     * @return <code>ResourceAdapterImpl</code> associated with this <code>ManagedConnectionFactory</code> instance
      * @see <code>setResourceAdapter</code>
      */
     public javax.resource.spi.ResourceAdapter getResourceAdapter() {
@@ -678,9 +678,9 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     }
 
     /**
-     * Set the associated <code>ResourceAdapter</code> JavaBean.
+     * Set the associated <code>ResourceAdapterImpl</code> JavaBean.
      *
-     * @param ra <code>ResourceAdapter</code> associated with this
+     * @param ra <code>ResourceAdapterImpl</code> associated with this
      *           <code>ManagedConnectionFactory</code> instance
      * @see <code>getResourceAdapter</code>
      */
@@ -1410,7 +1410,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
                 if(_logger.isLoggable(Level.FINEST)) {
                     _logger.finest("Scheduling timer task for sql trace caching");
                 }
-                Timer timer = ((com.sun.gjc.spi.ResourceAdapter) ra).getTimer();
+                Timer timer = ((com.sun.gjc.spi.ResourceAdapterImpl) ra).getTimer();
                 jdbcStatsProvider.getSqlTraceCache().scheduleTimerTask(timer);
             }
             if(_logger.isLoggable(Level.FINEST)) {
@@ -1457,6 +1457,6 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        ra = com.sun.gjc.spi.ResourceAdapter.getInstance();
+        ra = com.sun.gjc.spi.ResourceAdapterImpl.getInstance();
     }
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,12 +49,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * <code>LocalTransaction</code> implementation for Generic JDBC Connector.
+ * <code>LocalTransactionImpl</code> implementation for Generic JDBC Connector.
  *
  * @author Evani Sai Surya Kiran
  * @version 1.0, 02/08/03
  */
-public class LocalTransaction implements javax.resource.spi.LocalTransaction {
+public class LocalTransactionImpl implements javax.resource.spi.LocalTransaction {
 
     private ManagedConnection mc;
     protected final static Logger _logger;
@@ -64,13 +64,13 @@ public class LocalTransaction implements javax.resource.spi.LocalTransaction {
     }
 
     /**
-     * Constructor for <code>LocalTransaction</code>.
+     * Constructor for <code>LocalTransactionImpl</code>.
      *
      * @param mc <code>ManagedConnection</code> that returns
-     *           this <code>LocalTransaction</code> object as
+     *           this <code>LocalTransactionImpl</code> object as
      *           a result of <code>getLocalTransaction</code>
      */
-    public LocalTransaction(ManagedConnection mc) {
+    public LocalTransactionImpl(ManagedConnection mc) {
         this.mc = mc;
     }
 

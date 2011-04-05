@@ -50,6 +50,8 @@ import javax.resource.spi.ConnectionRequestInfo;
 import javax.resource.spi.security.PasswordCredential;
 import java.sql.DriverManager;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Set;
@@ -120,10 +122,12 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
         //Will return a set of properties that would have setURL and <url> as objects
         //Get a set of normal case properties
         Hashtable properties = dsObjBuilder.parseDriverProperties(spec, false);
-        Set<String> keys = (Set<String>)properties.keySet();
-        for( String key : keys ) {
+        Set<Map.Entry<String,Vector>> entries =
+                (Set<Map.Entry<String, Vector>>) properties.entrySet();
+        for(Map.Entry<String, Vector> entry : entries) {
             String value = null;
-            Vector values = (Vector) properties.get(key);
+            String key = (String) entry.getKey();
+            Vector values = (Vector) entry.getValue();
             if(!values.isEmpty() && values.size() == 1) {
                 value = (String) values.firstElement();
             } else if(values.size() > 1) {
@@ -137,7 +141,6 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
                 }
             }
         }
-
         try {
             if (cxRequestInfo != null) {
                 driverProps.setProperty("user", pc.getUserName());

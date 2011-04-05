@@ -262,7 +262,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
             if (leakDetector == null) {
                 leakDetector = new StatementLeakDetector(poolInfo, statementLeakTracing,
                         stmtLeakTimeout, stmtLeakReclaim,
-                        ((com.sun.gjc.spi.ResourceAdapter) spiMCF.getResourceAdapter()).getTimer());
+                        ((com.sun.gjc.spi.ResourceAdapterImpl) spiMCF.getResourceAdapter()).getTimer());
             }
         }
     }
@@ -515,16 +515,16 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
     }
 
     /**
-     * Returns an <code>LocalTransaction</code> instance. The <code>LocalTransaction</code> interface
+     * Returns an <code>LocalTransactionImpl</code> instance. The <code>LocalTransactionImpl</code> interface
      * is used by the container to manage local transactions for a RM instance.
      *
-     * @return <code>LocalTransaction</code> instance
+     * @return <code>LocalTransactionImpl</code> instance
      * @throws ResourceException if the physical connection is not valid
      */
     public javax.resource.spi.LocalTransaction getLocalTransaction() throws ResourceException {
         logFine("In getLocalTransaction");
         checkIfValid();
-        return new com.sun.gjc.spi.LocalTransaction(this);
+        return new com.sun.gjc.spi.LocalTransactionImpl(this);
     }
 
     /**
@@ -600,7 +600,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
     /**
      * This method is called from XAResource wrapper object
      * when its XAResource.start() has been called or from
-     * LocalTransaction object when its begin() method is called.
+     * LocalTransactionImpl object when its begin() method is called.
      */
     void transactionStarted() {
         transactionInProgress = true;
@@ -609,7 +609,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
     /**
      * This method is called from XAResource wrapper object
      * when its XAResource.end() has been called or from
-     * LocalTransaction object when its end() method is called.
+     * LocalTransactionImpl object when its end() method is called.
      */
     void transactionCompleted() {
         try {
