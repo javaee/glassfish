@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,6 +50,7 @@ import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.util.Locale;
 
 
 public class JavaBeanFactory implements Serializable, ObjectFactory {
@@ -84,7 +85,7 @@ public class JavaBeanFactory implements Serializable, ObjectFactory {
                         Object result = null;
 
                         if(type != null){
-                            type = type.toUpperCase();
+                            type = type.toUpperCase(Locale.getDefault());
                             if(type.endsWith("INT") || type.endsWith("INTEGER")){
                                 result =  Integer.valueOf(value);
                             } else if (type.endsWith("LONG")){

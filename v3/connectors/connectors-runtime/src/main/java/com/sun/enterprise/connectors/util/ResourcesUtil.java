@@ -744,7 +744,6 @@ public class ResourcesUtil {
         } else if(br instanceof AdminObjectResource) {
             AdminObjectResource aor = (AdminObjectResource) br;
             String raName = aor.getResAdapter();
-            boolean isRarEnabled = isRarEnabled(raName);
             if(/* TODO isRarEnabled &&*/ resourceEnabled && refEnabled){
                 enabled = true;
             }

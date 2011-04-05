@@ -433,7 +433,7 @@ public class AppSpecificConnectorClassLoaderUtil {
             //it is possible that connector-service is not yet defined in domain.xml
 
             if (connectorService != null) {
-                if (appName != null && appName.trim().length() > 0) {
+                if (appName.trim().length() > 0) {
                     Property property = connectorService.getProperty(appName.trim());
                     if (property != null) {
                         String requiredRarsString = property.getValue();

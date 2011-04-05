@@ -66,6 +66,7 @@ import java.util.ArrayList;
 
 import com.sun.enterprise.loader.ASURLClassLoader;
 import com.sun.logging.LogDomains;
+import java.util.Locale;
 
 
 /**
@@ -236,7 +237,7 @@ public class ConnectorsClassLoaderUtil {
         //TODO for embedded rars -consider MANIFEST.MF's classpath attribute
         if (moduleDir.isDirectory()) {
             for (File file : moduleDir.listFiles()) {
-                if (file.getName().toUpperCase().endsWith(".JAR")) {
+                if (file.getName().toUpperCase(Locale.getDefault()).endsWith(".JAR")) {
                     cl.appendURL(file.toURI().toURL());
                 } else if (file.isDirectory()) {
                     appendJars(file, cl); //recursive add

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,6 +49,7 @@ import javax.naming.RefAddr;
 import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.Locale;
 
 public class PrimitivesAndStringFactory implements Serializable, ObjectFactory {
 
@@ -70,7 +71,7 @@ public class PrimitivesAndStringFactory implements Serializable, ObjectFactory {
         }
 
         if(type != null && value != null){
-            type = type.toUpperCase();
+            type = type.toUpperCase(Locale.getDefault());
             if(type.endsWith("INT") || type.endsWith("INTEGER")){
                 return Integer.valueOf(value);
             } else if (type.endsWith("LONG")){

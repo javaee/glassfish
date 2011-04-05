@@ -206,9 +206,6 @@ public class ConnectorConfigParserUtils {
         Class loadedClass = javaBeanInstance.getClass();
 
         Method[] methods = loadedClass.getMethods();
-        if(methods == null) {
-            return null;
-        }
         Properties props = new Properties();
         String name = null;
         String value = null;
@@ -252,11 +249,7 @@ public class ConnectorConfigParserUtils {
     {
 
         Class loadedClass = loadClass(className, rarName);
-        Object loadedInstance = instantiate(loadedClass);
         Method[] methods = loadedClass.getMethods();
-        if(methods == null) {
-            return null;
-        }
         Properties props = new Properties();
         String name = null;
         String value = null;
@@ -367,9 +360,6 @@ public class ConnectorConfigParserUtils {
                                           Class loadedClass) {
 
         Method[] allMethods = loadedClass.getMethods();
-        if(allMethods == null) {
-            return null;
-        }
         int length = "set".length();
         String methodName = setMethod.getName();
         Class[] parameterTypes = null;

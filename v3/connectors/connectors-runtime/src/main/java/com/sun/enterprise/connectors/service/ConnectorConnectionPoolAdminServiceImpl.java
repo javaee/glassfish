@@ -182,13 +182,6 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             throw new ConnectorRuntimeException(i18nMsg);
         }
         PoolInfo poolInfo = connectorPoolObj.getPoolInfo();
-        if (poolInfo == null) {
-            if(_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE, "Wrong parameters for pool creation ");
-            }
-            String i18nMsg = localStrings.getString("ccp_adm.wrong_params_for_create");
-            throw new ConnectorRuntimeException(i18nMsg);
-        }
         String jndiNameForPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(poolInfo);
         try {
 
@@ -249,7 +242,6 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             String i18nMsg = localStrings.getString("ccp_adm.wrong_params_for_create");
             throw new ConnectorRuntimeException(i18nMsg);
         }
-        PoolInfo poolInfo = connectorPoolObj.getPoolInfo();
         String moduleName =
                 connectorPoolObj.getConnectorDescriptorInfo().getRarName();
         String connectionDefinitionName =
@@ -1543,7 +1535,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             //if user is null we will use default authentication
             //TODO: Discuss if this is the right thing to do
             ResourcePrincipal prin = (user == null) ?
-                    null : new ResourcePrincipal(user, password);
+                    null : new ResourcePrincipal(user, passwd);
             con = (java.sql.Connection) getUnpooledConnection(poolInfo, prin, true);
             if (con == null) {
                 String i18nMsg = localStrings.getString(
