@@ -336,6 +336,30 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
     }
 
     /**
+     * @return whether this descriptor is an extension descriptor
+     *         of a main descriptor, e.g. the EjbBundleDescriptor for
+     *         ejb in war case should return true.
+     */
+    public boolean isExtensionDescriptor() {
+        if (getModuleDescriptor().getDescriptor() != this) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @return the main descriptor associated with it if it's
+     *         an extension descriptor, otherwise return itself
+     */
+    public RootDeploymentDescriptor getMainDescriptor() {
+        if (isExtensionDescriptor()) {
+            return getModuleDescriptor().getDescriptor();
+        } else {
+            return this;
+        }
+    }
+
+    /**
      * Sets the full flag of the bundle descriptor. Once set, the annotations
      * of the classes contained in the archive described by this bundle
      * descriptor will be ignored.
