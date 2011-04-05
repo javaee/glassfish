@@ -1,6 +1,0 @@
-Connector 1.5 standalone RAR with resources defined in glassfish-resources.xml
-
-@Test : testing "java:app" scope in RAR
-@Test : testing "java:module" scope in ear
-@Test : There is only "module" level glassfish-resources.xml in ear
-

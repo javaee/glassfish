@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Specification-Title: Java Platform, Enterprise Edition Specification
-Specification-Vendor: Sun Microsystems, Inc.
-Specification-Version: 5.0
-Created-By: 1.5.0 (Sun Microsystems Inc.)
-Implementation-Vendor: Sun Microsystems, Inc.
-Implementation-Version: 9.1
-Implementation-Title: Sun Java System Application Server

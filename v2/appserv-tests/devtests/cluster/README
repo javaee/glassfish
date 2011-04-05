@@ -1,4 +1,0 @@
-Clustering Scalability Developer Tests
-
-These tests are designed for running on a hudson environment with multiple nodes.
-Information about what nodes to use in the hosted-nodes file.

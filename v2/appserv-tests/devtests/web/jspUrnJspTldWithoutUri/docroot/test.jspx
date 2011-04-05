@@ -1,5 +1,0 @@
-<jsp:root version="2.0"
-    xmlns:jsp="http://java.sun.com/JSP/Page"
-    xmlns:my="urn:jsptld:/WEB-INF/tlds/my.tld">
-  <my:custom/>
-</jsp:root>

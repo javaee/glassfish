@@ -1,5 +1,0 @@
-Test
-- Use of business method interceptors 
-    - Multiple interceptor binding annotations in an interceptor
-    - Interceptors bound to a method through the placement of @Transactional @Secure
-    at various places (Class level, method level)

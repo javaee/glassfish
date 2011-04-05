@@ -1,9 +1,0 @@
-<property name="module" value="visibroker"/>
-<property name="appname" value="${module}-App"/>         
-<property name="web.xml" value="descriptor/web.xml"/>
-<property name="sun-web.xml" value="descriptor/sun-web.xml"/>
-<property name="app.type" value="war"/>
-<property name="default-instance" value="${env.S1AS_HOME}/domains/domain1"/>
-<property name="deployed-apps" value="${default-instance}/applications/j2ee-apps"/>
-
-<property name="contextroot" value="visibroker"/>

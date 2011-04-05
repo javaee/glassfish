@@ -1,2 +1,0 @@
-echo test$1 
-    

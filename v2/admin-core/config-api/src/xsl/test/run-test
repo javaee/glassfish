@@ -1,4 +1,0 @@
-#!/bin/ksh
-[ $# -ne 1 ] && { echo "Invalid number of args. Expected 1, got $#. Usage: run-test test-file" 1>&2; exit 1; }
-xalan_jar=/share/builds/components/jaxp/1.2.2/lib/endorsed/xalan.jar
-java -jar ${xalan_jar:?} -in $1-test.xsl -xsl $1-test.xsl

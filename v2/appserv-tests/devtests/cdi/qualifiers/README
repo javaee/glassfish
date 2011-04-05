@@ -1,7 +1,0 @@
-Test
-- Use Qualifier annotations to specify exactly which bean instnace should be injected
-- @Any
-- @Default
-- Constructor, Initializer Method and Field injection of Qualified Bean types
-- Qualifiers with members, non-binding members
-- Multiple Qualifiers

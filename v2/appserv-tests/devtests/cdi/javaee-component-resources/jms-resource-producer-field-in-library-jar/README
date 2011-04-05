@@ -1,5 +1,0 @@
-Test
-- Use of Java EE component environment resources 
-    - type safe injection of Java EE component resources by declaring a 
-    resource by annotating a producer field wuth a component environment injection
-    annotation in a library jar

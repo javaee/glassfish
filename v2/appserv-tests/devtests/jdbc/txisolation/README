@@ -1,9 +1,0 @@
-Simple test case to ensure that transaction-isolation is properly set.
-
-case 1) (for all 4 types of isolation), set isolation, create a new connection and check whether
-it returns the connection with expected isolation-level.
-
-case 2) (for all 4 types of isolation) create surplus connections in the pool (they will be created
-with a particular isolation) and modify it to an isolation other than expected. getConnection()
- again must return with guaranteed isolation
-

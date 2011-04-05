@@ -1,6 +1,0 @@
-You should just run: java -jar JmxUtils.jar
-
-(Though it is not required, I will check in
-the JmxUtils.jar to the workspace, because that is going
-to be handy. Alternatively, you could open the NB
-Project in NB and  create the jar yourself).
