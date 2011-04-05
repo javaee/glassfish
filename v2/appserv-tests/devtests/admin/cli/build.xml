@@ -67,7 +67,7 @@
     <target name="debug-windows" depends="instance, cluster"/>
     <target name="cli" depends="setup, monitoring, zombie, ports, instance, cluster,
                         configs, sync, domain, backup, tokens, validation, node,
-                        load-balancer, misc-commands, manual-sync, upgrade,
+                        load-balancer, getset, misc-commands, manual-sync, upgrade,
                         cluster-upgrade, restart-domain, teardown"/>
 
     <target name="cluster" depends="init">
@@ -129,6 +129,12 @@
     </target>
     <target name="load-balancer" depends="init">
         <java classname="admin.LBCommandsTest"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+        </java>
+    </target>
+
+    <target name="getset" depends="init">
+        <java classname="admin.GetSetTest"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
         </java>
     </target>
