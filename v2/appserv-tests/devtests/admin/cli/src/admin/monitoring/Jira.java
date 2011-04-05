@@ -48,6 +48,7 @@ public class Jira extends MonTest {
     void runTests(TestDriver driver) {
         setDriver(driver);
         report(true, "Hello from JIRA Tests!");
+        test16313();
         test15397();
         test15054();
         test15923();
@@ -59,6 +60,16 @@ public class Jira extends MonTest {
         test13905();
         test13723();
 
+    }
+
+    private void test16313() { //Update this when 16313 is fixed
+        String prepend = "16313::";
+        AsadminReturn ar = asadminWithOutput("get", "-m", "*openconnections*");
+        report(checkForString(ar, "No monitoring data to report."), prepend + "check-getm-*openconnections*");
+
+        ar = asadminWithOutput("get", "-m", "*.*openconnections*");
+        report(checkForString(ar, "server.network.http-listener-1.connection-queue.countopenconnections-count"),
+                prepend + "check-getm-*.*openconnections*");
     }
 
     private void test15397() {
