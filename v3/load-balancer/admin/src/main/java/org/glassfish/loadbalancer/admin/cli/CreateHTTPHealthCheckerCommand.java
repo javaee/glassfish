@@ -224,7 +224,8 @@ public final class CreateHTTPHealthCheckerCommand implements AdminCommand {
                     report.setFailureCause(ex);
                     return;
                 }
-                logger.info("http_lb_admin.HealthCheckerCreated" + target);
+                logger.info(localStrings.getLocalString("http_lb_admin.HealthCheckerCreated",
+                        "Health checker created for target {0}", target));
             } else {                
                 String msg = localStrings.getLocalString("HealthCheckerExists",
                         "Health checker server/cluster [{0}] already exists.", target);

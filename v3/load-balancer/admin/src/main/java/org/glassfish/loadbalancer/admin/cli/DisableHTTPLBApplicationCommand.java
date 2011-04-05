@@ -108,7 +108,6 @@ public final class DisableHTTPLBApplicationCommand implements AdminCommand {
                 String msg = localStrings.getLocalString("AppDisabled",
                         "Application [{0}] is already disabled for [{1}].", name, target);
                 logger.warning(msg);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage(msg);
             } else {
                 try {
