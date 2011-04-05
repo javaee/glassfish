@@ -437,7 +437,7 @@ public class CommonHandlers {
         Long result = Long.valueOf(0);
         try{
             // Add the 2 numbers together
-            result = new Long(long1.longValue()+long2.longValue());
+            result = Long.valueOf(long1.longValue()+long2.longValue());
         }catch(Exception ex){
             Logger logger = GuiUtil.getLogger();
             if (logger.isLoggable(Level.WARNING)) {

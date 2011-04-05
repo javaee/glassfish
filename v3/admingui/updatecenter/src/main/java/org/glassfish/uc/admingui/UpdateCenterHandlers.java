@@ -395,7 +395,7 @@ public class UpdateCenterHandlers {
             Image.ImagePlan ip = image.makeInstallPlan(pkgsName);
             Fmri[] proposed = ip.getProposedFmris();
             if (countOnly){
-                result.add(new Integer(proposed.length));
+                result.add(Integer.valueOf(proposed.length));
                 return result;
             }
             for( Fmri newPkg : proposed){

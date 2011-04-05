@@ -212,10 +212,9 @@ public class DeploymentHandler {
     /**
      *  <p> This handler redeploy any application
      */
-    @Handler(id = "redeploy",
+    @Handler(id = "gf.redeploy",
     input = {
         @HandlerInput(name = "filePath", type = String.class, required = true),
-        @HandlerInput(name = "origPath", type = String.class, required = true),
         @HandlerInput(name = "deployMap", type = Map.class, required = true),
         @HandlerInput(name = "convertToFalse", type = List.class, required = true),
         @HandlerInput(name = "valueMap", type = Map.class, required = true)
@@ -223,7 +222,6 @@ public class DeploymentHandler {
     public static void redeploy(HandlerContext handlerCtx) {
         try {
             String filePath = (String) handlerCtx.getInputValue("filePath");
-            String origPath = (String) handlerCtx.getInputValue("origPath");
             Map<String,String> deployMap = (Map) handlerCtx.getInputValue("deployMap");
             Map<String,String> valueMap = (Map) handlerCtx.getInputValue("valueMap");
             List<String> convertToFalsList = (List<String>) handlerCtx.getInputValue("convertToFalse");
@@ -382,13 +380,11 @@ public class DeploymentHandler {
             
     @Handler(id = "gf.getDeploymentDescriptorList",
     input = {
-        @HandlerInput(name = "appName", type = String.class, required = true),
         @HandlerInput(name = "data", type = List.class, required = true)},
     output = {
         @HandlerOutput(name = "descriptors", type = List.class)
     })
     public static void getDeploymentDescriptorList(HandlerContext handlerCtx) {
-        String appName = (String) handlerCtx.getInputValue("appName");
         List<Map<String, Object>> ddList = (List) handlerCtx.getInputValue("data");
         List result = new ArrayList();
         if ((ddList != null) && ddList.size() > 0) {
@@ -407,7 +403,6 @@ public class DeploymentHandler {
 
     @Handler(id = "gf.getDeploymentDescriptor",
     input = {
-        @HandlerInput(name = "appName", type = String.class, required = true),
         @HandlerInput(name = "moduleName", type = String.class, required = true),
         @HandlerInput(name = "descriptorName", type = String.class, required = true),
         @HandlerInput(name = "data", type = List.class, required = true)
@@ -415,8 +410,7 @@ public class DeploymentHandler {
         @HandlerOutput(name = "content", type = String.class),
         @HandlerOutput(name = "encoding", type = String.class)
     })
-    public static void getDeploymentDesciptor(HandlerContext handlerCtx) {
-        String appName = (String) handlerCtx.getInputValue("appName");
+    public static void getDeploymentDescriptor(HandlerContext handlerCtx) {
         String moduleName = (String) handlerCtx.getInputValue("moduleName");
         if (moduleName == null){
             moduleName = "";   //for application.xml and sun-application.xml  where it is at top leverl, with a module name.

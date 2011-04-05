@@ -224,8 +224,7 @@ public class UtilHandlers {
             @HandlerOutput(name="Name", type=String.class)})
     public static void fileGetName(HandlerContext handlerCtx) {
         File file = (File) handlerCtx.getInputValue("File");
-        String name = file != null ? file.getName() : "" ;
-        handlerCtx.setOutputValue("Name", name != null ? name : "");        
+        handlerCtx.setOutputValue("Name", (file == null) ? "" : file.getName() );
     }
     
     /**
@@ -769,12 +768,12 @@ public class UtilHandlers {
             String s1 = values.trim().replaceAll("\\.jar:", "\\.jar\\$\\{path.separator\\}");
             String s2 = s1.replaceAll("\\.jar;", "\\.jar\\$\\{path.separator\\}");
             String[] strArray = s2.split("\\$\\{path.separator\\}");
-            String result = "";
+            StringBuilder result = new StringBuilder("");
             for (String s : strArray) {
-                result = result + s + "\n";
+                result.append(s).append("\n");
             }
 
-            handlerCtx.setOutputValue("formattedString", result.trim());
+            handlerCtx.setOutputValue("formattedString", result.toString().trim());
 
 
         }
@@ -791,7 +790,7 @@ public class UtilHandlers {
         String values = (String) handlerCtx.getInputValue("string");
         String token = "";
         if ((values != null) &&
-                (values.toString().trim().length() != 0)) {
+                (values.trim().length() != 0)) {
             Iterator it = GuiUtil.parseStringList(values, "\t\n\r\f").iterator();
             while (it.hasNext()) {
                 String nextToken = (String) it.next();

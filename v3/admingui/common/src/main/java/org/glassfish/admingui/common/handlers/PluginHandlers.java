@@ -413,7 +413,7 @@ public class PluginHandlers {
 	parentId = (String) ComponentUtil.getInstance(ctx).resolveValue(ctx, null, root, parentId);
 	if (parentId == null) {
 	    // If not specified, just stick it @ the root
-	    parentId = root.getId();
+	    //parentId = root.getId();
 	    parent = root;
 	} else {
 	    parent = findComponentById(root, parentId);

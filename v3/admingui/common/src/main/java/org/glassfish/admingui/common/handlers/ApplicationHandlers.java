@@ -219,17 +219,17 @@ public class ApplicationHandlers {
                 if (props == null){
                     return result;
                 }
-                for(String cName: props.keySet()){
+                for(Map.Entry<String,Object> e : props.entrySet()){
                     Map oneRow = new HashMap();
                     oneRow.put("moduleName", moduleName);
-                    oneRow.put("name", cName);
-                    oneRow.put("type", props.get(cName));
+                    oneRow.put("name", e.getKey());
+                    oneRow.put("type", e.getValue());
                     oneRow.put("hasLaunch", false);
                     oneRow.put("sniffers", "");
                     oneRow.put("hasEndpoint", false);
                     oneRow.put("hasAppClientLaunch", false);
                     if (wsAppMap != null){
-                        if (! (AppUtil.getEndpointDetails( wsAppMap, moduleName, cName) == null)){
+                        if (! (AppUtil.getEndpointDetails( wsAppMap, moduleName, e.getKey()) == null)){
                             oneRow.put("hasEndpoint", true );
                         }
                     }

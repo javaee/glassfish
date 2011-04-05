@@ -103,7 +103,6 @@ public class NewSSLHandlers {
 
     @Handler(id="convertCiphersItemsToStr",
     input={
-        @HandlerInput(name="test", type=Object.class),
         @HandlerInput(name="common",    type=String[].class),
         @HandlerInput(name="ephemeral", type=String[].class),
         @HandlerInput(name="other",     type=String[].class),
@@ -113,7 +112,6 @@ public class NewSSLHandlers {
     )
     public static void convertCiphersItemsToStr(HandlerContext handlerCtx) {
 
-        Object test = handlerCtx.getInputValue("test");
         String[] common = (String[])handlerCtx.getInputValue("common");
         String[] ephemeral = (String[])handlerCtx.getInputValue("ephemeral");
         String[] other = (String[])handlerCtx.getInputValue("other");

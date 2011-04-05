@@ -45,6 +45,7 @@
 
 package org.glassfish.admingui.common.util;
 
+import java.util.Locale;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -162,7 +163,7 @@ public class RestUtil {
                 attrs = new HashMap<String, Object>();
             }
         }
-        method = method.toLowerCase();
+        method = method.toLowerCase(new Locale("UTF-8"));
 
         Logger logger = GuiUtil.getLogger();
         if (logger.isLoggable(Level.FINEST)) {
@@ -252,7 +253,7 @@ public class RestUtil {
         if (aMap != null){
             message = (String) aMap.get("message");
         }
-        return message;
+        return (message==null)? "" : message;
     }
 
     public static Map<String, Object> parseResponse(RestResponse response, HandlerContext handlerCtx, String endpoint, Object attrs, boolean quiet, boolean throwException) {
@@ -273,14 +274,13 @@ public class RestUtil {
                     Map dataMap = (Map)responseMap.get("data");
                     if (dataMap != null) {
                         message = getMessage(dataMap);
-                        if (message == null){
-                            message = "";
-                        }
                         List<Map> subReports = (List<Map>)dataMap.get("subReports");
                         if (subReports != null){
+                            StringBuilder sb = new StringBuilder("");
                             for( Map oneSubReport : subReports){
-                                message = message + " " + getMessage(oneSubReport);
+                                sb.append(" ").append(getMessage(oneSubReport));
                             }
+                            message = message + sb.toString();
                         }
                     }else{
                         Object msgs = responseMap.get("message");
@@ -298,8 +298,7 @@ public class RestUtil {
                         } else if (msgs instanceof Map) {
                             message = ((Map<String, Object>) msgs).get("message").toString();
                         } else {
-                            message = "Unexpected message type.";
-                            throw new RuntimeException(message);
+                            throw new RuntimeException("Unexpected message type.");
                         }
                     }
                 }
@@ -516,7 +515,7 @@ public class RestUtil {
         if (string == null || string.length() <= 0) {
             return string;
         }
-        return string.substring(0, 1).toUpperCase() + string.substring(1);
+        return string.substring(0, 1).toUpperCase(new Locale("UTF-8")) + string.substring(1);
     }
 
     public static List<String> getChildResourceList(String document) throws SAXException, IOException, ParserConfigurationException {
@@ -570,8 +569,8 @@ public class RestUtil {
                 }
 
                 oneRow.put("selected", false);
-                for(String attrName : entity.keySet()){
-                    oneRow.put(attrName, getA(entity, attrName, convert));
+                for(Map.Entry<String,Object> e : entity.entrySet()){
+                    oneRow.put(e.getKey(), getA(entity, e.getKey(), convert));
                 }
                 oneRow.put("encodedName", URLEncoder.encode(entity.get(id).toString(), "UTF-8"));
                 oneRow.put("name", entity.get(id));

@@ -2,7 +2,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -160,11 +160,11 @@ public class ScheduleHandlers {
             delimiter =",";
         String str = "";
         String[] data = values.get(type);
-        for (String key : map.keySet()) {
-            Object o = map.get(key);
+        for(Map.Entry<String,String> e : map.entrySet()){
+            Object o = e.getValue();
             if (o == null)
                 continue;
-            if (key.equals("*")) {
+            if (e.getKey().equals("*")) {
                 str = "*";
                 break;
             }

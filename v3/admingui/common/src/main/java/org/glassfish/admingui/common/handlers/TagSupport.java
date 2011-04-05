@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -53,6 +53,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.prefs.Preferences;
@@ -265,8 +266,8 @@ public class TagSupport {
 	    // Include everything...
 	    results = new ArrayList<Tag>();
 	    Map<String, List<Tag>> map = maps[TAG_NAME_MAP_IDX];
-	    for (String key : map.keySet()) {
-		results.addAll(map.get(key));
+            for(Map.Entry<String,List<Tag>> e : map.entrySet()){
+		results.addAll(e.getValue());
 	    }
 	}
 
@@ -324,7 +325,7 @@ public class TagSupport {
 	if (tagName == null) {
 	    throw new IllegalArgumentException("Tag name cannot be null!");
 	}
-	return tagName.replaceAll("\\s", "").toLowerCase();
+	return tagName.replaceAll("\\s", "").toLowerCase(new Locale("UTF-8"));
     }
 
     /**

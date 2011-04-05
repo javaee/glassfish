@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,6 +50,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.io.Serializable;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import org.glassfish.admingui.plugin.Index;
@@ -325,7 +326,7 @@ public class HelpTreeIndexAdaptor extends TreeAdaptorBase {
      *	<p> Comparator class for {@link IndexItem}s.  Uses "text" for
      *	    comparison, ignoring case.</p>
      */
-    private static class IndexItemComparator implements Comparator<IndexItem> {
+    private static class IndexItemComparator implements Comparator<IndexItem>, Serializable {
         @Override
         public int compare(IndexItem x, IndexItem y) {
             int result = 0;

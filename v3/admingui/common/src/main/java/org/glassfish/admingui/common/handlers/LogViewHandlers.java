@@ -456,7 +456,6 @@ public class LogViewHandlers {
 		String temp = firstLogRow;
 		firstLogRow = lastLogRow;
 		lastLogRow = temp;
-		firstRow = lastRow;
 	    }
             handlerCtx.setOutputValue("First", firstLogRow);
             handlerCtx.setOutputValue("Last", lastLogRow);

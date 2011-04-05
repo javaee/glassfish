@@ -152,13 +152,11 @@ public class JndiHandlers {
         @Handler(id="updateJndiResourceAttrs",
         input={
                 @HandlerInput(name="classnameOption",   type=String.class),
-                @HandlerInput(name="entries",   type=String.class),
                 @HandlerInput(name="attrMap",      type=Map.class)},
         output={
             @HandlerOutput(name="resType", type=String.class)
             } )
         public static void updateJndiResourceAttrs(HandlerContext handlerCtx){
-            String entry = (String) handlerCtx.getInputValue("entries");
             String option = (String) handlerCtx.getInputValue("classnameOption");
             Map<String,String> attrMap = (Map)handlerCtx.getInputValue("attrMap");
             String restype ;

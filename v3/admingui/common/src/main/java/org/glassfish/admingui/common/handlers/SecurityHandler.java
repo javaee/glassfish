@@ -372,7 +372,6 @@ public class SecurityHandler {
             attrs.put("id", configName);
             attrs.put("realmName", realmName);
             RestUtil.restRequest(tmpEP, attrs, "POST", handlerCtx, false);
-            attrs = new HashMap<String, Object>();
             String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName + "/security-service/auth-realm/" + realmName ;
             if (Boolean.valueOf(createNew)) {
                 endpoint = endpoint +  "/create-user?target=" + configName;
@@ -380,19 +379,19 @@ public class SecurityHandler {
                 endpoint = endpoint + "/update-user?target=" + configName;
             }
 
-                final String USERPASSWORD = "AS_ADMIN_USERPASSWORD";
+            final String USERPASSWORD = "AS_ADMIN_USERPASSWORD";
 
-                attrs = new HashMap<String, Object>();
-                attrs.put("id", userid);
-                attrs.put(USERPASSWORD, password);
-                attrs.put("target", configName);
-                if (grouplist != null && grouplist.contains(","))
-                    grouplist = grouplist.replace(',', ':');
-                List<String> grpList = new ArrayList();
-                if (grouplist != null && !grouplist.equals(""))
-                    grpList.add(grouplist);
-                attrs.put("groups", grpList);
-                RestUtil.restRequest(endpoint, attrs, "POST", null, true, true );
+            attrs = new HashMap<String, Object>();
+            attrs.put("id", userid);
+            attrs.put(USERPASSWORD, password);
+            attrs.put("target", configName);
+            if (grouplist != null && grouplist.contains(","))
+                grouplist = grouplist.replace(',', ':');
+            List<String> grpList = new ArrayList();
+            if (grouplist != null && !grouplist.equals(""))
+                grpList.add(grouplist);
+            attrs.put("groups", grpList);
+            RestUtil.restRequest(endpoint, attrs, "POST", null, true, true );
         } catch(Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
@@ -774,7 +773,7 @@ public class SecurityHandler {
                 list = new ArrayList<String>();
             Boolean status = isSecurityManagerEnabled(list);
             String value= (String) handlerCtx.getInputValue("value");
-            Boolean userValue = new Boolean(value);
+            Boolean userValue = Boolean.valueOf(value);
             if (status.equals(userValue)){
                 //no need to change
                 return;
@@ -828,10 +827,6 @@ public class SecurityHandler {
             }
         }
         return Boolean.FALSE;
-    }
-
-    private static String str(String aa){
-        return (aa==null) ? "" : aa;
     }
 
     private static final String JVM_OPTION_SECURITY_MANAGER = "-Djava.security.manager";

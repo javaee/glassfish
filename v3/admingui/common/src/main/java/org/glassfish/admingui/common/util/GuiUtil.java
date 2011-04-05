@@ -103,7 +103,7 @@ public class GuiUtil {
         if (level == null) {
             level = "INFO";
         } else {
-            level = level.toUpperCase();
+            level = level.toUpperCase(new Locale("UTF-8"));
         }
         getLogger().log(Level.parse(level), (String)handlerCtx.getInputValue("message"));
     }
@@ -341,8 +341,7 @@ public class GuiUtil {
         try {
             Locale locale = com.sun.jsftemplating.util.Util.getLocale(FacesContext.getCurrentInstance());
             ResourceBundle bundle = ResourceBundleManager.getInstance().getBundle(RESOURCE_NAME, locale);
-            String ret = bundle.getString(key);
-            return (ret == null) ? key : ret;
+            return bundle.getString(key);
         } catch (NullPointerException ex) {
             return key;
         } catch (Exception ex1) {
@@ -355,14 +354,19 @@ public class GuiUtil {
     }
 
     public static String getMessage(String resourceName, String key) {
-        ResourceBundle bundle = getBundle(resourceName);
-        String ret = bundle.getString(key);
-        return (ret == null) ? key : ret;
+        try{
+            return getBundle(resourceName).getString(key);
+        }catch(Exception ex){
+            return key;
+        }
     }
 
     public static String getMessage(ResourceBundle bundle, String key) {
-        String ret = bundle.getString(key);
-        return (ret == null) ? key : ret;
+        try{
+            return bundle.getString(key);
+        }catch(Exception ex){
+            return key;
+        }
     }
 
     public static Locale getLocale() {
@@ -424,22 +428,6 @@ public class GuiUtil {
     public static void handleException(HandlerContext handlerCtx, Throwable ex) {
         prepareException(handlerCtx, ex);
         handlerCtx.getFacesContext().renderResponse();
-    }
-
-    public static List<Map> getListOfMaps(Map map) {
-        List<Map> list = null;
-
-        if (map != null) {
-            list = new ArrayList();
-            for (Object key : map.keySet()) {
-                HashMap row = new HashMap();
-                Object value = map.get(key);
-                row.put("name", key);
-                row.put("value", value != null ? value : "");
-                list.add(row);
-            }
-        }
-        return list;
     }
 
     public static void handleError(HandlerContext handlerCtx, String detail) {
@@ -666,12 +654,11 @@ public class GuiUtil {
     public static List<Map<String, String>> convertMapToListOfMap(Map<String, String> values) {
         List<Map<String, String>> list = new ArrayList();
         if (values != null) {
-            Map<String, Object> map = null;
-            for (String key : values.keySet()) {
+            for(Map.Entry<String,String> e : values.entrySet()){
                 HashMap oneRow = new HashMap();
-                Object value = values.get(key);
+                Object value = e.getValue();
                 String valString = (value == null) ? "" : value.toString();
-                oneRow.put("name", key);
+                oneRow.put("name", e.getKey());
                 oneRow.put("value", valString);
                 oneRow.put("description", "");
                 list.add(oneRow);
