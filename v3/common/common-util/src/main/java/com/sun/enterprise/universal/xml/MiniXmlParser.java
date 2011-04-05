@@ -39,20 +39,6 @@
  */
 package com.sun.enterprise.universal.xml;
 
-import com.sun.common.util.logging.LoggingConfigImpl;
-import com.sun.common.util.logging.LoggingPropertyNames;
-import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.util.HostAndPort;
-import java.io.UnsupportedEncodingException;
-
-import javax.xml.stream.XMLInputFactory;
-import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -64,6 +50,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
+import com.sun.common.util.logging.LoggingConfigImpl;
+import com.sun.common.util.logging.LoggingPropertyNames;
+import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.util.HostAndPort;
+import com.sun.enterprise.util.StringUtils;
+import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
 /**
  * A fairly simple but very specific stax XML Parser. Give it the location of domain.xml and the name of the server
@@ -87,8 +86,7 @@ public class MiniXmlParser {
             throw new MiniXmlParserException(strings.get("enddocument", configRef, serverName));
         }
         catch (Exception e) {
-            String msg = strings.get("toplevel", e);
-            throw new MiniXmlParserException(e);
+            throw new MiniXmlParserException(strings.get("toplevel", e), e);
         }
         finally {
             try {
@@ -178,14 +176,13 @@ public class MiniXmlParser {
      * @return the log filename if available, otherwise return null
      */
     public String getLogFilename() {
-        logFilename = null;
-
+        String logFilename = null;
         try {
             Map<String, String> map = loggingConfig.getLoggingProperties();
-            if (map != null)
+            if (map != null) {
                 logFilename = map.get(LoggingPropertyNames.file);
-        }
-        catch (Exception e) {
+            }
+        } catch (Exception e) {
             // just return null
         }
         return logFilename;
@@ -453,7 +450,7 @@ public class MiniXmlParser {
         }
     }
 
-    private void parseProperty(Map<String, String> map) throws XMLStreamException, EndDocumentException {
+    private void parseProperty(Map<String, String> map) {
         // cursor --> START_ELEMENT of property
         // it has 2 attributes:  name and value
         Map<String, String> prop = parseAttributes();
@@ -489,35 +486,13 @@ public class MiniXmlParser {
     }
 
     /**
-     * The cursor will be pointing at the START_ELEMENT of name when it returns note that skipTree must be called.
-     * Otherwise we could be fooled by a sub-element with the same name as an outer element
-     *
-     * @param name the Element to skip to
-     *
-     * @throws javax.xml.stream.XMLStreamException
-     */
-    private void skipTo(String name) throws XMLStreamException, EndDocumentException {
-        while (true) {
-            skipNonStartElements();
-            // cursor is at a START_ELEMENT
-            String localName = parser.getLocalName();
-            if (name.equals(localName)) {
-                return;
-            }
-            else {
-                skipTree(localName);
-            }
-        }
-    }
-
-    /**
      * The cursor will be pointing at the START_ELEMENT of name1 or name2 when it returns note that skipTree must be
      * called.  Otherwise we could be fooled by a sub-element with the same name as an outer element
      *
-     * @param the first eligible Element to skip to
-     * @param the second eligible Element to skip to
+     * @param name1 first eligible Element to skip to
+     * @param name2 second eligible Element to skip to
      *
-     * @throws javax.xml.stream.XMLStreamException
+     * @throws XMLStreamException
      */
     private void skipTo(String name1, String name2) throws XMLStreamException, EndDocumentException {
         while (true) {
@@ -538,9 +513,9 @@ public class MiniXmlParser {
      * Otherwise we could be fooled by a sub-element with the same name as an outer element Multiple startNames are
      * accepted.
      *
-     * @param name the Element to skip to
+     * @param endName the Element to skip to
      *
-     * @throws javax.xml.stream.XMLStreamException
+     * @throws XMLStreamException
      */
     private boolean skipToButNotPast(String endName, String... startNames)
             throws XMLStreamException, EndDocumentException {
@@ -593,11 +568,6 @@ public class MiniXmlParser {
             throw new EndDocumentException();
         }
         return event;
-    }
-
-    private void dump() throws XMLStreamException {
-        StringBuilder sb = new StringBuilder();
-        System.out.println(sb.toString());
     }
 
     private void findDomainNameAndEnd() {
@@ -764,7 +734,7 @@ public class MiniXmlParser {
                                 if (atts != null) {
                                     String sec = atts.get("security-enabled");
                                     secure = sec != null
-                                            && sec.equalsIgnoreCase("true");
+                                            && "true".equalsIgnoreCase(sec);
                                 }
                                 if (GFLauncherUtils.ok(addr))
                                     adminAddresses.add(
@@ -844,7 +814,6 @@ public class MiniXmlParser {
     private boolean valid = false;
     private List<HostAndPort> adminAddresses = new ArrayList<HostAndPort>();
     private String domainName;
-    private String logFilename;
     private static final LocalStringsImpl strings = new LocalStringsImpl(MiniXmlParser.class);
     private boolean monitoringEnabled = true; // Issue 12762 Absent <monitoring-service /> element means monitoring-enabled=true by default
     private List<Map<String, String>> vsAttributes = new ArrayList<Map<String, String>>();
