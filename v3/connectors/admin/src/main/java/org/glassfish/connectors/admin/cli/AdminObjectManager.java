@@ -153,7 +153,7 @@ public class AdminObjectManager implements ResourceManager {
     }
 
     private ResourceStatus isValid(Resources resources, boolean validateResourceRef, String target){
-        ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, "Validation Successful");
+        ResourceStatus status ;
         if (jndiName == null) {
             String msg = localStrings.getLocalString("create.admin.object.noJndiName",
                             "No JNDI name defined for administered object.");

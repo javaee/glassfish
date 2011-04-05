@@ -293,7 +293,7 @@ public class ResourcesUtil {
 
     public DeferredResourceConfig getDeferredResourceConfig(Object resource, Object pool, String resType, String raName)
             throws ConnectorRuntimeException {
-        String resourceAdapterName = raName;
+        String resourceAdapterName ;
         DeferredResourceConfig resConfig = null;
         //TODO V3 there should not be res-type related check, refactor deferred-ra-config
         //TODO V3 (not to hold specific resource types)

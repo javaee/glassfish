@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -214,11 +214,9 @@ public class BasicPasswordAuthenticationService
                 securityRoleMapperFactory.getRoleMapper(wbd.getModuleID());
 
         Map<String, Subject> map = securityRoleMapper.getRoleToSubjectMapping();
-        Set<String> roleSet = map.keySet();
-        Iterator iter = roleSet.iterator();
-        while (iter.hasNext()) {
-            roleName = (String) iter.next();
-            Subject subject = (Subject) map.get(roleName);
+        for (Map.Entry<String, Subject> entry : map.entrySet()) {
+            roleName = entry.getKey();
+            Subject subject = entry.getValue();
             Set principalSet = subject.getPrincipals();
             if (principalSet.contains(callerPrincipal)) {
                 return roleName;

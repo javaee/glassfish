@@ -103,7 +103,7 @@ public class ConfigPropertyHandler extends AbstractHandler {
             boolean supportsDynamicUpdates = configProperty.supportsDynamicUpdates();
             boolean confidential = configProperty.confidential();
 
-            Class type = configProperty.type();
+            Class type ;
 
             if (element.getElementType().equals(ElementType.METHOD)) {
                 Method m = (Method) element.getAnnotatedElement();

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -81,7 +81,6 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
     @Inject
     private ConnectorRuntime runtime ;
     private ClassLoader rarCL;
-    private String raName;
 
     static {
         containerSupportedContexts.add(TransactionContext.class);
@@ -98,7 +97,6 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
 
     public WorkContextHandler(ConnectorRuntime runtime, String raName, ClassLoader cl) {
         this.runtime = runtime;
-        this.raName = raName;
         this.rarCL = cl;
     }
 
@@ -106,7 +104,6 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
      * {@inheritDoc}
      */
     public void init(String raName, ClassLoader cl){
-        this.raName = raName;
         this.rarCL = cl;
     }
 
