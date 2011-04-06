@@ -40,9 +40,6 @@
 
 package org.glassfish.webservices;
 
-import com.sun.enterprise.config.serverbeans.Config;
-
-import java.io.File;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 import org.glassfish.api.deployment.ApplicationContainer;
@@ -55,19 +52,14 @@ import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.container.EndpointRegistrationException;
 
 import java.util.Set;
-import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.net.URL;
 
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.util.WebServerInfo;
-import org.jvnet.hk2.component.Habitat;
-
 
 /**
  * This class implements the ApplicationContainer and will be used
@@ -94,22 +86,16 @@ public class WebServicesApplication implements ApplicationContainer {
 
     private ResourceBundle rb = logger.getResourceBundle();
 
-    private Config config = null;
-
-    private Habitat habitat = null;
-
     private ClassLoader cl;
     private Application app;
     private Set<String> publishedFiles;
 
-    public WebServicesApplication(DeploymentContext context, ServerEnvironment env, RequestDispatcher dispatcherString, Config config, Habitat habitat, Set<String> publishedFiles){
+    public WebServicesApplication(DeploymentContext context, ServerEnvironment env, RequestDispatcher dispatcherString, Set<String> publishedFiles){
         this.deploymentCtx = context;
         this.dispatcher = dispatcherString;
         this.serverEnvironment = env;
         this.ejbendpoints = getEjbEndpoints();
         this.adapter = (com.sun.grizzly.tcp.Adapter) new EjbWSAdapter();
-        this.config = config;
-        this.habitat = habitat;
         this.publishedFiles = publishedFiles;
     }
     
@@ -181,8 +167,8 @@ public class WebServicesApplication implements ApplicationContainer {
     public boolean stop(ApplicationContext stopContext) {
         try {
             Iterator<EjbEndpoint> iter = ejbendpoints.iterator();
-            String contextRoot = null;
-            EjbEndpoint endpoint = null;
+            String contextRoot;
+            EjbEndpoint endpoint;
             while(iter.hasNext()) {
                 endpoint = iter.next();
                 contextRoot = endpoint.contextRoot;
