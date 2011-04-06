@@ -268,7 +268,12 @@ public abstract class PayloadFilesManager {
                     final Date when = new Date(entry.getValue());
                     logger.log(Level.FINER, "Setting lastModified for {0} explicitly to {1}", new Object[]{entry.getKey().getAbsolutePath(), when});
                 }
-                entry.getKey().setLastModified(entry.getValue());
+                if ( ! entry.getKey().setLastModified(entry.getValue())) {
+                    logger.log(Level.WARNING, strings.getLocalString(
+                            "payload.setLatModifiedFailed",
+                            "Attempt to set lastModified for {0} failed; no further information is available.  Continuing.",
+                            entry.getKey().getAbsoluteFile()));
+                }
             }
         }
 
@@ -567,12 +572,10 @@ public abstract class PayloadFilesManager {
             logger.log(Level.FINER, "Extracted transferred entry {0} to {1}", new Object[]{part.getName(), extractedFile.getAbsolutePath()});
             reportExtractionSuccess();
             return extractedFile;
-//        }
-//        catch (Exception e) {
-//            reportExtractionFailure(part.getName(), e);
-//            IOException ioe = new IOException(e.getMessage());
-//            ioe.initCause(e);
-//            throw ioe;
+        }
+        catch (IOException e) {
+            reportExtractionFailure(part.getName(), e);
+            throw new IOException(e.getMessage(), e);
         } finally {
             if (os != null) {
                 os.close();

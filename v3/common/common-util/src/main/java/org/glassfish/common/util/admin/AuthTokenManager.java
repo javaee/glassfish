@@ -105,7 +105,7 @@ public class AuthTokenManager {
 
     private final Map<String,TokenInfo> liveTokens = new HashMap<String,TokenInfo>();
 
-    private final Logger logger = LogDomains.getLogger(AuthTokenManager.class,
+    private static final Logger logger = LogDomains.getLogger(AuthTokenManager.class,
             LogDomains.ADMIN_LOGGER);
 
     private final static char REUSE_TOKEN_MARKER = '+';
@@ -132,9 +132,9 @@ public class AuthTokenManager {
             if (isUsedUp(now)) {
                 final String msg = localStrings.getLocalString("AuthTokenInvalid",
                         "Use of auth token {2} attempted but token is invalid; usesRemaining = {0,number,integer}, expired = {1}",
-                        new Integer(usesRemaining), Boolean.toString(expiration <= now),
+                        Integer.valueOf(usesRemaining), Boolean.toString(expiration <= now),
                         logger.isLoggable(Level.FINER) ? token : SUPPRESSED_TOKEN_OUTPUT);
-                
+                logger.log(Level.WARNING, msg);
                 return false;
             }
             if ( ! isBeingReused) {
@@ -142,7 +142,7 @@ public class AuthTokenManager {
             }
             logger.log(Level.FINER,
                         "Use of auth token {0} OK; isBeingReused = {2}; remaining uses = {1,number,integer}",
-                        new Object[] {token, new Integer(usesRemaining), Boolean.toString(isBeingReused)});
+                        new Object[] {token, Integer.valueOf(usesRemaining), Boolean.toString(isBeingReused)});
             expiration += (TOKEN_EXPIRATION_IN_MS);
             return true;
         }
