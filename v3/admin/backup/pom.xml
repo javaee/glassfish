@@ -72,9 +72,8 @@
     </dependencies>
 	<developers>
 		<developer>
-			<id>bnevins</id>
-			<name>Byron Nevins</name>
-			<url>http://blogs.sun.com/foo</url>
+			<id>kasso</id>
+			<name>Chris Kasso</name>
 			<organization>Oracle, Inc.</organization>
 			<roles>
 				<role>lead</role>

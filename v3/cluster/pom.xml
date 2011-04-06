@@ -55,10 +55,12 @@
     <packaging>pom</packaging>
     <name>Cluster</name>
     <developers>
-         <developer>           
-            <name>Sheetal Vartak</name>
+        <developer>
+            <id>tmueller</id>
+            <name>Tom Mueller</name>
             <organization>Oracle, Inc.</organization>
-            <roles>                
+            <roles>
+                <role>lead</role>
                 <role>developer</role>
             </roles>
         </developer>
