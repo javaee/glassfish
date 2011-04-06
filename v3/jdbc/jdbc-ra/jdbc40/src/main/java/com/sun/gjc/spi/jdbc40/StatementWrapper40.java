@@ -236,8 +236,6 @@ public class StatementWrapper40 extends StatementWrapper {
     public java.sql.ResultSet executeQuery(final String sql) throws
             java.sql.SQLException {
         ResultSet rs = jdbcStatement.executeQuery(sql);
-        if (rs == null)
-            return null;
         return new ResultSetWrapper40(this, rs);
     }
 }

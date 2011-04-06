@@ -164,10 +164,11 @@ public class BasicPasswordAuthenticationService
                     ConnectorRuntime.getRuntime().getInvocationManager().getCurrentInvocation();
             EJBInvocation ejbInvocation = (EJBInvocation) componentInvocation;
             EJBContext ejbcontext = ejbInvocation.getEJBContext();
-            Set s = groupNameSecurityMap.keySet();
+            Set<Map.Entry> s = (Set<Map.Entry>) groupNameSecurityMap.entrySet();
             Iterator i = s.iterator();
-            while (i.hasNext()) {
-                String entry = (String) i.next();
+            while(i.hasNext()) {
+                Map.Entry mapEntry = (Map.Entry) i.next();
+                String entry = (String) mapEntry.getValue();
                 boolean isInRole = false;
                 try {
                     isInRole = ejbcontext.isCallerInRole(entry);
@@ -180,7 +181,7 @@ public class BasicPasswordAuthenticationService
                     return (Principal) groupNameSecurityMap.get(entry);
                 }
             }
-        }
+       }
 
         // Check if caller's group(s) is/are present in the Group Map
         for (int j = 0; j < groupNames.size(); j++) {
