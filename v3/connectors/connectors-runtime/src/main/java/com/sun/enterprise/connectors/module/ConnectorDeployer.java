@@ -79,12 +79,9 @@ import org.jvnet.hk2.config.TransactionFailure;
 import javax.validation.*;
 import javax.validation.bootstrap.GenericBootstrap;
 import java.io.*;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.ArrayList;
-import java.util.List;
 import java.beans.PropertyVetoException;
 
 /**
@@ -549,7 +546,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         while (entries.hasMoreElements()) {
 
             String fileName = (String) entries.nextElement();
-            if (fileName.toUpperCase().endsWith(".XML")) {
+            if (fileName.toUpperCase(Locale.getDefault()).endsWith(".XML")) {
                 BufferedReader reader = null;
                 try {
                     InputStream is = archive.getEntry(fileName);
@@ -638,7 +635,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                     moduleName = module.getName();
                     if (module.getEngine(ConnectorConstants.CONNECTOR_MODULE) != null) {
                         moduleName = appName + ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER + moduleName;
-                        if (moduleName.toLowerCase().endsWith(".rar")) {
+                        if (moduleName.toLowerCase(Locale.getDefault()).endsWith(".rar")) {
                             int index = moduleName.lastIndexOf(".rar");
                             moduleName = moduleName.substring(0, index);
                             if (resourcesUtil.filterConnectorResources

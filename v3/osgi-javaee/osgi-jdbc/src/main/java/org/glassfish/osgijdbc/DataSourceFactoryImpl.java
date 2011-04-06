@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -66,6 +66,7 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
     private static final Logger logger = Logger.getLogger(
             DataSourceFactoryImpl.class.getPackage().getName());
 
+    private static final Locale locale = Locale.getDefault();
     public DataSourceFactoryImpl(BundleContext context) {
         this.header = context.getBundle().getHeaders();
         this.driverBundleContext = context;
@@ -143,7 +144,7 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
                     Object result = null;
 
                     if (type != null) {
-                        type = type.toUpperCase();
+                        type = type.toUpperCase(locale);
                         try {
                             if (type.endsWith("INT") || type.endsWith("INTEGER")) {
                                 result = Integer.valueOf(value);

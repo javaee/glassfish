@@ -406,7 +406,7 @@ public class InstalledLibrariesResolver {
                                         libraries[i].getAbsolutePath() +
                                         "; it is a directory");
                         continue;
-                    } else if (!libraries[i].getName().toLowerCase().endsWith(".jar")) {
+                    } else if (!libraries[i].getName().toLowerCase(Locale.getDefault()).endsWith(".jar")) {
                         logger.log(Level.FINE,
                                 "Skipping installed library processing on " +
                                         libraries[i].getAbsolutePath() +

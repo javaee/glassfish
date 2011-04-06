@@ -63,11 +63,7 @@ import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -87,6 +83,8 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
 
     private static StringManager localStrings =
             StringManager.getManager(ConnectorConnectionPoolDeployer.class);
+
+    private static final Locale locale = Locale.getDefault();
 
     /**
      * {@inheritDoc}
@@ -526,47 +524,47 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
         }
         for (Property ep : elemProps) {
             if (ep != null) {
-                if ("MATCHCONNECTIONS".equals(ep.getName().toUpperCase())) {
+                if ("MATCHCONNECTIONS".equals(ep.getName().toUpperCase(locale))) {
                     if (_logger.isLoggable(Level.FINE)) {
                         _logger.fine(" ConnectorConnectionPoolDeployer::  Setting matchConnections");
                     }
                     ccp.setMatchConnections(toBoolean(ep.getValue(), true));
-                } else if ("LAZYCONNECTIONASSOCIATION".equals(ep.getName().toUpperCase())) {
+                } else if ("LAZYCONNECTIONASSOCIATION".equals(ep.getName().toUpperCase(locale))) {
                     ConnectionPoolObjectsUtils.setLazyEnlistAndLazyAssocProperties(ep.getValue(),
                             domainCcp.getProperty(), ccp);
                     if(_logger.isLoggable(Level.FINE)) {
                         _logger.fine("LAZYCONNECTIONASSOCIATION");
                     }
 
-                } else if ("LAZYCONNECTIONENLISTMENT".equals(ep.getName().toUpperCase())) {
+                } else if ("LAZYCONNECTIONENLISTMENT".equals(ep.getName().toUpperCase(locale))) {
                     ccp.setLazyConnectionEnlist(toBoolean(ep.getValue(), false));
                     if(_logger.isLoggable(Level.FINE)) {
                         _logger.fine("LAZYCONNECTIONENLISTMENT");
                     }
 
-                } else if ("ASSOCIATEWITHTHREAD".equals(ep.getName().toUpperCase())) {
+                } else if ("ASSOCIATEWITHTHREAD".equals(ep.getName().toUpperCase(locale))) {
                     ccp.setAssociateWithThread(toBoolean(ep.getValue(), false));
                     if(_logger.isLoggable(Level.FINE)) {
                         _logger.fine("ASSOCIATEWITHTHREAD");
                     }
-                } else if ("POOLDATASTRUCTURE".equals(ep.getName().toUpperCase())) {
+                } else if ("POOLDATASTRUCTURE".equals(ep.getName().toUpperCase(locale))) {
                     ccp.setPoolDataStructureType(ep.getValue());
                     if(_logger.isLoggable(Level.FINE)) {
                         _logger.fine("POOLDATASTRUCTURE");
                     }
 
-                } else if ("POOLWAITQUEUE".equals(ep.getName().toUpperCase())) {
+                } else if ("POOLWAITQUEUE".equals(ep.getName().toUpperCase(locale))) {
                     ccp.setPoolWaitQueue(ep.getValue());
                     if(_logger.isLoggable(Level.FINE)) {
                         _logger.fine("POOLWAITQUEUE");
                     }
 
-                } else if ("DATASTRUCTUREPARAMETERS".equals(ep.getName().toUpperCase())) {
+                } else if ("DATASTRUCTUREPARAMETERS".equals(ep.getName().toUpperCase(locale))) {
                     ccp.setDataStructureParameters(ep.getValue());
                     if(_logger.isLoggable(Level.FINE)) {
                         _logger.fine("DATASTRUCTUREPARAMETERS");
                     }
-                } else if ("PREFER-VALIDATE-OVER-RECREATE".equals(ep.getName().toUpperCase(Locale.getDefault()))) {
+                } else if ("PREFER-VALIDATE-OVER-RECREATE".equals(ep.getName().toUpperCase(locale))) {
                     String value = ep.getValue();
                     if (_logger.isLoggable(Level.FINE)) {
                         _logger.fine(" ConnectorConnectionPoolDeployer::  " +

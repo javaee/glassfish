@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -61,6 +61,8 @@ public class JDBCJarManifestProcessor {
     private static final String IMPLEMENTATION_VERSION = "Implementation-Version";
     public static final String OSGI_RFC_122="OSGI_RFC_122";
 
+    private static final Locale locale = Locale.getDefault();
+
     /**
      * Reads content of the given URL, uses it to come up with a new Manifest.
      *
@@ -86,11 +88,9 @@ public class JDBCJarManifestProcessor {
             Manifest newManifest = new Manifest(oldManifest);
             Attributes attrs = newManifest.getMainAttributes();
 
-            Set keys = properties.keySet();
-            Iterator it = keys.iterator();
-            while (it.hasNext()) {
-                String key = (String) it.next();
-                String value = (String) properties.get(key);
+            for (Map.Entry entry : properties.entrySet()) {
+                String key = (String) entry.getKey();
+                String value = (String) entry.getValue();
                 key = key.replace('.', '_');
                 attrs.putValue(key, value);
             }
@@ -159,7 +159,7 @@ public class JDBCJarManifestProcessor {
         Enumeration<JarEntry> entries =  f.entries();
         while(entries.hasMoreElements()){
             JarEntry entry = entries.nextElement();
-            if(!entry.isDirectory() && entry.getName().toLowerCase().endsWith(".jar")){
+            if(!entry.isDirectory() && entry.getName().toLowerCase(locale).endsWith(".jar")){
                 jarsList.add(entry.getName());
             }
         }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,6 +52,7 @@ import com.sun.enterprise.deployment.ConnectorConfigProperty;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -97,8 +98,8 @@ public class ConnectorAdminServiceUtils implements ConnectorConstants {
             ConnectorConfigProperty  prop =
                     (ConnectorConfigProperty) mcfConfPropsIter.next();
 
-            if (prop.getName().toUpperCase().equals("USERNAME") ||
-                    prop.getName().toUpperCase().equals("USER")) {
+            if (prop.getName().toUpperCase(Locale.getDefault()).equals("USERNAME") ||
+                    prop.getName().toUpperCase(Locale.getDefault()).equals("USER")) {
                 userName = prop.getValue();
             } else if (prop.getName().toUpperCase().equals("PASSWORD")) {
                 password = prop.getValue();
