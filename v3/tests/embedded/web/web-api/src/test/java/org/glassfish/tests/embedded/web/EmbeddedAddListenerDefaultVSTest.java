@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,11 +59,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Tests for Context#addServlet, embedded.createVirtualServer
+ * Tests for Context#addListener to default virtual server
  * 
  * @author Amy Roh
  */
-public class EmbeddedAddServletTest {
+public class EmbeddedAddListenerDefaultVSTest {
 
     static GlassFish glassfish;
     static WebContainer embedded;
@@ -76,7 +76,7 @@ public class EmbeddedAddServletTest {
         glassfish = GlassFishRuntime.bootstrap().newGlassFish();
         glassfish.start();
         embedded = glassfish.getService(WebContainer.class);
-        System.out.println("================ EmbeddedAddServlet Test");
+        System.out.println("================ EmbeddedAddListenerDefaultVS Test");
         System.out.println("Starting Web "+embedded);
         embedded.setLogLevel(Level.INFO);
         WebContainerConfig config = new WebContainerConfig();
@@ -89,32 +89,15 @@ public class EmbeddedAddServletTest {
     }
     
     @Test
-    public void testEmbeddedWebAPIConfig() throws Exception {
-        WebListener testListener = embedded.createWebListener("test-listener", HttpListener.class);
-        testListener.setPort(9090);
-        WebListener[] webListeners = new HttpListener[1];
-        webListeners[0] = testListener;
+    public void testEmbeddedAddServletDefaultVS() throws Exception {
 
-        VirtualServerConfig config = new VirtualServerConfig();
-        config.setHostNames("localhost");
-        VirtualServer vs = (VirtualServer)
-                embedded.createVirtualServer(vsname, root, webListeners);
-        vs.setConfig(config);
-        embedded.addVirtualServer(vs);
-        boolean testvs = false;
-        for (VirtualServer avs : embedded.getVirtualServers()) {
-            System.out.println("virtual server "+avs.getID());
-            if (avs.getID().equals(vsname)) {
-                testvs=true;
-            }
-        }
-        Assert.assertTrue(testvs);    
+        VirtualServer vs = embedded.getVirtualServer("server");
+        System.out.println("Default virtual server "+vs);
         Context context = (Context) embedded.createContext(root);
-        ServletRegistration sr = context.addServlet("NewServlet", "org.glassfish.tests.embedded.web.NewServlet");
-        sr.addMapping(new String[] {"/newservlet"});
+        context.addListener("org.glassfish.tests.embedded.web.MyServletContextListener");
         vs.addContext(context, contextRoot);
 
-        URL servlet = new URL("http://localhost:9090/"+contextRoot+"/newservlet");
+        URL servlet = new URL("http://localhost:8080/"+contextRoot+"/myservlet");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(
@@ -126,6 +109,7 @@ public class EmbeddedAddServletTest {
             sb.append(inputLine);
         }
         in.close();
+
         vs.removeContext(context);
         
      }
