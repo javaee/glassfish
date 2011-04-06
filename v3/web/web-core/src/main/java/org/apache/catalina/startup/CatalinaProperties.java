@@ -153,9 +153,13 @@ public class CatalinaProperties {
             try {
                 properties = new Properties();
                 properties.load(is);
-                is.close();
             } catch (Throwable t) {
                 error = t;
+            } finally {
+                try {
+                    is.close();
+                } catch(Throwable t2) {
+                }
             }
         }
 

@@ -963,7 +963,14 @@ public class StandardClassLoader
                     URLConnection conn = url.openConnection();
                     JarInputStream jis =
                         new JarInputStream(conn.getInputStream());
-                    manifest = jis.getManifest();
+                    try {
+                        manifest = jis.getManifest();
+                    } finally {
+                        try {
+                            jis.close();
+                        } catch(Throwable t) {
+                        }
+                    }
                 } else {
                     throw new IllegalArgumentException
                         ("addRepositoryInternal:  Invalid URL '" +

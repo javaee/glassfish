@@ -125,13 +125,20 @@ public class CharsetMapper implements Cloneable {
      */
     public CharsetMapper(String name) {
 
+        InputStream stream = null;
         try {
-            InputStream stream =
-              this.getClass().getResourceAsStream(name);
+            stream =
+                this.getClass().getResourceAsStream(name);
             map.load(stream);
-            stream.close();
         } catch (Throwable t) {
             throw new IllegalArgumentException(t.toString());
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch(Throwable t2) {
+                }
+            }
         }
 
 
