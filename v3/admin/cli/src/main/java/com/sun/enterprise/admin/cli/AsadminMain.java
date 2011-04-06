@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -138,7 +138,7 @@ public class AsadminMain {
         boolean debug = sys != null || env;
 
         /*
-         * Use a logger assoicated with the top-most package that we
+         * Use a logger associated with the top-most package that we
          * expect all admin commands to share.  Only this logger and
          * its children obey the conventions that map terse=false to
          * the INFO level and terse=true to the FINE level.
