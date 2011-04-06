@@ -325,7 +325,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                 recordFieldSeparator = manager.getProperty(cname + ".logFormatFieldSeparator");
                 if (recordFieldSeparator == null || ("").equals(recordFieldSeparator) || recordFieldSeparator.length() > 1) {
                     lr = new LogRecord(Level.WARNING,
-                            "Log Format field separator is not a character so using default.");
+                            "Log Format field separator is not a proper value so using default.");
                     lr.setThreadID((int) Thread.currentThread().getId());
                     this.publish(lr);
                     recordFieldSeparator = RECORD_FIELD_SEPARATOR;

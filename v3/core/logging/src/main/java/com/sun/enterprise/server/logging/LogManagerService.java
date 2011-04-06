@@ -294,7 +294,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
                 recordFieldSeparator = props.get(cname + ".logFormatFieldSeparator");
                 if (recordFieldSeparator == null || ("").equals(recordFieldSeparator) || recordFieldSeparator.length() > 1) {
                     logger.log(Level.WARNING,
-                            "Log Format field separator is not a character so using default.");
+                            "Log Format field separator is not a proper value so using default.");
                     recordFieldSeparator = RECORD_FIELD_SEPARATOR;
                 }
 

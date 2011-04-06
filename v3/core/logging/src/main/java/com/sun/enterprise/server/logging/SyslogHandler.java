@@ -83,10 +83,11 @@ public class SyslogHandler extends Handler implements PostConstruct, PreDestroy 
         LogManager manager = LogManager.getLogManager();
         String cname = getClass().getName();
 
-        String systemLogging = TranslatedConfigView.getTranslatedValue(manager.getProperty(cname + ".useSystemLogging")).toString();
+        Object obj = TranslatedConfigView.getTranslatedValue(manager.getProperty(cname + ".useSystemLogging"));
         // Added below 2 lines of code to avoid NPE as per the bug http://java.net/jira/browse/GLASSFISH-16162
-        if(systemLogging==null)
-            return;
+        if(obj==null)
+            return;                
+        String systemLogging = obj.toString();
         if (systemLogging.equals("false"))
             return;
 

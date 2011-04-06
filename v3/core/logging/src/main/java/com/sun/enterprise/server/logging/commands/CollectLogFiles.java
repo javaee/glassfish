@@ -115,18 +115,8 @@ public class CollectLogFiles implements AdminCommand {
 
         Server targetServer = domain.getServerNamed(target);
 
-        File retrieveFile = new File(retrieveFilePath);
-        if (!retrieveFile.exists()) {
-            boolean created = retrieveFile.mkdir();
-            if (!created) {
-                final String errorMsg = localStrings.getLocalString(
-                        "collectlogfiles.outputPath.notexist", "Retrieve File Path does not exist. Please enter correct value for Retrieve File Path.");
-                report.setMessage(errorMsg);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
-            }
-        }
-
+        File retrieveFile = makingDirectory(retrieveFilePath, report, localStrings.getLocalString(
+                "collectlogfiles.outputPath.notexist", "Retrieve File Path does not exist. Please enter correct value for Retrieve File Path."));
 
         if (targetServer != null && targetServer.isDas()) {
 
@@ -141,28 +131,16 @@ public class CollectLogFiles implements AdminCommand {
 
             // This loop if target instance is DAS
             String zipFile = "";
-            File tempDirectory = null;
-
-            try {
-                tempDirectory = new File(env.getInstanceRoot(), "collected-logs");
-                if (!tempDirectory.exists())
-                    tempDirectory.mkdirs();
-            } catch (Exception ex) {
-                final String errorMsg = localStrings.getLocalString(
-                        "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files.");
-                logger.log(Level.SEVERE, errorMsg, ex);
-                report.setMessage(errorMsg);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
-            }
+            File tempDirectory = makingDirectory(env.getInstanceRoot(), "collected-logs", report, localStrings.getLocalString(
+                    "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
 
             String targetDirPath = tempDirectory.getAbsolutePath() + File.separator + "logs";
-            File targetDir = new File(targetDirPath);
-            if (!targetDir.exists())
-                targetDir.mkdir();
-            targetDirPath = tempDirectory.getAbsolutePath() + File.separator + "logs" + File.separator + targetServer.getName();
-            targetDir = new File(targetDirPath);
-            targetDir.mkdir();
+            File targetDir = makingDirectory(targetDirPath, report, localStrings.getLocalString(
+                    "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
+
+            targetDirPath = targetDir.getAbsolutePath() + File.separator + targetServer.getName();
+            targetDir = makingDirectory(targetDirPath, report, localStrings.getLocalString(
+                    "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
 
             try {
 
@@ -234,18 +212,8 @@ public class CollectLogFiles implements AdminCommand {
                         "collectlogfiles.errInstanceDownloading", "Error while downloading log files from {0}.", target);
             }
 
-            try {
-                tempDirectory = new File(env.getInstanceRoot(), "collected-logs");
-                if (!tempDirectory.exists())
-                    tempDirectory.mkdirs();
-            } catch (Exception ex) {
-                final String errorMsg = localStrings.getLocalString(
-                        "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files.");
-                logger.log(Level.SEVERE, errorMsg, ex);
-                report.setMessage(errorMsg);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
-            }
+            tempDirectory = makingDirectory(env.getInstanceRoot(), "collected-logs", report, localStrings.getLocalString(
+                    "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
 
             try {
                 if (node.isLocal()) {
@@ -260,12 +228,13 @@ public class CollectLogFiles implements AdminCommand {
                     }
 
                     String targetDirPath = tempDirectory.getAbsolutePath() + File.separator + "logs";
-                    targetDir = new File(targetDirPath);
-                    if (!targetDir.exists())
-                        targetDir.mkdir();
-                    targetDirPath = tempDirectory.getAbsolutePath() + File.separator + "logs" + File.separator + instanceName;
-                    targetDir = new File(targetDirPath);
-                    targetDir.mkdir();
+                    targetDir = makingDirectory(targetDirPath, report, localStrings.getLocalString(
+                            "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
+
+                    targetDirPath = targetDir.getAbsolutePath() + File.separator + targetServer.getName();
+                    targetDir = makingDirectory(targetDirPath, report, localStrings.getLocalString(
+                            "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
+
 
                     copyLogFilesForLocalhost(sourceDir, targetDir.getAbsolutePath(), report, instanceName);
                 } else {
@@ -322,18 +291,8 @@ public class CollectLogFiles implements AdminCommand {
             String zipFile = "";
             File targetDir = null;
 
-            try {
-                tempDirectory = new File(env.getInstanceRoot(), "collected-logs");
-                if (!tempDirectory.exists())
-                    tempDirectory.mkdirs();
-            } catch (Exception ex) {
-                final String errorMsg = localStrings.getLocalString(
-                        "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files.");
-                logger.log(Level.SEVERE, errorMsg, ex);
-                report.setMessage(errorMsg);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
-            }
+            tempDirectory = makingDirectory(env.getInstanceRoot(), "collected-logs", report, localStrings.getLocalString(
+                    "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
 
 
             // code to download server.log file for DAS. Bug fix 16088
@@ -347,13 +306,13 @@ public class CollectLogFiles implements AdminCommand {
             }
 
             String targetDirPath = tempDirectory.getAbsolutePath() + File.separator + "logs";
-            targetDir = new File(targetDirPath);
-            if (!targetDir.exists())
-                targetDir.mkdir();
-            targetDirPath = tempDirectory.getAbsolutePath() + File.separator + "logs" + File.separator
-                    + SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;;
-            targetDir = new File(targetDirPath);
-            targetDir.mkdir();
+            targetDir = makingDirectory(targetDirPath, report, localStrings.getLocalString(
+                    "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
+
+            targetDirPath = targetDir.getAbsolutePath() + File.separator + SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+
+            targetDir = makingDirectory(targetDirPath, report, localStrings.getLocalString(
+                    "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
 
             try {
 
@@ -410,8 +369,8 @@ public class CollectLogFiles implements AdminCommand {
                         }
 
                         targetDirPath = tempDirectory.getAbsolutePath() + File.separator + "logs" + File.separator + instanceName;
-                        targetDir = new File(targetDirPath);
-                        targetDir.mkdir();
+                        targetDir = makingDirectory(targetDirPath, report, localStrings.getLocalString(
+                                "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
 
                         copyLogFilesForLocalhost(sourceDir, targetDir.getAbsolutePath(), report, instanceName);
                     } else {
@@ -512,6 +471,9 @@ public class CollectLogFiles implements AdminCommand {
                     report.setMessage(errorMsg);
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     return;
+                } finally {
+                    from.close();
+                    to.close();
                 }
 
 
@@ -594,5 +556,39 @@ public class CollectLogFiles implements AdminCommand {
 
         return logFileDetailsForServer;
 
+    }
+
+    private File makingDirectory(String path, ActionReport report, String errorMsg) {
+        File targetDir = new File(path);
+        boolean created = false;
+        if (!targetDir.exists()) {
+            created = targetDir.mkdir();
+            if (!created) {
+                report.setMessage(errorMsg);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return null;
+            } else {
+                return targetDir;
+            }
+        } else {
+            return targetDir;
+        }
+    }
+
+    private File makingDirectory(File parent, String path, ActionReport report, String errorMsg) {
+        File targetDir = new File(parent, path);
+        boolean created = false;
+        if (!targetDir.exists()) {
+            created = targetDir.mkdir();
+            if (!created) {
+                report.setMessage(errorMsg);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return null;
+            } else {
+                return targetDir;
+            }
+        } else {
+            return targetDir;
+        }
     }
 }

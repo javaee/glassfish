@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -531,7 +531,7 @@ public class LogFilter {
         while (iterator.hasNext()) {
             LogFile.LogEntry entry = (LogFile.LogEntry) iterator.next();
             ArrayList logRecord = new ArrayList();
-            logRecord.add(new Long(entry.getRecordNumber()));
+            logRecord.add(Long.valueOf(entry.getRecordNumber()));
             logRecord.add(entry.getLoggedDateTime());
             logRecord.add(entry.getLoggedLevel());
             logRecord.add(entry.getLoggedProduct());
@@ -598,38 +598,6 @@ public class LogFilter {
         }
         return logFile;
     }
-
-
-    /**
-     *
-     */
-    public synchronized void setLogFile(LogFile logFile) {
-        _logFile = logFile;
-    }
-
-
-    /**
-     * Utility method to replace the Module Names with their actual logger
-     * names.
-     */
-    protected void updateModuleList(List listOfModules) {
-        if (listOfModules == null) {
-            return;
-        }
-        Iterator iterator = listOfModules.iterator();
-        /*
-        int index = 0;
-        while (iterator.hasNext()) {
-            String[] loggerNames = ModuleToLoggerNameMapper.getLoggerNames(
-                ((String)iterator.next()).trim());
-            if (loggerNames!=null && loggerNames.length>0) {
-               listOfModules.set(index, loggerNames[0]);  //todo: support multiple loggers per module
-            }
-            index++;
-        }
-        */
-    }
-
 
     /**
      * This method accepts the first line of the Log Record and checks
@@ -775,7 +743,7 @@ public class LogFilter {
     }
 
 
-    protected static final String[] LOG_LEVELS = {"SEVERE", "WARNING",
+    static final String[] LOG_LEVELS = {"SEVERE", "WARNING",
             "INFO", "CONFIG", "FINE", "FINER", "FINEST"};
 
     private static SimpleDateFormat SIMPLE_DATE_FORMAT =

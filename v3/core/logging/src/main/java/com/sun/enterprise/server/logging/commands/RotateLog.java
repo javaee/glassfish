@@ -57,7 +57,7 @@ import org.jvnet.hk2.component.PerLookup;
 /**
  * @author cmott
  */
-@ExecuteOn(value={RuntimeType.INSTANCE},ifOffline=FailurePolicy.Error)
+@ExecuteOn(value = {RuntimeType.INSTANCE}, ifOffline = FailurePolicy.Error)
 @Service(name = "rotate-log")
 @TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE})
 @Scoped(PerLookup.class)

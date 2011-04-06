@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -85,13 +85,10 @@ public class LogFilterForInstance {
 
         SFTPClient sftpClient = sshL.getSFTPClient();
 
-        File logFileDirectoryOnServer = new File(domainRoot + File.separator + "logs"
+        File logFileDirectoryOnServer = makingDirectory(domainRoot + File.separator + "logs"
                 + File.separator + instanceName);
-        if (!logFileDirectoryOnServer.exists())
-            logFileDirectoryOnServer.mkdirs();
 
         String loggingFile = "";
-
         if (instanceLogFileName.contains("${com.sun.aas.instanceRoot}/logs")) {
             // this code is used if no changes made to log file name under logging.properties file
             loggingFile = node.getInstallDir() + File.separator + "glassfish" + File.separator + "nodes"
@@ -132,17 +129,23 @@ public class LogFilterForInstance {
 
         // if differ both size then downloading
         if (instanceLogFileSize != fileSizeOnNode) {
-
-            InputStream inputStream = sftpClient.read(loggingFile);
-
-            BufferedInputStream in = new BufferedInputStream(inputStream);
-            FileOutputStream file = new FileOutputStream(instanceLogFile);
-            BufferedOutputStream out = new BufferedOutputStream(file);
-            int i;
-            while ((i = in.read()) != -1) {
-                out.write(i);
+            BufferedInputStream in = null;
+            FileOutputStream file = null;
+            BufferedOutputStream out = null;
+            try {
+                InputStream inputStream = sftpClient.read(loggingFile);
+                in = new BufferedInputStream(inputStream);
+                file = new FileOutputStream(instanceLogFile);
+                out = new BufferedOutputStream(file);
+                int i;
+                while ((i = in.read()) != -1) {
+                    out.write(i);
+                }
+            } finally {
+                in.close();
+                file.close();
+                out.flush();
             }
-            out.flush();
         }
 
         sftpClient.close();
@@ -167,12 +170,8 @@ public class LogFilterForInstance {
         SCPClient scpClient = sshL.getSCPClient();
         Vector allInstanceLogFileName = getInstanceLogFileNames(habitat, targetServer, domain, logger, instanceName, instanceLogFileDirectory);
 
-        File logFileDirectoryOnServer = new File(tempDirectoryOnServer + File.separator + "logs"
+        File logFileDirectoryOnServer = makingDirectory(tempDirectoryOnServer + File.separator + "logs"
                 + File.separator + instanceName);
-        if (logFileDirectoryOnServer.exists())
-            logFileDirectoryOnServer.delete();
-
-        logFileDirectoryOnServer.mkdirs();
 
         String sourceDir = "";
         if (instanceLogFileDirectory.contains("${com.sun.aas.instanceRoot}/logs")) {
@@ -279,4 +278,25 @@ public class LogFilterForInstance {
         }
         return sshL;
     }
+
+    private File makingDirectory(String path) {
+        File targetDir = new File(path);
+        boolean created = false;
+        boolean deleted = false;
+        if (targetDir.exists()) {
+            deleted = targetDir.delete();
+            if (!deleted) {
+                return targetDir;
+            }
+
+        }
+        created = targetDir.mkdir();
+        if (!created) {
+            return null;
+        } else {
+            return targetDir;
+        }
+
+    }
+
 }
