@@ -475,10 +475,14 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
          */
         void iteratePUDs(DeploymentContext context) {
             RootDeploymentDescriptor currentBundle = context.getModuleMetaData(BundleDescriptor.class);
-            if (currentBundle == null) {
-                    // We are being called for an application
-                    currentBundle = context.getModuleMetaData(Application.class);
-                }
+            if (currentBundle != null) {
+                // For EJB in war case, deployment puts extension (EjbBundleDescriptor) and main descriptor (WebBundleDescriptor) into the deployment context.
+                // Get to main descriptor where PersistenceUnitDescriptor is stored.
+                currentBundle = currentBundle.getMainDescriptor();
+            } else {
+                // We are being called for an application
+                currentBundle = context.getModuleMetaData(Application.class);
+            }
 
             Collection<PersistenceUnitsDescriptor> pusDescriptorForThisBundle = currentBundle.getExtensionsDescriptors(PersistenceUnitsDescriptor.class);
             for (PersistenceUnitsDescriptor persistenceUnitsDescriptor : pusDescriptorForThisBundle) {
