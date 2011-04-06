@@ -124,7 +124,7 @@ public class SaxParserHandler extends DefaultHandler {
     }
     
     public SaxParserHandler() {
-        Init();
+        init();
 
         // Create helper class to manage namespace contexts.
         namespaces = new NamespaceSupport();
@@ -133,7 +133,7 @@ public class SaxParserHandler extends DefaultHandler {
     /**
         @return the Map of root nodes.
      */
-    private static void Init() {
+    private static void init() {
         if ( _MappingStuffInited ) {    // '_MappingStuffInited' MUST be 'volatile'
             return;
         }

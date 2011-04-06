@@ -90,7 +90,7 @@ public class WebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescriptor>
     /**
      * Initialize the child handlers
      */
-    protected void Init() {
+    protected void init() {
         // we do not care about our standard DDS handles
         handlers = null;
         

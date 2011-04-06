@@ -106,7 +106,7 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
     /**
      * Initialize the child handlers
      */
-    protected void Init() {
+    protected void init() {
         registerElementHandler(new XMLElement(RuntimeTagNames.WL_SECURITY_ROLE_ASSIGNMENT),
                 WLSecurityRoleAssignmentNode.class);
         registerElementHandler(new XMLElement(RuntimeTagNames.RESOURCE_DESCRIPTION),

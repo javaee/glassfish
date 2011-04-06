@@ -94,8 +94,8 @@ public class WLApplicationRuntimeNode extends RuntimeBundleNode<Application> {
     /**
      * Initialize the child handlers
      */
-    protected void Init() {
-        super.Init();
+    protected void init() {
+        super.init();
         registerElementHandler(new XMLElement(
                 RuntimeTagNames.APPLICATION_PARAM), InitParamNode.class);
         registerElementHandler(new XMLElement(

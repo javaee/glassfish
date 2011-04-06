@@ -313,13 +313,14 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
 
     private File writeMemoryMappedArchiveToTempFile(MemoryMappedArchive mma, String fileSuffix) throws IOException {
         File tempFile = File.createTempFile("jsr88-", fileSuffix);
-        BufferedOutputStream bos = 
-            new BufferedOutputStream(new FileOutputStream(tempFile));
+        BufferedOutputStream bos = null; 
+        BufferedInputStream bis = null;
         int chunkSize = 32 * 1024;
         long remaining = mma.getArchiveSize();
-        BufferedInputStream bis = new BufferedInputStream(
-            new ByteArrayInputStream(mma.getByteArray()));
         try {
+            bos = new BufferedOutputStream(new FileOutputStream(tempFile));
+            bis = new BufferedInputStream(
+                new ByteArrayInputStream(mma.getByteArray()));
             while(remaining != 0) {
                 int actual = (remaining < chunkSize) ? (int) remaining : chunkSize;
                 byte[] bytes = new byte[actual];
@@ -332,9 +333,13 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                 remaining -= actual;
             }
         } finally {
-            bos.flush();
-            bis.close(); 
-            bos.close();
+            if (bos != null) {
+                bos.flush();
+                bos.close();
+            }
+            if (bis != null) {
+                bis.close(); 
+            }
         }
         return tempFile;
     } 

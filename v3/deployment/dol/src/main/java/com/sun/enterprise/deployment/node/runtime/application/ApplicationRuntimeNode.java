@@ -89,8 +89,8 @@ public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
     /**
      * Initialize the child handlers
      */    
-    protected void Init() {     
-        super.Init();                          
+    protected void init() {     
+        super.init();                          
         registerElementHandler(new XMLElement(RuntimeTagNames.SECURITY_ROLE_MAPPING), 
                                SecurityRoleMappingNode.class);              
         registerElementHandler(new XMLElement(RuntimeTagNames.RESOURCE_REFERENCE),
@@ -218,8 +218,8 @@ public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
     public void addDescriptor(Object newDescriptor) {
         if (newDescriptor instanceof SecurityRoleMapping) {
             SecurityRoleMapping roleMap = (SecurityRoleMapping) newDescriptor;
-            descriptor.addSecurityRoleMapping(roleMap);
             if (descriptor!=null && !descriptor.isVirtual()) {
+                descriptor.addSecurityRoleMapping(roleMap);
                 Role role = new Role(roleMap.getRoleName());
                 SecurityRoleMapper rm = descriptor.getRoleMapper();
                 if (rm != null) {

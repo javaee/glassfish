@@ -189,7 +189,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
 
     // this classloader will be used for sniffer retrieval, metadata parsing 
     // and the prepare
-    public void createDeploymentClassLoader(ClassLoaderHierarchy clh, ArchiveHandler handler)
+    public synchronized void createDeploymentClassLoader(ClassLoaderHierarchy clh, ArchiveHandler handler)
             throws URISyntaxException, MalformedURLException {
         this.addTransientAppMetaData(ExtendedDeploymentContext.IS_TEMP_CLASSLOADER, Boolean.TRUE);
         this.sharableTemp = createClassLoader(clh, handler, null); 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -66,7 +66,7 @@ import java.util.zip.ZipInputStream;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiBundleArchive extends AbstractReadableArchive implements ReadableArchive, URIable, Iterable<BundleResource> {
+public class OSGiBundleArchive extends AbstractReadableArchive implements URIable, Iterable<BundleResource> {
     private Bundle b;
 
     private String name;
@@ -500,7 +500,7 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements Readab
     /**
      * A jar (typically a bundle classpath) in the bundle represented as an archive.
      */
-    private class EmbeddedJarArchive extends AbstractReadableArchive implements ReadableArchive, URIable {
+    private class EmbeddedJarArchive extends AbstractReadableArchive implements URIable {
 
         /**
          * This is the entry name by which this is identified in the bundle space.
