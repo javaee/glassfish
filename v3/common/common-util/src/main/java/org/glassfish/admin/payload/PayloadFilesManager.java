@@ -505,7 +505,7 @@ public abstract class PayloadFilesManager {
              * Create the required directory tree under the target directory.
              */
             File immediateParent = extractedFile.getParentFile();
-            if ( ! immediateParent.mkdirs()) {
+            if ( ! immediateParent.exists() && ! immediateParent.mkdirs()) {
                 logger.log(Level.WARNING, strings.getLocalString(
                         "payload.mkdirsFailed",
                         "Attempt to create directories for {0} failed; no further information is available. Continuing.",
@@ -532,7 +532,7 @@ public abstract class PayloadFilesManager {
              * file.
              */
             if (outputName.endsWith("/")) {
-                if ( ! extractedFile.mkdir()) {
+                if ( ! extractedFile.exists() && ! extractedFile.mkdir()) {
                     logger.log(Level.WARNING, 
                             strings.getLocalString("payload.mkdirsFailed",
                             "Attempt to create directories for {0} failed; no further information is available. Continuing.",
