@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -228,9 +228,7 @@ public final class CreateDomainCommand extends CLICommand {
         if (usePortBase()) {
             final int portbase = convertPortStr(portBase);
             setOptionsWithPortBase(portbase);
-        } else if (adminPort == null) {
-            adminPort = Integer.toString(CLIConstants.DEFAULT_ADMIN_PORT);
-        }
+        } 
     }
 
     private void setOptionsWithPortBase(final int portbase)
@@ -356,9 +354,6 @@ public final class CreateDomainCommand extends CLICommand {
                 verifyPortIsValid(instancePort);
             }
 
-            // we give priority to the --adminport option
-            if (domainProperties != null)
-                domainProperties.remove(DomainConfig.K_ADMIN_PORT);
             // saving the login information happens inside this method
             createTheDomain(domainDir, domainProperties);
         } catch (CommandException ce) {
@@ -470,9 +465,6 @@ public final class CreateDomainCommand extends CLICommand {
     private void createTheDomain(final String domainPath,
             Properties domainProperties)
             throws DomainException, CommandValidationException {
-        final Integer adminPortInt = Integer.valueOf(adminPort);
-        logger.fine(
-            strings.get("UsingPort", "Admin", adminPort));
 
         //
         // fix for bug# 4930684
@@ -480,9 +472,14 @@ public final class CreateDomainCommand extends CLICommand {
         //
         String domainFilePath = (domainPath + File.separator + domainName);
         if (FileUtils.safeGetCanonicalFile(new File(domainFilePath)).exists()) {
-            throw new CommandValidationException(
-                strings.get("DomainExists", domainName));
+            throw new CommandValidationException(strings.get("DomainExists", domainName));
         }
+
+        final Integer adminPortInt = getPort(domainProperties,
+                DomainConfig.K_ADMIN_PORT,
+                adminPort,
+                Integer.toString(CLIConstants.DEFAULT_ADMIN_PORT),
+                "Admin");
 
         final Integer instancePortInt = getPort(domainProperties,
                 DomainConfig.K_INSTANCE_PORT,
@@ -551,9 +548,6 @@ public final class CreateDomainCommand extends CLICommand {
         domainConfig.put(DomainConfig.K_VALIDATE_PORTS,
                 Boolean.valueOf(checkPorts));
 
-        /* comment out for V3 until profiles decision is taken */
-        // setUsageProfile(domainConfig);
-
         domainConfig.put(DomainConfig.KEYTOOLOPTIONS, keytoolOptions);
         DomainsManager manager = new PEDomainsManager();
 
@@ -565,8 +559,7 @@ public final class CreateDomainCommand extends CLICommand {
                             strings.get("CustomizationFailed",e.getMessage()));
         }
         logger.info(strings.get("DomainCreated", domainName));
-        logger.info(
-            strings.get("DomainPort", domainName, adminPort));
+        logger.info(strings.get("DomainPort", domainName, adminPortInt.toString()));
         if (adminPassword.equals(
                 SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD))
             logger.info(strings.get("DomainAllowsUnauth", domainName,
@@ -578,27 +571,6 @@ public final class CreateDomainCommand extends CLICommand {
         if (saveLoginOpt) {
             saveLogin(adminPortInt, adminUser, adminPassword, domainName);
         }
-    }
-
-    private void setUsageProfile(final DomainConfig dc) {
-        String source = strings.get("ProfileUserSource");
-        if (profile == null) {
-            /*
-             * Implementation note: This is the ONLY place where this value
-             * is hardcoded. It is almost an assertion that the value is
-             * available. All Application Server installations will
-             * make sure that there is a proper value for this variable
-             * set in the configuration file.
-             */
-            profile = "developer";
-            source = strings.get("ProfileGlobalDefaultSource");
-        }
-        dc.put(DomainConfig.K_PROFILE, profile);
-        String msg = strings.get("UsingProfile", profile, source);
-        if (template != null) {
-            msg = strings.get("UsingTemplate", template);
-        }
-        logger.info(msg);
     }
 
     /**
