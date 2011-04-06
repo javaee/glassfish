@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -109,7 +109,7 @@ public class ListManager extends BackupRestoreManager
             Status status = new Status();
 
             if (!status.loadProps(zips[i]))
-                badPropsList.add(new Integer(i));
+                badPropsList.add(Integer.valueOf(i));
             else {
                 //XXX: if (request.terse)  How indicate no headers?
 
@@ -228,7 +228,7 @@ public class ListManager extends BackupRestoreManager
             }
 
             if (zipList.size() > 0) 
-                zips = zipList.toArray(new File[0]);
+                zips = zipList.toArray(new File[zipList.size()]);
 
         } else
             zips = files;
@@ -243,7 +243,7 @@ public class ListManager extends BackupRestoreManager
      * When camparing the Status in order to order the list output
      * we first sort by backup-config and then by file name.
      */
-    private class FileNameComparator implements Comparator<Status> {
+    static private class FileNameComparator implements Comparator<Status> {
 
         public int compare(Status s1, Status s2) {
 

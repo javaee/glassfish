@@ -71,14 +71,21 @@ class Status {
         }
         statusFile = new File(backupFileDir, Constants.PROPS_FILENAME);
 
+        FileOutputStream out = null;
         try {
             setProps();
-            FileOutputStream out = new FileOutputStream(statusFile);
+
+            out = new FileOutputStream(statusFile);
             props.store(out, Constants.PROPS_HEADER);
             return propsToString(false);
-        }
-        catch(Exception e) {
+        } catch(Exception e) {
             return StringHelper.get("backup-res.CantWriteStatus", statusFile);
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch(IOException ex) {}
+	    }
         }
     }
     
@@ -196,14 +203,14 @@ class Status {
 
     String getBackupConfigName(){
        if(props == null)
-            return new String("");
+            return "";
 
         return props.getProperty(Constants.BACKUP_CONFIG, "");
     }
 
     String getBackupType(){
        if(props == null)
-            return new String("");
+            return "";
 
         return props.getProperty(Constants.PROPS_TYPE, "");
     }
@@ -257,16 +264,21 @@ class Status {
     }
     
     private void readPropertiesFile(File propsFile) {
+
+        BufferedInputStream in = null;
         try {
-            BufferedInputStream in =
-                new BufferedInputStream(new FileInputStream(propsFile));
+            in = new BufferedInputStream(new FileInputStream(propsFile));
             props = new Properties();
             props.load(in);
-            in.close();
-        }
-        catch(IOException ioe) {
+        } catch(IOException ioe) {
             props = null;
-        }
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch(IOException ex) {}
+	    }
+	}
     }
 
     private void setProps() {

@@ -60,7 +60,7 @@ public class RestoreManager extends BackupRestoreManager {
 
     public String restore() throws BackupException {
         try {
-            boolean isConfigBackup = IsConfigBackup();
+            boolean isConfigBackup = isAConfigBackup();
 
             checkDomainName();
             ZipFile zf = new ZipFile(request.backupFile, tempRestoreDir);
@@ -121,7 +121,9 @@ public class RestoreManager extends BackupRestoreManager {
         }
                 
         if(!FileUtils.safeIsDirectory(request.domainDir))
-            request.domainDir.mkdirs();
+            if (!request.domainDir.mkdirs())
+                throw new BackupException("backup-res.CantCreateDomainDir",
+                                          request.domainDir);
 
         backupDir = new File(request.domainDir, Constants.BACKUP_DIR);
 
@@ -251,16 +253,20 @@ public class RestoreManager extends BackupRestoreManager {
 
         // Move the restored domain from the temp location to the domain dir.
         // On Error -- Delete the new files and undo the rename that was done
-        //successfully above
+        // successfully above
         if (configOnly) {
             if(!tempRestoreDir.renameTo(configDir)) {
-                oldDir.renameTo(configDir);
                 FileUtils.whack(tempRestoreDir);
+                if (!oldDir.renameTo(configDir))
+                    throw new BackupException("backup-res.CantRevertOldDomain",
+                                               configDir);
                 throw new BackupException("backup-res.CantRenameRestoredDomain");
             }
         } else if(!tempRestoreDir.renameTo(domainDir)) {
-            oldDir.renameTo(domainDir);
             FileUtils.whack(tempRestoreDir);
+            if (!oldDir.renameTo(domainDir))
+                throw new BackupException("backup-res.CantRevertOldDomain",
+                                           domainDir);
             throw new BackupException("backup-res.CantRenameRestoredDomain");
         }    
         
@@ -373,7 +379,7 @@ public class RestoreManager extends BackupRestoreManager {
     }
 
     // Return true if the backup contains only configuration (vs a full backup)
-    private boolean IsConfigBackup() {
+    private boolean isAConfigBackup() {
         Status status = new Status();
         status.read(request.backupFile);
         String backupType = status.getBackupType();

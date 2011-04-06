@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -129,13 +129,13 @@ public class BackupManager extends BackupRestoreManager {
 
         File backupDir = getBackupDirectory(request);
 
-        // not an error for this directory to not exist yet
-        backupDir.mkdirs();
-
-        // NOW it's an error to not exist...
-        if(!FileUtils.safeIsDirectory(backupDir))
-            throw new BackupException("backup-res.NoBackupDirCantCreate",
+        // mkdirs may fail if the directory exists or it could not be created.
+        if (!backupDir.mkdirs()) {
+            // If it doesn't exist then it is an error.
+            if(!FileUtils.safeIsDirectory(backupDir))
+                throw new BackupException("backup-res.NoBackupDirCantCreate",
                                       backupDir);
+	}
 
         BackupFilenameManager bfmgr = 
             new BackupFilenameManager(backupDir, request.domainName);
