@@ -51,7 +51,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -63,7 +62,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.Payload;
 import org.glassfish.api.admin.Payload.Part;
@@ -268,9 +266,7 @@ public abstract class PayloadFilesManager {
             for (Map.Entry<File,Long> entry : dirTimestamps.entrySet()) {
                 if (isFine) {
                     final Date when = new Date(entry.getValue());
-                    logger.finer("Setting lastModified for " +
-                            entry.getKey().getAbsolutePath() +
-                            " explicitly to " + when);
+                    logger.log(Level.FINER, "Setting lastModified for {0} explicitly to {1}", new Object[]{entry.getKey().getAbsolutePath(), when});
                 }
                 entry.getKey().setLastModified(entry.getValue());
             }
@@ -427,13 +423,12 @@ public abstract class PayloadFilesManager {
             if (isRemovalRecursive ?
                     FileUtils.whack(targetFile) : targetFile.delete()) {
                 if (isFine) {
-                    logger.finer("Deleted " + targetFile.getAbsolutePath() + 
-                            (isRemovalRecursive ? " recursively" : "") + " as requested");
+                    logger.log(Level.FINER, "Deleted {0}{1} as requested", new Object[]{targetFile.getAbsolutePath(), isRemovalRecursive ? " recursively" : ""});
                 }
                 reportDeletionSuccess();
             } else {
                 if (isFine) {
-                    logger.finer("File " + part.getName() + " (" + targetFile.getAbsolutePath() + ") requested for deletion exists but was not able to be deleted");
+                    logger.log(Level.FINER, "File {0} ({1}) requested for deletion exists but was not able to be deleted", new Object[]{part.getName(), targetFile.getAbsolutePath()});
                 }
                 reportDeletionFailure(part.getName(),
                         strings.getLocalString("payload.deleteFailedOnFile",
@@ -441,7 +436,7 @@ public abstract class PayloadFilesManager {
             }
         } else {
             if (isFine) {
-                logger.finer("File " + part.getName() + " (" + targetFile.getAbsolutePath() + ") requested for deletion does not exist.");
+                logger.log(Level.FINER, "File {0} ({1}) requested for deletion does not exist.", new Object[]{part.getName(), targetFile.getAbsolutePath()});
             }
             reportDeletionFailure(part.getName(), new FileNotFoundException(targetFile.getAbsolutePath()));
         }
@@ -450,7 +445,6 @@ public abstract class PayloadFilesManager {
 
 
     private File replaceFile(final Payload.Part part) throws IOException {
-        final boolean isFine = logger.isLoggable(Level.FINE);
         removeFileWithoutConsumingPartBody(part);
         return extractFile(part, part.getName());
     }
@@ -506,7 +500,12 @@ public abstract class PayloadFilesManager {
              * Create the required directory tree under the target directory.
              */
             File immediateParent = extractedFile.getParentFile();
-            immediateParent.mkdirs();
+            if ( ! immediateParent.mkdirs()) {
+                logger.log(Level.WARNING, strings.getLocalString(
+                        "payload.mkdirsFailed",
+                        "Attempt to create directories for {0} failed; no further information is available. Continuing.",
+                        immediateParent.getAbsolutePath()));
+            }
             if (extractedFile.exists()) {
                 if (!extractedFile.delete() && ! extractedFile.isDirectory()) {
                     /*
@@ -518,7 +517,7 @@ public abstract class PayloadFilesManager {
                             "Overwriting previously-uploaded file because the attempt to delete it failed: {0}",
                             extractedFile.getAbsolutePath()));
                 } else if (isFine) {
-                    logger.finer("Deleted pre-existing file " + extractedFile.getAbsolutePath() + " before extracting transferred file");
+                    logger.log(Level.FINER, "Deleted pre-existing file {0} before extracting transferred file", extractedFile.getAbsolutePath());
                 }
             }
 
@@ -528,7 +527,12 @@ public abstract class PayloadFilesManager {
              * file.
              */
             if (outputName.endsWith("/")) {
-                extractedFile.mkdir();
+                if ( ! extractedFile.mkdir()) {
+                    logger.log(Level.WARNING, 
+                            strings.getLocalString("payload.mkdirsFailed",
+                            "Attempt to create directories for {0} failed; no further information is available. Continuing.",
+                            extractedFile.getAbsolutePath()));
+                }
             }
 
             final boolean isDir = extractedFile.isDirectory();
@@ -550,21 +554,25 @@ public abstract class PayloadFilesManager {
                 Long.parseLong(lastModifiedString) :
                 System.currentTimeMillis());
 
-            extractedFile.setLastModified(lastModified);
+            if ( ! extractedFile.setLastModified(lastModified)) {
+                logger.log(Level.WARNING, strings.getLocalString(
+                        "payload.setLatModifiedFailed",
+                        "Attempt to set lastModified for {0} failed; no further information is available.  Continuing.",
+                        extractedFile.getAbsolutePath()));
+            }
             if (extractedFile.isDirectory()) {
                 dirTimestamps.put(extractedFile, lastModified);
             }
             postExtract(extractedFile);
-            logger.finer("Extracted transferred entry " + part.getName() + " to " +
-                    extractedFile.getAbsolutePath());
+            logger.log(Level.FINER, "Extracted transferred entry {0} to {1}", new Object[]{part.getName(), extractedFile.getAbsolutePath()});
             reportExtractionSuccess();
             return extractedFile;
-        }
-        catch (Exception e) {
-            reportExtractionFailure(part.getName(), e);
-            IOException ioe = new IOException(e.getMessage());
-            ioe.initCause(e);
-            throw ioe;
+//        }
+//        catch (Exception e) {
+//            reportExtractionFailure(part.getName(), e);
+//            IOException ioe = new IOException(e.getMessage());
+//            ioe.initCause(e);
+//            throw ioe;
         } finally {
             if (os != null) {
                 os.close();
@@ -591,40 +599,31 @@ public abstract class PayloadFilesManager {
         final Map<File,Properties> result = new LinkedHashMap<File,Properties>();
 
         OutputStream os = null;
-        InputStream is = null;
 
         boolean isReportProcessed = false;
         Part possibleUnrecognizedReportPart = null;
 
-        try {
-            StringBuilder uploadedEntryNames = new StringBuilder();
-            for (Iterator<Payload.Part> partIt = inboundPayload.parts(); partIt.hasNext();) {
-                Payload.Part part = partIt.next();
-                DataRequestType drt = DataRequestType.getType(part);
-                if (drt != null) {
-                    result.put(drt.processPart(this, part, part.getName()), part.getProperties());
-                    isReportProcessed |= (drt == DataRequestType.REPORT);
-                    uploadedEntryNames.append(part.getName()).append(" ");
-                } else {
-                    if ( (! isReportProcessed) && possibleUnrecognizedReportPart == null) {
-                        possibleUnrecognizedReportPart = part;
-                    }
+        StringBuilder uploadedEntryNames = new StringBuilder();
+        for (Iterator<Payload.Part> partIt = inboundPayload.parts(); partIt.hasNext();) {
+            Payload.Part part = partIt.next();
+            DataRequestType drt = DataRequestType.getType(part);
+            if (drt != null) {
+                result.put(drt.processPart(this, part, part.getName()), part.getProperties());
+                isReportProcessed |= (drt == DataRequestType.REPORT);
+                uploadedEntryNames.append(part.getName()).append(" ");
+            } else {
+                if ( (! isReportProcessed) && possibleUnrecognizedReportPart == null) {
+                    possibleUnrecognizedReportPart = part;
                 }
             }
-            if ( (! isReportProcessed) && possibleUnrecognizedReportPart != null) {
-                DataRequestType.REPORT.processPart(this, possibleUnrecognizedReportPart,
-                        possibleUnrecognizedReportPart.getName());
-                isReportProcessed = true;
-            }
-            postProcessParts();
-            return result;
         }
-        finally {
-            if (is != null) {
-                is.close();
-                is = null;
-            }
+        if ( (! isReportProcessed) && possibleUnrecognizedReportPart != null) {
+            DataRequestType.REPORT.processPart(this, possibleUnrecognizedReportPart,
+                    possibleUnrecognizedReportPart.getName());
+            isReportProcessed = true;
         }
+        postProcessParts();
+        return result;
     }
 
     /**
@@ -712,14 +711,12 @@ public abstract class PayloadFilesManager {
                             "Unknown error creating directory {0}",
                             result.getAbsolutePath()));
             }
-            logger.finer("Created temporary upload folder " + result.getAbsolutePath());
+            logger.log(Level.FINER, "Created temporary upload folder {0}", result.getAbsolutePath());
             return result;
         } catch (Exception e) {
-            IOException ioe = new IOException(strings.getLocalString(
+            throw new IOException(strings.getLocalString(
                     "payload.command.errorCreatingXferFolder",
-                    "Error creating temporary file transfer folder"));
-            ioe.initCause(e);
-            throw ioe;
+                    "Error creating temporary file transfer folder"), e);
         }
     }
 

@@ -182,26 +182,38 @@ public class PayloadImpl implements Payload {
 	    enhancedProps.setProperty("last-modified", Long.toString(file.lastModified()));
 
             /*
-             * Add a part for the recursive replacement of the directory.
+             * Add a dummy part for the replacement of the directory - if
+             * the part refers to a directory.
              */
-            parts.add(Part.newInstance(
-                    "application/octet-stream", /* not much effect */
-                    fileURI.getRawPath(),
-                    enhancedProps,
-                    (String) null));
-
-            /*
-             * If this is a directory and it's a recursive replacement add
-             * file-xfer Parts for the files in the directory.
-             */
-            if (file.isDirectory() && isRecursive) {
-                enhancedProps.setProperty("data-request-type", "file-xfer");
-                attachContainedFilesRecursively(
-                        file.toURI(),
-                        fileURI,
-                        dataRequestName,
+            if (file.isDirectory()) {
+                parts.add(Part.newInstance(
+                        "application/octet-stream", /* not much effect */
+                        fileURI.getRawPath(),
                         enhancedProps,
-                        file);
+                        (String) null));
+                /*
+                 * If this is also a recursive replacement, add file-xfer
+                 * Parts for the files in the directory.
+                 */
+                if (isRecursive) {
+                    enhancedProps.setProperty("data-request-type", "file-xfer");
+                    attachContainedFilesRecursively(
+                            file.toURI(),
+                            fileURI,
+                            dataRequestName,
+                            enhancedProps,
+                            file);
+                }
+            } else {
+                /*
+                 * This is a non-directory file. Add a simple replacement
+                 * request part for the single file.
+                 */
+                parts.add(Part.newInstance(
+                            contentType, 
+                            fileURI.getRawPath(),
+                            enhancedProps,
+                            file));
             }
         }
 
