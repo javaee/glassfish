@@ -49,6 +49,7 @@ import java.util.List;
  * @author Tom Mueller
  */
 public class GetSetTest extends AdminBaseDevTest {
+    final static boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
 
     @Override
     protected String getTestDescription() {
@@ -57,6 +58,10 @@ public class GetSetTest extends AdminBaseDevTest {
 
     public static void main(String[] args) {
         new GetSetTest().runTests();    
+    }
+
+    private String encodeStar(String s) {
+        return isWindows ? "\"" + s + "\"" : s;
     }
 
     private void runTests() {
@@ -85,7 +90,7 @@ public class GetSetTest extends AdminBaseDevTest {
     private void testGetSetAll() {
         final String t = "getsetall-";
         
-        AsadminReturn rv = asadminWithOutput("get", "\"*\"");
+        AsadminReturn rv = asadminWithOutput("get", encodeStar("*"));
         report(t + "get", rv.returnValue);
         String[] lines = rv.out.split("[\r\n]");
         if (!rv.returnValue) return;
@@ -116,7 +121,7 @@ public class GetSetTest extends AdminBaseDevTest {
 
         
         for (String a : aliases) {
-            AsadminReturn rv = asadminWithOutput("get", "\"" + a + ".*\"");
+            AsadminReturn rv = asadminWithOutput("get", encodeStar(a + ".*"));
             report(t + "get", rv.returnValue);
             String[] lines = rv.out.split("[\r\n]");
             if (!rv.returnValue) continue;
