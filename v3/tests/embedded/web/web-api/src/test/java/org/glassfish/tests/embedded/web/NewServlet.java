@@ -45,7 +45,7 @@ import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
-@WebServlet(urlPatterns={"/new"})
+//@WebServlet(urlPatterns={"/new"})
 public class NewServlet extends HttpServlet {
 
     private String initParamValue;

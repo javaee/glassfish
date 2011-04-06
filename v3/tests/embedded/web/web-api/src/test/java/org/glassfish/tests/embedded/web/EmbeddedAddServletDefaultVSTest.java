@@ -82,7 +82,6 @@ public class EmbeddedAddServletDefaultVSTest {
         WebContainerConfig config = new WebContainerConfig();
         config.setListings(true);
         root = new File(System.getProperty("buildDir"));
-        //root = new File("/Users/Amy/tests/hellotest");
         config.setDocRootDir(root);
         config.setPort(8080);
         System.out.println("Added Web with base directory "+root.getAbsolutePath());
@@ -95,13 +94,11 @@ public class EmbeddedAddServletDefaultVSTest {
         VirtualServer vs = embedded.getVirtualServer("server");
         System.out.println("Default virtual server "+vs);
         Context context = (Context) embedded.createContext(root);
-        //ServletRegistration sr = context.addServlet("NewServlet", new NewServlet());
-        //sr.addMapping(new String[] {"/new"});
-        //ServletRegistration sr = context.addServlet("ServletTest", "test.ServletTest");
-        //sr.addMapping(new String[] {"/ServletTest"});
+        ServletRegistration sr = context.addServlet("NewServlet", "org.glassfish.tests.embedded.web.NewServlet");
+        sr.addMapping(new String[] {"/newservlet"});
         vs.addContext(context, contextRoot);
 
-        URL servlet = new URL("http://localhost:8080/"+contextRoot+"/new");
+        URL servlet = new URL("http://localhost:8080/"+contextRoot+"/newservlet");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(
