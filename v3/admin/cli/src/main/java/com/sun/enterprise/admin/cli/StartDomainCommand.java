@@ -87,6 +87,11 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
     private StartServerHelper helper;
 
     @Override
+    public List<String> getLauncherArgs() {
+        return launcher.getCommandLine();
+    }
+
+    @Override
     public RuntimeType getType() {
         return RuntimeType.DAS;
     }

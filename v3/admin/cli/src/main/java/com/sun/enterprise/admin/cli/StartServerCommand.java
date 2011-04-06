@@ -43,6 +43,7 @@ package com.sun.enterprise.admin.cli;
 import com.sun.enterprise.admin.launcher.GFLauncherException;
 import com.sun.enterprise.admin.launcher.GFLauncherFactory;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
+import java.util.List;
 import org.glassfish.api.admin.RuntimeType;
 
 /**
@@ -59,4 +60,5 @@ public interface StartServerCommand {
      * Create a launcher for the whatever type of server "we" are.
      */
     void createLauncher() throws GFLauncherException, MiniXmlParserException;
+    List<String> getLauncherArgs();
 }
