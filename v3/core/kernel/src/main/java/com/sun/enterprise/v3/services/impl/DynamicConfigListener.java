@@ -52,11 +52,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.Result;
 import com.sun.enterprise.v3.services.impl.GrizzlyProxy.GrizzlyFuture;
 import com.sun.grizzly.config.dom.FileCache;
 import com.sun.grizzly.config.dom.Http;
+import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.Protocol;
 import com.sun.grizzly.config.dom.Ssl;
@@ -77,6 +79,7 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
 public class DynamicConfigListener implements ConfigListener {
     private static final String ADMIN_LISTENER = "admin-listener";
     private GrizzlyService grizzlyService;
+    private NetworkConfig networkConfig;
     private String config;
     private Logger logger;
     private static final int RECONFIG_LOCK_TIMEOUT_SEC = 30;
@@ -122,6 +125,15 @@ public class DynamicConfigListener implements ConfigListener {
                         return notProcessed;
                     } else if (t instanceof VirtualServer && !grizzlyService.hasMapperUpdateListener()) {
                         return processVirtualServer(type, (VirtualServer) t);
+                    } else if (t instanceof SystemProperty) {
+                        if ((networkConfig != null) && ((SystemProperty)t).getName().endsWith("LISTENER_PORT")) {
+                            for (NetworkListener listener : networkConfig.getNetworkListeners().getNetworkListener()) {
+                                if (listener.getPort().equals(((SystemProperty)t).getValue())) {
+                                    return processNetworkListener(Changed.TYPE.CHANGE, listener, events);
+                                }
+                            }
+                        }
+                        return null;
                     }
                     return null;
                 }
@@ -233,6 +245,10 @@ public class DynamicConfigListener implements ConfigListener {
 
     public void setGrizzlyService(GrizzlyService grizzlyService) {
         this.grizzlyService = grizzlyService;
+    }
+
+    public void setNetworkConfig(NetworkConfig networkConfig) {
+        this.networkConfig = networkConfig;
     }
 
     public Logger getLogger() {

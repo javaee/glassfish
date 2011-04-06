@@ -48,6 +48,7 @@ import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.config.serverbeans.WebContainerAvailability;
 import com.sun.enterprise.v3.services.impl.MapperUpdateListener;
 import com.sun.enterprise.web.WebContainer;
+import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.NetworkListeners;
 import com.sun.grizzly.util.http.mapper.Mapper;
@@ -71,6 +72,9 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
 
     @Inject
     public HttpService httpService;
+
+    @Inject
+    public NetworkConfig networkConfig;
     
     @Inject(optional=true)
     public AccessLog accessLog;
@@ -157,10 +161,15 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
                             container.updateHttpService(httpService);
                         }
                      } else if (t instanceof SystemProperty) {
-                        return new NotProcessed("The system-property, " + ((SystemProperty) t).getName() +
-                                ", that is referenced by the Java configuration, was modified");
+                        if (((SystemProperty)t).getName().endsWith("LISTENER_PORT")) {
+                            for (NetworkListener listener : networkConfig.getNetworkListeners().getNetworkListener()) {
+                                if (listener.getPort().equals(((SystemProperty)t).getValue())) {
+                                    container.updateConnector(listener, httpService);
+                                }
+                            }
+                        }
                     } else {
-                        container.updateHttpService(httpService);
+                        // Ignore other unrelated events
                     }
                 } catch (LifecycleException le) {
                     logger.log(Level.SEVERE, "webcontainer.exceptionConfigHttpService", le);

@@ -53,13 +53,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.enterprise.config.serverbeans.IiopListener;
-import com.sun.enterprise.config.serverbeans.JmsHost;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.IiopListener;
 import com.sun.enterprise.config.serverbeans.IiopService;
+import com.sun.enterprise.config.serverbeans.JmsHost;
 import com.sun.enterprise.config.serverbeans.JmsService;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.Result;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
@@ -106,6 +107,9 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
 
     @Inject
     Habitat habitat;
+
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Server server;
 
     @Inject
     ProbeProviderFactory probeProviderFactory;
@@ -333,9 +337,12 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         bean.addListener(configListener);
         bean = (ObservableBean) ConfigSupport.getImpl(config.getHttpService());
         bean.addListener(configListener);
+        bean = (ObservableBean) ConfigSupport.getImpl(server);
+        bean.addListener(configListener);
 
         configListener.setGrizzlyService(this);
         configListener.setLogger(logger);
+        configListener.setNetworkConfig(networkConfig);
 
         try {
             futures = new ArrayList<Future<Result<Thread>>>();

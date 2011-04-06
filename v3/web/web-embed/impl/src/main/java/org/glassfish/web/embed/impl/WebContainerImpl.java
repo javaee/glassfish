@@ -585,7 +585,7 @@ public class WebContainerImpl implements WebContainer {
     public Context createContext(File docRoot, ClassLoader classLoader) {
 
         if (docRoot == null) {
-            log.severe("Cannot create context with docRoot " + docRoot);
+            log.severe("Cannot create context with NULL docroot");
             return null;
         }
 
@@ -795,7 +795,7 @@ public class WebContainerImpl implements WebContainer {
 
     }
 
-    private WebListener getWebListener(int port) {
+    /*private WebListener getWebListener(int port) {
 
         for (WebListener listener : listeners) {
             if (listener.getPort() == port) {
@@ -805,7 +805,7 @@ public class WebContainerImpl implements WebContainer {
 
         return null;
 
-    }
+    }*/
 
     /**
      * Gets the collection of <tt>WebListener</tt> instances registered

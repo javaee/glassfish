@@ -436,7 +436,7 @@ public class ContextFacade extends StandardContext implements Context {
 
     // --------------------------------------------------------- embedded Methods
 
-    private SecurityConfig config;
+    private SecurityConfig config = null;
 
     /**
      * Enables or disables directory listings on this <tt>Context</tt>.
