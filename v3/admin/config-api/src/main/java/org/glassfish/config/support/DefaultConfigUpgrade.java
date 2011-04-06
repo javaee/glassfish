@@ -117,11 +117,6 @@ public class DefaultConfigUpgrade implements ConfigurationUpgrade, PostConstruct
                 "default-config not detected during upgrade. Running DefaultConfigUpgrade to create default-config."));
 
         String template = getDomainXmlTemplate();
-        if (template == null) {
-            throw new RuntimeException(localStrings.getLocalString(
-                    "DefaultConfigUpgrade.problemGettingDomainXmlTemplate",
-                    "DefaultConfigUpgrade failed.  Problem getting domain.xml template."));
-        }
 
         try {
             ConfigSupport.apply(new MinDefaultConfigCode(), configs);
@@ -399,7 +394,7 @@ public class DefaultConfigUpgrade implements ConfigurationUpgrade, PostConstruct
     /*
      * Creates the default-config object with the required elements (marked with @NotNull)
      */
-    private class MinDefaultConfigCode implements SingleConfigCode<Configs> {
+    private static class MinDefaultConfigCode implements SingleConfigCode<Configs> {
 
         public Object run(Configs configs) throws PropertyVetoException, TransactionFailure {
             Config defaultConfig = configs.createChild(Config.class);
@@ -1401,7 +1396,7 @@ public class DefaultConfigUpgrade implements ConfigurationUpgrade, PostConstruct
      * Creates the diagnostic-service object using data from glassfish3\glassfish\lib\templates\domain.xml
      * <diagnostic-service/>
      */
-    private class DiagnosticServiceConfigCode implements SingleConfigCode<Config> {
+    private static class DiagnosticServiceConfigCode implements SingleConfigCode<Config> {
 
         public Object run(Config config) throws PropertyVetoException, TransactionFailure {
             DiagnosticService ds = config.createChild(DiagnosticService.class);
@@ -1963,7 +1958,7 @@ public class DefaultConfigUpgrade implements ConfigurationUpgrade, PostConstruct
      * Creates the management-rules object using data from glassfish3\glassfish\lib\templates\domain.xml
      * <management-rules/>
      */
-    private class ManagementRulesConfigCode implements SingleConfigCode<Config> {
+    private static class ManagementRulesConfigCode implements SingleConfigCode<Config> {
 
         public Object run(Config config) throws PropertyVetoException {
             try {
