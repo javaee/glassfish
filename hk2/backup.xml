@@ -40,11 +40,13 @@
 
 -->
 <project name="buildit" default="backup">
-  <property environment="env"/>
+  <property name="file" value="backup.zip"/>
   <target name="backup">
     <defaultexcludes add="**/.svn/**"/>
+    <defaultexcludes add="**/.ade_path/**"/>
     <defaultexcludes add="**/target/**"/>
-    <jar destfile="backup.zip" basedir="."
+    <zip destfile="${file}" basedir="."
       excludes="**/*.class,**/*.jar,**/*.zip"/>
   </target>
 </project>
+
