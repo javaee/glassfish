@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -275,18 +275,16 @@ public abstract class WebCommonNode<T extends WebBundleDescriptor> extends Bundl
             }
         }
         
-        // servlet*
         Set servlets = webBundleDesc.getWebComponentDescriptors();
         if (servlets!=null && !servlets.isEmpty()) {
+            // servlet*
             ServletNode servletNode = new ServletNode();
             for (Iterator  e= servlets.iterator();e.hasNext();) {
                 WebComponentDescriptor aServlet = (WebComponentDescriptor) e.next();
                 servletNode.writeDescriptor(jarNode, aServlet);
             }
-        }
-        
-        // servlet-mapping*        
-        if (servlets!=null && !servlets.isEmpty()) {
+
+            // servlet-mapping*        
             for (Iterator servletsIterator = servlets.iterator(); servletsIterator.hasNext();) {
                 WebComponentDescriptor aServlet = (WebComponentDescriptor) servletsIterator.next();                
                 for (Iterator patterns = aServlet.getUrlPatternsSet().iterator();patterns.hasNext();) {
