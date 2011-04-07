@@ -168,17 +168,19 @@ public class BasicPasswordAuthenticationService
             Iterator i = s.iterator();
             while(i.hasNext()) {
                 Map.Entry mapEntry = (Map.Entry) i.next();
-                String entry = (String) mapEntry.getValue();
+                String key = (String) mapEntry.getKey();
+                Principal entry = (Principal) mapEntry.getValue();
+
                 boolean isInRole = false;
                 try {
-                    isInRole = ejbcontext.isCallerInRole(entry);
+                    isInRole = ejbcontext.isCallerInRole(key);
                 } catch (Exception ex) {
                     if(_logger.isLoggable(Level.FINE)) {
-                        _logger.log(Level.FINE, "BasicPasswordAuthentication::caller not in role " + entry);
+                        _logger.log(Level.FINE, "BasicPasswordAuthentication::caller not in role " + key);
                     }
                 }
                 if (isInRole) {
-                    return (Principal) groupNameSecurityMap.get(entry);
+                    return entry;
                 }
             }
        }

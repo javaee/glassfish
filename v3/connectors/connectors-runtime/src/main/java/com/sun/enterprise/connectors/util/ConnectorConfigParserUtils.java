@@ -249,6 +249,7 @@ public class ConnectorConfigParserUtils {
     {
 
         Class loadedClass = loadClass(className, rarName);
+        Object loadedInstance = instantiate(loadedClass);
         Method[] methods = loadedClass.getMethods();
         Properties props = new Properties();
         String name = null;
