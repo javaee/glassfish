@@ -72,9 +72,9 @@ import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
 
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.deployment.versioning.VersioningUtils;
-import org.glassfish.embeddable.*;
+import org.glassfish.embeddable.CommandRunner;
 import org.glassfish.embeddable.Deployer;
+import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.web.Context;
 import org.glassfish.embeddable.web.ConfigException;
 import org.glassfish.embeddable.web.WebListener;
@@ -207,6 +207,8 @@ public class VirtualServer extends StandardHost
     private boolean allowLinking = false;
 
     private String[] cacheControls;
+
+    private CommandRunner runner;
 
     private Domain domain;
 
@@ -355,6 +357,10 @@ public class VirtualServer extends StandardHost
      */
     public void setCacheControls(String[] cacheControls) {
         this.cacheControls = cacheControls;
+    }
+
+    public void setCommandRunner(CommandRunner runner) {
+        this.runner = runner;
     }
 
     public String getInfo() {
@@ -1932,38 +1938,23 @@ public class VirtualServer extends StandardHost
             ClassLoader classLoader = facade.getClassLoader();
 
             Deployer deployer = Globals.getDefaultHabitat().getComponent(Deployer.class);
-            String appName = deployer.deploy(docRoot, "--name", contextRoot);
-            //String appName = deployer.deploy(docRoot, "--name", contextRoot, "--enabled", "false");
+            String appName = deployer.deploy(docRoot, "--virtualservers", getName(),
+                            "--name", contextRoot, "--enabled", "false");
             String contextName = "/"+appName;
 
-            Map<String, String> servlets = facade.getAddedServlets();
-            Map<String, String[]> mappings = facade.getServletMappings();
-            File webXml = null;
+            File file = null;
+            Applications apps = domain.getApplications();
+            com.sun.enterprise.config.serverbeans.Application app = apps.getApplication(contextRoot);
+            if (app != null) {
+                file = new File(app.application().getAbsolutePath(), "/WEB-INF/web.xml");
+            }
+            updateWebXml(facade, file);
 
-            if (!servlets.isEmpty()) {
-                Applications apps = domain.getApplications();
-                com.sun.enterprise.config.serverbeans.Application app = apps.getApplication(contextRoot);
-                if (app != null) {
-                    webXml = new File(app.application().getAbsolutePath(), "/WEB-INF/web.xml");
-                }
-                if (_logger.isLoggable(Level.FINE)) {
-                    _logger.log(Level.FINE, "Modifying web.xml "+webXml.getAbsolutePath());
-                }
-                updateWebXml(webXml, servlets, mappings);
-
-                String repositoryBitName = VersioningUtils.getRepositoryName(appName);
-                File webInf = new File(instance.getApplicationRepositoryPath(), repositoryBitName+"/WEB-INF");
-                webInf.mkdirs();
-                webXml = new File(webInf, "web.xml");
-
-                if (_logger.isLoggable(Level.FINE)) {
-                    _logger.log(Level.FINE, "Modifying web.xml "+webXml.getAbsolutePath());
-                }
+            if (runner != null) {
+                runner.run("enable", appName);
             }
 
-            // enable the deployapp
-            //((com.sun.enterprise.admin.cli.embeddable.DeployerImpl) deployer).enable(appName);
-            //webXml.delete();
+            file.delete();
 
             WebModule wm = (WebModule) findChild(contextName);
             if (wm != null) {
@@ -1981,7 +1972,7 @@ public class VirtualServer extends StandardHost
             }
 
         } catch (Exception ex) {
-            ex.printStackTrace();
+            //throw new GlassFishException(ex);
         }
     }
 
@@ -2091,17 +2082,26 @@ public class VirtualServer extends StandardHost
         }        
     }
 
-	public static void updateWebXml(File file, Map<String, String> servlets, Map<String, String[]> mappings) {
+	public void updateWebXml(ContextFacade facade, File file) throws Exception {
 
-		try {
+        Map<String, String> servlets = facade.getAddedServlets();
+        Map<String, String[]> mappings = facade.getServletMappings();
+        List<String> listeners = facade.getListeners();
+        Map<String, String> filters = facade.getAddedFilters();
+        Map<String, String> filterMappings = facade.getFilterMappings();
+
+        if (!filters.isEmpty() || !listeners.isEmpty() || !servlets.isEmpty()) {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Modifying web.xml "+file.getAbsolutePath());
+            }
 
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = null;
             Element webapp = null;
 
             if ((file != null) && (file.exists())) {
-			    doc = dBuilder.parse(file);
+                doc = dBuilder.parse(file);
                 webapp = doc.getDocumentElement();
                 // doc.getDocumentElement().normalize();
             } else {
@@ -2115,29 +2115,84 @@ public class VirtualServer extends StandardHost
                 doc.appendChild(webapp);
             }
 
+            for (String name : filters.keySet()) {
+                Element filter = doc.createElement("filter");
+                Element filterName = doc.createElement("filter-name");
+                filterName.setTextContent(name);
+                filter.appendChild(filterName);
+                Element filterClass = doc.createElement("filter-class");
+                filterClass.setTextContent(filters.get(name));
+                filter.appendChild(filterClass);
+                if (facade.getFilterRegistration(name).getInitParameters() != null &&
+                    !facade.getFilterRegistration(name).getInitParameters().keySet().isEmpty()) {
+                    Element initParam = doc.createElement("init-param");
+                    for (String param : facade.getFilterRegistration(name).getInitParameters().keySet()) {
+                        Element paramName = doc.createElement("param-name");
+                        paramName.setTextContent(param);
+                        initParam.appendChild(paramName);
+                        Element paramValue = doc.createElement("param-value");
+                        paramValue.setTextContent(facade.getFilterRegistration(name).getInitParameters().get(param));
+                        initParam.appendChild(paramValue);
+                    }
+                    filter.appendChild(initParam);
+                }
+                webapp.appendChild(filter);
+            }
+
+            for (String mapping : filterMappings.keySet()) {
+                Element filterMapping = doc.createElement("filter-mapping");
+                Element filterName = doc.createElement("filter-name");
+                filterName.setTextContent(mapping);
+                filterMapping.appendChild(filterName);
+                Element servletName = doc.createElement("servlet-name");
+                servletName.setTextContent(filterMappings.get(mapping));
+                filterMapping.appendChild(servletName);
+                webapp.appendChild(filterMapping);
+            }
+
 			for (String name : servlets.keySet()) {
-				Element servlet = doc.createElement("servlet");
-				webapp.appendChild(servlet);
+                Element servlet = doc.createElement("servlet");
                 Element servletName = doc.createElement("servlet-name");
                 servletName.setTextContent(name);
                 servlet.appendChild(servletName);
                 Element servletClass = doc.createElement("servlet-class");
                 servletClass.setTextContent(servlets.get(name));
                 servlet.appendChild(servletClass);
-			}
+                if (facade.getServletRegistration(name).getInitParameters() != null &&
+                        !facade.getServletRegistration(name).getInitParameters().keySet().isEmpty()) {
+                    Element initParam = doc.createElement("init-param");
+                    for (String param : facade.getServletRegistration(name).getInitParameters().keySet()) {
+                        Element paramName = doc.createElement("param-name");
+                        paramName.setTextContent(param);
+                        initParam.appendChild(paramName);
+                        Element paramValue = doc.createElement("param-value");
+                        paramValue.setTextContent(facade.getServletRegistration(name).getInitParameters().get(param));
+                        initParam.appendChild(paramValue);
+                    }
+                    servlet.appendChild(initParam);
+                }
+			    webapp.appendChild(servlet);
+            }
 
             for (String mapping : mappings.keySet()) {
                 Element servletMapping = doc.createElement("servlet-mapping");
-                webapp.appendChild(servletMapping);
                 for (String pattern : mappings.get(mapping)) {
                     Element servletName = doc.createElement("servlet-name");
                     servletName.setTextContent(mapping);
+                    servletMapping.appendChild(servletName);
                     Element urlPattern = doc.createElement("url-pattern");
                     urlPattern.setTextContent(pattern);
-                    servletMapping.appendChild(servletName);
                     servletMapping.appendChild(urlPattern);
                 }
                 webapp.appendChild(servletMapping);
+            }
+
+            for (String listenerStr : listeners) {
+                Element listener = doc.createElement("listener");
+                Element listenerClass = doc.createElement("listener-class");
+                listenerClass.setTextContent(listenerStr);
+                listener.appendChild(listenerClass);
+                webapp.appendChild(listener);
             }
 
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
@@ -2147,9 +2202,7 @@ public class VirtualServer extends StandardHost
             StreamResult result = new StreamResult(file);
             transformer.transform(src, result);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+        }
+    }
 
 }

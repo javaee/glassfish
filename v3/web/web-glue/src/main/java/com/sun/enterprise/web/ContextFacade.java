@@ -43,19 +43,16 @@ package com.sun.enterprise.web;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.*;
 import javax.servlet.descriptor.JspConfigDescriptor;
-import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.web.LoginConfiguration;
-import com.sun.enterprise.deployment.web.UserDataConstraint;
-import com.sun.enterprise.web.deploy.LoginConfigDecorator;
+import javax.servlet.http.HttpSessionAttributeListener;
+import javax.servlet.http.HttpSessionListener;
+
 import org.apache.catalina.core.*;
+import org.apache.catalina.deploy.FilterDef;
+import org.apache.catalina.deploy.FilterMap;
 import org.glassfish.embeddable.web.Context;
-import org.glassfish.embeddable.web.config.FormLoginConfig;
-import org.glassfish.embeddable.web.config.LoginConfig;
 import org.glassfish.embeddable.web.config.SecurityConfig;
-import org.glassfish.embeddable.web.config.TransportGuarantee;
 
 /**
  * Facade object which masks the internal <code>Context</code>
@@ -93,11 +90,15 @@ public class ContextFacade extends StandardContext implements Context {
 
     private ClassLoader classLoader;
 
+    private Map<String, String> filters = new HashMap<String, String>();
+
+    private Map<String, String> filterMappings = new HashMap<String, String>();
+
     private Map<String, String> servlets = new HashMap<String, String>();
 
     private Map<String, String[]> servletMappings = new HashMap<String, String[]>();
 
-    protected Map<String, StandardWrapper> wrappers = new HashMap<String, StandardWrapper>();
+    protected ArrayList<String> listeners = new ArrayList<String>();
 
     // ------------------------------------------------------------- Properties
 
@@ -236,7 +237,7 @@ public class ContextFacade extends StandardContext implements Context {
         if (context != null) {
             return context.addServlet(servletName, className);
         } else {
-            return addServletBefore(servletName, className);
+            return addServletFacade(servletName, className);
         }
     }
 
@@ -249,7 +250,7 @@ public class ContextFacade extends StandardContext implements Context {
         }
     }*/
 
-    public ServletRegistration.Dynamic addServletBefore(String servletName,
+    public ServletRegistration.Dynamic addServletFacade(String servletName,
             String className) {
         if (servletName == null || className == null) {
             throw new NullPointerException("Null servlet instance or name");
@@ -268,7 +269,6 @@ public class ContextFacade extends StandardContext implements Context {
 
             servletRegisMap.put(servletName, regis);
             servlets.put(servletName, className);
-            wrappers.put(servletName, wrapper);
         }
 
         return regis;
@@ -292,7 +292,7 @@ public class ContextFacade extends StandardContext implements Context {
         if (context != null) {
             return context.addServlet(servletName, servletClass);
         } else {
-            return null;
+            return addServletFacade(servletName, servletClass.getName());
         }
     }
 
@@ -301,7 +301,7 @@ public class ContextFacade extends StandardContext implements Context {
         if (context != null) {
             return context.addServlet(servletName, servlet);
         } else {
-            return null;
+            return addServletFacade(servletName, servlet.getClass().getName());
         }
     }
 
@@ -309,44 +309,109 @@ public class ContextFacade extends StandardContext implements Context {
     public Set<String> addServletMapping(String name,
                                          String[] urlPatterns) {
         servletMappings.put(name, urlPatterns);
-        return Collections.emptySet();
+        return servletMappings.keySet();
     }
 
     public <T extends Servlet> T createServlet(Class<T> clazz)
             throws ServletException {
-        return context.createServlet(clazz);
+        if (context != null) {
+            return context.createServlet(clazz);
+        } else {
+            try {
+                return createServletInstance(clazz);
+            } catch (Throwable t) {
+                throw new ServletException("Unable to create Servlet from " +
+                        "class " + clazz.getName(), t);
+            }
+        }
     }
 
     public ServletRegistration getServletRegistration(String servletName) {
-        return context.getServletRegistration(servletName);
+        return servletRegisMap.get(servletName);
     }
 
     public Map<String, ? extends ServletRegistration> getServletRegistrations() {
         return context.getServletRegistrations();
     }
 
+    public Map<String, String> getAddedFilters() {
+        return filters;
+    }
+
+    public Map<String, String> getFilterMappings() {
+        return filterMappings;
+    }
+
+    public FilterRegistration.Dynamic addFilterFacade(
+            String filterName, String className) {
+        DynamicFilterRegistrationImpl regis =
+                (DynamicFilterRegistrationImpl) filterRegisMap.get(
+                        filterName);
+        FilterDef filterDef = null;
+        if (null == regis) {
+            filterDef = new FilterDef();
+        } else {
+            filterDef = regis.getFilterDefinition();
+        }
+        filterDef.setFilterName(filterName);
+        filterDef.setFilterClassName(className);
+
+        regis = new DynamicFilterRegistrationImpl(filterDef, this);
+        filterRegisMap.put(filterDef.getFilterName(), regis);
+        filters.put(filterName, className);
+
+        return regis;
+    }
+
+    @Override
     public FilterRegistration.Dynamic addFilter(
             String filterName, String className) {
-        return context.addFilter(filterName, className);
+        if (context != null) {
+            return context.addFilter(filterName, className);
+        } else {
+            return addFilterFacade(filterName, className);
+        }
+    }
+
+    @Override
+    public void addFilterMap(FilterMap filterMap, boolean isMatchAfter) {
+        filterMappings.put(filterMap.getFilterName(), filterMap.getServletName());
     }
 
     public FilterRegistration.Dynamic addFilter(
             String filterName, Filter filter) {
-        return context.addFilter(filterName, filter);
+        if (context != null) {
+            return context.addFilter(filterName, filter);
+        } else {
+            return addFilterFacade(filterName, filter.getClass().getName());
+        }
     }
 
     public FilterRegistration.Dynamic addFilter(String filterName,
             Class <? extends Filter> filterClass) {
-        return context.addFilter(filterName, filterClass);
+        if (context != null) {
+            return context.addFilter(filterName, filterClass);
+        } else {
+            return addFilterFacade(filterName, filterClass.getName());
+        }
     }
 
     public <T extends Filter> T createFilter(Class<T> clazz)
             throws ServletException {
-        return context.createFilter(clazz);
+        if (context != null) {
+            return context.createFilter(clazz);
+        } else {
+            try {
+                return createFilterInstance(clazz);
+            } catch (Throwable t) {
+                throw new ServletException("Unable to create Filter from " +
+                        "class " + clazz.getName(), t);
+            }
+        }
     }
 
     public FilterRegistration getFilterRegistration(String filterName) {
-        return context.getFilterRegistration(filterName);
+        return filterRegisMap.get(filterName);
     }
 
     public Map<String, ? extends FilterRegistration> getFilterRegistrations() {
@@ -370,20 +435,53 @@ public class ContextFacade extends StandardContext implements Context {
     }
 
     public void addListener(String className) {
-        context.addListener(className);
+        if (context != null) {
+            context.addListener(className);
+        } else {
+            listeners.add(className);
+        }
+    }
+
+    public List<String> getListeners() {
+        return listeners;
     }
 
     public <T extends EventListener> void addListener(T t) {
-        context.addListener(t);
+        if (context != null) {
+            context.addListener(t);
+        } else {
+            listeners.add(t.getClass().getName());
+        }
     }
 
     public void addListener(Class <? extends EventListener> listenerClass) {
-        context.addListener(listenerClass);
+        if (context != null) {
+            context.addListener(listenerClass);
+        } else {
+            listeners.add(listenerClass.getName());
+        }
     }
 
     public <T extends EventListener> T createListener(Class<T> clazz)
             throws ServletException {
-        return context.createListener(clazz);
+        if (context != null) {
+            return context.createListener(clazz);
+        } else {
+            if (!ServletContextListener.class.isAssignableFrom(clazz) &&
+                    !ServletContextAttributeListener.class.isAssignableFrom(clazz) &&
+                    !ServletRequestListener.class.isAssignableFrom(clazz) &&
+                    !ServletRequestAttributeListener.class.isAssignableFrom(clazz) &&
+                    !HttpSessionListener.class.isAssignableFrom(clazz) &&
+                    !HttpSessionAttributeListener.class.isAssignableFrom(clazz)) {
+                throw new IllegalArgumentException(sm.getString(
+                        "standardContext.invalidListenerType", clazz.getName()));
+            }
+            try {
+                return createListenerInstance(clazz);
+            } catch (Throwable t) {
+                throw new ServletException(t);
+            }
+        }
     }
 
     public JspConfigDescriptor getJspConfigDescriptor() {
@@ -401,7 +499,7 @@ public class ContextFacade extends StandardContext implements Context {
     }
 
     public void declareRoles(String... roleNames) {
-        // TBD
+        context.declareRoles(roleNames);
     }
 
     public String getPath() {

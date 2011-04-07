@@ -92,6 +92,7 @@ import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.web.TldProvider;
+import org.glassfish.embeddable.CommandRunner;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.data.ApplicationRegistry;
@@ -171,6 +172,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     protected static boolean useDOLforDeployment = true;
 
     // ----------------------------------------------------- Instance Variables
+
+    @Inject
+    CommandRunner runner;
 
     @Inject
     private Domain domain;
@@ -1200,6 +1204,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         configureHost(vs, securityService);
         vs.setServerEnvironment(instance);
         vs.setDomain(domain);
+        vs.setCommandRunner(runner);
 
         // Add Host to Engine
         engine.addChild(vs);

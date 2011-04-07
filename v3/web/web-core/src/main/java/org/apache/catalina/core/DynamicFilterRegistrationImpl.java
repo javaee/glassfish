@@ -51,7 +51,7 @@ public class DynamicFilterRegistrationImpl
     /**
      * Constructor
      */
-    DynamicFilterRegistrationImpl(FilterDef filterDef,
+    public DynamicFilterRegistrationImpl(FilterDef filterDef,
             StandardContext ctx) {
         super(filterDef, ctx);
     }
