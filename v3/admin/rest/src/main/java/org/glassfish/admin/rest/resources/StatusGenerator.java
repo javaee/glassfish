@@ -199,7 +199,7 @@ public class StatusGenerator {
 
         public NOOPClassWriter(String className, String baseClassName, String resourcePath) {
             this.className = className;
-            if (baseClassName.equals("TemplateResource"))
+            if (baseClassName.equals("TemplateRestResource"))
             resourcesToDeleteCommands.put(className, ""); //init the map with empty values
 
         }

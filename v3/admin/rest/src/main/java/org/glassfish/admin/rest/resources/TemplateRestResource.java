@@ -72,7 +72,7 @@ import static org.glassfish.admin.rest.Util.upperCaseFirstLetter;
  */
 @Produces({"text/html;qs=2", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
 @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-public class TemplateResource {
+public class TemplateRestResource {
     @Context
     protected HttpHeaders requestHeaders;
 
@@ -88,7 +88,7 @@ public class TemplateResource {
     protected Dom parent;
     protected String tagName;
     protected ConfigModel childModel; //good model even if the child entity is null
-    public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateResource.class);
+    public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateRestResource.class);
     final private static List<String> attributesToSkip = new ArrayList<String>() {
         {
             add("parent");
@@ -101,7 +101,7 @@ public class TemplateResource {
     /**
      * Creates a new instance of xxxResource
      */
-    public TemplateResource() {
+    public TemplateRestResource() {
     }
 
     @GET
@@ -295,7 +295,7 @@ public class TemplateResource {
             Set<String> ss = m1.keySet();
             for (String fieldName : ss) {
                 FormDataBodyPart n = formData.getField(fieldName);
-                Logger.getLogger(TemplateResource.class.getName()).log(Level.INFO, "fieldName={0}", fieldName);
+                Logger.getLogger(TemplateRestResource.class.getName()).log(Level.INFO, "fieldName={0}", fieldName);
 
 
                 if (n.getContentDisposition().getFileName() != null) {//we have a file
@@ -321,7 +321,7 @@ public class TemplateResource {
 
                 } else {
                     try {
-                        Logger.getLogger(TemplateResource.class.getName()).log(Level.INFO, "Values={0} === {1}", new Object[]{fieldName, n.getValue()});
+                        Logger.getLogger(TemplateRestResource.class.getName()).log(Level.INFO, "Values={0} === {1}", new Object[]{fieldName, n.getValue()});
                         data.put(fieldName, n.getValue());
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -329,7 +329,7 @@ public class TemplateResource {
                 }
             }
         } catch (Exception ex) {
-            Logger.getLogger(TemplateResource.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TemplateRestResource.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             formData.cleanup();
         }
@@ -434,14 +434,14 @@ public class TemplateResource {
             }
             return f;
         } catch (IOException ex) {
-            Logger.getLogger(TemplateResource.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TemplateRestResource.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
                 if (out != null) {
                     out.close();
                 }
             } catch (IOException ex) {
-                Logger.getLogger(TemplateResource.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(TemplateRestResource.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return null;

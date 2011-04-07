@@ -87,7 +87,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
             return;
         }
 
-        String baseClassName = "TemplateResource";
+        String baseClassName = "TemplateRestResource";
         String resourcePath = null;
 
         if (beanName.equals("Domain")) {

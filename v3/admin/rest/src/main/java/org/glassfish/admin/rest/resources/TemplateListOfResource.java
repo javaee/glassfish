@@ -190,7 +190,7 @@ public abstract class TemplateListOfResource {
         /* data passed to the generic command running
        *
        * */
-        HashMap<String, String> data = TemplateResource.createDataBasedOnForm(formData);
+        HashMap<String, String> data = TemplateRestResource.createDataBasedOnForm(formData);
         return createResource(data, data.get("name")); //execute the deploy command with a copy of the file locally
 
     }

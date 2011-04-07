@@ -93,7 +93,7 @@ import static org.glassfish.admin.rest.provider.ProviderUtil.getElementLink;
 
 /**
  * Resource utilities class. Used by resource templates,
- * <code>TemplateListOfResource</code> and <code>TemplateResource</code>
+ * <code>TemplateListOfResource</code> and <code>TemplateRestResource</code>
  *
  * @author Rajeshwar Patil
  */

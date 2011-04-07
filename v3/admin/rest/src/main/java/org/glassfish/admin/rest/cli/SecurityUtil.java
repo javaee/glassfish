@@ -117,9 +117,10 @@ public class SecurityUtil {
             String goodRealm = goodRealms.iterator().next();
             try {
                 String defaultRealm = getSecurityService().getDefaultRealm();
-                Realm r = Realm.getInstance(defaultRealm);
+                /*Realm r = */Realm.getInstance(defaultRealm);
                 Realm.setDefaultRealm(defaultRealm);
             } catch (Exception e) {
+                Realm.setDefaultRealm(goodRealms.iterator().next());
                 e.printStackTrace();
 
             }
