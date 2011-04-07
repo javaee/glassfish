@@ -190,22 +190,6 @@ public class RestTestBase {
 
         String xml = response.getEntity(String.class);
         Map responseMap = MarshallingUtils.buildMapFromDocument(xml);
-//        if ((xml != null) && !xml.isEmpty()) {
-//            try {
-//                Document doc = getDocument(xml);
-//                Element root = doc.getDocumentElement();
-//                NamedNodeMap nnm = root.getAttributes();
-//
-//                for (int i = 0; i < nnm.getLength(); i++) {
-//                    Node attr = nnm.item(i);
-//                    String name = attr.getNodeName();
-//                    String value = attr.getNodeValue();
-//                    map.put(name, value);
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//            }
-//        }
         Object obj = responseMap.get("extraProperties");
         if (obj != null) {
             return (Map)((Map) obj).get("entity");
