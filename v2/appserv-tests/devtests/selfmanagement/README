@@ -1,7 +1,0 @@
-Instructions for running the devtests of selfmanagement
-
-1. asant all
-
-2. Test Results can be seen in the .output files.
-
-These tests are to be run only on Linux/Solaris.

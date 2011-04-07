@@ -1,6 +1,0 @@
-Test
-- Use of business method interceptors 
-    - definition of interceptor binding type with members
-    - association of an interceptor binding type with different values for a member 
-    variable with different interceptors
-    - non-binding members in an interceptor binding type 

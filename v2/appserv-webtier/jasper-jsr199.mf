@@ -1,9 +1,0 @@
-Extension-Name: org.apache.jasper
-Specification-Title: Jasper JSR 199 Java Compiler Bridge
-Specification-Version: @VERSION@ 
-Specification-Vendor: Sun Microsystems, Inc.
-Implementation-Version: @VERSION@
-Implementation-Vendor: Sun Microsystems, Inc.
-Implementation-Vendor-Id: com.sun
-Implementation-Title: Sun Java System Application Server
-

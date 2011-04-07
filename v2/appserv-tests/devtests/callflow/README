@@ -1,4 +1,0 @@
-dbreader: utility servlet that displays the count of rows in each of the database tables. It cleans out the data from the database before the next test run generates fresh data.
-
-simpleServlet: The actual web test.
-simpleJsp : Simple JSP Test. (This test is sensitive to timing issues. Incase it fails, increase the sleep time in the build.xml and it should work fine.)

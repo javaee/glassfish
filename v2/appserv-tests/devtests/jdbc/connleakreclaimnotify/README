@@ -1,3 +1,0 @@
-When connection leak reclaim is set to true, when max pool size is reached and the wait queue is filled with more connection requests, the application server could become unresponsive for more than 60 seconds. 
-
-This test case tests this case. 20 threads send connection requests from a jdbc connection pool and the max pool size is set to 10. The time taken to get a connection at any time (before or after connection leak reclaim) should not be more than 59 seconds. This is verified by setting the connection leak reclaim to true and turning on the connection leak tracing while the ejb does not close any connection got. 

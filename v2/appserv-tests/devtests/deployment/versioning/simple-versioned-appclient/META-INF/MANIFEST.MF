@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Ant-Version: Apache Ant 1.7.1
-Created-By: 16.3-b01 (Sun Microsystems Inc.)
-Main-Class: versionedappclient.SimpleVersionedAppClient
-Class-Path: 
-X-COMMENT: Main-Class will be added automatically by build
-

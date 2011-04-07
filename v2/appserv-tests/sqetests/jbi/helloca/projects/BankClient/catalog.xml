@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
-    <system systemId="http://localhost:8080/BankService/Bank?wsdl" uri="src/conf/xml-resources/web-service-references/Bank/wsdl/localhost_8080/BankService/Bank.wsdl"/>
-    <system systemId="http://localhost:8080/BankService/Bank?xsd=1" uri="src/conf/xml-resources/web-service-references/Bank/wsdl/localhost_8080/BankService/Bank.xsd_1.xsd"/>
-    <system systemId="file:/export2/workspace/quicklook/glassfish/appserv-tests/sqetests/jbi/helloca/projects/wsdls/bank/BankService.wsdl" uri="src/conf/xml-resources/web-service-references/BankService/wsdl/BankService.wsdl"/>
-    <system systemId="file:/export2/workspace/quicklook/glassfish/appserv-tests/sqetests/jbi/helloca/projects/wsdls/bank/BankService_schema1.xsd" uri="src/conf/xml-resources/web-service-references/BankService/wsdl/BankService_schema1.xsd"/>
-</catalog>

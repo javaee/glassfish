@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<handler-chains xmlns:jws="http://java.sun.com/xml/ns/javaee">
-  <handler-chain>
-    <handler>
-      <handler-class>com.sun.s1asdev.security.jmac.soap.client.TestHandler</handler-class>
-    </handler>
-  </handler-chain>
-</handler-chains>
-

@@ -1,6 +1,0 @@
-i copyright
-i pkginfo
-i depend
-d none appserver/lib 755 root bin
-f none appserver/lib/framework.jar 644 root bin
-f none appserver/lib/libcliutil.so 755 root bin

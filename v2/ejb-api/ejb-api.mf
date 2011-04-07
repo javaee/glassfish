@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-SCCS-ID: @(#)Manifest	1.1 00/10/19
-Extension-Name: javax.ejb
-Specification-Title: Enterprise JavaBeans(TM) Specification
-Specification-Version: @VERSION@
-Specification-Vendor: Sun Microsystems, Inc.
-Implementation-Version: @VERSION@
-Implementation-Vendor: Sun Microsystems, Inc.
-Implementation-Vendor-Id: com.sun

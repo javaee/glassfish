@@ -1,7 +1,0 @@
-lib/install/templates/asenv.conf.template
-lib/appserv-rt.jar
-lib/appserv-launch.jar
-lib/j2ee.jar
-lib/javaee.jar
-lib/appserv-ext.jar
-lib/install/templates/asenv.conf.template

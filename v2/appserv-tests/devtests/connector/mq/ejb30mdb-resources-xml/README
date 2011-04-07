@@ -1,5 +1,0 @@
-Test - a simple hello world style EJB 3.0 MDB using annotations
-* Uses glassfish-resources.xml
-
-@TODO : Merge the test with "ejb30mdb"
-

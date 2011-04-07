@@ -1,9 +1,0 @@
-<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-  
-<suite name="persistence-test" >
-  <test name="ejb.ejb30-toplink-essentials-advanced" >
-    <classes>
-      <class name="oracle.toplink.essentials.testing.tests.cmp3.advanced.EntityManagerTestNGTestCase" />
-    </classes>
-  </test>
-</suite>
