@@ -95,6 +95,7 @@ public class GlassFishTldProvider implements TldProvider, PostConstruct {
     /**
      * Gets a mapping from JAR files to their TLD resources.
      */
+    @SuppressWarnings("unchecked")
     public Map<URI, List<String>> getTldMap() {
         return (Map<URI, List<String>>)((HashMap)tldMap).clone();
     }
@@ -165,7 +166,7 @@ public class GlassFishTldProvider implements TldProvider, PostConstruct {
         if (uris != null && uris.length > 0) {
             Pattern pattern = Pattern.compile("META-INF/.*\\.tld");
             for (URI uri : uris) {
-                List entries =  JarURIPattern.getJarEntries(uri, pattern);
+                List<String> entries =  JarURIPattern.getJarEntries(uri, pattern);
                 if (entries != null && entries.size() > 0) {
                     tldMap.put(uri, entries);
                 }

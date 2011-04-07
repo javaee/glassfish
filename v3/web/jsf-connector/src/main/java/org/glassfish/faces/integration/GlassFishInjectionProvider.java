@@ -378,7 +378,7 @@ public class GlassFishInjectionProvider extends DiscoverableInjectionProvider im
             // Wrap actual value insertion in doPrivileged to
             // allow for private/protected field access.
             java.security.AccessController.doPrivileged(
-                new java.security.PrivilegedExceptionAction() {
+                new java.security.PrivilegedExceptionAction<Object>() {
                     public java.lang.Object run() throws Exception {
                         if( !lifecycleMethod.isAccessible() ) {
                             lifecycleMethod.setAccessible(true);
