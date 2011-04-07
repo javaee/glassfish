@@ -185,7 +185,7 @@ public class BasicAuthenticator
             realmName = REALM_NAME;
     //        if (debug >= 1)
     //            log("Challenging for realm '" + realmName + "'");
-        hres.setHeader("WWW-Authenticate",
+        hres.setHeader(AUTH_HEADER_NAME,
                        "Basic realm=\"" + realmName + "\"");
         hres.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         //      hres.flushBuffer();

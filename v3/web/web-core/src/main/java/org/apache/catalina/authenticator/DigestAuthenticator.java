@@ -482,7 +482,7 @@ public class DigestAuthenticator
         String authenticateHeader = "Digest realm=\"" + realmName + "\", "
             +  "qop=\"auth\", nonce=\"" + nOnce + "\", " + "opaque=\""
             + String.valueOf(digestEncoder.encode(buffer)) + "\"";
-        response.setHeader("WWW-Authenticate", authenticateHeader);
+        response.setHeader(AUTH_HEADER_NAME, authenticateHeader);
 
     }
 
