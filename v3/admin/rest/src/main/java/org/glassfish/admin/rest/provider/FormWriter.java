@@ -94,7 +94,7 @@ public class FormWriter implements MessageBodyWriter<Dom> {
 
     private String constructForm(Dom data) {
         String ret = "";
-        StringBuilder sb= new StringBuilder();
+     //   StringBuilder sb= new StringBuilder();
         ret = ret +
                 "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n" +
                 "<html><head><title>Data</title></head>\n" +
