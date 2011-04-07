@@ -41,28 +41,24 @@
 package org.glassfish.tests.embedded.web;
 
 import java.io.*;
-import java.util.*;
 import javax.servlet.*;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
 
-public class MyServlet extends HttpServlet {
+public class NewFilter implements Filter {
 
-    public MyServlet() {
-        System.out.println("Servlet MyServlet initialized");
+    String filterInitParam;
+
+    public void init(FilterConfig filterConfig) throws ServletException {
+        filterInitParam = filterConfig.getInitParameter("filterInitName");
     }
 
-    public void service(ServletRequest req, ServletResponse res)
+    public void doFilter(ServletRequest request, ServletResponse response,
+                         FilterChain chain)
             throws IOException, ServletException {
-        if (!"def".equals(req.getAttribute("abc"))) {
-            throw new ServletException("Missing ServletRequest parameter");
-        } else {
-            PrintWriter pw = res.getWriter();
-            try {
-                pw.println("Hello World!");
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
-        }
+        request.setAttribute("filterInitName", filterInitParam);
+        chain.doFilter(request, response);
+    }
+
+    public void destroy() {
+        // do nothing
     }
 }
