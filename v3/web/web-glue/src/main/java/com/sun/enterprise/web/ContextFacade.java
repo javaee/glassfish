@@ -98,7 +98,7 @@ public class ContextFacade extends StandardContext implements Context {
 
     private Map<String, String[]> servletMappings = new HashMap<String, String[]>();
 
-    protected ArrayList<String> listeners = new ArrayList<String>();
+    protected ArrayList<String> listenerNames = new ArrayList<String>();
 
     // ------------------------------------------------------------- Properties
 
@@ -438,19 +438,19 @@ public class ContextFacade extends StandardContext implements Context {
         if (context != null) {
             context.addListener(className);
         } else {
-            listeners.add(className);
+            listenerNames.add(className);
         }
     }
 
     public List<String> getListeners() {
-        return listeners;
+        return listenerNames;
     }
 
     public <T extends EventListener> void addListener(T t) {
         if (context != null) {
             context.addListener(t);
         } else {
-            listeners.add(t.getClass().getName());
+            listenerNames.add(t.getClass().getName());
         }
     }
 
@@ -458,7 +458,7 @@ public class ContextFacade extends StandardContext implements Context {
         if (context != null) {
             context.addListener(listenerClass);
         } else {
-            listeners.add(listenerClass.getName());
+            listenerNames.add(listenerClass.getName());
         }
     }
 
