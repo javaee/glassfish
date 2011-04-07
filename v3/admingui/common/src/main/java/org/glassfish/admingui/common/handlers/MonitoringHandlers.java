@@ -103,7 +103,7 @@ public class MonitoringHandlers {
 
             String monitoringLevelsEndPoint = monitoringServiceEndPoint + "/module-monitoring-levels";
             attrs = RestUtil.getEntityAttrs(monitoringLevelsEndPoint, "entity");
-            for (String oneMonComp : attrs.keySet()) {
+            for(Map.Entry<String,Object> e : attrs.entrySet()){
                 Map oneRow = new HashMap();
                 String name = null;
                 ListIterator ni = monDisplayList.listIterator();
@@ -111,15 +111,15 @@ public class MonitoringHandlers {
                 while (ni.hasNext() && vi.hasNext()) {
                     String dispName = (String) ni.next();
                     String value = (String) vi.next();
-                    if ((oneMonComp.equals(value))) {
+                    if ((e.getKey().equals(value))) {
                         name = dispName;
                     }
                 }
                 if (name == null) {
-                    name = oneMonComp;
+                    name = e.getKey();
                 }
                 oneRow.put("monCompName", name);
-                oneRow.put("level", attrs.get(oneMonComp));
+                oneRow.put("level", e.getValue());
                 oneRow.put("selected", false);
                 result.add(oneRow);
             }

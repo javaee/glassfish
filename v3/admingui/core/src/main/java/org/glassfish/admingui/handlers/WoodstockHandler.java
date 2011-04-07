@@ -274,7 +274,7 @@ public class WoodstockHandler {
             handlerCtx.setOutputValue("optionArray", new Option[0]);
             return;
         }
-        handlerCtx.setOutputValue("optionArray", SunOptionUtil.getOptionsArray( list.toArray(new String[0])));
+        handlerCtx.setOutputValue("optionArray", SunOptionUtil.getOptionsArray(list.toArray( new String[list.size()])));
     }
 
 

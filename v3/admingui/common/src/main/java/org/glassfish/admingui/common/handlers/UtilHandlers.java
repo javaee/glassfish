@@ -788,20 +788,17 @@ public class UtilHandlers {
         @HandlerOutput(name = "formattedString", type = String.class)})
     public static void formatPathSeperatorStringsforSaving(HandlerContext handlerCtx) {
         String values = (String) handlerCtx.getInputValue("string");
-        String token = "";
+        StringBuilder token = new StringBuilder("");
+        String sep = "";
         if ((values != null) &&
                 (values.trim().length() != 0)) {
-            Iterator it = GuiUtil.parseStringList(values, "\t\n\r\f").iterator();
-            while (it.hasNext()) {
-                String nextToken = (String) it.next();
-                token += nextToken + PATH_SEPARATOR;
-            }
-            int end = token.length() - PATH_SEPARATOR.length();
-            if (token.lastIndexOf(PATH_SEPARATOR) == end) {
-                token = token.substring(0, end);
+            List<String> strList = GuiUtil.parseStringList(values, "\t\n\r\f");
+            for(String nextToken : strList){
+                token.append(sep).append(nextToken);
+                sep = PATH_SEPARATOR;
             }
         }
-        handlerCtx.setOutputValue("formattedString", token);
+        handlerCtx.setOutputValue("formattedString", token.toString());
     }    
 
     /**

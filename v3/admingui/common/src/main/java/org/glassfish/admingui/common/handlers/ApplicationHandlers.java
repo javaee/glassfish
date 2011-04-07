@@ -560,12 +560,12 @@ public class ApplicationHandlers {
         List result = new ArrayList();
         String prefix = (String) GuiUtil.getSessionValue("REST_URL");
 	if (appPropsMap != null) {
-	    for(String oneAppName : appPropsMap.keySet()){
+            for(Map.Entry<String,String> e : appPropsMap.entrySet()){
                 try{
-                    String engines = appPropsMap.get(oneAppName);
+                    String engines = e.getValue();
                     HashMap oneRow = new HashMap();
-                    oneRow.put("name", oneAppName);
-                    String encodedName = URLEncoder.encode(oneAppName, "UTF-8");
+                    oneRow.put("name", e.getKey());
+                    String encodedName = URLEncoder.encode(e.getKey(), "UTF-8");
                     oneRow.put("targetName", target);
                     oneRow.put("selected", false);
                     Map appRefAttrsMap = RestUtil.getAttributesMap(prefix + appRefEndpoint + encodedName);

@@ -51,6 +51,8 @@ package org.glassfish.admingui.registration;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.logging.Logger;
+import java.io.*;
 
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
@@ -65,11 +67,6 @@ import java.util.Random;
 import com.sun.enterprise.registration.impl.RelayService;
 import com.sun.enterprise.registration.glassfish.RegistrationUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import java.io.*;
 
 /**
  * @author Siraj Ghaffar
@@ -170,12 +167,14 @@ public class RegisterHandlers {
         try {
             FileReader fr = new FileReader(f);
             BufferedReader br = new BufferedReader(fr);
-            String s, pageContent = "";
+            String s;
+            StringBuilder pageContent = new StringBuilder("");
 
             while((s = br.readLine()) != null) {
-                pageContent = pageContent + s;
+                pageContent.append(s);
             }
-            handlerCtx.setOutputValue("registrationPage", pageContent);
+            br.close();
+            handlerCtx.setOutputValue("registrationPage", pageContent.toString());
         } catch (Exception ex) {
             Logger logger = GuiUtil.getLogger();
             logger.fine(ex.getMessage());

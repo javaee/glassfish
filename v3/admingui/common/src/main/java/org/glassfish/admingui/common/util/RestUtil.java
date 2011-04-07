@@ -448,7 +448,7 @@ public class RestUtil {
     protected static Map<String, Object> fixKeyNames(Map<String, Object> map) {
         Map<String, Object> results = new HashMap<String, Object>();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
-            String key = entry.getKey().substring(0, 1).toLowerCase() + entry.getKey().substring(1);
+            String key = entry.getKey().substring(0, 1).toLowerCase(new Locale("UTF-8")) + entry.getKey().substring(1);
             Object value = entry.getValue();
             results.put(key, value);
         }
