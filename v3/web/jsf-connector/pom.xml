@@ -55,21 +55,12 @@
 
     <developers>
         <developer>
-            <id>dochez</id>
-            <name>Jerome Dochez</name>
-            <url>http://blogs.sun.com/dochez</url>
-            <organization>Oracle, Inc.</organization>
+            <id>edburns</id>
+            <name>Edwards Burns</name>
+            <url>http://ridingthecrest.com</url>
+            <organization>Oracle</organization>
             <roles>
                 <role>lead</role>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>swchan2</id>
-            <name>Shing Wai Chan</name>
-            <url>http://blogs.sun.com/swchan</url>
-            <organization>Oracle, Inc.</organization>
-            <roles>
                 <role>developer</role>
             </roles>
         </developer>

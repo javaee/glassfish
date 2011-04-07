@@ -55,39 +55,12 @@
 
     <developers>
         <developer>
-            <id>jluehe</id>
-            <name>Jan Luehe</name>
-            <url>http://blogs.sun.com/jluehe</url>
-            <organization>Oracle, Inc.</organization>
-            <roles>
-                <role>lead</role>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>jfarcand</id>
-            <name>Jean Francois Arcand</name>
-            <url>http://weblogs.java.net/blog/jfarcand/</url>
-            <organization>Oracle, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
             <id>swchan2</id>
             <name>Shing Wai Chan</name>
-            <url>http://blogs.sun.com/swchan</url>
-            <organization>Oracle, Inc.</organization>
+            <url>http://weblogs.java.net/blog/swchan2</url>
+            <organization>Oracle</organization>
             <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>dochez</id>
-            <name>Jerome Dochez</name>
-            <url>http://blogs.sun.com/dochez</url>
-            <organization>Oracle, Inc.</organization>
-            <roles>
+                <role>lead</role>
                 <role>developer</role>
             </roles>
         </developer>
@@ -95,15 +68,15 @@
             <id>amyroh</id>
             <name>Amy Roh</name>
             <url>http://weblogs.java.net/blog/amyroh</url>
-            <organization>Oracle, Inc.</organization>
+            <organization>Oracle</organization>
             <roles>
                 <role>developer</role>
             </roles>
         </developer>
         <developer>
-            <id>ss141213</id>
-            <name>Sahoo</name>
-            <organization>Oracle, Inc.</organization>
+            <id>kchung</id>
+            <name>Kin-man Chung</name>
+            <organization>Oracle</organization>
             <roles>
                 <role>developer</role>
             </roles>

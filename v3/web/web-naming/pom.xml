@@ -56,21 +56,12 @@
 
     <developers>
         <developer>
-            <id>jluehe</id>
-            <name>Jan Luehe</name>
-            <url>http://blogs.sun.com/jluehe</url>
-            <organization>Oracle, Inc.</organization>
+            <id>swchan2</id>
+            <name>Shing Wai Chan</name>
+            <url>http://weblogs.java.net/blog/swchan2</url>
+            <organization>Oracle</organization>
             <roles>
                 <role>lead</role>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>jfarcand</id>
-            <name>Jean Francois Arcand</name>
-            <url>http://weblogs.java.net/blog/jfarcand/</url>
-            <organization>Oracle, Inc.</organization>
-            <roles>
                 <role>developer</role>
             </roles>
         </developer>
