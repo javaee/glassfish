@@ -904,7 +904,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * If this Manager has no active Sessions, a zero-length array is returned.
      */
     public Session[] findSessions() {
-        return sessions.values().toArray(new Session[0]);
+        return sessions.values().toArray(new Session[sessions.size()]);
     }
 
 
