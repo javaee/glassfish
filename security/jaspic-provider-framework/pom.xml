@@ -53,6 +53,41 @@
     <artifactId>jaspic.provider.framework</artifactId>
     <name>JSR-196 Provider Framework Reference Implementation</name>
     <packaging>hk2-jar</packaging>
+
+    <profiles>
+        <profile>
+            <id>aix-jdk</id>
+            <activation>
+	        <os>
+                    <name>AIX</name>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.code.maven-replacer-plugin</groupId>
+                        <artifactId>maven-replacer-plugin</artifactId>      
+                        <executions>
+                            <execution>
+                               <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>replace</goal>
+                                </goals>                    
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <ignoreMissingFile>false</ignoreMissingFile>
+                            <filesToInclude>src/main/**/*.java</filesToInclude>
+                            <regex>false</regex>
+                            <tokenValueMap>${project.basedir}/../../maven-build-aix.properties</tokenValueMap>
+                            <preserveDir>true</preserveDir>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <dependencies>
         <dependency>
             <groupId>org.glassfish</groupId>

@@ -438,6 +438,7 @@
                 <module>ant-tasks</module>
             </modules>
         </profile>
+
     </profiles>
 
     <build>
@@ -602,7 +603,7 @@
                     <configuration>
                         <rules>
                             <requireJavaVersion>
-                                <version>[1.6.0-4,)</version>
+                                <version>[1.6.0,)</version>
                                 <message>You need JDK 1.6.0_04 and above!</message>
                             </requireJavaVersion>
                             <requireMavenVersion>
@@ -1469,6 +1470,6 @@
             <version>4.3.1</version>
             <scope>test</scope>
             <optional>true</optional>
-      </dependency>
+        </dependency>
     </dependencies>
 </project>

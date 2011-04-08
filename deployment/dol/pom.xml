@@ -85,7 +85,7 @@
                 <configuration>
                     <compilerArguments>
                         <!-- also adding the classes.jar in the bootclasspath as rt.jar is not available on Mac -->
-                        <bootclasspath>${project.build.directory}/endorsed/javax.annotation.jar${path.separator}${java.home}/../Classes/classes.jar${path.separator}${java.home}/lib/rt.jar</bootclasspath>
+                        <bootclasspath>${project.build.directory}/endorsed/javax.annotation.jar${path.separator}${java.home}/../Classes/classes.jar${path.separator}${java.home}/lib/rt.jar${path.separator}${java.home}/lib/tools.jar${path.separator}${java.home}/lib/java.util.jar${path.separator}${java.home}/lib/vm.jar${path.separator}${java.home}/lib/logging.jar${path.separator}${java.home}/lib/annotation.jar${path.separator}${java.home}/lib/security.jar${path.separator}${java.home}/lib/xml.jar${path.separator}${java.home}/lib/ibmjgssfw.jar${path.separator}${java.home}/lib/sql.jar${path.separator}${java.home}/lib/beans.jar${path.separator}${java.home}/lib/jndi.jar${path.separator}${java.home}/lib/ibmorbapi.jar</bootclasspath>
                     </compilerArguments>
                     <fork>true</fork>
                 </configuration>

@@ -90,6 +90,41 @@
             </roles>
         </developer>
     </developers>
+
+
+    <profiles>
+        <profile>
+            <id>aix-jdk</id>
+            <activation>
+	        <os>
+                    <name>AIX</name>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.code.maven-replacer-plugin</groupId>
+                        <artifactId>maven-replacer-plugin</artifactId>      
+                        <executions>
+                            <execution>
+                               <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>replace</goal>
+                                </goals>                    
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <ignoreMissingFile>false</ignoreMissingFile>
+                            <filesToInclude>src/main/**/*.java</filesToInclude>
+                            <regex>false</regex>
+                            <tokenValueMap>${project.basedir}/../../maven-build-aix.properties</tokenValueMap>
+                            <preserveDir>true</preserveDir>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     
     <dependencies>
         <!-- All the dependencies have been marked provided so that 
