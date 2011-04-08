@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -1521,7 +1521,7 @@ public class Digester extends DefaultHandler {
             if (systemId == null) {
                 // cannot resolve
                 if (log.isLoggable(Level.FINE)) {
-                    log.fine(" Cannot resolve entity: '" + entityURL + "'");
+                    log.fine(" Cannot resolve entity: '" + publicId + "'");
                 }
                 return (null);
                 
@@ -2870,7 +2870,7 @@ public class Digester extends DefaultHandler {
             try {
                 String newValue = 
                     IntrospectionUtils.replaceProperties(value, null, source);
-                if (value != newValue) {
+                if (!value.equals(newValue)) {
                     newAttrs.setValue(i, newValue);
                 }
             }
