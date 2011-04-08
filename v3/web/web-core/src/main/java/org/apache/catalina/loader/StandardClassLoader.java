@@ -179,16 +179,7 @@ public class StandardClassLoader
      * @param repositories The initial set of repositories
      */
     public StandardClassLoader(String repositories[]) {
-
-        super(convert(repositories));
-        this.parent = getParent();
-        this.system = getSystemClassLoader();
-        securityManager = System.getSecurityManager();
-        if (repositories != null) {
-            for (int i = 0; i < repositories.length; i++) {
-                addRepositoryInternal(repositories[i]);
-            }
-        }
+        this(convert(repositories));
     }
 
 
@@ -200,14 +191,25 @@ public class StandardClassLoader
      * @param parent The parent ClassLoader
      */
     public StandardClassLoader(String repositories[], ClassLoader parent) {
+        this(convert(repositories), parent);
+    }
 
-        super(convert(repositories), parent);
-        this.parent = parent;
+
+    /**
+     * Construct a new ClassLoader with the specified repositories and
+     * no parent ClassLoader.
+     *
+     * @param repositories The initial set of repositories
+     */
+    public StandardClassLoader(URL repositories[]) {
+
+        super(repositories);
+        this.parent = getParent();
         this.system = getSystemClassLoader();
         securityManager = System.getSecurityManager();
         if (repositories != null) {
             for (int i = 0; i < repositories.length; i++) {
-                addRepositoryInternal(repositories[i]);
+                addRepositoryInternal(repositories[i].toString());
             }
         }
     }
@@ -519,10 +521,10 @@ public class StandardClassLoader
         }
 
         // Return the class we have located
-        if (debug >= 4)
+        if (debug >= 4) {
             log("      Returning class " + clazz);
-        if ((debug >= 4) && (clazz != null))
             log("      Loaded by " + clazz.getClassLoader());
+        }
         return (clazz);
 
     }
@@ -878,7 +880,7 @@ public class StandardClassLoader
      * add read FilePermissions for the base directory (if unpacked),
      * the context URL, and jar file resources.
      *
-     * @param CodeSource where the code was loaded from
+     * @param codeSource where the code was loaded from
      * @return PermissionCollection for CodeSource
      */
     protected final PermissionCollection getPermissions(CodeSource codeSource) {
