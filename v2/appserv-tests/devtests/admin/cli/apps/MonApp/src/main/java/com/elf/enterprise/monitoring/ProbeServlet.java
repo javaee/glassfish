@@ -2,48 +2,78 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.elf.enterprise.monitoring;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.glassfish.external.probe.provider.annotations.Probe;
+import org.glassfish.external.probe.provider.annotations.ProbeProvider;
+import org.glassfish.flashlight.client.ProbeClientMediator;
+import org.glassfish.flashlight.provider.ProbeProviderFactory;
 
 /**
- *
- * @author wnevins
+ * @author Byron Nevins
  */
+
+@ProbeProvider (moduleProviderName="fooblog", moduleName="samples", probeProviderName="ProbeServlet")
+
 public class ProbeServlet extends HttpServlet {
-   
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+    @Resource
+    private ProbeProviderFactory probeProviderFactory;
+    @Resource
+    private ProbeClientMediator listenerRegistrar;
+
+    @Probe(name = "myProbe")
+    public void myProbe(String s) {
+        System.out.println("inside myProbeMethod called with this arg: " + s);
+    }
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
+        myProbe("Hello #" + counter.incrementAndGet());
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
-            /* TODO output your page here
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ProbeServlet</title>");  
+            out.println("<title>Servlet ProbeServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ProbeServlet at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Probe Name is MonApp:MonApp:ProbeServlet:myProbe</h1>");
+            out.println("Injected PPF: " + probeProviderFactory);
+            out.println("Injected PCM: " + listenerRegistrar);
+
             out.println("</body>");
             out.println("</html>");
-            */
-        } finally { 
+        }
+        finally {
             out.close();
         }
-    } 
+    }
+
+    @Override
+    public void init() throws ServletException {
+        if (probeProviderFactory == null)
+            throw new ServletException("ProbeProviderFactory was not injected.");
+
+        if (listenerRegistrar == null)
+            throw new ServletException("ProbeClientMediator was not injected.");
+
+        try {
+            // need to get the probe provider registered before the listener!
+            probeProviderFactory.getProbeProvider(getClass());
+            listenerRegistrar.registerListener(new MyProbeListener());
+        }
+        catch (Exception e) {
+            throw new ServletException("Error initializing", e);
+        }
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 
@@ -55,9 +85,9 @@ public class ProbeServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         processRequest(request, response);
-    } 
+    }
 
     /** 
      * Handles the HTTP <code>POST</code> method.
@@ -68,7 +98,7 @@ public class ProbeServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         processRequest(request, response);
     }
 
@@ -80,5 +110,5 @@ public class ProbeServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
+    private final static AtomicInteger counter = new AtomicInteger();
 }
