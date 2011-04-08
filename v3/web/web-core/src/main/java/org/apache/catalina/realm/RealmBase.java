@@ -554,7 +554,7 @@ public abstract class RealmBase
         boolean caseSensitiveMapping = 
             ((StandardContext)context).isCaseSensitiveMapping();
         if (uri != null && !caseSensitiveMapping) {
-            uri = uri.toLowerCase();
+            uri = uri.toLowerCase(Locale.ENGLISH);
         }
         // END SJSWS 6324431
 
@@ -616,7 +616,7 @@ public abstract class RealmBase
                     */
                     // START SJSWS 6324431
                     String pattern = caseSensitiveMapping ? patterns[k] :
-                        patterns[k].toLowerCase();
+                        patterns[k].toLowerCase(Locale.ENGLISH);
                     if (uri != null && uri.equals(pattern)) {
                     // END SJSWS 6324431
                         found = true;
@@ -695,7 +695,7 @@ public abstract class RealmBase
                     */
                     // START SJSWS 6324431
                     String pattern = caseSensitiveMapping ?
-                        patterns[k]:patterns[k].toLowerCase();
+                        patterns[k]:patterns[k].toLowerCase(Locale.ENGLISH);
                     // END SJSWS 6324431
                     if (pattern.startsWith("/") &&
                             pattern.endsWith("/*") && 
@@ -794,7 +794,7 @@ public abstract class RealmBase
                     */
                     // START SJSWS 6324431
                     String pattern = caseSensitiveMapping ? 
-                        patterns[k]:patterns[k].toLowerCase();
+                        patterns[k]:patterns[k].toLowerCase(Locale.ENGLISH);
                     // END SJSWS 6324431
                     if (uri != null && pattern.startsWith("*.")){
                         int slash = uri.lastIndexOf("/");
@@ -884,7 +884,7 @@ public abstract class RealmBase
                     */
                     // START SJSWS 6324431
                     String pattern = caseSensitiveMapping ? 
-                        patterns[k]:patterns[k].toLowerCase();
+                        patterns[k]:patterns[k].toLowerCase(Locale.ENGLISH);
                     // END SJSWS 6324431
                     if (pattern.equals("/")){
                         matched = true;

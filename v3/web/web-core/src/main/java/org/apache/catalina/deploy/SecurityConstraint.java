@@ -59,6 +59,7 @@
 package org.apache.catalina.deploy;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 
 /**
@@ -476,8 +477,8 @@ public class SecurityConstraint implements Serializable {
 
         // START SJSWS 6324431
         if (!caseSensitiveMapping) {
-            path = path.toLowerCase();
-            pattern = pattern.toLowerCase();
+            path = path.toLowerCase(Locale.ENGLISH);
+            pattern = pattern.toLowerCase(Locale.ENGLISH);
         }
         // END SJSWS 6324431
 

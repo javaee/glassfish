@@ -214,7 +214,7 @@ public final class ExtensionValidator {
         try {
             NamingEnumeration wne = dirContext.listBindings("/META-INF/");
             Binding binding = (Binding) wne.nextElement();
-            if (binding.getName().toUpperCase().equals("MANIFEST.MF")) {
+            if (binding.getName().toUpperCase(Locale.ENGLISH).equals("MANIFEST.MF")) {
                 Resource resource = (Resource)dirContext.lookup
                                     ("/META-INF/" + binding.getName());
                 inputStream = resource.streamContent();
