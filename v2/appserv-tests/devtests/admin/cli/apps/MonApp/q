@@ -1,0 +1,47 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[ERROR] FATAL ERROR
+[INFO] ------------------------------------------------------------------------
+[INFO] Error building POM (may not be this project's POM).
+
+
+Project ID: com.elf:MonApp
+POM Location: d:\gf\v2\appserv-tests\devtests\admin\cli\apps\MonApp\pom.xml
+Validation Messages:
+
+    [0]  'dependencies.dependency.version' is missing for org.glassfish.gmbal:gmbal:jar
+
+
+Reason: Failed to validate POM for project com.elf:MonApp at d:\gf\v2\appserv-tests\devtests\admin\cli\apps\MonApp\pom.xml
+
+
+[INFO] ------------------------------------------------------------------------
+[INFO] Trace
+org.apache.maven.reactor.MavenExecutionException: Failed to validate POM for project com.elf:MonApp at d:\gf\v2\appserv-tests\devtests\admin\cli\apps\MonApp\pom.xml
+	at org.apache.maven.DefaultMaven.getProjects(DefaultMaven.java:404)
+	at org.apache.maven.DefaultMaven.doExecute(DefaultMaven.java:272)
+	at org.apache.maven.DefaultMaven.execute(DefaultMaven.java:138)
+	at org.apache.maven.cli.MavenCli.main(MavenCli.java:362)
+	at org.apache.maven.cli.compat.CompatibleMain.main(CompatibleMain.java:60)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.codehaus.classworlds.Launcher.launchEnhanced(Launcher.java:315)
+	at org.codehaus.classworlds.Launcher.launch(Launcher.java:255)
+	at org.codehaus.classworlds.Launcher.mainWithExitCode(Launcher.java:430)
+	at org.codehaus.classworlds.Launcher.main(Launcher.java:375)
+Caused by: org.apache.maven.project.InvalidProjectModelException: Failed to validate POM for project com.elf:MonApp at d:\gf\v2\appserv-tests\devtests\admin\cli\apps\MonApp\pom.xml
+	at org.apache.maven.project.DefaultMavenProjectBuilder.processProjectLogic(DefaultMavenProjectBuilder.java:1077)
+	at org.apache.maven.project.DefaultMavenProjectBuilder.buildInternal(DefaultMavenProjectBuilder.java:880)
+	at org.apache.maven.project.DefaultMavenProjectBuilder.buildFromSourceFileInternal(DefaultMavenProjectBuilder.java:508)
+	at org.apache.maven.project.DefaultMavenProjectBuilder.build(DefaultMavenProjectBuilder.java:200)
+	at org.apache.maven.DefaultMaven.getProject(DefaultMaven.java:604)
+	at org.apache.maven.DefaultMaven.collectProjects(DefaultMaven.java:487)
+	at org.apache.maven.DefaultMaven.getProjects(DefaultMaven.java:391)
+	... 12 more
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: < 1 second
+[INFO] Finished at: Thu Apr 07 17:53:24 PDT 2011
+[INFO] Final Memory: 1M/15M
+[INFO] ------------------------------------------------------------------------
