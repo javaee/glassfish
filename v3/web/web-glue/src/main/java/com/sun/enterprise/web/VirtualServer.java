@@ -2115,23 +2115,24 @@ public class VirtualServer extends StandardHost
                 doc.appendChild(webapp);
             }
 
-            for (String name : filters.keySet()) {
+            for (Map.Entry entry : filters.entrySet()) {
                 Element filter = doc.createElement("filter");
                 Element filterName = doc.createElement("filter-name");
-                filterName.setTextContent(name);
+                filterName.setTextContent(entry.getKey().toString());
                 filter.appendChild(filterName);
                 Element filterClass = doc.createElement("filter-class");
-                filterClass.setTextContent(filters.get(name));
+                filterClass.setTextContent(entry.getValue().toString());
                 filter.appendChild(filterClass);
-                if (facade.getFilterRegistration(name).getInitParameters() != null &&
-                    !facade.getFilterRegistration(name).getInitParameters().keySet().isEmpty()) {
+                Map<String, String> initParams =
+                        facade.getFilterRegistration(entry.getKey().toString()).getInitParameters();
+                if ((initParams != null) && (!initParams.isEmpty())) {
                     Element initParam = doc.createElement("init-param");
-                    for (String param : facade.getFilterRegistration(name).getInitParameters().keySet()) {
+                    for (Map.Entry param : initParams.entrySet()) {
                         Element paramName = doc.createElement("param-name");
-                        paramName.setTextContent(param);
+                        paramName.setTextContent(param.getKey().toString());
                         initParam.appendChild(paramName);
                         Element paramValue = doc.createElement("param-value");
-                        paramValue.setTextContent(facade.getFilterRegistration(name).getInitParameters().get(param));
+                        paramValue.setTextContent(param.getValue().toString());
                         initParam.appendChild(paramValue);
                     }
                     filter.appendChild(initParam);
@@ -2139,34 +2140,35 @@ public class VirtualServer extends StandardHost
                 webapp.appendChild(filter);
             }
 
-            for (String mapping : filterMappings.keySet()) {
+            for (Map.Entry mapping : filterMappings.entrySet()) {
                 Element filterMapping = doc.createElement("filter-mapping");
                 Element filterName = doc.createElement("filter-name");
-                filterName.setTextContent(mapping);
+                filterName.setTextContent(mapping.getKey().toString());
                 filterMapping.appendChild(filterName);
                 Element servletName = doc.createElement("servlet-name");
-                servletName.setTextContent(filterMappings.get(mapping));
+                servletName.setTextContent(mapping.getValue().toString());
                 filterMapping.appendChild(servletName);
                 webapp.appendChild(filterMapping);
             }
 
-			for (String name : servlets.keySet()) {
+            for (Map.Entry name : servlets.entrySet()) {
                 Element servlet = doc.createElement("servlet");
                 Element servletName = doc.createElement("servlet-name");
-                servletName.setTextContent(name);
+                servletName.setTextContent(name.getKey().toString());
                 servlet.appendChild(servletName);
                 Element servletClass = doc.createElement("servlet-class");
-                servletClass.setTextContent(servlets.get(name));
+                servletClass.setTextContent(name.getValue().toString());
                 servlet.appendChild(servletClass);
-                if (facade.getServletRegistration(name).getInitParameters() != null &&
-                        !facade.getServletRegistration(name).getInitParameters().keySet().isEmpty()) {
+                Map<String, String> initParams =
+                        facade.getServletRegistration(name.getKey().toString()).getInitParameters();
+                if ((initParams != null) && (!initParams.isEmpty())) {
                     Element initParam = doc.createElement("init-param");
-                    for (String param : facade.getServletRegistration(name).getInitParameters().keySet()) {
+                    for (Map.Entry param : initParams.entrySet()) {
                         Element paramName = doc.createElement("param-name");
-                        paramName.setTextContent(param);
+                        paramName.setTextContent(param.getKey().toString());
                         initParam.appendChild(paramName);
                         Element paramValue = doc.createElement("param-value");
-                        paramValue.setTextContent(facade.getServletRegistration(name).getInitParameters().get(param));
+                        paramValue.setTextContent(param.getValue().toString());
                         initParam.appendChild(paramValue);
                     }
                     servlet.appendChild(initParam);
@@ -2174,11 +2176,11 @@ public class VirtualServer extends StandardHost
 			    webapp.appendChild(servlet);
             }
 
-            for (String mapping : mappings.keySet()) {
+            for (Map.Entry mapping : mappings.entrySet()) {
                 Element servletMapping = doc.createElement("servlet-mapping");
-                for (String pattern : mappings.get(mapping)) {
+                for (String pattern : mappings.get(mapping.getKey())) {
                     Element servletName = doc.createElement("servlet-name");
-                    servletName.setTextContent(mapping);
+                    servletName.setTextContent(mapping.getKey().toString());
                     servletMapping.appendChild(servletName);
                     Element urlPattern = doc.createElement("url-pattern");
                     urlPattern.setTextContent(pattern);
