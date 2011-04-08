@@ -72,7 +72,7 @@ import java.beans.PropertyVetoException;
  * @author Jerome Dochez
  */
 @Scoped(PerLookup.class)
-public class GenericCreateCommand extends GenericCrudCommand implements AdminCommand, PostConstruct, CommandModelProvider {
+public class GenericCreateCommand extends GenericCrudCommand implements AdminCommand {
 
     @Inject
     Habitat habitat;

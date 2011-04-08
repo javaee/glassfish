@@ -112,8 +112,8 @@
         <grizzly.version>1.9.31</grizzly.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
         <saaj-api.version>1.3</saaj-api.version>
-        <hk2.version>1.1.0</hk2.version>
-        <hk2.plugin.version>1.1.0</hk2.plugin.version>
+        <hk2.version>1.6.1</hk2.version>
+        <hk2.plugin.version>1.6.1</hk2.plugin.version>
         <trilead-ssh2.version>build212-hudson-6</trilead-ssh2.version>
         <product.name>GlassFish Server Open Source Edition</product.name>
         <abbrev_product_name>glassfish</abbrev_product_name>
@@ -233,7 +233,7 @@
                     <plugin>
                         <groupId>org.glassfish.build</groupId>
                         <artifactId>maven-glassfishbuild-plugin</artifactId>
-                        <version>${project.version}</version>
+                        <version>3.1</version>
                         <executions>
                             <execution>
                                 <id>echo</id>
@@ -500,7 +500,7 @@
                 <plugin>
                     <groupId>org.glassfish.build</groupId>
                     <artifactId>maven-glassfishbuild-plugin</artifactId>
-                    <version>${project.version}</version>
+                    <version>3.1</version>
                     <configuration>
                         <!-- configuration for the checkout mojo -->
                         <checkoutDirectory>.</checkoutDirectory>

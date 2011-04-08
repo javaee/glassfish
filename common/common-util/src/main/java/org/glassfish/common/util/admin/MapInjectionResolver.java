@@ -41,6 +41,8 @@
 package org.glassfish.common.util.admin;
 
 import java.lang.reflect.*;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.*;
 import java.io.File;
 import java.io.IOException;
@@ -223,8 +225,14 @@ public class MapInjectionResolver extends InjectionResolver<Param> {
                          final AnnotatedElement annotated) {
         try {
             if (annotated instanceof Field) {
-                Field field = (Field)annotated;
-                field.setAccessible(true);
+                final Field field = (Field)annotated;
+                AccessController.doPrivileged(new PrivilegedAction<Object>() {
+                    @Override
+                    public Object run() {
+                        field.setAccessible(true);
+                        return null;
+                    }
+                });
                 return ((Field) annotated).get(component);
             }
         } catch (Exception e) {

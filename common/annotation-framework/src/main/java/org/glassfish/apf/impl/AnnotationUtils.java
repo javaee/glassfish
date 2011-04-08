@@ -58,11 +58,6 @@ public class AnnotationUtils {
     private static String whatToLog="";
     private static ResourceBundle resourceBundle;
     
-    /** Creates a new instance of AnnotationUtils */
-    private AnnotationUtils() {
-        resourceBundle = ResourceBundle.getBundle("LocalStrings");
-    }
-    
     public static Logger getLogger() {
         if (logger==null) {
             logger = Logger.global;

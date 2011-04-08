@@ -389,9 +389,9 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
    
         Map<Class<? extends Annotation>, ResultType> annotationResults = 
                 result.processedAnnotations();
-        for (Class annotationType : annotationResults.keySet()) {            
-            logger.finer("Annotation " + annotationType + " : " +
-                    annotationResults.get(annotationType));
+        for (Map.Entry<Class<? extends Annotation>, ResultType> element : annotationResults.entrySet()) {
+            logger.finer("Annotation " + element.getKey() + " : " +
+                    element.getValue());
         }
     }
     public void pushAnnotationHandler(AnnotationHandler handler) {
