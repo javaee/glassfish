@@ -195,7 +195,7 @@ public class JmsHandlers {
             AttributeList attributes = (AttributeList) getMBeanServerConnection(target).getAttributes(new ObjectName(objectName), ATTRS_MONITOR);
             ResourceBundle bundle = GuiUtil.getBundle("org.glassfish.jms.admingui.Strings");
             statsList.add(createRow("Name", name, ""));
-            statsList.add(createRow("Type", type.substring(0, 1).toUpperCase() + type.substring(1), ""));
+            statsList.add(createRow("Type", type.substring(0, 1).toUpperCase(GuiUtil.guiLocale) + type.substring(1), ""));
             for (Attribute attribute : attributes.asList()) {
                 statsList.add(
                         createRow(
@@ -315,7 +315,7 @@ public class JmsHandlers {
         try {
             for (Map oneRow : selectedRows) {
                 String name = (String) oneRow.get("name");
-                String type = ((String) oneRow.get("type")).substring(0, 1).toLowerCase();
+                String type = ((String) oneRow.get("type")).substring(0, 1).toLowerCase(GuiUtil.guiLocale);
                 Object[] params = new Object[]{type, name};
                 String[] types = new String[]{"java.lang.String", "java.lang.String"};
                 JMXUtil.invoke(OBJECT_DEST_MGR, OP_DESTROY, params, types);
@@ -420,7 +420,7 @@ public class JmsHandlers {
     }
 
     protected static String getJmsDestinationObjectName(String objectType, String name, String destType) {
-        return OBJECT_DEST_BASE + ",subtype=" + objectType + ",desttype=" + destType.substring(0, 1).toLowerCase() + ",name=\"" + name + "\"";
+        return OBJECT_DEST_BASE + ",subtype=" + objectType + ",desttype=" + destType.substring(0, 1).toLowerCase(GuiUtil.guiLocale) + ",name=\"" + name + "\"";
     }
 
     protected static void buildAttributeList(AttributeList list, Map attrMap, String type) {

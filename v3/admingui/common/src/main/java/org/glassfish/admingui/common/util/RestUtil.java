@@ -163,7 +163,7 @@ public class RestUtil {
                 attrs = new HashMap<String, Object>();
             }
         }
-        method = method.toLowerCase(new Locale("UTF-8"));
+        method = method.toLowerCase(GuiUtil.guiLocale);
 
         Logger logger = GuiUtil.getLogger();
         if (logger.isLoggable(Level.FINEST)) {
@@ -448,7 +448,7 @@ public class RestUtil {
     protected static Map<String, Object> fixKeyNames(Map<String, Object> map) {
         Map<String, Object> results = new HashMap<String, Object>();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
-            String key = entry.getKey().substring(0, 1).toLowerCase(new Locale("UTF-8")) + entry.getKey().substring(1);
+            String key = entry.getKey().substring(0, 1).toLowerCase(GuiUtil.guiLocale) + entry.getKey().substring(1);
             Object value = entry.getValue();
             results.put(key, value);
         }
@@ -515,7 +515,7 @@ public class RestUtil {
         if (string == null || string.length() <= 0) {
             return string;
         }
-        return string.substring(0, 1).toUpperCase(new Locale("UTF-8")) + string.substring(1);
+        return string.substring(0, 1).toUpperCase(GuiUtil.guiLocale) + string.substring(1);
     }
 
     public static List<String> getChildResourceList(String document) throws SAXException, IOException, ParserConfigurationException {

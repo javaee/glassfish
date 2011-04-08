@@ -103,7 +103,7 @@ public class GuiUtil {
         if (level == null) {
             level = "INFO";
         } else {
-            level = level.toUpperCase(new Locale("UTF-8"));
+            level = level.toUpperCase(GuiUtil.guiLocale);
         }
         getLogger().log(Level.parse(level), (String)handlerCtx.getInputValue("message"));
     }
@@ -742,6 +742,6 @@ public class GuiUtil {
     public static final String I18N_RESOURCE_BUNDLE = "__i18n_resource_bundle";
     public static final String RESOURCE_NAME = "org.glassfish.admingui.core.Strings";
     public static final String COMMON_RESOURCE_NAME = "org.glassfish.common.admingui.Strings";
-
     public static final String LOGGER_NAME = "org.glassfish.admingui";
+    public static final Locale guiLocale = new Locale("UTF-8");
 }

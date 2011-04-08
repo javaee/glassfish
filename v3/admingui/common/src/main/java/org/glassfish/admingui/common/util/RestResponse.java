@@ -157,7 +157,7 @@ class JerseyRestResponse extends RestResponse {
         String contentType = response.getHeaders().getFirst("Content-type");
         if (contentType != null) {
             String responseBody = getResponseBody();
-            contentType = contentType.toLowerCase(new Locale("UTF-8"));
+            contentType = contentType.toLowerCase(GuiUtil.guiLocale);
             if (contentType.startsWith("application/xml")) {
                 InputStream input = null;
                 try {

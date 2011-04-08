@@ -86,7 +86,7 @@ public class RestUtilHandlers {
     public static void callRestAndExtractMsgProps(HandlerContext handlerCtx) {
         Map<String, Object> attrs = (Map<String, Object>) handlerCtx.getInputValue("attrs");
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
-        String method = ((String) handlerCtx.getInputValue("method")).toLowerCase(new Locale("UTF-8"));
+        String method = ((String) handlerCtx.getInputValue("method")).toLowerCase(GuiUtil.guiLocale);
         int index = (Integer) handlerCtx.getInputValue("index");
         try{
             Map responseMap = RestUtil.restRequest( endpoint , attrs, method , handlerCtx, false);

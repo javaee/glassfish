@@ -40,23 +40,19 @@
 
 package org.glassfish.admingui.common.handlers;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.prefs.Preferences;
+import org.glassfish.admingui.common.util.GuiUtil;
 
 /**
  *  <p>	This class provides API support for managing {@link Tag}s.</p>
@@ -325,7 +321,7 @@ public class TagSupport {
 	if (tagName == null) {
 	    throw new IllegalArgumentException("Tag name cannot be null!");
 	}
-	return tagName.replaceAll("\\s", "").toLowerCase(new Locale("UTF-8"));
+	return tagName.replaceAll("\\s", "").toLowerCase(GuiUtil.guiLocale);
     }
 
     /**

@@ -716,7 +716,7 @@ public class MonitoringHandlers {
         String[] nameStrs = name.split("-");
         StringBuilder modifiedName = new StringBuilder();
         for (int i = 0; i < nameStrs.length; i++) {
-            String tmp = nameStrs[i].substring(0, 1).toUpperCase(new Locale("UTF-8")) + nameStrs[i].substring(1);
+            String tmp = nameStrs[i].substring(0, 1).toUpperCase(GuiUtil.guiLocale) + nameStrs[i].substring(1);
             modifiedName.append(tmp);
         }
         return modifiedName.toString();
