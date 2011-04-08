@@ -92,7 +92,9 @@ public class ContextFacade extends StandardContext implements Context {
 
     private Map<String, String> filters = new HashMap<String, String>();
 
-    private Map<String, String> filterMappings = new HashMap<String, String>();
+    private Map<String, String> servletNameFilterMappings = new HashMap<String, String>();
+
+    private Map<String, String> urlPatternFilterMappings = new HashMap<String, String>();
 
     private Map<String, String> servlets = new HashMap<String, String>();
 
@@ -338,8 +340,12 @@ public class ContextFacade extends StandardContext implements Context {
         return filters;
     }
 
-    public Map<String, String> getFilterMappings() {
-        return filterMappings;
+    public Map<String, String> getServletNameFilterMappings() {
+        return servletNameFilterMappings;
+    }
+
+    public Map<String, String> getUrlPatternFilterMappings() {
+        return urlPatternFilterMappings;
     }
 
     public FilterRegistration.Dynamic addFilterFacade(
@@ -375,7 +381,11 @@ public class ContextFacade extends StandardContext implements Context {
 
     @Override
     public void addFilterMap(FilterMap filterMap, boolean isMatchAfter) {
-        filterMappings.put(filterMap.getFilterName(), filterMap.getServletName());
+        if (filterMap.getServletName() != null) {
+            servletNameFilterMappings.put(filterMap.getFilterName(), filterMap.getServletName());
+        } else if (filterMap.getURLPattern() != null) {
+            urlPatternFilterMappings.put(filterMap.getFilterName(), filterMap.getURLPattern());
+        }
     }
 
     public FilterRegistration.Dynamic addFilter(
