@@ -1504,10 +1504,11 @@ public abstract class BaseContainer
 
 
 
-        for(String intf : intfsForPortableJndi.keySet()) {
+        for(Map.Entry<String, Object> entry : intfsForPortableJndi.entrySet()) {
+            String intf = entry.getKey();
 
             String fullyQualifiedJavaGlobalName = javaGlobalName + "!" + intf;
-            Object namingProxy = intfsForPortableJndi.get(intf);
+            Object namingProxy = entry.getValue();
             boolean local = (namingProxy instanceof JavaGlobalJndiNamingObjectProxy);
 
             if (intfsForPortableJndi.size() == 1) {
@@ -2022,7 +2023,9 @@ public abstract class BaseContainer
 
                     Map<EntityManagerFactory, EntityManager> entityManagerMap = sessionCtx
                             .getExtendedEntityManagerMap();
-                    for (EntityManagerFactory emf : entityManagerMap.keySet()) {
+                    for (Map.Entry<EntityManagerFactory, EntityManager> entry : 
+                            entityManagerMap.entrySet()) {
+                        EntityManagerFactory emf = entry.getKey();
 
                         if (sessionCtx.isEmfRegisteredWithTx(emf)) {
                             j2eeTx.removeExtendedEntityManagerMapping(emf);
@@ -2165,7 +2168,8 @@ public abstract class BaseContainer
      * automatic timers to the map of scheduleIds
      */
     protected void addSchedule(TimerPrimaryKey timerId, TimerSchedule ts) {
-        for (Method m : schedules.keySet()) {
+        for (Map.Entry<Method, List<ScheduledTimerDescriptor>> entry : schedules.entrySet()) {
+            Method m = entry.getKey();
             if (m.getName().equals(ts.getTimerMethodName()) &&
                     m.getParameterTypes().length == ts.getMethodParamCount()) {
                 scheduleIds.put(timerId, m);
@@ -3535,8 +3539,8 @@ public abstract class BaseContainer
                 processTxAttrForScheduledTimeoutMethod(ejbTimeoutMethod);
             }
 
-            for (Method m : schedules.keySet()) {
-                processTxAttrForScheduledTimeoutMethod(m);
+            for (Map.Entry<Method, List<ScheduledTimerDescriptor>> entry : schedules.entrySet()) {
+                processTxAttrForScheduledTimeoutMethod(entry.getKey());
             }
         }
 
@@ -4707,7 +4711,9 @@ public abstract class BaseContainer
                 sessionCtx.getExtendedEntityManagerMap();
 
             JavaEETransaction clientJ2EETx = (JavaEETransaction) clientTx;
-            for(EntityManagerFactory emf : entityManagerMap.keySet()) {
+            for (Map.Entry<EntityManagerFactory, EntityManager> entry : 
+                    entityManagerMap.entrySet()) {
+                EntityManagerFactory emf = entry.getKey();
 
                 // Make sure there is no Transactional persistence context
                 // for the same EntityManagerFactory as this SFSB's 
@@ -4720,7 +4726,7 @@ public abstract class BaseContainer
                 // persistence context within this transaction for the 
                 // same EntityManagerFactory.
                 EntityManager em = clientJ2EETx.getExtendedEntityManager(emf);
-                if( (em != null) && entityManagerMap.get(emf) != em ) {
+                if( (em != null) && entry.getValue() != em ) {
                     throw new EJBException("Detected two different extended persistence contexts for the same EntityManagerFactory within a transaction");
                 }
 

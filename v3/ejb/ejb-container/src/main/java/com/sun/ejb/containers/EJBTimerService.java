@@ -1267,10 +1267,12 @@ public class EJBTimerService
                         " persistent timers for containerId: " + containerId);
             }
 
+            boolean schedulesExist = (schedules.size() > 0);
             for (TimerState timer : timers) {
                 TimerSchedule ts = timer.getTimerSchedule();
-                if (ts != null && ts.isAutomatic() && schedules != null) {
-                    for (Method m : schedules.keySet()) {
+                if (ts != null && ts.isAutomatic() && schedulesExist) {
+                    for (Map.Entry<Method, List<ScheduledTimerDescriptor>> entry : schedules.entrySet()) {
+                        Method m = entry.getKey();
                         if (m.getName().equals(ts.getTimerMethodName()) &&
                                 m.getParameterTypes().length == ts.getMethodParamCount()) {
                             result.put(new TimerPrimaryKey(timer.getTimerId()), m);
@@ -1335,7 +1337,8 @@ public class EJBTimerService
             Map<TimerPrimaryKey, Method> result,
             String server_name, boolean startTimers, boolean deploy) throws Exception {
 
-        for (Object key : schedules.keySet()) {
+        for (Map.Entry<?, List<ScheduledTimerDescriptor>> entry : schedules.entrySet()) {
+            Object key = entry.getKey();
             String mname = null;
             int args_length = 0;
             if (key instanceof Method) {
@@ -1346,7 +1349,7 @@ public class EJBTimerService
                 args_length = ((MethodDescriptor)key).getJavaParameterClassNames().length;
             }
 
-            for (ScheduledTimerDescriptor sch : schedules.get(key)) {
+            for (ScheduledTimerDescriptor sch : entry.getValue()) {
                 boolean persistent = sch.getPersistent();
                 if ((persistent && !deploy) || (!persistent && !startTimers)) {
                     // Do not recreate schedule-based timers on restart or create
@@ -2573,8 +2576,9 @@ public class EJBTimerService
         public synchronized Set<TimerPrimaryKey> getNonPersistentTimerIdsForContainer(
                                         long containerId_) {
             Set<TimerPrimaryKey> result = new HashSet<TimerPrimaryKey>();
-            for (TimerPrimaryKey key : nonpersistentTimers_.keySet()) {
-                RuntimeTimerState rt = nonpersistentTimers_.get(key);
+            for (Map.Entry<TimerPrimaryKey, RuntimeTimerState> entry : nonpersistentTimers_.entrySet()) {
+                TimerPrimaryKey key = entry.getKey();
+                RuntimeTimerState rt = entry.getValue();
                 if ((rt.getContainerId() == containerId_)) {
                     result.add(key);
                 }
@@ -2587,8 +2591,9 @@ public class EJBTimerService
         public synchronized Set<TimerPrimaryKey> getNonPersistentActiveTimerIdsForContainer(
                                         long containerId_) {
             Set<TimerPrimaryKey> result = new HashSet<TimerPrimaryKey>();
-            for (TimerPrimaryKey key : nonpersistentTimers_.keySet()) {
-                RuntimeTimerState rt = nonpersistentTimers_.get(key);
+            for (Map.Entry<TimerPrimaryKey, RuntimeTimerState> entry : nonpersistentTimers_.entrySet()) {
+                TimerPrimaryKey key = entry.getKey();
+                RuntimeTimerState rt = entry.getValue();
                 if ((rt.getContainerId() == containerId_) && rt.isActive()) {
                     result.add(key);
                 }
@@ -2600,8 +2605,9 @@ public class EJBTimerService
         // Returns a Set of active non-persistent timer ids for this server
         public synchronized Set<TimerPrimaryKey> getActiveTimerIdsByThisServer() {
             Set<TimerPrimaryKey> result = new HashSet<TimerPrimaryKey>();
-            for (TimerPrimaryKey key : nonpersistentTimers_.keySet()) {
-                RuntimeTimerState rt = nonpersistentTimers_.get(key);
+            for (Map.Entry<TimerPrimaryKey, RuntimeTimerState> entry : nonpersistentTimers_.entrySet()) {
+                TimerPrimaryKey key = entry.getKey();
+                RuntimeTimerState rt = entry.getValue();
                 if (rt.isActive()) {
                     result.add(key);
                 }
