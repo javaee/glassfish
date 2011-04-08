@@ -2064,32 +2064,6 @@ public class VirtualServer extends StandardHost
         super.stop();
     }
 
-    /**
-     * Enables this component.
-     * 
-     * @throws GlassFishException if this component fails to be enabled
-     */    
-    public void enable() throws GlassFishException {
-       try {
-            start();
-        } catch (LifecycleException e) {
-            throw new GlassFishException(e);
-        }
-    }
-    
-    /**
-     * Disables this component.
-     * 
-     * @throws LifecycleException if this component fails to be disabled
-     */
-    public void disable() throws GlassFishException {
-       try {
-            stop();
-        } catch (LifecycleException e) {
-            throw new GlassFishException(e);
-        }        
-    }
-
 	public void updateWebXml(ContextFacade facade, File file) throws Exception {
 
         Map<String, String> servlets = facade.getAddedServlets();

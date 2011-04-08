@@ -113,6 +113,8 @@ public class WebResourceCollection {
      * Sets the HTTP methods that should be protected
      *
      * @param httpMethods the HTTP methods
+     *
+     * @throws GlassFishException if HttpMethodOmissions is already defined
      */
     public void setHttpMethods(Set<String> httpMethods)
             throws GlassFishException {
@@ -138,6 +140,8 @@ public class WebResourceCollection {
      *
      * @param httpMethodOmissions the HTTP methods to be 
      * omitted from protection
+     *
+     * @throws GlassFishException if HttpMethods is already defined
      */
     public void setHttpMethodOmissions(Set<String> httpMethodOmissions)
             throws GlassFishException {

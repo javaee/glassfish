@@ -60,7 +60,6 @@ public class SslConfig {
      * Create an instance of <tt>SslConfig</tt>.
      */
     public SslConfig() {
-        
     }
 
     /**

@@ -72,11 +72,10 @@ public class SecurityConstraint {
     private TransportGuarantee tg;
 
     /**
-     * Create an instance of SecurityConstraint with default values
-     *
+     * Create an instance of SecurityConstraint
+     */
     public SecurityConstraint() {
-        roleNames = new String[0];
-    } */
+    }
 
 
     /**
