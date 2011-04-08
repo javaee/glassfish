@@ -53,7 +53,7 @@
     <property name="install.dir" value="binaries"/>
     <property name="server.dir" value="${install.dir}/glassfish3"/>
     <property name="maven.dir" value="${install.dir}/${maven.version}"/>
-    <property name="glassfish.download.dir" value="../../../"/> 
+    <property name="glassfish.download.dir" value="."/> 
     <property name="glassfish.download" value="${glassfish.download.dir}/glassfish.zip"/>
 
     <property name="http.proxyHost" value=""/>
@@ -64,6 +64,19 @@
     <property name="DOMAIN" value="domain1"/>
     <property name="RELEASEAFTER" value="true"/>
     <property name="SLOWDOWN" value="true"/>
+
+    <property name="env.ADMIN_PORT" value="14848"/>
+    <property name="env.INSTANCE_PORT" value="18080"/>
+    <property name="env.JMS_PORT" value="17676"/>
+    <property name="env.JMX_PORT" value="18686"/>
+    <property name="env.ORB_PORT" value="13700"/>
+    <property name="env.SSL_PORT" value="18181"/>
+    <property name="env.ORB_SSL_PORT" value="13820"/>
+    <property name="env.ORB_SSL_MUTUALAUTH_PORT" value="13920"/>
+    <property name="env.OSGI_SHELL" value="16666"/>
+    <property name="env.DEBUGGER_PORT" value="19009"/>
+
+    <property name="env.MAVEN_HOME" value="${user.home}/.m2"/>
 
     <property name="ant.contrib.url"
               value="http://mirrors.ibiblio.org/pub/mirrors/maven2/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar"/>
@@ -80,6 +93,7 @@
         <delete dir="${install.dir}"/>
         <mkdir dir="${install.dir}"/>
         <unzip src="${glassfish.download}" dest="${install.dir}"/>
+
     </target>
 
     <target name="setup">
@@ -99,7 +113,44 @@
         </if>
     </target>
 
-    <target name="start-server" depends="shutdown-server">
+    <target name="recreate-domain" depends="shutdown-server">
+        <echo>
+            Port assigments:
+            Admin port: ${env.ADMIN_PORT}
+            Instance port: ${env.INSTANCE_PORT}
+            JMS Port: ${env.JMS_PORT}
+            JMX Port: ${env.JMX_PORT}
+            ORB Port: ${env.ORB_PORT}
+            SSL Port: ${env.SSL_PORT}
+            ORB SSL Port: ${env.ORB_SSL_PORT}
+            ORB SSL Mutual Auth Port: ${env.ORB_SSL_MUTUALAUTH_PORT}
+            OSGi Shell: ${env.OSGI_SHELL}
+            JAVA Debugger Port: ${env.DEBUGGER_PORT}
+        </echo>
+        
+        <exec executable="${executable}">
+            <arg value="--port"/>
+            <arg value="${env.ADMIN_PORT}"/>
+            <arg value="delete-domain"/>
+            <arg value="${DOMAIN}"/>
+        </exec>
+
+        <exec executable="${executable}">
+            <arg value="--port"/>
+            <arg value="${env.ADMIN_PORT}"/>
+            <arg value="create-domain"/>
+            <arg value="--adminport"/>
+            <arg value="${env.ADMIN_PORT}"/>
+            <arg value="--nopassword=true"/>
+            <arg value="--domainproperties"/>
+            <arg value="jms.port=${env.JMS_PORT}:domain.jmxPort=${env.JMX_PORT}:orb.listener.port=${env.ORB_PORT}:http.ssl.port=${env.SSL_PORT}:orb.ssl.port=${env.ORB_SSL_PORT}:orb.mutualauth.port=${env.ORB_SSL_MUTUALAUTH_PORT}:osgi.shell.telnet.port=${env.OSGI_SHELL}:java.debugger.port=${env.DEBUGGER_PORT}"/>
+            <arg value="--instanceport"/>
+            <arg value="${env.INSTANCE_PORT}"/>
+            <arg value="${DOMAIN}"/>
+        </exec>
+    </target>
+
+    <target name="start-server" depends="recreate-domain">
         <echo message="***** Starting GlassFish"/>
         <exec executable="${executable}">
             <arg value="start-domain"/>
@@ -114,7 +165,8 @@
                 <artifact:mvn pom="pom.xml" fork="true" mavenHome="${env.MAVEN_HOME}" failonerror="false" resultproperty="test.result">
                     <arg value="-Dhttp.proxyHost=${http.proxyHost}"/>
                     <arg value="-Dhttp.proxyPort=${http.proxyPort}"/>
-                    <arg value="-Dadmin.port=${GUI_ADMIN_PORT}"/>
+                    <arg value="-Dadmin.port=${env.ADMIN_PORT}"/>
+                    <arg value="-Dinstance.port=${env.INSTANCE_PORT}"/>
                     <arg value="-Dbrowser=${BROWSER}"/>
                     <arg value="-DreleaseAfter=${RELEASEAFTER}"/>
                     <arg value="-DslowDown=${SLOWDOWN}"/>
