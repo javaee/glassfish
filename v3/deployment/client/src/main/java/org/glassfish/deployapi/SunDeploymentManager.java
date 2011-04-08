@@ -306,7 +306,7 @@ public class SunDeploymentManager implements DeploymentManager {
             /*
              *Return an array of runtime type TargetModuleIDImpl [].
              */
-            TargetModuleID [] answer = (TargetModuleID []) resultingTMIDs.toArray(new TargetModuleIDImpl[0]);
+            TargetModuleID [] answer = (TargetModuleID []) resultingTMIDs.toArray(new TargetModuleIDImpl[resultingTMIDs.size()]);
             return answer;
 
 
@@ -1480,7 +1480,7 @@ public class SunDeploymentManager implements DeploymentManager {
          *@return array of Target
          */
         public Target [] targets() {
-            return (Target []) targets.toArray(new TargetImpl[] {});
+            return (Target []) targets.toArray(new TargetImpl[targets.size()]);
         }
         
         /**

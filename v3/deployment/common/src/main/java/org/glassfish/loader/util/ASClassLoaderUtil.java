@@ -442,13 +442,12 @@ public class ASClassLoaderUtil {
         if (manifest != null) {
             Attributes mainAttributes  = manifest.getMainAttributes();
 
-            for (Iterator itr=mainAttributes.keySet().iterator();
-                itr.hasNext();) {
+            for (Map.Entry entry : mainAttributes.entrySet()) {
 
-                Attributes.Name next = (Attributes.Name) itr.next();
+                Attributes.Name next = (Attributes.Name) entry.getKey();
 
                 if (next.equals(Attributes.Name.CLASS_PATH)) {
-                    String classpathString = (String) mainAttributes.get(next);
+                    String classpathString = (String) entry.getValue();
                     urlList = getURLsFromClasspath(classpathString, " ", 
                         rootPath);
                 }

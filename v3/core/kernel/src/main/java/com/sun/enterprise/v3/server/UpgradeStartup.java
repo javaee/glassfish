@@ -593,13 +593,12 @@ public class UpgradeStartup implements ModuleStartup {
     private void processManifest(Manifest m, String moduleName) {
         // remove signature related entries from the file
         Map<String, Attributes> entries = m.getEntries(); 
-        Iterator<String> entryKeyItr = entries.keySet().iterator(); 
-        while (entryKeyItr.hasNext()) {
-            String entryKey = entryKeyItr.next();
-            Attributes attr = entries.get(entryKey);
-            Iterator attrKeyItr  = attr.keySet().iterator();
-            while (attrKeyItr.hasNext()) {
-                Object attrKey = attrKeyItr.next();
+        Iterator<Map.Entry<String, Attributes>> entryItr = entries.entrySet().iterator(); 
+        while (entryItr.hasNext()) {
+            Attributes attr = entryItr.next().getValue();
+            Iterator<Map.Entry<Object, Object>> attrItr  = attr.entrySet().iterator();
+            while (attrItr.hasNext()) {
+                Object attrKey = attrItr.next().getKey();
                 if (attrKey instanceof Attributes.Name) {
                     Attributes.Name attrKey2 = (Attributes.Name) attrKey;
                     if (attrKey2.toString().trim().equals("Digest-Algorithms")
@@ -607,12 +606,12 @@ public class UpgradeStartup implements ModuleStartup {
                         logger.log(Level.INFO, "Removing signature attribute " 
                             + attrKey2 + " from manifest in "  + 
                             moduleName + "\n");
-                        attrKeyItr.remove();
+                        attrItr.remove();
                     }
                 }
             }
             if (attr.size() == 0) {
-                entryKeyItr.remove();
+                entryItr.remove();
             }
         }
     }

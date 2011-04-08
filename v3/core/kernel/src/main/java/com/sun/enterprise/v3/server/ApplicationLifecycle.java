@@ -2030,8 +2030,8 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             appContext.getModuleDeploymentContexts();
 
         // install at module level 
-        for (String moduleUri : moduleContexts.keySet()) {
-            ExtendedDeploymentContext context = moduleContexts.get(moduleUri);
+        for (Map.Entry<String, ExtendedDeploymentContext> entry : moduleContexts.entrySet()) {
+            ExtendedDeploymentContext context = entry.getValue();
             installTransformersOnModule(context, false);
         }
     }
