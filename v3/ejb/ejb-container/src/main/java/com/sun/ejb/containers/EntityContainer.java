@@ -2597,12 +2597,12 @@ public class EntityContainer
         
         sbuf.append("\n\t[").append(header).append(": ");
         if (map != null) {
-            Iterator iter = map.keySet().iterator();
+            Iterator iter = map.entrySet().iterator();
             
             while (iter.hasNext()) {
-                String name = (String)iter.next();
-                sbuf.append(name).append("=").append(map.get(name))
-		    .append("; ");
+                Map.Entry entry = (Map.Entry)iter.next();
+                sbuf.append((String)entry.getKey()).append("=")
+                        .append(entry.getValue()).append("; ");
             }
         } else {
             sbuf.append("NONE");

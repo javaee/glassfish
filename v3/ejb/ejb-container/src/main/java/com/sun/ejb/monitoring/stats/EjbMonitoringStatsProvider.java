@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -119,8 +119,8 @@ public abstract class EjbMonitoringStatsProvider {
                 appName, moduleName, beanName, this, invokerId);
         if (beanSubTreeNode != null) {
             registered = true;
-            for (Method m : methodMonitorMap.keySet()) {
-                EjbMethodStatsProvider monitor = methodMonitorMap.get(m);
+            for (Map.Entry<Method, EjbMethodStatsProvider> entry : methodMonitorMap.entrySet()) {
+                EjbMethodStatsProvider monitor = entry.getValue();
                 if (!monitor.isRegistered()) {
                     String node = EjbMonitoringUtils.registerMethod(beanSubTreeNode,
                             monitor.getStringifiedMethodName(), monitor, invokerId);

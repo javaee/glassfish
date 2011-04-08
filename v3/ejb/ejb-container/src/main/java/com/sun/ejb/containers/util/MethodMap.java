@@ -161,11 +161,11 @@ public final class MethodMap extends HashMap {
         
         methodInfo_ = new MethodInfo[numBuckets_];
 
-        Set methods  = methodMap.keySet();
         Set occupied = new HashSet();
 
-        for(Iterator iter = methods.iterator(); iter.hasNext();) {
-            Object nextObj = iter.next();           
+        for(Iterator iter = methodMap.entrySet().iterator(); iter.hasNext();) {
+            Map.Entry entry = (Map.Entry)iter.next();
+            Object nextObj = entry.getKey();           
             Method next = null;
 
             if( nextObj == null ) {
@@ -184,7 +184,7 @@ public final class MethodMap extends HashMap {
 
                 MethodInfo methodInfo = new MethodInfo();
                 methodInfo.key = next;
-                methodInfo.value = methodMap.get(next);
+                methodInfo.value = entry.getValue();
 
                 // cache declaring class so we can avoid the method call
                 // during lookup operation.

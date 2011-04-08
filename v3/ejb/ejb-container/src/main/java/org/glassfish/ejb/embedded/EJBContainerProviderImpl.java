@@ -250,9 +250,9 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
 
             if (!moduleNames.isEmpty()) {
                 StringBuffer sb = new StringBuffer();
-                for (String mn : moduleNames.keySet()) {
-                    if (!moduleNames.get(mn)) {
-                        sb.append(mn).append(", ");
+                for (Map.Entry<String, Boolean> entry : moduleNames.entrySet()) {
+                    if (!entry.getValue()) {
+                        sb.append(entry.getKey()).append(", ");
                     }
                 }
                 int ln = sb.length();
