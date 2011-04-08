@@ -50,11 +50,14 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-   
     <groupId>org.glassfish.admingui</groupId>
     <artifactId>dist-fragment</artifactId>
     <name>Admin Console Install Fragment for distributions/web</name>
     <packaging>distribution-fragment</packaging>
+
+    <developers>
+        <!-- See parent POM -->
+    </developers>
 
     <build>
         <!--
@@ -77,11 +80,8 @@
                         <configuration>
                             <tasks>
                                 <!-- extract admin gui war file into the final location -->
-				<resolveArtifact artifactId="war" 
-					property="war"/>
-				<unzip src="${war}"
-					dest="target/classes/glassfish/lib/install/applications/__admingui"/>
-
+                                <resolveArtifact artifactId="war" property="war"/>
+                                <unzip src="${war}" dest="target/classes/glassfish/lib/install/applications/__admingui"/>
                             </tasks>
                         </configuration>
                         <goals>
@@ -105,8 +105,8 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>war</artifactId>
             <version>${project.version}</version>
-	    <type>war</type>
-	    <optional>true</optional>
+            <type>war</type>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>

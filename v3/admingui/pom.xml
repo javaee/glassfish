@@ -101,8 +101,8 @@
     </developers>
     
     <modules>
-    	<module>dataprovider</module>
-    	<module>plugin-service</module>
+        <module>dataprovider</module>
+        <module>plugin-service</module>
         <module>common</module>
         <module>core</module>
         <module>cluster</module>
@@ -147,28 +147,28 @@
         <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
-	    <scope>provided</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.jsftemplating</groupId>
             <artifactId>jsftemplating</artifactId>
-	    <scope>provided</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.jsftemplating</groupId>
             <artifactId>jsftemplating-dt</artifactId>
-	    <scope>provided</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.faces</groupId>
             <artifactId>jsf-api</artifactId>
-	    <scope>provided</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.servlet</artifactId>
             <version>${project.version}</version>
-	    <scope>provided</scope>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

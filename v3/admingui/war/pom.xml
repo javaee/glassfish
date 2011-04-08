@@ -44,9 +44,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-	<groupId>org.glassfish</groupId>
-	<artifactId>glassfish-parent</artifactId>
-	<version>3.2-SNAPSHOT</version>
+        <groupId>org.glassfish</groupId>
+        <artifactId>glassfish-parent</artifactId>
+        <version>3.2-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <groupId>org.glassfish.admingui</groupId>
@@ -54,34 +54,38 @@
     <packaging>war</packaging>
     <name>Admin Console WAR</name>
 
+    <developers>
+        <!-- See parent POM -->
+    </developers>
+
     <build>
         <finalName>admingui</finalName>
         <plugins>
-          <plugin>
-            <artifactId>maven-war-plugin</artifactId>
-	    <version>2.0.2</version>
-            <configuration>
-	     <archive>
-	      <manifestEntries>
-		  <Glassfish-require-services>org.glassfish.api.admingui.ConsoleProvider</Glassfish-require-services>
-		  <HK2-Import-Bundles>org.glassfish.admingui.console-common,com.sun.enterprise.hk2,org.glassfish.admingui.console-plugin-service, org.glassfish.deployment.deployment-client,org.glassfish.registration.registration-api,org.glassfish.registration.registration-impl, org.glassfish.javax.servlet, org.glassfish.javax.servlet.jsp, com.sun.jsftemplating, org.glassfish.admingui.dataprovider, com.sun.pkg.client  </HK2-Import-Bundles>
-	      </manifestEntries>
-	     </archive>
-            </configuration>
-          </plugin>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Glassfish-require-services>org.glassfish.api.admingui.ConsoleProvider</Glassfish-require-services>
+                            <HK2-Import-Bundles>org.glassfish.admingui.console-common,com.sun.enterprise.hk2,org.glassfish.admingui.console-plugin-service, org.glassfish.deployment.deployment-client,org.glassfish.registration.registration-api,org.glassfish.registration.registration-impl, org.glassfish.javax.servlet, org.glassfish.javax.servlet.jsp, com.sun.jsftemplating, org.glassfish.admingui.dataprovider, com.sun.pkg.client  </HK2-Import-Bundles>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
-  <dependencies>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>console-core</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-	<groupId>commons-fileupload</groupId>
-	<artifactId>commons-fileupload</artifactId>
-	<scope>runtime</scope>
-    </dependency>
-  </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>console-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
 </project>

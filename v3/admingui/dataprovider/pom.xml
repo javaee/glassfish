@@ -56,8 +56,11 @@
     <name>DataProvider</name>
     <modelVersion>4.0.0</modelVersion>
     <description>DataProvider Repackaged as OSGi bundle for GlassFish</description>
-
     <packaging>jar</packaging>
+
+    <developers>
+        <!-- See parent POM -->
+    </developers>
 
     <properties>
         <!--
@@ -138,7 +141,7 @@
         <dependency>
             <groupId>com.sun.woodstock.dependlibs</groupId>
             <artifactId>dataprovider</artifactId>
-	    <scope>optional</scope>
+            <scope>optional</scope>
         </dependency>
     </dependencies>
 </project>

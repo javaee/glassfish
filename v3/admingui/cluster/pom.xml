@@ -55,15 +55,7 @@
     <description>Clustering support plugin bundle for GlassFish V3 Admin Console</description>
 
     <developers>
-        <developer>
-            <id>anilam</id>
-            <name>Anissa Lam</name>
-            <url>http://blogs.sun.com/anilam</url>
-            <organization>Oracle, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
+        <!-- See parent POM -->
     </developers>
 
     <build>
@@ -102,7 +94,7 @@
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-common</artifactId>
             <version>${project.version}</version>
-	    <scope>provided</scope>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

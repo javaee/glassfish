@@ -56,24 +56,7 @@
     <description>Custom Theme Plugin for GlassFish V3 Admin Console</description>
 
     <developers>
-        <developer>
-            <id>anilam</id>
-            <name>Anissa Lam</name>
-            <url>http://blogs.sun.com/anilam</url>
-            <organization>Oracle, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>kenpaulsen</id>
-            <name>Ken Paulsen</name>
-            <url>http://blogs.sun.com/paulsen</url>
-            <organization>Oracle, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
+        <!-- See parent POM -->
     </developers>
 
     <build>

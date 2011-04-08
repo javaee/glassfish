@@ -55,24 +55,7 @@
     <description>Web container plugin bundle for GlassFish V3 Admin Console</description>
 
     <developers>
-        <developer>
-            <id>anilam</id>
-            <name>Anissa Lam</name>
-            <url>http://blogs.sun.com/anilam</url>
-            <organization>Oracle, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>kenpaulsen</id>
-            <name>Ken Paulsen</name>
-            <url>http://blogs.sun.com/paulsen</url>
-            <organization>Oracle, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
+        <!-- See parent POM -->
     </developers>
 
     <build>
@@ -105,19 +88,19 @@
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>${project.version}</version>
-	    <scope>provided</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-plugin-service</artifactId>
             <version>${project.version}</version>
-	    <scope>provided</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-common</artifactId>
             <version>${project.version}</version>
-	    <scope>provided</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.admin</groupId>
@@ -128,13 +111,13 @@
             <groupId>org.glassfish.deployment</groupId>
             <artifactId>deployment-client</artifactId>
             <version>${project.version}</version>
-	    <scope>provided</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>web-gui-plugin-common</artifactId>
             <version>${project.version}</version>
-	    <scope>provided</scope>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

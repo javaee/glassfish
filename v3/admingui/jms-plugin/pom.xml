@@ -54,6 +54,10 @@
     <packaging>hk2-jar</packaging>
     <name>Admin Console JMS Plugin</name>
 
+    <developers>
+        <!-- See parent POM -->
+    </developers>
+
     <build>
         <plugins>
             <plugin>

@@ -59,6 +59,10 @@
         </repository>
     </repositories>
 
+    <developers>
+        <!-- See parent POM -->
+    </developers>
+
     <properties>
         <selenium.version>2.0b3</selenium.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
