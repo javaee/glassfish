@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.rest.resources;
 
 import java.net.HttpURLConnection;
@@ -73,55 +72,33 @@ import static org.glassfish.admin.rest.Util.*;
  * @author Rajeshwar Patil
  */
 public abstract class TemplateListOfResource {
-    private final static String QUERY_PARAMETERS = "queryParameters";
-    private final static String MESSAGE_PARAMETERS = "messageParameters";
 
     @Context
     protected HttpHeaders requestHeaders;
-
     @Context
     protected UriInfo uriInfo;
-    
     @Context
     protected ResourceContext resourceContext;
-
     @Context
     protected Habitat habitat;
-
     protected List<Dom> entity;
     protected Dom parent;
     protected String tagName;
-
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateListOfResource.class);
 
     @GET
     @Produces({"text/html;qs=2", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response get(@QueryParam("expandLevel") @DefaultValue("1") int expandLevel) {
         return Response.ok().entity(buildActionReportResult()).build();
-/*
-        List<Dom> domList = new ArrayList();
-        List<Dom> entities = getEntity();
-        if (entities==null){
-            return new GetResultList(domList, getPostCommand(), getCommandResourcesPaths(), options());//empty dom list
-        }
-        Iterator iterator = entities.iterator();
-        ConfigBean e;
-        while (iterator.hasNext()) {
-            e = (ConfigBean) iterator.next();
-            domList.add(e);
-        }
-
-        return new GetResultList(domList, getPostCommand(), getCommandResourcesPaths(), options());
-*/
     }
 
     @POST
     //create
     @Produces({"text/html;qs=2",
-            MediaType.APPLICATION_JSON,
-            MediaType.APPLICATION_XML})
+        MediaType.APPLICATION_JSON,
+        MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,
-            MediaType.APPLICATION_FORM_URLENCODED})
+        MediaType.APPLICATION_FORM_URLENCODED})
     public Response createResource(HashMap<String, String> data) {
         try {
             if (data.containsKey("error")) {
@@ -151,7 +128,7 @@ public abstract class TemplateListOfResource {
                 if (exitCode != ActionReport.ExitCode.FAILURE) {
                     String successMessage =
                             localStrings.getLocalString("rest.resource.create.message",
-                                    "\"{0}\" created successfully.", resourceToCreate);
+                            "\"{0}\" created successfully.", resourceToCreate);
                     ActionReportResult arr = ResourceUtil.getActionReportResult(201, successMessage, requestHeaders, uriInfo);
                     return Response.ok(arr).build();
                 }
@@ -160,26 +137,10 @@ public abstract class TemplateListOfResource {
                 ActionReportResult arr = ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo);
                 return Response.status(400).entity(arr).build();
             } else {
-                // create it on the fly without a create CLI command.
-
-               /* Class<? extends ConfigBeanProxy> proxy = getElementTypeByName(parent, tagName);
-                data = ResourceUtil.translateCamelCasedNamesToXMLNames(data);
-                try {
-                    ConfigBean createdBean = ConfigSupport.createAndSet((ConfigBean) parent, proxy, data);
-                    String successMessage =
-                            localStrings.getLocalString("rest.resource.create.message",
-                            "\"{0}\" created successfully.", createdBean.getKey());
-                    return ResourceUtil.getActionReportResult(201, successMessage, requestHeaders, uriInfo);
-                } catch (TransactionFailure ex) {
-                    throw new CliFailureException(ex.getMessage(), ex);
-                }*/
-
                 ActionReportResult arr = ResourceUtil.getActionReportResult(400, "No CRUD Create possible.", requestHeaders, uriInfo);
                 return Response.status(HttpURLConnection.HTTP_INTERNAL_ERROR).entity(arr).build();
-
-
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
@@ -188,8 +149,8 @@ public abstract class TemplateListOfResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response post(FormDataMultiPart formData) {
         /* data passed to the generic command running
-       *
-       * */
+         *
+         * */
         HashMap<String, String> data = TemplateRestResource.createDataBasedOnForm(formData);
         return createResource(data, data.get("name")); //execute the deploy command with a copy of the file locally
 
@@ -212,8 +173,9 @@ public abstract class TemplateListOfResource {
     public void setParentAndTagName(Dom parent, String tagName) {
         this.parent = parent;
         this.tagName = tagName;
-        if (parent!=null)
+        if (parent != null) {
             entity = parent.nodeElements(tagName);
+        }
 
     }
 
@@ -228,22 +190,22 @@ public abstract class TemplateListOfResource {
     public String getPostCommand() {
         ConfigModel.Property p = parent.model.getElement(tagName);
 
-        if (p==null){ //"*"
+        if (p == null) { //"*"
             ConfigModel.Property childElement = parent.model.getElement("*");
-            if (childElement!=null) {
+            if (childElement != null) {
                 ConfigModel.Node node = (ConfigModel.Node) childElement;
                 ConfigModel childModel = node.getModel();
                 List<ConfigModel> subChildConfigModels = ResourceUtil.getRealChildConfigModels(childModel, parent.document);
                 for (ConfigModel subChildConfigModel : subChildConfigModels) {
                     if (subChildConfigModel.getTagName().equals(tagName)) {
-                                return ResourceUtil.getCommand(RestRedirect.OpType.POST, subChildConfigModel);
+                        return ResourceUtil.getCommand(RestRedirect.OpType.POST, subChildConfigModel);
                     }
                 }
 
-                }
-        }else {
+            }
+        } else {
             ConfigModel.Node n = (ConfigModel.Node) p;
-           return ResourceUtil.getCommand(RestRedirect.OpType.POST, n.getModel());
+            return ResourceUtil.getCommand(RestRedirect.OpType.POST, n.getModel());
         }
 
         return null;
@@ -366,55 +328,12 @@ public abstract class TemplateListOfResource {
                 postMethodMetaData.setIsFileUploadOperation(true);
             }
             map.put("POST", postMethodMetaData);
-        } /*else {
-            ConfigModel.Node prop = (ConfigModel.Node) parent.model.getElement(tagName);
-            if (prop == null) { //maybe null when Element ("*") is used
-                try {
-                    ConfigModel.Node prop2 = (ConfigModel.Node) parent.model.getElement("*");
-
-                    ConfigModel childModel = prop2.getModel();
-                    Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName); ///  a should be the typename
-                    List<ConfigModel> lcm = parent.document.getAllModelsImplementing(subType);
-                    if (lcm == null) { //https://glassfish.dev.java.net/issues/show_bug.cgi?id=12654
-                        lcm = new ArrayList<ConfigModel>();
-                        lcm.add(childModel);
-                    }
-                    for (ConfigModel cmodel : lcm) {
-                        if (cmodel.getTagName().equals(tagName)) {
-                            MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData2(parent,
-                                    cmodel, Constants.MESSAGE_PARAMETER);
-                            postMethodMetaData.setDescription("Update");
-                            map.put("POST", postMethodMetaData);
-                        }
-                    }
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData2(parent,
-                        prop.getModel(), Constants.MESSAGE_PARAMETER);
-                postMethodMetaData.setDescription("Update");
-                map.put("POST", postMethodMetaData);
-            }
-
-        }*/
+        } 
 
         return map;
     }
 
     private String getErrorMessage(HashMap<String, String> data, ActionReport ar) {
-        String message;
-        //error info
-        message = ar.getMessage();
-
-        /*if (data.isEmpty()) {
-            try {
-                //usage info
-                message = ar.getTopMessagePart().getChildren().get(0).getMessage();
-            } catch (Exception e) {
-                message = ar.getMessage();
-            }
-        }*/
-        return message;
+        return ar.getMessage();
     }
 }
