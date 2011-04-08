@@ -6,6 +6,7 @@ package com.elf.enterprise.monitoring;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
@@ -15,19 +16,22 @@ import javax.servlet.http.HttpServletResponse;
 import org.glassfish.external.probe.provider.annotations.Probe;
 import org.glassfish.external.probe.provider.annotations.ProbeProvider;
 import org.glassfish.flashlight.client.ProbeClientMediator;
+import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
+import org.glassfish.flashlight.provider.ProbeRegistry;
 
 /**
  * @author Byron Nevins
  */
-
-@ProbeProvider (moduleProviderName="fooblog", moduleName="samples", probeProviderName="ProbeServlet")
-
+@ProbeProvider(moduleProviderName = "fooblog", moduleName = "samples", probeProviderName = "ProbeServlet")
 public class ProbeServlet extends HttpServlet {
     @Resource
     private ProbeProviderFactory probeProviderFactory;
     @Resource
     private ProbeClientMediator listenerRegistrar;
+    @Resource
+    private ProbeRegistry probeRegistry;
+    private PrintWriter out;
 
     @Probe(name = "myProbe")
     public void myProbe(String s) {
@@ -38,19 +42,27 @@ public class ProbeServlet extends HttpServlet {
             throws ServletException, IOException {
         myProbe("Hello #" + counter.incrementAndGet());
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
+        out = response.getWriter();
         try {
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ProbeServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Probe Name is MonApp:MonApp:ProbeServlet:myProbe</h1>");
-            out.println("Injected PPF: " + probeProviderFactory);
-            out.println("Injected PCM: " + listenerRegistrar);
-
-            out.println("</body>");
-            out.println("</html>");
+            pr("<html>");
+            pr("<head>");
+            pr("<title>Servlet ProbeServlet</title>");
+            pr("</head>");
+            pr("<body>");
+            pr("<h2>All Probes</h2>");
+            pr("<ul>");
+            // KISS
+            for (Iterator<String> it = getAllProbes().iterator(); it.hasNext();) {
+                String s = it.next();
+                
+                if(s.startsWith("fooblog"))
+                    s = "<b>" + s + "</b>";
+                
+                pr("<li>" + s + "</li>");
+            }
+            pr("</ul>");
+            pr("</body>");
+            pr("</html>");
         }
         finally {
             out.close();
@@ -75,8 +87,27 @@ public class ProbeServlet extends HttpServlet {
         }
     }
 
+    private void pr(String s) {
+        out.println(s);
+    }
+
+    private Set<String> getAllProbes() {
+        Collection<FlashlightProbe> probes = probeRegistry.getAllProbes();
+        NavigableSet sorted = new TreeSet<String>();
+
+        for (FlashlightProbe flp : probes) {
+            String probeString = flp.toString();
+            sorted.add(probeString);
+        }
+
+        if (sorted.isEmpty()) {
+            sorted.add("No Probes found!");
+        }
+        return sorted;
+    }
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
+    /**
      * Handles the HTTP <code>GET</code> method.
      * @param request servlet request
      * @param response servlet response
