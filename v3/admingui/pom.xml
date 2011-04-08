@@ -61,22 +61,38 @@
             <url>http://blogs.sun.com/anilam</url>
             <organization>Oracle, Inc.</organization>
             <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>kenpaulsen</id>
-            <name>Ken Paulsen</name>
-            <url>http://blogs.sun.com/paulsen</url>
-            <organization>Oracle, Inc.</organization>
-            <roles>
+                <role>lead</role>
                 <role>developer</role>
             </roles>
         </developer>
         <developer>
             <id>jdlee</id>
             <name>Jason Lee</name>
-            <url>http://blogs.steeplesoft..com/</url>
+            <url>http://blogs.steeplesoft.com/</url>
+            <organization>Oracle, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>sirajg</id>
+            <name>Siraj Ghaffar</name>
+            <organization>Oracle, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>srinik76</id>
+            <name>Srinivas Krishnan</name>
+            <organization>Oracle, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>sumasri</id>
+            <name>Suma Sri Uppala</name>
             <organization>Oracle, Inc.</organization>
             <roles>
                 <role>developer</role>
