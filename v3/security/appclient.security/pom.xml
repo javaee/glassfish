@@ -62,6 +62,14 @@
                 <role>developer</role>
             </roles>
         </developer>
+        <developer>
+            <id>nitkal</id>
+            <name>Nithya Subramanian</name>
+            <organization>Oracle, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
