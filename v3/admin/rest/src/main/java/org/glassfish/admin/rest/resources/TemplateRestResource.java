@@ -447,15 +447,6 @@ public class TemplateRestResource {
         return null;
     }
 
-    /*
-     * see if we can understand the ConfigBeans annotations like:
-     * @RestRedirects(
-    {
-    @RestRedirect(opType= RestRedirect.OpType.DELETE, commandName="undeploy"),
-    @RestRedirect(opType= RestRedirect.OpType.POST, commandName = "redeploy")
-    }
-     **/
-
     /**
      * Returns the list of command resource paths [command, http method, url/path]
      *
