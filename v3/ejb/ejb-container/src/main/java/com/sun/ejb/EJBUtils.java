@@ -758,7 +758,6 @@ public class EJBUtils {
         throws IOException {
 
         Class clazz = instance.getClass().getSuperclass();
-        final ObjectInputStream objInputStream = ois;
 
         // Use helper method to get sorted list of fields eligible
         // for deserialization.  This ensures that we correctly match
