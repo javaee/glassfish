@@ -51,10 +51,10 @@
     &testproperties;
     &reporting;
 
-    <target name="all" depends="build,setup,deploy,run,undeploy,unsetup,dev-report"/>
+    <target name="all" depends="clean-results, build,setup,deploy,run,undeploy,unsetup,dev-report"/>
+    <target name="test" depends="build,setup,deploy,run,undeploy,unsetup"/>
 
     <target name="setup" depends="init-common">
-      <antcall target="clean-results"/>
       <antcall target="start-database"/>
       <ant target="startDomain"/>
       <antcall target="setup-database"/>

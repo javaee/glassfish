@@ -51,11 +51,11 @@
     &testproperties;
     &reporting;
 
-    <!-- executed list of targets: build,setup,deploy,verify,add-cluster,verify,redeploy,verify,undeploy,unsetup,dev-report -->
-    <target name="all" depends="build,setup,run-test,unsetup,dev-report"/>
+    <!-- executed list of targets: clean-results,build,setup,deploy,verify,add-cluster,verify,redeploy,verify,undeploy,unsetup,dev-report -->
+    <target name="all" depends="clean-results,build,setup,run-test,unsetup,dev-report"/>
+    <target name="test" depends="build,setup,run-test,unsetup"/>
 
     <target name="setup" depends="init-common">
-      <antcall target="clean-results"/>
       <antcall target="start-database"/>
       <ant target="startDomain"/>
       <antcall target="setup-database"/>
@@ -78,6 +78,8 @@
       <antcall target="verify"/>
       <antcall target="redeploy"/>
       <antcall target="verify"/>
+      <ant target="stopDomain"/>
+      <ant target="startDomain"/>
       <antcall target="undeploy"/>
     </target>
 

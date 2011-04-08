@@ -53,10 +53,10 @@
 
     <property name="verbose" value="false"/>
 
-    <target name="all" depends="build,setup,run,unsetup,dev-report"/>
+    <target name="all" depends="clean-results,build,setup,run,unsetup,dev-report"/>
+    <target name="test" depends="build,setup,run,unsetup"/>
 
     <target name="setup" depends="init-common">
-      <antcall target="clean-results"/>
       <antcall target="start-database"/>
       <ant target="startDomain"/>
       <antcall target="asadmin-common">
@@ -93,16 +93,16 @@
 
     <target name="setup-cluster" depends="init-common">
         <antcall target="create-cluster-common">
-          <param name="cluster-name" value="${cluster-name}"/>
+          <param name="cluster.name" value="${cluster-name}"/>
         </antcall>
 
         <antcall target="create-local-instance-common">
-            <param name="cluster-name" value="${cluster-name}"/>
+            <param name="cluster.name" value="${cluster-name}"/>
             <param name="instance.name" value="${instance-name-1}"/>
         </antcall>
 
         <antcall target="create-local-instance-common">
-            <param name="cluster-name" value="${cluster-name}"/>
+            <param name="cluster.name" value="${cluster-name}"/>
             <param name="instance.name" value="${instance-name-2}"/>
         </antcall>
 
@@ -114,7 +114,7 @@
 
         <!-- start cluster -->
         <antcall target="start-cluster-common">
-            <param name="cluster-name" value="${cluster-name}"/>
+            <param name="cluster.name" value="${cluster-name}"/>
         </antcall>
 
         <!-- start standalone instance -->
@@ -125,7 +125,7 @@
 
     <target name="unsetup-cluster" depends="init-common">
         <antcall target="stop-cluster-common">
-            <param name="cluster-name" value="${cluster-name}"/>
+            <param name="cluster.name" value="${cluster-name}"/>
         </antcall>
 
         <antcall target="stop-local-instance-common">
@@ -145,7 +145,7 @@
         </antcall>
 
         <antcall target="delete-cluster-common">
-          <param name="cluster-name" value="${cluster-name}"/>
+          <param name="cluster.name" value="${cluster-name}"/>
         </antcall>
     </target>
 
@@ -232,10 +232,10 @@
         </antcall>
         <antcall target="restart-server" />
         <antcall target="stop-cluster-common">
-            <param name="cluster-name" value="${cluster-name}"/>
+            <param name="cluster.name" value="${cluster-name}"/>
         </antcall>
         <antcall target="start-cluster-common">
-            <param name="cluster-name" value="${cluster-name}"/>
+            <param name="cluster.name" value="${cluster-name}"/>
         </antcall>
     </target>
 
