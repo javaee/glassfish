@@ -61,10 +61,8 @@ import com.sun.enterprise.util.HostAndPort;
 /**
  * @author bnevins
  */
-@org.junit.Ignore // This test takes a minute to run, so I (Sahoo) have disabled it.
 @SuppressWarnings({"StaticNonFinalField"})
 public class MiniXmlParserTest {
-
     private static File hasProfiler;
     private static File wrongOrder;
     private static File rightOrder;
@@ -80,6 +78,8 @@ public class MiniXmlParserTest {
     private static File monitoringNone;
     private static File v2DomainXml;
     private static File issue9127DomainXml;
+    private static File clusters1;
+    private static File manysysprops;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -105,7 +105,8 @@ public class MiniXmlParserTest {
                 MiniXmlParserTest.class.getClassLoader().getResource("monitoringFalse.xml").getPath());
         monitoringTrue = new File(MiniXmlParserTest.class.getClassLoader().getResource("monitoringTrue.xml").getPath());
         monitoringNone = new File(MiniXmlParserTest.class.getClassLoader().getResource("monitoringNone.xml").getPath());
-
+        clusters1 = new File(MiniXmlParserTest.class.getClassLoader().getResource("clusters1.xml").getPath());
+        manysysprops = new File(MiniXmlParserTest.class.getClassLoader().getResource("manysysprops.xml").getPath());
 
         if (canAccessInternet())
             v2DomainXml = new File(MiniXmlParserTest.class.getClassLoader().getResource("v2domain.xml").getPath());
@@ -118,6 +119,10 @@ public class MiniXmlParserTest {
         assertTrue(noconfig.exists());
         assertTrue(hasProfiler.exists());
         assertTrue(noDomainName.exists());
+        assertTrue(clusters1.exists());
+        assertTrue(clusters1.length() > 100);
+        assertTrue(manysysprops.exists());
+        assertTrue(manysysprops.length() > 100);
     }
 
     @AfterClass
@@ -431,8 +436,43 @@ public class MiniXmlParserTest {
 
     @Test
     public void testV2DomainXml() throws MiniXmlParserException {
-        if(v2DomainXml != null)
+        if (v2DomainXml != null)
             new MiniXmlParser(v2DomainXml, "server");
+    }
+
+    @Test
+    public void testClusterParsing() throws MiniXmlParserException {
+        MiniXmlParser instance = new MiniXmlParser(clusters1, "i1");
+    }
+
+    /*
+     * the xml has 4 special system-properties.  We check here that they override
+     * each other properly...
+    <system-property name="shouldbeserver" value="domain"></system-property>
+    <system-property name="shouldbeconfig" value="domain"></system-property>
+    <system-property name="shouldbecluster" value="domain"></system-property>
+    <system-property name="shouldbedomain" value="domain"></system-property>
+     */
+    @Test
+    public void testSysPropParsing() throws MiniXmlParserException {
+        MiniXmlParser instance = new MiniXmlParser(manysysprops, "i1");
+        Map<String, String> sp = instance.getSystemProperties();
+        assertTrue(sp.size() >= 4);
+        String ser = sp.get("shouldbeserver");
+        String con = sp.get("shouldbeconfig");
+        String clu = sp.get("shouldbecluster");
+        String dom = sp.get("shouldbedomain");
+        String jun = sp.get("shouldbejunk");
+
+        // Note: there were 10 values for these 4 system-properties -- when
+        // combined in the exact correct order of priority you'll get the below
+        // results.  Grep on "should" in domain.xml to see behind the smoke and mirrors.
+        
+        assertNull(jun);
+        assertEquals(ser, "server");
+        assertEquals(con, "config");
+        assertEquals(clu, "cluster");
+        assertEquals(dom, "domain");
     }
 
     private static boolean canAccessInternet() {
