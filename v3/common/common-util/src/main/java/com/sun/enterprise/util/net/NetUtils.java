@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -90,20 +90,19 @@ public class NetUtils {
         InetAddress hostAddrs[] = null;
         try {
             hostAddrs = InetAddress.getAllByName(hostname);
+            assert hostAddrs != null;
 
             // any address that's a loopback address is a local address
-            if (hostAddrs != null) {
-                for (InetAddress ia : hostAddrs) {
-                    if (ia.isLoopbackAddress())
-                        return true;
-                }
+            for (InetAddress ia : hostAddrs) {
+                if (ia.isLoopbackAddress())
+                    return true;
             }
 
             // are any of our addresses the same as any address of "localhost"?
             // XXX - redundant with the above check?
             InetAddress localHostAddrs[] =
                 InetAddress.getAllByName("localhost");
-            if (localHostAddrs != null && hostAddrs != null) {
+            if (localHostAddrs != null) {
                 for (InetAddress lia : localHostAddrs) {
                     for (InetAddress ia : hostAddrs) {
                         if (lia.equals(ia))
