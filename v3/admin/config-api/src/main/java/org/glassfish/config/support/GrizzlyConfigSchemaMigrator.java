@@ -92,7 +92,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
     private final static String SSL_CONFIGURATION_SSLIMPL = "com.sun.grizzly.ssl.sslImplementation";
     @Inject
     private Configs configs;
-    private Config currentConfig;
+    private Config currentConfig = null;
     @Inject
     private Habitat habitat;
     private static final String HTTP_THREAD_POOL = "http-thread-pool";

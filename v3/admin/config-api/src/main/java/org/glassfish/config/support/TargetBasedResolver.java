@@ -97,9 +97,6 @@ public class TargetBasedResolver implements CrudResolver {
 
         ConfigBeanProxy config = habitat.getComponent(targetType, target);
         if (config!=null) {
-            if (config==null) {
-                return null;
-            }
             try {
                 return type.cast(config);
             } catch (ClassCastException e) {

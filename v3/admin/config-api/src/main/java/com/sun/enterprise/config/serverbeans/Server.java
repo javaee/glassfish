@@ -49,11 +49,9 @@ import com.sun.enterprise.config.serverbeans.customvalidators.NotDuplicateTarget
 import com.sun.enterprise.config.util.ServerHelper;
 import com.sun.enterprise.config.util.PortBaseHelper;
 import com.sun.enterprise.config.util.PortManager;
-import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.net.NetUtils;
-import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.logging.LogDomains;
 import java.io.*;
 import org.glassfish.api.Param;
@@ -76,7 +74,6 @@ import static org.glassfish.config.support.Constants.*;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -232,6 +229,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @ToDo(priority = ToDo.Priority.IMPORTANT, details = "Provide PropertyDesc for legal system properties")
     @Element
     @Param(name = InstanceRegisterInstanceCommandParameters.ParameterNames.PARAM_SYSTEMPROPERTIES, optional = true)
+    @Override
     List<SystemProperty> getSystemProperty();
 
     /**
@@ -241,9 +239,11 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @PropertiesDesc(props = {})
     @Element
     @Param(name = "properties", optional = true)
+    @Override
     List<Property> getProperty();
 
     @DuckTyped
+    @Override
     String getReference();
 
     @DuckTyped
@@ -367,6 +367,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             if (ref != null) {
                 ConfigSupport.apply(new SingleConfigCode<Server>() {
 
+                    @Override
                     public Object run(Server param) {
                         return param.getResourceRef().remove(ref);
                     }
@@ -378,6 +379,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
             ConfigSupport.apply(new SingleConfigCode<Server>() {
 
+                @Override
                 public Object run(Server param) throws PropertyVetoException, TransactionFailure {
 
                     ResourceRef newResourceRef = param.createChild(ResourceRef.class);
@@ -480,7 +482,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
         public void decorate(AdminCommandContext context, final Server instance) throws TransactionFailure, PropertyVetoException {
             Config ourConfig = null;
             Cluster ourCluster = null;
-            Logger logger = LogDomains.getLogger(Cluster.class, LogDomains.ADMIN_LOGGER);
+            Logger logger = LogDomains.getLogger(Server.class, LogDomains.ADMIN_LOGGER);
             LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Server.class);
             Transaction tx = Transaction.getTransaction(instance);
             String configRef = instance.getConfigRef();
@@ -491,11 +493,6 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                         "noTransaction", "Internal Error - Cannot obtain transaction object"));
             }
 
-/*
-            if (node == null) {
-                instance.setNode("localhost");  //remove?
-            }
-            else { */
             if (node != null){
                 if (domain.getNodeNamed(node) == null) {
                     throw new TransactionFailure(localStrings.getLocalString(
@@ -536,52 +533,47 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                             "noSuchCluster", "Cluster {0} does not exist.", clusterName));
                 }
 
-                Cluster cluster = domain.getClusterNamed(clusterName);
-
                 final String instanceName = instance.getName();
-                try {
-                    File configConfigDir = new File(env.getConfigDirPath(), cluster.getConfigRef());
-                    new File(configConfigDir, "docroot").mkdirs();
-                    new File(configConfigDir, "lib/ext").mkdirs();
+                File configConfigDir = new File(env.getConfigDirPath(), ourCluster.getConfigRef());
+                if (!new File(configConfigDir, "docroot").mkdirs()) { 
+                    throw new TransactionFailure(localStrings.getLocalString(
+                            "noMkdir", "Cannot create configuration specific directory {0}", "docroot"));
                 }
-                catch (Exception e) {
-                    // no big deal - just ignore
+                if (!new File(configConfigDir, "lib/ext").mkdirs()) { 
+                    throw new TransactionFailure(localStrings.getLocalString(
+                            "noMkdir", "Cannot create configuration specific directory {0}", "lib/ext"));
                 }
 
-                if (cluster != null) {
-                    if (tx != null) {
-                        Cluster c = tx.enroll(cluster);
-                        ServerRef newServerRef = c.createChild(ServerRef.class);
-                        newServerRef.setRef(instanceName);
-                        if(lbEnabled != null){
-                            newServerRef.setLbEnabled(lbEnabled);
-                        } else {
-                            //check whether all instances in cluster had lb-enabled set to false
-                            List<ServerRef> serverRefs = c.getServerRef();
-                            Iterator<ServerRef> serverRefIter = serverRefs.iterator();
-                            boolean allLBEnabled = false;
-                            while (!allLBEnabled && serverRefIter.hasNext()) {
-                                ServerRef serverRef = serverRefIter.next();
-                                allLBEnabled = allLBEnabled
-                                        || Boolean.parseBoolean(serverRef.getLbEnabled());
-                            }
-                            //if there are existing instances in cluster
-                            //and they all have lb-enabled to false, set it
-                            //false for new instance as well
-                            if (!allLBEnabled && serverRefs.size() > 0) {
-                                newServerRef.setLbEnabled("false");
-                            } else {
-                                //check if system property exists and use that
-                                String lbEnabledDefault =
-                                        System.getProperty(lbEnabledSystemProperty);
-                                if(lbEnabledDefault != null){
-                                    newServerRef.setLbEnabled(lbEnabledDefault);
-                                }
-                            }
+                Cluster c = tx.enroll(ourCluster);
+                ServerRef newServerRef = c.createChild(ServerRef.class);
+                newServerRef.setRef(instanceName);
+                if (lbEnabled != null) {
+                    newServerRef.setLbEnabled(lbEnabled);
+                } else {
+                    //check whether all instances in cluster had lb-enabled set to false
+                    List<ServerRef> serverRefs = c.getServerRef();
+                    Iterator<ServerRef> serverRefIter = serverRefs.iterator();
+                    boolean allLBEnabled = false;
+                    while (!allLBEnabled && serverRefIter.hasNext()) {
+                        ServerRef serverRef = serverRefIter.next();
+                        allLBEnabled = allLBEnabled
+                                || Boolean.parseBoolean(serverRef.getLbEnabled());
+                    }
+                    //if there are existing instances in cluster
+                    //and they all have lb-enabled to false, set it
+                    //false for new instance as well
+                    if (!allLBEnabled && serverRefs.size() > 0) {
+                        newServerRef.setLbEnabled("false");
+                    } else {
+                        //check if system property exists and use that
+                        String lbEnabledDefault =
+                                System.getProperty(lbEnabledSystemProperty);
+                        if (lbEnabledDefault != null) {
+                            newServerRef.setLbEnabled(lbEnabledDefault);
                         }
-                        c.getServerRef().add(newServerRef);
                     }
                 }
+                c.getServerRef().add(newServerRef);
             }
 
             // instance using specified config
@@ -592,15 +584,16 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                             "noSuchConfig", "Configuration {0} does not exist.", configRef));
                 }
                 ourConfig = specifiedConfig;
-                try {
-                    File configConfigDir = new File(env.getConfigDirPath(), specifiedConfig.getName());
-                    new File(configConfigDir, "docroot").mkdirs();
-                    new File(configConfigDir, "lib/ext").mkdirs();
+                File configConfigDir = new File(env.getConfigDirPath(), specifiedConfig.getName());
+                if (!new File(configConfigDir, "docroot").mkdirs()) { 
+                    throw new TransactionFailure(localStrings.getLocalString(
+                            "noMkdir", "Cannot create configuration specific directory {0}", "docroot"));
                 }
-                catch (Exception e) {
-                    // no big deal - just ignore
+                if (!new File(configConfigDir, "lib/ext").mkdirs()) { 
+                    throw new TransactionFailure(localStrings.getLocalString(
+                            "noMkdir", "Cannot create configuration specific directory {0}", "lib/ext"));
                 }
-            }
+             }
 
             //stand-alone instance using default-config if config not specified
             if (configRef == null && clusterName == null) {
@@ -745,11 +738,6 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @Scoped(PerLookup.class)
     class DeleteDecorator implements DeletionDecorator<Servers, Server> {
 
-        @Param(optional=true)
-        String target;
-        //TODO - add support for node?
-        @Param(name = PARAM_NODE, optional = true)
-        String node;
         @Inject
         Configs configs;
         @Inject

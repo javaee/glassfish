@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,6 +43,7 @@ package org.glassfish.config.support;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.hk2.component.InjectionResolver;
 import com.sun.enterprise.config.serverbeans.CopyConfig;
+import java.util.logging.Level;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
 import org.glassfish.common.util.admin.GenericCommandModel;
@@ -60,7 +61,7 @@ import java.lang.reflect.Proxy;
  * @author Jerome Dochez
  */
 @Scoped(PerLookup.class)
-public class GenericDeleteCommand extends GenericCrudCommand implements AdminCommand, PostConstruct, CommandModelProvider {
+public class GenericDeleteCommand extends GenericCrudCommand implements AdminCommand {
 
     @Inject
     Habitat habitat;
@@ -71,7 +72,7 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
 
     Class<? extends CrudResolver> resolverType;
     CommandModel model;
-    Delete delete;    
+    Delete delete = null;    
     
     @Override
     public CommandModel getModel() {
@@ -94,7 +95,7 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
             if (logger.isLoggable(level)) {
                 for (String paramName : model.getParametersNames()) {
                     CommandModel.ParamModel param = model.getModelFor(paramName);
-                    logger.fine("I take " + param.getName() + " parameters");
+                    logger.log(Level.FINE, "I take {0} parameters", param.getName());
                 }
             }
         } catch(Exception e) {
