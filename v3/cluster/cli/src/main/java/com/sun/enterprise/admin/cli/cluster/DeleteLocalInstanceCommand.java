@@ -158,9 +158,7 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
 
         if (isRegisteredToDas()) {
             RemoteCommand rc = new RemoteCommand("_unregister-instance", programOpts, env);
-            rc.execute("_unregister-instance",
-                    "--node", getServerDirs().getServerParentDir().getName(),
-                    getServerDirs().getServerName());
+            rc.execute("_unregister-instance", getServerDirs().getServerName());
         }
     }
 

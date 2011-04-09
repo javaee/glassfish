@@ -535,11 +535,13 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
                 final String instanceName = instance.getName();
                 File configConfigDir = new File(env.getConfigDirPath(), ourCluster.getConfigRef());
-                if (!new File(configConfigDir, "docroot").mkdirs()) { 
+                File docroot = new File(configConfigDir, "docroot");
+                if (!docroot.exists() && !docroot.mkdirs()) { 
                     throw new TransactionFailure(localStrings.getLocalString(
                             "noMkdir", "Cannot create configuration specific directory {0}", "docroot"));
                 }
-                if (!new File(configConfigDir, "lib/ext").mkdirs()) { 
+                File lib = new File(configConfigDir, "lib/ext");
+                if (!lib.exists() && !lib.mkdirs()) { 
                     throw new TransactionFailure(localStrings.getLocalString(
                             "noMkdir", "Cannot create configuration specific directory {0}", "lib/ext"));
                 }
@@ -585,11 +587,13 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 }
                 ourConfig = specifiedConfig;
                 File configConfigDir = new File(env.getConfigDirPath(), specifiedConfig.getName());
-                if (!new File(configConfigDir, "docroot").mkdirs()) { 
+                File docroot = new File(configConfigDir, "docroot");
+                if (!docroot.exists() && !docroot.mkdirs()) { 
                     throw new TransactionFailure(localStrings.getLocalString(
                             "noMkdir", "Cannot create configuration specific directory {0}", "docroot"));
                 }
-                if (!new File(configConfigDir, "lib/ext").mkdirs()) { 
+                File lib = new File(configConfigDir, "lib/ext");
+                if (!lib.exists() && !lib.mkdirs()) { 
                     throw new TransactionFailure(localStrings.getLocalString(
                             "noMkdir", "Cannot create configuration specific directory {0}", "lib/ext"));
                 }
