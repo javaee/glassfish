@@ -182,7 +182,8 @@ public class MiniXmlParser {
             if (map != null) {
                 logFilename = map.get(LoggingPropertyNames.file);
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             // just return null
         }
         return logFilename;
