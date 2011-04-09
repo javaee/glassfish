@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,6 +51,7 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
 import org.glassfish.internal.api.*;
 import org.glassfish.api.admin.ServerEnvironment;
+import com.sun.logging.LogDomains;
 
 /**
  * Manage a local password, which is a cryptographically secure random number
@@ -77,7 +78,8 @@ public class LocalPasswordImpl implements PostConstruct, Init, LocalPassword {
         '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
 
-    private final Logger logger = Logger.getAnonymousLogger();
+    private static final Logger logger =
+        LogDomains.getLogger(LocalPasswordImpl.class, LogDomains.ADMIN_LOGGER);
 
     /**
      * Generate a local password and save it in the local-password file.
@@ -92,20 +94,39 @@ public class LocalPasswordImpl implements PostConstruct, Init, LocalPassword {
             new File(env.getConfigDirPath(), LOCAL_PASSWORD_FILE);
         PrintWriter w = null;
         try {
-            if (!localPasswordFile.exists()) {
-                localPasswordFile.createNewFile();
-                /*
-                 * XXX - There's a security hole here.
-                 * Between the time the file is created and the permissions
-                 * are changed to prevent others from opening it, someone
-                 * else could open it and wait for the data to be written.
-                 * Java needs the ability to create a file that's readable
-                 * only by the owner; coming in JDK 7.
-                 */
-                localPasswordFile.setWritable(false, false); // take from all
-                localPasswordFile.setWritable(true, true); // owner only
-                localPasswordFile.setReadable(false, false); // take from all
-                localPasswordFile.setReadable(true, true); // owner only
+            if (localPasswordFile.exists()) {
+                if (!localPasswordFile.delete()) {
+                    logger.log(Level.WARNING, "localpassword.cantdelete",
+                                    localPasswordFile.toString());
+                    // if we can't make sure it's our file, don't write it
+                    return;
+                }
+            }
+            if (!localPasswordFile.createNewFile()) {
+                logger.log(Level.WARNING, "localpassword.cantcreate",
+                                localPasswordFile.toString());
+                // if we can't make sure it's our file, don't write it
+                return;
+            }
+
+            /*
+             * XXX - There's a security hole here.
+             * Between the time the file is created and the permissions
+             * are changed to prevent others from opening it, someone
+             * else could open it and wait for the data to be written.
+             * Java needs the ability to create a file that's readable
+             * only by the owner; coming in JDK 7.
+             */
+            if (!(
+                 localPasswordFile.setWritable(false, false) && // take from all
+                 localPasswordFile.setWritable(true, true) && // owner only
+                 localPasswordFile.setReadable(false, false) && // take from all
+                 localPasswordFile.setReadable(true, true)
+                )) { // owner only
+                logger.log(Level.WARNING, "localpassword.cantchmod",
+                                localPasswordFile.toString());
+                // if we can't protect it, don't write it
+                return;
             }
             w = new PrintWriter(localPasswordFile);
             w.println(password);
