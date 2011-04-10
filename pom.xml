@@ -439,6 +439,25 @@
             </modules>
         </profile>
 
+        <profile>
+            <id>aix-jdk</id>
+            <activation>
+                <os>
+                    <name>AIX</name>
+                </os>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.sun</groupId>
+                    <artifactId>tools</artifactId>
+                    <version>1.6</version>
+                    <scope>system</scope>
+                    <systemPath>${java.home}/../lib/tools.jar</systemPath>
+                </dependency>
+            </dependencies>
+        </profile>
+
     </profiles>
 
     <build>
@@ -589,7 +608,7 @@
 
         <plugins>
 
-            <!-- Enforces maven 2.2.1 and jdk 1.6.0-04 and above to be used to build v3 -->
+            <!-- Enforces maven 2.2.1 and jdk 1.6.0 and above to be used to build 3.1.1 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
