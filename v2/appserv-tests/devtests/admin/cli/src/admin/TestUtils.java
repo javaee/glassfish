@@ -51,4 +51,16 @@ final class TestUtils {
         pwfile.close();
         return f;
     }
+    public static String unecho(String s) {
+        // remove the huge echo'd command from some output
+        // it will be [enormous ugly command]EOL[output from command]
+
+        // note that this will work for "\r\n" as well
+        int index = s.indexOf('\n');
+
+        if(index > 0)
+            return s.substring(index);
+
+        return s;
+    }
 }
