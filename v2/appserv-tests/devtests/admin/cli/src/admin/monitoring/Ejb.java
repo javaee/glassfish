@@ -94,23 +94,16 @@ public class Ejb extends MonTest {
 
         // We looking for get -m to return something like this:
         // clustered-i1.applications.MyEjb.MyEjb-ejb\.jar.MySessionBean.bean-methods.getMessage.methodstatistic-count = 8
-        kludge = true;
         for (int i = 0; i < 10; i++) {
             verifyGetm(getmArgInstance1, getmArgInstance1 + " = " + i);
             verifyGetm(getmArgInstance2, getmArgInstance2 + " = " + i);
             report(wget(28080, uri), "hit MyEjbServlet on 28080-");
             report(wget(28081, uri), "hit MyEjbServlet on 28081-");
         }
-        kludge = false;
     }
-    private boolean kludge = false;
 
     private boolean verifyGetm(String arg, String key) {
         AsadminReturn ret = asadminWithOutput("get", "-m", arg);
-        //AsadminReturn ret = asadminWithOutput("get", "-m", "\"*\"");
-        if (kludge)
-            System.out.println("XXXXXX " + ret.out);
-
         return matchString(key, ret.outAndErr);
     }
 
