@@ -173,10 +173,8 @@ public class Jira extends MonTest {
             String label = prepend + "GET-";
             String goodkey = KEYS14461_GET[i];
             String badkey = KEYS14461_GET_BAD[i];
-            r = asadminWithOutput("get", goodkey);
-            report(r.out.indexOf(NO_DATA) < 0, label);
-            r = asadminWithOutput("get", badkey);
-            report(r.err.indexOf(badkey) >= 0, label);
+            report(doesGetMatch(goodkey), label);
+            report(!doesGetMatch(badkey), label);
         }
 
         for (int i = 0; i < KEYS14461_GET_M.length; i++) {

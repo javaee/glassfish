@@ -255,6 +255,24 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
         return (match.equals(ret));
     }
 
+    /**
+     * returns true if there is anything in the config that matches.
+     * returns false if there is no such thing
+     * @param what
+     * @return
+     */
+    public final boolean doesGetMatch(String what) {
+        AsadminReturn ret = asadminWithOutput("get", what);
+
+        if (!ret.returnValue)
+            return false;
+
+        if (ret.err != null && ret.err.length() > 1)
+            return false;
+
+        return ret.out != null && ret.out.indexOf("=") >= 0;
+    }
+
     public static void runFakeServerDaemon(int port) {
         Thread t = new Thread(new FakeServer(port), "FakeServerListeningOn: " + port);
         t.setDaemon(true);

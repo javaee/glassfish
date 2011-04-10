@@ -48,6 +48,7 @@ import java.util.logging.Logger;
  */
 abstract class MonTest {
     private static boolean stopWaiting = false;
+    private static boolean waited;
 
     abstract void runTests(TestDriver driver);
 
@@ -90,6 +91,10 @@ abstract class MonTest {
 
     final boolean doesGetMatch(String dottedName, String value) {
         return driver.doesGetMatch(dottedName, value);
+    }
+
+    final boolean doesGetMatch(String dottedName) {
+        return driver.doesGetMatch(dottedName);
     }
 
     final void deleteDomain() {
@@ -315,8 +320,11 @@ abstract class MonTest {
         // note that we MUST be running with a debug port for this to work!
         // build.xml should have it set...
 
-        if (!WAIT)
+        if (!WAIT || waited)
             return;
+
+        // only do this once!
+        waited = true;
 
         for (String s : ERROR) {
             System.out.print(s);
