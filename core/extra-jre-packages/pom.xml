@@ -67,7 +67,7 @@
 
     <profiles>    
         <profile>
-            <id>default-tools.jar</id>
+            <id>not-aix</id>
             <activation>
                 <os>
                     <family>!AIX</family>

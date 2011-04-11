@@ -59,48 +59,111 @@
     <name>libpam4j repackaged as a module</name>
     <description>libpam4j repackaged as a module</description>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Embed-Dependency>
-                            *;scope=compile;inline=true
-                        </Embed-Dependency>
-                        <!-- Export everything from the embedded jar 
-                             in the final bundle 
-                        -->
-                        <!-- Exclude unnecessary imports -->
-                        <Export-Package>*;version=${libpam4j.version}</Export-Package>
-                        <Private-Package>!*</Private-Package>
-                        <!-- Make it an HK2 module, as GlassFish needs it to be HK2 module.
-                         This is needed because we don't want to change the packaging type to
-                         hk2-jar. -->
-                        <HK2-Bundle-Name>${pom.groupId}:${pom.artifactId}</HK2-Bundle-Name>
-                    </instructions>
-                    <!-- Maven uses the output directory (target/classes)
-                    rather than the final bundle, when compiling against
-                    projects in the same reactor (ie. the same build).
-                    Since this jar comprises of classes that come from
-                    some other jar and other modules depend on this
-                    artifact, we need to unpack.
-                    -->
-                    <unpackBundle>true</unpackBundle>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>osgi-bundle</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>bundle</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+
+    <profiles>    
+        <profile>
+            <id>not-aix</id>
+            <activation>
+                <os>
+                    <family>!AIX</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.felix</groupId>
+                        <artifactId>maven-bundle-plugin</artifactId>
+                        <configuration>
+                            <instructions>
+                                <Embed-Dependency>
+                                    *;scope=compile;inline=true
+                                </Embed-Dependency>
+                                <!-- Export everything from the embedded jar 
+                                     in the final bundle 
+                                -->
+                                <!-- Exclude unnecessary imports -->
+                                <Export-Package>*;version=${libpam4j.version}</Export-Package>
+                                <Private-Package>!*</Private-Package>
+                                <!-- Make it an HK2 module, as GlassFish needs it to be HK2 module.
+                                     This is needed because we don't want to change the packaging type to
+                                     hk2-jar. -->
+                                <HK2-Bundle-Name>${pom.groupId}:${pom.artifactId}</HK2-Bundle-Name>
+                            </instructions>
+                            <!-- Maven uses the output directory (target/classes)
+                                 rather than the final bundle, when compiling against
+                                 projects in the same reactor (ie. the same build).
+                                 Since this jar comprises of classes that come from
+                                 some other jar and other modules depend on this
+                                 artifact, we need to unpack.
+                            -->
+                            <unpackBundle>true</unpackBundle>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>osgi-bundle</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>bundle</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>aix-jdk</id>
+            <activation>
+	        <os>
+                    <name>AIX</name>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.felix</groupId>
+                        <artifactId>maven-bundle-plugin</artifactId>
+                        <configuration>
+                            <instructions>
+                                <Embed-Dependency>
+                                    *;scope=compile;inline=true
+                                </Embed-Dependency>
+                                <!-- Export everything from the embedded jar 
+                                     in the final bundle 
+                                -->
+                                <!-- Exclude unnecessary imports -->
+                                <Export-Package>*;version=${libpam4j.version}</Export-Package>
+                                <Private-Package>!*</Private-Package>
+                                <Import-Package>!*</Import-Package>
+                                <!-- Make it an HK2 module, as GlassFish needs it to be HK2 module.
+                                     This is needed because we don't want to change the packaging type to
+                                     hk2-jar. -->
+                                <HK2-Bundle-Name>${pom.groupId}:${pom.artifactId}</HK2-Bundle-Name>
+                            </instructions>
+                            <!-- Maven uses the output directory (target/classes)
+                                 rather than the final bundle, when compiling against
+                                 projects in the same reactor (ie. the same build).
+                                 Since this jar comprises of classes that come from
+                                 some other jar and other modules depend on this
+                                 artifact, we need to unpack.
+                            -->
+                            <unpackBundle>true</unpackBundle>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>osgi-bundle</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>bundle</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <dependencies>
         <!-- Mark them as optional so that GF distribution mechanism
              won't package them. It is sufficient to package the wrapped jar. 
