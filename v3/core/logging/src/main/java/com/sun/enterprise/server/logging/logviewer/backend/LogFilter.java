@@ -50,6 +50,7 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.TranslatedConfigView;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -146,6 +147,7 @@ public class LogFilter {
 
         try {
             logFileDetailsForServer = loggingConfig.getLoggingFileDetails();
+            logFileDetailsForServer = TranslatedConfigView.getTranslatedValue(logFileDetailsForServer).toString();
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "logging.backend.error.fetchrecord", ex);
             return new AttributeList();
@@ -154,11 +156,6 @@ public class LogFilter {
 
         if ((logFileName != null)
                 && (logFileName.length() != 0)) {
-            if (logFileDetailsForServer.contains("${com.sun.aas.instanceRoot}")) {
-                String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
-                String f = logFileDetailsForServer.replace("${com.sun.aas.instanceRoot}", instanceRoot);
-                logFileDetailsForServer = f;
-            }
             logFileName = logFileDetailsForServer.substring(0, logFileDetailsForServer.lastIndexOf(File.separator)) + File.separator +
                     logFileName.trim();
             if (new File(logFileName).exists()) {
@@ -220,15 +217,10 @@ public class LogFilter {
             try {
                 // getting log file attribute value from logging.properties file
                 logFileDetailsForServer = loggingConfig.getLoggingFileDetails();
+                logFileDetailsForServer = TranslatedConfigView.getTranslatedValue(logFileDetailsForServer).toString();
             } catch (Exception ex) {
                 logger.log(Level.SEVERE, "logging.backend.error.fetchrecord", ex);
                 return new Vector();
-            }
-
-            if (logFileDetailsForServer.contains("${com.sun.aas.instanceRoot}")) {
-                String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
-                String f = logFileDetailsForServer.replace("${com.sun.aas.instanceRoot}", instanceRoot);
-                logFileDetailsForServer = f;
             }
 
             File logsDir = new File(logFileDetailsForServer.substring(0, logFileDetailsForServer.lastIndexOf(File.separator)));
@@ -321,15 +313,15 @@ public class LogFilter {
 
                     // verifying loggingFile presents or not if not then changing logFileName value to server.log. It means wrong name is coming
                     // from GUI to back end code.
-                    if(!instanceLogFile.exists()) {
+                    if (!instanceLogFile.exists()) {
                         instanceLogFile = new File(loggingDir + File.separator + "server.log");
                     }
                 } else {
                     // this code is used when user changes the attributes value(com.sun.enterprise.server.logging.GFFileHandler.file) in
-                    // logging.properties file to something else.                                
+                    // logging.properties file to something else.
                     loggingDir = instanceLogFileName.substring(0, instanceLogFileName.lastIndexOf(File.separator));
                     instanceLogFile = new File(loggingDir + File.separator + logFileName);
-                    if(!instanceLogFile.exists()) {
+                    if (!instanceLogFile.exists()) {
                         instanceLogFile = new File(instanceLogFileName);
                     }
                 }
