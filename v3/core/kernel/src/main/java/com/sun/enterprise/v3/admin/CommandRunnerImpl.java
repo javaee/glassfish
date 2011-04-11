@@ -752,10 +752,9 @@ public class CommandRunnerImpl implements CommandRunner {
         } catch (Exception ex) {
             return null;
         } finally {
-            if (br != null)
-                try {
-                    br.close();
-                } catch (IOException ioex) { }
+            try {
+                br.close();
+            } catch (IOException ioex) { }
         }
     }
 
