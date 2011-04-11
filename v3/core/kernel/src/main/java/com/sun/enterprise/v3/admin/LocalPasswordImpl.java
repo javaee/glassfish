@@ -126,7 +126,9 @@ public class LocalPasswordImpl implements PostConstruct, Init, LocalPassword {
                 logger.log(Level.WARNING, "localpassword.cantchmod",
                                 localPasswordFile.toString());
                 // if we can't protect it, don't write it
-                return;
+
+                // 16331 -- temporarily ignore this problem ...
+				// return;
             }
             w = new PrintWriter(localPasswordFile);
             w.println(password);
