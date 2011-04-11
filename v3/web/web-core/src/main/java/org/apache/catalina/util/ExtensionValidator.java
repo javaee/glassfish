@@ -243,9 +243,7 @@ public final class ExtensionValidator {
         // Locate the Manifests for all bundled JARs
         NamingEnumeration ne = null;
         try {
-            if (dirContext != null) {
-                ne = dirContext.listBindings("WEB-INF/lib/");
-            }
+            ne = dirContext.listBindings("WEB-INF/lib/");
             while ((ne != null) && ne.hasMoreElements()) {
                 Binding binding = (Binding)ne.nextElement();
                 if (!binding.getName().toLowerCase(Locale.ENGLISH).endsWith(".jar")) {

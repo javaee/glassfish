@@ -569,13 +569,8 @@ public class ErrorReportValve
                                    ServerInfo.getServerInfo()));
             */
             // START SJSAS 6412710
-            if (serverInfo != null && !serverInfo.isEmpty()) {
-                sb.append(sm.getString("errorReportValve.rootCauseInLogs",
-                                       serverInfo, responseLocale));
-            } else {
-                sb.append(sm.getString("errorReportValve.rootCauseInLogs",
-                                       "server", responseLocale));
-            }
+            sb.append(sm.getString("errorReportValve.rootCauseInLogs",
+                                   serverInfo, responseLocale));
             // END SJSAS 6412710
             sb.append("</u></p>");
 

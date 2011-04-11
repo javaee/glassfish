@@ -293,12 +293,14 @@ public final class FileStore extends StoreBase {
                              id, file.getAbsolutePath()));
         }
 
+        FileInputStream fis = null;
+        BufferedInputStream bis = null;
         ObjectInputStream ois = null;
         Loader loader = null;
         ClassLoader classLoader = null;
         try {
-            FileInputStream fis = new FileInputStream(file.getAbsolutePath());
-            BufferedInputStream bis = new BufferedInputStream(fis);
+            fis = new FileInputStream(file.getAbsolutePath());
+            bis = new BufferedInputStream(fis);
             Container container = manager.getContainer();
             if (container != null) {
                 ois = ((StandardContext)container).createObjectInputStream(bis);
@@ -311,13 +313,19 @@ public final class FileStore extends StoreBase {
                 log("No persisted data file found");
             return (null);
         } catch (IOException e) {
-            if (ois != null) {
+            if (bis != null) {
                 try {
-                    ois.close();
+                    bis.close();
                 } catch (IOException f) {
                     // Ignore
                 }
-                ois = null;
+            }
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException f) {
+                    // Ignore
+                }
             }
             throw e;
         }
@@ -391,9 +399,10 @@ public final class FileStore extends StoreBase {
             log(sm.getString(getStoreName()+".saving",
                              session.getIdInternal(), file.getAbsolutePath()));
         }
+        FileOutputStream fos = null;
         ObjectOutputStream oos = null;
         try {
-            FileOutputStream fos = new FileOutputStream(file.getAbsolutePath());
+            fos = new FileOutputStream(file.getAbsolutePath());
             Container container = manager.getContainer();
             if (container != null) {
                 oos = ((StandardContext) container).createObjectOutputStream(
@@ -402,9 +411,9 @@ public final class FileStore extends StoreBase {
                 oos = new ObjectOutputStream(new BufferedOutputStream(fos)); 
             }
         } catch (IOException e) {
-            if (oos != null) {
+            if (fos != null) {
                 try {
-                    oos.close();
+                    fos.close();
                 } catch (IOException f) {
                     // Ignore
                 }

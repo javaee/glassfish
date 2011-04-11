@@ -195,11 +195,9 @@ public final class StandardServer
         globalNamingResources.setContainer(this);
 
         if (isUseNaming()) {
-            if (namingContextListener == null) {
-                namingContextListener = new NamingContextListener();
-                namingContextListener.setDebug(getDebug());
-                addLifecycleListener(namingContextListener);
-            }
+            namingContextListener = new NamingContextListener();
+            namingContextListener.setDebug(getDebug());
+            addLifecycleListener(namingContextListener);
         }
 
     }

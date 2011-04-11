@@ -1196,7 +1196,6 @@ public class WebappLoader
             Method m=loader.getClass().getMethod("getClasspath", new Class[] {});
             if (log.isLoggable(Level.FINEST))
                 log.finest("getClasspath " + m );
-            if( m==null ) return null;
             Object o=m.invoke( loader, new Object[] {} );
             if (log.isLoggable(Level.FINEST))
                 log.finest("gotClasspath " + o);
