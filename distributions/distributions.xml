@@ -121,7 +121,7 @@
 	    tofile="${basedir}/cfg_cache.bak" />
     <replace file="${installer.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache">
 	    <replacefilter token="${repo.url}"
-		    value="${dev.repository.url}"/>
+		    value="${stable.repository.url}"/>
     </replace>	
     <exec dir="${installer.image.dir}/${install.dir.name}" executable="zip">
         <arg line= "-r ../../../../target/${image.name}-ips-installer.zip ."/>
@@ -134,7 +134,7 @@
 	    tofile="${basedir}/cfg_cache.bak" />
     <replace file="${installer.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache">
 	    <replacefilter token="${repo.url}"
-		    value="${dev.repository.url}"/>
+		    value="${stable.repository.url}"/>
     </replace>	
     <exec dir="${installer.image.dir.l10n}/${install.dir.name}" executable="zip">
         <arg line= "-r ../../../../target/${image.name}-ips-ml-installer.zip ."/>
@@ -159,7 +159,7 @@
 	    tofile="${basedir}/cfg_cache.bak" />
     <replace file="${glassfish.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache">
 	    <replacefilter token="${repo.url}"
-		    value="${dev.repository.url}"/>
+		    value="${stable.repository.url}"/>
     </replace>	
     <exec dir="${glassfish.image.dir}" executable="zip">
         <arg line= "-r ../../../target/${image.name}-ips.zip ${install.dir.name}"/>
@@ -172,7 +172,7 @@
 	    tofile="${basedir}/cfg_cache.bak" />
     <replace file="${glassfish.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache">
 	    <replacefilter token="${repo.url}"
-		    value="${dev.repository.url}"/>
+		    value="${stable.repository.url}"/>
     </replace>	
     <exec dir="${glassfish.image.dir.l10n}" executable="zip">
         <arg line= "-r ../../../target/${image.name}-ips-ml.zip ${install.dir.name}"/>
@@ -188,7 +188,7 @@
     <echo message="Creating local IPS image for ${repo.url} to ${image.dir}"/>
     <mkdir dir="${image.dir}"/>
     <exec executable="pkg" failonerror="true">
-        <arg line="image-create -U -a ${dev.authority}=${repo.url} ${image.dir}" />
+        <arg line="image-create -U -a ${stable.authority}=${repo.url} ${image.dir}" />
     </exec>
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
         <arg line="refresh" />
@@ -241,7 +241,10 @@
 	description="Update cfg_cache for authorities">
 
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
-        <arg line="set-authority -P -O ${repo.url} '${dev.authority}'"/>
+        <arg line="set-authority -P -O ${repo.url} '${stable.authority}'"/>
+    </exec>
+    <exec dir="${image.dir}" executable="pkg" failonerror="true">
+        <arg line="set-authority -O ${dev.repository.url} '${dev.authority}'"/>
     </exec>
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
         <arg line="set-authority -O ${contrib.repository.url} '${contrib.authority}'"/>
