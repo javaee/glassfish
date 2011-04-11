@@ -518,6 +518,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         bean = (ObservableBean) ConfigSupport.getImpl(
                 serverConfig.getNetworkConfig().getNetworkListeners());
+        configListener.setNetworkConfig(serverConfig.getNetworkConfig());
         bean.addListener(configListener);
 
         if (serverConfig.getAvailabilityService() != null) {

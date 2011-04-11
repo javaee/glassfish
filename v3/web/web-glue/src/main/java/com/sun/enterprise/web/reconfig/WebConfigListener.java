@@ -72,9 +72,6 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
 
     @Inject
     public HttpService httpService;
-
-    @Inject
-    public NetworkConfig networkConfig;
     
     @Inject(optional=true)
     public ManagerProperties managerProperties;
@@ -85,6 +82,8 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
     private WebContainer container;
 
     private Logger logger;
+
+    private NetworkConfig networkConfig;
     
     /**
      * Set the Web Container for this ConfigListener.
@@ -97,6 +96,10 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
 
     public void setLogger(Logger logger) {
         this.logger = logger;
+    }
+
+    public void setNetworkConfig(NetworkConfig config) {
+        this.networkConfig = config;
     }
 
     /**
