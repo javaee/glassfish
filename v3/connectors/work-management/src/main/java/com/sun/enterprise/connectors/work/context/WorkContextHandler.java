@@ -333,14 +333,10 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
 
     private void setupHintsContext(HintsContext ic, WorkContextLifecycleListener listener, OneWork work) {
         Map<String, Serializable> hints = ic.getHints();
-        for(String key : hints.keySet()){
-            if(HintsContext.NAME_HINT.equals(key)){
-                Object value = hints.get(key);
-                if(value != null){
-                    work.setName(value.toString());
-                    notifyContextSetupComplete(listener);
-                }
-            }
+        Object value = hints.get(HintsContext.NAME_HINT);
+        if(value != null){
+            work.setName(value.toString());
+            notifyContextSetupComplete(listener);
         }
     }
 

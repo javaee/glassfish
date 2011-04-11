@@ -42,9 +42,12 @@ package com.sun.enterprise.connectors.util;
 
 import com.sun.enterprise.loader.ASURLClassLoader;
 import com.sun.logging.LogDomains;
+import org.glassfish.internal.api.DelegatingClassLoader;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -84,7 +87,12 @@ public class ConnectorClassLoader extends ASURLClassLoader
 
     public static synchronized ConnectorClassLoader getInstance() {
         if (classLoader == null) {
-            classLoader = new ConnectorClassLoader();
+            classLoader =
+                    AccessController.doPrivileged(new PrivilegedAction<ConnectorClassLoader>() {
+                        public ConnectorClassLoader run() {
+                            return new ConnectorClassLoader();
+                        }
+                    });
         }
         return classLoader;
     }
@@ -99,16 +107,20 @@ public class ConnectorClassLoader extends ASURLClassLoader
     }
 
     /**
-     * Initializes this sigleton with the given parent class loader
+     * Initializes this singleton with the given parent class loader
      * if not already created.
      *
      * @param parent parent class loader
      * @return the instance
      */
-    public static ConnectorClassLoader getInstance(ClassLoader parent) {
+    public static ConnectorClassLoader getInstance(final ClassLoader parent) {
         if (classLoader == null) {
             synchronized (ConnectorClassLoader.class) {
-                classLoader = new ConnectorClassLoader(parent);
+                classLoader = AccessController.doPrivileged(new PrivilegedAction<ConnectorClassLoader>() {
+                        public ConnectorClassLoader run() {
+                            return new ConnectorClassLoader(parent);
+                        }
+                    });
             }
         }
         return classLoader;

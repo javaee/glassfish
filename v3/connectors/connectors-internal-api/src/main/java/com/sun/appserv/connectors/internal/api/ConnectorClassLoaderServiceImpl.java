@@ -45,6 +45,8 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -96,8 +98,13 @@ public class ConnectorClassLoaderServiceImpl implements ConnectorClassLoaderServ
        if(globalConnectorCL == null){
            synchronized (ConnectorClassLoaderServiceImpl.class){
                if(globalConnectorCL == null){
-                   ClassLoader parent = getCommonClassLoader();
-                    globalConnectorCL =  new DelegatingClassLoader(parent);
+                   final ClassLoader parent = getCommonClassLoader();
+                   globalConnectorCL =  AccessController.doPrivileged(new PrivilegedAction<DelegatingClassLoader>() {
+                       public DelegatingClassLoader run() {
+                           return new DelegatingClassLoader(parent);
+                       }
+                   });
+
                     for(DelegatingClassLoader.ClassFinder cf : appsSpecificCCLUtil.getSystemRARClassLoaders()){
                         globalConnectorCL.addDelegate(cf);
                     }
