@@ -116,20 +116,18 @@ public class LocalPasswordImpl implements PostConstruct, Init, LocalPassword {
              * else could open it and wait for the data to be written.
              * Java needs the ability to create a file that's readable
              * only by the owner; coming in JDK 7.
+             *
+             * The setReadable(false, false) call will fail on Windows.
+             * we ignore the failures on all platforms - this is a best
+             * effort.  The above calls ensured that the file is our
+             * file, so the following is the best we can do on all
+             * operating systems.
              */
-            if (!(
-                 localPasswordFile.setWritable(false, false) && // take from all
-                 localPasswordFile.setWritable(true, true) && // owner only
-                 localPasswordFile.setReadable(false, false) && // take from all
-                 localPasswordFile.setReadable(true, true)
-                )) { // owner only
-                logger.log(Level.WARNING, "localpassword.cantchmod",
-                                localPasswordFile.toString());
-                // if we can't protect it, don't write it
+            localPasswordFile.setWritable(false, false); // take from all
+            localPasswordFile.setWritable(true, true);   // owner only
+            localPasswordFile.setReadable(false, false); // take from all
+            localPasswordFile.setReadable(true, true);   // owner only
 
-                // 16331 -- temporarily ignore this problem ...
-				// return;
-            }
             w = new PrintWriter(localPasswordFile);
             w.println(password);
         } catch (IOException ex) {
