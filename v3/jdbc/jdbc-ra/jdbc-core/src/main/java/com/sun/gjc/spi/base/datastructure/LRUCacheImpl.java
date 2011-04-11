@@ -70,7 +70,7 @@ public class LRUCacheImpl implements Cache {
     private PoolInfo poolInfo;
 
     static {
-        _logger = LogDomains.getLogger(ManagedConnectionFactory.class, LogDomains.RSR_LOGGER);
+        _logger = LogDomains.getLogger(LRUCacheImpl.class, LogDomains.RSR_LOGGER);
     }
 
     public LRUCacheImpl(PoolInfo poolInfo, int maxSize){

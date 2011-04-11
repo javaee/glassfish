@@ -60,7 +60,7 @@ public class LocalTransactionImpl implements javax.resource.spi.LocalTransaction
     protected final static Logger _logger;
 
     static {
-        _logger = LogDomains.getLogger(ManagedConnection.class, LogDomains.RSR_LOGGER);
+        _logger = LogDomains.getLogger(LocalTransactionImpl.class, LogDomains.RSR_LOGGER);
     }
 
     /**
