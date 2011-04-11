@@ -39,6 +39,16 @@
  */
 package com.sun.enterprise.universal.xml;
 
+import com.sun.common.util.logging.LoggingConfigImpl;
+import com.sun.common.util.logging.LoggingPropertyNames;
+import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.util.HostAndPort;
+import com.sun.enterprise.util.StringUtils;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -51,19 +61,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 
-import com.sun.common.util.logging.LoggingConfigImpl;
-import com.sun.common.util.logging.LoggingPropertyNames;
-import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.util.HostAndPort;
-import com.sun.enterprise.util.StringUtils;
-import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.*;
 
 /**
  * A fairly simple but very specific stax XML Parser. Give it the location of domain.xml and the name of the server
@@ -174,24 +173,53 @@ public class MiniXmlParser {
         loggingConfig.setupConfigDir(configDir, installDir);
     }
 
-    /** 
+    /**
      * loggingConfig will return an IOException if there is no
      * logging properties file.
-     * 
+     *
      * @return the log filename if available, otherwise return null
      */
     public String getLogFilename() {
         String logFilename = null;
         try {
             Map<String, String> map = loggingConfig.getLoggingProperties();
+            String logFileContains = new String("${com.sun.aas.instanceName}");
             if (map != null) {
                 logFilename = map.get(LoggingPropertyNames.file);
             }
+            if (logFilename != null && logFilename.contains(logFileContains)) {
+                logFilename = replaceOld(logFilename,logFileContains,this.serverName);
+            }  
         }
         catch (Exception e) {
             // just return null
         }
         return logFilename;
+    }
+
+    private static String replaceOld(
+            final String aInput,
+            final String aOldPattern,
+            final String aNewPattern
+    ) {
+        final StringBuffer result = new StringBuffer();
+        //startIdx and idxOld delimit various chunks of aInput; these
+        //chunks always end where aOldPattern begins
+        int startIdx = 0;
+        int idxOld = 0;
+        while ((idxOld = aInput.indexOf(aOldPattern, startIdx)) >= 0) {
+            //grab a part of aInput which does not include aOldPattern
+            result.append(aInput.substring(startIdx, idxOld));
+            //add aNewPattern to take place of aOldPattern
+            result.append(aNewPattern);
+
+            //reset the startIdx to just after the current match, to see
+            //if there are any further matches
+            startIdx = idxOld + aOldPattern.length();
+        }
+        //the final chunk will go to the end of aInput
+        result.append(aInput.substring(startIdx));
+        return result.toString();
     }
 
     public boolean isMonitoringEnabled() {
@@ -207,6 +235,7 @@ public class MiniXmlParser {
     }
 
     /////////////////////  all private below  /////////////////////////
+
     private void read() throws XMLStreamException, EndDocumentException, FileNotFoundException {
         createParser();
         getConfigRefName();
@@ -239,6 +268,7 @@ public class MiniXmlParser {
     // Thread's context class loader to locate the factory. See:
     // https://glassfish.dev.java.net/issues/show_bug.cgi?id=6428
     // 
+
     private XMLInputFactory getXmlInputFactory() {
         Class clazz = XMLInputFactory.class;
         ClassLoader cl = clazz.getClassLoader();
@@ -288,8 +318,7 @@ public class MiniXmlParser {
                 parseSysPropsFromServer();
                 skipToEnd("servers");
                 return;
-            }
-            else
+            } else
                 skipToEnd("server");
         }
     }
@@ -320,8 +349,7 @@ public class MiniXmlParser {
             if (configRef.equals(thisName)) {
                 sawConfig = true;
                 parseConfig();
-            }
-            else {
+            } else {
                 skipTree("config");
             }
         }
@@ -341,26 +369,20 @@ public class MiniXmlParser {
                 if ("config".equals(parser.getLocalName())) {
                     return;
                 }
-            }
-            else if (event == START_ELEMENT) {
+            } else if (event == START_ELEMENT) {
                 String name = parser.getLocalName();
                 if ("system-property".equals(name)) {
                     parseSystemProperty(SysPropsHandler.Type.CONFIG);
-                }
-                else if ("java-config".equals(name)) {
+                } else if ("java-config".equals(name)) {
                     parseJavaConfig();
-                }
-                else if ("http-service".equals(name)) {
+                } else if ("http-service".equals(name)) {
                     parseHttpService();
-                }
-                else if ("network-config".equals(name)) {
+                } else if ("network-config".equals(name)) {
                     sawNetworkConfig = true;
                     parseNetworkConfig();
-                }
-                else if ("monitoring-service".equals(name)) {
+                } else if ("monitoring-service".equals(name)) {
                     parseMonitoringService();
-                }
-                else {
+                } else {
                     skipTree(name);
                 }
             }
@@ -377,16 +399,13 @@ public class MiniXmlParser {
                 if ("network-config".equals(parser.getLocalName())) {
                     return;
                 }
-            }
-            else if (event == START_ELEMENT) {
+            } else if (event == START_ELEMENT) {
                 String name = parser.getLocalName();
                 if ("protocols".equals(name)) {
                     parseProtocols();
-                }
-                else if ("network-listeners".equals(name)) {
+                } else if ("network-listeners".equals(name)) {
                     parseListeners();
-                }
-                else
+                } else
                     skipTree(name);
             }
         }
@@ -402,13 +421,11 @@ public class MiniXmlParser {
                 if ("server".equals(parser.getLocalName())) {
                     return;
                 }
-            }
-            else if (event == START_ELEMENT) {
+            } else if (event == START_ELEMENT) {
                 String name = parser.getLocalName();
                 if ("system-property".equals(name)) {
                     parseSystemProperty(SysPropsHandler.Type.SERVER);
-                }
-                else {
+                } else {
                     skipTree(name);
                 }
             }
@@ -436,8 +453,7 @@ public class MiniXmlParser {
         while (skipToButNotPast("java-config", "jvm-options", "profiler")) {
             if ("jvm-options".equals(parser.getLocalName())) {
                 jvmOptions.add(parser.getElementText());
-            }
-            else {// profiler
+            } else {// profiler
                 parseProfiler();
             }
         }
@@ -450,8 +466,7 @@ public class MiniXmlParser {
         while (skipToButNotPast("profiler", "jvm-options", "property")) {
             if ("jvm-options".equals(parser.getLocalName())) {
                 profilerJvmOptions.add(parser.getElementText());
-            }
-            else {
+            } else {
                 parseProperty(profilerSysProps);
             }
         }
@@ -520,7 +535,6 @@ public class MiniXmlParser {
      * accepted.
      *
      * @param endName the Element to skip to
-     *
      * @throws XMLStreamException
      */
     private boolean skipToButNotPast(String endName, String... startNames)
@@ -633,11 +647,9 @@ public class MiniXmlParser {
         String s = parseAttributes().get("monitoring-enabled");
         if (s == null) {
             monitoringEnabled = true;  // case 1
-        }
-        else if ("false".equals(s)) {
+        } else if ("false".equals(s)) {
             monitoringEnabled = false; // case 2
-        }
-        else {
+        } else {
             monitoringEnabled = true;  // case 3
         }
     }
@@ -654,11 +666,9 @@ public class MiniXmlParser {
             String name = parser.getLocalName();
             if ("http-listener".equals(name)) {
                 listenerAttributes.add(parseAttributes());
-            }
-            else if ("virtual-server".equals(name)) {
+            } else if ("virtual-server".equals(name)) {
                 vsAttributes.add(parseAttributes());
-            }
-            else if ("http-service".equals(name)) {
+            } else if ("http-service".equals(name)) {
                 break;
             }
         }
@@ -679,8 +689,7 @@ public class MiniXmlParser {
             final String name = parser.getLocalName();
             if ("network-listener".equals(name)) {
                 listenerAttributes.add(parseAttributes());
-            }
-            else if ("network-listeners".equals(name)) {
+            } else if ("network-listeners".equals(name)) {
                 break;
             }
         }
@@ -693,8 +702,7 @@ public class MiniXmlParser {
             final String name = parser.getLocalName();
             if ("protocol".equals(name)) {
                 protocolAttributes.add(parseAttributes());
-            }
-            else if ("protocols".equals(name)) {
+            } else if ("protocols".equals(name)) {
                 break;
             }
         }
@@ -872,10 +880,12 @@ public class MiniXmlParser {
     }
 
     // this is so we can return from arbitrarily nested calls
+
     private static class EndDocumentException extends Exception {
         EndDocumentException() {
         }
     }
+
     private static final String DEFAULT_ADMIN_VS_ID = "__asadmin";
     private static final String DEFAULT_VS_ID = "server";
     private LoggingConfigImpl loggingConfig = new LoggingConfigImpl();
