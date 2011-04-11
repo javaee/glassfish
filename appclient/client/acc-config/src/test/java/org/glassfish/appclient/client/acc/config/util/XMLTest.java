@@ -140,6 +140,7 @@ public class XMLTest {
     private static SAXSource setUpToUseLocalDTDs(final InputStream is)
             throws ParserConfigurationException, SAXException {
         SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+        parserFactory.setNamespaceAware(true);
         SAXParser saxParser = parserFactory.newSAXParser();
         XMLReader xmlReader = saxParser.getXMLReader();
         InputSource inSrc = new InputSource(is);
