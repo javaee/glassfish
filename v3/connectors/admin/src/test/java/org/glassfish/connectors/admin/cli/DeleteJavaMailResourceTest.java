@@ -77,7 +77,7 @@ public class DeleteJavaMailResourceTest extends ConfigApiTest {
         cr = habitat.getComponent(CommandRunner.class);
         resources = habitat.getComponent(Domain.class).getResources();
         context = new AdminCommandContext(
-                LogDomains.getLogger(ListJavaMailResourcesTest.class, LogDomains.ADMIN_LOGGER),
+                LogDomains.getLogger(DeleteJavaMailResourceTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());
     }
 

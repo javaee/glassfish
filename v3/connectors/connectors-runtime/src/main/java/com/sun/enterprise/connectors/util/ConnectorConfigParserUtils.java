@@ -64,7 +64,7 @@ import javax.resource.spi.ResourceAdapterAssociation;
  */
 public class ConnectorConfigParserUtils {
 
-    static Logger _logger = LogDomains.getLogger(ConnectorRuntime.class, LogDomains.RSR_LOGGER);
+    private final static Logger _logger = LogDomains.getLogger(ConnectorConfigParserUtils.class, LogDomains.RSR_LOGGER);
 
     /**
      *  Default constructor.

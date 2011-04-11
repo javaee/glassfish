@@ -57,8 +57,6 @@ import java.util.*;
  */
 public class JMSResourceManager extends BaseResourceManager implements ResourceManager {
 
-    private Habitat habitat;
-
     public JMSResourceManager(Habitat habitat){
         super(habitat);
     }

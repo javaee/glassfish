@@ -56,8 +56,6 @@ import java.util.Hashtable;
  */
 public class JMSDestinationResourceManager extends BaseResourceManager implements ResourceManager {
 
-    private Habitat habitat;
-
     public JMSDestinationResourceManager(Habitat habitat){
         super(habitat);
     }

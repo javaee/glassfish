@@ -70,7 +70,7 @@ import org.jvnet.hk2.config.ObservableBean;
 @Service(name="ApplicationScopedResourcesManager")
 public class ApplicationScopedResourcesManager implements PostStartup, PostConstruct, PreDestroy, ConfigListener {
 
-    private static final Logger _logger = LogDomains.getLogger(ResourceManager.class,LogDomains.RESOURCE_BUNDLE);
+    private static final Logger _logger = LogDomains.getLogger(ApplicationScopedResourcesManager.class,LogDomains.RESOURCE_BUNDLE);
 
     @Inject
     private ResourcesBinder resourcesBinder;

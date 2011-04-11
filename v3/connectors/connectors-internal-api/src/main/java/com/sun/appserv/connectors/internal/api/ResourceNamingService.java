@@ -80,7 +80,7 @@ public class ResourceNamingService implements ConnectorConstants {
     @Inject
     private ProcessEnvironment pe;
 
-    private Logger _logger = LogDomains.getLogger(ConnectorRuntime.class, LogDomains.RSR_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(ResourceNamingService.class, LogDomains.RSR_LOGGER);
 
 
     public void publishObject(GenericResourceInfo resourceInfo, String jndiName, Object object,boolean rebind)

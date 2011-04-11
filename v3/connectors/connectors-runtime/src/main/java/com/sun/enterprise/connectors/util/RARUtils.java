@@ -68,7 +68,7 @@ import java.net.URLClassLoader;
  * @author Sivakumar Thyagarajan
  */
 public class RARUtils {
-    static Logger _logger = LogDomains.getLogger(ConnectorRuntime.class, LogDomains.RSR_LOGGER);
+    private final static Logger _logger = LogDomains.getLogger(RARUtils.class, LogDomains.RSR_LOGGER);
     private static StringManager localStrings = 
         StringManager.getManager( RARUtils.class );
 

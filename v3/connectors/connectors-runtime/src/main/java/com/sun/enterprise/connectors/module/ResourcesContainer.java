@@ -55,7 +55,7 @@ import java.util.logging.Logger;
 @Service(name = "com.sun.enterprise.connectors.module.ResourcesContainer")
 public class ResourcesContainer implements Container, PostConstruct, PreDestroy {
 
-    private static Logger _logger = LogDomains.getLogger(ConnectorContainer.class, LogDomains.RSR_LOGGER);
+    private final static Logger _logger = LogDomains.getLogger(ResourcesContainer.class, LogDomains.RSR_LOGGER);
 
     public void postConstruct() {
         logFine("postConstruct of ConnectorContainer");

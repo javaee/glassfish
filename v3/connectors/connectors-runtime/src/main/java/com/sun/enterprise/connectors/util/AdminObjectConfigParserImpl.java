@@ -61,7 +61,7 @@ import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 
 public class AdminObjectConfigParserImpl implements AdminObjectConfigParser {
 
-    static Logger _logger = LogDomains.getLogger(ConnectorRuntime.class, LogDomains.RSR_LOGGER);
+    private final static Logger _logger = LogDomains.getLogger(AdminObjectConfigParserImpl.class, LogDomains.RSR_LOGGER);
 
     /**
      * Default constructor.

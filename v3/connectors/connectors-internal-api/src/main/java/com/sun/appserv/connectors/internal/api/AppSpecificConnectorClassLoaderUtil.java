@@ -66,12 +66,13 @@ import java.util.logging.Logger;
 public class AppSpecificConnectorClassLoaderUtil {
 
     @Inject
-    ApplicationRegistry appRegistry;
+    private ApplicationRegistry appRegistry;
 
     @Inject
-    Habitat habitat;
+    private Habitat habitat;
 
-    private Logger _logger = LogDomains.getLogger(ConnectorRuntime.class, LogDomains.RSR_LOGGER);
+    private static final Logger _logger =
+            LogDomains.getLogger(AppSpecificConnectorClassLoaderUtil.class, LogDomains.RSR_LOGGER);
 
     /**
      * {@inheritDoc}

@@ -86,7 +86,7 @@ public class CreateJavaMailResourceTest extends ConfigApiTest {
         assertTrue(resources != null);
         parameters = new ParameterMap();
         context = new AdminCommandContext(
-                LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER),
+                LogDomains.getLogger(CreateJavaMailResourceTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());
         cr = habitat.getComponent(CommandRunner.class);
         assertTrue(cr != null);

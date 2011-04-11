@@ -122,7 +122,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
             new HashMap<String, Map<String, Resources>>();
     private static Map<String, Application> preservedApps = new HashMap<String, Application>();
 
-    private static Logger _logger = LogDomains.getLogger(ConnectorDeployer.class, LogDomains.RSR_LOGGER);
+    private final static Logger _logger = LogDomains.getLogger(ResourcesDeployer.class, LogDomains.RSR_LOGGER);
 
     private static final String RESOURCES_XML_META_INF = "META-INF/glassfish-resources.xml";
     private static final String RESOURCES_XML_WEB_INF = "WEB-INF/glassfish-resources.xml";

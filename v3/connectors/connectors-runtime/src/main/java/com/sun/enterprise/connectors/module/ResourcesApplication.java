@@ -59,7 +59,7 @@ import java.util.logging.Logger;
 @Scoped(PerLookup.class)
 public class ResourcesApplication implements ApplicationContainer{
 
-    private static Logger _logger = LogDomains.getLogger(ConnectorApplication.class, LogDomains.RSR_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(ResourcesApplication.class, LogDomains.RSR_LOGGER);
     private String applicationName;
 
     @Inject

@@ -87,7 +87,7 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
         PoolLifeCycle {
 
     protected final static Logger logger =
-    LogDomains.getLogger(ConnectorConnPoolStatsProvider.class,LogDomains.RSR_LOGGER);
+    LogDomains.getLogger(ConnectionPoolStatsProviderBootstrap.class,LogDomains.RSR_LOGGER);
 
     @Inject
     private PoolManager poolManager;
