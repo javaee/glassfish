@@ -174,49 +174,34 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     // ----------------------------------------------------- Instance Variables
 
     @Inject
-    CommandRunner runner;
-
-    @Inject
-    private Domain domain;
-
-    @Inject
-    private Habitat habitat;
-
-    @Inject
-    ServerContext _serverContext;
-
-    @Inject
     private ApplicationRegistry appRegistry;
-
-    @Inject
-    private ComponentEnvManager componentEnvManager;
-
-    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    private Config serverConfig;
-
-    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    private Server server;
-
-    @Inject(optional = true)
-    private DasConfig dasConfig;
-
-    @Inject
-    private Events events;
 
     @Inject
     private ClassLoaderHierarchy clh;
 
     @Inject
-    private GrizzlyService grizzlyService;
+    private ComponentEnvManager componentEnvManager;
 
     @Inject
-    private LoggingConfigImpl logConfig;
+    Configs configs;
 
-    //@Inject
-    //MonitoringService monitoringService;
+    @Inject(optional = true)
+    private DasConfig dasConfig;
+
+    @Inject
+    private Domain domain;
+
+    @Inject
+    private Events events;
 
     @Inject
     private FileLoggerHandlerFactory fileLoggerHandlerFactory;
+
+    @Inject
+    private GrizzlyService grizzlyService;
+
+    @Inject
+    private Habitat habitat;
 
     @Inject
     private JavaEEIOUtils javaEEIOUtils;
@@ -224,17 +209,33 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     @Inject(optional = true)
     private JCDIService jcdiService;
 
+    @Inject
+    private LoggingConfigImpl logConfig;
+
+    @Inject
+    CommandRunner runner;
+
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Server server;
+
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Config serverConfig;
+
+    @Inject
+    ServerContext _serverContext;
+
+
     private HashMap<String, WebConnector> connectorMap = new HashMap<String, WebConnector>();
 
     private EmbeddedWebContainer _embedded;
+
     private Engine engine;
+
     private String instanceName;
-
-    private String logLevel = "INFO";
-
 
     private WebConnector jkConnector;
 
+    private String logLevel = "INFO";
     /**
      * Allow disabling accessLog mechanism
      */
@@ -518,7 +519,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         bean = (ObservableBean) ConfigSupport.getImpl(
                 serverConfig.getNetworkConfig().getNetworkListeners());
-        configListener.setNetworkConfig(serverConfig.getNetworkConfig());
         bean.addListener(configListener);
 
         if (serverConfig.getAvailabilityService() != null) {
@@ -529,6 +529,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         bean = (ObservableBean) ConfigSupport.getImpl(server);
         bean.addListener(configListener);
+
+        String instanceConfig = server.getConfigRef();
+        Config config = configs.getConfigByName(instanceConfig);
+        configListener.setNetworkConfig(config.getNetworkConfig());
 
         // embedded mode does not have manager-propertie in domain.xml
         if (configListener.managerProperties != null) {
