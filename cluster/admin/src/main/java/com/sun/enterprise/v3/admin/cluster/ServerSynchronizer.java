@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -221,9 +221,12 @@ public final class ServerSynchronizer implements PostConstruct {
             String line;
             if (in != null) {
                 while ((line = in.readLine()) != null) {
-                    if (line.startsWith("#"))
+                    if (line.startsWith("#"))   // ignore comment lines
                         continue;
-                    files.add(line.trim());
+                    line = line.trim();
+                    if (line.length() == 0)     // ignore blank lines
+                        continue;
+                    files.add(line);
                 }
             }
         } catch (IOException ex) {
@@ -262,7 +265,10 @@ public final class ServerSynchronizer implements PostConstruct {
     /**
      * Sync an individual file.  Return true if the file changed.
      * The file is named by mt.name, relative to base.  The name
-     * used in the response will be relative to root.
+     * used in the response will be relative to root.  In case the
+     * file is a directory, tell the payload to include it recursively,
+     * and replace the entire contents of the directory in case any
+     * files were removed.
      */
     private boolean syncFile(URI root, File base, ModTime mt,
                             Payload.Outbound payload)
@@ -282,9 +288,9 @@ public final class ServerSynchronizer implements PostConstruct {
             else
                 logger.fine("ServerSynchronizer: sending file " + f +
                             " because it was out of date");
-            payload.attachFile("application/octet-stream",
+            payload.requestFileReplacement("application/octet-stream",
                 root.relativize(f.toURI()),
-                "configChange", f);
+                "configChange", null, f, true);
         } catch (IOException ioex) {
             logger.fine("ServerSynchronizer: IOException attaching file: " + f);
             logger.fine(ioex.toString());
@@ -605,7 +611,7 @@ public final class ServerSynchronizer implements PostConstruct {
         }
         payload.attachFile("application/octet-stream",
             domainRootUri.relativize(file.toURI()),
-            "configChange", file);
+            "configChange", file, true);
     }
 
     /**
