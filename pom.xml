@@ -445,7 +445,6 @@
                 <os>
                     <name>AIX</name>
                 </os>
-                <activeByDefault>true</activeByDefault>
             </activation>
             <dependencies>
                 <dependency>
