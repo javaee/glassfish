@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@
 
 package org.glassfish.appclient.client.acc.config.util;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,7 +72,8 @@ import static org.junit.Assert.*;
  */
 public class XMLTest {
 
-    private static final String SAMPLE_XML_PATH = "/sun-acc.xml";
+    private static final String[] SAMPLE_XML_PATH = {"/sun-acc.xml", "/glassfish-acc.xml"};
+    
     private static final String FIRST_HOST = "glassfish.dev.java.net";
     private static final int FIRST_PORT = 3701;
     private static final String SECOND_HOST = "other.dev.java.net";
@@ -97,49 +99,62 @@ public class XMLTest {
     @Test
     public void testProps() throws Exception {
         System.out.println("testProps");
-        ClientContainer cc = readConfig(SAMPLE_XML_PATH);
-        Properties props = XML.toProperties(cc.getProperty());
-        assertEquals("property value mismatch for first property", FIRST_PROP_VALUE, props.getProperty(FIRST_PROP_NAME));
-        assertEquals("property value mismatch for second property", SECOND_PROP_VALUE, props.getProperty(SECOND_PROP_NAME));
+        for (String sampleXMLPath : SAMPLE_XML_PATH) {
+            System.out.println("  Testing with " + sampleXMLPath);
+            ClientContainer cc = readConfig(sampleXMLPath);
+            Properties props = XML.toProperties(cc.getProperty());
+            assertEquals("property value mismatch for first property from " + sampleXMLPath, 
+                    FIRST_PROP_VALUE, props.getProperty(FIRST_PROP_NAME));
+            assertEquals("property value mismatch for second property from " + sampleXMLPath, 
+                    SECOND_PROP_VALUE, props.getProperty(SECOND_PROP_NAME));
+        }
     }
 
     @Test
     public void testReadSampleXML() throws Exception {
         System.out.println("testReadSampleXML");
-        ClientContainer cc = readConfig(SAMPLE_XML_PATH);
-        List<TargetServer> servers = cc.getTargetServer();
+        for (String sampleXMLPath : SAMPLE_XML_PATH) {
+            System.out.println("  Testing with " + sampleXMLPath);
+            ClientContainer cc = readConfig(sampleXMLPath);
+            List<TargetServer> servers = cc.getTargetServer();
 
 
-        assertTrue("target servers did not read correctly",
-                servers.get(0).getAddress().equals(FIRST_HOST) &&
-                servers.get(0).getPort().equals(FIRST_PORT) &&
-                servers.get(1).getAddress().equals(SECOND_HOST) &&
-                servers.get(1).getPort() == SECOND_PORT
-            );
+            assertTrue("target servers did not read correctly from " + sampleXMLPath,
+                    servers.get(0).getAddress().equals(FIRST_HOST) &&
+                    servers.get(0).getPort().equals(FIRST_PORT) &&
+                    servers.get(1).getAddress().equals(SECOND_HOST) &&
+                    servers.get(1).getPort() == SECOND_PORT
+                );
+        }
 
     }
 
     private static ClientContainer readConfig(final String configPath) 
-            throws JAXBException, FileNotFoundException, ParserConfigurationException, SAXException {
+            throws JAXBException, FileNotFoundException, ParserConfigurationException, SAXException, IOException {
         ClientContainer result = null;
-        InputStream is = XMLTest.class.getResourceAsStream(SAMPLE_XML_PATH);
-        if (is == null) {
-            fail("cannot locate test file " + SAMPLE_XML_PATH);
+        InputStream is = XMLTest.class.getResourceAsStream(configPath);
+        try {
+            if (is == null) {
+                fail("cannot locate test file " + configPath);
+            }
+            JAXBContext jc = JAXBContext.newInstance(ClientContainer.class );
+
+            Unmarshaller u = jc.createUnmarshaller();
+
+            final SAXSource src = setUpToUseLocalDTDs(is);
+
+            result = (ClientContainer) u.unmarshal(src);
+
+            return result;
+        } finally {
+            is.close();
         }
-        JAXBContext jc = JAXBContext.newInstance(ClientContainer.class );
-
-        Unmarshaller u = jc.createUnmarshaller();
-
-        final SAXSource src = setUpToUseLocalDTDs(is);
-
-        result = (ClientContainer) u.unmarshal(src);
-
-        return result;
     }
 
     private static SAXSource setUpToUseLocalDTDs(final InputStream is)
             throws ParserConfigurationException, SAXException {
         SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+        parserFactory.setNamespaceAware(true);
         SAXParser saxParser = parserFactory.newSAXParser();
         XMLReader xmlReader = saxParser.getXMLReader();
         InputSource inSrc = new InputSource(is);
@@ -152,20 +167,42 @@ public class XMLTest {
      * Resolves entity references against local files if possible.
      * <p>
      * This is here primarily to allow us to find the local copy of the
-     * sun-application-client DTD without going out over the network.
+     * glassfish- or sun-application-client DTD without going out over the network.
      */
     private static class LocalEntityResolver implements EntityResolver {
 
+        private static enum ACC_INFO {
+            SUN_ACC(
+                "-//Sun Microsystems Inc.//DTD Application Server 8.0 Application Client Container//EN",
+                "dtds/sun-application-client-container_1_2.dtd"),
+            GLASSFISH_ACC(
+                "-//GlassFish.org//DTD GlassFish Application Server 3.1 Application Client Container//EN",
+                "dtds/glassfish-application-client-container_1_3.dtd");
+            
+            private static final String SYSTEM_ID_PREFIX = "http://glassfish.org/";
+            
+            private final String publicID;
+            private final String systemIDSuffix;
+            private final URI uri;
+            
+            ACC_INFO(final String publicID, final String systemIDSuffix) {
+                this.publicID = publicID;
+                this.systemIDSuffix = systemIDSuffix;
+                uri = URI.create(LOCAL_PATH_PREFIX + systemIDSuffix);
+            }
+        }
         
         private static final String SUN_ACC_PUBLIC_ID =
                 "-//Sun Microsystems Inc.//DTD Application Server 8.0 Application Client Container//EN";
+        private static final String GLASSFISH_ACC_PUBLIC_ID =
+                "-//GlassFish.org//DTD GlassFish Application Server 3.1 Application Client Container//EN";
         private static final String SYSTEM_ID_PREFIX =
-                "http://www.sun.com/software/appserver/";
+                "http://glassfish.org/";
         private static final URI SUN_ACC_SYSTEM_ID_URI = 
                 URI.create(SYSTEM_ID_PREFIX + "dtds/sun-application-client-container_1_2.dtd");
-        private static final URI SYSTEM_ID_PREFIX_URI =
-                URI.create(SYSTEM_ID_PREFIX);
-
+        private static final URI GLASSFISH_ACC_SYSTEM_ID_URI = 
+                URI.create(SYSTEM_ID_PREFIX + "dtds/glassfish-application-client-container_1_3.dtd");
+        
         private static final String LOCAL_PATH_PREFIX = "/glassfish/lib/";
 
         private static final Map<String,String> publicIdToLocalPathMap =
@@ -173,8 +210,9 @@ public class XMLTest {
 
         private static Map<String,String> initPublicIdToLocalPathMap() {
             final Map<String,String> result = new HashMap<String,String>();
-            final URI relativeURIToSystemID = SYSTEM_ID_PREFIX_URI.relativize(SUN_ACC_SYSTEM_ID_URI);
-            result.put(SUN_ACC_PUBLIC_ID, LOCAL_PATH_PREFIX + relativeURIToSystemID.getPath());
+            for (ACC_INFO accInfo : ACC_INFO.values()) {
+                result.put(accInfo.publicID, accInfo.uri.toASCIIString());
+            }
             return result;
         }
 

@@ -63,7 +63,7 @@
         
 <!--        <java version="1.6+"
              java-vm-args="-showversion -javaagent=${gf-client.jar}=mode=jws,${agent.args} ${request.vmargs}" /> -->
-        <java version="1.6+" java-vm-args="${request.vmargs}" />
+        <java version="1.6+" java-vm-args="-verbose ${request.vmargs}" />
         
         <!-- 
             In v3, run the client facade as the main JAR. Eventually Java Web
@@ -111,7 +111,7 @@
         <!--
             Content normally read from files during an appclient script launch.
         -->
-        <property name="sun-acc.xml.content" value="${request.sun-ac.xml.content}"/>
+        <property name="glassfish-acc.xml.content" value="${request.glassfish-acc.xml.content}"/>
         <property name="appclient.login.conf.content" value="${request.appclient.login.conf.content}"/>
         <property name="message.security.config.provider.security.config"
             value="${request.message.security.config.provider.security.config}"/>

@@ -97,9 +97,8 @@ public class AppClientCommand {
     private static final String TEXT_AUTH = "-textauth";
     private static final String XML_PATH = "-xml";
     private static final String ACC_CONFIG_XML = "-configxml";
-    private static final String DEFAULT_CLIENT_CONTAINER_XML = "sun-acc.xml";
+    private static final String DEFAULT_CLIENT_CONTAINER_XML = "glassfish-acc.xml";
     // duplicated in com.sun.enterprise.jauth.ConfigXMLParser
-    private static final String SUNACC_XML_URL = "sun-acc.xml.url";
     private static final String NO_APP_INVOKE = "-noappinvoke";
     //Added for allow user to pass user name and password through command line.
     private static final String USER = "-user";

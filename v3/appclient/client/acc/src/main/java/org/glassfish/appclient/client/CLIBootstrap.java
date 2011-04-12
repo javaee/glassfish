@@ -1027,7 +1027,7 @@ public class CLIBootstrap {
      * <p>
      * Note that we use the property acc._AS_INSTALL to find the installation.
      */
-    class GlassFishInfo {
+    static class GlassFishInfo {
 
         private final File home;
         private final File modules;
@@ -1058,7 +1058,7 @@ public class CLIBootstrap {
         }
 
         File configxml() {
-            return new File(new File(home, "domains/domain1/config"), "sun-acc.xml");
+            return new File(new File(home, "domains/domain1/config"), "glassfish-acc.xml");
         }
 
         String[] endorsedPaths() {
@@ -1097,7 +1097,7 @@ public class CLIBootstrap {
      * the java.home property to find the JRE's home, which we need for the
      * library directory (for example).
      */
-    class JavaInfo {
+    static class JavaInfo {
 
         private final static String CYGWIN_PROP_NAME = "org.glassfish.isCygwin";
         private final static String SHELL_PROP_NAME = "org.glassfish.appclient.shell";
@@ -1122,7 +1122,7 @@ public class CLIBootstrap {
             init();
         }
 
-        protected void init() {
+        private void init() {
             jreHome = new File(System.getProperty("java.home"));
             javaExe = javaExe();
         }

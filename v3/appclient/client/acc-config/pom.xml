@@ -62,7 +62,8 @@
         <extracted-dtd-root>temp</extracted-dtd-root>
         <extracted-dtd-top-level-directory>${extracted-dtd-root}/glassfish</extracted-dtd-top-level-directory>
         <extracted-dtd-directory>${extracted-dtd-top-level-directory}/lib/dtds</extracted-dtd-directory>
-        <config-dtd-file>sun-application-client-container_1_2.dtd</config-dtd-file>
+        <dtd-for-jaxb-compilation>glassfish-application-client-container_1_3.dtd</dtd-for-jaxb-compilation>
+        <config-dtd-file>*-application-client-container*.dtd</config-dtd-file>
         <added-test-classpath>${project.build.directory}/../${extracted-dtd-root}</added-test-classpath>
 <!--
         <config-xsd-dir>src/main/resources</config-xsd-dir>
@@ -96,9 +97,10 @@
 
         <plugins>
             <!--
-                Extracts the sun-application-client-container_x_y.dtd from the
+                Extracts the DTD(s) from the
                 deployment/dtds module into a temp file.
-                The "generate" phase will use it to create JAXB classes.
+                The "generate" phase will use it to create JAXB classes.  
+                Unit tests use both DTDs for parse testing.
             -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -138,7 +140,7 @@
                 <artifactId>maven-jaxb2-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>JAXB-gen-for-sun-acc</id>
+                        <id>JAXB-gen-for-glassfish-acc</id>
                         <goals>
                             <goal>generate</goal> <!-- must be before compile -->
                         </goals>
@@ -152,7 +154,7 @@
 -->
                     <generatePackage>org.glassfish.appclient.client.acc.config</generatePackage>
                     <schemaIncludes>
-                        <include>${config-dtd-file}</include>
+                        <include>${dtd-for-jaxb-compilation}</include>
 <!--
                         <include>${config-xsd-file}</include>
 -->
@@ -206,7 +208,8 @@
     <dependencies>
         <!--
             We depend on the deployment/dtds module which contains the
-            sun-application-client-container_1_2.dtd.  We use that for
+            sun-application-client-container_1_2.dtd and
+            glassfish-application-client-container_1_3.dtd.  We use that for
             generating JAXB classes but we do not want to package the DTD
             with the ACC module, nor do we want the ACC module depending on
             the deploymenet/dtds module at runtime.  Note the scope is "provided"
