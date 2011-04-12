@@ -115,7 +115,7 @@ public class ExpressionParseTree {
     private void pushOpp(OppNode node) {
         // If node is null then it's just a group marker
         if (node == null) {
-            oppStack.add(0, node);
+            oppStack.add(0, null);
             return;
         }
         while (true) {

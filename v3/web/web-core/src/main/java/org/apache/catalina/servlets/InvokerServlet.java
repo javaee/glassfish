@@ -291,7 +291,7 @@ public final class InvokerServlet
         // Make sure a servlet name or class name was specified
         if (inPathInfo == null) {
             if (debug >= 1)
-                log("Invalid pathInfo '" + inPathInfo + "'");
+                log("Invalid pathInfo 'null'");
             if (included)
                 throw new ServletException
                     (sm.getString("invokerServlet.invalidPath", inRequestURI));

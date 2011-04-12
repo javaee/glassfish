@@ -618,9 +618,9 @@ public class StandardWrapper
                 "Wrapper already initialized with servlet instance, " +
                 "class, or name");
         }
-        String oldServletClassName = servletClassName;
         servletClassName = className;
-        support.firePropertyChange("servletClassName", oldServletClassName,
+        // oldServletClassName is null
+        support.firePropertyChange("servletClassName", null,
                                    servletClassName);
         if (Constants.JSP_SERVLET_CLASS.equals(servletClassName)) {
             isJspServlet = true;
