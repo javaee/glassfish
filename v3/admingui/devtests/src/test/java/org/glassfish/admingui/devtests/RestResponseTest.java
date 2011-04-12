@@ -53,7 +53,8 @@ import static org.junit.Assert.*;
  * @author jasonlee
  */
 public class RestResponseTest {
-    public static final String BASE_URL = "http://localhost:4848/management/domain";
+    private static final SeleniumHelper helper = SeleniumHelper.getInstance();
+    public static final String BASE_URL = helper.getBaseUrl() + "/management/domain";
     static final String URL_UPTIME = BASE_URL + "/uptime";
     static final String URL_GENERATE_JVM_REPORT = BASE_URL + "/servers/server/server/generate-jvm-report";
 
