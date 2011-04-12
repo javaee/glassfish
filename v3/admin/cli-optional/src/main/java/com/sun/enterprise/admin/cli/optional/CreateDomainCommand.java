@@ -411,7 +411,9 @@ public final class CreateDomainCommand extends CLICommand {
             throw new CommandException(strings.get("UnknownPortMsg", portNum));
 
         case OK:
-            logger.finer("Port =" + portToVerify);
+            logger.log(Level.FINER, "Port ={0}", portToVerify);
+            break;
+        default:
             break;
         }
     }
