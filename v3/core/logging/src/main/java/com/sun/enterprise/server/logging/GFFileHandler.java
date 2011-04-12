@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -394,7 +394,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
 
     public void preDestroy() {
         // stop the Queue consummer thread.
-        LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER).fine("Logger handler killed");
+        LogDomains.getLogger(GFFileHandler.class, LogDomains.CORE_LOGGER).fine("Logger handler killed");
         done.tryReleaseShared(1);
         pump.interrupt();
 

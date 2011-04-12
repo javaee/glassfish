@@ -115,7 +115,7 @@ public class SyslogHandler extends Handler implements PostConstruct, PreDestroy 
 
     }
     public void preDestroy() {
-        LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER).fine("SysLog Logger handler killed");
+        LogDomains.getLogger(SyslogHandler.class, LogDomains.CORE_LOGGER).fine("SysLog Logger handler killed");
     }
 
     /**

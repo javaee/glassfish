@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,20 +39,14 @@
  */
 package org.glassfish.admin.amx.impl.util;
 
-import java.util.Set;
-import java.util.logging.Logger;
-
+import com.sun.logging.LogDomains;
+import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-
-import org.glassfish.admin.amx.core.AMXProxy;
-
-import org.glassfish.admin.amx.core.Util;
-import org.glassfish.admin.amx.core.proxy.ProxyFactory;
-
-import com.sun.logging.LogDomains;
-import org.glassfish.server.ServerEnvironmentImpl;
+import java.util.Set;
+import java.util.logging.Logger;
 
 public final class ImplUtil {
 
@@ -61,7 +55,7 @@ public final class ImplUtil {
     }
 
     public static Logger getLogger() {
-        return LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER);
+        return LogDomains.getLogger(ImplUtil.class, LogDomains.ADMIN_LOGGER);
     }
 
     /**
