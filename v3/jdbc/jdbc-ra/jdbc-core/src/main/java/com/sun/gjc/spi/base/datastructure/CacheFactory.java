@@ -42,7 +42,6 @@ package com.sun.gjc.spi.base.datastructure;
 
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.gjc.common.DataSourceObjectBuilder;
-import com.sun.gjc.spi.ManagedConnectionFactory;
 import com.sun.logging.LogDomains;
 import org.glassfish.resource.common.PoolInfo;
 

@@ -40,7 +40,6 @@
 
 package com.sun.gjc.spi.base.datastructure;
 
-import com.sun.gjc.spi.ManagedConnectionFactory;
 import com.sun.gjc.spi.base.*;
 import com.sun.logging.LogDomains;
 import com.sun.gjc.monitoring.StatementCacheProbeProvider;
