@@ -462,6 +462,8 @@ public class AsyncContextImpl implements AsyncContext {
                     case START_ASYNC:
                         asyncListener.onStartAsync(asyncEvent);
                         break;
+                    default: // not possible
+                        break;
                     }
                 } catch (IOException ioe) {
                     log.log(Level.WARNING, "Error invoking AsyncListener",

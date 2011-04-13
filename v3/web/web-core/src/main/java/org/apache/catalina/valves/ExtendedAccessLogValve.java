@@ -643,8 +643,6 @@ public final class ExtendedAccessLogValve
                     result.append(getServerToClient(fieldInfos[i], response));
                     break;
                 case FieldInfo.DATA_SERVER_TO_RSERVER:
-                    result.append('-');
-                    break;
                 case FieldInfo.DATA_RSERVER_TO_SERVER:
                     result.append('-');
                     break;
