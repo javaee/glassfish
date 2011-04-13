@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -120,19 +120,6 @@ public class CurrentImpl extends org.omg.CORBA.LocalObject
 
         CurrentTransaction.initialise();
     }
-
-    /**Cleans up the state of the object.
-     *
-     * @param
-     *
-     * @return
-     *
-     * @see
-     */
-    /*
-    public void finalize() {
-    }
-    */
 
     /**Creates a new Control object, containing new Terminator and Coordinator
      * objects.
@@ -535,7 +522,7 @@ public class CurrentImpl extends org.omg.CORBA.LocalObject
         if( !controlImpl.representsRemoteControl() ) {
 
             StatusHolder status = new StatusHolder();
-            Long localTID = new Long(controlImpl.getLocalTID(status));
+            Long localTID = controlImpl.getLocalTID(status);
 
             if( status.value != Status.StatusActive ) {
 
@@ -676,7 +663,7 @@ public class CurrentImpl extends org.omg.CORBA.LocalObject
         if( !controlImpl.representsRemoteControl() ) {
 
             StatusHolder status = new StatusHolder();
-            Long localTID = new Long(controlImpl.getLocalTID(status));
+            Long localTID = controlImpl.getLocalTID(status);
 
             if( status.value != Status.StatusActive ) {
 

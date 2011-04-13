@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -111,7 +111,7 @@ class RegisteredResources {
     private java.lang.Object heuristicLogSection = null;
     private Resource laoResource = null;
     private CoordinatorImpl coord = null;
-    private static boolean lastXAResCommit = false;
+    private static boolean lastXAResCommit = Boolean.getBoolean("com.sun.jts.lastagentcommit");
     // START IASRI 4662745
     //private int commitRetries = -1;
     // private static int commitRetries = -1;
@@ -127,13 +127,6 @@ class RegisteredResources {
     private final static String LOG_SECTION_NAME = "RR"/*#Frozen*/;
     private final static String HEURISTIC_LOG_SECTION_NAME = "RRH"/*#Frozen*/;
 
-    static {
-        String lastXAResCommitProp = System.getProperty("com.sun.jts.lastagentcommit");
-        if (lastXAResCommitProp != null && "true".equals(lastXAResCommitProp.toLowerCase())) {
-            lastXAResCommit = true;
-        }
-    }
-	
 	/*
 		Logger to log transaction messages
 	*/  
@@ -188,30 +181,6 @@ class RegisteredResources {
      * @see
      */
     RegisteredResources(CoordinatorImpl coord) { this.coord = coord;}
-
-    /**
-     * Cleans up RegisteredResources state.
-     *
-     * @param
-     *
-     * @return
-     *
-     * @see
-     */
-    /*
-    public void finalize() {
-
-        if (resourceObjects != null) {
-          empty();
-        }
-
-        resourceObjects = null;
-        resourceStates = null;
-        logRecord = null;
-        logSection = null;
-        heuristicLogSection = null;
-    }
-    */
 
     /**
      * Directs the RegisteredResources to recover its state after a failure.
@@ -296,14 +265,12 @@ class RegisteredResources {
 
                              // If the retry limit has been exceeded,
                              // end the process with a fatal error.
-							 _logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
-	                                 new java.lang.Object[] {
-									 new Integer(commitRetries), "commit"});
-							 String msg = LogFormatter.getLocalizedMessage(_logger,
-							 							"jts.retry_limit_exceeded",
-						                                 new java.lang.Object[] {
-														 new Integer(commitRetries), "commit"});
-							  throw  new org.omg.CORBA.INTERNAL(msg);
+                             _logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
+	                                 new java.lang.Object[] {commitRetries, "commit"});
+                             String msg = LogFormatter.getLocalizedMessage(_logger,
+					"jts.retry_limit_exceeded",
+			                 new java.lang.Object[] {commitRetries, "commit"});
+			    throw  new org.omg.CORBA.INTERNAL(msg);
                             //exceptionThrown=false;
 								//Commented out code as this statement is not
 								//reachable
@@ -358,16 +325,13 @@ class RegisteredResources {
 
                              // If the retry limit has been exceeded,
                              // end the process with a fatal error.
-							 _logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
-	                                 new java.lang.Object[] {new Integer(commitRetries),
-									 						"commit"});
-							 String msg = LogFormatter.getLocalizedMessage(_logger,
-							 							"jts.retry_limit_exceeded",
-						                                 new java.lang.Object[] {
-														 new Integer(commitRetries),
-									 						"commit"});
+			     _logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
+	                                 new java.lang.Object[] {commitRetries, "commit"});
+			     String msg = LogFormatter.getLocalizedMessage(_logger,
+					"jts.retry_limit_exceeded",
+			                 new java.lang.Object[] {commitRetries, "commit"});
 							 		
-							  throw  new org.omg.CORBA.INTERNAL(msg);
+			    throw  new org.omg.CORBA.INTERNAL(msg);
                            // exceptionThrown=false;
 						   //Commented out as this will not be executed 
                         }
@@ -898,16 +862,14 @@ class RegisteredResources {
 
                             // If the retry limit has been exceeded,
                             // end the process with a fatal error.
-							_logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
-	                               new java.lang.Object[] { 
-								   new Integer(commitRetries), "commit"});
+			    _logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
+	                               new java.lang.Object[] {commitRetries, "commit"});
 
                              exceptionThrown = false;
                              transactionCompleted = false;
-							 msg = LogFormatter.getLocalizedMessage(_logger,
-													"jts.retry_limit_exceeded",
-	                        						new java.lang.Object[] {
-													new Integer(commitRetries), "commit"});
+			     msg = LogFormatter.getLocalizedMessage(_logger,
+					"jts.retry_limit_exceeded",
+	                       		new java.lang.Object[] {commitRetries, "commit"});
                         }
                     }
                 }
@@ -1142,14 +1104,12 @@ class RegisteredResources {
 
                             // If the retry limit has been exceeded, end the
                             // process with a fatal error.
-							_logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
-	                                new java.lang.Object[]
-                                    { new Integer(commitRetries), "rollback"});
+			    _logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
+	                                new java.lang.Object[] {commitRetries, "rollback"});
 
-							msg = LogFormatter.getLocalizedMessage(_logger,
-							 					"jts.retry_limit_exceeded",
-	                                			new java.lang.Object[]
-			                                    { new Integer(commitRetries), "rollback"});
+			    msg = LogFormatter.getLocalizedMessage(_logger,
+					"jts.retry_limit_exceeded",
+	                       		new java.lang.Object[] {commitRetries, "rollback"});
 												
                             exceptionThrown = false;
                             transactionCompleted = false;
@@ -1307,14 +1267,12 @@ class RegisteredResources {
 
                             // If the retry limit has been exceeded,
                             // end the process with a fatal error.
-							_logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
-	                                new java.lang.Object[] { new Integer(retries),
-									"forget"});
-							 String msg = LogFormatter.getLocalizedMessage(_logger,
-							 						"jts.retry_limit_exceeded",
-	                                				new java.lang.Object[]
-													{ new Integer(retries), "forget"});
-							  throw  new org.omg.CORBA.INTERNAL(msg);
+			    _logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
+	                                new java.lang.Object[] { retries, "forget"});
+			    String msg = LogFormatter.getLocalizedMessage(_logger,
+					"jts.retry_limit_exceeded",
+	                       		new java.lang.Object[] {retries, "forget"});
+			    throw  new org.omg.CORBA.INTERNAL(msg);
                         }
                     }
                 }
@@ -1708,14 +1666,12 @@ class RegisteredResources {
                     // toolkit for standalone apps) then we would replace
                     // all the FATAL_ERROR actions such as the one below
                     // with the actino required by the application server.
-					_logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
-	                        new java.lang.Object[] { new Integer(commitRetries), 
-							"commitOnePhase"});
-					 String msg = LogFormatter.getLocalizedMessage(_logger,
-					 						"jts.retry_limit_exceeded",
-											 new java.lang.Object[] {
-											 new Integer(commitRetries),"commitOnePhase"});
-					  throw  new org.omg.CORBA.INTERNAL(msg);
+		    _logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
+	                        new java.lang.Object[] { commitRetries, "commitOnePhase"});
+		    String msg = LogFormatter.getLocalizedMessage(_logger,
+				"jts.retry_limit_exceeded",
+				 new java.lang.Object[] {commitRetries,"commitOnePhase"});
+		    throw  new org.omg.CORBA.INTERNAL(msg);
                 }
             } // end of catch block for exceptions
         } // end while exception being raised (GDH)

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -80,13 +80,6 @@ public class TransactionState {
     private static final int FAILED = 3;
     private static final int ROLLING_BACK = 4;
 
-    private static final Integer NOT_EXIST_INTEGER = new Integer(NOT_EXIST);
-    private static final Integer ASSOCIATED_INTEGER = new Integer(ASSOCIATED);
-    private static final Integer NOT_ASSOCIATED_INTEGER = new Integer(NOT_ASSOCIATED);
-    private static final Integer ASSOCIATION_SUSPENDED_INTEGER = new Integer(ASSOCIATION_SUSPENDED);
-    private static final Integer FAILED_INTEGER = new Integer(FAILED);
-    private static final Integer ROLLING_BACK_INTEGER = new Integer(ROLLING_BACK);
-
     /**
      * a mapping of XAResource -> Integer (state)
      * possible states are listed above
@@ -123,7 +116,6 @@ public class TransactionState {
     
 	static Logger _logger = LogDomains.getLogger(TransactionState.class, LogDomains.TRANSACTION_LOGGER);
 
-    public static boolean debug = false;
     // private static TransactionManagerImpl tm = TransactionManagerImpl.getTransactionManagerImpl();
 
     public TransactionState(GlobalTID gtid, TransactionImpl tran) {
@@ -158,7 +150,7 @@ public class TransactionState {
                     case ASSOCIATED:
                         Xid xid = (Xid) resourceList.get(res);
                         res.end(xid, XAResource.TMSUCCESS);
-                        setXAState(res, NOT_ASSOCIATED_INTEGER);
+                        setXAState(res, NOT_ASSOCIATED);
                         break;
                     case ROLLING_BACK:
                     case NOT_EXIST:
@@ -199,7 +191,7 @@ public class TransactionState {
             } catch (Exception ex) {
                 _logger.log(Level.WARNING,"jts.delist_exception",ex);
             }
-            setXAState(res, NOT_ASSOCIATED_INTEGER);
+            setXAState(res, NOT_ASSOCIATED);
             res.rollback(xid);
             /** was in ASSOCIATED:
             // rollback is deferred until delistment
@@ -302,18 +294,18 @@ public class TransactionState {
                 // first time this branch is enlisted
                 seenXids.add(xid);
                 res.start(xid, XAResource.TMNOFLAGS);
-                setXAState(res, ASSOCIATED_INTEGER);
+                setXAState(res, ASSOCIATED);
             } else {
                 // have seen this branch before
                 switch (XAState) {
                 case NOT_ASSOCIATED:
                 case NOT_EXIST:
                     res.start(xid, XAResource.TMJOIN);
-                    setXAState(res, ASSOCIATED_INTEGER);
+                    setXAState(res, ASSOCIATED);
                     break;
                 case ASSOCIATION_SUSPENDED:
                     res.start(xid, XAResource.TMRESUME);
-                    setXAState(res, ASSOCIATED_INTEGER);
+                    setXAState(res, ASSOCIATED);
                     break;
                 case ASSOCIATED:
                 case FAILED:
@@ -333,7 +325,7 @@ public class TransactionState {
             }
            **/
         } catch (XAException ex) {
-            setXAState(res, FAILED_INTEGER);
+            setXAState(res, FAILED);
             throw ex;
         } catch (Inactive ex) {
 			_logger.log(Level.WARNING,"jts.transaction_inactive",ex);
@@ -356,13 +348,13 @@ public class TransactionState {
             case ASSOCIATED:
                 if ((flags & XAResource.TMSUCCESS) != 0) {
                     xares.end(xid, XAResource.TMSUCCESS);
-                    setXAState(xares, NOT_ASSOCIATED_INTEGER);
+                    setXAState(xares, NOT_ASSOCIATED);
                 } else if ((flags & XAResource.TMSUSPEND) != 0) {
                     xares.end(xid, XAResource.TMSUSPEND);
-                    setXAState(xares, ASSOCIATION_SUSPENDED_INTEGER);
+                    setXAState(xares, ASSOCIATION_SUSPENDED);
                 } else {
                     xares.end(xid, XAResource.TMFAIL);
-                    setXAState(xares, FAILED_INTEGER);
+                    setXAState(xares, FAILED);
                 }
                 break;
             case ROLLING_BACK:
@@ -370,20 +362,20 @@ public class TransactionState {
                 // activeResources--;
                 // cleanupTransactionStateMapping();
                 xares.end(xid, XAResource.TMSUCCESS);
-                setXAState(xares, NOT_ASSOCIATED_INTEGER);
+                setXAState(xares, NOT_ASSOCIATED);
                 xares.rollback(xid);
                 
                 break;
             case ASSOCIATION_SUSPENDED:
                 if ((flags & XAResource.TMSUCCESS) != 0) {
                     xares.end(xid, XAResource.TMSUCCESS);
-                    setXAState(xares, NOT_ASSOCIATED_INTEGER);
+                    setXAState(xares, NOT_ASSOCIATED);
                 } else if ((flags & XAResource.TMSUSPEND) != 0) {
                     throw new IllegalStateException
                         ("Wrong XAState: " + XAState/*#Frozen*/);
                 } else {
                     xares.end(xid, XAResource.TMFAIL);
-                    setXAState(xares, FAILED_INTEGER);
+                    setXAState(xares, FAILED);
                 }
                 break;
             case NOT_ASSOCIATED:
@@ -393,7 +385,7 @@ public class TransactionState {
                 throw new IllegalStateException("Wrong XAState: " + XAState/*#Frozen*/);
             }
         } catch (XAException ex) {
-            setXAState(xares, FAILED_INTEGER);
+            setXAState(xares, FAILED);
             throw ex;
         }
     }
@@ -451,7 +443,7 @@ public class TransactionState {
     }
 
     private void setXAState(XAResource res, Integer state) {
-        if (debug) {
+        if (_logger.isLoggable(Level.FINE)) {
             int oldValue = getXAState(res);
 			_logger.log(Level.FINE,"transaction id : " + gtid);
             _logger.log(Level.FINE,"res: " + res + "," + oldValue + "," + state);

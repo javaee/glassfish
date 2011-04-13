@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -127,7 +127,7 @@ public class Configuration extends Object {
 	*/
 	static Logger _logger = LogDomains.getLogger(Configuration.class, LogDomains.TRANSACTION_LOGGER);
 
-   public static boolean traceOn = false;
+   private static boolean traceOn = false;
 
    /**The property key used to specify the directory to which trace files and the
      * error log should be written.
@@ -288,7 +288,7 @@ public class Configuration extends Object {
 
             // If the default subdirectory is not valid, then use the current directory.
 
-            envValue = new String("."+File.separator+defaultSubdirectory/*#Frozen*/);
+            envValue = "."+File.separator+defaultSubdirectory/*#Frozen*/;
             if( !new File(envValue).isDirectory() ) {
                 result[0] = DEFAULT_INVALID;
             }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -144,23 +144,6 @@ class RecoveryCoordinatorImpl extends RecoveryCoordinatorPOA {
         id[3] = (byte)(internalSeq >> 24);
         */
     }
-
-    /**
-     * Cleans up the state of the object.
-     *
-     * @param
-     *
-     * @return
-     *
-     * @see
-     */
-    /*
-    public void finalize() {
-
-        globalTID = null;
-        internalSeq = 0;
-    }
-    */
 
     /**
      * Informs the Transaction Service that the given Resource object has been
@@ -579,7 +562,6 @@ class RecoveryCoordinatorImpl extends RecoveryCoordinatorPOA {
 				_logger.log(Level.WARNING,"jts.object_destroy_error","RecoveryCoordinator");
         }
 
-        //finalize();
         globalTID = null;
         internalSeq = 0;
     }

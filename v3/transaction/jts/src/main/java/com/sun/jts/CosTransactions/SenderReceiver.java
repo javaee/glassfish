@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -94,7 +94,6 @@ import com.sun.logging.LogDomains;
 
 class SenderReceiver implements Sender, Receiver {
 
-    static private final boolean debug = false;
     private static SenderReceiver sendRec = new SenderReceiver();
 	/*
 		Logger to log transaction messages
@@ -130,14 +129,14 @@ class SenderReceiver implements Sender, Receiver {
     public void sending_request(int id, PropagationContextHolder holder)
             throws TRANSACTION_ROLLEDBACK, TRANSACTION_REQUIRED {
 
-        if (debug) {
+        if (_logger.isLoggable(Level.FINE)) {
 			_logger.log(Level.FINE,"In sending_request"+
 					":"+id+","+holder.value.current.otid.formatID);
         }
 
         CurrentTransaction.sendingRequest(id, holder);
 
-        if (debug) {
+        if (_logger.isLoggable(Level.FINE)) {
 			_logger.log(Level.FINE,"Out sending_request"+
 					":"+id+","+holder.value.current.otid.formatID);
         }
@@ -161,14 +160,14 @@ class SenderReceiver implements Sender, Receiver {
             org.omg.CORBA.Environment ex)
             throws org.omg.CORBA.WrongTransaction {
 
-        if (debug) {
+        if (_logger.isLoggable(Level.FINE)) {
 			_logger.log(Level.FINE,"In received_reply"+
 					":"+id+","+context.current.otid.formatID);
         }
 
         CurrentTransaction.receivedReply(id, context, ex);
 
-        if (debug) {
+        if (_logger.isLoggable(Level.FINE)) {
 			_logger.log(Level.FINE,"Out received_reply"+
 					":"+id+","+context.current.otid.formatID);
         }
@@ -186,14 +185,14 @@ class SenderReceiver implements Sender, Receiver {
      */
     public void received_request(int id, PropagationContext context) {
 
-        if (debug) {
+        if (_logger.isLoggable(Level.FINE)) {
 			_logger.log(Level.FINE,"In received_request"+
 					":"+id+","+context.current.otid.formatID);
         }
 
         CurrentTransaction.receivedRequest(id, context);
 
-        if (debug) {
+        if (_logger.isLoggable(Level.FINE)) {
 			_logger.log(Level.FINE,"Out received_request"+
 					":"+id+","+context.current.otid.formatID);
         }
@@ -219,14 +218,14 @@ class SenderReceiver implements Sender, Receiver {
     public void sending_reply(int id, PropagationContextHolder holder)
         throws INVALID_TRANSACTION, TRANSACTION_ROLLEDBACK {
 
-        if (debug) {
+        if (_logger.isLoggable(Level.FINE)) {
 			_logger.log(Level.FINE,"In sending_reply"+
 					":"+id+","+holder.value.current.otid.formatID);
         }
 
         CurrentTransaction.sendingReply(id, holder);
 
-        if (debug) {
+        if (_logger.isLoggable(Level.FINE)) {
 			_logger.log(Level.FINE,"Out sending_reply"+
 					":"+id+","+holder.value.current.otid.formatID);
         }
@@ -245,7 +244,7 @@ class SenderReceiver implements Sender, Receiver {
         try {
             ident.identify_sender(sendRec);
             ident.identify_receiver(sendRec);
-            if (debug) {
+            if (_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE,"Sender/Receiver "+ sendRec +
                                    " successfully identified");
             }

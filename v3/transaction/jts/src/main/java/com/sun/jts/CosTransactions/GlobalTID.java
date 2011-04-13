@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -91,13 +91,14 @@ import com.sun.jts.utils.LogFormatter;
 //   0.01  SAJH   Initial implementation.
 //-----------------------------------------------------------------------------
 public class GlobalTID extends Object {
-    static GlobalTID NullGlobalTID = new GlobalTID(-1,-1,null);
-
     otid_t realTID = null;
 
     private String stringForm = null;
     private int hashCode = 0;
     private boolean hashed = false;
+
+    static GlobalTID NULL_GLOBAL_TID = new GlobalTID(-1,-1,null);
+
 	/*
 		Logger to log transaction messages
 	*/
@@ -217,7 +218,7 @@ public class GlobalTID extends Object {
      *
      * @see
      */
-    final boolean isNull() {
+    final boolean isNullTID() {
         return realTID.formatID == -1;
     }
 

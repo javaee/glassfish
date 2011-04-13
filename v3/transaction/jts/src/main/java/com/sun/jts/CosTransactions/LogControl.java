@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -64,9 +64,13 @@ package com.sun.jts.CosTransactions;
 
 // Import required classes.
 
-import com.sun.enterprise.util.i18n.StringManager;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.io.*;
+
+import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.logging.LogDomains;
 
 /**This class holds the top level information for an instance of the log,
  *
@@ -85,6 +89,8 @@ import java.io.*;
 
 public class LogControl {
     private static final StringManager sm = StringManager.getManager(LogControl.class);
+
+    private static Logger _logger = LogDomains.getLogger(LogControl.class, LogDomains.TRANSACTION_LOGGER);
 
     /**Constants for file name extensions.
      */
@@ -138,7 +144,7 @@ public class LogControl {
 
         // Store the log directory name for use by subsequent log functions.
 
-        directoryPath = new String(logDirectory);
+        directoryPath = logDirectory;
 
         // If this is a cold start, then remove all files in the log directory
 
@@ -936,4 +942,38 @@ public class LogControl {
         File result = new File(directory(logId,logDir),RECOVERY_LOCK_FILE_NAME);
         return result;
     }
+
+    /**
+     * Returns the log directory name
+     */
+    public static String getLogPath() {
+        String logPath = null;
+        int[] result = new int[1];
+        logPath = Configuration.getDirectory(Configuration.LOG_DIRECTORY,
+                                                 Configuration.JTS_SUBDIRECTORY,
+                                                 result);
+
+        // If a default was used, display a message.
+
+        if( result[0] == Configuration.DEFAULT_USED ||
+                result[0] == Configuration.DEFAULT_INVALID ) {
+
+            // In the case where the SOMBASE default is used, only display a message
+            // if an invalid value was specified in the environment value.
+
+            if( logPath.length() > 0 ) {
+                 _logger.log(Level.WARNING,"jts.invalid_log_path",logPath);
+            }
+
+            // In the case where the SOMBASE default is invalid, the value returned is
+            // the invalid default. We then default to the current directory.
+
+            if( result[0] == Configuration.DEFAULT_INVALID ) {
+                _logger.log(Level.WARNING,"jts.invalid_default_log_path");
+                logPath = "."/*#Frozen*/;
+            }
+        }
+        return logPath;
+    }
+
 }

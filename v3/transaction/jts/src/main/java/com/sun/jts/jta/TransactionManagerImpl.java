@@ -147,8 +147,7 @@ public class TransactionManagerImpl implements TransactionManager {
         statusMap = new HashMap();
         int calcMaxStatus = 0;
         for (int i=0; i<CosTransactionStatus.length; i++) {
-            statusMap.put(CosTransactionStatus[i],
-                          new Integer(JTAStatus[i]));
+            statusMap.put(CosTransactionStatus[i], JTAStatus[i]);
             calcMaxStatus = Math.max(calcMaxStatus, CosTransactionStatus[i].value());
         }
         maxStatus = calcMaxStatus;
@@ -645,18 +644,6 @@ public class TransactionManagerImpl implements TransactionManager {
         return new XATerminatorImpl();
     }
 
-    /**
-     * a simple assertion mechanism that print stack trace
-     * if assertion fails
-     */
-    static private void assert_prejdk14(boolean value) {
-        if (!value) {
-            Exception e = new Exception();
-			_logger.log(Level.WARNING,"jts.assert",e);
-        }
-    }
-
-	
   	//START IASRI 4706150 
 	/**
 	* used to set XAResource timeout
@@ -688,7 +675,7 @@ public class TransactionManagerImpl implements TransactionManager {
             try {
 	      tranState.beforeCompletion();
 	    }catch(XAException xaex){
-	      _logger.log(Level.WARNING,"jts.unexpected_xa_error_in_beforecompletion", new java.lang.Object[] {new Integer(xaex.errorCode), xaex.getMessage()});
+	      _logger.log(Level.WARNING,"jts.unexpected_xa_error_in_beforecompletion", new java.lang.Object[] {xaex.errorCode, xaex.getMessage()});
 	      _logger.log(Level.WARNING,"",xaex);
             } catch (Exception ex) {
 				_logger.log(Level.WARNING,"jts.unexpected_error_in_beforecompletion",ex);

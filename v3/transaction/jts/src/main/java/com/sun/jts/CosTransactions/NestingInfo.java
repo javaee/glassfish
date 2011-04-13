@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -117,30 +117,6 @@ class NestingInfo {
         ancestorSeq = (CoordinatorImpl[])ancestors.clone();
         removed = (ancestors.length == 0);
     }
-
-    /**
-     * Cleans up the state of the object.
-     *
-     * @param
-     *
-     * @return
-     *
-     * @see
-     */
-    /*
-    public void finalize() {
-
-    if( childSet != null ) childSet.removeAllElements();
-        childSet = null;
-
-        if( ancestorSeq != null )
-          {
-          for( int i = 0; i < ancestorSeq.length; i++ )
-            ancestorSeq[i] = null;
-          ancestorSeq = null;
-          }
-    }
-    */
 
     /**
      * Adds the given SubCoordinator as a child.

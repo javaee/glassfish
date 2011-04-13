@@ -591,7 +591,7 @@ public class CurrentTransaction {
 
             outStatus.value = Status.StatusRolledBack;
             try {
-                Long currentLocalTID = new Long(current.getLocalTID(outStatus));
+                Long currentLocalTID = current.getLocalTID(outStatus);
                 if( outStatus.value == Status.StatusActive )
                     if( currentLocalTID.equals(localTID) ) {
                         outstanding[0] |= current.isOutgoing();

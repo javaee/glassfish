@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -306,10 +306,7 @@ class SubCoordinator extends CoordinatorImpl {
 
         case TransactionState.STATE_COMMITTED :
         case TransactionState.STATE_ROLLED_BACK :
-            // if( tranState != null ) tranState.finalize();
             if( superInfo != null ) superInfo.doFinalize();
-            // if( nestingInfo != null ) nestingInfo.finalize();
-            // if( participants != null ) participants.finalize();
 
             tranState = null;
             superInfo = null;
@@ -984,7 +981,7 @@ class SubCoordinator extends CoordinatorImpl {
 
         String result = null;
         if (tranState != null) {
-            result = new String(name);
+            result = name;
         } else {
             INVALID_TRANSACTION exc = new INVALID_TRANSACTION(
                                         MinorCode.Completed,
@@ -1056,7 +1053,7 @@ class SubCoordinator extends CoordinatorImpl {
 
             result = new ControlImpl(terminator, child,
                                      new GlobalTID(child.getGlobalTID()),
-                                     new Long(child.getLocalTID())).object();
+                                     child.getLocalTID()).object();
         } catch (Throwable exc) {
             Inactive ex2 = new Inactive();
             throw ex2;
@@ -1299,7 +1296,9 @@ class SubCoordinator extends CoordinatorImpl {
         // instance variable has not been set up, then the child
         // cannot be removed.
 
-        result = nestingInfo.removeChild(child);
+        if (nestingInfo != null) {
+            result = nestingInfo.removeChild(child);
+        }
 
         // If the removal results in an empty, temporary Coordinator, then this
         // Coordinator must be cleaned up.  The RecoveryManager is called to

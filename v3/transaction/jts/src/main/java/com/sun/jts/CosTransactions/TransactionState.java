@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -284,7 +284,7 @@ class TransactionState {
 
         // Get the sequence number for the transaction identifier.
 
-        localTID = new Long(getSequenceNumber());
+        localTID = getSequenceNumber();
 
         // Get the epoch number for this execution of the server.
 
@@ -334,7 +334,7 @@ class TransactionState {
         // Get the sequence number for the transaction identifier.
 
         this.globalTID = globalTID;
-        localTID = new Long(getSequenceNumber());
+        localTID = getSequenceNumber();
 
         // Store the values in instance variables.
 
@@ -375,7 +375,7 @@ class TransactionState {
 
         // Get the sequence number for the transaction identifier.
 
-        localTID = new Long(getSequenceNumber());
+        localTID = getSequenceNumber();
 
         // Get the epoch number for this execution of the server.
 
@@ -471,26 +471,6 @@ class TransactionState {
 
         return result;
     }
-
-    /**
-     * Cleans up the state of the object.
-     *
-     * @param
-     *
-     * @return
-     *
-     * @see
-     */
-    /*
-    public void finalize() {
-
-        state = STATE_NONE;
-        globalTID = null;
-        localTID  = null;
-        logRecord = null;
-        logSection = null;
-    }
-    */
 
     /**
      * Sets the state to the given value and returns true.

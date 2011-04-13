@@ -579,7 +579,7 @@ public class RecoveryManager {
                         // Synchronization objects.
 
                         TimeoutManager.setTimeout(
-                            new Long(coord.getLocalTID()),
+                            coord.getLocalTID(),
                             TimeoutManager.IN_DOUBT_TIMEOUT,
                             60);
 
@@ -1460,7 +1460,7 @@ public class RecoveryManager {
     }
 
     static void addToIncompleTx(CoordinatorImpl coord, boolean commit) {
-        inCompleteTxMap.put(coord, new Boolean(commit));
+        inCompleteTxMap.put(coord, commit);
     }
 
     public static Boolean isIncompleteTxRecoveryRequired() {
@@ -1630,7 +1630,7 @@ public class RecoveryManager {
 
     static void createRecoveryFile(String serverName) {
         try {
-            String logPath = getLogDirectory();
+            String logPath = LogControl.getLogPath();
             File recoveryFile = LogControl.recoveryIdentifierFile(serverName,logPath);
             RandomAccessFile raf = new RandomAccessFile(recoveryFile,"rw");
             raf.writeBytes(serverName);
@@ -1666,23 +1666,6 @@ public class RecoveryManager {
         } else {
             _logger.log(Level.WARNING,"", new IllegalStateException());
         }
-    }
-
-    /**
-     * return transaction log directory
-     */
-    public static String getLogDirectory() {
-        int[] result = new int[1];
-        String logDir = Configuration.getDirectory(Configuration.LOG_DIRECTORY,
-                     Configuration.JTS_SUBDIRECTORY, result);
-        if( result[0] == Configuration.DEFAULT_USED ||
-                result[0] == Configuration.DEFAULT_INVALID ) {
-            if( result[0] == Configuration.DEFAULT_INVALID ) {
-                logDir = ".";
-            }
-        }
-
-        return logDir;
     }
 
     /**

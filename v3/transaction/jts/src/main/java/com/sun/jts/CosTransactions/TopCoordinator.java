@@ -393,29 +393,9 @@ public class TopCoordinator extends CoordinatorImpl {
         case TransactionState.STATE_COMMITTED_ONE_PHASE_OK :
         case TransactionState.STATE_COMMIT_ONE_PHASE_ROLLED_BACK :
 
-	    /*
-            if (tranState != null) {
-                tranState.finalize();
-            }
-	    */
-
             if (superInfo != null) {
                 superInfo.doFinalize();
             }
-
-	    /*
-            if (nestingInfo != null) {
-                nestingInfo.doFinalize();
-            }
-
-            if (participants != null) {
-                participants.finalize();
-            }
-
-            if (synchronizations != null) {
-                synchronizations.finalize();
-            }
-	    */
 
             tranState = null;
             superInfo = null;
@@ -1426,7 +1406,7 @@ public class TopCoordinator extends CoordinatorImpl {
         if (tranState != null) {
             if (name == null)
                 name = superInfo.globalTID.toString();
-            result = new String(name);
+            result = name;
         } else {
             INVALID_TRANSACTION exc = new INVALID_TRANSACTION(
                                             MinorCode.Completed,
@@ -1496,7 +1476,7 @@ public class TopCoordinator extends CoordinatorImpl {
 
             result = new ControlImpl(terminator, child,
                                      new GlobalTID(child.getGlobalTID()),
-                                     new Long(child.getLocalTID())
+                                     child.getLocalTID()
                                     ).object();
         } catch (Throwable exc) {
             Inactive ex2 = new Inactive();
@@ -2510,7 +2490,7 @@ public class TopCoordinator extends CoordinatorImpl {
 						"register_synchronization()",
 						"SynchronizationImpl :" + sync +
 						" has been registeredwith TopCoordinator :"+
-						"GTID is : "+ superInfo.globalTID.toString().toString());
+						"GTID is : "+ superInfo.globalTID.toString());
             }
 
         } else {

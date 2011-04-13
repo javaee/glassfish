@@ -63,6 +63,7 @@ import com.sun.jts.CosTransactions.Configuration;
 import com.sun.jts.CosTransactions.RecoveryManager;
 import com.sun.jts.CosTransactions.DelegatedRecoveryManager;
 import com.sun.jts.CosTransactions.RWLock;
+import com.sun.jts.CosTransactions.LogControl;
 
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.TransactionService;
@@ -598,7 +599,7 @@ public class JavaEETransactionManagerJTSDelegate
     /** {@inheritDoc}
     */
     public String getTxLogLocation() {
-            return RecoveryManager.getLogDirectory();
+            return LogControl.getLogPath();
     }
 
     /** {@inheritDoc}
