@@ -47,7 +47,7 @@ public class RegistrationTest extends BaseSeleniumTestClass {
     // this test connects to an external site on the internet. It will fail if the site is down or there is no internet.
     @Test
     public void testRegistration() {
-        open("http://localhost:4848/common/registration.jsf");
+        open(SeleniumHelper.getInstance().getBaseUrl() + "/common/registration.jsf");
         sleep(1000); // ugh
         isTextPresent("Oracle");
         submitForm("form1");
