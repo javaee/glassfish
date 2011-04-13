@@ -911,6 +911,7 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
         
         String className=type;
         String pkg=className;
+        // pkg.indexOf(".") must be greater than 0 for a valid package name.
         while( pkg.indexOf( ".") > 0 ) {
             int lastComp=pkg.lastIndexOf( ".");
             if( lastComp <= 0 ) return;
