@@ -54,7 +54,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.openqa.selenium.NoSuchElementException;
 
 public class BaseSeleniumTestClass {
     public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
@@ -544,23 +543,19 @@ public class BaseSeleniumTestClass {
      * @return
      */
     protected String getLinkIdByLinkText(String baseId, String value) {
-        WebElement link = elementFinder.findElement(By.linkText(value), TIMEOUT);
-                //driver.findElement(By.linkText(value));
-        return (link == null) ?  null : (String)link.getAttribute("id");
-        /*
-        String[] links = selenium.getAllLinks();
-
-        for (String link : links) {
-            if (link.startsWith(baseId)) {
-                String linkText = selenium.getText(link);
-                if (value.equals(linkText)) {
-                    return link;
-                }
-            }
+        String id = null;
+        WebElement link = null;
+        try {
+            link = driver.findElement(By.linkText(value));
+            id = ((link == null) ?  null : (String)link.getAttribute("id"));
+        } catch (StaleElementReferenceException sere) {
+            // Sleep and try again
+            sleep(1000);
+            link = driver.findElement(By.linkText(value));
+            id = ((link == null) ?  null : (String)link.getAttribute("id"));
         }
-
-        return null;
-        */
+                //;
+        return id;
     }
     
     protected boolean isTextPresent(String text) {
