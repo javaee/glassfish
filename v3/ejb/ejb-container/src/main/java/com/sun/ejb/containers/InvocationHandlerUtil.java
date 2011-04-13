@@ -108,7 +108,7 @@ public final class InvocationHandlerUtil {
                                     Class[] declaredExceptions) 
         throws Throwable 
     {
-        Throwable toThrow = t;
+        Throwable toThrow;
 
         if( (t instanceof java.lang.RuntimeException) ||
             (isDeclaredException(t, declaredExceptions)) ) {
@@ -126,7 +126,7 @@ public final class InvocationHandlerUtil {
                                      Class[] declaredExceptions)
         throws Throwable 
     {
-        Throwable toThrow = t;
+        Throwable toThrow;
 
         if( (t instanceof java.lang.RuntimeException) ||
             (t instanceof java.rmi.RemoteException) ||

@@ -1189,8 +1189,6 @@ public final class MessageBeanContainer extends BaseContainer implements
 			_logger.log(Level.SEVERE, "containers.mdb.no_invocation",
 					new Object[] { appEJBName_, "" });
 		} else {
-			MessageBeanContextImpl beanContext = (MessageBeanContextImpl) invocation.context;
-
 			try {
 				if (invocation.containerStartsTx) {
 					// Unregister the session associated with

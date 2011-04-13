@@ -536,8 +536,6 @@ public class EntityContainer
      * for local and remote invocations, and from the EJBHome for create/find.
      */
     protected ComponentContext _getContext(EjbInvocation inv) {
-        String name = inv.method.getName();
-        
         if ( inv.invocationInfo.isCreateHomeFinder ) { 
             // create*, find*, home methods
             // Note: even though CMP finders dont need an instance,
@@ -1309,7 +1307,6 @@ public class EntityContainer
         }
         
         EntityContextImpl context = (EntityContextImpl)ctx;
-        EntityBean ejb = (EntityBean)context.getEJB();
         // Start of IAS 4661771
         synchronized ( context ) {
             try {
@@ -1599,13 +1596,12 @@ public class EntityContainer
     
     // CacheListener interface
     public void trimEvent(Object primaryKey, Object context) {
-        boolean addTask = false;
         synchronized (asyncTaskSemaphore) {
             passivationCandidates.add(context);
             if (addedASyncTask == true) {
                 return;
             }
-            addTask = addedASyncTask = true;
+            addedASyncTask = true;
         }
         
         try {
@@ -1631,12 +1627,12 @@ public class EntityContainer
                 //We need to set the context class loader for this 
                 //(deamon) thread!!      
                 if(System.getSecurityManager() == null) {
-                    currentThread.setContextClassLoader(loader);
+                    currentThread.setContextClassLoader(myClassLoader);
                 } else {
                     java.security.AccessController.doPrivileged(
                             new java.security.PrivilegedAction() {
                         public java.lang.Object run() {
-                            currentThread.setContextClassLoader(loader);
+                            currentThread.setContextClassLoader(myClassLoader);
                             return null;
                         }
                     }
@@ -2745,7 +2741,6 @@ public class EntityContainer
         }
 
         InvocationInfo invInfo = inv.invocationInfo;
-        Throwable exception = inv.exception;
         EntityContextImpl context = (EntityContextImpl)inv.context;
         Transaction tx = context.getTransaction();
 
@@ -2867,12 +2862,12 @@ public class EntityContainer
             try {
             //We need to set the context class loader for this (deamon) thread!!
                 if(System.getSecurityManager() == null) {
-                    currentThread.setContextClassLoader(loader);
+                    currentThread.setContextClassLoader(myClassLoader);
                 } else {
                     java.security.AccessController.doPrivileged(
                             new java.security.PrivilegedAction() {
                         public java.lang.Object run() {
-                            currentThread.setContextClassLoader(loader);
+                            currentThread.setContextClassLoader(myClassLoader);
                             return null;
                         }
                     }

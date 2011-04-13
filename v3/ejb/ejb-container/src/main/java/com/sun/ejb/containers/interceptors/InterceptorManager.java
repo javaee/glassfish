@@ -252,8 +252,7 @@ public class InterceptorManager {
                 continue;
             }
 
-            List<LifecycleCallbackDescriptor> orderedAIInterceptors =
-                new ArrayList<LifecycleCallbackDescriptor>();
+            List<LifecycleCallbackDescriptor> orderedAIInterceptors = null;
             try {
                 orderedAIInterceptors = interceptor.getOrderedAroundInvokeDescriptors(loader);
             } catch (Exception e) {
@@ -572,7 +571,6 @@ public class InterceptorManager {
     private void initCallbackIndices(List<InterceptorDescriptor> callbackList,
                                      CallbackType callbackType) throws Exception {
 
-        int size = CallbackType.values().length;
         ArrayList<CallbackInterceptor> callbacks = new ArrayList<CallbackInterceptor>();
 
         int index = callbackType.ordinal();

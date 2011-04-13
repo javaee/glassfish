@@ -3846,8 +3846,7 @@ public abstract class BaseContainer
 
         EJBLocalObjectImpl localBusinessObjImpl = handler;
 
-        Object localObjectProxy = ejbLocalBusinessObjectProxyCtor.newInstance
-            ( new Object[] { handler });
+        ejbLocalBusinessObjectProxyCtor.newInstance( new Object[] { handler });
 
         localBusinessObjImpl.setContainer(this);
 
@@ -3872,8 +3871,7 @@ public abstract class BaseContainer
 
         EJBLocalObjectImpl localBusinessObjImpl = handler;
 
-        Object localObjectProxy = ejbOptionalLocalBusinessObjectProxyCtor.newInstance
-            ( new Object[] { handler });
+        ejbOptionalLocalBusinessObjectProxyCtor.newInstance( new Object[] { handler });
 
         localBusinessObjImpl.setContainer(this);
 
@@ -3890,7 +3888,7 @@ public abstract class BaseContainer
         ((EjbOptionalIntfGenerator) optIntfClassLoader).generateOptionalLocalInterfaceSubClass(
                 ejbClass, beanSubClassName, ejbGeneratedOptionalLocalBusinessIntfClass);
 
-        Class dummyIntfTst = optIntfClassLoader.loadClass(ejbGeneratedOptionalLocalBusinessIntfClass.getName());
+        optIntfClassLoader.loadClass(ejbGeneratedOptionalLocalBusinessIntfClass.getName());
                        
         Class subClass = optIntfClassLoader.loadClass(beanSubClassName);
         OptionalLocalInterfaceProvider provider =
@@ -4493,8 +4491,6 @@ public abstract class BaseContainer
     protected final void preInvokeTx(EjbInvocation inv)
         throws Exception
     {
-        Method method = inv.method;       
-
         if (inv.invocationInfo==null) {
 
             inv.invocationInfo = getInvocationInfo(inv);
@@ -4690,7 +4686,6 @@ public abstract class BaseContainer
         transactionManager.enlistComponentResources();
         
         // register synchronization for methods other than finders/home methods
-        Method method = inv.method;
         if ( !inv.invocationInfo.isHomeFinder ) {
             // Register for Synchronization notification
             ejbContainerUtilImpl.getContainerSync(tx).addBean(context);
@@ -4784,7 +4779,6 @@ public abstract class BaseContainer
                     // and they cant be associated with a tx across
                     // invocations.
                     // Register sync for methods other than finders/home methods
-                    Method method = inv.method;
                     if ( !inv.invocationInfo.isHomeFinder ) {
                         ejbContainerUtilImpl.getContainerSync(clientTx).addBean(
                         context);

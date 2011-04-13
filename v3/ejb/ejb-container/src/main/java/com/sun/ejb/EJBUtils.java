@@ -505,8 +505,7 @@ public class EJBUtils {
                                                           businessInterfaceName);
 
                 Class developerClass = appClassLoader.loadClass(businessInterfaceName);
-                generatedRemoteIntf = generateAndLoad(gen, generatedRemoteIntfName,
-                        appClassLoader, developerClass);
+                generateAndLoad(gen, generatedRemoteIntfName, appClassLoader, developerClass);
 
             }
 
@@ -517,8 +516,7 @@ public class EJBUtils {
                      generatedRemoteIntfName);
                                           
                 Class developerClass = appClassLoader.loadClass(businessInterfaceName);
-                generatedRemoteWrapper = generateAndLoad(gen, wrapperClassName,
-                        appClassLoader, developerClass);
+                generateAndLoad(gen, wrapperClassName, appClassLoader, developerClass);
             }
 
         } finally {

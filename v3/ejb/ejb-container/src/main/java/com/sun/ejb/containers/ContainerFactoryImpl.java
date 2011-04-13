@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -82,13 +82,13 @@ public final class ContainerFactoryImpl implements ContainerFactory {
 	     throws Exception 
     {
         BaseContainer container = null;
-        String appid = ejbDescriptor.getApplication().getRegistrationName();
+        /** TODO ??? - see below
         String archiveuri = ejbDescriptor.getEjbBundleDescriptor().
             getModuleDescriptor().getArchiveUri();
+         **/
             
         String modulename = "";
             //TODO com.sun.enterprise.util.io.FileUtils.makeFriendlyFilename(archiveuri);
-        String ejbname = ejbDescriptor.getName();
 
         IASEjbExtraDescriptors iased = null;
 

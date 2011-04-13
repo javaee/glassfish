@@ -196,8 +196,6 @@ public class EjbApplication
 
         DeploymentContext dc = (DeploymentContext) startupContext;
 
-        DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
-
         String dcMapToken = "org.glassfish.ejb.startup.SingletonLCM";
         singletonLCM = dc.getTransientAppMetaData(dcMapToken, SingletonLifeCycleManager.class);
         if (singletonLCM == null) {

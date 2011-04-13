@@ -449,10 +449,8 @@ public class EJBTimerService
 
         boolean result = false;
         try{
-            Properties props = System.getProperties();
-            String str=props.getProperty( strDBReadBeforeTimeout );
+            String str=System.getProperty( strDBReadBeforeTimeout );
             if( null != str) {
-		str = str.toLowerCase();
                 performDBReadBeforeTimeout = Boolean.valueOf(str).booleanValue();
 
                 if( logger.isLoggable(Level.FINE) ) {
@@ -467,7 +465,7 @@ public class EJBTimerService
             logger.log(Level.INFO,
                 "ContainerFactoryImpl.getDebugMonitoringDetails(), " +
                 " Exception when trying to " + 
-                "get the System properties - ", e);
+                "get the System property - ", e);
         }
         return result;
     }

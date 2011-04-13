@@ -781,7 +781,6 @@ public class StatelessSessionContainer
             sessionCtx.setTransaction(null);
 
             sessionCtx.deleteAllReferences();
-            sessionCtx = null;
         }
     } // SessionContextFactory{}
 

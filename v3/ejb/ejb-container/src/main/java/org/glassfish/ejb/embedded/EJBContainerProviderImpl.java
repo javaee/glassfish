@@ -177,7 +177,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                 }
 
                 EjbBuilder ejb = server.createConfig(EjbBuilder.class);
-                EmbeddedEjbContainer ejbContainer = server.addContainer(ejb);
+                server.addContainer(ejb);
                 server.addContainer(ContainerBuilder.Type.jpa);
 
                 habitat = ejb.habitat;
