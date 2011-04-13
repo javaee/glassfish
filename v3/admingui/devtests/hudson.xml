@@ -85,10 +85,9 @@
     <property name="glassfish.dist.url"
               value="http://hudson.glassfish.org/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip"/>
 
-    <target name="download" depends="shutdown-server">
+    <target name="download">
         <get src="${glassfish.dist.url}" dest="${glassfish.download}" usetimestamp="true"/>
         
-        <delete dir="${install.dir}"/>
         <mkdir dir="${install.dir}"/>
         <unzip src="${glassfish.download}" dest="${install.dir}"/>
         <if>
@@ -100,6 +99,7 @@
                 <chmod perm="a+x" file="${server.dir}/glassfish/bin/asadmin"/>
             </then>
         </if>
+        <antcall target="shutdown-server"/>
     </target>
 
     <target name="setup">
@@ -183,6 +183,7 @@
             </try>
             <finally>
                 <antcall target="shutdown-server"/>
+                <delete dir="${install.dir}"/>
             </finally>
         </trycatch>
         <fail message="The test run failed.  Please see the console output for details.">
