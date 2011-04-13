@@ -49,27 +49,11 @@
   <parameter name="admin.console.url" value="http://localhost:4848/"/>
   <parameter name="resources.xml.relative.path" value="admin/resources/resources.xml"/>
   
-  <test name="admincli_tests">
-        <classes>
-                <class name="test.admincli.RestartDomainTests"/>
-                <class name="test.admincli.ExistStatusTests"/>
-        </classes>
-  </test>
-
 <!-- AMX -->
   <parameter name="amx.debug" value="true"/>
 <!-- AMX: port of the JMX RMI -->
   <parameter name="amx.rmiport" value="8686"/>
 
-<!-- AMX -->
-  <test name="amx_tests">
-    <classes>
-      <class name="amxtest.AMXCoreTests"/>
-      <class name="amxtest.AMXProxyTests"/>
-      <class name="amxtest.AMXConfigProxyTests"/>
-      <class name="amxtest.AMXOtherTests"/>
-    </classes>
-  </test>
   
   <test name="adminconsole_tests">
 	<classes>
@@ -144,6 +128,22 @@
       <class name="test.admin.JvmOptionTests"/>
       <class name="test.admin.JdbcConnectionPoolTests"/>
       <class name="test.admin.WebtierTests"/>
+    </classes>
+  </test>
+  <test name="admincli_tests">
+        <classes>
+                <class name="test.admincli.RestartDomainTests"/>
+                <class name="test.admincli.ExistStatusTests"/>
+        </classes>
+  </test>
+
+<!-- AMX -->
+  <test name="amx_tests">
+    <classes>
+      <class name="amxtest.AMXCoreTests"/>
+      <class name="amxtest.AMXProxyTests"/>
+      <class name="amxtest.AMXConfigProxyTests"/>
+      <class name="amxtest.AMXOtherTests"/>
     </classes>
   </test>
  
