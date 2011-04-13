@@ -66,8 +66,8 @@ public class ElementFinder {
         return wait.until(presenceOfElementLocated(locatorname));
     }
 
-    public WebElement findElement(By locator, int timeout, ExpectedCondition<Boolean> condition) {
-        WebDriverWait w = new WebDriverWait(driver, timeout);
+    public WebElement findElement(By locator, int timeoutInSeconds, ExpectedCondition<Boolean> condition) {
+        WebDriverWait w = new WebDriverWait(driver, timeoutInSeconds);
         w.until(condition);
 
         return driver.findElement(locator);

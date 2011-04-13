@@ -452,24 +452,20 @@ public class BaseSeleniumTestClass {
                 Assert.fail("The operation timed out waiting for the page to load.");
             }
 
-            RenderedWebElement ajaxPanel = (RenderedWebElement) elementFinder.findElement(By.id(AJAX_INDICATOR), TIMEOUT,
-                    new ExpectedCondition<Boolean>() {
-
-                        @Override
-                        public Boolean apply(WebDriver driver) {
-                            try {
-                                RenderedWebElement ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
-                                return !ajaxPanel.isDisplayed();
-                            } catch (Exception e) {
-                                return false;
-                            }
-                        }
-                    });
-//                if (!ajaxPanel.isDisplayed()) {
+            elementFinder.findElement(By.id(AJAX_INDICATOR), 1, new ExpectedCondition<Boolean>() {
+                @Override
+                public Boolean apply(WebDriver driver) {
+                    try {
+                        RenderedWebElement ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
+                        return !ajaxPanel.isDisplayed();
+                    } catch (Exception e) {
+                        return false;
+                    }
+                }
+            });
             if (callback.executeTest()) {
                 break;
             }
-//                }
 
             sleep(TIMEOUT_CALLBACK_LOOP);
         }
