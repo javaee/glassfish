@@ -83,10 +83,16 @@
             </roles>
         </developer>
     </developers>
+
+    <properties>
+        <findbugs.exclude>exclude.xml</findbugs.exclude>
+    </properties>
+
     <build>
         <resources>
         </resources>
-	</build>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>org.glassfish</groupId>
