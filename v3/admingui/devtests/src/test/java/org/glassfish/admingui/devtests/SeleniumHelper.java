@@ -39,6 +39,7 @@
  */
 package org.glassfish.admingui.devtests;
 
+import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.thoughtworks.selenium.Selenium;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,6 +47,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 
 /**
@@ -83,6 +85,8 @@ public class SeleniumHelper {
                 driver = new ChromeDriver();
             } else if ("ie".contains(browser)) {
                 driver = new InternetExplorerDriver();
+            } else if ("htmlunit".equals(browser)) {
+                driver = new HtmlUnitDriver(BrowserVersion.FIREFOX_3_6);
             }
             elementFinder = new ElementFinder(driver);
 

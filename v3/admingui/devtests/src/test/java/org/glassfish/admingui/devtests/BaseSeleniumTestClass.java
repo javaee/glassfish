@@ -54,7 +54,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.NoSuchElementException;
 
 public class BaseSeleniumTestClass {
     public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
@@ -136,7 +136,7 @@ public class BaseSeleniumTestClass {
     @AfterClass
     public static void captureLog() {
         try {
-            helper.releaseSeleniumInstance();
+//            helper.releaseSeleniumInstance();
 
             if (!currentTestClass.isEmpty() && !DEBUG) {
                 URL url = new URL("http://localhost:" + SeleniumHelper.getParameter("admin.port", "4848") + "/management/domain/view-log");
@@ -447,24 +447,37 @@ public class BaseSeleniumTestClass {
     }
     
     protected void waitForLoad(int timeoutInSeconds, WaitForLoadCallBack callback) {
+        /*
+        final ExpectedCondition<Boolean> expectedCondition = new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(WebDriver driver) {
+                try {
+                    RenderedWebElement ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
+                    return !ajaxPanel.isDisplayed();
+                } catch (Exception e) {
+                    return false;
+                }
+            }
+        };
+        */
+
         for (int seconds = 0;; seconds++) {
             if (seconds >= (timeoutInSeconds)) {
                 Assert.fail("The operation timed out waiting for the page to load.");
             }
 
-            elementFinder.findElement(By.id(AJAX_INDICATOR), 1, new ExpectedCondition<Boolean>() {
-                @Override
-                public Boolean apply(WebDriver driver) {
-                    try {
-                        RenderedWebElement ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
-                        return !ajaxPanel.isDisplayed();
-                    } catch (Exception e) {
-                        return false;
-                    }
+//            elementFinder.findElement(By.id(AJAX_INDICATOR), 1, expectedCondition);
+            RenderedWebElement ajaxPanel = null;
+            
+            try {
+                ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
+            } catch (NoSuchElementException nsee) {
+                
+            }
+            if ((ajaxPanel != null) && !ajaxPanel.isDisplayed()) {
+                if (callback.executeTest()) {
+                    break;
                 }
-            });
-            if (callback.executeTest()) {
-                break;
             }
 
             sleep(TIMEOUT_CALLBACK_LOOP);

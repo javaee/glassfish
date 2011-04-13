@@ -93,7 +93,6 @@
         <delete dir="${install.dir}"/>
         <mkdir dir="${install.dir}"/>
         <unzip src="${glassfish.download}" dest="${install.dir}"/>
-
     </target>
 
     <target name="setup">
@@ -108,7 +107,8 @@
             </then>
             <else>
                 <property name="executable" value="${server.dir}/bin/asadmin"/>
-                <chmod perm="u+x" file="${executable}"/>
+                <chmod perm="a+x" file="${executable}"/>
+                <chmod perm="a+x" file="${server.dir}/glassfish/bin/asadmin"/>
             </else>
         </if>
     </target>
@@ -170,6 +170,7 @@
                     <arg value="-Dbrowser=${BROWSER}"/>
                     <arg value="-DreleaseAfter=${RELEASEAFTER}"/>
                     <arg value="-DslowDown=${SLOWDOWN}"/>
+                    <arg value="-Dtest=${testClasses}"/>
                     <arg value="test"/>
                 </artifact:mvn>
             </try>
