@@ -306,28 +306,28 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
             if (formatterClass != null) {
                 recordBeginMarker = manager.getProperty(cname + ".logFormatBeginMarker");
                 if (recordBeginMarker == null || ("").equals(recordBeginMarker)) {
-                    lr = new LogRecord(Level.WARNING,
-                            "Record begin marker is not a proper value so using default.");
-                    lr.setThreadID((int) Thread.currentThread().getId());
-                    this.publish(lr);
+                    //lr = new LogRecord(Level.WARNING,
+                    //        "Record begin marker is not a proper value so using default.");
+                    //lr.setThreadID((int) Thread.currentThread().getId());
+                    //this.publish(lr);
                     recordBeginMarker = RECORD_BEGIN_MARKER;
                 }
 
                 recordEndMarker = manager.getProperty(cname + ".logFormatEndMarker");
                 if (recordEndMarker == null || ("").equals(recordEndMarker)) {
-                    lr = new LogRecord(Level.WARNING,
-                            "Record end marker is not a proper value so using default.");
-                    lr.setThreadID((int) Thread.currentThread().getId());
-                    this.publish(lr);
+                    //lr = new LogRecord(Level.WARNING,
+                    //        "Record end marker is not a proper value so using default.");
+                    //lr.setThreadID((int) Thread.currentThread().getId());
+                    //this.publish(lr);
                     recordEndMarker = RECORD_END_MARKER;
                 }
 
                 recordFieldSeparator = manager.getProperty(cname + ".logFormatFieldSeparator");
                 if (recordFieldSeparator == null || ("").equals(recordFieldSeparator) || recordFieldSeparator.length() > 1) {
-                    lr = new LogRecord(Level.WARNING,
-                            "Log Format field separator is not a proper value so using default.");
-                    lr.setThreadID((int) Thread.currentThread().getId());
-                    this.publish(lr);
+                    //lr = new LogRecord(Level.WARNING,
+                    //       "Log Format field separator is not a proper value so using default.");
+                    //lr.setThreadID((int) Thread.currentThread().getId());
+                    //this.publish(lr);
                     recordFieldSeparator = RECORD_FIELD_SEPARATOR;
                 }
 
@@ -337,17 +337,17 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                     try {
                         sdf.format(new Date());
                     } catch (Exception e) {
-                        lr = new LogRecord(Level.WARNING,
-                                "Date Format specified is wrong so using default.");
-                        lr.setThreadID((int) Thread.currentThread().getId());
-                        this.publish(lr);
+                        //lr = new LogRecord(Level.WARNING,
+                        //        "Date Format specified is wrong so using default.");
+                        //lr.setThreadID((int) Thread.currentThread().getId());
+                        //this.publish(lr);
                         recordDateFormat = RECORD_DATE_FORMAT;
                     }
                 } else {
-                    lr = new LogRecord(Level.WARNING,
-                            "Date Format specified is wrong so using default.");
-                    lr.setThreadID((int) Thread.currentThread().getId());
-                    this.publish(lr);
+                    //lr = new LogRecord(Level.WARNING,
+                    //        "Date Format specified is wrong so using default.");
+                    //lr.setThreadID((int) Thread.currentThread().getId());
+                    //this.publish(lr);
                     recordDateFormat = RECORD_DATE_FORMAT;
                 }
 
