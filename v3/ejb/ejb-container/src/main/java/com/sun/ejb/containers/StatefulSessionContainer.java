@@ -1424,8 +1424,8 @@ public final class StatefulSessionContainer
         }
 
         MethodLockInfo lockInfo = inv.invocationInfo.methodLockInfo;
-        boolean allowSerializedAccess = (lockInfo == null) ||
-                ( (lockInfo != null) && ( lockInfo.getTimeout() != CONCURRENCY_NOT_ALLOWED ));
+        boolean allowSerializedAccess = 
+                (lockInfo == null) || (lockInfo.getTimeout() != CONCURRENCY_NOT_ALLOWED);
 
         if( allowSerializedAccess ) {
 

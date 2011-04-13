@@ -524,8 +524,7 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
             (clientInterfaces.size() == 0) &&
             !ejbDesc.hasWebServiceEndpointInterface() &&
             ( !canDoWebServiceAnnCheck ||
-                (canDoWebServiceAnnCheck &&
-                (ejbClass.getAnnotation(javax.jws.WebService.class) == null)) ) ) {
+              (ejbClass.getAnnotation(javax.jws.WebService.class) == null) ) ) {
             ejbDesc.setLocalBean(true);
         }
         

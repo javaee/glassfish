@@ -140,7 +140,7 @@ public class EjbOptionalIntfGenerator
         tv.visit(V1_1, ACC_PUBLIC + ACC_ABSTRACT + ACC_INTERFACE,
                 intfInternalName, null,
                 Type.getType(Object.class).getInternalName(), 
-                (ejbClass instanceof Serializable)? new String[] {Type.getType(Serializable.class).getInternalName()} : null);
+                (new String[] {Type.getType(Serializable.class).getInternalName()}) );
 
         Set<java.lang.reflect.Method> allMethods = new HashSet<java.lang.reflect.Method>();
         for (Class clz = ejbClass; clz != Object.class; clz = clz.getSuperclass()) {

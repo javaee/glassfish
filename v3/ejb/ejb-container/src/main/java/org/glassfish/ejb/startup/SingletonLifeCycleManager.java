@@ -240,11 +240,14 @@ public class SingletonLifeCycleManager {
     private void addDependency(String src, String depends) {
         src = src.trim();
         Set<String> deps = getExistingDependecyList(src);
-        StringTokenizer tok = new StringTokenizer(depends, " ,");
-        while (tok.hasMoreTokens()) {
-            String dep = tok.nextToken();
-            deps.add(dep);
-            getExistingDependecyList(dep);
+
+        if (depends != null) {
+            StringTokenizer tok = new StringTokenizer(depends, " ,");
+            while (tok.hasMoreTokens()) {
+                String dep = tok.nextToken();
+                deps.add(dep);
+                getExistingDependecyList(dep);
+            }
         }
     }
 
