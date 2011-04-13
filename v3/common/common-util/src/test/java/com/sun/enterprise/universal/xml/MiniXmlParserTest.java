@@ -76,16 +76,11 @@ public class MiniXmlParserTest {
     private static File monitoringFalse;
     private static File monitoringTrue;
     private static File monitoringNone;
-    private static File v2DomainXml;
-    private static File issue9127DomainXml;
     private static File clusters1;
     private static File manysysprops;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        if (!runTheTests)
-            return;
-
         String wrongOrderString = MiniXmlParserTest.class.getClassLoader().getResource("wrongorder.xml").getPath();
         wrongOrder = new File(wrongOrderString);
 
@@ -110,13 +105,6 @@ public class MiniXmlParserTest {
         monitoringNone = new File(MiniXmlParserTest.class.getClassLoader().getResource("monitoringNone.xml").getPath());
         clusters1 = new File(MiniXmlParserTest.class.getClassLoader().getResource("clusters1.xml").getPath());
         manysysprops = new File(MiniXmlParserTest.class.getClassLoader().getResource("manysysprops.xml").getPath());
-
-        if (canAccessInternet())
-            v2DomainXml = new File(MiniXmlParserTest.class.getClassLoader().getResource("v2domain.xml").getPath());
-        else
-            v2DomainXml = null;
-
-        issue9127DomainXml = new File(MiniXmlParserTest.class.getClassLoader().getResource("domain9127.xml").getPath());
         assertTrue(wrongOrder.exists());
         assertTrue(rightOrder.exists());
         assertTrue(noconfig.exists());
@@ -126,6 +114,7 @@ public class MiniXmlParserTest {
         assertTrue(clusters1.length() > 100);
         assertTrue(manysysprops.exists());
         assertTrue(manysysprops.length() > 100);
+
     }
 
     @AfterClass
@@ -151,9 +140,7 @@ public class MiniXmlParserTest {
      */
     @Test
     public void serversAfterConfigs() {
-        if (!runTheTests)
-            return;
-
+        
         try {
             MiniXmlParser instance = new MiniXmlParser(wrongOrder, "server");
             Map<String, String> javaConfig = instance.getJavaConfig();
@@ -165,6 +152,7 @@ public class MiniXmlParserTest {
         catch (MiniXmlParserException ex) {
             Logger.getLogger(MiniXmlParserTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
     /**
@@ -174,10 +162,13 @@ public class MiniXmlParserTest {
      */
     @Test(expected = MiniXmlParserException.class)
     public void nullXmlFile() throws MiniXmlParserException {
-        if (!runTheTests)
-            throw mxpe;
+        
 
-        new MiniXmlParser(null, "server");
+        try {
+            new MiniXmlParser(null, "server");
+        }
+        finally {
+        }
     }
 
     /**
@@ -187,10 +178,12 @@ public class MiniXmlParserTest {
      */
     @Test(expected = MiniXmlParserException.class)
     public void nonexistentFile() throws MiniXmlParserException {
-        if (!runTheTests)
-            throw mxpe;
-
-        new MiniXmlParser(new File("."), "server");
+        
+        try {
+            new MiniXmlParser(new File("."), "server");
+        }
+        finally {
+        }
     }
 
     /**
@@ -200,9 +193,7 @@ public class MiniXmlParserTest {
      */
     @Test
     public void configsAfterServers() {
-        if (!runTheTests)
-            return;
-
+        
         try {
             MiniXmlParser instance = new MiniXmlParser(rightOrder, "server");
             Map<String, String> javaConfig = instance.getJavaConfig();
@@ -214,6 +205,7 @@ public class MiniXmlParserTest {
         catch (MiniXmlParserException ex) {
             Logger.getLogger(MiniXmlParserTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
     /**
@@ -223,15 +215,14 @@ public class MiniXmlParserTest {
      */
     @Test(expected = MiniXmlParserException.class)
     public void noServerConfig() throws MiniXmlParserException {
-        if (!runTheTests)
-            throw mxpe;
-
-
+        
         try {
             new MiniXmlParser(noconfig, "server");
         }
         catch (MiniXmlParserException ex) {
             throw ex;
+        }
+        finally {
         }
     }
 
@@ -240,9 +231,7 @@ public class MiniXmlParserTest {
      */
     @Test
     public void systemProperties() {
-        if (!runTheTests)
-            return;
-
+        
         try {
             MiniXmlParser instance = new MiniXmlParser(rightOrder, "server");
             Map<String, String> javaConfig = instance.getJavaConfig();
@@ -259,6 +248,7 @@ public class MiniXmlParserTest {
         catch (MiniXmlParserException ex) {
             Logger.getLogger(MiniXmlParserTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
     /*
@@ -266,9 +256,7 @@ public class MiniXmlParserTest {
      */
     @Test
     public void systemPropertyOverrides() {
-        if (!runTheTests)
-            return;
-
+        
         try {
             MiniXmlParser instance = new MiniXmlParser(rightOrder, "server");
             Map<String, String> sysProps = instance.getSystemProperties();
@@ -277,6 +265,7 @@ public class MiniXmlParserTest {
         catch (MiniXmlParserException ex) {
             Logger.getLogger(MiniXmlParserTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
     /*
@@ -292,9 +281,7 @@ public class MiniXmlParserTest {
      */
     @Test
     public void profilerParsing() {
-        if (!runTheTests)
-            return;
-
+        
         try {
             MiniXmlParser instance = new MiniXmlParser(hasProfiler, "server");
             Map<String, String> config = instance.getProfilerConfig();
@@ -316,6 +303,7 @@ public class MiniXmlParserTest {
         catch (MiniXmlParserException ex) {
             Logger.getLogger(MiniXmlParserTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
     /*
@@ -324,9 +312,7 @@ public class MiniXmlParserTest {
      */
     @Test
     public void findTwoAdminPorts() {
-        if (!runTheTests)
-            return;
-
+        
         try {
             MiniXmlParser instance = new MiniXmlParser(adminport2, "server");
             List<HostAndPort> addrs = instance.getAdminAddresses();
@@ -348,6 +334,7 @@ public class MiniXmlParserTest {
         catch (MiniXmlParserException ex) {
             Logger.getLogger(MiniXmlParserTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
     /*
@@ -356,32 +343,21 @@ public class MiniXmlParserTest {
      */
     @Test
     public void findOneAdminPort() {
-        if (!runTheTests)
-            return;
-
+        
         try {
+
             MiniXmlParser instance = new MiniXmlParser(adminport, "server");
+
+
             List<HostAndPort> addrs = instance.getAdminAddresses();
             assertEquals(1, addrs.size());
             assertEquals(3333, addrs.iterator().next().getPort());
 
-            // clean v2 domain.xml
-            if (v2DomainXml != null) {
-                instance = new MiniXmlParser(v2DomainXml, "server");
-                addrs = instance.getAdminAddresses();
-                assertEquals(1, addrs.size());
-                assertEquals(4848, addrs.iterator().next().getPort());
-            }
-
-            // domain.xml from issue 9127
-            instance = new MiniXmlParser(issue9127DomainXml, "server");
-            addrs = instance.getAdminAddresses();
-            assertEquals(1, addrs.size());
-            assertEquals(4848, addrs.iterator().next().getPort());
         }
         catch (MiniXmlParserException ex) {
             Logger.getLogger(MiniXmlParserTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
     /**
@@ -391,10 +367,13 @@ public class MiniXmlParserTest {
      */
     @Test(expected = MiniXmlParserException.class)
     public void testNoClosingDomainRightOrder() throws MiniXmlParserException {
-        if (!runTheTests)
-            throw mxpe;
+        
+        try {
+            new MiniXmlParser(noCloseRightOrder, "server");
+        }
+        finally {
+        }
 
-        new MiniXmlParser(noCloseRightOrder, "server");
     }
 
     /**
@@ -404,10 +383,13 @@ public class MiniXmlParserTest {
      */
     @Test(expected = MiniXmlParserException.class)
     public void testNoClosingDomainWrongOrder() throws MiniXmlParserException {
-        if (!runTheTests)
-            throw mxpe;
+        
+        try {
+            new MiniXmlParser(noCloseWrongOrder, "server");
+        }
+        finally {
+        }
 
-        new MiniXmlParser(noCloseWrongOrder, "server");
     }
 
     /**
@@ -417,47 +399,41 @@ public class MiniXmlParserTest {
      */
     @Test
     public void testNoDomainName() throws MiniXmlParserException {
-        if (!runTheTests)
-            return;
-
+        
         new MiniXmlParser(noDomainName, "server");
+
     }
 
     @Test
     public void testOldSchema() throws MiniXmlParserException {
-        if (!runTheTests)
-            return;
-
+        
         final MiniXmlParser parser = new MiniXmlParser(
                 new File(getClass().getClassLoader().getResource("olddomain.xml").getPath()), "server");
         List<HostAndPort> addrs = parser.getAdminAddresses();
         assertEquals(1, addrs.size());
+
     }
 
     @Test
     public void testNoNetworkConfig() throws MiniXmlParserException {
-        if (!runTheTests)
-            return;
-
+        
         final MiniXmlParser parser = new MiniXmlParser(
                 new File(getClass().getClassLoader().getResource("olddomain.xml").getPath()), "server");
         assert (!parser.hasNetworkConfig());
+
     }
 
     @Test
     public void testNetworkConfig() throws MiniXmlParserException {
-        if (!runTheTests)
-            return;
-
+        
         final MiniXmlParser parser = new MiniXmlParser(rightOrder, "server");
         assert (parser.hasNetworkConfig());
+
     }
 
     @Test
     public void timingTest() {
-        if (!runTheTests)
-            return;
-
+        
         try {
             long nanoStart = System.nanoTime();
             new MiniXmlParser(bigDomain, "server");
@@ -469,50 +445,38 @@ public class MiniXmlParserTest {
         catch (MiniXmlParserException ex) {
             Logger.getLogger(MiniXmlParserTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
     @Test
     public void testMonitoringTrue() throws MiniXmlParserException {
-        if (!runTheTests)
-            return;
-
+        
         MiniXmlParser instance = new MiniXmlParser(monitoringTrue, "server");
         assertTrue(instance.isMonitoringEnabled());
+
     }
 
     @Test
     public void testMonitoringFalse() throws MiniXmlParserException {
-        if (!runTheTests)
-            return;
-
+        
         MiniXmlParser instance = new MiniXmlParser(monitoringFalse, "server");
         assertTrue(!instance.isMonitoringEnabled());
+
     }
 
     @Test
     public void testMonitoringNone() throws MiniXmlParserException {
-        if (!runTheTests)
-            return;
-
+        
         MiniXmlParser instance = new MiniXmlParser(monitoringNone, "server");
         assertTrue(instance.isMonitoringEnabled());
-    }
 
-    @Test
-    public void testV2DomainXml() throws MiniXmlParserException {
-        if (!runTheTests)
-            return;
-
-        if (v2DomainXml != null)
-            new MiniXmlParser(v2DomainXml, "server");
     }
 
     @Test
     public void testClusterParsing() throws MiniXmlParserException {
-        if (!runTheTests)
-            return;
-
+        
         MiniXmlParser instance = new MiniXmlParser(clusters1, "i1");
+
     }
 
     /*
@@ -525,9 +489,7 @@ public class MiniXmlParserTest {
      */
     @Test
     public void testSysPropParsing() throws MiniXmlParserException {
-        if (!runTheTests)
-            return;
-
+        
         MiniXmlParser instance = new MiniXmlParser(manysysprops, "i1");
         Map<String, String> sp = instance.getSystemProperties();
         assertTrue(sp.size() >= 4);
@@ -546,29 +508,6 @@ public class MiniXmlParserTest {
         assertEquals(con, "config");
         assertEquals(clu, "cluster");
         assertEquals(dom, "domain");
-    }
 
-    private static boolean canAccessInternet() {
-        String urlString = "http://www.sun.com/software/appserver/dtds/sun-domain_1_3.dtd";
-        try {
-            URL url = new URL(urlString);
-            URLConnection urlc = url.openConnection();
-            urlc.getInputStream().close(); // will throw if no internet!
-            return true;
-        }
-        catch (Exception ex) {
-            return true;
-        }
-    }
-    private final static boolean runTheTests;
-    private final static MiniXmlParserException mxpe = new MiniXmlParserException("");
-
-    static {
-        final boolean b1 = Boolean.parseBoolean(System.getenv("MAVEN_UNIT_TESTS"));
-        final String user = System.getProperty("user.name");
-        final boolean b2 = "bnevins".equals(user);
-        final boolean b3 = "wnevins".equals(user);
-        final boolean b4 = "hudson".equals(user);
-        runTheTests = b1 || b2 || b3 || b4;
     }
 }
