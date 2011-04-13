@@ -136,7 +136,7 @@ public class BaseSeleniumTestClass {
     @AfterClass
     public static void captureLog() {
         try {
-//            helper.releaseSeleniumInstance();
+            helper.releaseSeleniumInstance();
 
             if (!currentTestClass.isEmpty() && !DEBUG) {
                 URL url = new URL("http://localhost:" + SeleniumHelper.getParameter("admin.port", "4848") + "/management/domain/view-log");
@@ -168,7 +168,7 @@ public class BaseSeleniumTestClass {
     @After
     public void afterTest() {
         if (Boolean.parseBoolean(SeleniumHelper.getParameter("releaseAfter", "false"))) {
-            helper.releaseSeleniumInstance();
+//            helper.releaseSeleniumInstance();
         }
     }
     
@@ -471,7 +471,7 @@ public class BaseSeleniumTestClass {
             
             try {
                 ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
-            } catch (NoSuchElementException nsee) {
+            } catch (Exception ex) {
                 
             }
             if ((ajaxPanel != null) && !ajaxPanel.isDisplayed()) {
@@ -938,17 +938,16 @@ public class BaseSeleniumTestClass {
         
         try {
             RenderedWebElement element = (RenderedWebElement) elementFinder.findElement(By.id(id), TIMEOUT);
-                    //driver.findElement(By.id(id));
             if (element.isDisplayed()) {
                 return;
             }
-        } catch (StaleElementReferenceException sere) {
+        } catch (Exception ex) {
             
         }
         
         final String parentId = id.substring(0, id.lastIndexOf(":"));
         final RenderedWebElement parentElement = (RenderedWebElement) elementFinder.findElement(By.id(parentId), TIMEOUT);
-//                driver.findElement(By.id(parentId));
+
         if (!parentElement.isDisplayed()) {
             insureElementIsVisible(parentId);
             String grandParentId = parentId.substring(0, parentId.lastIndexOf(":"));
