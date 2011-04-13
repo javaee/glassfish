@@ -118,5 +118,20 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+    <profile>
+        <id>aix-jdk</id>
+        <activation>
+            <os>
+                <name>AIX</name>
+            </os>
+        </activation>
+        <modules>
+            <module>aixporting</module>
+        </modules>
+    </profile>
+    </profiles>
+
 </project>
 
