@@ -85,17 +85,26 @@
     <property name="glassfish.dist.url"
               value="http://hudson.glassfish.org/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip"/>
 
-    <target name="download">
-        <get src="${ant.contrib.url}" dest="ant-contrib.jar" skipexisting="true"/>
-        <get src="${maven.ant.tasks.url}" dest="maven-ant-tasks.jar" skipexisting="true"/>
+    <target name="download" depends="shutdown-server">
         <get src="${glassfish.dist.url}" dest="${glassfish.download}" usetimestamp="true"/>
         
         <delete dir="${install.dir}"/>
         <mkdir dir="${install.dir}"/>
         <unzip src="${glassfish.download}" dest="${install.dir}"/>
+        <if>
+            <not>
+                <os family="windows"/>
+            </not>
+            <then>
+                <chmod perm="a+x" file="${executable}"/>
+                <chmod perm="a+x" file="${server.dir}/glassfish/bin/asadmin"/>
+            </then>
+        </if>
     </target>
 
     <target name="setup">
+        <get src="${ant.contrib.url}" dest="ant-contrib.jar" skipexisting="true"/>
+        <get src="${maven.ant.tasks.url}" dest="maven-ant-tasks.jar" skipexisting="true"/>
         <taskdef resource="net/sf/antcontrib/antlib.xml" classpath="ant-contrib.jar"/>
         <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="antlib:org.apache.maven.artifact.ant"
                  classpath="maven-ant-tasks.jar"/>
@@ -107,8 +116,6 @@
             </then>
             <else>
                 <property name="executable" value="${server.dir}/bin/asadmin"/>
-                <chmod perm="a+x" file="${executable}"/>
-                <chmod perm="a+x" file="${server.dir}/glassfish/bin/asadmin"/>
             </else>
         </if>
     </target>
@@ -158,7 +165,7 @@
         </exec>
     </target>
 
-    <target name="test" depends="download,setup">
+    <target name="test" depends="setup,download">
         <trycatch>
             <try>
                 <antcall target="start-server"/>
