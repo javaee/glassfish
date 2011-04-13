@@ -505,7 +505,10 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             final ExtendedDeploymentContext deploymentContext,
             final Logger logger) throws IOException {
         final File finalUploadDir = deploymentContext.getAppInternalDir();
-        finalUploadDir.mkdirs();
+        if ( ! finalUploadDir.mkdirs()) {
+            logger.log(Level.FINE," Attempting to create upload directory {0} was reported as failed; attempting to continue",
+                    new Object[] {finalUploadDir.getAbsolutePath()});
+        }
         safeCopyOfApp = renameUploadedFileOrCopyInPlaceFile(
                 finalUploadDir, originalPathValue, logger);
         safeCopyOfDeploymentPlan = renameUploadedFileOrCopyInPlaceFile(
@@ -539,7 +542,12 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
              */
             result = new File(finalUploadDir, fileParam.getName());
             FileUtils.renameFile(fileParam, result);
-            result.setLastModified(fileParam.lastModified());
+            if ( ! result.setLastModified(fileParam.lastModified())) { 
+                    logger.log(Level.FINE, "In renaming {0} to {1} could not setLastModified; continuing",
+                            new Object[] {fileParam.getAbsolutePath(),
+                                result.getAbsolutePath()
+                            });
+            }
         } else {
             final boolean copyInPlaceArchive = Boolean.valueOf(
                     System.getProperty(COPY_IN_PLACE_ARCHIVE_PROP_NAME, "true"));
@@ -551,7 +559,10 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 final long startTime = System.currentTimeMillis();
                 result = new File(finalUploadDir, fileParam.getName());
                 FileUtils.copy(fileParam, result);
-                result.setLastModified(fileParam.lastModified());
+                if ( ! result.setLastModified(fileParam.lastModified())) {
+                    logger.log(Level.FINE, "Could not set lastModified for {0}; continuing",
+                            result.getAbsolutePath());
+                }
                 if (logger.isLoggable(Level.FINE)) {
                     logger.log(Level.FINE, "*** In-place archive copy of {0} took {1} ms",
                             new Object[]{
