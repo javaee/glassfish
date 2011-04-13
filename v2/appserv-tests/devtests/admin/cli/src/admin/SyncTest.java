@@ -38,7 +38,6 @@ package admin;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.InetAddress;
 
 /**
  *
@@ -47,17 +46,7 @@ import java.net.InetAddress;
 public class SyncTest extends AdminBaseDevTest {
 
     SyncTest() {
-        String host0 = null;
-        try {
-            host0 = InetAddress.getLocalHost().getHostName();
-            host0 = "localhost";  //when DAS and instance are co-located use localhost
-        }
-        catch (Exception e) {
-            host0 = "localhost";
-        }
-        host = host0;
-        System.out.println("Host= " + host);
-        instancesHome = new File(new File(getGlassFishHome(), "nodes"), host);
+        instancesHome = new File(new File(getGlassFishHome(), "nodes"), "localhost-domain1");
 
     }
     @Override
@@ -74,6 +63,7 @@ public class SyncTest extends AdminBaseDevTest {
         testCleanupofStaleFiles();
         testStartWithDASDown();
         testConfigDirSync();
+        testFullSync();
         stopDomain();
         stat.printSummary();
     }
@@ -204,7 +194,7 @@ public class SyncTest extends AdminBaseDevTest {
     }
 
     void testFullSync() {
-        final String tn = "fullsync";
+        final String tn = "fullsync-";
         final String cname = "syncc3";
         final String i1url = "http://localhost:18080/";
         final String i1murl = "http://localhost:14848/management/domain/";
@@ -248,7 +238,7 @@ public class SyncTest extends AdminBaseDevTest {
         report(tn + "del-instance-file", !fooOnInstance.exists());
 
          // start the instance with --fullsync
-        report(tn + "start-local-instance1a", asadmin("start-local-instance", "--syncfull=true", i1name));
+        report(tn + "start-local-instance1a", asadmin("start-local-instance", "--sync=full", i1name));
 
         // make sure the file is back
         report(tn + "getfoo1", matchString("Foo file", getURL(i1url + "foo.html")));
@@ -337,7 +327,6 @@ public class SyncTest extends AdminBaseDevTest {
         throw new RuntimeException("Can't touch file: " + f);
     }
 
-    private final String host;
     private final File instancesHome;
 
 }
