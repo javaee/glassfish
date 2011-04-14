@@ -631,12 +631,11 @@ public class BaseModelMBean implements ModelMBean, MBeanRegistration {
             setAttMap.put( name, m );
         }
 
-        Object result = null;
         try {
             if( m.getDeclaringClass().isAssignableFrom( this.getClass()) ) {
-                result = m.invoke(this, new Object[] { value });
+                m.invoke(this, new Object[] { value });
             } else {
-                result = m.invoke(resource, new Object[] { value });
+                m.invoke(resource, new Object[] { value });
             }
         } catch (InvocationTargetException e) {
             Throwable t = e.getTargetException();

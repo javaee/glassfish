@@ -413,8 +413,8 @@ public class StandardHostDeployer implements Deployer {
             host.fireContainerEvent(INSTALL_EVENT, context);
 
             // save context info into configFile
-            Engine engine = (Engine)host.getParent();
-            StandardServer server = (StandardServer) engine.getService().getServer();
+            //Engine engine = (Engine)host.getParent();
+            //StandardServer server = (StandardServer) engine.getService().getServer();
             //server.storeContext(context);
         } catch (Exception e) {
             log.log(Level.SEVERE,

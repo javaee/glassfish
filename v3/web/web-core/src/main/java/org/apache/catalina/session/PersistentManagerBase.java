@@ -598,7 +598,6 @@ public abstract class PersistentManagerBase
         if (!started)
             return;
 
-        long timeNow = System.currentTimeMillis();
         Session sessions[] = findSessions();
 
         for (int i = 0; i < sessions.length; i++) {

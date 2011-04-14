@@ -102,7 +102,6 @@ public final class RequestUtil {
             buf.append("\"");
         }
 
-        long age = cookie.getMaxAge();
         if (cookie.getMaxAge() >= 0) {
             buf.append("; Max-Age=\"");
             buf.append(cookie.getMaxAge());

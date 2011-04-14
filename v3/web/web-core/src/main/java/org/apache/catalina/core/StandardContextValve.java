@@ -301,7 +301,6 @@ final class StandardContextValve
                     || (requestPathMB.equalsIgnoreCase("/META-INF"))
                     || (requestPathMB.startsWithIgnoreCase("/WEB-INF/", 0))
                     || (requestPathMB.equalsIgnoreCase("/WEB-INF"))) {
-                String requestURI = hreq.getDecodedRequestURI();
                 notFound((HttpServletResponse) response.getResponse());
                 return null;
             }
@@ -332,14 +331,12 @@ final class StandardContextValve
         // Select the Wrapper to be used for this Request
         Wrapper wrapper = request.getWrapper();
         if (wrapper == null) {
-            String requestURI = hreq.getDecodedRequestURI();
             notFound((HttpServletResponse) response.getResponse());
             return null;
         } else if (wrapper.isUnavailable()) {
             // May be as a result of a reload, try and find the new wrapper
             wrapper = (Wrapper) container.findChild(wrapper.getName());
             if (wrapper == null) {
-                String requestURI = hreq.getDecodedRequestURI();
                 notFound((HttpServletResponse) response.getResponse());
                 return null;
             }

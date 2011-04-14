@@ -6483,7 +6483,7 @@ public class StandardContext
             // Temporary - /admin uses the old names
             return name;
         }
-        ObjectName result=super.preRegister(server,name);
+        super.preRegister(server,name);
         return name;
     }
 

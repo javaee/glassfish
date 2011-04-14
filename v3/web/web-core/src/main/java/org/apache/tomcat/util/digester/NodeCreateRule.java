@@ -456,7 +456,7 @@ public class NodeCreateRule extends Rule {
      */
     public void end() throws Exception {
 
-        Object top = digester.pop();
+        digester.pop();
 
     }
 

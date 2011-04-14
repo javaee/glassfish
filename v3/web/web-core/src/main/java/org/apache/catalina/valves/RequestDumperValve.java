@@ -140,8 +140,6 @@ public class RequestDumperValve extends ValveBase {
         HttpResponse hresponse = (HttpResponse) response;
         HttpServletRequest hreq =
             (HttpServletRequest) hrequest.getRequest();
-        HttpServletResponse hres =
-            (HttpServletResponse) hresponse.getResponse();
 
         // Log pre-service information
         log("REQUEST URI       =" + hreq.getRequestURI());

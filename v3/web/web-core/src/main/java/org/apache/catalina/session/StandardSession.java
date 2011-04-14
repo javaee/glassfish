@@ -350,7 +350,6 @@ public class StandardSession
      */
     public void setAuthType(String authType) {
 
-        String oldAuthType = this.authType;
         this.authType = authType;
     }
 
@@ -626,7 +625,6 @@ public class StandardSession
      */
     public void setPrincipal(Principal principal) {
 
-        Principal oldPrincipal = this.principal;
         this.principal = principal;
     }
 
