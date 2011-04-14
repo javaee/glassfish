@@ -100,6 +100,7 @@ public class AuthTokenManager {
     private final static int TOKEN_SIZE = 10;
 
     private final static long DEFAULT_TOKEN_LIFETIME = 60 * 1000;
+    private final static long TOKEN_EXPIRATION_IN_MS = 360 * 1000;
 
     private final SecureRandom rng = new SecureRandom();
 
