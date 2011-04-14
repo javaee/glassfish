@@ -38,15 +38,8 @@
  * holder.
  */
 
-/*
- * Created on Jan 7, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package com.sun.ejb.containers.interceptors;
 
-import com.sun.ejb.EjbInvocation;
 import com.sun.ejb.containers.BaseContainer;
 import com.sun.ejb.containers.StatelessSessionContainer;
 import com.sun.ejb.containers.MessageBeanContainer;
@@ -54,7 +47,6 @@ import com.sun.ejb.containers.EJBContextImpl;
 import com.sun.enterprise.deployment.*;
 import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJBException;
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -1024,10 +1016,3 @@ class BeanCallbackInterceptor
         return "beancallback[" + index + "]: " + method;
     }
 }
-
-class RuntimeInterceptorDescriptor {
-    int index;
-    Object interceptorInstance;
-    Method postConstructMethod;
-}
-

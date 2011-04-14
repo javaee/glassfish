@@ -651,7 +651,7 @@ public final class EJBSecurityManager
                 _logger.fine("JACC: returning cached ProtectionDomain PrincipalSet: null");
             } else {
                 StringBuffer pBuf = null;
-                principals = (Principal[]) principalSet.toArray(new Principal[0]);
+                principals = (Principal[]) principalSet.toArray(new Principal[principalSet.size()]);
                 for (int i = 0; i < principals.length; i++) {
                     if (i == 0) pBuf = new StringBuffer(principals[i].toString());
                     else pBuf.append(" " + principals[i].toString());

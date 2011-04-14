@@ -293,7 +293,7 @@ public class SingletonLifeCycleManager {
 
         } while (dependencies.size() < name2Index.size());
 
-        return dependencies.toArray(new String[0]);
+        return dependencies.toArray(new String[dependencies.size()]);
 
     }
 

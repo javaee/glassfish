@@ -3698,7 +3698,7 @@ public abstract class BaseContainer
         proxyInterfacesSet.add(homeIntf); 
 
         Class[] proxyInterfaces = (Class [])
-            proxyInterfacesSet.toArray(new Class[0]);
+            proxyInterfacesSet.toArray(new Class[proxyInterfacesSet.size()]);
 
         EJBHome ejbHomeProxy = (EJBHome) 
             Proxy.newProxyInstance( loader, proxyInterfaces, handler);
@@ -3763,7 +3763,7 @@ public abstract class BaseContainer
         proxyInterfacesSet.add(localHomeIntf);
         
         Class[] proxyInterfaces = (Class[])
-            proxyInterfacesSet.toArray(new Class[0]);
+            proxyInterfacesSet.toArray(new Class[proxyInterfacesSet.size()]);
         
         // Client's EJBLocalHome object
         EJBLocalHome proxy = (EJBLocalHome) Proxy.newProxyInstance
@@ -5507,7 +5507,7 @@ public abstract class BaseContainer
                     methodList.add(m);
                 }
             }
-            methods = methodList.toArray(new Method[0]);
+            methods = methodList.toArray(new Method[methodList.size()]);
         } else {
             Vector methodVec = ejbDescriptor.getMethods();
             int sz = methodVec.size();

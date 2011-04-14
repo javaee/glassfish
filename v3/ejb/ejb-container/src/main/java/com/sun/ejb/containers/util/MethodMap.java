@@ -244,7 +244,7 @@ public final class MethodMap extends HashMap {
     }   
 
 
-    private class MethodInfo {
+    private static class MethodInfo {
         public Class declaringClass;
         public Method key;
         public Object value;

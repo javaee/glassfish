@@ -40,7 +40,6 @@
 
 package com.sun.ejb.codegen;
 
-import java.lang.reflect.Method;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
@@ -344,7 +343,7 @@ public class StaticRmiStubGenerator {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         sun.rmi.rmic.Main compiler = new sun.rmi.rmic.Main(baos, "rmic");
-        boolean success = compiler.compile(cmds.toArray(new String[0]));
+        boolean success = compiler.compile(cmds.toArray(new String[cmds.size()]));
         //success = true;  // it ALWAYS returns an "error" if -Xnocompile is used!!
 
         String output = baos.toString();
