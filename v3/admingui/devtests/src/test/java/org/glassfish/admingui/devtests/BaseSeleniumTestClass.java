@@ -67,7 +67,7 @@ public class BaseSeleniumTestClass {
     @Rule
     public SpecificTestRule specificTestRule = new SpecificTestRule();
 
-    protected static final int TIMEOUT = 90;
+    protected static final int TIMEOUT = 120;
     protected static final int BUTTON_TIMEOUT = 750;
     protected static final Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
     
@@ -159,6 +159,7 @@ public class BaseSeleniumTestClass {
 
     @Before
     public void reset() {
+        helper.releaseSeleniumInstance();
         selenium = helper.getSeleniumInstance();
         currentTestClass = this.getClass().getName();
         openAndWait("/", TRIGGER_COMMON_TASKS);
@@ -467,13 +468,15 @@ public class BaseSeleniumTestClass {
 
 //            elementFinder.findElement(By.id(AJAX_INDICATOR), 1, expectedCondition);
             RenderedWebElement ajaxPanel = null;
+            boolean panelIsDisplayed = false;
             
             try {
                 ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
+                panelIsDisplayed = ajaxPanel.isDisplayed();
             } catch (Exception ex) {
                 
             }
-            if ((ajaxPanel != null) && !ajaxPanel.isDisplayed()) {
+            if (!panelIsDisplayed) {
                 if (callback.executeTest()) {
                     break;
                 }
