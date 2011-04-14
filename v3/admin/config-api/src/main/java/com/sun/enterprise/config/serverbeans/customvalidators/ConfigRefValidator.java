@@ -55,9 +55,10 @@ import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 
 import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.api.admin.config.Named;
 
 public class ConfigRefValidator
-    implements ConstraintValidator<ConfigRefConstraint, Server>, Payload {
+    implements ConstraintValidator<ConfigRefConstraint, Named>, Payload {
 
     static final Logger logger = LogDomains.getLogger(ConfigRefValidator.class, LogDomains.ADMIN_LOGGER);
     static final LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ConfigRefValidator.class);
@@ -66,30 +67,27 @@ public class ConfigRefValidator
     }
 
     @Override
-    public boolean isValid(final Server server,
+    public boolean isValid(final Named bean,
         final ConstraintValidatorContext constraintValidatorContext) {
+        if (bean == null) return true;
 
-        if (server == null) return true;
+        Server server = null ;
+        Cluster mycluster = null;
+        String configRef = null;
+        String serverName = null;
+        if (bean instanceof Server)  {
+            server = (Server)bean;
+            configRef = server.getConfigRef();
+            serverName = server.getName();
+        } else if (bean instanceof Cluster){
+            mycluster = (Cluster)bean  ;
+            configRef = mycluster.getConfigRef();
+            serverName = mycluster.getName();
+        }
 
-        final String configRef = server.getConfigRef();
+
         if (configRef == null) return true; // skip validation @NotNull is already on getConfigRef
         
-        final String serverName = server.getName();
-
-        // cannot change config-ref of DAS
-        if (server.isDas() && !configRef.equals(SystemPropertyConstants.DAS_SERVER_CONFIG)) {
-            logger.warning(localStrings.getLocalString("configref.dasconfig",
-                    "The configuration of the Domain Administration Server "
-                    + "cannot be changed from server-config."));
-           return false;
-        }
-        // cannot use server-config if not DAS
-        if (!server.isDas() && configRef.equals(SystemPropertyConstants.DAS_SERVER_CONFIG)) {
-            logger.warning(localStrings.getLocalString("configref.serverconfig",
-                    "The configuration of the Domain Administration Server "
-                    + "(named server-config) cannot be referenced by a server."));
-           return false;
-        }
         // cannot use default-config
         if (configRef.equals(SystemPropertyConstants.TEMPLATE_CONFIG_NAME)) {
             logger.warning(localStrings.getLocalString("configref.defaultconfig",
@@ -97,34 +95,52 @@ public class ConfigRefValidator
                     + "cannot be referenced by a server."));
            return false;
         }
+        // cannot change config-ref of DAS
+        if (server != null) {
+            if (server.isDas() && !configRef.equals(SystemPropertyConstants.DAS_SERVER_CONFIG)) {
+                logger.warning(localStrings.getLocalString("configref.dasconfig",
+                        "The configuration of the Domain Administration Server "
+                                + "cannot be changed from server-config."));
+                return false;
+            }
+            // cannot use server-config if not DAS
+            if (!server.isDas() && configRef.equals(SystemPropertyConstants.DAS_SERVER_CONFIG)) {
+                logger.warning(localStrings.getLocalString("configref.serverconfig",
+                        "The configuration of the Domain Administration Server "
+                                + "(named server-config) cannot be referenced by a server."));
+                return false;
+            }
 
-        final Servers servers = server.getParent(Servers.class);
-        final Domain domain = servers.getParent(Domain.class);
-        final Configs configs = domain.getConfigs();
 
-        if (servers.getServer(serverName) != null) { // validate for set, not _register-instance
-            // cannot change config ref of a clustered instance
-            Cluster cluster = domain.getClusterForInstance(serverName);
-            if (cluster != null) { // cluster is not null during create-local-instance --cluster c1 i1
-                if (!cluster.getConfigRef().equals(configRef)) {
-                    // During set when trying to change config-ref of a clustered instance,
-                    // the value of desired config-ref will be different than the current config-ref.
-                    // During _register-instance, (create-local-instance --cluster c1 i1)
-                    // cluster.getConfigRef().equals(configRef) will be true and not come here.
-                    logger.warning(localStrings.getLocalString("configref.clusteredinstance",
-                            "Cannot change a config-ref when the instance is part of a cluster."));
+
+            final Servers servers = server.getParent(Servers.class);
+            final Domain domain = servers.getParent(Domain.class);
+            final Configs configs = domain.getConfigs();
+
+            if (servers.getServer(serverName) != null) { // validate for set, not _register-instance
+                // cannot change config ref of a clustered instance
+                Cluster cluster = domain.getClusterForInstance(serverName);
+                if (cluster != null) { // cluster is not null during create-local-instance --cluster c1 i1
+                    if (!cluster.getConfigRef().equals(configRef)) {
+                        // During set when trying to change config-ref of a clustered instance,
+                        // the value of desired config-ref will be different than the current config-ref.
+                        // During _register-instance, (create-local-instance --cluster c1 i1)
+                        // cluster.getConfigRef().equals(configRef) will be true and not come here.
+                        logger.warning(localStrings.getLocalString("configref.clusteredinstance",
+                                "Cannot change a config-ref when the instance is part of a cluster."));
+                        return false;
+                    }
+                }
+                // cannot use a non-existent config  (Only used by set.  _register-instance will fail earlier)
+                if (configs == null || configs.getConfigByName(configRef) == null) {
+                    logger.warning(localStrings.getLocalString("configref.nonexistent",
+                            "A configuration that doesn't exist cannot be referenced by a server."));
                     return false;
                 }
             }
-            // cannot use a non-existent config  (Only used by set.  _register-instance will fail earlier)
-            if (configs == null || configs.getConfigByName(configRef) == null) {
-                logger.warning(localStrings.getLocalString("configref.nonexistent",
-                        "A configuration that doesn't exist cannot be referenced by a server."));
-                return false;
-            }
         }
-  
         return true;
     }
+
 }
 

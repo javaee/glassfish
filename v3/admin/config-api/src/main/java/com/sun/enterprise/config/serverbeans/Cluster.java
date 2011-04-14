@@ -42,6 +42,8 @@ package com.sun.enterprise.config.serverbeans;
 
 import com.sun.enterprise.config.serverbeans.customvalidators.NotTargetKeyword;
 import com.sun.enterprise.config.serverbeans.customvalidators.NotDuplicateTargetName;
+import com.sun.enterprise.config.serverbeans.customvalidators.ConfigRefConstraint;
+import com.sun.enterprise.config.serverbeans.customvalidators.ConfigRefValidator;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
@@ -88,6 +90,7 @@ import javax.validation.constraints.Pattern;
  */
 @Configured
 @SuppressWarnings("unused")
+@ConfigRefConstraint(message="{configref.invalid}", payload= ConfigRefValidator.class)
 @NotDuplicateTargetName(message="{cluster.duplicate.name}", payload=Cluster.class)
 public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer, Payload {
 
