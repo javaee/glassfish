@@ -68,7 +68,7 @@ public class SeleniumHelper {
         if (instance == null) {
             instance = new SeleniumHelper();
         }
-
+        
         return instance;
     }
 

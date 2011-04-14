@@ -159,7 +159,6 @@ public class BaseSeleniumTestClass {
 
     @Before
     public void reset() {
-        helper.releaseSeleniumInstance();
         selenium = helper.getSeleniumInstance();
         currentTestClass = this.getClass().getName();
         openAndWait("/", TRIGGER_COMMON_TASKS);
