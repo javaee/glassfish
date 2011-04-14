@@ -80,6 +80,7 @@ import java.security.Principal;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 import static org.apache.catalina.InstanceEvent.EventType.*;
@@ -141,7 +142,7 @@ public class StandardWrapper
      * The count of allocations that are currently active (even if they
      * are for the same instance, as will be true on a non-STM servlet).
      */
-    private int countAllocated = 0;
+    private AtomicInteger countAllocated = new AtomicInteger(0);
 
 
     /**
@@ -167,7 +168,7 @@ public class StandardWrapper
     /**
      * The (single) initialized instance of this servlet.
      */
-    private Servlet instance = null;
+    private volatile Servlet instance = null;
 
 
     /**
@@ -362,7 +363,7 @@ public class StandardWrapper
      */
     public int getCountAllocated() {
 
-        return (this.countAllocated);
+        return (this.countAllocated.get());
 
     }
 
@@ -1087,14 +1088,14 @@ public class StandardWrapper
             if (!singleThreadModel) {
                 if (log.isLoggable(Level.FINEST))
                     log.finest("Returning non-STM instance");
-                countAllocated++;
+                countAllocated.incrementAndGet();
                 return (instance);
             }
         }
 
         synchronized (instancePool) {
 
-            while (countAllocated >= nInstances) {
+            while (countAllocated.get() >= nInstances) {
                 // Allocate a new instance if possible, or else wait
                 if (nInstances < maxInstances) {
                     try {
@@ -1119,7 +1120,7 @@ public class StandardWrapper
             if (log.isLoggable(Level.FINEST)) {
                 log.finest("Returning allocated STM instance");
             }
-            countAllocated++;
+            countAllocated.incrementAndGet();
             return instancePool.pop();
         }
     }
@@ -1138,13 +1139,13 @@ public class StandardWrapper
 
         // If not SingleThreadModel, no action is required
         if (!singleThreadModel) {
-            countAllocated--;
+            countAllocated.decrementAndGet();
             return;
         }
 
         // Unlock and free this instance
         synchronized (instancePool) {
-            countAllocated--;
+            countAllocated.decrementAndGet();
             instancePool.push(servlet);
             instancePool.notify();
         }
@@ -1718,13 +1719,13 @@ public class StandardWrapper
 
         // Loaf a while if the current instance is allocated
         // (possibly more than once if non-STM)
-        if (countAllocated > 0) {
+        if (countAllocated.get() > 0) {
             int nRetries = 0;
-            while ((nRetries < 21) && (countAllocated > 0)) {
+            while ((nRetries < 21) && (countAllocated.get() > 0)) {
                 if ((nRetries % 10) == 0) {
                     if (log.isLoggable(Level.FINE)) {
                         log.fine(sm.getString("standardWrapper.waiting",
-                                              countAllocated,
+                                              countAllocated.toString(),
                                               instance.getClass().getName()));
                     }
                 }
