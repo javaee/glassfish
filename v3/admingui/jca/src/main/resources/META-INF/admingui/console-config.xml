@@ -105,4 +105,30 @@
         content="rar|org.glassfish.admingui.core.Strings|deploy.type.rar"
     />
 
+    <!-- add dropdown option for the resource dropdown of cluster/standalone instance resource table. -->
+    <integration-point
+            id="jcaResourceDropDown"
+            type="org.glassfish.admingui:resourceTypeDropdown"
+            priority="200"
+            content="jca/connectorResourceNew.jsf|org.glassfish.admingui.core.Strings|tree.connectorResources"
+    />
+    <integration-point
+            id="adminObjResourceDropDown"
+            type="org.glassfish.admingui:resourceTypeDropdown"
+            priority="300"
+            content="jca/adminObjectNew.jsf|org.glassfish.admingui.core.Strings|tree.adminObjectResources"
+    />
+    <integration-point
+            id="jcaResourceFilter"
+            type="org.glassfish.admingui:resFilterDropdown"
+            priority="200"
+            content="connector-resource|org.glassfish.admingui.core.Strings|tree.connectorResources"
+    />
+    <integration-point
+            id="adminObjResourceFilter"
+            type="org.glassfish.admingui:resFilterDropdown"
+            priority="300"
+            content="admin-object-resource|org.glassfish.admingui.core.Strings|tree.adminObjectResources"
+    />
+
 </console-config>

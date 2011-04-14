@@ -62,5 +62,21 @@
                 type="org.glassfish.admingui:resources" 
                 priority="100" 
                 content="jdbcResourceLink.jsf"
-        />        
+        />
+
+        <!-- add dropdown option for the resource dropdown of cluster/standalone instance resource table. -->
+        <integration-point
+                id="jdbcResourceDropDown"
+                type="org.glassfish.admingui:resourceTypeDropdown"
+                priority="100"
+                content="jdbc/jdbcResourceNew.jsf|org.glassfish.admingui.core.Strings|tree.jdbcResources"
+        />
+        
+        <integration-point
+                id="jdbcResourceFilter"
+                type="org.glassfish.admingui:resFilterDropdown"
+                priority="100"
+                content="jdbc-resource|org.glassfish.admingui.core.Strings|tree.jdbcResources"
+        />
+
 </console-config>
