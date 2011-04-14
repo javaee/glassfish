@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,13 +59,13 @@ public abstract class CoordinatorResourcePOA extends org.omg.PortableServer.Serv
   private static java.util.Hashtable _methods = new java.util.Hashtable ();
   static
   {
-    _methods.put ("commit_subtransaction", new java.lang.Integer (0));
-    _methods.put ("rollback_subtransaction", new java.lang.Integer (1));
-    _methods.put ("prepare", new java.lang.Integer (2));
-    _methods.put ("rollback", new java.lang.Integer (3));
-    _methods.put ("commit", new java.lang.Integer (4));
-    _methods.put ("commit_one_phase", new java.lang.Integer (5));
-    _methods.put ("forget", new java.lang.Integer (6));
+    _methods.put ("commit_subtransaction", 0);
+    _methods.put ("rollback_subtransaction", 1);
+    _methods.put ("prepare", 2);
+    _methods.put ("rollback", 3);
+    _methods.put ("commit", 4);
+    _methods.put ("commit_one_phase", 5);
+    _methods.put ("forget", 6);
   }
 
   public org.omg.CORBA.portable.OutputStream _invoke (String $method,

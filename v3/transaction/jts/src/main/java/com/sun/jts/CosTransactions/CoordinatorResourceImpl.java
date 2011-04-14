@@ -470,7 +470,7 @@ class CoordinatorResourceImpl extends CoordinatorResourcePOA
                     // The prepare operation may throw the HeuristicHazard exception.  In this case
                     // allow it to go back to the caller.
 
-                    Vote vote = Vote.VoteRollback;
+                    Vote vote;
                     try {
                         vote = coord.prepare();
                     } catch( HeuristicMixed exc ) {

@@ -117,21 +117,12 @@ class Log {
         // prior to SOMTR_Init.
 
         // Initialise the instance variables.
-
-        logControl = null;
-
-        // Get the log path.  If it is not set, or blank, then set it to the current
-        // directory.
-
-        if( logPath == null ) {
-            logPath = LogControl.getLogPath();
-        }
+        logPath = LogControl.getLogPath();
 
     }
 
 
     Log(String logPath) {
-        logControl = null;
         this.logPath = logPath;
     }
 

@@ -751,8 +751,8 @@ public class ControlImpl extends JControlPOA implements Control {
             Long localTID = null;
             try {
                 localTID = result.getLocalTID(outStatus); 
+                validTID = RecoveryManager.validLocalTID(localTID);
             } catch( Throwable exc ) {}
-            validTID = RecoveryManager.validLocalTID(localTID);
             
             // If the transaction identifier is not valid, then the transaction must have
             // rolled back, so discard it and get its stacked Control object, if any.

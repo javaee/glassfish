@@ -729,9 +729,12 @@ class TransactionState {
                 // Force the log record for the transaction.
                 // How much 'force' can we use in Java?
 
-                if (!(result = logRecord.write(true))) {
+                result = logRecord.write(true);
+                /**
+                if (!result) {
                     // empty
                 }
+                **/
             } else {
                 if (newState == STATE_PREPARED_SUCCESS ||
                      newState == STATE_COMMIT_ONE_PHASE_HEURISTIC_HAZARD ||
@@ -756,9 +759,12 @@ class TransactionState {
 
                 // Write the log record for the transaction (unforced).
 
-                if (!(result = logRecord.write(false))) {
+                result = logRecord.write(false);
+                /**
+                if (!result) {
                     // empty
                 }
+                **/
             }
 
             // RecoveryHook (for induced crashes and waits)  (Ram Jeyaraman)

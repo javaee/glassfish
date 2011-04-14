@@ -279,8 +279,8 @@ class SuperiorInfo {
                     // TN - used to be com.sun.CORBA.iiop.CORBAObjectImpl
                     java.lang.Object rcimpl = logObjects[0];
                         
-                    String[] ids = StubAdapter.getTypeIds(rcimpl);
                     /*
+                    String[] ids = StubAdapter.getTypeIds(rcimpl);
                     for (int i = 0; i < ids.length; i++)
                         if( trc != null )
                             trc.exit(998).data(i).data(ids[i]).write();
@@ -289,8 +289,8 @@ class SuperiorInfo {
                     // TN - used to be com.sun.CORBA.iiop.CORBAObjectImpl
                     java.lang.Object crimpl = logObjects[1];
                         
-                    ids = StubAdapter.getTypeIds(crimpl);
                     /*
+                    ids = StubAdapter.getTypeIds(crimpl);
                     for( int i = 0; i < ids.length; i++ )
                         if( trc != null )
                             trc.exit(998).data(i).data(ids[i]).write();
@@ -353,8 +353,8 @@ class SuperiorInfo {
                     // TN - used to be com.sun.CORBA.iiop.CORBAObjectImpl
                     java.lang.Object rcimpl = logObjects[0];
                         
-                    String[] ids = StubAdapter.getTypeIds(rcimpl);
                     /*
+                    String[] ids = StubAdapter.getTypeIds(rcimpl);
                     for (int i = 0; i < ids.length; i++)
                         if( trc != null )
                             trc.exit(998).data(i).data(ids[i]).write();
@@ -363,8 +363,8 @@ class SuperiorInfo {
                     // TN - used to be com.sun.CORBA.iiop.CORBAObjectImpl
                     java.lang.Object crimpl = logObjects[1];
                         
-                    ids = StubAdapter.getTypeIds(crimpl);
                     /*
+                    ids = StubAdapter.getTypeIds(crimpl);
                     for( int i = 0; i < ids.length; i++ )
                         if( trc != null )
                             trc.exit(998).data(i).data(ids[i]).write();

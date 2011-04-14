@@ -271,7 +271,7 @@ public class LogControl {
         try {
             logHandle = new LogHandle(this,logName,controlFH,upcallTarget); }
         catch( LogException le ) {
-            controlFH.finalize();
+            controlFH.destroy();
             throw new LogException(LogException.LOG_INSUFFICIENT_MEMORY,4,
                     sm.getString("jts.log_create_LogHandle_failed", logName), le);
         }
@@ -283,7 +283,7 @@ public class LogControl {
         try {
             logHandle.restoreCushion(false); 
         } catch( LogException le ) {
-            controlFH.finalize();
+            controlFH.destroy();
             throw new LogException(LogException.LOG_INSUFFICIENT_MEMORY,9,
                     sm.getString("jts.log_cushion_file_failed"), le);
         }
@@ -301,7 +301,7 @@ public class LogControl {
         try {
             bytesRead = controlFH.fileRead(controlBytes); 
         } catch( LogException le ) {
-            controlFH.finalize();
+            controlFH.destroy();
             throw new LogException(LogException.LOG_READ_FAILURE,5,
                     sm.getString("jts.log_control_file_read_failed"), le);
         }
@@ -344,7 +344,7 @@ public class LogControl {
                 try {
                     controlFH.allocFileStorage(LogHandle.CONTROL_FILE_SIZE); 
                 } catch( LogException le ) {
-                    controlFH.finalize();
+                    controlFH.destroy();
                     throw new LogException(LogException.LOG_WRITE_FAILURE,6,
                             sm.getString("jts.log_allocate_failed"), le);
                 }
@@ -353,7 +353,7 @@ public class LogControl {
                 try {
                     bytesWritten = controlFH.fileWrite(controlBytes);
                 } catch( LogException le ) {
-                    controlFH.finalize();
+                    controlFH.destroy();
                     throw new LogException(LogException.LOG_WRITE_FAILURE,7,
                             sm.getString("jts.log_control_file_write_failed"), le);
                 }
@@ -362,7 +362,7 @@ public class LogControl {
                 try {
                     logEDP = logHandle.openExtent(logHandle.logControlDescriptor.nextLSN.extent);
                 } catch( LogException le ) {
-                    controlFH.finalize();
+                    controlFH.destroy();
                     throw new LogException(LogException.LOG_NO_SPACE,10,
                             sm.getString("jts.log_open_extend_failed"), le);
                 }
@@ -370,7 +370,7 @@ public class LogControl {
                 try {
                     logEDP.fileHandle.allocFileStorage(LogHandle.ALLOCATE_SIZE); 
                 } catch( LogException le ) {
-                    controlFH.finalize();
+                    controlFH.destroy();
                     throw new LogException(LogException.LOG_NO_SPACE,11,
                             sm.getString("jts.log_allocate_failed"), le);
                 }
@@ -406,7 +406,7 @@ public class LogControl {
                 try {
                     logEDP = logHandle.openExtent(currentExtent); 
                 } catch( LogException le ) {
-                    controlFH.finalize();
+                    controlFH.destroy();
                     throw new LogException(LogException.LOG_OPEN_EXTENT_FAILURE,19,
                             sm.getString("jts.log_open_extend_failed"), le);
                 }
@@ -423,7 +423,7 @@ public class LogControl {
             try {
                 logHandle.checkRestart(controlFH,1,restartValues1); 
             } catch( LogException le ) {
-                controlFH.finalize();
+                controlFH.destroy();
                 throw new LogException(LogException.LOG_READ_FAILURE,8,
                         sm.getString("jts.log_read_restart_data_failed"), le);
             }
@@ -452,7 +452,7 @@ public class LogControl {
                 try {
                     logHandle.checkRestart(controlFH,2,restartValues2);
                 } catch( LogException le ) {
-                    controlFH.finalize();
+                    controlFH.destroy();
                     throw new LogException(LogException.LOG_READ_FAILURE,9,
                             sm.getString("jts.log_check_restart_failed"), le);
                 }
@@ -503,7 +503,7 @@ public class LogControl {
                 logEDP = logHandle.positionFilePointer(logHandle.logControlDescriptor.headLSN,
                                                        0,LogExtent.ACCESSTYPE_READ); }
             catch( LogException le ) {
-                controlFH.finalize();
+                controlFH.destroy();
                 removeFile(logHandle);
                 throw new LogException(LogException.LOG_OPEN_FAILURE,10,
                         sm.getString("jts.log_position_file_pointer_failed"), le);
@@ -525,7 +525,7 @@ public class LogControl {
             try {
                 bytesRead = logEDP.fileHandle.fileRead(headerBytes);
             } catch( LogException le ) {
-                controlFH.finalize();
+                controlFH.destroy();
                 removeFile(logHandle);
                 throw new LogException(le.errorCode,11,
                         sm.getString("jts.log_read_header_failed"), le);
@@ -533,7 +533,7 @@ public class LogControl {
             extentRec = new LogRecordHeader(headerBytes,0);
 
             if( !extentRec.currentLSN.equals(logHandle.logControlDescriptor.headLSN) ) {
-                controlFH.finalize();
+                controlFH.destroy();
                 removeFile(logHandle);
                 throw new LogException(null,LogException.LOG_CORRUPTED,12);
             }
@@ -549,7 +549,7 @@ public class LogControl {
             try {
                 logEDP = logHandle.positionFilePointer(extentRec.nextLSN,0,LogExtent.ACCESSTYPE_READ);
             } catch( LogException le ) {
-                controlFH.finalize();
+                controlFH.destroy();
                 removeFile(logHandle);
                 throw new LogException(LogException.LOG_OPEN_FAILURE,13,
                         sm.getString("jts.log_position_file_pointer_failed"), le);
@@ -568,13 +568,13 @@ public class LogControl {
                 try {
                     bytesRead = logEDP.fileHandle.fileRead(headerBytes);
                 } catch( LogException le ) {
-                    controlFH.finalize();
+                    controlFH.destroy();
                     removeFile(logHandle);
                     throw new LogException(LogException.LOG_READ_FAILURE,14,
                             sm.getString("jts.log_read_header_failed"), le);
                 }
                 if( bytesRead == -1 ) {
-                    controlFH.finalize();
+                    controlFH.destroy();
                     removeFile(logHandle);
                     throw new LogException(null,LogException.LOG_READ_FAILURE,14);
                 }
@@ -597,7 +597,7 @@ public class LogControl {
                         try {
                             logEDP = logHandle.positionFilePointer(extentRec.nextLSN,0,LogExtent.ACCESSTYPE_READ);
                         } catch( LogException le ) {
-                            controlFH.finalize();
+                            controlFH.destroy();
                             removeFile(logHandle);
                             throw new LogException(le.errorCode,15,
                                     sm.getString("jts.log_position_file_pointer_failed"), le);
@@ -635,7 +635,7 @@ public class LogControl {
                                                                LogRecordHeader.SIZEOF+headRec.recordLength,
                                                                LogExtent.ACCESSTYPE_READ); 
                     } catch( LogException le ) {
-                        controlFH.finalize();
+                        controlFH.destroy();
                         removeFile(logHandle);
                         throw new LogException(le.errorCode,16,
                                 sm.getString("jts.log_position_file_pointer_failed"), le);
@@ -646,7 +646,7 @@ public class LogControl {
                     try {
                         bytesRead = logEDP.fileHandle.fileRead(endingBytes);
                     } catch( LogException le ) {
-                        controlFH.finalize();
+                        controlFH.destroy();
                         removeFile(logHandle);
                         throw new LogException(le.errorCode,17, null, le);
                     }

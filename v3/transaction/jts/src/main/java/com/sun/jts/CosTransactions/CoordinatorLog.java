@@ -356,8 +356,6 @@ class CoordinatorLog extends java.lang.Object implements LogUpcallTarget {
 
         result = (CoordinatorLogSection) sectionMapping.get(sectionName);
         if (result == null) {
-            int nameLength = sectionName.length();
-
             // Create a new section.
             // If a section info structure cannot be allocated, return.
             // Note that the section name is added to the end of the section

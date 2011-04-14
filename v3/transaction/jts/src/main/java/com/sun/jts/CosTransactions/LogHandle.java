@@ -835,7 +835,7 @@ class LogHandle {
         //   Return LOG_SUCCESS
         // ELSE let the error pass to the caller.
 
-        int bytesWritten = logFileHandle.fileWrite(writeBytes);
+        logFileHandle.fileWrite(writeBytes);
 
         activeRestartVersion = alternate;
 
@@ -903,7 +903,7 @@ class LogHandle {
         // Issue a READV for the restart data
         // IF not successful let the error pass to the caller.
 
-        int bytesRead = logFileHandle.readVector(readVect);
+        logFileHandle.readVector(readVect);
 
         LogRestartDescriptor logRD    = new LogRestartDescriptor(readVect[0],0);
         LogRestartDescriptor logRDEnd = new LogRestartDescriptor(readVect[2],0);
@@ -1018,7 +1018,7 @@ class LogHandle {
         // IF not successful allow the error to pass to the caller.
 
         logFileHandle.fileClose();
-        // logFileHandle.finalize();
+        // logFileHandle.destroy();
 
         // If deletion of the logfile was requested, delete it's
         // control File and the cushion file.
@@ -1703,7 +1703,7 @@ class LogHandle {
                 try {
                     cushionFH.allocFileStorage(CUSHION_SIZE);
                 } catch( LogException le ) {
-                    cushionFH.finalize();
+                    cushionFH.destroy();
                     // Start IASRI 4720539
                     //logControl.cushionFile.delete();
                     java.security.AccessController.doPrivileged(
@@ -1727,7 +1727,7 @@ class LogHandle {
 
                 // CLOSE the cushion file
 
-                cushionFH.finalize();
+                cushionFH.destroy();
             }
 
             cushionExists = true;
@@ -1780,7 +1780,7 @@ class LogHandle {
 
         byte[] controlBytes = new byte[LogControlDescriptor.SIZEOF];
         logControlDescriptor.toBytes(controlBytes,0);
-        int bytesWritten = logFileHandle.fileWrite(controlBytes);
+        logFileHandle.fileWrite(controlBytes);
 
     }
 
@@ -1815,10 +1815,6 @@ class LogHandle {
         // Allocate a Log_ExtentDescriptor block and initialise it
 
         LogExtent logEDP = new LogExtent(extent,extentFH,extentFile);
-        if( logEDP == null ) {
-            extentFH.finalize();
-            throw new LogException(null,LogException.LOG_INSUFFICIENT_MEMORY,2);
-        }
 
         // Use the already hashed extent number to find the position in the
         // hash table and add it to the chain
@@ -1914,7 +1910,7 @@ class LogHandle {
             if( logRD.restartValid == restartPosition(restartNumber) ) {
                 fileHandle.fileSeek(logRD.restartDataLength,
                                     LogFileHandle.SEEK_RELATIVE);
-                bytesRead = fileHandle.fileRead(restartBytes);
+                fileHandle.fileRead(restartBytes);
                 LogRestartDescriptor logRDEnd = new LogRestartDescriptor(restartBytes,0);
 
 

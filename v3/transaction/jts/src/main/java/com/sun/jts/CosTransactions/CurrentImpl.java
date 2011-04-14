@@ -522,7 +522,7 @@ public class CurrentImpl extends org.omg.CORBA.LocalObject
         if( !controlImpl.representsRemoteControl() ) {
 
             StatusHolder status = new StatusHolder();
-            Long localTID = controlImpl.getLocalTID(status);
+            controlImpl.getLocalTID(status);
 
             if( status.value != Status.StatusActive ) {
 
@@ -556,11 +556,13 @@ public class CurrentImpl extends org.omg.CORBA.LocalObject
         // raise an exception and return.
 
         if( (active != 1) || (controlImpl.isOutgoing()) ) {
+            /**
             if( active != 1 ) {
             }
 
             if( controlImpl.isOutgoing() ) {
             }
+            **/
 
             INVALID_TRANSACTION exc = new INVALID_TRANSACTION(MinorCode.DeferredActivities,
                                                               CompletionStatus.COMPLETED_NO);
@@ -663,7 +665,7 @@ public class CurrentImpl extends org.omg.CORBA.LocalObject
         if( !controlImpl.representsRemoteControl() ) {
 
             StatusHolder status = new StatusHolder();
-            Long localTID = controlImpl.getLocalTID(status);
+            controlImpl.getLocalTID(status);
 
             if( status.value != Status.StatusActive ) {
 
@@ -699,11 +701,13 @@ public class CurrentImpl extends org.omg.CORBA.LocalObject
         // raise an exception and return.
 
         if( (active != 1) || (controlImpl.isOutgoing()) ) {
+            /**
             if( active != 1 ) {
             }
 
             if( controlImpl.isOutgoing() ) {
             }
+            **/
 
             INVALID_TRANSACTION exc = new INVALID_TRANSACTION(MinorCode.DeferredActivities,
                                                               CompletionStatus.COMPLETED_NO);

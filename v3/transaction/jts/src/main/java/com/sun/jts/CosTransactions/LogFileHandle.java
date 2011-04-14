@@ -211,7 +211,7 @@ class LogFileHandle {
      *
      * @see
      */
-    protected void finalize()
+    void destroy()
         throws LogException {
 
         // Ensure that the file is closed.
@@ -220,6 +220,12 @@ class LogFileHandle {
 
         if( fhandle != null )
             fileClose();
+    }
+
+    protected void finalize()
+        throws LogException {
+
+        destroy();
     }
 
     /**Reads from the file.

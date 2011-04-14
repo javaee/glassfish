@@ -231,8 +231,7 @@ public class TopCoordinator extends CoordinatorImpl {
             // Set the state of the transaction to active before making
             // it visible to the TransactionManager.
 
-            LogicErrorException exc =
-                new LogicErrorException(
+            LogicErrorException exc = new LogicErrorException(
 					LogFormatter.getLocalizedMessage(_logger,
 					"jts.invalid_state_change"));
             throw exc;
@@ -244,8 +243,7 @@ public class TopCoordinator extends CoordinatorImpl {
                                                 tranState.localTID,
                                                 this,
                                                 timeOut)) {
-                LogicErrorException exc =
-                    new LogicErrorException(
+                LogicErrorException exc = new LogicErrorException(
 						LogFormatter.getLocalizedMessage(_logger,
 						"jts.transaction_id_already_in_use"));
                 throw exc;
@@ -329,16 +327,14 @@ public class TopCoordinator extends CoordinatorImpl {
         // visible to the RecoveryManager.
 
         if (!tranState.setState(TransactionState.STATE_ACTIVE)) {
-            LogicErrorException exc =
-                new LogicErrorException(
+            LogicErrorException exc = new LogicErrorException(
 					LogFormatter.getLocalizedMessage(_logger,
 					"jts.invalid_state_change"));
             throw exc;
         } else {
             if (!RecoveryManager.addCoordinator(globalTID, tranState.localTID,
                                                 this, timeOut)) {
-                LogicErrorException exc =
-                    new LogicErrorException(
+                LogicErrorException exc = new LogicErrorException(
 						LogFormatter.getLocalizedMessage(_logger,
 						"jts.transaction_id_already_in_use"));
                 throw exc;
@@ -1790,8 +1786,6 @@ public class TopCoordinator extends CoordinatorImpl {
     Vote prepare()
             throws INVALID_TRANSACTION, HeuristicMixed, HeuristicHazard {
 
-        Vote result = Vote.VoteRollback;
-
         // Until we actually distribute prepare flows, synchronize the method.
 
         synchronized(this) {
@@ -1823,7 +1817,10 @@ public class TopCoordinator extends CoordinatorImpl {
 
                 if (!tranState.
                         setState(TransactionState.STATE_PREPARED_FAIL)) {
-                    // empty
+		     if(_logger.isLoggable(Level.FINE)) {
+		         _logger.log(Level.FINE,
+                                "TopCoordinator - setState(TransactionState.STATE_PREPARED_FAIL) returned false");
+                     }
                 }
 
                 return Vote.VoteRollback;
@@ -1877,7 +1874,10 @@ public class TopCoordinator extends CoordinatorImpl {
                     heuristicExc = exc;
                     if (!tranState.
                             setState(TransactionState.STATE_ROLLED_BACK)) {
-                        // empty
+		        if(_logger.isLoggable(Level.FINE)) {
+			    _logger.log(Level.FINE,
+                                "TopCoordinator - setState(TransactionState.STATE_ROLLED_BACK) returned false");
+                        }
                     }
 
                     /* comented out (Ram J) for memory leak fix.
@@ -2263,7 +2263,10 @@ public class TopCoordinator extends CoordinatorImpl {
 
             if( !temporary &&
                     !tranState.setState(TransactionState.STATE_ROLLING_BACK)) {
-                // empty
+                if(_logger.isLoggable(Level.FINE)) {
+		    _logger.log(Level.FINE,
+                           "TopCoordinator - setState(TransactionState.STATE_ROLLED_BACK) returned false");
+                }
             }
 
             // Rollback outstanding children.  If the NestingInfo instance
@@ -2308,7 +2311,10 @@ public class TopCoordinator extends CoordinatorImpl {
 
             if (!temporary &&
                     !tranState.setState(TransactionState.STATE_ROLLED_BACK)) {
-                // empty
+	        if(_logger.isLoggable(Level.FINE)) {
+		    _logger.log(Level.FINE,
+                          "TopCoordinator - setState(TransactionState.STATE_ROLLED_BACK) returned false");
+                }
             }
 
             // Clean up the TopCoordinator after a rollback.

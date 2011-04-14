@@ -296,10 +296,6 @@ public class FailureInducer {
         }
 
         String msg = messages.getString(key);
-        if (msg == null) {
-            return null;
-        }
-
         if (inserts == null) {
             return msg;
         } else {

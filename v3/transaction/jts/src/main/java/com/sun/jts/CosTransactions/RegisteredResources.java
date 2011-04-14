@@ -158,7 +158,7 @@ class RegisteredResources {
 
         logRecord = log;
 
-        if (log != null) {
+        //if (log != null) {
 
             // Create section for Resources registered as part of transaction
 
@@ -167,7 +167,7 @@ class RegisteredResources {
             // Create section for Resources with heuristic actions taken
 
           // heuristicLogSection = log.createSection(HEURISTIC_LOG_SECTION_NAME);
-        }
+        //}
         this.coord = coord;
     }
 
@@ -452,7 +452,7 @@ class RegisteredResources {
         boolean isProxy = false;
         Vote result = Vote.VoteReadOnly;
         int laoIndex = -1;
-         boolean rmErr = false;
+        boolean rmErr = false;
 
         // Browse through the participants, preparing them, and obtain
         // a consolidated result.  The following is intended to be done

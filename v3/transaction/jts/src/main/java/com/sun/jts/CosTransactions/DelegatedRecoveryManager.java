@@ -611,7 +611,7 @@ public class DelegatedRecoveryManager {
                         // is registered with the coordinator per transaction
                         // per RM.
                         
-                        String xidStr = stringifyXid(inDoubtXids[i]);
+                        //String xidStr = stringifyXid(inDoubtXids[i]);
                         if (!uniqueXids.contains(inDoubtXids[i])) { // unique xid
                             if(_logger.isLoggable(Level.FINE))
                             {
@@ -834,5 +834,5 @@ class RecoveryStateHolder {
     
     Hashtable coordsByGlobalTID = new Hashtable();
     Hashtable coordsByLocalTID = new Hashtable();
-    Hashtable transactionIds = new Hashtable();
+    //Hashtable transactionIds = new Hashtable();
 }

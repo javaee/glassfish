@@ -196,8 +196,7 @@ class CoordinatorTerm implements CompletionHandler {
         if( coordinator == null ) {
 			String msg = LogFormatter.getLocalizedMessage(_logger,
 									  "jts.no_coordinator_available");
-            LogicErrorException exc =
-                new LogicErrorException(msg);
+            LogicErrorException exc = new LogicErrorException(msg);
             throw exc;
         }
 
@@ -479,8 +478,7 @@ class CoordinatorTerm implements CompletionHandler {
 			 String msg = LogFormatter.getLocalizedMessage(_logger,
 			 							"jts.no_coordinator_available");
 			 						   
-            LogicErrorException exc =
-                new LogicErrorException(msg);
+            LogicErrorException exc = new LogicErrorException(msg);
             throw exc;
         }
 

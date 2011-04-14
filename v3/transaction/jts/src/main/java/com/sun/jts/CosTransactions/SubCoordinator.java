@@ -175,8 +175,7 @@ class SubCoordinator extends CoordinatorImpl {
         // visible to the RecoveryManager.
 
         if (!tranState.setState(TransactionState.STATE_ACTIVE)) {
-            LogicErrorException exc =
-                new LogicErrorException(
+            LogicErrorException exc = new LogicErrorException(
 					 LogFormatter.getLocalizedMessage(_logger,
 					 "jts.invalid_state_change"));
             throw exc;
@@ -253,16 +252,14 @@ class SubCoordinator extends CoordinatorImpl {
         // to the TransactionManager.
 
         if (!tranState.setState(TransactionState.STATE_ACTIVE)) {
-            LogicErrorException exc = 
-				new LogicErrorException(
+            LogicErrorException exc = new LogicErrorException(
 					LogFormatter.getLocalizedMessage(_logger,
 					"jts.invalid_state_change"));
             throw exc;
         } else if (!RecoveryManager.addCoordinator(globalTID,
                                                    tranState.localTID,
                                                    this, 0)) {
-            LogicErrorException exc =
-                new LogicErrorException(
+            LogicErrorException exc = new LogicErrorException(
 					LogFormatter.getLocalizedMessage(_logger,
 					"jts.transaction_id_already_in_use"));
             throw exc;
@@ -1537,7 +1534,11 @@ class SubCoordinator extends CoordinatorImpl {
 
             if (!temporary &&
                     !tranState.setState(TransactionState.STATE_ROLLING_BACK)) {
-                // empty
+	        if(_logger.isLoggable(Level.FINE)) {
+		    _logger.log(Level.FINE,
+                         "SubCoordinator - setState(TransactionState.STATE_ROLLED_BACK) returned false");
+                }
+
             }
 
             // Rollback outstanding children.  If the NestingInfo instance
@@ -1568,7 +1569,10 @@ class SubCoordinator extends CoordinatorImpl {
             // Remove our reference from the parents set of children
             if (!temporary &&
                     !tranState.setState(TransactionState.STATE_ROLLED_BACK)) {
-                // empty
+	        if(_logger.isLoggable(Level.FINE)) {
+		    _logger.log(Level.FINE,
+                         "SubCoordinator - setState(TransactionState.STATE_ROLLED_BACK) returned false");
+                }
             }
 
             nestingInfo.removeFromParent(this);
