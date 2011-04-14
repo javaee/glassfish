@@ -63,6 +63,7 @@ import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.*;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
+import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -247,6 +248,13 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                           append(VersioningUtils.EXPRESSION_SEPARATOR).
                           append(versionIdentifier);
                   name = sb.toString();
+                }
+            }
+            // needs to be fixed in hk2, we don't generate the right innerclass index. it should use $
+            Collection<Interceptor> interceptors = habitat.getAllByContract("org.glassfish.deployment.admin.DeployCommand.Interceptor");
+            if (interceptors!=null) {
+                for (Interceptor interceptor : interceptors) {
+                    interceptor.intercept(this, initialContext);
                 }
             }
             
@@ -825,5 +833,19 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             subReport.setMessage(warningMsg);
             context.getLogger().log(Level.WARNING, warningMsg);
         }
+    }
+
+    /**
+     * Crude interception mechanisms for deploy comamnd execution
+     */
+    @Contract
+    public interface Interceptor {
+        /**
+         * Called by the deployment command to intercept a deployment activity.
+         *
+         * @param self the deployment command in flight.
+         * @param context of the deployment
+         */
+        void intercept(DeployCommand self, DeploymentContext context);
     }
 }

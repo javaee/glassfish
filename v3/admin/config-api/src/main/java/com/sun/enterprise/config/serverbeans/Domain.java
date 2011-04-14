@@ -40,12 +40,9 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.glassfish.api.admin.config.ReferenceContainer;
+import org.glassfish.api.admin.config.*;
 import org.jvnet.hk2.config.types.PropertyBag;
-import org.glassfish.api.admin.config.ApplicationName;
-import org.glassfish.api.admin.config.PropertiesDesc;
 import org.jvnet.hk2.config.types.Property;
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.quality.ToDo;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
@@ -390,6 +387,10 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     @Element
     List<Property> getProperty();
 
+
+    @Element("*")
+    List<DomainExtension> getExtensions();
+
     @DuckTyped
     String getName();
 
@@ -489,6 +490,9 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
 
     @DuckTyped
     List<Cluster> getClustersOnNode(String nodeName);
+
+    @DuckTyped
+    <T extends DomainExtension> T getExtensionByType(Class<T> type);
 
     class Duck {
         public static String getName(Domain domain) {
@@ -953,6 +957,17 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
         public static boolean isServer(Domain d, String name) {
             final Server server = d.getServerNamed(name);
             return (server != null ? true : false);
+        }
+
+        public static <T extends DomainExtension> T getExtensionByType(Domain d, Class<T> type) {
+            for (DomainExtension extension : d.getExtensions()) {
+                try {
+                    return type.cast(extension);
+                } catch (Exception e) {
+                    // ignore, not the right type.
+                }
+            }
+            return null;
         }
     }
 }

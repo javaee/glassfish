@@ -117,7 +117,7 @@ public final class CopyConfigCommand extends CopyConfig {
         final String configName = destConfig ;
         final Logger logger = context.getLogger();
         try {
-            final Config newCopy = (Config) ConfigSupport.apply(new SingleConfigCode<Configs>(){
+            ConfigSupport.apply(new SingleConfigCode<Configs>(){
                 @Override
                 public Object run(Configs configs ) throws PropertyVetoException, TransactionFailure {
                     return copyConfig(configs,config,configName,logger);

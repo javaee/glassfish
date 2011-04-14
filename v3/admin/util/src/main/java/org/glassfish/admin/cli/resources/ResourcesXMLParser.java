@@ -1491,7 +1491,7 @@ public class ResourcesXMLParser implements EntityResolver
      }
     
     
-      final class AddResourcesErrorHandler implements ErrorHandler {
+      final static class AddResourcesErrorHandler implements ErrorHandler {
           public void error(SAXParseException e) throws org.xml.sax.SAXException{
            throw e ;
         }

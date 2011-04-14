@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,62 +37,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.enterprise.config.serverbeans;
 
-package org.glassfish.apf.impl;
-
-import java.util.logging.Logger;
-import java.util.logging.*;
-import java.util.ResourceBundle;
-import java.text.MessageFormat;
-
-import org.glassfish.apf.ErrorHandler;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
 
 /**
- * Bag for utility methods
+ * Tag interface to extend the domain configuration
+ * Any implementation of this interface will be stored under the domain.xml
+ * root domain element.
  *
  * @author Jerome Dochez
  */
-public class AnnotationUtils {
-    
-    private static Logger logger;
-    private static String whatToLog="";
-    private static ResourceBundle resourceBundle;
-    
-    public static Logger getLogger() {
-        if (logger==null) {
-            logger = Logger.global;
-        }
-        return logger;        
-    }
-
-    public static void setLogger(Logger lg) {
-        logger = lg;
-    }
-    
-    public static void setLoggerTarget(String what) {
-        whatToLog = what;
-    }
-    
-    public static String getLoggerTarget() {
-        return whatToLog;
-    }
-    
-    public static boolean shouldLog(String what) {
-        
-        if (logger.isLoggable(Level.FINER)) {
-            if (whatToLog.indexOf(what)!=-1) 
-                return true;
-            if ("*".equals(whatToLog))
-                return true;
-        }
-        return false;
-    }
-    
-    public static String getLocalString(String key, String defaultString, Object... arguments){
-        String value = defaultString;
-        if (resourceBundle!=null && resourceBundle.getString(key)!=null){
-            value = resourceBundle.getString(key);
-        }
-        return MessageFormat.format(value, arguments);
-    }
+@Configured
+public interface DomainExtension extends ConfigBeanProxy {
 }
