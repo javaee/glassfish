@@ -40,7 +40,6 @@
 package org.glassfish.admingui.devtests;
 
 import com.google.common.base.Function;
-import com.thoughtworks.selenium.Wait;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openqa.selenium.By;
@@ -64,13 +63,6 @@ public class ElementFinder {
     public WebElement findElement(By locatorname, int timeout) {
         WebDriverWait wait = new WebDriverWait(driver, timeout);
         return wait.until(presenceOfElementLocated(locatorname));
-    }
-
-    public WebElement findElement(By locator, int timeoutInSeconds, ExpectedCondition<Boolean> condition) {
-        WebDriverWait w = new WebDriverWait(driver, timeoutInSeconds);
-        w.until(condition);
-
-        return driver.findElement(locator);
     }
 
     private static Function<WebDriver, WebElement> presenceOfElementLocated(final By locator) {

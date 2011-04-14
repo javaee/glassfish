@@ -941,9 +941,19 @@ public class BaseSeleniumTestClass {
         }
         
         final String parentId = id.substring(0, id.lastIndexOf(":"));
-        final RenderedWebElement parentElement = (RenderedWebElement) elementFinder.findElement(By.id(parentId), TIMEOUT);
+        boolean parentIsDisplayed = false;
 
-        if (!parentElement.isDisplayed()) {
+        try {
+            RenderedWebElement parentElement = (RenderedWebElement) elementFinder.findElement(By.id(parentId), TIMEOUT);
+            parentIsDisplayed = parentElement.isDisplayed();
+        } catch (StaleElementReferenceException sere) {
+            sleep(1000);
+            RenderedWebElement parentElement = (RenderedWebElement) elementFinder.findElement(By.id(parentId), TIMEOUT);
+            parentIsDisplayed = parentElement.isDisplayed();
+            
+        }
+
+        if (!parentIsDisplayed) {
             insureElementIsVisible(parentId);
             String grandParentId = parentId.substring(0, parentId.lastIndexOf(":"));
             String nodeId = grandParentId.substring(grandParentId.lastIndexOf(":")+1);
