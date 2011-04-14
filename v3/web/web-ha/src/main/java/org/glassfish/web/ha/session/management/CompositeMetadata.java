@@ -333,6 +333,8 @@ public final class CompositeMetadata implements Storeable {
                             case DELETE:
                                 attributesMap.remove(attrName);
                                 break;
+                            default:
+                                throw new IOException("Unknown operation");
 
                         }
                     }
