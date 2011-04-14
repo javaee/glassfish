@@ -93,6 +93,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
     Map<String, ArchiveHandler> moduleArchiveHandlers = new HashMap<String, ArchiveHandler>();
     Map<String, ExtendedDeploymentContext> moduleDeploymentContexts = new HashMap<String, ExtendedDeploymentContext>();
     ExtendedDeploymentContext parentContext = null;
+    String moduleUri = null;
 
     /** Creates a new instance of DeploymentContext */
     public DeploymentContextImpl(Deployment.DeploymentContextBuilder builder, ServerEnvironment env) {
@@ -473,6 +474,24 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
      */
     public ExtendedDeploymentContext getParentContext() {
         return parentContext;
+    }
+
+    /**
+     * Gets the module uri for this module context
+     *
+     * @return the module uri
+     */
+    public String getModuleUri() {
+        return moduleUri;
+    }
+
+   /**
+     * Sets the module uri for this module context
+     *
+     * @param moduleUri
+     */
+    public void setModuleUri(String moduleUri) {
+        this.moduleUri = moduleUri;
     }
 
 

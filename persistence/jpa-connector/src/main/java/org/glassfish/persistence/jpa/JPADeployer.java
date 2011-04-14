@@ -42,6 +42,7 @@ package org.glassfish.persistence.jpa;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.DeployCommandParameters;
@@ -474,16 +475,7 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
          * @param context
          */
         void iteratePUDs(DeploymentContext context) {
-            RootDeploymentDescriptor currentBundle = context.getModuleMetaData(BundleDescriptor.class);
-            if (currentBundle != null) {
-                // For EJB in war case, deployment puts extension (EjbBundleDescriptor) and main descriptor (WebBundleDescriptor) into the deployment context.
-                // Get to main descriptor where PersistenceUnitDescriptor is stored.
-                currentBundle = currentBundle.getMainDescriptor();
-            } else {
-                // We are being called for an application
-                currentBundle = context.getModuleMetaData(Application.class);
-            }
-
+            RootDeploymentDescriptor currentBundle = DOLUtils.getCurrentBundleForContext(context);
             Collection<PersistenceUnitsDescriptor> pusDescriptorForThisBundle = currentBundle.getExtensionsDescriptors(PersistenceUnitsDescriptor.class);
             for (PersistenceUnitsDescriptor persistenceUnitsDescriptor : pusDescriptorForThisBundle) {
                     for (PersistenceUnitDescriptor pud : persistenceUnitsDescriptor.getPersistenceUnitDescriptors()) {
