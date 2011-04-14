@@ -47,6 +47,7 @@
     &reporting;
     &run;
 
+    <property name="gfurl" value="http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip"/>
     <property name="stylesheet" value="${env.APS_HOME}/config/j2eeReporter.xsl" />
     <property name="xmlfile" value="${env.APS_HOME}/test_resultsValid.xml" />
     <property name="htmlfile" value="${env.APS_HOME}/test_results.html" />
@@ -55,14 +56,17 @@
     <property name="javaprops" value="-Dverbose=${verbose}"/>
     <property name="derbyhome" value="${env.S1AS_HOME}/../javadb"/>
     <property name="databases_dir" value="${env.S1AS_HOME}/databases"/>
+    <property name="asinstall_dir" value="${env.S1AS_HOME}/../.."/>
 
-    <path id="class.path">
-        <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
-        <pathelement location="build"/>
-        <pathelement location="${env.S1AS_HOME}/lib/gf-client.jar"/>
-        <fileset dir="${env.S1AS_HOME}/modules"/>
-    </path>
-    <pathconvert refid="class.path" property="test"/>
+    <target name="init-path">
+        <path id="class.path">
+            <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
+            <pathelement location="build"/>
+            <pathelement location="${env.S1AS_HOME}/lib/gf-client.jar"/>
+            <fileset dir="${env.S1AS_HOME}/modules"/>
+        </path>
+        <pathconvert refid="class.path" property="test"/>
+    </target>
 
     <target name="debug-windows" depends="instance, cluster"/>
     <target name="cli" depends="setup, monitoring, zombie, ports, instance, cluster,
@@ -322,7 +326,7 @@
     <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
 </target>
 
-<target name="build">
+<target name="build" depends="init-path">
     <mkdir dir="build"/>
     <javac srcdir="src" destdir="build" debug="true"
                classpath="${test}"
@@ -335,7 +339,7 @@
 <target name="teardown" depends="stopdb">
 </target>
 
-<target name="init" depends="build">
+<target name="init" depends="build, init-path">
 </target>
 
 <target name="clean">
@@ -365,6 +369,12 @@
     <echo message="************   JavaDB Stopped **********"/>
 </target>
 
+<target name="download">
+    <get verbose="${verbose}" src="${gfurl}" dest="${asinstall_dir}/glassfish.zip"/>
+    <delete dir="${asinstall_dir}/glassfish3" includeemptydirs="true"/>
+    <unzip src="${asinstall_dir}/glassfish.zip" dest="${asinstall_dir}"/>
+</target>
+    
 <target name="usage">
     <echo>Usage: ant [-Dteststorun=instance|cluster|...] [-Dnum_tests=n] [-Dverbose=true/false] all (Executes the admin tests)</echo>
 </target>
