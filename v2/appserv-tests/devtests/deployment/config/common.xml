@@ -899,12 +899,15 @@ AS_ADMIN_MASTERPASSWORD=changeit
 </target>
 
 <target name="failed" if="testFailed">
-    <echo message="Test ${testname} Failed with return code ${result}"/>
+    <tstamp>
+        <format property="failureNOW"  pattern="dd-MMM-yyyy HH:mm:ss.SSS"/>
+    </tstamp>
+    <echo message="Test ${testname} Failed at ${failureNOW} with return code ${result}"/>
     <concat append="yes">
-        <header>
+        <header trimleading="true">
         ==================  Error output  ==================
         </header>
-        <footer>
+        <footer trimleading="true">
         ==================  End of error output ==================
         </footer>
         <fileset file="${log}"/>
