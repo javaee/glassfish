@@ -1,4 +1,4 @@
-/*
+  /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
  * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -80,6 +81,10 @@ public class MiniXmlParser {
         this.domainXml = domainXml;
         try {
             read();
+
+            if (!sawConfig)
+                throw new EndDocumentException(); // handled just below...
+
             valid = true;
         }
         catch (EndDocumentException e) {
@@ -147,7 +152,7 @@ public class MiniXmlParser {
         if (!valid) {
             throw new MiniXmlParserException(strings.get("invalid"));
         }
-        return sysProps;
+        return sysProps.getCombinedSysProps();
     }
 
     public String getDomainName() {
@@ -207,17 +212,17 @@ public class MiniXmlParser {
         try {
             // this will fail if config is above servers in domain.xml!
             getConfig(); // might throw
-            findDomainNameAndEnd();
-            return;
+            findOtherStuff();
         }
         catch (EndDocumentException ex) {
             createParser();
             skipRoot("domain");
             getConfig();
-            findDomainNameAndEnd();
+            findOtherStuff();
             Logger.getLogger(MiniXmlParser.class.getName()).log(
                     Level.FINE, strings.get("secondpass"));
         }
+        finalTouches();
     }
 
     private void createParser() throws FileNotFoundException, XMLStreamException {
@@ -252,13 +257,19 @@ public class MiniXmlParser {
         skipRoot("domain");
         // complications -- look for this element as a child of Domain...
         // <property name="administrative.domain.name" value="domain1"/>
+        // also have to handle system-property at the domain level
         while (true) {
-            skipTo("servers", "property");
+            skipTo("servers", "property", "clusters", "system-property");
             String name = parser.getLocalName();
             if ("servers".equals(name)) {
                 break;
             }
-            parseDomainName(); // maybe it is the domain name?
+            else if ("clusters".equals(name))
+                parseClusters();
+            else if ("system-property".equals(name))
+                parseSystemProperty(SysPropsHandler.Type.DOMAIN);
+            else
+                parseDomainProperty(); // maybe it is the domain name?
         }
         // the cursor is at the start-element of <servers>
         while (true) {
@@ -285,13 +296,19 @@ public class MiniXmlParser {
     private void getConfig() throws XMLStreamException, EndDocumentException {
         // complications -- look for this element as a child of Domain...
         // <property name="administrative.domain.name" value="domain1"/>
+        // also have to handle system-property at the domain level
         while (true) {
-            skipTo("configs", "property");
+            skipTo("configs", "property", "clusters", "system-property");
             String name = parser.getLocalName();
             if ("configs".equals(name)) {
                 break;
             }
-            parseDomainName(); // maybe it is the domain name?
+            if ("clusters".equals(name))
+                parseClusters();
+            else if ("system-property".equals(name))
+                parseSystemProperty(SysPropsHandler.Type.DOMAIN);
+            else
+                parseDomainProperty(); // maybe it is the domain name?
         }
         while (skipToButNotPast("configs", "config")) {
             // get the attributes for this <config>
@@ -300,6 +317,7 @@ public class MiniXmlParser {
             if ("default-config".equals(thisName))
                 sawDefaultConfig = true;
             if (configRef.equals(thisName)) {
+                sawConfig = true;
                 parseConfig();
             }
             else {
@@ -326,7 +344,7 @@ public class MiniXmlParser {
             else if (event == START_ELEMENT) {
                 String name = parser.getLocalName();
                 if ("system-property".equals(name)) {
-                    parseSystemPropertyNoOverride();
+                    parseSystemProperty(SysPropsHandler.Type.CONFIG);
                 }
                 else if ("java-config".equals(name)) {
                     parseJavaConfig();
@@ -376,8 +394,6 @@ public class MiniXmlParser {
     private void parseSysPropsFromServer() throws XMLStreamException, EndDocumentException {
         // cursor --> <server>
         // these are the system-properties that OVERRIDE the ones in the <config>
-        // This code executes BEFORE the <config> is read so we can just add them to the Map here
-        // w/o doing anything special.
         while (true) {
             int event = next();
             // return when we get to the </config>
@@ -389,7 +405,7 @@ public class MiniXmlParser {
             else if (event == START_ELEMENT) {
                 String name = parser.getLocalName();
                 if ("system-property".equals(name)) {
-                    parseSystemPropertyWithOverride();
+                    parseSystemProperty(SysPropsHandler.Type.SERVER);
                 }
                 else {
                     skipTree(name);
@@ -398,23 +414,13 @@ public class MiniXmlParser {
         }
     }
 
-    private void parseSystemPropertyNoOverride() {
-        parseSystemProperty(false);
-    }
-
-    private void parseSystemPropertyWithOverride() {
-        parseSystemProperty(true);
-    }
-
-    private void parseSystemProperty(boolean override) {
+    private void parseSystemProperty(SysPropsHandler.Type type) {
         // cursor --> <system-property>
         Map<String, String> map = parseAttributes();
         String name = map.get("name");
         String value = map.get("value");
         if (name != null) {
-            if (override || !sysProps.containsKey(name)) {
-                sysProps.put(name, value);
-            }
+            sysProps.add(type, name, value);
         }
     }
 
@@ -489,22 +495,21 @@ public class MiniXmlParser {
      * The cursor will be pointing at the START_ELEMENT of name1 or name2 when it returns note that skipTree must be
      * called.  Otherwise we could be fooled by a sub-element with the same name as an outer element
      *
-     * @param name1 first eligible Element to skip to
-     * @param name2 second eligible Element to skip to
-     *
+     * @param nameArgs An array of eligible element names to skip to
      * @throws XMLStreamException
      */
-    private void skipTo(String name1, String name2) throws XMLStreamException, EndDocumentException {
+    private void skipTo(final String... namesArgs) throws XMLStreamException, EndDocumentException {
+        final List<String> names = Arrays.asList(namesArgs);
+
         while (true) {
             skipNonStartElements();
             // cursor is at a START_ELEMENT
             String localName = parser.getLocalName();
-            if (name1.equals(localName) || name2.equals(localName)) {
+
+            if (names.contains(localName))
                 return;
-            }
-            else {
-                skipTree(localName);
-            }
+
+            skipTree(localName);
         }
     }
 
@@ -570,17 +575,27 @@ public class MiniXmlParser {
         return event;
     }
 
-    private void findDomainNameAndEnd() {
+    private void findOtherStuff() {
         try {
-            // find the domain name, if it is there
+            // find the domain name and/or clusters, if it is there
             // If we bump into the domain end tag first -- no sweat
-            while (skipToButNotPast("domain", "property")) {
-                parseDomainName(); // property found -- maybe it is the domain name?
+            //
+            // notice how everything is MUCH more difficult to understand because
+            // we are going through domain.xml in one long relentless sweep and
+            // we can't back up!
+
+            while (skipToButNotPast("domain", "property", "clusters", "system-property")) {
+                String name = parser.getLocalName();
+                if ("clusters".equals(name))
+                    parseClusters();
+                else if ("system-property".equals(name))
+                    parseSystemProperty(SysPropsHandler.Type.DOMAIN);
+                else if ("property".equals(name))
+                    parseDomainProperty(); // property found -- maybe it is the domain name?
             }
             if (domainName == null) {
                 Logger.getLogger(MiniXmlParser.class.getName()).log(
                         Level.INFO, strings.get("noDomainName"));
-
             }
         }
         catch (Exception e) {
@@ -588,18 +603,21 @@ public class MiniXmlParser {
         }
     }
 
-    private void parseDomainName() {
+    private void parseDomainProperty() {
         // cursor --> pointing at "property" element that is a child of "domain" element
         // <property name="administrative.domain.name" value="domain1"/>
         if (domainName != null) {
             return; // found it already
         }
+
         Map<String, String> map = parseAttributes();
         String name = map.get("name");
         String value = map.get("value");
+
         if (name == null || value == null) {
             return;
         }
+        
         if ("administrative.domain.name".equals(name)) {
             domainName = value;
         }
@@ -739,6 +757,7 @@ public class MiniXmlParser {
                                 if (GFLauncherUtils.ok(addr))
                                     adminAddresses.add(
                                             new HostAndPort(addr, port, secure));
+                                // ed: seven end-braces is six too many for my code!
                             }
                             break;
                         }
@@ -792,6 +811,65 @@ public class MiniXmlParser {
         return map;
     }
 
+    // clusters is short and sweet.  Just parse the whole thing first -- and then do
+    // the logic of finding our server in it and picking out sysprops...
+    private void parseClusters() throws XMLStreamException, EndDocumentException {
+        // cursor ==> clusters
+        // if there is more than one clusters element (!weird!) only use the last one
+        clusters = new ArrayList<ParsedCluster>();
+
+        while (skipToButNotPast("clusters", "cluster")) {
+            // cursor ==> "cluster"
+            ParsedCluster pc = new ParsedCluster(parseAttributes().get("name"));
+            clusters.add(pc);
+            parseCluster(pc);
+        }
+    }
+
+    /*
+     * the cluster element has one server-ref for each server in the cluster.
+     * cluster has an attribute for the config-ref which is the same as in the server element
+     * that would make this MUCH simpler - compare server's config-ref with this
+     * cluster's config-ref.  If they match -- then the server belongs to this cluster
+     * But we can't depend on it because of the nature of this serial parser.  I.e.
+     * we may not yet have seen the server element.  BUT we are given the server name
+     * in the constructor -- so we ALWAYS have that.  So we check the more complex
+     * server-ref's
+     */
+    private void parseCluster(ParsedCluster pc) throws XMLStreamException, EndDocumentException {
+        // cursor --> cluster element
+        while (skipToButNotPast("cluster", "system-property", "server-ref")) {
+            String name = parser.getLocalName();
+            if ("system-property".equals(name)) {
+                // NOT parseSystemProperty() because this might not be "our" cluster
+                // finalTouches() will add the correct system-property's
+                parseProperty(pc.sysProps);
+            }
+            else if ("server-ref".equals(name)) {
+                Map<String, String> atts = parseAttributes();
+                // atts is guaranteed to be non-null
+                String sname = atts.get("ref");
+                if (GFLauncherUtils.ok(sname))
+                    pc.serverNames.add(sname);
+            }
+        }
+    }
+
+    // add any cluster system props to the data structure...
+    private void finalTouches() {
+        if (clusters == null)
+            return;
+
+        for (ParsedCluster pc : clusters) {
+            Map<String, String> props = pc.getMySysProps(serverName);
+
+            if (props != null) {
+                sysProps.add(SysPropsHandler.Type.CLUSTER, props);
+                break;  // done!!
+            }
+        }
+    }
+
     // this is so we can return from arbitrarily nested calls
     private static class EndDocumentException extends Exception {
         EndDocumentException() {
@@ -809,7 +887,6 @@ public class MiniXmlParser {
     private List<String> profilerJvmOptions = new ArrayList<String>();
     private Map<String, String> javaConfig;
     private Map<String, String> profilerConfig = Collections.emptyMap();
-    private Map<String, String> sysProps = new HashMap<String, String>();
     private Map<String, String> profilerSysProps = new HashMap<String, String>();
     private boolean valid = false;
     private List<HostAndPort> adminAddresses = new ArrayList<HostAndPort>();
@@ -821,4 +898,7 @@ public class MiniXmlParser {
     private List<Map<String, String>> protocolAttributes = new ArrayList<Map<String, String>>();
     private boolean sawNetworkConfig;
     private boolean sawDefaultConfig;
+    private boolean sawConfig;
+    private SysPropsHandler sysProps = new SysPropsHandler();
+    private List<ParsedCluster> clusters = null;
 }

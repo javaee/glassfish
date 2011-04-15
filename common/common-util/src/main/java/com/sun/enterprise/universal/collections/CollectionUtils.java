@@ -105,6 +105,19 @@ public class CollectionUtils {
         }
         return sb.toString();
     }
+    /**
+     * Convert a List of String into a space-delimited String
+     * @param arr The String array to convert
+     * @return The pretty String
+     */
+    public static String toString(List<String> list) {
+        StringBuilder sb = new StringBuilder();
+        for(String s : list) {
+            sb.append(s);
+            sb.append(' ');
+        }
+        return sb.toString();
+    }
 
     public static String[] toStringArray(Map<String,String> map) {
         Set<String> set = map.keySet();
