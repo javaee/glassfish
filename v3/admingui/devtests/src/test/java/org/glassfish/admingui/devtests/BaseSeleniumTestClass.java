@@ -181,7 +181,14 @@ public class BaseSeleniumTestClass {
      * @return 
      */
     public String getFieldValue(String elem) {
-        return selenium.getValue(elem);
+        String value = null;
+        try {
+            value = selenium.getValue(elem);
+        } catch (Exception e) {
+            sleep(1000);
+            value = selenium.getValue(elem);
+        }
+        return value;
     }
     /**
      * Types the specified text into the requested element
@@ -189,7 +196,12 @@ public class BaseSeleniumTestClass {
      * @param text 
      */
     public void setFieldValue(String elem, String text) {
-        selenium.type(elem, text);
+        try {
+            selenium.type(elem, text);
+        } catch (Exception e) {
+            sleep(1000);
+            selenium.type(elem, text);
+        }
     }
     
     /**
@@ -199,7 +211,14 @@ public class BaseSeleniumTestClass {
      * @return 
      */
     public String getText(String elem) {
-        return selenium.getText(elem);
+        String value = null;
+        try {
+            value = selenium.getText(elem);
+        } catch (Exception e) {
+            sleep(1000);
+            value = selenium.getText(elem);
+        }
+        return value;
     }
     
     /**
@@ -208,7 +227,12 @@ public class BaseSeleniumTestClass {
      * @param cb 
      */
     public void markCheckbox(String cb) {
-        selenium.check(cb);
+        try {
+            selenium.check(cb);
+        } catch (Exception e) {
+            sleep(1000);
+            selenium.check(cb);
+        }
     }
 
     /**
@@ -217,11 +241,21 @@ public class BaseSeleniumTestClass {
      * @param cb 
      */
     public void clearCheckbox(String cb) {
-        selenium.uncheck(cb);
+        try {
+            selenium.uncheck(cb);
+        } catch (Exception e) {
+            sleep(1000);
+            selenium.uncheck(cb);
+        }
     }
     
     public void pressButton(String button) {
-        selenium.click(button);
+        try {
+            selenium.click(button);
+        } catch (Exception e) {
+            sleep(1000);
+            selenium.click(button);
+        }
     }
     
     /**
@@ -230,7 +264,14 @@ public class BaseSeleniumTestClass {
      * @return 
      */
     public String getSelectedValue(String elem) {
-        return selenium.getSelectedValue(elem);
+        String selectedValue = null;
+        try {
+            selenium.getSelectedValue(elem);
+        } catch (Exception e) {
+            sleep(1000);
+            selenium.getSelectedValue(elem);
+        }
+        return selectedValue;
     }
     
     /**
@@ -239,7 +280,14 @@ public class BaseSeleniumTestClass {
      * @return 
      */
     public boolean isElementPresent(String elem) {
-        return selenium.isElementPresent(elem);
+        boolean isElementPresent = false;
+        try {
+            selenium.isElementPresent(elem);
+        } catch (Exception e) {
+            sleep(1000);
+            selenium.isElementPresent(elem);
+        }
+        return isElementPresent;
     }
 
     /**
