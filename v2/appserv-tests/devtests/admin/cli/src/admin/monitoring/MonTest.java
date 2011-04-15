@@ -1,4 +1,4 @@
-/*
+w /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
  * Copyright 2011 Sun Microsystems, Inc. All rights reserved.
@@ -48,7 +48,7 @@ import java.util.logging.Logger;
  */
 abstract class MonTest {
     private static boolean stopWaiting = false;
-    private static boolean waited;
+    private static boolean waitedOnce;
 
     abstract void runTests(TestDriver driver);
 
@@ -320,11 +320,11 @@ abstract class MonTest {
         // note that we MUST be running with a debug port for this to work!
         // build.xml should have it set...
 
-        if (!WAIT || waited)
+        if (!WAIT || waitedOnce)
             return;
 
         // only do this once!
-        waited = true;
+        waitedOnce = true;
 
         for (String s : ERROR) {
             System.out.print(s);
@@ -349,7 +349,7 @@ abstract class MonTest {
         "***************************************************************\n",
         "***************************************************************\n",
         "***************************************************************\n",
-        "*******   TEST ERROR!!   Attach a Debugger NOW at port 9999 \n",
+        "*******   TEST ERROR!!   Attach a Debugger NOW at port 9010 \n",
         "*******   To stop the timeout: \n",
         "******* Set the \"stopWaiting\" variable to true in MonTest\n",
         "*******  I'll wait for 60 seconds...    \n",
