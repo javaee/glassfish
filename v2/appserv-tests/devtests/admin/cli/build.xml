@@ -255,7 +255,9 @@
 <!-- there must be a better way to do this...
 -->
     <target name="monitoringverbose" depends="init,setup">
-        <runtest classname="admin.monitoring.TestDriver" jvmarg="-Dverbose=true"/>
+        <runtest classname="admin.monitoring.TestDriver">
+            <jvmarg value="-Dverbose=true"/>
+        </runtest> 
     </target>
 
     <target name="mon" depends="monitoringverbose,teardown">
