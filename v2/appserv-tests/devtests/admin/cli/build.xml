@@ -57,6 +57,10 @@
     <property name="derbyhome" value="${env.S1AS_HOME}/../javadb"/>
     <property name="databases_dir" value="${env.S1AS_HOME}/databases"/>
     <property name="asinstall_dir" value="${env.S1AS_HOME}/../.."/>
+    <!-- convert these paths to canonical form -->
+    <pathconvert property="aps_home"><path location="${env.APS_HOME}"/></pathconvert>
+    <pathconvert property="s1as_home"><path location="${env.S1AS_HOME}"/></pathconvert>
+    <pathconvert property="as_logfile"><path location="${env.AS_LOGFILE}"/></pathconvert>
     
     <macrodef name="runtest">
         <attribute name="classname"/>
@@ -65,9 +69,9 @@
             <java classname="@{classname}" fork="true" classpath="${test}">
                 <jvmarg value="${javaprops}"/>
                 <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
-                <env key="APS_HOME" value="${env.APS_HOME}"/>
-                <env key="S1AS_HOME" value="${env.S1AS_HOME}"/>
-                <env key="AS_LOGFILE" value="${env.AS_LOGFILE}"/>
+                <env key="APS_HOME" value="${aps_home}"/>
+                <env key="S1AS_HOME" value="${s1as_home}"/>
+                <env key="AS_LOGFILE" value="${as_logfile}"/>
                 <args/>
             </java>
         </sequential>    

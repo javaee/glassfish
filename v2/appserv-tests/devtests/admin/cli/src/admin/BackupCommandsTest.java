@@ -161,8 +161,11 @@ public class BackupCommandsTest extends AdminBaseDevTest {
 
     private void cleanupBackupDir() {
         File path = new File(BACKUP_DIR, DOMAIN1);
-        for(File f : path.listFiles()) {
-            f.delete();
+        File[] paths = path.listFiles();
+        if (paths != null) {
+            for(File f : paths) {
+                f.delete();
+            }
         }
         path.delete();
     }
