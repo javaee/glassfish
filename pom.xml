@@ -444,11 +444,9 @@
             <!--
                 RE profile for AIX release purposes.
             -->
-            <id>release-phase-all-aix</id>
+            <id>release-phase-aix</id>
             <modules>
                 <module>cluster</module>
-                <module>build</module>
-                <module>findbugs</module>
                 <module>javaee-api</module>
                 <module>common</module>
                 <module>ha</module>
@@ -480,8 +478,6 @@
                 <module>sun-glassfish/packager</module>
                 <module>sun-glassfish/distributions</module>
                 <module>sun-glassfish/installer</module>
-                <module>sun-glassfish/distributions/web-ri</module>
-                <module>sun-glassfish/distributions/glassfish-ri</module>
                 <module>appclient</module>
                 <module>verifier/verifier-impl</module>
                 <module>verifier/verifier-scripts</module>
@@ -490,7 +486,7 @@
                 <module>extras/embedded/web</module>
                 <module>extras/embedded/nucleus</module>
                 <module>osgi-javaee</module>
-                <module>ant-tasks</module>
+		<module>ant-tasks</module>
             </modules>
             <dependencies>
                 <dependency>
