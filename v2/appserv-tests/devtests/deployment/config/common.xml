@@ -729,6 +729,14 @@ AS_ADMIN_MASTERPASSWORD=changeit
 <target name="common.run.jsr88" depends="init, compile.util" unless="run.jsr88" >
     <delete file="${testsRoot}/build/archives/DEPLOY_RESULT"/>
 
+    <!--
+        Due to differences in command line parsing on Windows and non-Windows systems we need
+        to pass the possibly-empty admin.password differently.  
+    -->
+    <condition property="admin.password.arg" value="&quot;${admin.password}&quot;" else="${admin.password}">
+        <os family="windows"/>
+    </condition>
+
     <echo message="JSR88Deployer ${command} ${jsr88.uri} ${admin.user} ${admin.password}  ${arg.list}"/>
     <javaWithResult
             fork="true" 
@@ -736,7 +744,12 @@ AS_ADMIN_MASTERPASSWORD=changeit
             jvm="${JAVA}"
             classname="devtests.deployment.util.JSR88Deployer"
             resultproperty="deployActionResult">
-        <arg line="${command} ${jsr88.uri} ${admin.user} &quot;&quot; ${arg.list}"/>
+        <arg value="${command}"/>
+        <arg value="${jsr88.uri}"/>
+        <arg value="${admin.user}"/>
+        <arg value="${admin.password.arg}"/>
+        <arg line="${arg.list}"/>
+<!--        <arg line="${command} ${jsr88.uri} ${admin.user} &quot;&quot; ${arg.list}"/> -->
         <classpath>
             <path refid="gfv3.classpath"/>
             <path location="${junit.jar}"/>
@@ -887,6 +900,15 @@ AS_ADMIN_MASTERPASSWORD=changeit
 
 <target name="failed" if="testFailed">
     <echo message="Test ${testname} Failed with return code ${result}"/>
+    <concat append="yes">
+        <header>
+        ==================  Error output  ==================
+        </header>
+        <footer>
+        ==================  End of error output ==================
+        </footer>
+        <fileset file="${log}"/>
+    </concat> 
     <concat destfile="${root}/tests-results.xml" append="yes">&lt;result status="FAILED" log="${log}"/></concat>
     <concat destfile="${root}/tests-results.xml" append="yes">&lt;/test></concat>	
 </target>
