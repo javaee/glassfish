@@ -37,14 +37,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admingui.devtests;
+package org.glassfish.admingui.devtests.util;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.thoughtworks.selenium.Selenium;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.admingui.devtests.BaseSeleniumTestClass;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverBackedSelenium;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
@@ -56,7 +55,7 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
  */
 public class SeleniumHelper {
     private static SeleniumHelper instance;
-    private Selenium selenium;
+    private SeleniumWrapper selenium;
     private WebDriver driver;
     private ElementFinder elementFinder;
     private static final Logger logger = Logger.getLogger(SeleniumHelper.class.getName());
@@ -72,7 +71,7 @@ public class SeleniumHelper {
         return instance;
     }
 
-    public Selenium getSeleniumInstance() {
+    public SeleniumWrapper getSeleniumInstance() {
         if (selenium == null) {
             if (Boolean.parseBoolean(SeleniumHelper.getParameter("debug", "false"))) {
                 logger.log(Level.INFO, "Creating new selenium instance");
@@ -90,7 +89,7 @@ public class SeleniumHelper {
             }
             elementFinder = new ElementFinder(driver);
 
-            selenium = new WebDriverBackedSelenium(driver, getBaseUrl());
+            selenium = new SeleniumWrapper(driver, getBaseUrl());
             selenium.setTimeout("90000");
             (new BaseSeleniumTestClass()).openAndWait("/", BaseSeleniumTestClass.TRIGGER_COMMON_TASKS, 480); // Make sure the server has started and the user logged in
         }

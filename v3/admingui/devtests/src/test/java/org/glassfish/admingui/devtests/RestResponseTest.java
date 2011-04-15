@@ -40,6 +40,7 @@
 
 package org.glassfish.admingui.devtests;
 
+import org.glassfish.admingui.devtests.util.SeleniumHelper;
 import org.glassfish.admingui.common.util.RestUtil;
 import java.util.HashMap;
 import org.glassfish.admingui.common.util.RestResponse;

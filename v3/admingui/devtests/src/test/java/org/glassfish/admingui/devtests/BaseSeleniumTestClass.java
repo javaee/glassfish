@@ -40,7 +40,8 @@
 
 package org.glassfish.admingui.devtests;
 
-import com.thoughtworks.selenium.Selenium;
+import org.glassfish.admingui.devtests.util.ElementFinder;
+import org.glassfish.admingui.devtests.util.SeleniumHelper;
 import com.thoughtworks.selenium.SeleniumException;
 import org.junit.*;
 import org.openqa.selenium.*;
@@ -54,6 +55,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.admingui.devtests.util.SeleniumWrapper;
 
 public class BaseSeleniumTestClass {
     public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
@@ -71,7 +73,7 @@ public class BaseSeleniumTestClass {
     protected static final int BUTTON_TIMEOUT = 750;
     protected static final Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
     
-    protected static Selenium selenium;
+    protected static SeleniumWrapper selenium;
     protected static WebDriver driver;
     private static String currentTestClass = "";
     private boolean processingLogin = false;
@@ -181,14 +183,7 @@ public class BaseSeleniumTestClass {
      * @return 
      */
     public String getFieldValue(String elem) {
-        String value = null;
-        try {
-            value = selenium.getValue(elem);
-        } catch (Exception e) {
-            sleep(1000);
-            value = selenium.getValue(elem);
-        }
-        return value;
+        return selenium.getValue(elem);
     }
     /**
      * Types the specified text into the requested element
@@ -196,12 +191,7 @@ public class BaseSeleniumTestClass {
      * @param text 
      */
     public void setFieldValue(String elem, String text) {
-        try {
-            selenium.type(elem, text);
-        } catch (Exception e) {
-            sleep(1000);
-            selenium.type(elem, text);
-        }
+        selenium.type(elem, text);
     }
     
     /**
@@ -211,14 +201,7 @@ public class BaseSeleniumTestClass {
      * @return 
      */
     public String getText(String elem) {
-        String value = null;
-        try {
-            value = selenium.getText(elem);
-        } catch (Exception e) {
-            sleep(1000);
-            value = selenium.getText(elem);
-        }
-        return value;
+        return selenium.getText(elem);
     }
     
     /**
@@ -227,12 +210,7 @@ public class BaseSeleniumTestClass {
      * @param cb 
      */
     public void markCheckbox(String cb) {
-        try {
-            selenium.check(cb);
-        } catch (Exception e) {
-            sleep(1000);
-            selenium.check(cb);
-        }
+        selenium.check(cb);
     }
 
     /**
@@ -241,21 +219,11 @@ public class BaseSeleniumTestClass {
      * @param cb 
      */
     public void clearCheckbox(String cb) {
-        try {
-            selenium.uncheck(cb);
-        } catch (Exception e) {
-            sleep(1000);
-            selenium.uncheck(cb);
-        }
+        selenium.uncheck(cb);
     }
     
     public void pressButton(String button) {
-        try {
-            selenium.click(button);
-        } catch (Exception e) {
-            sleep(1000);
-            selenium.click(button);
-        }
+        selenium.click(button);
     }
     
     /**
@@ -264,14 +232,7 @@ public class BaseSeleniumTestClass {
      * @return 
      */
     public String getSelectedValue(String elem) {
-        String selectedValue = null;
-        try {
-            selenium.getSelectedValue(elem);
-        } catch (Exception e) {
-            sleep(1000);
-            selenium.getSelectedValue(elem);
-        }
-        return selectedValue;
+        return selenium.getSelectedValue(elem);
     }
     
     /**
@@ -280,14 +241,7 @@ public class BaseSeleniumTestClass {
      * @return 
      */
     public boolean isElementPresent(String elem) {
-        boolean isElementPresent = false;
-        try {
-            selenium.isElementPresent(elem);
-        } catch (Exception e) {
-            sleep(1000);
-            selenium.isElementPresent(elem);
-        }
-        return isElementPresent;
+        return selenium.isElementPresent(elem);
     }
 
     /**
@@ -413,11 +367,11 @@ public class BaseSeleniumTestClass {
         return count;
     }
 
-    protected void openAndWait(String url, String triggerText) {
+    public void openAndWait(String url, String triggerText) {
         openAndWait(url, triggerText, TIMEOUT);
     }
 
-    protected void openAndWait(String url, String triggerText, int timeout) {
+    public void openAndWait(String url, String triggerText, int timeout) {
         open(url);
         // wait for 2 minutes, as that should be enough time to insure that the admin console app has been deployed by the server
         waitForPageLoad(triggerText, timeout);
@@ -465,12 +419,10 @@ public class BaseSeleniumTestClass {
         waitForButtonEnabled(id);
     }
 
-    // Argh!
     protected void sleep(int millis) {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
-//            e.printStackTrace();
         }
     }
 
@@ -494,31 +446,16 @@ public class BaseSeleniumTestClass {
     }
     
     protected void waitForLoad(int timeoutInSeconds, WaitForLoadCallBack callback) {
-        /*
-        final ExpectedCondition<Boolean> expectedCondition = new ExpectedCondition<Boolean>() {
-            @Override
-            public Boolean apply(WebDriver driver) {
-                try {
-                    RenderedWebElement ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
-                    return !ajaxPanel.isDisplayed();
-                } catch (Exception e) {
-                    return false;
-                }
-            }
-        };
-        */
-
         for (int seconds = 0;; seconds++) {
             if (seconds >= (timeoutInSeconds)) {
                 Assert.fail("The operation timed out waiting for the page to load.");
             }
 
-//            elementFinder.findElement(By.id(AJAX_INDICATOR), 1, expectedCondition);
             RenderedWebElement ajaxPanel = null;
             boolean panelIsDisplayed = false;
             
             try {
-                ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
+                ajaxPanel = selenium.findElement(By.id(AJAX_INDICATOR));
                 panelIsDisplayed = ajaxPanel.isDisplayed();
             } catch (Exception ex) {
                 
@@ -596,12 +533,12 @@ public class BaseSeleniumTestClass {
         String id = null;
         WebElement link = null;
         try {
-            link = driver.findElement(By.linkText(value));
+            link = selenium.findElement(By.linkText(value));
             id = ((link == null) ?  null : (String)link.getAttribute("id"));
         } catch (StaleElementReferenceException sere) {
             // Sleep and try again
             sleep(1000);
-            link = driver.findElement(By.linkText(value));
+            link = selenium.findElement(By.linkText(value));
             id = ((link == null) ?  null : (String)link.getAttribute("id"));
         }
                 //;
@@ -982,7 +919,7 @@ public class BaseSeleniumTestClass {
         }
         
         try {
-            RenderedWebElement element = (RenderedWebElement) elementFinder.findElement(By.id(id), TIMEOUT);
+            RenderedWebElement element = (RenderedWebElement) selenium.findElement(By.id(id), TIMEOUT);
             if (element.isDisplayed()) {
                 return;
             }
@@ -994,11 +931,11 @@ public class BaseSeleniumTestClass {
         boolean parentIsDisplayed = false;
 
         try {
-            RenderedWebElement parentElement = (RenderedWebElement) elementFinder.findElement(By.id(parentId), TIMEOUT);
+            RenderedWebElement parentElement = (RenderedWebElement) selenium.findElement(By.id(parentId), TIMEOUT);
             parentIsDisplayed = parentElement.isDisplayed();
         } catch (StaleElementReferenceException sere) {
             sleep(1000);
-            RenderedWebElement parentElement = (RenderedWebElement) elementFinder.findElement(By.id(parentId), TIMEOUT);
+            RenderedWebElement parentElement = (RenderedWebElement) selenium.findElement(By.id(parentId), TIMEOUT);
             parentIsDisplayed = parentElement.isDisplayed();
             
         }

@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admingui.devtests;
+package org.glassfish.admingui.devtests.util;
 
 import com.google.common.base.Function;
 import java.util.logging.Level;
@@ -47,7 +47,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 
 /**
  *

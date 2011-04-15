@@ -39,6 +39,7 @@
  */
 package org.glassfish.admingui.devtests;
 
+import org.glassfish.admingui.devtests.util.SeleniumHelper;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;

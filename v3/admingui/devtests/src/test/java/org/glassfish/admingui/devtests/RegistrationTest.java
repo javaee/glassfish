@@ -40,6 +40,7 @@
 
 package org.glassfish.admingui.devtests;
 
+import org.glassfish.admingui.devtests.util.SeleniumHelper;
 import org.junit.Test;
 
 public class RegistrationTest extends BaseSeleniumTestClass {

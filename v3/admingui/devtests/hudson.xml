@@ -142,6 +142,8 @@
             <arg value="${DOMAIN}"/>
         </exec>
 
+        <delete dir="binaries\glassfish3\glassfish\domains\domain1" />
+
         <exec executable="${executable}">
             <arg value="--port"/>
             <arg value="${env.ADMIN_PORT}"/>
