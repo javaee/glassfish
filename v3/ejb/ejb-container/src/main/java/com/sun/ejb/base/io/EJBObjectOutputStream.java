@@ -360,8 +360,8 @@ final class SerializableS1ASEJBObjectReference
 {
     private byte[] instanceKey;
     private Object sfsbKey;
-    protected long sfsbClientVersion;
-    protected boolean haEnabled;
+    private long sfsbClientVersion;
+    private boolean haEnabled;
 
     // If 3.0 Remote business view, the name of the remote business
     // interface to which this stub corresponds.

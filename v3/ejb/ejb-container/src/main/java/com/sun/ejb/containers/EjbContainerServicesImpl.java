@@ -91,8 +91,7 @@ public class EjbContainerServicesImpl implements EjbContainerServices, Serializa
         
         if (businessInterface != null) {
             String intfName = businessInterface.getName();
-            if ((localObjectImpl != null) &&
-                    ejbDesc.getLocalBusinessClassNames().contains(intfName)) {
+            if (ejbDesc.getLocalBusinessClassNames().contains(intfName)) {
 
                 // Get proxy corresponding to this business interface.
                 businessObject = (S) localObjectImpl.getClientObject(intfName);

@@ -143,7 +143,7 @@ public final class StatefulSessionContainer
 
     private long instanceCount = 1;
 
-    protected ArrayList passivationCandidates = new ArrayList();
+    private ArrayList passivationCandidates = new ArrayList();
     private Object asyncTaskSemaphore = new Object();
 
 
@@ -160,7 +160,7 @@ public final class StatefulSessionContainer
     private SFSBUUIDUtil uuidGenerator;
     private ArrayList scheduledTimerTasks = new ArrayList();
 
-    protected int statMethodReadyCount = 0;
+    private int statMethodReadyCount = 0;
 
     private Level TRACE_LEVEL = Level.FINE;
 
@@ -1280,12 +1280,12 @@ public final class StatefulSessionContainer
 
     EJBObjectImpl getEJBObjectImpl(byte[] instanceKey) {
         SessionContextImpl sc = _getContextForInstance(instanceKey);
-        return (sc != null) ? sc.getEJBObjectImpl() : null;
+        return sc.getEJBObjectImpl();
     }
 
     EJBObjectImpl getEJBRemoteBusinessObjectImpl(byte[] instanceKey) {
         SessionContextImpl sc = _getContextForInstance(instanceKey);
-        return (sc != null) ? sc.getEJBRemoteBusinessObjectImpl() : null;
+        return sc.getEJBRemoteBusinessObjectImpl();
     }
 
     /**
@@ -1937,7 +1937,7 @@ public final class StatefulSessionContainer
                     byte[] serializedState = IOUtils.serializeObject(sc, true);
                     simpleMetadata = new SimpleMetadata(sc.getVersion(),
                             System.currentTimeMillis(),
-                            removalGracePeriodInSeconds*1000, serializedState);
+                            removalGracePeriodInSeconds*1000L, serializedState);
                     simpleMetadata.setVersion(newCtxVersion);
                     interceptorManager.intercept(
                             CallbackType.POST_ACTIVATE, sc);
@@ -2845,7 +2845,7 @@ public final class StatefulSessionContainer
             _logger.log(Level.FINE, "StatefulContainer Removing expired sessions....");
             long val = 0;
             if (backingStore != null) {
-                val = backingStore.removeExpired(this.removalGracePeriodInSeconds * 1000);
+                val = backingStore.removeExpired(this.removalGracePeriodInSeconds * 1000L);
             }
 
             if (cacheProbeNotifier != null) {
@@ -2983,7 +2983,7 @@ public final class StatefulSessionContainer
                         SimpleMetadata beanState =
                                new SimpleMetadata(
                                         sc.getVersion(), sc.getLastAccessTime(),
-                                        removalGracePeriodInSeconds*1000, serializedState);
+                                        removalGracePeriodInSeconds*1000L, serializedState);
                         beanState.setVersion(newCtxVersion);
                         backingStore.save((Serializable) sc.getInstanceKey(), beanState, !sc.existsInStore());
 

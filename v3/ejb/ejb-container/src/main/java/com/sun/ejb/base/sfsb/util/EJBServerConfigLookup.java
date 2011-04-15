@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,12 +38,6 @@
  * holder.
  */
 
-/*
- * EJBServerConfigLookup.java
- *
- * Created on January 5, 2004, 4:13 PM
- */
-
 package com.sun.ejb.base.sfsb.util;
 
 import java.util.logging.Level;
@@ -76,19 +70,19 @@ public final class EJBServerConfigLookup {
      * The default store-pool-jndi-name (used by Ejb Container for
      * Stateful Session Bean checkpointing and passivation to HADB
      */
-    protected final String DEFAULT_STORE_POOL_JNDI_NAME = "jdbc/hastore";
+    private final String DEFAULT_STORE_POOL_JNDI_NAME = "jdbc/hastore";
 
     /**
      * The default sfsb-ha-persistence-type (used by Ejb Container for
      * Stateful Session Bean checkpointing and passivation to HADB
      */
-    protected final String DEFAULT_SFSB_HA_PERSISTENCE_TYPE = "file";
+    private final String DEFAULT_SFSB_HA_PERSISTENCE_TYPE = "file";
 
     /**
      * The default sfsb-non-ha-persistence-type (used by Ejb Container for
      * Stateful Session Bean checkpointing and passivation to HADB
      */
-    protected final String DEFAULT_SFSB_NON_HA_PERSISTENCE_TYPE = "file";
+    private final String DEFAULT_SFSB_NON_HA_PERSISTENCE_TYPE = "file";
 
     private static final String REPLICATED_TYPE = "replicated";
 
@@ -107,8 +101,8 @@ public final class EJBServerConfigLookup {
     /**
      * The ejbDescriptor
      */
-    protected EjbDescriptor _ejbDescriptor = null;
-    protected boolean _haEnabled = false;
+    private EjbDescriptor _ejbDescriptor = null;
+    private boolean _haEnabled = false;
 
     /**
      * Creates a new instance of EJBServerConfigLookup
@@ -126,7 +120,7 @@ public final class EJBServerConfigLookup {
     /**
      * is monitoring enabled
      */
-    protected static boolean _isDebugMonitoringEnabled = false;
+    private static boolean _isDebugMonitoringEnabled = false;
 
     static {
         _isDebugMonitoringEnabled = checkDebugMonitoringEnabled();

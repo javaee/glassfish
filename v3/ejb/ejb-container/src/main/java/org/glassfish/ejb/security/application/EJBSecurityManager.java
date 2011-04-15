@@ -787,10 +787,8 @@ public final class EJBSecurityManager
         // and preInvoke is not call before
         if ((!isWebService || (inv.getAuth() != null && inv.getAuth().booleanValue()))
                 && !inv.isPreInvokeDone()) {
-            if (runAs != null) {
-                inv.setOldSecurityContext(SecurityContext.getCurrent());
-                loginForRunAs();
-            }
+            inv.setOldSecurityContext(SecurityContext.getCurrent());
+            loginForRunAs();
             inv.setPreInvokeDone(true);
         }
     }

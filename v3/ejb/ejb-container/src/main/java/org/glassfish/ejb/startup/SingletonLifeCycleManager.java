@@ -496,7 +496,6 @@ public class SingletonLifeCycleManager {
         ts2.addDependency("E", ts.computeDependencies("E"));
         ts2.addDependency("U", ts.computeDependencies("U"));
         ts2.addDependency("H", ts.computeDependencies("H"));
-        String[] dep2 = ts2.getPartialOrdering();
         for (String s : ts2.getPartialOrdering()) {
             System.out.print(s + " ");
         }

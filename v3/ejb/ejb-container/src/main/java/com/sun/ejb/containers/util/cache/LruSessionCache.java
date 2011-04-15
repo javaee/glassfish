@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -505,7 +505,7 @@ public class LruSessionCache
 	
 	if (data != null) {
 	    SimpleMetadata beanState = new SimpleMetadata(
-		ctx.getVersion(), ctx.getLastAccessTime(), removalTimeoutInSeconds*1000, data);
+		ctx.getVersion(), ctx.getLastAccessTime(), removalTimeoutInSeconds*1000L, data);
         
         //Note: Don't increment the version here because
         //  this is called on an async thread and the client
