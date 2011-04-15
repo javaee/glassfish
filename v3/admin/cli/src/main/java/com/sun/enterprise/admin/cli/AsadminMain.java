@@ -111,8 +111,6 @@ public class AsadminMain {
      */
     private static class CLILoggerHandler extends ConsoleHandler {
         
-        private OutputStream currentOutputStream = System.err;
-        
         private CLILoggerHandler() {
             setFormatter(new CLILoggerFormatter());
         }
@@ -121,11 +119,8 @@ public class AsadminMain {
         public void publish(java.util.logging.LogRecord logRecord) {
             if (!isLoggable(logRecord))
                 return;
-            final OutputStream newOutputStream = logRecord.getLevel() == Level.SEVERE ? System.err : System.out;
-            if (! newOutputStream.equals(currentOutputStream)) {
-                setOutputStream(currentOutputStream = newOutputStream);
-            }
-            super.publish(logRecord);
+            final PrintStream ps = (logRecord.getLevel() == Level.SEVERE) ? System.err : System.out;
+            ps.println(getFormatter().format(logRecord));
         }
     }
     
