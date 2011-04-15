@@ -116,7 +116,7 @@
                                <artifactItem>
                                    <groupId>aixport</groupId>
                                    <artifactId>aixport</artifactId>
-                                   <version>3.1.1-20110413</version>
+                                   <version>3.1.1-20110414</version>
                                    <type>jar</type>
                                    <overWrite>false</overWrite>
                                </artifactItem>
