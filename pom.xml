@@ -440,6 +440,69 @@
             </modules>
         </profile>
 
+       <profile>
+            <!--
+                RE profile for AIX release purposes.
+            -->
+            <id>release-phase-all-aix</id>
+            <modules>
+                <module>cluster</module>
+                <module>build</module>
+                <module>findbugs</module>
+                <module>javaee-api</module>
+                <module>common</module>
+                <module>ha</module>
+                <module>deployment</module>
+                <module>admin</module>
+                <module>core</module>
+                <module>transaction</module>
+                <module>web</module>
+                <module>ejb</module>
+                <module>connectors</module>
+                <module>load-balancer</module> 
+                <module>jms</module>
+                <module>jdbc</module>
+                <module>persistence</module>
+                <module>extras</module>
+                <module>admingui</module>
+                <module>extras/embedded/shell</module>
+                <module>packager</module>
+                <module>distributions</module>
+                <module>security</module>
+                <module>registration</module>
+                <module>tests</module>
+                <module>osgi-platforms</module>
+                <module>flashlight</module>
+                <module>webservices</module>
+                <module>orb</module>
+                <module>installer</module>
+                <module>sun-glassfish</module>
+                <module>sun-glassfish/packager</module>
+                <module>sun-glassfish/distributions</module>
+                <module>sun-glassfish/installer</module>
+                <module>sun-glassfish/distributions/web-ri</module>
+                <module>sun-glassfish/distributions/glassfish-ri</module>
+                <module>appclient</module>
+                <module>verifier/verifier-impl</module>
+                <module>verifier/verifier-scripts</module>
+                <module>verifier/verifier-jdk-extension-bundle</module>
+                <module>extras/embedded/all</module>
+                <module>extras/embedded/web</module>
+                <module>extras/embedded/nucleus</module>
+                <module>osgi-javaee</module>
+                <module>ant-tasks</module>
+            </modules>
+            <dependencies>
+                <dependency>
+                    <groupId>com.sun</groupId>
+                    <artifactId>tools</artifactId>
+                    <version>1.6</version>
+                    <scope>system</scope>
+                    <systemPath>${java.home}/../lib/tools.jar</systemPath>
+                </dependency>
+            </dependencies>
+        </profile>
+
         <profile>
             <id>aix-jdk</id>
             <activation>
