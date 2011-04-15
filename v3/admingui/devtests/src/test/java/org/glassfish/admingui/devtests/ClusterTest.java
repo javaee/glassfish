@@ -234,6 +234,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:clusterTabs:clusterInst", TRIGGER_CLUSTER_INSTANCES_PAGE);
     }
 
+    @Test
     public void testClusterResourcesPage() {
         final String jndiName = "jdbcResource" + generateRandomString();
         String target = "cluster" + generateRandomString();
@@ -262,11 +263,6 @@ public class ClusterTest extends BaseSeleniumTestClass {
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:button1");
         pressButton("propertyForm:resourcesTable:topActionsGroup1:button1");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:button1");
-
-        /*selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:actions", "JDBC Resources");
-        waitForPageLoad(JdbcTest.TRIGGER_NEW_JDBC_RESOURCE, true);
-        clickAndWait("form:propertyContentPage:topButtons:cancelButton", JdbcTest.TRIGGER_JDBC_RESOURCES);*/
-
         jdbcTest.deleteJDBCResource(jndiName, target, MonitoringTest.TARGET_CLUSTER_TYPE);
     }
 
