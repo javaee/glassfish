@@ -1,4 +1,4 @@
-w /*
+/*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
  * Copyright 2011 Sun Microsystems, Inc. All rights reserved.
