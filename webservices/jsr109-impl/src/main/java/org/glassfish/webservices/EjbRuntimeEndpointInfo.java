@@ -303,7 +303,7 @@ public class EjbRuntimeEndpointInfo {
         //Issue 10776 The wsCtxt created using WebServiceReferenceManagerImpl
         //does not have the jaxwsContextDelegate set
         //set it using this method
-        addWSContextInfo(wsCtxt);
+        //addWSContextInfo(wsCtxt);
         if (inv != null) {
             EJBInvocation ejbInv = (EJBInvocation) inv;
             ejbInv.setWebServiceContext(wsCtxt);
