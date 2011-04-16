@@ -39,16 +39,12 @@
  */
 package com.sun.enterprise.admin.cli.cluster;
 
-import com.sun.enterprise.universal.process.Jps;
 import com.sun.enterprise.util.StringUtils;
 import java.io.*;
-import java.util.*;
-
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
-
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 
 /**
@@ -120,14 +116,6 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
     protected int executeCommand()
             throws CommandException, CommandValidationException {
         if (isRunning()) {
-            int prevpid = getPrevPid();
-            Map<String, Integer> procs = Jps.getProcessTable();
-            Set<Map.Entry<String,Integer>> set = procs.entrySet();
-            Iterator<Map.Entry<String,Integer>> it = set.iterator();
-            while(it.hasNext()) {
-                Map.Entry<String,Integer> entry = it.next();
-            }
-            
             throw new CommandException(Strings.get("DeleteInstance.running"));
         }
 
