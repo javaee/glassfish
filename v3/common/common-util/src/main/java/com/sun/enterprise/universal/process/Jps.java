@@ -88,9 +88,10 @@ public class Jps {
 
         while (it.hasNext()) {
             Map.Entry<Integer, String> entry = it.next();
-            String value = entry.getValue();
+            String valueFull = entry.getValue();
+            String valuePlain = plainClassName(valueFull);
 
-            if (mainClassName.equals(value) || plainName.equals(value))
+            if (mainClassName.equals(valueFull) || plainName.equals(valuePlain))
                 // got a match!
                 ints.add(entry.getKey());
         }

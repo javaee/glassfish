@@ -44,6 +44,7 @@ import java.lang.management.ManagementFactory;
 
 import com.sun.enterprise.universal.io.*;
 import com.sun.enterprise.util.*;
+import java.util.*;
 
 import static com.sun.enterprise.util.StringUtils.ok;
 
@@ -64,7 +65,12 @@ public final class ProcessUtils {
     public static void main(String[] args) {
         debug = true;
         for (String s : args) {
-            System.out.println(s + " ===> " + isProcessRunning(Integer.parseInt(s)));
+            String ret = killJvm(s);
+
+            if(ret == null)
+                ret = "SUCCESS!!";
+
+            System.out.println(s + " ===> " + ret);
         }
     }
 
@@ -121,6 +127,32 @@ public final class ProcessUtils {
         catch (ProcessManagerException ex) {
             return ex.getMessage();
         }
+    }
+
+    /**
+     * Kill the JVM with the given main classname.  The classname can be fully-qualified
+     * or just the classname (i.e. without the package name prepended).
+     * @param pid
+     * @return a String if the process was not killed for any reason including if it does not exist.
+     *  Return null if it was killed.
+     */
+    public static String killJvm(String classname) {
+        List<Integer> pids = Jps.getPid(classname);
+        StringBuilder sb = new StringBuilder();
+        int numDead = 0;
+
+        for (int pid : pids) {
+            String s = kill(pid);
+            if (s != null)
+                sb.append(s).append('\n');
+            else
+                ++numDead;
+        }
+        String err = sb.toString();
+
+        if (err.length() > 0 || numDead <= 0)
+            return Strings.get("ProcessUtils.killjvmerror", err, numDead);
+        return null;
     }
 
     /**
