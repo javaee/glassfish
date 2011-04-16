@@ -41,6 +41,7 @@
 package com.sun.enterprise.universal.process;
 
 import java.io.IOException;
+import java.util.*;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -75,6 +76,6 @@ public class JpsTest {
 
     @Test
     public void atest() {
-        int pid = Jps.getPid("ASMain");
+        List<Integer> pid = Jps.getPid("ASMain");
     }
 }

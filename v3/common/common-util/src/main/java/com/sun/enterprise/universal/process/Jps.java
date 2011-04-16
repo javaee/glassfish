@@ -55,31 +55,46 @@ import static com.sun.enterprise.util.StringUtils.ok;
  */
 public class Jps {
     public static void main(String[] args) {
-        Set<Map.Entry<String, Integer>> set = getProcessTable().entrySet();
+        Set<Map.Entry<Integer, String>> set = getProcessTable().entrySet();
         System.out.println("** Got " + set.size() + " process entries");
-        for (Map.Entry<String, Integer> e : set) {
-            System.out.printf("%d %s\n", e.getValue(), e.getKey());
+        for (Map.Entry<Integer, String> e : set) {
+            System.out.printf("%d %s\n", e.getKey(), e.getValue());
+        }
+        if(args.length > 0) {
+            System.out.printf("Jps.isPid(%s) ==> %b\n", args[0], Jps.isPid(Integer.parseInt(args[0])));
         }
     }
 
-    final static public Map<String, Integer> getProcessTable() {
+    final static public Map<Integer, String> getProcessTable() {
         return new Jps().pidMap;
     }
 
     /**
      * return the platform-specific process-id of a JVM
-     * @param mainClassName The main class - this is how we identify the right JVM
+     * @param mainClassName The main class - this is how we identify the right JVM.  
+     * You can pass in a fully-qualified name or just the classname.
+     * E.g. com.sun.enterprise.glassfish.bootstrap.ASMain and ASMain work the same.
      * @return the process id if possible otherwise 0
      */
-    final static public int getPid(String mainClassName) {
+    final static public List<Integer> getPid(String mainClassName) {
+        if (mainClassName == null)
+            return Collections.emptyList();
+
+        String plainName = plainClassName(mainClassName);
         Jps jps = new Jps();
-        Integer integer = jps.pidMap.get(mainClassName);
+        List<Integer> ints = new LinkedList<Integer>();
+        Set<Map.Entry<Integer, String>> set = jps.pidMap.entrySet();
+        Iterator<Map.Entry<Integer, String>> it = set.iterator();
 
-        if (integer == null) {
-            return 0;
+        while (it.hasNext()) {
+            Map.Entry<Integer, String> entry = it.next();
+            String value = entry.getValue();
+
+            if (mainClassName.equals(value) || plainName.equals(value))
+                // got a match!
+                ints.add(entry.getKey());
         }
-
-        return integer;
+        return ints;
     }
 
     /**
@@ -88,7 +103,7 @@ public class Jps {
      * @return whether there is a process running with that id
      */
     final static public boolean isPid(int apid) {
-        return new Jps().pidMap.containsValue(apid);
+        return new Jps().pidMap.containsKey(apid);
     }
 
     private Jps() {
@@ -121,10 +136,8 @@ public class Jps {
                 catch (Exception e) {
                     continue;
                 }
-                // todo -- handle duplicate names??
-                // todo -- easy --> make the pid the key not the value!
                 if (!isJps(sublines[1])) {
-                    pidMap.put(sublines[1], aPid);
+                    pidMap.put(aPid, sublines[1]);
                 }
             }
         }
@@ -147,7 +160,14 @@ public class Jps {
 
         return false;
     }
-    private Map<String, Integer> pidMap = new HashMap<String, Integer>();
+
+    private static String plainClassName(String s) {
+        if (s == null || !s.contains(".") || s.endsWith("."))
+            return s;
+
+        return s.substring(s.lastIndexOf('.') + 1);
+    }
+    private Map<Integer, String> pidMap = new HashMap<Integer, String>();
     private static final File jpsExe;
     private static final String jpsName;
 
