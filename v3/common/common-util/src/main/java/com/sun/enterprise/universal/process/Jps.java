@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.universal.process;
 
 import java.io.*;
@@ -55,7 +54,6 @@ import static com.sun.enterprise.util.StringUtils.ok;
  * @author bnevins
  */
 public class Jps {
-
     public static void main(String[] args) {
         Set<Map.Entry<String, Integer>> set = getProcessTable().entrySet();
         System.out.println("** Got " + set.size() + " process entries");
@@ -119,7 +117,8 @@ public class Jps {
                 int aPid = 0;
                 try {
                     aPid = Integer.parseInt(sublines[0]);
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     continue;
                 }
                 // todo -- handle duplicate names??
@@ -128,7 +127,8 @@ public class Jps {
                     pidMap.put(sublines[1], aPid);
                 }
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
         }
     }
 
@@ -154,7 +154,8 @@ public class Jps {
     static {
         if (OS.isWindows()) {
             jpsName = "jps.exe";
-        } else {
+        }
+        else {
             jpsName = "jps";
         }
 
@@ -165,11 +166,12 @@ public class Jps {
 
         if (fhere.isFile()) {
             jpsExe = SmartFile.sanitize(fhere);
-        } else if (fthere.isFile()) {
+        }
+        else if (fthere.isFile()) {
             jpsExe = SmartFile.sanitize(fthere);
-        } else {
+        }
+        else {
             jpsExe = null;
         }
     }
 }
-
