@@ -239,11 +239,6 @@
         <runtest classname="admin.RestartDomainTest"/>
     </target>
 
-
-    <target name="whacker" depends="init">
-        <runtest classname="admin.Whacker"/>
-    </target>
-
     <target name="all-resources">
         <antcall target="jdbc-resource"/>
         <antcall target="connector-resource"/>
@@ -283,7 +278,7 @@
                includes="**/*.java"/>
 </target>
 
-<target name="setup" depends="whacker, startdb">
+<target name="setup" depends="startdb">
 </target>
 
 <target name="teardown" depends="stopdb">
