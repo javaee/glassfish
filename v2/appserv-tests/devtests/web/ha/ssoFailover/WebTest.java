@@ -62,6 +62,7 @@ public class WebTest extends BaseDevTest {
     private static final String JSESSIONIDVERSION = "JSESSIONIDVERSION";
     private static final String JREPLICA = "JREPLICA";
     private static final String JSESSIONIDSSO = "JSESSIONIDSSO";
+    private static final String JSESSIONIDSSOVERSION = "JSESSIONIDSSOVERSION";
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
@@ -75,6 +76,8 @@ public class WebTest extends BaseDevTest {
     private String password;
     private Map<String, SessionData> app2Sd = new HashMap<String, SessionData>();
     private String ssoId;
+    private String ssoIdVersion;
+    private long ssoIdVersionNumber = -1L;
 
     public WebTest(String[] args) {
         host = args[0];
@@ -148,6 +151,18 @@ public class WebTest extends BaseDevTest {
                 }
             }
 
+            if (ssoIdVersion != null) {
+                long ssoVer = Long.valueOf(ssoIdVersion.substring(
+                        JSESSIONIDSSOVERSION.length() + 1));
+                if (ssoIdVersionNumber == -1 ||
+                        ssoIdVersionNumber + 1 == ssoVer) {
+                    ssoIdVersionNumber = ssoVer;
+                } else {
+                    throw new Exception("Version number does not match: " +
+                           ssoIdVersionNumber + ", " + ssoVer);
+                }
+            }
+
             if (cookie == null) {
                 throw new Exception("Missing Set-Cookie response header");
             } else if (location == null) {
@@ -197,6 +212,9 @@ public class WebTest extends BaseDevTest {
             os.write(get.getBytes());
             StringBuilder sb = new StringBuilder("Cookie: ");
             sb.append(ssoId);
+            if (ssoIdVersion != null) {
+                sb.append(";" + ssoIdVersion);
+            }
             SessionData data = app2Sd.get(aName);
             if (data.jsessionId != null) {
                 sb.append(";" + data.jsessionId);
@@ -261,6 +279,10 @@ public class WebTest extends BaseDevTest {
         value = getSessionIdFromCookie(cookie, JSESSIONIDSSO);
         if (value != null) {
             ssoId = value;
+        }
+        value = getSessionIdFromCookie(cookie, JSESSIONIDSSOVERSION);
+        if (value != null) {
+            ssoIdVersion = value;
         }
     }
 
