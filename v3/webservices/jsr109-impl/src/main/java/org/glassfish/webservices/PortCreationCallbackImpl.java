@@ -78,7 +78,7 @@ public class PortCreationCallbackImpl extends ServiceInterceptor {
             // Set MTOM for this port
             boolean mtomEnabled = false;
             if(portInfo.getMtomEnabled() != null &&
-                (new Boolean(portInfo.getMtomEnabled())).booleanValue()) {
+                ( Boolean.valueOf(portInfo.getMtomEnabled())).booleanValue()) {
                 mtomEnabled = true;
             }
             if (mtomEnabled) {

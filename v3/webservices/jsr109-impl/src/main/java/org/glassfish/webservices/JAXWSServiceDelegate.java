@@ -83,7 +83,6 @@ public class JAXWSServiceDelegate extends Service {
     private URL wsdlLocation;
 
     private boolean fullWsdl = false;
-    private boolean noWsdl = false;
 
     // Service method types
     private static final int ADD_PORT = 1;
@@ -105,7 +104,7 @@ public class JAXWSServiceDelegate extends Service {
     private static Set noWsdlIllegalMethods;
 
     static {
-        Init();
+        init();
     }
 
     public JAXWSServiceDelegate(ServiceReferenceDescriptor descriptor,
@@ -118,9 +117,7 @@ public class JAXWSServiceDelegate extends Service {
         if( serviceRef.hasWsdlFile() ) {
             wsdlLocation = (new WsUtil()).privilegedGetServiceRefWsdl(serviceRef);
             fullWsdl = true;
-        } else {
-            noWsdl = true;
-        }
+        } 
     }
 
     public void addPort(QName q, String id, String addr) {
@@ -200,7 +197,7 @@ public class JAXWSServiceDelegate extends Service {
     /**
      * Convert invocation method to a constant for easier processing.
      */
-    private static void Init() {
+    private static void init() {
 
         serviceMethodTypes     = new HashMap();
         fullWsdlIllegalMethods = new HashSet();
