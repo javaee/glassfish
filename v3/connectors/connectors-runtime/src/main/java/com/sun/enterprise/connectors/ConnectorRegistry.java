@@ -296,14 +296,14 @@ public class ConnectorRegistry {
         if (rarModuleName != null) {
             if(_logger.isLoggable(Level.FINE)) {
                 _logger.fine(
-                    "returning/found the resource adapter from connector registry" +
+                    "returning/found the resource adapter from connector registry " +
                             rarModuleName);
             }
             return resourceAdapters.get(rarModuleName);
         } else {
             if(_logger.isLoggable(Level.FINE)) {
                 _logger.fine(
-                    "Resourceadapter not found in connector registry.Returning null");
+                    "resource-adapter not found in connector registry. Returning null");
             }
             return null;
         }
@@ -632,7 +632,8 @@ public class ConnectorRegistry {
      * @return All active resource adapters in the connector runtime
      */
     public ActiveResourceAdapter[] getAllActiveResourceAdapters() {
-        return this.resourceAdapters.values().toArray(new ActiveResourceAdapter[]{});
+        ActiveResourceAdapter araArray[]  = new ActiveResourceAdapter[this.resourceAdapters.size()];
+        return this.resourceAdapters.values().toArray(araArray);
     }
 
     public PoolMetaData getPoolMetaData(PoolInfo poolInfo) {

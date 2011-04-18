@@ -743,7 +743,7 @@ public class ResourcesUtil {
             enabled  = poolEnabled && resourceEnabled && refEnabled ;
         } else if(br instanceof AdminObjectResource) {
             AdminObjectResource aor = (AdminObjectResource) br;
-            String raName = aor.getResAdapter();
+           // String raName = aor.getResAdapter();
             if(/* TODO isRarEnabled &&*/ resourceEnabled && refEnabled){
                 enabled = true;
             }

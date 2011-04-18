@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,15 +44,13 @@ import com.sun.appserv.connectors.internal.api.JavaEEResource;
 import com.sun.appserv.connectors.internal.api.JavaEEResourceBase;
 import org.glassfish.resource.common.ResourceInfo;
 
-import java.io.Serializable;
-
 /**
  * Resource info for CustomResourcel.
  * IASRI #4626188
  *
  * @author Sridatta Viswanath
  */
-public class CustomResource extends JavaEEResourceBase implements Serializable {
+public class CustomResource extends JavaEEResourceBase {
 
     private String resType_;
     private String factoryClass_;

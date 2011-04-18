@@ -52,6 +52,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.IllegalStateException;
+import java.util.Locale;
 import java.util.Set;
 import java.util.List;
 import java.util.Iterator;
@@ -201,7 +202,7 @@ public class ConfigPropertyHandler extends AbstractHandler {
      * correct accessor and mutator method names for a give property.
      */
     private static String getCamelCasedPropertyName(String propertyName) {
-        return propertyName.substring(0, 1).toUpperCase() +
+        return propertyName.substring(0, 1).toUpperCase(Locale.getDefault()) +
                 propertyName.substring(1);
     }
 

@@ -1066,7 +1066,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
                         if (lazyAssoc) {
                             String str = System.getProperty(
                                     "com.sun.enterprise.resource.AllowLazyAssociationWithPM", "FALSE");
-                            if (str.toUpperCase().trim().equals("FALSE")) {
+                            if (str.toUpperCase(Locale.getDefault()).trim().equals("FALSE")) {
                                 lazyAssoc = false;
                             }
                         }

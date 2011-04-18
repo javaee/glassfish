@@ -78,6 +78,8 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
             new ArrayList<Class<? extends WorkContext>>();
     private static final Logger logger =
             LogDomains.getLogger(WorkCoordinator.class, LogDomains.RESOURCE_BUNDLE);
+    private final static Locale locale = Locale.getDefault();
+
     @Inject
     private ConnectorRuntime runtime ;
     private ClassLoader rarCL;
@@ -276,8 +278,8 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
     private boolean isUniqueSubmission(WorkContext ic, Collection<WorkContext> supportedContexts) {
         //TODO JSR-322-WORK-CONTEXT : can we use workContext.getName() ??
         for (WorkContext workContext : supportedContexts) {
-            String workContextName = workContext.getClass().getName().toLowerCase();
-            String icName = ic.getClass().getName().toLowerCase();
+            String workContextName = workContext.getClass().getName().toLowerCase(locale);
+            String icName = ic.getClass().getName().toLowerCase(locale);
             if (workContextName.equalsIgnoreCase(icName)) {
                 debug("Not a unique workContext submission : " + workContext.getClass().getName());
                 return false;

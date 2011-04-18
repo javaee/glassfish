@@ -101,7 +101,7 @@ public class ConnectorAdminServiceUtils implements ConnectorConstants {
             if (prop.getName().toUpperCase(Locale.getDefault()).equals("USERNAME") ||
                     prop.getName().toUpperCase(Locale.getDefault()).equals("USER")) {
                 userName = prop.getValue();
-            } else if (prop.getName().toUpperCase().equals("PASSWORD")) {
+            } else if (prop.getName().toUpperCase(Locale.getDefault()).equals("PASSWORD")) {
                 password = prop.getValue();
             }
         }

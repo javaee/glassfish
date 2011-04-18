@@ -481,7 +481,7 @@ public class JDBCDriverLoader {
         } else {
             //Got from Manifest file.
             if (vendor.equalsIgnoreCase(dbVendor) ||
-                    vendor.toUpperCase(locale).indexOf(dbVendor.toUpperCase()) != -1) {
+                    vendor.toUpperCase(locale).indexOf(dbVendor.toUpperCase(locale)) != -1) {
                 isVendorSpecific = true;
             }
         }
@@ -498,7 +498,7 @@ public class JDBCDriverLoader {
      * @return true if the className in question is vendor specific.
      */
     private boolean isVendorSpecific(String dbVendor, String className) {
-        return className.toUpperCase(locale).indexOf(dbVendor.toUpperCase()) != -1;
+        return className.toUpperCase(locale).indexOf(dbVendor.toUpperCase(locale)) != -1;
     }
 
     /**

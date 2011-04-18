@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,10 +43,8 @@ package com.sun.enterprise.resource.beans;
 import com.sun.enterprise.deployment.AdminObject;
 import com.sun.enterprise.deployment.ConnectorConfigProperty ;
 import com.sun.enterprise.resource.naming.SerializableObjectRefAddr;
-import com.sun.enterprise.resource.naming.ConnectorNamingUtils;
 import com.sun.appserv.connectors.internal.api.JavaEEResourceBase;
 import com.sun.enterprise.connectors.util.SetMethodAction;
-import com.sun.enterprise.connectors.util.ConnectorJavaBeanValidator;
 import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.PoolingException;
@@ -55,7 +53,6 @@ import com.sun.appserv.connectors.internal.api.JavaEEResource;
 import com.sun.logging.LogDomains;
 import org.glassfish.resource.common.ResourceInfo;
 
-import java.io.Serializable;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
@@ -73,10 +70,9 @@ import javax.resource.ResourceException;
  *
  * @author Qingqing Ouyang
  */
-public class AdministeredObjectResource extends JavaEEResourceBase
-        implements Serializable {
+public class AdministeredObjectResource extends JavaEEResourceBase {
 
-    private static Logger _logger = LogDomains.getLogger(AdministeredObjectResource.class, LogDomains.RSR_LOGGER);
+    private final static Logger _logger = LogDomains.getLogger(AdministeredObjectResource.class, LogDomains.RSR_LOGGER);
 
     private String resadapter_;
     private String adminObjectClass_;

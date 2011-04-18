@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,9 +46,7 @@ import com.sun.logging.LogDomains;
 
 import java.lang.reflect.Method;
 import java.security.PrivilegedExceptionAction;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,6 +63,7 @@ public final class SetMethodAction implements PrivilegedExceptionAction {
 
     private static final Logger logger =
             LogDomains.getLogger(SetMethodAction.class, LogDomains.RSR_LOGGER);
+    private final static Locale locale = Locale.getDefault();
 
     /**
      * Accepts java bean object and properties to be set.
@@ -158,7 +157,7 @@ public final class SetMethodAction implements PrivilegedExceptionAction {
             return "null";
 
         String propname = prop.getName();
-        if (propname.toLowerCase().contains("password"))
+        if (propname.toLowerCase(locale).contains("password"))
             return "********";
 
         return (prop.getResolvedValue());
@@ -260,7 +259,7 @@ public final class SetMethodAction implements PrivilegedExceptionAction {
      * cased methods.
      */
     private Method[] findMethod(String methodName) {
-        ArrayList matchedMethods = new ArrayList();
+        List<Method> matchedMethods = new ArrayList<Method>();
 
         //check for CamelCased Method(s)
         for (int i = 0; i < this.methods.length; i++) {
@@ -275,7 +274,8 @@ public final class SetMethodAction implements PrivilegedExceptionAction {
                 matchedMethods.add(methods[i]);
             }
         }
-        return (Method[]) matchedMethods.toArray(new Method[]{});
+        Method[] methodArray = new Method[matchedMethods.size()];
+        return matchedMethods.toArray(methodArray);
     }
 
     /**
@@ -283,7 +283,7 @@ public final class SetMethodAction implements PrivilegedExceptionAction {
      * correct accessor and mutator method names for a give property.
      */
     private String getCamelCasedPropertyName(String propertyName) {
-        return propertyName.substring(0, 1).toUpperCase() +
+        return propertyName.substring(0, 1).toUpperCase(locale) +
                 propertyName.substring(1);
     }
 

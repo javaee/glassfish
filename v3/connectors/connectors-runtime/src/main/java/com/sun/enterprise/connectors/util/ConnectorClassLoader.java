@@ -152,7 +152,7 @@ public class ConnectorClassLoader extends ASURLClassLoader
     private void appendJars(File moduleDir, ASURLClassLoader cl) throws MalformedURLException {
         if (moduleDir.isDirectory()) {
             for (File file : moduleDir.listFiles()) {
-                if (file.getName().toUpperCase().endsWith(".JAR")) {
+                if (file.getName().toUpperCase(Locale.getDefault()).endsWith(".JAR")) {
                     cl.appendURL(file.toURI().toURL());
                 } else if (file.isDirectory()) {
                     appendJars(file, cl); //recursive add
