@@ -202,7 +202,7 @@ public class HtmlFormat implements SchemaOutputFormat {
         InputStreamReader reader = null;
         PrintWriter writer = null;
         try {
-            InputStream stream = getClass().getResourceAsStream(resource);
+            InputStream stream = getClass().getClassLoader().getResourceAsStream(resource);
             reader = new InputStreamReader(stream);
             writer = new PrintWriter(new File(dir, resource));
             char[] bytes = new char[8192];
