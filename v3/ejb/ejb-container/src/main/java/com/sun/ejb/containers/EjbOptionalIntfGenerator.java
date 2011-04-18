@@ -78,14 +78,9 @@ public class EjbOptionalIntfGenerator
 
     private Map<String, byte[]> classMap = new HashMap<String, byte[]>();
 
-    private Map<String, Class> loadedClasses = new HashMap<String, Class>()
-            ;
     private ClassLoader loader;
 
     private ProtectionDomain protectionDomain;
-
-
-    private static final boolean _debug = Boolean.valueOf(System.getProperty("emit.ejb.optional.interface"));
 
     public EjbOptionalIntfGenerator(ClassLoader loader) {
         this.loader = loader;

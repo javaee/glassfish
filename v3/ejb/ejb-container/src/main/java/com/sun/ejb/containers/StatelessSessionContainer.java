@@ -96,9 +96,6 @@ public class StatelessSessionContainer
     extends BaseContainer 
     //implements StatelessSessionBeanStatsProvider
 {
-
-    private static LocalStringManagerImpl localStrings;
-
     private static final byte[] statelessInstanceKey = {0, 0, 0, 1};
 
     // All stateless EJBs have the same instanceKey, since all stateless EJBs
@@ -125,16 +122,11 @@ public class StatelessSessionContainer
     private Map<String, java.rmi.Remote> theRemoteBusinessStubs = 
         new HashMap<String, java.rmi.Remote>();
 
-    
-
-
-	private boolean isPoolClosed = false;    
-	protected AbstractPool pool;
+    private boolean isPoolClosed = false;
+    protected AbstractPool pool;
 
     private IASEjbExtraDescriptors iased 	 = null;
-    private BeanCacheDescriptor beanCacheDes = null;
     private BeanPoolDescriptor beanPoolDes   = null;
-    private Server svr 						 = null;
     private EjbContainer ejbContainer 		 = null;
 
     private PoolProperties poolProp 		 = null;

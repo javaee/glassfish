@@ -76,7 +76,6 @@ public class LruSessionCache
     public int passivationCount = 0;
     protected Object passivationCountLock = new Object();
     
-    private Object numPassLock = new Object();
     private int numVictimsAccessed = 0;
     
     protected SFSBContainerCallback     container;

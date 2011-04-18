@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -79,8 +79,6 @@ import com.sun.ejb.monitoring.stats.EjbMonitoringStatsProvider;
 public abstract class AbstractSingletonContainer
     extends BaseContainer {
 
-    private static LocalStringManagerImpl localStrings;
-
     private static final byte[] singletonInstanceKey = {0, 0, 0, 1};
 
     // All Singleton EJBs have the same instanceKey
@@ -105,11 +103,6 @@ public abstract class AbstractSingletonContainer
     // between webservice runtime and ejb container.  Contains a Remote
     // servant used by jaxrpc to call web service business method.
     //TODO private EjbRuntimeEndpointInfo webServiceEndpoint;
-
-    private IASEjbExtraDescriptors iased 	 = null;
-    private BeanPoolDescriptor beanPoolDes   = null;
-    private Server svr 						 = null;
-    private EjbContainer ejbContainer 		 = null;
 
     protected ObjectFactory singletonCtxFactory;
 
@@ -136,13 +129,8 @@ public abstract class AbstractSingletonContainer
      */
 
     protected AbstractSingletonContainer(EjbDescriptor desc, ClassLoader loader)
-        throws Exception
-        {
-            super(ContainerType.SINGLETON, desc, loader);
-
-
-        ejbContainer = ejbContainerUtilImpl.getEjbContainer();
-
+        throws Exception {
+        super(ContainerType.SINGLETON, desc, loader);
         super.setMonitorOn(false); //TODO super.setMonitorOn(ejbContainer.isMonitoringEnabled());
 
         super.createCallFlowAgent(ComponentType.SLSB);
@@ -235,21 +223,17 @@ public abstract class AbstractSingletonContainer
     protected void initializeHome()
         throws Exception
     {
-
         super.initializeHome();
 
         if ( isRemote ) {
-
-
-
             if( hasRemoteBusinessView ) {
 
                 theRemoteBusinessObjectImpl = 
                     instantiateRemoteBusinessObjectImpl();
 
-                theRemoteBusinessObject = 
+                theRemoteBusinessObject =
                     theRemoteBusinessObjectImpl.getEJBObject();
-                
+
                 for(RemoteBusinessIntfInfo next : 
                         remoteBusinessIntfInfo.values()) {
                     java.rmi.Remote stub = next.referenceFactory.
@@ -259,9 +243,7 @@ public abstract class AbstractSingletonContainer
                     theRemoteBusinessObjectImpl.setStub
                         (next.generatedRemoteIntf.getName(), stub);
                 }
-
             }
-
         }
 
         if ( isLocal ) {
@@ -276,9 +258,7 @@ public abstract class AbstractSingletonContainer
             }
         }
 
-       
         createBeanPool();
-
         registerMonitorableComponents();
     }
 
