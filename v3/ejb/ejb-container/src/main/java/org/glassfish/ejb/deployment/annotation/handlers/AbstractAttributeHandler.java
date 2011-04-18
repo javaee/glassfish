@@ -141,7 +141,7 @@ public abstract class AbstractAttributeHandler extends AbstractHandler {
                     aeHandler = ejbBundleContext.createContextForEjbInterceptor();
                 }
                 if (aeHandler == null) {
-                    return getInvalidAnnotatedElementHandlerResult(aeHandler, ainfo);
+                    return getInvalidAnnotatedElementHandlerResult(null, ainfo);
                 }
             }
         }
