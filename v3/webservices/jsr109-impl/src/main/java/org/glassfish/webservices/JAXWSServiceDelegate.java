@@ -218,73 +218,73 @@ public class JAXWSServiceDelegate extends Service {
             Method addPort = serviceClass.getDeclaredMethod
                 ("addPort", new Class[] {QName.class, URI.class, String.class});
             serviceMethodTypes.put(addPort, 
-                                   new Integer(ADD_PORT));
+                                    Integer.valueOf(ADD_PORT));
 
             Method createDispatchClass = serviceClass.getDeclaredMethod
                 ("createDispatch", new Class[] {QName.class, Class.class, Service.Mode.class});
             serviceMethodTypes.put(createDispatchClass, 
-                                   new Integer(CREATE_DISPATCH_CLASS));
+                                   Integer.valueOf(CREATE_DISPATCH_CLASS));
 
             Method createDispatchContext = serviceClass.getDeclaredMethod
                 ("createDispatch", new Class[] {QName.class, JAXBContext.class, Service.Mode.class});
             serviceMethodTypes.put(createDispatchContext, 
-                                   new Integer(CREATE_DISPATCH_CONTEXT));
+                                   Integer.valueOf(CREATE_DISPATCH_CONTEXT));
 
             Method getExecutor = serviceClass.getDeclaredMethod
                 ("getExecutor", noParams);
             serviceMethodTypes.put(getExecutor, 
-                                   new Integer(GET_EXECUTOR));
+                                   Integer.valueOf(GET_EXECUTOR));
 
             Method setExecutor = serviceClass.getDeclaredMethod
                 ("setExecutor", new Class[] {Executor.class});
             serviceMethodTypes.put(setExecutor, 
-                                   new Integer(SET_EXECUTOR));
+                                   Integer.valueOf(SET_EXECUTOR));
 
             Method getHandlerResolver = serviceClass.getDeclaredMethod
                 ("getHandlerResolver", noParams);
             serviceMethodTypes.put(getHandlerResolver, 
-                                   new Integer(GET_HANDLER_RESOLVER));
+                                   Integer.valueOf(GET_HANDLER_RESOLVER));
 
             Method getPortContainerManaged = serviceClass.getDeclaredMethod
                 ("getPort", new Class[] { Class.class });
             serviceMethodTypes.put(getPortContainerManaged, 
-                                   new Integer(GET_PORT_CONTAINER_MANAGED));
+                                   Integer.valueOf(GET_PORT_CONTAINER_MANAGED));
 
             Method getPortClientManaged = serviceClass.getDeclaredMethod
                 ("getPort", new Class[] { QName.class, Class.class });
             serviceMethodTypes.put(getPortClientManaged, 
-                                   new Integer(GET_PORT_CLIENT_MANAGED));
+                                   Integer.valueOf(GET_PORT_CLIENT_MANAGED));
             
             Method getPorts = serviceClass.getDeclaredMethod
                 ("getPorts", noParams);
-            serviceMethodTypes.put(getPorts, new Integer(GET_PORTS));
+            serviceMethodTypes.put(getPorts, Integer.valueOf(GET_PORTS));
 
             Method getServiceName = serviceClass.getDeclaredMethod
                 ("getServiceName", noParams);
             serviceMethodTypes.put(getServiceName, 
-                                   new Integer(GET_SERVICE_NAME));
+                                   Integer.valueOf(GET_SERVICE_NAME));
 
             Method setHandlerResolver = serviceClass.getDeclaredMethod
                 ("setHandlerResolver", new Class[] {HandlerResolver.class});
             serviceMethodTypes.put(setHandlerResolver, 
-                                   new Integer(SET_HANDLER_RESOLVER));
+                                   Integer.valueOf(SET_HANDLER_RESOLVER));
 
             Method getWsdlLocation = serviceClass.getDeclaredMethod
                 ("getWSDLDocumentLocation", noParams);
             serviceMethodTypes.put(getWsdlLocation,
-                                   new Integer(GET_WSDL_LOCATION));
+                                   Integer.valueOf(GET_WSDL_LOCATION));
         } catch(NoSuchMethodException nsme) {}
 
-        noWsdlIllegalMethods.add(new Integer(GET_PORT_CONTAINER_MANAGED));
-        noWsdlIllegalMethods.add(new Integer(GET_PORT_CLIENT_MANAGED));
-        noWsdlIllegalMethods.add(new Integer(GET_PORTS));
-        noWsdlIllegalMethods.add(new Integer(GET_SERVICE_NAME));
-        noWsdlIllegalMethods.add(new Integer(GET_WSDL_LOCATION));
+        noWsdlIllegalMethods.add(Integer.valueOf(GET_PORT_CONTAINER_MANAGED));
+        noWsdlIllegalMethods.add(Integer.valueOf(GET_PORT_CLIENT_MANAGED));
+        noWsdlIllegalMethods.add(Integer.valueOf(GET_PORTS));
+        noWsdlIllegalMethods.add(Integer.valueOf(GET_SERVICE_NAME));
+        noWsdlIllegalMethods.add(Integer.valueOf(GET_WSDL_LOCATION));
 
         // This case shouldn't happen since if service-ref has generated
         // service and no WSDL it won't get past deployment, but it's here
         // for completeness.
-        noWsdlIllegalMethods.add(new Integer(GENERATED_SERVICE_METHOD));
+        noWsdlIllegalMethods.add(Integer.valueOf(GENERATED_SERVICE_METHOD));
     }
 
     private void checkUnsupportedMethods(int methodType) 
@@ -293,7 +293,7 @@ public class JAXWSServiceDelegate extends Service {
         Set illegalMethods = fullWsdl ?
             fullWsdlIllegalMethods : noWsdlIllegalMethods;
 
-        if( illegalMethods.contains(new Integer(methodType)) ) {
+        if( illegalMethods.contains(Integer.valueOf(methodType)) ) {
             throw new UnsupportedOperationException();
         }
 
