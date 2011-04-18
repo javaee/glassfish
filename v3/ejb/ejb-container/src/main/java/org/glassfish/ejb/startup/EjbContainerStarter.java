@@ -40,7 +40,9 @@
 
 package org.glassfish.ejb.startup;
 
+import com.sun.ejb.containers.EjbContainerUtil;
 import org.glassfish.api.container.Container;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
@@ -54,6 +56,14 @@ import org.jvnet.hk2.component.PreDestroy;
 @Service(name="org.glassfish.ejb.startup.EjbContainerStarter")
 public class EjbContainerStarter
     implements Container, PostConstruct, PreDestroy {
+
+    /**
+     * Initializes EjbContainerUtilImpl instance with this injection so that
+     * its instance is available to subsequent request, e.g., with
+     * EjbContainerUtilImpl.getInstance().
+     */
+    @Inject
+    EjbContainerUtil ejbContainerUtilImpl;
 
     public void postConstruct() {
     }    
