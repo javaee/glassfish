@@ -94,8 +94,6 @@ public class AsadminMain {
     private static final LocalStringsImpl strings =
                                 new LocalStringsImpl(AsadminMain.class);
 
-    private static final String LINE_SEP = System.getProperty("line.separator");
-    
     static {
         Map<String, String> systemProps = new ASenvPropertyReader().getProps();
         for (String prop : copyProps) {
@@ -128,7 +126,7 @@ public class AsadminMain {
 
         @Override
         public synchronized String format(LogRecord record) {
-            return formatMessage(record) + LINE_SEP;
+            return formatMessage(record);
         }
     }
 
