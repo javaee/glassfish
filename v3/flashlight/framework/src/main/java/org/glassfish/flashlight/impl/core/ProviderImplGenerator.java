@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -207,7 +207,7 @@ public class ProviderImplGenerator {
 
             if(index >= 0)
                 clsName = clsName.substring(index + 1);
-
+                FileOutputStream fos = null;
 			try {
 				String rootPath = System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) +
 									File.separator + "lib" + File.separator;
@@ -217,13 +217,19 @@ public class ProviderImplGenerator {
                     logger.fine("ClassFile: " + fileName);
 				File file = new File(fileName);
 				file.getParentFile().mkdirs();
-				FileOutputStream fos = new FileOutputStream(file);
+				fos = new FileOutputStream(file);
 				fos.write(classData);
 				fos.flush();
-				fos.close();
 			} catch (Exception ex) {
 			   ex.printStackTrace();
-			}
+			}finally {
+                            try {
+                                fos.close();
+                            }
+                            catch(Exception e) {
+                                // nothing can be done...
+                            }
+                        }
 		}
         return classData;
     }

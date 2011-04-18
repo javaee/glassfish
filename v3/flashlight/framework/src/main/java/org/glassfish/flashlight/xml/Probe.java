@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -89,11 +89,11 @@ public class Probe {
 
     @Override
     public String toString() {
-        String paramsStr = "     \n";
+        final StringBuilder paramsStr = new StringBuilder("     \n");
         for (ProbeParam param : probeParams) {
-            paramsStr += "         , Param " + param.toString();
+            paramsStr.append("         , Param ").append(param.toString());
         }
         return (" Probe name = " + probeName +
-                " , method = " + probeMethod + paramsStr);
+                " , method = " + probeMethod + paramsStr.toString());
     }
 }
