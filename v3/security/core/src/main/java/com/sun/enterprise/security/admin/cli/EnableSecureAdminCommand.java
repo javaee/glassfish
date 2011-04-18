@@ -38,7 +38,7 @@
  * holder.
  */
 
-package com.sun.enterprise.v3.admin.cluster;
+package com.sun.enterprise.security.admin.cli;
 
 import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.security.ssl.SSLUtils;
@@ -48,7 +48,6 @@ import java.security.KeyStoreException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.ExecuteOn;
@@ -56,7 +55,6 @@ import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
 /**
@@ -163,8 +161,7 @@ public class EnableSecureAdminCommand extends SecureAdminCommand {
     
     @Override
     protected boolean updateSecureAdminSettings(
-            final SecureAdmin secureAdmin_w,
-            final ActionReport actionReport) {
+            final SecureAdmin secureAdmin_w) {
         /*
          * Apply the values for the aliases, if the user provided them on the
          * command invocation.
@@ -186,9 +183,9 @@ public class EnableSecureAdminCommand extends SecureAdminCommand {
                 }
             }
             if (badAliases.size() > 0) {
-                actionReport.failure(logger, Strings.get("enable.secure.admin.badAlias",
+                throw new SecureAdminCommandException(
+                        Strings.get("enable.secure.admin.badAlias",
                         badAliases.size(), badAliases.toString()));
-                return false;
             }
             return true;
         } catch (Exception ex) {
