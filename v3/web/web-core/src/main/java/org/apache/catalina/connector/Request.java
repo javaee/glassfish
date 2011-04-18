@@ -2906,7 +2906,13 @@ public class Request
                 String ssoId = (String) getNote(
                         org.apache.catalina.authenticator.Constants.REQ_SSOID_NOTE);
                 if (ssoId != null) {
-                    sso.associate(ssoId, session);
+                    long ssoVersion = 0L;
+                    Long ssoVersionObj = (Long)getNote(
+                            org.apache.catalina.authenticator.Constants.REQ_SSO_VERSION_NOTE);
+                    if (ssoVersionObj != null) {
+                        ssoVersion = ssoVersionObj.longValue();
+                    }
+                    sso.associate(ssoId, ssoVersion, session);
                     removeNote(
                             org.apache.catalina.authenticator.Constants.REQ_SSOID_NOTE);
                 }

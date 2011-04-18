@@ -63,6 +63,7 @@ import org.apache.catalina.Session;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -88,10 +89,14 @@ public class SingleSignOnEntry {
 
     protected long lastAccessTime;
 
-    public SingleSignOnEntry(String id, Principal principal, String authType,
+    protected AtomicLong version = null;
+
+    public SingleSignOnEntry(String id, long ver,
+                             Principal principal, String authType,
                              String username, String realmName) {
         super();
         this.id = id;
+        this.version = new AtomicLong(ver);
         this.principal = principal;
         this.authType = authType;
         this.username = username;
@@ -162,7 +167,14 @@ public class SingleSignOnEntry {
         return id;
     }
 
-        /**
+    /**
+     * Gets the id version of this SSO entry
+     */
+    public long getVersion() {
+        return version.get();
+    }
+
+    /**
      * Gets the name of the authentication type originally used to authenticate
      * the user associated with the SSO.
      *
@@ -198,5 +210,9 @@ public class SingleSignOnEntry {
 
     public void setLastAccessTime(long lastAccessTime) {
         this.lastAccessTime = lastAccessTime;
+    }
+
+    public long incrementAndGetVersion() {
+        return version.incrementAndGet();
     }
 }

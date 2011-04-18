@@ -366,6 +366,18 @@ public interface Session {
 
 
     /**
+     * Return the single sign on version.
+     */
+    public long getSsoVersion();
+
+
+    /**
+     * Set the single sign on version.
+     */
+    public void setSsoVersion(long ssoVersion);
+
+
+    /**
      * lock the session for background
      * returns true if successful; false if unsuccessful
      */     

@@ -65,8 +65,10 @@ import com.sun.grizzly.util.buf.C2BConverter;
 import org.apache.catalina.Globals;
 import org.apache.catalina.Session;
 import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.util.RequestUtil;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Writer;
@@ -680,6 +682,7 @@ public class OutputBuffer extends Writer
             addSessionCookieWithJReplica(req, ctx, sess);
             addPersistedSessionCookie(req, ctx, sess);
             addJrouteCookie(req, ctx, sess);
+            addSsoVersionCookie(req, ctx);
         }
     }
 
@@ -755,6 +758,33 @@ public class OutputBuffer extends Writer
 
     }
 
+    /**
+     * Adds JSESSIONSSOVERSION cookie
+     */
+    private void addSsoVersionCookie(Request request, StandardContext ctx) {
+
+        Long ssoVersion = (Long)request.getNote(
+                org.apache.catalina.authenticator.Constants.REQ_SSO_VERSION_NOTE);
+        if (ssoVersion != null) {
+            Cookie cookie = new Cookie(
+                    org.apache.catalina.authenticator.Constants.SINGLE_SIGN_ON_VERSION_COOKIE,
+                    ssoVersion.toString());
+            cookie.setMaxAge(-1);
+            cookie.setPath("/");
+            StandardHost host = (StandardHost) ctx.getParent();
+            HttpServletRequest hreq =
+                    (HttpServletRequest)request.getRequest();
+            if (host != null) {
+                host.configureSingleSignOnCookieSecure(cookie, hreq);
+                host.configureSingleSignOnCookieHttpOnly(cookie);
+            } else {
+                cookie.setSecure(hreq.isSecure());
+            }
+
+            response.addHeader(SET_COOKIE_HEADER,
+                    coyoteResponse.getCookieString(cookie));
+        }
+    }
 
     private void addPersistedSessionCookie(Request request, StandardContext ctx,
             Session sess) throws IOException {

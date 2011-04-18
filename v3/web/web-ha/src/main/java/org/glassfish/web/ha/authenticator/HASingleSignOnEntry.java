@@ -57,8 +57,6 @@ import java.security.Principal;
 public class HASingleSignOnEntry extends SingleSignOnEntry {
     protected long maxIdleTime;
 
-    protected long version;
-
     protected JavaEEIOUtils ioUtils;
 
     protected HASingleSignOnEntryMetadata metadata = null;
@@ -123,16 +121,15 @@ public class HASingleSignOnEntry extends SingleSignOnEntry {
             long lastAccessTime, long maxIdleTime, long version,
             JavaEEIOUtils ioUtils) {
         
-        super(id, principal, authType, username, realmName);
+        super(id, version, principal, authType, username, realmName);
         this.lastAccessTime = lastAccessTime;
         this.maxIdleTime = maxIdleTime;
-        this.version = version;
         this.ioUtils = ioUtils;
 
         metadata = new HASingleSignOnEntryMetadata(
-                id, convertToByteArray(principal), authType,
+                id, version, convertToByteArray(principal), authType,
                 username, realmName,
-                lastAccessTime, maxIdleTime, version);
+                lastAccessTime, maxIdleTime);
     }
 
     public HASingleSignOnEntryMetadata getMetadata() {
@@ -141,10 +138,6 @@ public class HASingleSignOnEntry extends SingleSignOnEntry {
 
     public long getMaxIdleTime() {
         return maxIdleTime;
-    }
-
-    public long getVersion() {
-        return version;
     }
 
     @Override
@@ -169,6 +162,13 @@ public class HASingleSignOnEntry extends SingleSignOnEntry {
     public void setLastAccessTime(long lastAccessTime) {
         super.setLastAccessTime(lastAccessTime);
         metadata.setLastAccessTime(lastAccessTime);
+    }
+
+    @Override
+    public long incrementAndGetVersion() {
+        long ver = super.incrementAndGetVersion();
+        metadata.setVersion(ver);
+        return ver;
     }
 
     // convert a Serializable object into byte array

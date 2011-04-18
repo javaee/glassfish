@@ -649,13 +649,15 @@ public abstract class AuthenticatorBase
      * specified Session.
      *
      * @param ssoId Single sign on identifier
+     * @param ssoVersion Single sign on version
      * @param session Session to be associated
      */
-    protected void associate(String ssoId, Session session) {
+    protected void associate(String ssoId, long ssoVersion,
+            Session session) {
         
         if (sso == null)
             return;
-        sso.associate(ssoId, session);
+        sso.associate(ssoId, ssoVersion, session);
         
     }
     
@@ -884,7 +886,7 @@ public abstract class AuthenticatorBase
             cookie.setSecure(hreq.isSecure());
         }
         hres.addCookie(cookie);
-        
+
         // Register this principal with our SSO valve
         /* BEGIN S1AS8 PE 4856080,4918627
         sso.register(value, principal, authType, username, password);
@@ -897,6 +899,9 @@ public abstract class AuthenticatorBase
         // END S1AS8 PE 4856080,4918627
         
         request.setNote(Constants.REQ_SSOID_NOTE, value);
+        if (sso.isVersioningSupported()) {
+            request.setNote(Constants.REQ_SSO_VERSION_NOTE, new Long(0));
+        }
         
     }
     

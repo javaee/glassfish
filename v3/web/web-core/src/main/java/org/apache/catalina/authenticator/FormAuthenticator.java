@@ -210,8 +210,9 @@ public class FormAuthenticator
                      (String) session.getNote(Constants.SESS_USERNAME_NOTE),
                      (char[]) session.getNote(Constants.SESS_PASSWORD_NOTE));
             String ssoId = (String) request.getNote(Constants.REQ_SSOID_NOTE);
-            if (ssoId != null)
-                associate(ssoId, session);
+            if (ssoId != null) {
+                associate(ssoId, getSsoVersion(request), session);
+            }
             if (restoreRequest(request, session)) {
                 if (log.isLoggable(Level.FINE))
                     log.fine("Proceed to restored request");
@@ -314,7 +315,7 @@ public class FormAuthenticator
                      (char[]) session.getNote(Constants.SESS_PASSWORD_NOTE));
             String ssoId = (String) request.getNote(Constants.REQ_SSOID_NOTE);
             if (ssoId != null) {
-                associate(ssoId, session);
+                associate(ssoId, getSsoVersion(request), session);
             }
         }
 
@@ -585,4 +586,13 @@ public class FormAuthenticator
         return (sb.toString());
     }
 
+    private long getSsoVersion(HttpRequest request) {
+        long ssoVersion = 0L;
+        Long ssoVersionObj = (Long)request.getNote(
+                Constants.REQ_SSO_VERSION_NOTE);
+        if (ssoVersionObj != null) {
+            ssoVersion = ssoVersionObj.longValue();
+        }
+        return ssoVersion;
+    }
 }
