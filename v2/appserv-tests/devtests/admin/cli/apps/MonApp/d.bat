@@ -1,1 +1,1 @@
-asadmin deploy target/MonApp.war
+asadmin deploy --force target/MonApp.war
