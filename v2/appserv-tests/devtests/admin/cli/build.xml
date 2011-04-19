@@ -283,7 +283,7 @@
                includes="**/*.java"/>
 </target>
 
-<target name="setup" depends="whacker, startdb">
+<target name="setup" depends="startdb">
 </target>
 
 <target name="teardown" depends="stopdb">
