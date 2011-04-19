@@ -38,7 +38,7 @@
  * holder.
  */
 
-package com.sun.enterprise.v3.admin.cluster;
+package com.sun.enterprise.security.admin.cli;
 
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Configs;
@@ -103,7 +103,7 @@ public abstract class SecureAdminCommand implements AdminCommand {
     private final static String REDIRECT_PROTOCOL_NAME = "admin-http-redirect";
     public final static String ADMIN_LISTENER_NAME = "admin-listener";
 
-    static final Logger logger = LogDomains.getLogger(SupplementalCommandExecutorImpl.class,
+    static final Logger logger = LogDomains.getLogger(SecureAdminCommand.class,
                                         LogDomains.ADMIN_LOGGER);
 
 
@@ -122,8 +122,7 @@ public abstract class SecureAdminCommand implements AdminCommand {
      * @return
      */
     boolean updateSecureAdminSettings(
-            final SecureAdmin secureAdmin_w,
-            final ActionReport actionReport) throws TransactionFailure {
+            final SecureAdmin secureAdmin_w) throws TransactionFailure {
         /*
          * Default implementation - currently used by DisableSecureAdminCommand
          * and overridden by EnableSecureAdminCommand.
@@ -132,7 +131,6 @@ public abstract class SecureAdminCommand implements AdminCommand {
     }
 
     interface Context {
-        AdminCommandContext adminCommandContext();
     }
 
     /**
@@ -181,17 +179,6 @@ public abstract class SecureAdminCommand implements AdminCommand {
 //    }
 
     static class AbstractContext implements Context {
-
-        private final AdminCommandContext adminCommandContext;
-        
-        AbstractContext(final AdminCommandContext adminCommandContext) {
-            this.adminCommandContext = adminCommandContext;
-        }
-        
-        @Override
-        public AdminCommandContext adminCommandContext() {
-            return adminCommandContext;
-        }
     }
 
     /**
@@ -206,10 +193,8 @@ public abstract class SecureAdminCommand implements AdminCommand {
         private SecureAdmin secureAdmin_w = null;
 
         private TopLevelContext(
-                final AdminCommandContext adminCommandContext,
                 final Transaction t,
                 final Domain d) {
-            super(adminCommandContext);
             this.t = t;
             this.d = d;
         }
@@ -256,10 +241,8 @@ public abstract class SecureAdminCommand implements AdminCommand {
 
 
         private ConfigLevelContext(
-                final AdminCommandContext adminCommandContext,
                 final TopLevelContext topLevelContext,
                 final Config config_w) {
-            super(adminCommandContext);
             this.topLevelContext = topLevelContext;
             this.t = topLevelContext.t;
             this.config_w = config_w;
@@ -367,8 +350,7 @@ public abstract class SecureAdminCommand implements AdminCommand {
                  * The subclass might have overridden updateSecureAdminSettings.
                  * Give it a change to run logic specific to enable or disable.
                  */
-                return SecureAdminCommand.this.updateSecureAdminSettings(secureAdmin_w,
-                        context.adminCommandContext().getActionReport());
+                return SecureAdminCommand.this.updateSecureAdminSettings(secureAdmin_w);
             }
         }
         
@@ -387,9 +369,6 @@ public abstract class SecureAdminCommand implements AdminCommand {
      * Manages the sec-admin-listener protocol.
      */
     private Step<ConfigLevelContext> secAdminListenerProtocolStep = new Step<ConfigLevelContext>() {
-
-        private static final String CREATE_PROTOCOL = "create-protocol";
-        private static final String DELETE_PROTOCOL = "delete-protocol";
 
         private static final String ASADMIN_VIRTUAL_SERVER_NAME = "__asadmin";
 
@@ -483,7 +462,6 @@ public abstract class SecureAdminCommand implements AdminCommand {
                 final StringBuilder newURLString = new StringBuilder();
                 newURLString.append(newEnabledState ? "https" : "http");
                 newURLString.append("://").append(urlText.substring(urlText.indexOf("//") + "//".length()));
-                final ProviderConfig pc_w = t.enroll(pc);
                 p_w.setValue(newURLString.toString());
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
@@ -843,7 +821,7 @@ public abstract class SecureAdminCommand implements AdminCommand {
      * 
      * @throws TransactionFailure
      */
-    public void run(final AdminCommandContext adminContext) throws TransactionFailure {
+    public void run() throws TransactionFailure {
         ConfigSupport.apply(new SingleConfigCode<Domain>() {
             @Override
             public Object run(Domain domain_w) throws PropertyVetoException, TransactionFailure {
@@ -851,7 +829,7 @@ public abstract class SecureAdminCommand implements AdminCommand {
                 // get the transaction
                 final Transaction t = Transaction.getTransaction(domain_w);
                 final TopLevelContext topLevelContext = 
-                        new TopLevelContext(adminContext, t, domain_w);
+                        new TopLevelContext(t, domain_w);
                 if (t!=null) {
 
                     try {
@@ -874,7 +852,7 @@ public abstract class SecureAdminCommand implements AdminCommand {
                         for (Config c : configs.getConfig()) {
                             final Config c_w = t.enroll(c);
                             ConfigLevelContext configLevelContext = 
-                                    new ConfigLevelContext(adminContext, topLevelContext, c_w);
+                                    new ConfigLevelContext(topLevelContext, c_w);
                             for (Iterator<Work<ConfigLevelContext>> it = perConfigSteps(); it.hasNext();) {
                                 final Work<ConfigLevelContext> step = it.next();
                                 if ( ! step.run(configLevelContext)) {
@@ -904,12 +882,34 @@ public abstract class SecureAdminCommand implements AdminCommand {
 
         try {
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-            run(context);
+            run();
         } catch (TransactionFailure ex) {
-            logger.log(Level.SEVERE, Strings.get(transactionErrorMessageKey()), ex);
             report.failure(context.getLogger(), Strings.get(transactionErrorMessageKey()), ex);
+        } catch (SecureAdminCommandException ex) {
+            report.failure(context.getLogger(), ex.getLocalizedMessage(), ex);
         }
     }
     
+    /*
+     * Exeutes the command with no action report.  Primarily useful from the
+     * upgrade class (which does not have a convenient action report).
+     */
+    void execute() throws TransactionFailure, SecureAdminCommandException {
+        try {
+            run();
+        } catch (TransactionFailure ex) {
+            logger.log(Level.SEVERE, Strings.get(transactionErrorMessageKey()), ex);
+            throw ex;
+        } catch (SecureAdminCommandException ex) {
+            logger.log(Level.SEVERE, ex.getLocalizedMessage(), ex);
+            throw ex;
+        }
+    }
     
+    public class SecureAdminCommandException extends RuntimeException {
+        
+        public SecureAdminCommandException(String message) {
+            super(message);
+        }
+    }
 }
