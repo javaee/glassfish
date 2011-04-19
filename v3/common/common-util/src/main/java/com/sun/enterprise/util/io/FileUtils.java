@@ -62,6 +62,16 @@ public class FileUtils {
     final static Logger _logger = Logger.getLogger("javax.enterprise.system.util");
     final static Logger _utillogger = com.sun.logging.LogDomains.getLogger(FileUtils.class,com.sun.logging.LogDomains.UTIL_LOGGER);
 
+    /**
+     * Wrapper for File.mkdirs
+     * This version will return true if the directory exists when the method returns.
+     * Unlike File.mkdirs which returns false if the directory already exists.
+     * @param f The file pointing to the directory to be created
+     * @return
+     */
+    public static boolean mkdirsMaybe(File f) {
+        return f != null && (f.isDirectory() || f.mkdirs());
+    }
 
     /*
     * Wrapper for File.listFiles
