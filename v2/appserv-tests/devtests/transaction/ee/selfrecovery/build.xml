@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2011 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -43,7 +43,7 @@
 <!ENTITY testproperties SYSTEM "file:./build.properties">
 ]>
 
-<project name="tx-ee-autorecovery" default="usage" basedir=".">
+<project name="tx-ee-selfrecovery" default="usage" basedir=".">
 
 
     &commonSetup;
@@ -177,8 +177,14 @@
            <antcall target="kill-instance"/>
         </parallel>
 
-        <!-- Let GMS do the work -->
-        <sleep seconds="135"/>
+        <!-- restart the instance -->
+        <exec executable="${ASADMIN}" failonerror="false">
+          <arg line="start-local-instance"/>
+          <arg line="in1"/>
+        </exec>
+
+        <!-- wait a little -->
+        <sleep seconds="35"/>
 
         <echo message="Verifying results"/>
         <java  fork="on"
@@ -191,10 +197,6 @@
            <arg line="recover"/>
         </java>
 
-        <exec executable="${ASADMIN}" failonerror="false">
-          <arg line="start-local-instance"/>
-          <arg line="in1"/>
-        </exec>
     </target>
 
     <target name="kill-instance">

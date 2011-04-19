@@ -57,6 +57,7 @@
 
         <record name="transaction.ee.output" action="start" />
 
+        <ant dir="selfrecovery" target="test"/>
         <ant dir="autorecovery" target="test"/>
         <ant dir="cli" target="test"/>
         <ant dir="mdb" target="test"/>
