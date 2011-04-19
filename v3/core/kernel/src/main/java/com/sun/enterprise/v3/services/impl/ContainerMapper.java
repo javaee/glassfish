@@ -86,7 +86,6 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
     private GrizzlyEmbeddedHttp grizzlyEmbeddedHttp;
     private String defaultHostName = "server";
     private final UDecoder urlDecoder;
-    private final Habitat habitat;
     private final GrizzlyService grizzlyService;
     protected final static int MAPPING_DATA = 12;
     protected final static int MAPPED_ADAPTER = 13;
@@ -108,7 +107,6 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
         grizzlyEmbeddedHttp = embeddedHttp;
         urlDecoder = embeddedHttp.getUrlDecoder();
         grizzlyService = service;
-        habitat = service.habitat;
         logger = GrizzlyEmbeddedHttp.logger();
 
         version = System.getProperty("product.name");
@@ -196,7 +194,7 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
             if (adapter == null || adapter instanceof ContainerMapper) {
                 String ext = decodedURI.toString();
                 String type = "";
-                if (ext.indexOf(".") > 0) {
+                if (ext.lastIndexOf(".") > 0) {
                     ext = "*" + ext.substring(ext.lastIndexOf("."));
                     type = ext.substring(ext.lastIndexOf(".") + 1);
                 }

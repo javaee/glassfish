@@ -204,7 +204,7 @@ public class DynamicConfigListener implements ConfigListener {
         while(bean != null && ! (bean instanceof Config)) {
             bean = bean.getParent();
         }
-        return bean instanceof Config ? ((Config) bean).getName() : "";
+        return bean != null ? ((Config) bean).getName() : "";
     }
 
     private boolean isAdminDynamic(PropertyChangeEvent[] events) {
