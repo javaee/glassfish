@@ -45,6 +45,7 @@ package org.glassfish.flashlight.impl.core;
  */
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeRegistry;
@@ -216,8 +217,7 @@ public class ProviderImplGenerator {
 
                 File file = new File(fileName);
 
-                if (file.getParentFile().isDirectory()
-                        || file.getParentFile().mkdirs()) {
+                if (FileUtils.mkdirsMaybe(file.getParentFile())) {
                     fos = new FileOutputStream(file);
                     fos.write(classData);
                     fos.flush();
