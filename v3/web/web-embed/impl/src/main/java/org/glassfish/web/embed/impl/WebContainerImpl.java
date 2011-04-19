@@ -913,14 +913,6 @@ public class WebContainerImpl implements WebContainer {
 
         Collection<WebListener> webListeners = virtualServer.getWebListeners();
 
-        if ((webListeners != null) && (!webListeners.isEmpty())) {
-            for (WebListener listener : webListeners) {
-                if (getWebListener(listener.getId())==null) {
-                    addWebListener(listener, virtualServer.getID());
-                }
-            }
-        }
-
         List<String> names = new ArrayList<String>();
         if ((webListeners != null) && (!webListeners.isEmpty())) {
             for (WebListener listener : webListeners) {
@@ -964,7 +956,9 @@ public class WebContainerImpl implements WebContainer {
                             param.createChild(com.sun.enterprise.config.serverbeans.VirtualServer.class);
                     newVirtualServer.setId(id);
                     newVirtualServer.setNetworkListeners(nl);
-                    newVirtualServer.setHosts(hosts);
+                    if (hosts != null) {
+                        newVirtualServer.setHosts(hosts);
+                    }
                     Property property = newVirtualServer.createChild(Property.class);
                     property.setName("docroot");
                     property.setValue(root);
@@ -975,6 +969,14 @@ public class WebContainerImpl implements WebContainer {
             }, httpService);
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+
+        if ((webListeners != null) && (!webListeners.isEmpty())) {
+            for (WebListener listener : webListeners) {
+                if (getWebListener(listener.getId())==null) {
+                    addWebListener(listener, virtualServer.getID());
+                }
+            }
         }
 
         vs = (com.sun.enterprise.web.VirtualServer) engine.findChild(id);
