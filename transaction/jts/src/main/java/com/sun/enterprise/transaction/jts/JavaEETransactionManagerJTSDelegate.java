@@ -60,6 +60,7 @@ import javax.resource.spi.work.WorkException;
 import com.sun.jts.jta.TransactionManagerImpl;
 import com.sun.jts.jta.TransactionServiceProperties;
 import com.sun.jts.CosTransactions.Configuration;
+import com.sun.jts.CosTransactions.DefaultTransactionService;
 import com.sun.jts.CosTransactions.RecoveryManager;
 import com.sun.jts.CosTransactions.DelegatedRecoveryManager;
 import com.sun.jts.CosTransactions.RWLock;
@@ -524,7 +525,8 @@ public class JavaEETransactionManagerJTSDelegate
         
                 if (Boolean.parseBoolean(txnService.getAutomaticRecovery())) {
                     // If recovery on server startup is set, initialize other properties as well
-                    TransactionServiceProperties.getJTSProperties(habitat, false);
+                    Properties props = TransactionServiceProperties.getJTSProperties(habitat, false);
+                    DefaultTransactionService.setServerName(props);
 
                     if (Boolean.parseBoolean(txnService.getPropertyValue("delegated-recovery"))) {
                         // Register GMS notification callback

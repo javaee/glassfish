@@ -1703,6 +1703,11 @@ public class RecoveryManager {
         if (resyncThread == null) {
             initialise();
         }
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE,"RecoveryManager.startResyncThread Configuration.isRecoverable? "
+                    + Configuration.isRecoverable());
+	}
+
         if (Configuration.isRecoverable()) {
             resyncThread.start();
         }
