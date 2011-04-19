@@ -89,7 +89,7 @@
     <target name="download">
         <get src="${glassfish.dist.url}" dest="${glassfish.download}" usetimestamp="true"/>
         
-        <delete dir="binaries" failonerror="false" deleteonexit="true"/>
+        <delete dir="binaries" failonerror="false" />
         <mkdir dir="${install.dir}"/>
         <unzip src="${glassfish.download}" dest="${install.dir}"/>
         <if>
