@@ -323,14 +323,8 @@
     <get verbose="${verbose}" src="${gfurl}" dest="${asinstall_dir}/glassfish.zip"/>
     <delete dir="${asinstall_dir}/glassfish3" includeemptydirs="true"/>
     <unzip src="${asinstall_dir}/glassfish.zip" dest="${asinstall_dir}"/>
-    <if>
-        <not><os family="windows"/></not>
-        <then>
-            <chmod perm="a+x" file="${asinstall_dir}/glassfish3/bin/asadmin"/>
-            <chmod perm="a+x" file="${asinstall_dir}/glassfish3/glassfish/bin/asadmin"/>
-        </then>
-    </if>
-
+    <chmod perm="a+x" file="${asinstall_dir}/glassfish3/bin/asadmin"/>
+    <chmod perm="a+x" file="${asinstall_dir}/glassfish3/glassfish/bin/asadmin"/>
 </target>
     
 <target name="usage">
