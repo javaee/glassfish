@@ -37,14 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.flashlight.impl.core;
 
 /**
  * @author Mahesh Kannan
  *         Date: Jul 20, 2008
  */
-
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
@@ -67,9 +65,8 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 public class ProviderImplGenerator {
-
     private static final Logger logger =
-        LogDomains.getLogger(ProviderImplGenerator.class, LogDomains.MONITORING_LOGGER);
+            LogDomains.getLogger(ProviderImplGenerator.class, LogDomains.MONITORING_LOGGER);
 
     public String defineClass(FlashlightProbeProvider provider, Class providerClazz) {
 
@@ -105,18 +102,18 @@ public class ProviderImplGenerator {
                     classData.length, pd);
 
             return generatedClassName;
-        } catch (PrivilegedActionException pEx) {
+        }
+        catch (PrivilegedActionException pEx) {
             throw new RuntimeException(pEx);
-        } catch (IllegalAccessException
-                illegalAccessException) {
+        }
+        catch (IllegalAccessException illegalAccessException) {
             throw new RuntimeException(illegalAccessException);
-        } catch (InvocationTargetException
-                invtEx) {
+        }
+        catch (InvocationTargetException invtEx) {
             throw new RuntimeException(invtEx);
         }
 
     }
-
 
     public byte[] generateClassData(FlashlightProbeProvider provider, Class providerClazz, String generatedClassName) {
 
@@ -191,11 +188,11 @@ public class ProviderImplGenerator {
         byte[] classData = cw.toByteArray();
 
         int index = generatedClassName.lastIndexOf('.');
-        String clsName = generatedClassName.substring(index+1);
+        String clsName = generatedClassName.substring(index + 1);
 
 
-        if(Boolean.parseBoolean(System.getenv("AS_DEBUG"))) {
-			if (logger.isLoggable(Level.FINE))
+        if (Boolean.parseBoolean(System.getenv("AS_DEBUG"))) {
+            if (logger.isLoggable(Level.FINE))
                 logger.fine("Generated ClassDATA " + clsName);
 
             // the path is horribly long.  Let's just write t directly into the
@@ -205,32 +202,40 @@ public class ProviderImplGenerator {
             clsName = clsName.replace('\\', '/'); // just in case Windows?  unlikely...
             index = clsName.lastIndexOf("/");
 
-            if(index >= 0)
+            if (index >= 0)
                 clsName = clsName.substring(index + 1);
-                FileOutputStream fos = null;
-			try {
-				String rootPath = System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) +
-									File.separator + "lib" + File.separator;
+            FileOutputStream fos = null;
+            try {
+                String rootPath = System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY)
+                        + File.separator + "lib" + File.separator;
 
-				String fileName = rootPath + clsName + ".class";
-				if (logger.isLoggable(Level.FINE))
+                String fileName = rootPath + clsName + ".class";
+
+                if (logger.isLoggable(Level.FINE))
                     logger.fine("ClassFile: " + fileName);
-				File file = new File(fileName);
-				file.getParentFile().mkdirs();
-				fos = new FileOutputStream(file);
-				fos.write(classData);
-				fos.flush();
-			} catch (Exception ex) {
-			   ex.printStackTrace();
-			}finally {
-                            try {
-                                fos.close();
-                            }
-                            catch(Exception e) {
-                                // nothing can be done...
-                            }
-                        }
-		}
+
+                File file = new File(fileName);
+
+                if (file.getParentFile().isDirectory()
+                        || file.getParentFile().mkdirs()) {
+                    fos = new FileOutputStream(file);
+                    fos.write(classData);
+                    fos.flush();
+                }
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            finally {
+                try {
+                    if (fos != null)
+                        fos.close();
+                }
+                catch (Exception e) {
+                    // nothing can be done...
+                }
+            }
+        }
         return classData;
     }
 
@@ -242,16 +247,16 @@ public class ProviderImplGenerator {
 
         Type probeRegType = Type.getType(ProbeRegistry.class);
         Type probeType = Type.getType(FlashlightProbe.class);
-        
+
         gen.loadThis();
         for (FlashlightProbe probe : provider.getProbes()) {
 
             gen.dup();
-            
+
             String fieldName = "_flashlight_" + probe.getProbeName();
             gen.push(probe.getId());
             gen.invokeStatic(probeRegType,
-                Method.getMethod("org.glassfish.flashlight.provider.FlashlightProbe getProbeById(int)"));
+                    Method.getMethod("org.glassfish.flashlight.provider.FlashlightProbe getProbeById(int)"));
 
             gen.visitFieldInsn(Opcodes.PUTFIELD,
                     generatedClassName,
@@ -270,7 +275,6 @@ public class ProviderImplGenerator {
         mg.invokeVirtual(Type.getType(PrintStream.class), Method.getMethod("void println (String)"));
         mg.returnValue();
     }
-
 }
 /*************
  *
@@ -282,57 +286,57 @@ import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeRegistry;
 
 public final class ThreadPoolProbeProvider
-  implements org.glassfish.kernel.admin.monitor.ThreadPoolProbeProvider
+implements org.glassfish.kernel.admin.monitor.ThreadPoolProbeProvider
 {
-  public FlashlightProbe _flashlight_threadReturnedToPoolEvent;
-  public FlashlightProbe _flashlight_threadDispatchedFromPoolEvent;
-  public FlashlightProbe _flashlight_newThreadsAllocatedEvent;
-  public FlashlightProbe _flashlight_maxNumberOfThreadsReachedEvent;
+public FlashlightProbe _flashlight_threadReturnedToPoolEvent;
+public FlashlightProbe _flashlight_threadDispatchedFromPoolEvent;
+public FlashlightProbe _flashlight_newThreadsAllocatedEvent;
+public FlashlightProbe _flashlight_maxNumberOfThreadsReachedEvent;
 
-  public void threadReturnedToPoolEvent(String paramString1, String paramString2)
-  {
-    FlashlightProbe localFlashlightProbe = this._flashlight_threadReturnedToPoolEvent;
-    if (localFlashlightProbe.isEnabled() != true)
-      return;
-    localFlashlightProbe.fireProbe(new Object[] { paramString1, paramString2 });
-  }
+public void threadReturnedToPoolEvent(String paramString1, String paramString2)
+{
+FlashlightProbe localFlashlightProbe = this._flashlight_threadReturnedToPoolEvent;
+if (localFlashlightProbe.isEnabled() != true)
+return;
+localFlashlightProbe.fireProbe(new Object[] { paramString1, paramString2 });
+}
 
-  public void threadDispatchedFromPoolEvent(String paramString1, String paramString2)
-  {
-    FlashlightProbe localFlashlightProbe = this._flashlight_threadDispatchedFromPoolEvent;
-    if (localFlashlightProbe.isEnabled() != true)
-      return;
-    localFlashlightProbe.fireProbe(new Object[] { paramString1, paramString2 });
-  }
+public void threadDispatchedFromPoolEvent(String paramString1, String paramString2)
+{
+FlashlightProbe localFlashlightProbe = this._flashlight_threadDispatchedFromPoolEvent;
+if (localFlashlightProbe.isEnabled() != true)
+return;
+localFlashlightProbe.fireProbe(new Object[] { paramString1, paramString2 });
+}
 
-  public void newThreadsAllocatedEvent(String paramString, int paramInt, boolean paramBoolean)
-  {
-    FlashlightProbe localFlashlightProbe = this._flashlight_newThreadsAllocatedEvent;
-    if (localFlashlightProbe.isEnabled() != true)
-      return;
-    localFlashlightProbe.fireProbe(new Object[] { paramString, new Integer(paramInt), new Boolean(paramBoolean) });
-  }
+public void newThreadsAllocatedEvent(String paramString, int paramInt, boolean paramBoolean)
+{
+FlashlightProbe localFlashlightProbe = this._flashlight_newThreadsAllocatedEvent;
+if (localFlashlightProbe.isEnabled() != true)
+return;
+localFlashlightProbe.fireProbe(new Object[] { paramString, new Integer(paramInt), new Boolean(paramBoolean) });
+}
 
-  public void maxNumberOfThreadsReachedEvent(String paramString, int paramInt)
-  {
-    FlashlightProbe localFlashlightProbe = this._flashlight_maxNumberOfThreadsReachedEvent;
-    if (localFlashlightProbe.isEnabled() != true)
-      return;
-    localFlashlightProbe.fireProbe(new Object[] { paramString, new Integer(paramInt) });
-  }
+public void maxNumberOfThreadsReachedEvent(String paramString, int paramInt)
+{
+FlashlightProbe localFlashlightProbe = this._flashlight_maxNumberOfThreadsReachedEvent;
+if (localFlashlightProbe.isEnabled() != true)
+return;
+localFlashlightProbe.fireProbe(new Object[] { paramString, new Integer(paramInt) });
+}
 
-  public ThreadPoolProbeProvider()
-  {
-    ThreadPoolProbeProvider tmp5_4 = this;
-    tmp5_4._flashlight_threadReturnedToPoolEvent = ProbeRegistry.getProbeById(4);
-    ThreadPoolProbeProvider tmp13_5 = tmp5_4;
-    tmp13_5._flashlight_threadDispatchedFromPoolEvent = ProbeRegistry.getProbeById(3);
-    ThreadPoolProbeProvider tmp21_13 = tmp13_5;
-    tmp21_13._flashlight_newThreadsAllocatedEvent = ProbeRegistry.getProbeById(1);
-    ThreadPoolProbeProvider tmp29_21 = tmp21_13;
-    tmp29_21._flashlight_maxNumberOfThreadsReachedEvent = ProbeRegistry.getProbeById(2);
-    tmp29_21;
-  }
+public ThreadPoolProbeProvider()
+{
+ThreadPoolProbeProvider tmp5_4 = this;
+tmp5_4._flashlight_threadReturnedToPoolEvent = ProbeRegistry.getProbeById(4);
+ThreadPoolProbeProvider tmp13_5 = tmp5_4;
+tmp13_5._flashlight_threadDispatchedFromPoolEvent = ProbeRegistry.getProbeById(3);
+ThreadPoolProbeProvider tmp21_13 = tmp13_5;
+tmp21_13._flashlight_newThreadsAllocatedEvent = ProbeRegistry.getProbeById(1);
+ThreadPoolProbeProvider tmp29_21 = tmp21_13;
+tmp29_21._flashlight_maxNumberOfThreadsReachedEvent = ProbeRegistry.getProbeById(2);
+tmp29_21;
+}
 }
  ***********************************************************************
  * Another example
@@ -342,26 +346,24 @@ import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeRegistry;
 
 public final class ListContractsProbeProvider
-  implements com.sun.enterprise.v3.admin.ListContractsProbeProvider
+implements com.sun.enterprise.v3.admin.ListContractsProbeProvider
 {
-  public FlashlightProbe _flashlight_listContractsEvent;
+public FlashlightProbe _flashlight_listContractsEvent;
 
-  public void listContractsEvent(String paramString, boolean paramBoolean)
-  {
-    FlashlightProbe localFlashlightProbe = this._flashlight_listContractsEvent;
-    if (localFlashlightProbe.isEnabled() != true)
-      return;
-    localFlashlightProbe.fireProbe(new Object[] { paramString, new Boolean(paramBoolean) });
-  }
+public void listContractsEvent(String paramString, boolean paramBoolean)
+{
+FlashlightProbe localFlashlightProbe = this._flashlight_listContractsEvent;
+if (localFlashlightProbe.isEnabled() != true)
+return;
+localFlashlightProbe.fireProbe(new Object[] { paramString, new Boolean(paramBoolean) });
+}
 
-  public ListContractsProbeProvider()
-  {
-    ListContractsProbeProvider tmp5_4 = this;
-    tmp5_4._flashlight_listContractsEvent = ProbeRegistry.getProbeById(113);
-    tmp5_4;
-  }
+public ListContractsProbeProvider()
+{
+ListContractsProbeProvider tmp5_4 = this;
+tmp5_4._flashlight_listContractsEvent = ProbeRegistry.getProbeById(113);
+tmp5_4;
+}
 }
 
  */
-
-
