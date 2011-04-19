@@ -282,7 +282,7 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
                 _getEntityManagerFactoryReferenceByName(emfRef.getName());
             if (emfr != null) {
                 if (emfr.isConflict(emfRef)) {
-                    conflictEntityManagerReference = true;
+                    conflictEntityManagerFactoryReference = true;
                 }
                 unionInjectionTargets(emfr, emfRef);
             } else {
