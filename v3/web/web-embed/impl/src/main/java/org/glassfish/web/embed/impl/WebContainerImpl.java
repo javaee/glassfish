@@ -48,6 +48,7 @@ import java.util.logging.*;
 
 import com.sun.enterprise.web.EmbeddedWebContainer;
 import com.sun.enterprise.web.ContextFacade;
+import com.sun.enterprise.web.VirtualServerFacade;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.grizzly.config.dom.FileCache;
 import com.sun.grizzly.config.dom.Http;
@@ -843,80 +844,6 @@ public class WebContainerImpl implements WebContainer {
         removeListener(webListener.getId());
     }
 
-    private com.sun.enterprise.web.VirtualServer createVS(String id, File f, WebListener...  webListeners) {
-
-        if (!initialized) {
-            init();
-        }
-
-        List<String> names = new ArrayList<String>();
-        if (webListeners != null) {
-            for (WebListener listener : webListeners) {
-                names.add(listener.getId());
-            }
-        } else {
-            for (NetworkListener networkListener :
-                networkConfig.getNetworkListeners().getNetworkListener()) {
-                names.add(networkListener.getName());
-            }
-            webListeners = listeners.toArray(new WebListener[listeners.size()]);
-        }
-
-        StringBuffer networkListeners = new StringBuffer("");
-        if (names.size()>0) {
-            networkListeners.append(names.get(0));
-        }
-        for (int i=1; i<names.size(); i++) {
-            networkListeners.append(",");
-            networkListeners.append(names.get(i));
-        }
-
-        String docRoot = null;
-        if (f != null) {
-            docRoot = f.getPath();
-        }
-        final String root = docRoot;
-        final String nl = networkListeners.toString();
-        final String virtualServerId = id;
-
-        try {
-            ConfigSupport.apply(new SingleConfigCode<HttpService>() {
-                public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
-                    com.sun.enterprise.config.serverbeans.VirtualServer newVirtualServer =
-                            param.createChild(com.sun.enterprise.config.serverbeans.VirtualServer.class);
-                    newVirtualServer.setId(virtualServerId);
-                    newVirtualServer.setNetworkListeners(nl);
-                    Property property = newVirtualServer.createChild(Property.class);
-                    property.setName("docroot");
-                    property.setValue(root);
-                    newVirtualServer.getProperty().add(property);
-                    param.getVirtualServer().add(newVirtualServer);
-                    return newVirtualServer;
-                }
-            }, httpService);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        com.sun.enterprise.web.VirtualServer vs =
-                (com.sun.enterprise.web.VirtualServer) engine.findChild(virtualServerId);
-
-        if (vs != null) {
-            if (log.isLoggable(Level.INFO)) {
-                log.info("Created virtual server " + id +
-                        " docroot " + docRoot + " networklisteners " + nl);
-            }
-            vs.setNetworkListenerNames(names.toArray(new String[names.size()]));
-            vs.setWebListeners(webListeners);
-            engine.removeChild(vs);
-        } else {
-            log.severe("Cannot add virtual server "+virtualServerId);
-        }
-
-        return vs;
-
-    }
-
 
     /**
      * Creates a <tt>VirtualServer</tt> with the given id and docroot, and
@@ -932,7 +859,7 @@ public class WebContainerImpl implements WebContainer {
     public VirtualServer createVirtualServer(String id,
         File docRoot, WebListener...  webListeners) {
 
-        return createVS(id, docRoot, webListeners);
+        return new VirtualServerFacade(id, docRoot, webListeners);
 
     }
 
@@ -947,7 +874,7 @@ public class WebContainerImpl implements WebContainer {
      */    
     public VirtualServer createVirtualServer(String id, File docRoot) {
 
-        return createVirtualServer(id, docRoot, null);
+        return new VirtualServerFacade(id, docRoot, null);
 
     }
 
@@ -973,6 +900,10 @@ public class WebContainerImpl implements WebContainer {
             init();
         }
 
+        if (log.isLoggable(Level.INFO)) {
+            log.info("Adding virtual server " + virtualServer.getID());
+        }
+
         com.sun.enterprise.web.VirtualServer vs =
                 (com.sun.enterprise.web.VirtualServer) engine.findChild(virtualServer.getID());
         if (vs != null) {
@@ -980,47 +911,85 @@ public class WebContainerImpl implements WebContainer {
                         virtualServer.getID()+" is already registered");
         }
 
-        final String id = virtualServer.getID();
-        final String networkListeners = ((StandardHost)virtualServer).getNetworkListeners();
-        final String docRoot = virtualServer.getDocRoot().getPath();
-        String hostNames = "${com.sun.aas.hostName}";
-        if (virtualServer.getConfig()!=null) {
-            hostNames = virtualServer.getConfig().getHostNames();
-        }
-        final String hosts = hostNames;
-        final com.sun.enterprise.config.serverbeans.VirtualServer vsBean = httpService.getVirtualServerByName(id);
+        Collection<WebListener> webListeners = virtualServer.getWebListeners();
 
-        try {
-            engine.addChild((StandardHost)virtualServer);
-            for (WebListener listener : virtualServer.getWebListeners()) {
+        if ((webListeners != null) && (!webListeners.isEmpty())) {
+            for (WebListener listener : webListeners) {
                 if (getWebListener(listener.getId())==null) {
                     addWebListener(listener, virtualServer.getID());
                 }
             }
-            ConfigSupport.apply(new SingleConfigCode<com.sun.enterprise.config.serverbeans.VirtualServer>() {
-                public Object run(com.sun.enterprise.config.serverbeans.VirtualServer param)
-                        throws PropertyVetoException, TransactionFailure {
-                    param.setHosts(hosts);
-                    param.setNetworkListeners(networkListeners);
-                    param.setDocroot(docRoot);
-                    return null;
+        }
+
+        List<String> names = new ArrayList<String>();
+        if ((webListeners != null) && (!webListeners.isEmpty())) {
+            for (WebListener listener : webListeners) {
+                names.add(listener.getId());
+            }
+        } else {
+            for (NetworkListener networkListener :
+                networkConfig.getNetworkListeners().getNetworkListener()) {
+                names.add(networkListener.getName());
+            }
+            webListeners = listeners;
+        }
+
+        StringBuffer networkListeners = new StringBuffer("");
+        if (names.size()>0) {
+            networkListeners.append(names.get(0));
+        }
+        for (int i=1; i<names.size(); i++) {
+            networkListeners.append(",");
+            networkListeners.append(names.get(i));
+        }
+
+        String docRoot = null;
+        if (virtualServer.getDocRoot() != null) {
+            docRoot = virtualServer.getDocRoot().getPath();
+        }
+
+        String hostName = null;
+        if (virtualServer.getConfig() != null) {
+            hostName = virtualServer.getConfig().getHostNames();
+        }
+        final String root = docRoot;
+        final String nl = networkListeners.toString();
+        final String id = virtualServer.getID();
+        final String hosts = hostName;
+
+        try {
+            ConfigSupport.apply(new SingleConfigCode<HttpService>() {
+                public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
+                    com.sun.enterprise.config.serverbeans.VirtualServer newVirtualServer =
+                            param.createChild(com.sun.enterprise.config.serverbeans.VirtualServer.class);
+                    newVirtualServer.setId(id);
+                    newVirtualServer.setNetworkListeners(nl);
+                    newVirtualServer.setHosts(hosts);
+                    Property property = newVirtualServer.createChild(Property.class);
+                    property.setName("docroot");
+                    property.setValue(root);
+                    newVirtualServer.getProperty().add(property);
+                    param.getVirtualServer().add(newVirtualServer);
+                    return newVirtualServer;
                 }
-            }, vsBean);
+            }, httpService);
         } catch (Exception ex) {
-            throw new GlassFishException(ex);
+            ex.printStackTrace();
         }
 
         vs = (com.sun.enterprise.web.VirtualServer) engine.findChild(id);
-
         if (vs != null) {
             if (log.isLoggable(Level.INFO)) {
-                log.info("Added virtual server " + vs.getName() +
-                        " with networklisteners " + networkListeners);
+                log.info("Added virtual server " + id +
+                        " docroot " + docRoot + " networklisteners " + nl);
             }
+            ((VirtualServerFacade)virtualServer).setVirtualSever(vs);
+            vs.setNetworkListenerNames(names.toArray(new String[names.size()]));
         } else {
-            log.severe("Cannot add virtual server "+id);
+            log.severe("Could not add virtual server "+id);
             throw new GlassFishException(
                     new Exception("Cannot add virtual server " + id));
+
         }
         
     }

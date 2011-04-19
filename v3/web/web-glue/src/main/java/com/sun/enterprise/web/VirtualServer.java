@@ -1901,7 +1901,9 @@ public class VirtualServer extends StandardHost
      * this <tt>VirtualServer</tt> receives requests.
      */
     public void setWebListeners(WebListener...  webListeners) {
-        listeners = Arrays.asList(webListeners);
+        if (webListeners != null) {
+            listeners = Arrays.asList(webListeners);
+        }
     }
 
     /**
