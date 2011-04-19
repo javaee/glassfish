@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -161,16 +161,20 @@ class InstanceStateFileProcessor {
     }
 
     private void writeDoc() throws Exception {
-        OutputStream outputStream = new FileOutputStream(stateFile);
-        TransformerFactory transformerfactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerfactory.newTransformer();
-        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-        transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
-        //transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        DOMSource domSource = new DOMSource(this.xmlDoc);
-        transformer.transform(domSource, new StreamResult(outputStream));
-        outputStream.close();
+        OutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(stateFile);
+            TransformerFactory transformerfactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerfactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
+            //transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            DOMSource domSource = new DOMSource(this.xmlDoc);
+            transformer.transform(domSource, new StreamResult(outputStream));
+        } finally {
+            if (outputStream != null) outputStream.close();
+        }
     }
 
     public void updateState(String instanceName, String newState) throws Exception {

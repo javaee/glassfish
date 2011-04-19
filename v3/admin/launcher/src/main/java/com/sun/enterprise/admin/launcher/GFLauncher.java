@@ -232,7 +232,7 @@ public abstract class GFLauncher {
      * @return The full path of the logfile
      * @throws GFLauncherException if you call this method too early
      */
-    public String getLogFilename() throws GFLauncherException {
+    public synchronized String getLogFilename() throws GFLauncherException {
         if (!logFilenameWasFixed)
             throw new GFLauncherException(strings.get("internalError") + " call to getLogFilename() before it has been initialized");
 
@@ -263,7 +263,7 @@ public abstract class GFLauncher {
      *
      * @return true if the domain needs to be upgraded first
      */
-    public final boolean needsAutoUpgrade() {
+    public final synchronized boolean needsAutoUpgrade() {
         return needsAutoUpgrade;
     }
     
@@ -272,7 +272,7 @@ public abstract class GFLauncher {
      *
      * @return true if the domain needs to be upgraded first
      */
-    public final boolean needsManualUpgrade() {
+    public final synchronized boolean needsManualUpgrade() {
         return needsManualUpgrade;
     }
 
@@ -311,7 +311,7 @@ public abstract class GFLauncher {
             }
         }
     }
-private void setLogFilename(MiniXmlParser parser) throws GFLauncherException {
+    private void setLogFilename(MiniXmlParser parser) throws GFLauncherException {
         logFilename = parser.getLogFilename();
 
         if (logFilename == null)
@@ -381,7 +381,7 @@ private void setLogFilename(MiniXmlParser parser) throws GFLauncherException {
         this.info = info;
     }
 
-    final Map<String, String> getEnvProps() {
+    final synchronized Map<String, String> getEnvProps() {
         return asenvProps;
     }
 
@@ -389,7 +389,7 @@ private void setLogFilename(MiniXmlParser parser) throws GFLauncherException {
         return commandLine;
     }
 
-    final long getStartTime() {
+    final synchronized long getStartTime() {
         return startTime;
     }
 
@@ -481,8 +481,8 @@ private void setLogFilename(MiniXmlParser parser) throws GFLauncherException {
         //returns null in case the process is NOT dead
         try {
             int ev = sp.exitValue();
-            ProcessStreamDrainer psd = getProcessStreamDrainer();
-            String output = psd.getOutErrString();
+            ProcessStreamDrainer psd1 = getProcessStreamDrainer();
+            String output = psd1.getOutErrString();
             String trace = strings.get("server_process_died", ev, output);
             return trace;
         }

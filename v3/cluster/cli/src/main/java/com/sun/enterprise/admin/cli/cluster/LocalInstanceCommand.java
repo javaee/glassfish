@@ -47,6 +47,7 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.logging.Level;
 
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
@@ -200,8 +201,8 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             throw new CommandException(e);
         }
         
-        logger.finer("nodeDirChild: " + nodeDirChild);
-        logger.finer("instanceDir: " + instanceDir);
+        logger.log(Level.FINER, "nodeDirChild: {0}", nodeDirChild);
+        logger.log(Level.FINER, "instanceDir: {0}", instanceDir);
     }
 
     protected final InstanceDirs getInstanceDirs() {
@@ -336,7 +337,9 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         // The FileUtils.renameFile method has a retry built in.
         try {
             File tmpwhackee = File.createTempFile("oldinst", null, parent);
-            tmpwhackee.delete();
+            if (!tmpwhackee.delete()) {
+                throw new IOException(Strings.get("cantdelete", tmpwhackee));
+            }
             FileUtils.renameFile(whackee, tmpwhackee);
             FileUtils.whack(tmpwhackee);
         }
@@ -364,7 +367,9 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
 
             if (noInstancesRemain(files)) {
                 File tmpwhackee = File.createTempFile("oldnode", null, grandParent);
-                tmpwhackee.delete();
+                if (!tmpwhackee.delete()) {
+                    throw new IOException(Strings.get("cantdelete", tmpwhackee));
+                }
                 FileUtils.renameFile(parent, tmpwhackee);
                 FileUtils.whack(tmpwhackee);
             }
@@ -500,7 +505,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             }
         }
         // whether we were able to update the file or not, keep going
-        logger.finer("New DAS port number: " + port);
+        logger.log(Level.FINER, "New DAS port number: {0}", port);
         return port;
     }
 
@@ -509,6 +514,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         // or there can be zero in which case we create one-and-only
 
         File[] files = parent.listFiles(new FileFilter() {
+            @Override
             public boolean accept(File f) {
                 return isDirectory(f);
             }
@@ -559,6 +565,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         // look for subdirs in the parent dir -- there must be one and only one
 
         File[] files = parent.listFiles(new FileFilter() {
+            @Override
             public boolean accept(File f) {
                 return isDirectory(f);
             }

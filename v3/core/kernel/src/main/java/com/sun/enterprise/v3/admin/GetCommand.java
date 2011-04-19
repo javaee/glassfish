@@ -140,8 +140,6 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
             pattern = parentNodes[0].relativeName;
         }
 
-        String targetName = prefix + pattern;
-
         Map<Dom, String> matchingNodes;
         Map<Dom, String> dottedNames = new HashMap<Dom, String>();
         for (TreeNode parentNode : parentNodes) {
