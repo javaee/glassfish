@@ -72,6 +72,10 @@ public interface JavaEETransaction
 
     public Set getResources(Object poolInfo);
 
+    public TransactionalResource getLAOResource();
+
+    public void setLAOResource(TransactionalResource h);
+
     public TransactionalResource getNonXAResource();
 
     public void setResources(Set resources, Object poolInfo);

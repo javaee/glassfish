@@ -60,6 +60,7 @@ import javax.resource.spi.work.WorkException;
 import com.sun.jts.jta.TransactionManagerImpl;
 import com.sun.jts.jta.TransactionServiceProperties;
 import com.sun.jts.CosTransactions.Configuration;
+import com.sun.jts.CosTransactions.DefaultTransactionService;
 import com.sun.jts.CosTransactions.RecoveryManager;
 import com.sun.jts.CosTransactions.DelegatedRecoveryManager;
 import com.sun.jts.CosTransactions.RWLock;
@@ -313,21 +314,26 @@ public class JavaEETransactionManagerJTSDelegate
     public boolean enlistLAOResource(Transaction tran, TransactionalResource h)
            throws RollbackException, IllegalStateException, SystemException {
 
-        JavaEETransactionImpl tx = (JavaEETransactionImpl)tran;
-        ((JavaEETransactionManagerSimplified) javaEETM).startJTSTx(tx);
+        if (tran instanceof JavaEETransaction) {
+            JavaEETransaction tx = (JavaEETransaction)tran;
+            ((JavaEETransactionManagerSimplified) javaEETM).startJTSTx(tx);
 
-        //If transaction conatains a NonXA and no LAO, convert the existing
-        //Non XA to LAO
-        if(useLAO()) {
-            if(h != null && (tx.getLAOResource() == null) ) {
-                tx.setLAOResource(h);
-                if (h.isTransactional()) {
-                    XAResource res = h.getXAResource();
-                    return tran.enlistResource(res);
+            //If transaction conatains a NonXA and no LAO, convert the existing
+            //Non XA to LAO
+            if(useLAO()) {
+                if(h != null && (tx.getLAOResource() == null) ) {
+                    tx.setLAOResource(h);
+                    if (h.isTransactional()) {
+                        XAResource res = h.getXAResource();
+                        return tran.enlistResource(res);
+                    }
                 }
             }
+            return true;
+        } else {
+            // Should not be called
+            return false;
         }
-        return true;
 
     }
 
@@ -525,7 +531,8 @@ public class JavaEETransactionManagerJTSDelegate
         
                 if (Boolean.parseBoolean(txnService.getAutomaticRecovery())) {
                     // If recovery on server startup is set, initialize other properties as well
-                    TransactionServiceProperties.getJTSProperties(habitat, false);
+                    Properties props = TransactionServiceProperties.getJTSProperties(habitat, false);
+                    DefaultTransactionService.setServerName(props);
 
                     if (Boolean.parseBoolean(txnService.getPropertyValue("delegated-recovery"))) {
                         // Register GMS notification callback

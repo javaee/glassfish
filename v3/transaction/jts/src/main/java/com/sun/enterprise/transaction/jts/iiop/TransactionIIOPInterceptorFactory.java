@@ -82,9 +82,6 @@ public class TransactionIIOPInterceptorFactory implements IIOPInterceptorFactory
     private static Logger _logger =
             LogDomains.getLogger(InterceptorImpl.class, LogDomains.TRANSACTION_LOGGER);
 
-    private static StringManager localStrings =
-            StringManager.getManager(InterceptorImpl.class);
-
     private static String jtsClassName = "com.sun.jts.CosTransactions.DefaultTransactionService";
 
     private static Properties jtsProperties = new Properties();

@@ -140,7 +140,7 @@ public class GMSCallBack implements CallBack {
             // the database, otherwise while doing the recovery an instance may not
             // get all the correct indoubt xids.
             try {
-                Thread.sleep(waitTime*1000);
+                Thread.sleep(waitTime*1000L);
             } catch(InterruptedException e) {
                 e.printStackTrace();
             }
