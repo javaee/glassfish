@@ -179,16 +179,6 @@ public abstract class GenericSniffer implements Sniffer {
         return false;
     }
 
-
-    /**
-     * @return whether this sniffer is a primary sniffer
-     * An archive needs to be recognized by at least one primary sniffer.
-     *
-     */
-    public boolean isPrimary() {
-        return false;
-    }
-
     @Override
     public boolean equals(Object other) {
         if (other instanceof Sniffer) {

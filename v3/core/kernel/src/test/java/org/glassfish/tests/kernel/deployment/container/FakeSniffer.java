@@ -101,8 +101,4 @@ public class FakeSniffer implements Sniffer {
     public String[] getIncompatibleSnifferTypes() {
         return new String[0];
     }
-
-    public boolean isPrimary() {
-        return true;
-    }
 }

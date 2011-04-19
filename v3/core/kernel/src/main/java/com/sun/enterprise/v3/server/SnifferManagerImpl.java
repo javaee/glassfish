@@ -47,6 +47,7 @@ import org.jvnet.hk2.component.*;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.CompositeSniffer;
+import org.glassfish.api.container.SecondarySniffer;
 import org.glassfish.internal.deployment.SnifferManager;
 import org.glassfish.internal.deployment.ApplicationInfoProvider;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
@@ -253,7 +254,7 @@ public class SnifferManagerImpl implements SnifferManager {
             return false;
         }
         for (Sniffer sniffer : sniffers) {
-            if (sniffer.isPrimary()) {
+            if (! (sniffer instanceof SecondarySniffer)) {
                 return true;
             }
         }

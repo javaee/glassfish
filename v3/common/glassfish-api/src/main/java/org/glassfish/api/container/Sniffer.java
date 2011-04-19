@@ -162,12 +162,4 @@ public interface Sniffer {
      * 
      */
     public String[] getIncompatibleSnifferTypes();
-
-    /** 
-     * @return whether this sniffer is a primary sniffer
-     * An archive needs to be recognized by at least one primary sniffer.
-     * 
-     */
-    public boolean isPrimary();
-    
 }
