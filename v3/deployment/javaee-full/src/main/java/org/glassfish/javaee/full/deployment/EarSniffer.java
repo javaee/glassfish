@@ -107,5 +107,14 @@ public class EarSniffer extends GenericCompositeSniffer {
         return deploymentConfigurationPaths;
     }
 
+    /**
+     * @return whether this sniffer is a primary sniffer
+     * An archive needs to be recognized by at least one primary sniffer.
+     *
+     */
+    @Override
+    public boolean isPrimary() {
+        return true;
+    }
 }
 

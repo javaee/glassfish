@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -217,4 +217,13 @@ public class EjbSniffer  extends GenericSniffer implements Sniffer {
         return deploymentConfigurationPaths;
     }
 
+    /**
+     * @return whether this sniffer is a primary sniffer
+     * An archive needs to be recognized by at least one primary sniffer.
+     *
+     */
+    @Override
+    public boolean isPrimary() {
+        return true;
+    }
 }

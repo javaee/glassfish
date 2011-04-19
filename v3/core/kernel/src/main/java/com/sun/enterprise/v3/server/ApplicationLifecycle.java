@@ -609,7 +609,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
 
         DeploymentTracing tracing = context.getModuleMetaData(DeploymentTracing.class);
         
-        if (sniffers.size()==0) {
+        if (!snifferManager.containsPrimarySniffer(sniffers)) {
             report.failure(logger,localStrings.getLocalString("deploy.unknownmoduletpe","Module type not recognized for module {0}", context.getSourceDir()));
             return null;
         }

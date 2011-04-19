@@ -134,4 +134,14 @@ public class WebSniffer  extends GenericSniffer {
     public String[] getIncompatibleSnifferTypes() {
         return new String[] {"connector"};
     }
+
+    /**
+     * @return whether this sniffer is a primary sniffer
+     * An archive needs to be recognized by at least one primary sniffer.
+     *
+     */
+    @Override
+    public boolean isPrimary() {
+        return true;
+    }
 }

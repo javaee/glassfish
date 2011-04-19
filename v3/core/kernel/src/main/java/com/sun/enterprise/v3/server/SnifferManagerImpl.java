@@ -247,6 +247,19 @@ public class SnifferManagerImpl implements SnifferManager {
         }
     }
 
+    public boolean containsPrimarySniffer(
+        Collection<? extends Sniffer> sniffers) {
+        if (sniffers == null || sniffers.isEmpty()) {
+            return false;
+        }
+        for (Sniffer sniffer : sniffers) {
+            if (sniffer.isPrimary()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private List<URI> getURIs(DeploymentContext context) {
         List<URI> uris = new ArrayList<URI>();
         uris.add(context.getSource().getURI());

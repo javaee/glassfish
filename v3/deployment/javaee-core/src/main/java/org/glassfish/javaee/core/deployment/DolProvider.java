@@ -140,7 +140,9 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
         Archivist archivist = archivistFactory.getArchivist(
                 sourceArchive, cl);
         if (archivist == null) {
-            throw new RuntimeException(localStrings.getLocalString("invalid.javaee.archive", "Archive [{0}] was deployed as a Java EE archive while it does not contain any valid Java EE components. Please check the packaging of the archive.", name));
+            // if no JavaEE medata was found in the archive, we return 
+            // an empty Application object
+            return new Application(habitat);
         }
         archivist.setAnnotationProcessingRequested(true);
         String xmlValidationLevel = dasConfig.getDeployXmlValidation();
