@@ -301,7 +301,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
 
     void setSsoCookieSecure(String value);
 
-    @Attribute(defaultValue="false", dataType=Boolean.class)
+    @Attribute(defaultValue="true", dataType=Boolean.class)
     String getSsoCookieHttpOnly();
 
     void setSsoCookieHttpOnly(String value);
