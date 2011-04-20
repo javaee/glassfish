@@ -437,7 +437,7 @@ public class ResourceHandler extends AbstractResourceHandler {
             }
         }
 
-        return envEntries.toArray(new EnvironmentProperty[] {});
+        return envEntries.toArray(new EnvironmentProperty[envEntries.size()]);
     }
 
     /**

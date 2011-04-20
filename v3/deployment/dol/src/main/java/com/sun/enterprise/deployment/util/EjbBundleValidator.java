@@ -94,10 +94,10 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
         InterceptorBindingTranslator bindingTranslator = 
             new InterceptorBindingTranslator(bundleDescriptor);
 
-        for(Iterator iter = bundleDescriptor.getEjbs().iterator(); 
+        for(Iterator<EjbDescriptor> iter = bundleDescriptor.getEjbs().iterator();
             iter.hasNext();) {
-            EjbDescriptor ejb = (EjbDescriptor) iter.next();
-            if( ejb.getType() != EjbEntityDescriptor.TYPE ) {
+            EjbDescriptor ejb = iter.next();
+            if(!EjbEntityDescriptor.TYPE.equals(ejb.getType())) {
                 ejb.applyInterceptors(bindingTranslator);
             }
         }

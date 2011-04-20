@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -174,17 +174,15 @@ public class InterceptorBindingNode extends DeploymentDescriptorNode {
         Map<MethodDescriptor, List<EjbInterceptor>> methodInterceptorsMap =
             ejbDesc.getMethodInterceptorsMap();
 
-        for(MethodDescriptor nextMethod : methodInterceptorsMap.keySet()) {
-
-            List<EjbInterceptor> interceptors = 
-                methodInterceptorsMap.get(nextMethod);
+        for(Map.Entry<MethodDescriptor, List<EjbInterceptor>> mapEntry:
+            methodInterceptorsMap.entrySet()) {
+            List<EjbInterceptor> interceptors = mapEntry.getValue();
             
             if(interceptors.isEmpty()) {
-                writeExclusionBinding(parent, ejbDesc, nextMethod);
+                writeExclusionBinding(parent, ejbDesc, mapEntry.getKey());
             } else {
-                writeTotalOrdering(parent, interceptors, ejbDesc, nextMethod);
+                writeTotalOrdering(parent, interceptors, ejbDesc, mapEntry.getKey());
             }
-
         }
 
         return;

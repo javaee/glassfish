@@ -550,7 +550,7 @@ public class TypeUtil {
                                                setterMethodName);
         } 
 
-        return ( setterMethodName.substring(3, 4).toLowerCase() +
+        return ( setterMethodName.substring(3, 4).toLowerCase(Locale.ENGLISH) +
                  setterMethodName.substring(4) );
 
     }
@@ -566,7 +566,7 @@ public class TypeUtil {
                                                propertyName);
         } 
 
-        return ( "set" + propertyName.substring(0, 1).toUpperCase() +
+        return ( "set" + propertyName.substring(0, 1).toUpperCase(Locale.ENGLISH) +
                  propertyName.substring(1) );
 
     }
