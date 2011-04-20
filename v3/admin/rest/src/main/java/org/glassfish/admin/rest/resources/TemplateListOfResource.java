@@ -127,17 +127,17 @@ public abstract class TemplateListOfResource {
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
                 if (exitCode != ActionReport.ExitCode.FAILURE) {
                     String successMessage =
-                            localStrings.getLocalString("rest.resource.create.message",
-                            "\"{0}\" created successfully.", resourceToCreate);
+                        localStrings.getLocalString("rest.resource.create.message",
+                        "\"{0}\" created successfully.", resourceToCreate);
                     ActionReportResult arr = ResourceUtil.getActionReportResult(201, successMessage, requestHeaders, uriInfo);
                     return Response.ok(arr).build();
                 }
 
                 String errorMessage = getErrorMessage(data, actionReport);
-                ActionReportResult arr = ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo);
-                return Response.status(400).entity(arr).build();
+                ActionReportResult arr = ResourceUtil.getActionReportResult(Response.Status.INTERNAL_SERVER_ERROR, errorMessage, requestHeaders, uriInfo);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(arr).build();
             } else {
-                ActionReportResult arr = ResourceUtil.getActionReportResult(400, "No CRUD Create possible.", requestHeaders, uriInfo);
+                ActionReportResult arr = ResourceUtil.getActionReportResult(Response.Status.INTERNAL_SERVER_ERROR, "No CRUD Create possible.", requestHeaders, uriInfo);
                 return Response.status(HttpURLConnection.HTTP_INTERNAL_ERROR).entity(arr).build();
             }
         } catch (Exception e) {

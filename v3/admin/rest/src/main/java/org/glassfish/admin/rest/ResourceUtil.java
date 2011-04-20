@@ -552,6 +552,10 @@ public class ResourceUtil {
         return Response.status(status).entity(message).build();
     }
 
+    public static ActionReportResult getActionReportResult(Response.Status status, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
+        return getActionReportResult(status.getStatusCode(), null, message, requestHeaders, uriInfo);
+    }
+    
     public static ActionReportResult getActionReportResult(int status, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
         return getActionReportResult(status, null, message, requestHeaders, uriInfo);
     }

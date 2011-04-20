@@ -267,7 +267,9 @@ public class RestTestBase {
     protected void checkStatusForSuccess(ClientResponse cr) {
         int status = cr.getStatus();
         if ((status < 200) || (status > 299)) {
-            fail("Expected a status between 200 and 299 (inclusive).  Found " + status);
+            String message = getErrorMessage(cr);
+            fail("Expected a status between 200 and 299 (inclusive).  Found " + status +
+                    ((message != null) ? ":  " + message : ""));
         }
     }
 
@@ -276,6 +278,16 @@ public class RestTestBase {
         if ((status < 200) && (status > 299)) {
             fail("Expected a status less than 200 or greater than 299 (inclusive).  Found " + status);
         }
+    }
+    
+    protected String getErrorMessage(ClientResponse cr) {
+        String message = null;
+        Map map = MarshallingUtils.buildMapFromDocument(cr.getEntity(String.class));
+        if (map != null) {
+            message = (String)map.get("message");
+        }
+        
+        return message;
     }
 
     protected static String getParameter(String paramName, String defaultValue) {
