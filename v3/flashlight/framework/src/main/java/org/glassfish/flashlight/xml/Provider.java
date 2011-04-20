@@ -56,7 +56,7 @@ public class Provider {
     private String moduleName = null;
     private String probeProviderName = null;
     private String probeProviderClass = null;
-    private List<Probe> probes = null;
+    private List<XmlProbe> probes = null;
 
     public String getModuleName() {
         return moduleName;
@@ -74,13 +74,13 @@ public class Provider {
         return probeProviderClass;
     }
 
-    public List<Probe> getProbes() {
+    public List<XmlProbe> getProbes() {
         return probes;
     }
 
     public Provider(String moduleProviderName, String moduleName,
                     String probeProviderName, String providerClass,
-                    List<Probe> probes) {
+                    List<XmlProbe> probes) {
         this.moduleProviderName = moduleProviderName;
         this.moduleName = moduleName;
         this.probeProviderName = probeProviderName;
@@ -100,7 +100,7 @@ public class Provider {
                 .append(probeProviderName)
                 .append(" probeProviderClass=")
                 .append(probeProviderClass);
-        for (Probe probe : probes) {
+        for (XmlProbe probe : probes) {
             probeStr.append("\n    ").append(probe.toString());
         }
         return (probeStr.toString());

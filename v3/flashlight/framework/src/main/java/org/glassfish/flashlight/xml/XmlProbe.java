@@ -51,10 +51,10 @@ import java.util.*;
  *
  * @author Mahesh Meswani
  */
-public class Probe {
+public class XmlProbe {
     String probeName = null;
     String probeMethod = null;
-    List<ProbeParam> probeParams = null;
+    List<XmlProbeParam> probeParams = null;
     boolean hasSelf = false;
     boolean isHidden = false;
 
@@ -66,7 +66,7 @@ public class Probe {
         return probeMethod;
     }
 
-    public List<ProbeParam> getProbeParams() {
+    public List<XmlProbeParam> getProbeParams() {
         return probeParams;
     }
 
@@ -78,7 +78,7 @@ public class Probe {
         return isHidden;
     }
 
-    public Probe(String probeName, String method, List<ProbeParam> params, boolean hasSelf, boolean isHidden) {
+    public XmlProbe(String probeName, String method, List<XmlProbeParam> params, boolean hasSelf, boolean isHidden) {
         this.probeName = probeName;
         probeMethod = method;
         probeParams = params;
@@ -90,7 +90,7 @@ public class Probe {
     @Override
     public String toString() {
         final StringBuilder paramsStr = new StringBuilder("     \n");
-        for (ProbeParam param : probeParams) {
+        for (XmlProbeParam param : probeParams) {
             paramsStr.append("         , Param ").append(param.toString());
         }
         return (" Probe name = " + probeName +
