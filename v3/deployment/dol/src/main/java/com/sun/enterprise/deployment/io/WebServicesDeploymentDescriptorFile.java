@@ -55,8 +55,7 @@ import java.util.Vector;
  *
  * @author Kenneth Saks
  */
-public class WebServicesDeploymentDescriptorFile extends 
-    DeploymentDescriptorFile {
+public class WebServicesDeploymentDescriptorFile extends DeploymentDescriptorFile {
 
     private String descriptorPath;
 
