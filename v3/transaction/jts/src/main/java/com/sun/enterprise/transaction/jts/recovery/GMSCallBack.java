@@ -118,6 +118,8 @@ public class GMSCallBack implements CallBack {
                 gms = gmsAdapter.getModule();
                 // Set the member details when GMS service is ready to store it
                 try {
+                     _logger.log(Level.INFO, "Storing GMS instance " + instanceName +
+                             " data " + TXLOGLOCATION + " : " + logdir);
                      gms.updateMemberDetails(instanceName, TXLOGLOCATION, logdir);
                 } catch (Exception e) {
                     _logger.log(Level.WARNING, "jts.error_updating_gms", e);
@@ -153,7 +155,8 @@ public class GMSCallBack implements CallBack {
             }
 
             synchronized(lock) {
-                _logger.log(Level.INFO, "[GMSCallBack] Recovering for instance: " + instance);
+                _logger.log(Level.INFO, "[GMSCallBack] Recovering for instance: " + instance + 
+                        " logdir: " + logdir);
                 doRecovery(logdir, instance, timestamp);
 
                 // Find records of not finished delegated recovery and do delegated recovery on those instances.
