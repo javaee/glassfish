@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -238,7 +238,7 @@ public class WSServletContextListener implements ServletContextListener {
 
         if (wsFeatures.size() > 0) {
             binding = BindingID.parse(givenBinding).createBinding(wsFeatures.toArray
-                    (new WebServiceFeature[0]));
+                    (new WebServiceFeature[wsFeatures.size()]));
         } else {
             binding = BindingID.parse(givenBinding).createBinding();
         }
