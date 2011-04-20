@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -235,22 +235,32 @@ public class APIClassLoaderServiceImpl implements PostConstruct {
         @Override
         public Enumeration<URL> getResources(String name) throws IOException {
             List<Enumeration<URL>> enumerators = new ArrayList<Enumeration<URL>>();
+            enumerators.add(findResources(name));
+            // Either requested resource belongs to java/ namespace or
+            // it was not found in any of the bundles, so delegate to parent.
+            enumerators.add(getParent().getResources(name));
+            return new CompositeEnumeration(enumerators);
+        }
+
+        // This method is needed to be compatible with ClassLoader implementation in IBM JRE.
+        // In IBM JRE, ClassLoader.getResources() does not call parent.getResources(); instead it
+        // recurssively calls findResources() for all parents in the delegation hierarchy.
+        // See issue #16364 for details.
+        @Override
+        protected Enumeration<URL> findResources(String name) throws IOException {
             if (!name.startsWith("java/")) {
                 if (name.equals(MAILCAP)) {
-                    // punch in for META-INF/mailcap files.
-                    // see issue #8426
+                    // punch in for META-INF/mailcap files. see issue #8426
+                    List<Enumeration<URL>> enumerators = new ArrayList<Enumeration<URL>>();
                     for (Module m : mr.getModules()) {
                         enumerators.add(m.getClassLoader().getResources(name));
                     }
+                    return new CompositeEnumeration(enumerators);
                 } else {
-                    enumerators.add(apiModuleLoader.getResources(name));
+                    return apiModuleLoader.getResources(name);
                 }
             }
-            // Either requested resource belongs to java/ namespace or
-            // it was not found in any of the bundles, so call
-            // super class implementation which will delegate to parent.
-            enumerators.add(super.getResources(name));
-            return new CompositeEnumeration(enumerators);
+            return Collections.enumeration(Collections.<URL>emptyList());
         }
 
         @Override
