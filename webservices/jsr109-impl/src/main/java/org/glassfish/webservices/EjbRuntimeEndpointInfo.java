@@ -43,37 +43,34 @@ package org.glassfish.webservices;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
-import org.glassfish.ejb.api.EjbEndpointFacade;
-
-import com.sun.xml.ws.transport.http.servlet.ServletAdapterList;
-import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
-import com.sun.xml.ws.api.server.SDDocumentSource;
-import com.sun.xml.ws.api.server.Invoker;
-import com.sun.xml.ws.api.server.WSEndpoint;
-import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.BindingID;
-
-import javax.xml.ws.WebServiceContext;
-import javax.xml.ws.WebServiceFeature;
-import javax.xml.ws.soap.MTOMFeature;
-import javax.xml.ws.soap.AddressingFeature;
-import java.net.URI;
-import java.net.URL;
-import java.util.ResourceBundle;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.io.File;
-
+import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.server.Invoker;
+import com.sun.xml.ws.api.server.SDDocumentSource;
+import com.sun.xml.ws.api.server.WSEndpoint;
+import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
+import com.sun.xml.ws.transport.http.servlet.ServletAdapterList;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
-import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.ejb.api.EJBInvocation;
+import org.glassfish.ejb.api.EjbEndpointFacade;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.jvnet.hk2.component.Habitat;
+
+import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.WebServiceFeature;
+import javax.xml.ws.soap.AddressingFeature;
+import javax.xml.ws.soap.MTOMFeature;
+import java.io.File;
+import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -303,7 +300,7 @@ public class EjbRuntimeEndpointInfo {
         //Issue 10776 The wsCtxt created using WebServiceReferenceManagerImpl
         //does not have the jaxwsContextDelegate set
         //set it using this method
-        //addWSContextInfo(wsCtxt);
+        addWSContextInfo(wsCtxt);
         if (inv != null) {
             EJBInvocation ejbInv = (EJBInvocation) inv;
             ejbInv.setWebServiceContext(wsCtxt);
@@ -315,26 +312,21 @@ public class EjbRuntimeEndpointInfo {
     private void addWSContextInfo(WebServiceContextImpl wsCtxt) {
         WebServiceContextImpl wsc = null;
 
-        EjbDescriptor bundle = (EjbDescriptor)endpoint.getEjbComponentImpl();
+        EjbDescriptor bundle = endpoint.getEjbComponentImpl();
         Iterator<ResourceReferenceDescriptor> it = bundle.getResourceReferenceDescriptors().iterator();
+
         while(it.hasNext()) {
             ResourceReferenceDescriptor r = it.next();
             if(r.isWebServiceContext()) {
-                Iterator<InjectionTarget> iter = r.getInjectionTargets().iterator();
+                try {
+                    javax.naming.InitialContext ic = new javax.naming.InitialContext();
+                    wsc = (WebServiceContextImpl) ic.lookup("java:comp/env/" + r.getName());
+                } catch (Throwable t) {
+                    logger.severe(rb.getString("exception.thrown") + t);
+                }
+                if(wsc != null) {
+                    wsc.setContextDelegate(wsCtxt.getContextDelegate());
 
-                while(iter.hasNext()) {
-                    
-                    try {
-                        javax.naming.InitialContext ic = new javax.naming.InitialContext();
-                        wsc = (WebServiceContextImpl) ic.lookup("java:comp/env/" + r.getName());
-                    } catch (Throwable t) {
-                        // Do something here
-                        logger.fine(rb.getString("exception.thrown") + t);
-                    }
-                    if(wsc != null) {
-                        wsc.setContextDelegate(wsCtxt.getContextDelegate());
-
-                    }
                 }
             }
         }
@@ -388,8 +380,8 @@ public class EjbRuntimeEndpointInfo {
 
     private AddressingFeature.Responses getResponse(String s) {
         if (s != null) {
-                    return AddressingFeature.Responses.valueOf(AddressingFeature.Responses.class,s);
-                } else return AddressingFeature.Responses.ALL;
+            return AddressingFeature.Responses.valueOf(AddressingFeature.Responses.class,s);
+        } else return AddressingFeature.Responses.ALL;
 
     }
 
