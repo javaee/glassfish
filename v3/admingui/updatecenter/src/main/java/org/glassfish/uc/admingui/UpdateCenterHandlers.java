@@ -455,16 +455,18 @@ public class UpdateCenterHandlers {
             return;
         }
         List<Map> selectedRows = (List) obj;
-        List<Fmri> fList = new ArrayList();
+        //do not use Fmri list to pass to installPackages, use String array to avoid UPDATECENTER2-2187
+        String[] fmris = new String[selectedRows.size()];
+        int i=0;
         try {
             for (Map oneRow : selectedRows) {
-                fList.add((Fmri)oneRow.get("fmri"));
+                fmris[i++]=((Fmri)oneRow.get("fmri")).toString();
             }
             if (install){
-                image.installPackages(fList);
+                image.installPackages(fmris);
                 //updateCountInSession(image);   No need to update the update count since the count will not change.  Only installing new component is allowed.
             }else{
-                image.uninstallPackages(fList);
+                image.uninstallPackages(fmris);
             }
             GuiUtil.setSessionValue("restartRequired", Boolean.TRUE);
         }catch(Exception ex){
