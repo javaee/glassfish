@@ -141,12 +141,12 @@ public class TemplateRestResource {
             ActionReporter ar = Util.applyChanges(data, uriInfo, habitat);
             if(ar.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
                 //TODO better error handling.
-                return Response.status(400).entity(ResourceUtil.getActionReportResult(400, "Could not apply changes" + ar.getMessage(), requestHeaders, uriInfo)).build();
+                return Response.status(400).entity(ResourceUtil.getActionReportResult(400, ar, "Could not apply changes" + ar.getMessage(), requestHeaders, uriInfo)).build();
             }
 
             String successMessage = localStrings.getLocalString("rest.resource.update.message",
                     "\"{0}\" updated successfully.", uriInfo.getAbsolutePath());
-            return Response.ok(ResourceUtil.getActionReportResult(200, successMessage, requestHeaders, uriInfo)).build();
+            return Response.ok(ResourceUtil.getActionReportResult(200, ar, successMessage, requestHeaders, uriInfo)).build();
         } catch (Exception ex) {
             if (ex.getCause() instanceof ValidationException) {
                 return Response.status(400).entity(ResourceUtil.getActionReportResult(400, ex.getMessage(), requestHeaders, uriInfo)).build();
@@ -215,17 +215,17 @@ public class TemplateRestResource {
                 if (exitCode != ActionReport.ExitCode.FAILURE) {
                     String successMessage = localStrings.getLocalString("rest.resource.delete.message",
                             "\"{0}\" deleted successfully.", new Object[]{uriInfo.getAbsolutePath()});
-                    return Response.ok(ResourceUtil.getActionReportResult(200, successMessage, requestHeaders, uriInfo)).build(); //200 - ok
+                    return Response.ok(ResourceUtil.getActionReportResult(200, actionReport, successMessage, requestHeaders, uriInfo)).build(); //200 - ok
                 }
 
                 String errorMessage = actionReport.getMessage();
 
-                return Response.status(400).entity(ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo)).build(); //400 - bad request
+                return Response.status(400).entity(ResourceUtil.getActionReportResult(400, actionReport, errorMessage, requestHeaders, uriInfo)).build(); //400 - bad request
             }
 
             String message = localStrings.getLocalString("rest.resource.delete.forbidden",
                     "DELETE on \"{0}\" is forbidden.", new Object[]{uriInfo.getAbsolutePath()});
-            return Response.status(400).entity(ResourceUtil.getActionReportResult(403, message, requestHeaders, uriInfo)).build(); //403 - forbidden
+            return Response.status(400).entity(ResourceUtil.getActionReportResult(403, actionReport, message, requestHeaders, uriInfo)).build(); //403 - forbidden
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }

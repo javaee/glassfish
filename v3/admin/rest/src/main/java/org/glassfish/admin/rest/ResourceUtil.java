@@ -41,6 +41,7 @@
 package org.glassfish.admin.rest;
 
 
+import com.sun.enterprise.v3.common.ActionReporter;
 import java.util.Locale;
 import org.glassfish.admin.rest.generator.CommandResourceMetaData;
 import java.lang.reflect.Method;
@@ -77,7 +78,6 @@ import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.DomDocument;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
-import org.glassfish.admin.rest.generator.ResourcesGeneratorBase;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.provider.ParameterMetaData;
 import org.glassfish.admin.rest.provider.ProviderUtil;
@@ -552,13 +552,21 @@ public class ResourceUtil {
         return Response.status(status).entity(message).build();
     }
 
-    // FIXME: This should take ActionReport as a param
     public static ActionReportResult getActionReportResult(int status, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
+        return getActionReportResult(status, null, message, requestHeaders, uriInfo);
+    }
+    
+    public static ActionReportResult getActionReportResult(int status, ActionReport parentActionReport, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
         if (isBrowser(requestHeaders)) {
             message = getHtml(message, uriInfo, false);
         }
         RestActionReporter ar = new RestActionReporter();
+        if (parentActionReport != null) {
+            ar.getSubActionsReport().addAll(((ActionReporter)parentActionReport).getSubActionsReport());
+        }
+        
         ActionReportResult result = new ActionReportResult(ar);
+        
         if ((status >= 200) && (status <= 299)) {
             ar.setSuccess();
         } else {
