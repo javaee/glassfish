@@ -102,21 +102,14 @@
            width="$int{18}"
            url="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/table/actions_separator.gif"
         />
-
         <sun:dropDown id="actions" selected="#{actionValue}" submitForm="#{true}" immediate="#{true}"
-                labels={"$resource{i18n.common.newDropDown}",
-                        "$resource{i18n.tree.jdbcResources}",
-                        "$resource{i18n.tree.connectionFactories}",
-                        "$resource{i18n.tree.destinationResources}",
-                        "$resource{i18n.tree.javaMailSessions}",
-                        "$resource{i18n.tree.customResources}",
-                        "$resource{i18n.tree.externalResources}",
-                        "$resource{i18n.tree.connectorResources}",
-                        "$resource{i18n.tree.adminObjectResources}"}
-
-                values={"",  "jdbc/jdbcResourceNew.jsf", "jms/jmsConnectionNew.jsf", "jms/jmsDestinationNew.jsf",
-                         "full/mailResourceNew.jsf", "full/customResourceNew.jsf", "full/externalResourceNew.jsf",
-                         "jca/connectorResourceNew.jsf", "jca/adminObjectNew.jsf" } >
+                      labels="$attribute{labels}" values="$attribute{values}"
+                >
+              <!beforeCreate
+                    getContentOfIntegrationPoints(type="org.glassfish.admingui:resourceTypeDropdown" labels="#{requestScope.labels}" values="#{requestScope.values}" );
+                    listAdd(list="#{requestScope.labels}" value="$resource{i18n.common.newDropDown}",  index="0");
+                    listAdd(list="#{requestScope.values}" value=""  index="0" );
+                />
                 <!command
                     setAttribute(key="click" value="$this{component}");
                     setAttribute(key="actionValue" value="#{click.selected}");
@@ -125,16 +118,12 @@
             </sun:dropDown>
 
             <sun:dropDown id="filter" selected="$pageSession{filterValue}" label="$resource{i18n.common.filterDropDown}" submitForm="#{true}" immediate="#{true}"
-                 labels={"$resource{i18n.common.showAll}",
-                        "$resource{i18n.tree.jdbcResources}",                        
-                        "$resource{i18n.tree.javaMailSessions}",
-                        "$resource{i18n.tree.customResources}",
-                        "$resource{i18n.tree.externalResources}",
-                        "$resource{i18n.tree.connectorResources}",
-                        "$resource{i18n.tree.adminObjectResources}"}
-                 values={"", "jdbc-resource", "mail-resource", "custom-resource",
-                         "external-jndi-resource", "connector-resource", "admin-object-resource"}>
-                labels="$attribute{labelsList}" values="$attribute{valuesList}">
+                labels="$attribute{filterLabels}" values="$attribute{filterValues}">
+                <!beforeCreate
+                    getContentOfIntegrationPoints(type="org.glassfish.admingui:resFilterDropdown" labels="#{requestScope.filterLabels}" values="#{requestScope.filterValues}" );
+                    listAdd(list="#{requestScope.filterLabels}" value="$resource{i18n.common.showAll}",  index="0");
+                    listAdd(list="#{requestScope.filterValues}" value=""  index="0" );
+                />
                 <!command
                     setAttribute(key="click" value="$this{component}");
                     setAttribute(key="filterValue" value="#{click.selected}");

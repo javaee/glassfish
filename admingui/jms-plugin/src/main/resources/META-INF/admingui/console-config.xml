@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -98,4 +98,19 @@
                 priority="300"
                 content="/physdest/serverPhysDestTab.jsf"
     />
+
+    <!-- add dropdown option for the resource dropdown of cluster/standalone instance resource table. -->
+    <integration-point
+            id="jmsResourceDropDown"
+            type="org.glassfish.admingui:resourceTypeDropdown"
+            priority="400"
+            content="jms/jmsConnectionNew.jsf|org.glassfish.admingui.core.Strings|tree.connectionFactories"
+    />
+    <integration-point
+            id="jmsResourceDropDown2"
+            type="org.glassfish.admingui:resourceTypeDropdown"
+            priority="500"
+            content="jms/jmsDestinationNew.jsf|org.glassfish.admingui.core.Strings|tree.destinationResources"
+    />
+
 </console-config> 

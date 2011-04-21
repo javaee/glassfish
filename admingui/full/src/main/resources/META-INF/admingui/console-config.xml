@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -121,6 +121,44 @@
         id="full_edit_ejb"
         type="org.glassfish.admingui:editAppPage"
         content="ejb:full/apps/editEjb.jsf"
+    />
+    <!-- add dropdown option for the resource dropdown of cluster/standalone instance resource table. -->
+    <integration-point
+            id="jmailResourceDropDown"
+            type="org.glassfish.admingui:resourceTypeDropdown"
+            priority="600"
+            content="full/mailResourceNew.jsf|org.glassfish.admingui.core.Strings|tree.javaMailSessions"
+    />
+    <integration-point
+            id="customResourceDropDown"
+            type="org.glassfish.admingui:resourceTypeDropdown"
+            priority="700"
+            content="full/customResourceNew.jsf|org.glassfish.admingui.core.Strings|tree.customResources"
+    />
+    <integration-point
+            id="externalResourceDropDown"
+            type="org.glassfish.admingui:resourceTypeDropdown"
+            priority="800"
+            content="full/externalResourceNew.jsf|org.glassfish.admingui.core.Strings|tree.externalResources"
+    />
+
+    <integration-point
+            id="jmailFilter"
+            type="org.glassfish.admingui:resFilterDropdown"
+            priority="600"
+            content="mail-resource|org.glassfish.admingui.core.Strings|tree.javaMailSessions"
+    />
+    <integration-point
+            id="customFilter"
+            type="org.glassfish.admingui:resFilterDropdown"
+            priority="700"
+            content="custom-resource|org.glassfish.admingui.core.Strings|tree.customResources"
+    />
+    <integration-point
+            id="externalFilter"
+            type="org.glassfish.admingui:resFilterDropdown"
+            priority="800"
+            content="external-jndi-resource|org.glassfish.admingui.core.Strings|tree.externalResources"
     />
 
 </console-config>
