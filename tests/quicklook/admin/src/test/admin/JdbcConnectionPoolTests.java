@@ -86,7 +86,7 @@ public class JdbcConnectionPoolTests extends BaseAsadminTest {
         //ping succeeded!
     }
 
-    @Test(groups={"pulse"}, dependsOnMethods={"createPool"})
+    @Test(groups={"pulse"}, dependsOnMethods={"pingPool"})
     public void ensureCreatedPoolExists() {
         Manifest man = runListPoolsCommand();
         GeneralUtils.handleManifestFailure(man);
