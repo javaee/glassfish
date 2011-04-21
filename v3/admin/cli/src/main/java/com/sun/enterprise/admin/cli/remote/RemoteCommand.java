@@ -344,9 +344,10 @@ public class RemoteCommand extends CLICommand {
             // if a --help request failed, try to emulate it locally
             if (programOpts.isHelp()) {
                 Reader r = getLocalManPage();
-                if (r != null) {
-                    try {
-                        BufferedReader br = new BufferedReader(r);
+                BufferedReader br = null;
+                try {
+                    if (r != null) {
+                        br = new BufferedReader(r);
                         PrintWriter pw = new PrintWriter(System.out);
                         char[] buf = new char[8192];
                         int cnt;
@@ -354,14 +355,15 @@ public class RemoteCommand extends CLICommand {
                             pw.write(buf, 0, cnt);
                         pw.flush();
                         return SUCCESS;
-                    } catch (IOException ioex2) {
-                        // ignore it and throw original exception
-                    } finally {
-                        try {
-                            r.close();
-                        } catch (IOException ioex3) {
-                            // ignore it
-                        }
+                    }
+                } catch (IOException ioex2) {
+                    // ignore it and throw original exception
+                } finally {
+                    try {
+                        if (br != null)
+                            br.close();
+                    } catch (IOException ioex3) {
+                        // ignore it
                     }
                 }
             }
@@ -561,7 +563,7 @@ public class RemoteCommand extends CLICommand {
      * Return a Habitat used just for reading man pages from the
      * modules in the modules directory.
      */
-    private static Habitat getManHabitat() {
+    private static synchronized Habitat getManHabitat() {
         if (manHabitat != null)
             return manHabitat;
         ModulesRegistry registry =
@@ -574,7 +576,7 @@ public class RemoteCommand extends CLICommand {
      * Return a ClassLoader that loads classes from all the modules
      * (jar files) in the <INSTALL_ROOT>/modules directory.
      */
-    private static ClassLoader getModuleClassLoader() {
+    private static synchronized ClassLoader getModuleClassLoader() {
         if (moduleClassLoader != null)
             return moduleClassLoader;
         try {

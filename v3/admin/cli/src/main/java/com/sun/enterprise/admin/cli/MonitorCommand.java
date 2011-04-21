@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -88,7 +88,7 @@ public class MonitorCommand extends CLICommand {
         try {
             MonitorTask monitorTask = new MonitorTask(timer, getRemoteArgs(),
                             programOpts, env, type, filter, fileName);
-            timer.scheduleAtFixedRate(monitorTask, 0, interval * 1000);
+            timer.scheduleAtFixedRate(monitorTask, 0, (long)interval * 1000);
 
             boolean done = false;
             // detect if a q or Q key is entered
@@ -98,7 +98,7 @@ public class MonitorCommand extends CLICommand {
                 //final char c = 'p';
                 final String str = new BufferedReader(
                                 new InputStreamReader(System.in)).readLine(); 
-                if (str.equals("q") || str.equals("Q")) {
+                if (str == null || str.equals("q") || str.equals("Q")) {
                     timer.cancel();
                     done = true;
                     String exceptionMessage = monitorTask.getExceptionMessage();
