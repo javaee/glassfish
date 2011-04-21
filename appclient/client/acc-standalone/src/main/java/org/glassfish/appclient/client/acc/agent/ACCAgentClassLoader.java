@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,6 +47,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLStreamHandlerFactory;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -78,7 +80,18 @@ public class ACCAgentClassLoader extends URLClassLoader {
          * typically for a splash screen.
          */
         super(userClassPath(),
-                new URLClassLoader(GFSystemClassPath(), parent.getParent()));
+                prepareLoader(GFSystemClassPath(), parent.getParent()));
+    }
+    
+    private static URLClassLoader prepareLoader(final URL[] urls, final ClassLoader parent) {
+        return AccessController.doPrivileged(new PrivilegedAction<URLClassLoader>() {
+
+            @Override
+            public URLClassLoader run() {
+                return new URLClassLoader(urls, parent);
+            }
+            
+        });
     }
 
     public ACCAgentClassLoader(URL[] urls) {

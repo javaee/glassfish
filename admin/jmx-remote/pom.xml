@@ -55,11 +55,9 @@
     <name>JMX Remote Service</name>
     <description>Private APIs for JMX connector infrastructure used internally within Glassfish V3</description>
     <developers>
-
         <developer>
-            <id>ne110415</id>
-            <name>Nandini Ektare</name>
-            <url>http://blogs.sun.com/nektare</url>
+            <id>naman_mehta</id>
+            <name>Naman Mehta</name>
             <organization>Oracle, Inc.</organization>
             <roles>
                 <role>lead</role>

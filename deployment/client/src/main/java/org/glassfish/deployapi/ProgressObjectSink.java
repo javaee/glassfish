@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -394,7 +394,6 @@ public class ProgressObjectSink extends DFProgressObject implements ProgressList
             /*
              *The new state status depends on the DeploymentStatus outcome.
              */
-            String msgKey = null;
             int stageStatus = -1;
             Throwable exc;
 
@@ -418,7 +417,7 @@ public class ProgressObjectSink extends DFProgressObject implements ProgressList
     
     private void reviseStatusAndMessage(DeploymentStatus ds, DFDeploymentStatus newStageStatus) {
         String msgKey = null;
-        Status stageStatus = Status.NOTINITIALIZED;
+        Status stageStatus;
         
         if (ds.isCompleted()) {
             /*

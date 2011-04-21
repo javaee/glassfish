@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -130,17 +130,17 @@ public class JndiHandlers {
         handlerCtx.setOutputValue("attrMap", attrMap);
     }
 
-    private static String getFactoryMap(Map emap){
+    private static String getFactoryMap(Map<String,String> emap){
         String factMap = null;
         StringBuilder factoryMap = new StringBuilder();
         if(emap != null) {
             String sep = "";
-            for (String key : (Set<String>)emap.keySet()) {
+            for(Map.Entry<String,String> e : emap.entrySet()){
                     factoryMap.append(sep)
                             .append("\"")
-                            .append(key)
+                            .append(e.getKey())
                             .append("\": '")
-                            .append(emap.get(key))
+                            .append(e.getValue())
                             .append("'");
                     sep = ",";
             }
@@ -152,16 +152,14 @@ public class JndiHandlers {
         @Handler(id="updateJndiResourceAttrs",
         input={
                 @HandlerInput(name="classnameOption",   type=String.class),
-                @HandlerInput(name="entries",   type=String.class),
                 @HandlerInput(name="attrMap",      type=Map.class)},
         output={
             @HandlerOutput(name="resType", type=String.class)
             } )
         public static void updateJndiResourceAttrs(HandlerContext handlerCtx){
-            String entry = (String) handlerCtx.getInputValue("entries");
             String option = (String) handlerCtx.getInputValue("classnameOption");
             Map<String,String> attrMap = (Map)handlerCtx.getInputValue("attrMap");
-            String restype = "";
+            String restype ;
             if (option.equals("predefine")) {
                 restype = attrMap.get("classname");
             } else {

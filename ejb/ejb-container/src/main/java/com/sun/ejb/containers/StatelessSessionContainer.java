@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -96,9 +96,6 @@ public class StatelessSessionContainer
     extends BaseContainer 
     //implements StatelessSessionBeanStatsProvider
 {
-
-    private static LocalStringManagerImpl localStrings;
-
     private static final byte[] statelessInstanceKey = {0, 0, 0, 1};
 
     // All stateless EJBs have the same instanceKey, since all stateless EJBs
@@ -125,16 +122,11 @@ public class StatelessSessionContainer
     private Map<String, java.rmi.Remote> theRemoteBusinessStubs = 
         new HashMap<String, java.rmi.Remote>();
 
-    
-
-
-	private boolean isPoolClosed = false;    
-	protected AbstractPool pool;
+    private boolean isPoolClosed = false;
+    protected AbstractPool pool;
 
     private IASEjbExtraDescriptors iased 	 = null;
-    private BeanCacheDescriptor beanCacheDes = null;
     private BeanPoolDescriptor beanPoolDes   = null;
-    private Server svr 						 = null;
     private EjbContainer ejbContainer 		 = null;
 
     private PoolProperties poolProp 		 = null;
@@ -781,7 +773,6 @@ public class StatelessSessionContainer
             sessionCtx.setTransaction(null);
 
             sessionCtx.deleteAllReferences();
-            sessionCtx = null;
         }
     } // SessionContextFactory{}
 
@@ -793,13 +784,13 @@ public class StatelessSessionContainer
 
         public PoolProperties() {
 
-            maxPoolSize = new Integer(ejbContainer.getMaxPoolSize()).intValue();
-            poolIdleTimeoutInSeconds = new Integer(
-                ejbContainer.getPoolIdleTimeoutInSeconds()).intValue();
-            poolResizeQuantity = new Integer(
-                ejbContainer.getPoolResizeQuantity()).intValue();
-            steadyPoolSize = new Integer(
-                ejbContainer.getSteadyPoolSize()).intValue();
+            maxPoolSize = Integer.parseInt(ejbContainer.getMaxPoolSize());
+            poolIdleTimeoutInSeconds = Integer.parseInt(
+                ejbContainer.getPoolIdleTimeoutInSeconds());
+            poolResizeQuantity = Integer.parseInt(
+                ejbContainer.getPoolResizeQuantity());
+            steadyPoolSize = Integer.parseInt(
+                ejbContainer.getSteadyPoolSize());
             if(beanPoolDes != null) {
                 int temp = 0;
                 if (( temp = beanPoolDes.getMaxPoolSize()) != -1) {

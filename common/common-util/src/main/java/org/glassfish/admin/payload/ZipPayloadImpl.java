@@ -94,6 +94,7 @@ class ZipPayloadImpl extends PayloadImpl {
             zos.putNextEntry(entry);
         }
 
+        @Override
         public void writePartsTo(OutputStream os) throws IOException {
             ZipOutputStream zos = new ZipOutputStream(os);
             for (Payload.Part part : getParts()) {
@@ -264,9 +265,11 @@ class ZipPayloadImpl extends PayloadImpl {
 	    return PAYLOAD_IMPL_CONTENT_TYPE.equalsIgnoreCase(contentType);
 	}
         
+        @Override
         public Iterator<Payload.Part> parts() {
             return new Iterator<Payload.Part>() {
 
+                @Override
                 public boolean hasNext() {
                     if ( ! isNextEntryPrefetched) {
                         try {
@@ -278,6 +281,7 @@ class ZipPayloadImpl extends PayloadImpl {
                     return (nextEntry != null);
                 }
 
+                @Override
                 public Payload.Part next() {
                     final Extra extra = new Extra(nextEntry.getExtra());
                     final Payload.Part part = new ZipPayloadImpl.Part(
@@ -289,6 +293,7 @@ class ZipPayloadImpl extends PayloadImpl {
                     return part;
                 }
 
+                @Override
                 public void remove() {
                     throw new UnsupportedOperationException();
                 }
@@ -301,7 +306,6 @@ class ZipPayloadImpl extends PayloadImpl {
      */
     static class Part extends PayloadImpl.Part {
 
-        private final ZipInputStream zis;
         private final Inbound inboundPayload;
 
         private Part(
@@ -311,9 +315,9 @@ class ZipPayloadImpl extends PayloadImpl {
                 final Inbound inboundPayload) {
             super(contentType, name, props);
             this.inboundPayload = inboundPayload;
-            this.zis = inboundPayload.zis;
         }
 
+        @Override
         public InputStream getInputStream() {
             return new Inbound.ZipEntryInputStream(inboundPayload);
         }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,7 +50,7 @@ package org.glassfish.deployment.client;
 public class ServerConnectionIdentifier {
     
     // XXX these may not be needed - verify - copied from com.sun.enterprise.admin.jmx.remote.DefaultConfiguration to avoid dependency
-    private class DefaultConfiguration {
+    private static class DefaultConfiguration {
         public static final String S1_HTTP_PROTOCOL = "s1ashttp";
         public static final String S1_HTTPS_PROTOCOL = "s1ashttps";
     }

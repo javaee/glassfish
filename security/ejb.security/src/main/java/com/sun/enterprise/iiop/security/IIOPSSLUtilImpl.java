@@ -94,7 +94,7 @@ public class IIOPSSLUtilImpl implements IIOPSSLUtil {
         try {
             if (alias != null && !sslUtils.isTokenKeyAlias(alias)) {
                 throw new IllegalStateException(getFormatMessage(
-                        "iiop.cannot_find_keyalias", new Object[]{alias                        }));
+                        "iiop.cannot_find_keyalias", new Object[]{alias}));
             }
 
             mgrs = sslUtils.getKeyManagers();

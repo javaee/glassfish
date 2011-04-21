@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,6 +46,11 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
+
 public class OSGiDeployedBundle implements ApplicationContainer<OSGiContainer> {
 
     private Bundle bundle;
@@ -68,29 +73,109 @@ public class OSGiDeployedBundle implements ApplicationContainer<OSGiContainer> {
 
     public boolean suspend() {
         if (!isFragment(bundle)) {
-            try {
-                bundle.stop(Bundle.STOP_TRANSIENT);
-                System.out.println("Stopped " + bundle);
-            } catch (BundleException e) {
-                throw new RuntimeException(e);
-            }
+            stopBundle();
         }
         return true;
     }
 
     public boolean resume() throws Exception {
         if (!isFragment(bundle)) {
-            bundle.start(Bundle.START_TRANSIENT | Bundle.START_ACTIVATION_POLICY);
-            System.out.println("Started " + bundle);
+            startBundle();
         }
         return true;
     }
 
     public ClassLoader getClassLoader() {
-        return null;
+        // return a non-null class loader. This will be set as TCL before the bundle is started or stopped
+        // so that operations like JNDI lookup can be successful, as those operations in GlassFish requires
+        // a non-null class loader.
+        return new BundleClassLoader(bundle);
     }
 
     private static boolean isFragment(Bundle b) {
         return b.getHeaders().get(Constants.FRAGMENT_HOST) != null;
+    }
+
+    private void startBundle() throws BundleException {
+        ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
+        try {
+            // Some operations like JNDI lookup requires a non-null context class loader, so
+            // we need to set a non-null class loader.
+            final ClassLoader cl1 = getClassLoader();
+            assert(cl1 != null);
+            Thread.currentThread().setContextClassLoader(cl1);
+            bundle.start(Bundle.START_TRANSIENT | Bundle.START_ACTIVATION_POLICY);
+            System.out.println("Started " + bundle);
+        } catch (BundleException e) {
+            throw new RuntimeException(e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldCl);
+        }
+    }
+
+    private void stopBundle() {
+        ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
+        try {
+            // Some operations like JNDI lookup requires a non-null context class loader, so
+            // we need to set a non-null class loader.
+            final ClassLoader cl1 = getClassLoader();
+            assert(cl1 != null);
+            Thread.currentThread().setContextClassLoader(cl1);
+            bundle.stop(Bundle.STOP_TRANSIENT);
+            System.out.println("Stopped " + bundle);
+        } catch (BundleException e) {
+            throw new RuntimeException(e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldCl);
+        }
+    }
+
+}
+
+class BundleClassLoader extends ClassLoader
+{
+    private Bundle bundle;
+
+    public BundleClassLoader(Bundle b)
+    {
+        super(Bundle.class.getClassLoader());
+        this.bundle = b;
+    }
+
+    @Override
+    public synchronized Class<?> loadClass(final String name, boolean resolve) throws ClassNotFoundException
+    {
+        return bundle.loadClass(name);
+    }
+
+    @Override
+    public URL getResource(String name)
+    {
+        return bundle.getResource(name);
+    }
+
+    @Override
+    public Enumeration<URL> getResources(String name) throws IOException
+    {
+        Enumeration<URL> resources = bundle.getResources(name);
+        if (resources == null)
+        {
+            // This check is needed, because ClassLoader.getResources()
+            // expects us to return an empty enumeration.
+            resources = new Enumeration<URL>()
+            {
+
+                public boolean hasMoreElements()
+                {
+                    return false;
+                }
+
+                public URL nextElement()
+                {
+                    throw new NoSuchElementException();
+                }
+            };
+        }
+        return resources;
     }
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -75,10 +75,11 @@ public class PropertiesFactory implements Serializable, ObjectFactory {
                 }
                 try{
                     if(file.exists()){
+                        FileInputStream fis = null;
                         try{
 
-                            FileInputStream fis = new FileInputStream(file);
-                            if(fileName.toUpperCase().endsWith("XML")){
+                            fis = new FileInputStream(file);
+                            if(fileName.toUpperCase(Locale.getDefault()).endsWith("XML")){
                                 fileProperties.loadFromXML(fis);
                             }else{
                                 fileProperties.load(fis);
@@ -86,6 +87,8 @@ public class PropertiesFactory implements Serializable, ObjectFactory {
 
                         }catch(IOException ioe){
                             throw new IOException("IO Exception during properties load : " + file.getAbsolutePath());
+                        } finally {
+                            fis.close();
                         }
                     } else {
                         throw new FileNotFoundException("File not found : " + file.getAbsolutePath());

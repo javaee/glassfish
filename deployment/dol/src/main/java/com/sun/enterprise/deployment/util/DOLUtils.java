@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,8 +44,10 @@ import com.sun.logging.LogDomains;
 
 import java.util.logging.Logger;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.loader.util.ASClassLoaderUtil;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.DeploymentContext;
 import java.net.URL;
 import java.util.List;
 import java.util.ArrayList;
@@ -112,4 +114,22 @@ public class DOLUtils {
        return libraryURLs;
    } 
 
+   public static BundleDescriptor getCurrentBundleForContext(
+       DeploymentContext context) {
+       ExtendedDeploymentContext ctx = (ExtendedDeploymentContext)context;
+       Application application = context.getModuleMetaData(Application.class);
+       if (application == null) return null; // this can happen for non-JavaEE type deployment. e.g., issue 15869
+       if (ctx.getParentContext() == null) {
+           if (application.isVirtual()) {
+               // standalone module
+               return application.getStandaloneBundleDescriptor();
+           } else {
+               // top level 
+               return application;
+           }
+       } else {
+           // a sub module of ear
+           return application.getModuleByUri(ctx.getModuleUri());
+       }
+   }
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -93,12 +93,9 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
         return Collections.unmodifiableList(systemIDs);
     }
 
-    WebBundleDescriptor descriptor = null;
-        
     /** Creates new WLWebBundleRuntimeNode */
     public WLWebBundleRuntimeNode(WebBundleDescriptor descriptor) {
         super(descriptor);
-        this.descriptor = descriptor;        
     }
     
     /** Creates new WebBundleRuntimeNode */
@@ -109,7 +106,7 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
     /**
      * Initialize the child handlers
      */
-    protected void Init() {
+    protected void init() {
         registerElementHandler(new XMLElement(RuntimeTagNames.WL_SECURITY_ROLE_ASSIGNMENT),
                 WLSecurityRoleAssignmentNode.class);
         registerElementHandler(new XMLElement(RuntimeTagNames.RESOURCE_DESCRIPTION),
@@ -177,7 +174,7 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
             // for embedded war, the context root will be set 
             // using the value in application.xml
             Application app = descriptor.getApplication();
-            if ( (app == null) || (app!=null && app.isVirtual()) ) {
+            if ( (app == null) || app.isVirtual() ) {
                 descriptor.setContextRoot(value);
             }
         } else {

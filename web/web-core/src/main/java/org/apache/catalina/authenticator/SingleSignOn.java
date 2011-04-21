@@ -336,6 +336,7 @@ public class SingleSignOn
         HttpServletResponse hres =
             (HttpServletResponse) response.getResponse();
         request.removeNote(Constants.REQ_SSOID_NOTE);
+        request.removeNote(Constants.REQ_SSO_VERSION_NOTE);
 
         // Has a valid user already been authenticated?
         if (debug >= 1)
@@ -351,12 +352,18 @@ public class SingleSignOn
         if (debug >= 1)
             log(" Checking for SSO cookie");
         Cookie cookie = null;
+        Cookie versionCookie = null;
         Cookie cookies[] = hreq.getCookies();
         if (cookies == null)
             cookies = new Cookie[0];
         for (int i = 0; i < cookies.length; i++) {
             if (Constants.SINGLE_SIGN_ON_COOKIE.equals(cookies[i].getName())) {
                 cookie = cookies[i];
+            } else if (Constants.SINGLE_SIGN_ON_VERSION_COOKIE.equals(cookies[i].getName())) {
+                versionCookie = cookies[i];
+            }
+            
+            if (cookie != null && versionCookie != null) {
                 break;
             }
         }
@@ -369,13 +376,24 @@ public class SingleSignOn
         // Look up the cached Principal associated with this cookie value
         if (debug >= 1)
             log(" Checking for cached principal for " + cookie.getValue());
-        SingleSignOnEntry entry = lookup(cookie.getValue());
+
+        long version = 0;
+        if (isVersioningSupported() && versionCookie != null) {
+            version = Long.parseLong(versionCookie.getValue());
+        }
+        SingleSignOnEntry entry = lookup(cookie.getValue(), version);
         if (entry != null) {
             if (debug >= 1)
                 log(" Found cached principal '" +
                     entry.getPrincipal().getName() + "' with auth type '" +
                     entry.getAuthType() + "'");
             request.setNote(Constants.REQ_SSOID_NOTE, cookie.getValue());
+            if (isVersioningSupported()) {
+                long ver = entry.incrementAndGetVersion();
+                request.setNote(Constants.REQ_SSO_VERSION_NOTE,
+                        Long.valueOf(ver));
+            }
+
             ((HttpRequest) request).setAuthType(entry.getAuthType());
             ((HttpRequest) request).setUserPrincipal(entry.getPrincipal());
         } else {
@@ -417,9 +435,10 @@ public class SingleSignOn
      * specified Session.
      *
      * @param ssoId Single sign on identifier
+     * @param ssoVersion Single sign on version
      * @param session Session to be associated
      */
-    public void associate(String ssoId, Session session) {
+    public void associate(String ssoId, long ssoVersion, Session session) {
 
         if (!started) {
             return;
@@ -428,9 +447,10 @@ public class SingleSignOn
         if (debug >= 1)
             log("Associate sso id " + ssoId + " with session " + session);
 
-        SingleSignOnEntry sso = lookup(ssoId);
+        SingleSignOnEntry sso = lookup(ssoId, ssoVersion);
         if (sso != null) {
             session.setSsoId(ssoId);
+            session.setSsoVersion(ssoVersion);
             sso.addSession(this, session);
         }
     }
@@ -449,12 +469,13 @@ public class SingleSignOn
             return;
 
         session.setSsoId(null);
+        session.setSsoVersion(0L);
         sso.removeSession( session );
 
         // see if we are the last session, if so blow away ssoId
         if (sso.isEmpty()) {
             synchronized (cache) {
-                sso = cache.remove(ssoId);
+                cache.remove(ssoId);
             }
         }
     }
@@ -479,7 +500,7 @@ public class SingleSignOn
                 principal.getName() + "' with auth type '" + authType + "'");
 
         synchronized (cache) {
-            cache.put(ssoId, new SingleSignOnEntry(ssoId, principal, authType,
+            cache.put(ssoId, new SingleSignOnEntry(ssoId, 0L, principal, authType,
                                                    username, realmName));
         }
 
@@ -538,5 +559,24 @@ public class SingleSignOn
 
     }
 
+    /**
+     * Look up and return the cached SingleSignOn entry associated with this
+     * sso id value, if there is one; otherwise return <code>null</code>.
+     *
+     * @param ssoId Single sign on identifier to look up
+     * @param ssoVersion Single sign on version to look up
+     */
+    protected SingleSignOnEntry lookup(String ssoId, long ssoVersion) {
 
+        return lookup(ssoId);
+
+    }
+
+    /**
+     * Return a boolean to indicate whether the sso id version is
+     * supported or not.
+     */
+    public boolean isVersioningSupported() {
+        return false;
+    }
 }

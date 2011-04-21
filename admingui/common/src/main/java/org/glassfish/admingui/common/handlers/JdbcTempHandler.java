@@ -127,12 +127,8 @@ public class JdbcTempHandler {
         } else {
 
             if (!GuiUtil.isEmpty(resType) && !GuiUtil.isEmpty(dbVendor)) {
-                List dsl = new ArrayList();
                 try {
-                    String classname = "";
-
-                    dsl = getJdbcDriverClassNames(dbVendor, resType, false);
-
+                    List dsl = getJdbcDriverClassNames(dbVendor, resType, false);
                     if (guiLogger.isLoggable(Level.FINE)) {
                         guiLogger.fine("======= getJdbcDriverClassNames(" + dbVendor + ", " + resType + ")");
                         guiLogger.fine("=======  # of items for JDBC_DRIVER_CLASS_NAMES_KEY  " + dsl.size());

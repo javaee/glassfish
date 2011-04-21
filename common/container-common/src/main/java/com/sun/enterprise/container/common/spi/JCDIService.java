@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,6 +45,9 @@ import org.jvnet.hk2.annotations.Contract;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
 
+import javax.servlet.ServletContext;
+import javax.naming.NamingException;
+
 /**
  */
 @Contract
@@ -53,6 +56,10 @@ public interface JCDIService {
     public boolean isCurrentModuleJCDIEnabled();
 
     public boolean isJCDIEnabled(BundleDescriptor bundle);
+
+    public boolean isCDIScoped(Class<?> clazz);
+
+    public void setELResolver(ServletContext servletContext) throws NamingException;
 
     public JCDIInjectionContext createManagedObject(Class managedClass, BundleDescriptor bundle);
     public JCDIInjectionContext createManagedObject(Class managedClass, BundleDescriptor bundle,

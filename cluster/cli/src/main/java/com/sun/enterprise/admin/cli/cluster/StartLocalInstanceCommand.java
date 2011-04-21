@@ -68,11 +68,15 @@ import static com.sun.enterprise.admin.cli.CLIConstants.*;
 @Scoped(PerLookup.class)
 public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
                                         implements StartServerCommand {
-    @Param(optional = true, defaultValue = "false")
+    @Param(optional = true, shortName = "v", defaultValue = "false")
     private boolean verbose;
 
-    @Param(optional = true, defaultValue = "false")
+    @Param(optional = true, shortName = "d", defaultValue = "false")
     private boolean debug;
+
+    @Param(name = "_dry-run", shortName = "n", optional = true,
+            defaultValue = "false")
+    private boolean dry_run;
 
     // handled by superclass
     //@Param(name = "instance_name", primary = true, optional = false)
@@ -81,7 +85,12 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
     private StartServerHelper helper;
 
     private String localPassword;
-    
+
+    @Override
+    public List<String> getLauncherArgs() {
+        return launcher.getCommandLine();
+    }
+
     @Override
     public RuntimeType getType() {
          return RuntimeType.INSTANCE;
@@ -142,6 +151,18 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
             if(!helper.prepareForLaunch())
                 return ERROR;
 
+            if(dry_run) {
+                logger.fine(Strings.get("dry_run_msg"));
+                List<String> cmd = launcher.getCommandLine();
+                StringBuilder sb = new StringBuilder();
+                for (String s : cmd) {
+                    sb.append(s);
+                    sb.append('\n');
+                }
+                logger.info(sb.toString());
+                return SUCCESS;
+            }
+            
             launcher.launch();
 
             if (verbose) { // we can potentially loop forever here...

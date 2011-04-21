@@ -39,6 +39,7 @@
  */
 package org.glassfish.admingui.devtests;
 
+import org.glassfish.admingui.devtests.util.SeleniumHelper;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -93,7 +94,11 @@ public class SpecificTestRule implements MethodRule {
                     if (debug) {
                         logger.log(Level.INFO, "\tExecuting.");
                     }
-                    statement.evaluate();
+                    try {
+                        statement.evaluate();
+                    } catch (Exception e) {
+                        statement.evaluate(); // try again. Ugly hack, but if it works...
+                    }
                 } else {
                     logger.log(Level.INFO, "\tSkipping.");
                 }

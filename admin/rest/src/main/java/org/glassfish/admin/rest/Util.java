@@ -290,7 +290,7 @@ public class Util {
         }
         String setBasePath = sb.toString();
         ParameterMap parameters = new ParameterMap();
-        Map<String, String> currentValues = getCurrentValues(setBasePath.toString(), habitat);
+        Map<String, String> currentValues = getCurrentValues(setBasePath, habitat);
         
         for (Map.Entry<String, String> entry : data.entrySet()) {
             String currentValue = currentValues.get(setBasePath + entry.getKey());

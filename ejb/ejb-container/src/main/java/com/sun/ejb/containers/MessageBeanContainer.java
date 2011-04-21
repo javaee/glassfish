@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -320,8 +320,8 @@ public final class MessageBeanContainer extends BaseContainer implements
 			value = Integer.parseInt(val);
 		} catch (Exception e) {
 			_logger.log(Level.WARNING, "containers.mdb.invalid_value",
-					new Object[] { appName, new Integer(val), e.toString(),
-							new Integer(0) });
+					new Object[] { appName, val, e.toString(),
+							"0" });
 			_logger.log(Level.WARNING, "", e);
 		}
 		return value;
@@ -333,15 +333,13 @@ public final class MessageBeanContainer extends BaseContainer implements
 
 		if (value < lowLimit) {
 			_logger.log(Level.WARNING, "containers.mdb.invalid_value",
-					new Object[] { appName, new Integer(value), emsg,
-							new Integer(deft) });
+					new Object[] { appName, value, emsg, deft });
 			value = deft;
 		}
 
 		if ((highLimit >= 0) && (value > highLimit)) {
 			_logger.log(Level.WARNING, "containers.mdb.invalid_value",
-					new Object[] { appName, new Integer(value), emsg,
-							new Integer(highLimit) });
+					new Object[] { appName, value, emsg, highLimit });
 			value = highLimit;
 		}
 
@@ -1191,8 +1189,6 @@ public final class MessageBeanContainer extends BaseContainer implements
 			_logger.log(Level.SEVERE, "containers.mdb.no_invocation",
 					new Object[] { appEJBName_, "" });
 		} else {
-			MessageBeanContextImpl beanContext = (MessageBeanContextImpl) invocation.context;
-
 			try {
 				if (invocation.containerStartsTx) {
 					// Unregister the session associated with

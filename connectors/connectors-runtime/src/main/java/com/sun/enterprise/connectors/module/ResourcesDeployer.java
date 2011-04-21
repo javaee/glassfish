@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -122,7 +122,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
             new HashMap<String, Map<String, Resources>>();
     private static Map<String, Application> preservedApps = new HashMap<String, Application>();
 
-    private static Logger _logger = LogDomains.getLogger(ConnectorDeployer.class, LogDomains.RSR_LOGGER);
+    private final static Logger _logger = LogDomains.getLogger(ResourcesDeployer.class, LogDomains.RSR_LOGGER);
 
     private static final String RESOURCES_XML_META_INF = "META-INF/glassfish-resources.xml";
     private static final String RESOURCES_XML_WEB_INF = "WEB-INF/glassfish-resources.xml";
@@ -191,8 +191,9 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                 //be different than the archive name.
                 retrieveAllResourcesXMLs(fileNames, archive, appName);
 
-                for (String moduleName: fileNames.keySet()) {
-                    String fileName = fileNames.get(moduleName);
+                for (Map.Entry<String, String> entry: fileNames.entrySet()) {
+                    String moduleName = entry.getKey();
+                    String fileName = entry.getValue();
                     debug("Sun Resources XML : " + fileName);
 
                     moduleName = getActualModuleName(moduleName);
@@ -555,8 +556,9 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
     public static void  deployResources(String applicationName, boolean embedded) throws Exception {
         Map<String, Resources> allResources = resourceConfigurations.get(applicationName);
         if(allResources != null){
-            for(String moduleName : allResources.keySet()){
-                Resources resources = allResources.get(moduleName);
+            for(Map.Entry<String, Resources> entry : allResources.entrySet()){
+                String moduleName = entry.getKey();
+                Resources resources = entry.getValue();
                 if(applicationName.equals(moduleName)){
                     deployResources(applicationName, null, resources.getResources(), embedded);
                 }else{

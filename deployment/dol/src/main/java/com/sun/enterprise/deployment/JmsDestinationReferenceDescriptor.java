@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -159,5 +159,33 @@ public class JmsDestinationReferenceDescriptor extends EnvironmentProperty imple
             return destReference.getName().equals(this.getName());
         }
         return false;
+    }
+
+    /**
+     * Performs the same check as in ResourceReferenceDescriptor
+     */
+    public void checkType() {
+        if (refType == null) {
+            if (isBoundsChecking()) {
+                throw new IllegalArgumentException(localStrings.getLocalString(
+                        "enterprise.deployment.exceptiontypenotallowedpropertytype",
+                        "{0} is not an allowed property value type",
+                        new Object[]{"null"}));
+            }
+        }
+        if (refType != null) {
+            try {
+                Class.forName(refType, true, Thread.currentThread().getContextClassLoader());
+            } catch (Throwable t) {
+                if (isBoundsChecking()) {
+                    throw new IllegalArgumentException(localStrings.getLocalString(
+                            "enterprise.deployment.exceptiontypenotallowedpropertytype",
+                            "{0} is not an allowed property value type",
+                            new Object[]{refType}));
+                } else {
+                    return;
+                }
+            }
+        }
     }
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -156,8 +156,9 @@ public class InterceptorBindingTranslator {
 
         }
 
-        for(MethodDescriptor next : methodBindings.keySet()) {
-            processMethod(next, methodBindings.get(next));
+        for(Map.Entry<MethodDescriptor, List<InterceptorBindingDescriptor>> next
+                : methodBindings.entrySet()) {
+            processMethod(next.getKey(), next.getValue());
         }
 
         TranslationResults results = buildResults();

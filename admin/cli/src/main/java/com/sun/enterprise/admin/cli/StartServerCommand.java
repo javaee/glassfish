@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,6 +43,7 @@ package com.sun.enterprise.admin.cli;
 import com.sun.enterprise.admin.launcher.GFLauncherException;
 import com.sun.enterprise.admin.launcher.GFLauncherFactory;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
+import java.util.List;
 import org.glassfish.api.admin.RuntimeType;
 
 /**
@@ -59,4 +60,5 @@ public interface StartServerCommand {
      * Create a launcher for the whatever type of server "we" are.
      */
     void createLauncher() throws GFLauncherException, MiniXmlParserException;
+    List<String> getLauncherArgs();
 }

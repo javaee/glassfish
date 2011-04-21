@@ -214,7 +214,7 @@ public final class ExtensionValidator {
         try {
             NamingEnumeration wne = dirContext.listBindings("/META-INF/");
             Binding binding = (Binding) wne.nextElement();
-            if (binding.getName().toUpperCase().equals("MANIFEST.MF")) {
+            if (binding.getName().toUpperCase(Locale.ENGLISH).equals("MANIFEST.MF")) {
                 Resource resource = (Resource)dirContext.lookup
                                     ("/META-INF/" + binding.getName());
                 inputStream = resource.streamContent();
@@ -243,9 +243,7 @@ public final class ExtensionValidator {
         // Locate the Manifests for all bundled JARs
         NamingEnumeration ne = null;
         try {
-            if (dirContext != null) {
-                ne = dirContext.listBindings("WEB-INF/lib/");
-            }
+            ne = dirContext.listBindings("WEB-INF/lib/");
             while ((ne != null) && ne.hasMoreElements()) {
                 Binding binding = (Binding)ne.nextElement();
                 if (!binding.getName().toLowerCase(Locale.ENGLISH).endsWith(".jar")) {

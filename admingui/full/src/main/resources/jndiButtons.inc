@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -46,7 +46,7 @@
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                updateJndiResourceAttrs(attrMap="#{attrMap}", entries="#{pageSession.valueMap['resType']}", classnameOption="#{classnameOption}", resType="#{requestScope.resType}" );
+                updateJndiResourceAttrs(attrMap="#{attrMap}", classnameOption="#{classnameOption}", resType="#{requestScope.resType}" );
                 mapPut(map="#{pageSession.valueMap}" key="resType" value="#{requestScope.resType}")
 
                 if(#{pageSession.hasPropertySheet}){
@@ -75,7 +75,7 @@
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}') && checkForBackslash('#{jndiNameId}', '$resource{i18n.msg.JS.resources.resName}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                    updateJndiResourceAttrs(attrMap="#{attrMap}", entries="#{pageSession.valueMap['resType']}", classnameOption="#{classnameOption}", resType="#{requestScope.resType}" );
+                    updateJndiResourceAttrs(attrMap="#{attrMap}",  classnameOption="#{classnameOption}", resType="#{requestScope.resType}" );
                     mapPut(map="#{pageSession.valueMap}" key="resType" value="#{requestScope.resType}")
                     mapPut(map="#{pageSession.valueMap}" key="target" value="domain")
                     gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}"

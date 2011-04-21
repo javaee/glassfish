@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -306,85 +306,83 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                     configProps.put(keyName, isDas ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
                     break;
 
-                case VIRTUAL_MULTICAST_URI_LIST:
-                    // todo
-                    break;
 
                 case BIND_INTERFACE_ADDRESS:
                     if (cluster != null) {
-                        String value = cluster.getGmsBindInterfaceAddress();
-                        if (value != null) {
-                            value = value.trim();
-                        }
-                        if (value != null && value.length() > 1 && value.charAt(0) != '$') {
+                            String value = cluster.getGmsBindInterfaceAddress();
+                            if (value != null) {
+                                    value = value.trim();
+                            }
+                            if (value != null && value.length() > 1 && value.charAt(0) != '$') {
 
-                            // todo: remove check for value length greater than 1.
-                            // this value could be anything from IPv4 address, IPv6 address, hostname, network interface name.
-                            // Only supported IPv4 address in gf v2.
-                            if (NetworkUtility.isBindAddressValid(value)) {
-                                configProps.put(keyName, value);
-                            } else {
-                                logger.log(Level.SEVERE,
+                                    // todo: remove check for value length greater than 1.
+                                    // this value could be anything from IPv4 address, IPv6 address, hostname, network interface name.
+                                    // Only supported IPv4 address in gf v2.
+                                    if (NetworkUtility.isBindAddressValid(value)) {
+                                            configProps.put(keyName, value);
+                                    } else {
+                                            logger.log(Level.SEVERE,
                                     "gmsservice.bind.int.address.invalid",
                                     value);
+                                    }
                             }
-                        }
                     }
                     break;
 
                 case FAILURE_DETECTION_TCP_RETRANSMIT_TIMEOUT:
                     if (clusterConfig != null) {
-                        String  value = clusterConfig.getGroupManagementService().getFailureDetection().getVerifyFailureConnectTimeoutInMillis();
-                        if (value != null) {
-                            configProps.put(keyName, value);
-                        }
+                            String  value = clusterConfig.getGroupManagementService().getFailureDetection().getVerifyFailureConnectTimeoutInMillis();
+                            if (value != null) {
+                                    configProps.put(keyName, value);
+                            }
                     }
                     break;
 
                 case MULTICAST_POOLSIZE:
                 case INCOMING_MESSAGE_QUEUE_SIZE :
-                // case MAX_MESSAGE_LENGTH:    todo uncomment with shoal-gms.jar with this defined is promoted.
+                    // case MAX_MESSAGE_LENGTH:    todo uncomment with shoal-gms.jar with this defined is promoted.
                 case FAILURE_DETECTION_TCP_RETRANSMIT_PORT:
 
                     if (clusterConfig != null) {
-                        Property prop = clusterConfig.getGroupManagementService().getProperty(keyName);
-                        if (prop == null) {
-                            if (logger.isLoggable(Level.FINE)) {
-                                logger.log(Level.FINE, String.format(
+                            Property prop = clusterConfig.getGroupManagementService().getProperty(keyName);
+                            if (prop == null) {
+                                    if (logger.isLoggable(Level.FINE)) {
+                                            logger.log(Level.FINE, String.format(
                                     "No config property found for %s",
                                     keyName));
+                                    }
+                                    break;
                             }
-                            break;
-                        }
-                        String value = prop.getValue().trim();
-                        if (value != null) {
-                            configProps.put(keyName, value);
-                        }
-                        /*
-                        int positiveint = 0;
-                        try {
-                            positiveint = Integer.getInteger(value);
-                        } catch (Throwable t) {}
+                            String value = prop.getValue().trim();
+                            if (value != null) {
+                                    configProps.put(keyName, value);
+                            }
+                            /*
+                            int positiveint = 0;
+                            try {
+                                positiveint = Integer.getInteger(value);
+                            } catch (Throwable t) {}
 
-                        // todo
-                        if (positiveint > 0) {
-                            configProps.put(keyName, positiveint);
-                        } // todo else log event that invalid value was provided.
-                        */
+                            // todo
+                            if (positiveint > 0) {
+                                configProps.put(keyName, positiveint);
+                            } // todo else log event that invalid value was provided.
+                            */
                     }
                     break;
 
-                // These Shoal GMS configuration parameters are not supported to be set.
-                // Must place here or they will get flagged as not handled.
+                    // These Shoal GMS configuration parameters are not supported to be set.
+                    // Must place here or they will get flagged as not handled.
                 case LOOPBACK:
+                case VIRTUAL_MULTICAST_URI_LIST:
                     break;
 
-                // end unsupported Shoal GMS configuration parameters.
+                    // end unsupported Shoal GMS configuration parameters.
 
 
                 default:
                     if (logger.isLoggable(Level.FINE)) {
-                        logger.log(Level.FINE, String.format(
+                            logger.log(Level.FINE, String.format(
                             "service provider key %s ignored", keyName));
                     }
                     break;
@@ -421,21 +419,20 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                                 " since value is unresolved symbolic token=" +
                                 value);
                     }
-                } else if (name != null ) {
-                        if (logger.isLoggable(Level.CONFIG)) {
-                            logger.log(Level.CONFIG,
-                                "processing group-management-service property name=" +
-                                    name + " value= " + value);
-                        }
-                        if (name.startsWith(GMS_PROPERTY_PREFIX)) {
-                            name = name.replaceFirst(GMS_PROPERTY_PREFIX_REGEXP, "");
-                        }
-                        configProps.put(name, value);
-                        if (! validateGMSProperty(name)) {
-                            logger.log(Level.WARNING, "gmsexception.ignoring.property",
-                                           new Object [] {name, value, ""} );
-                        }
-
+                } else {
+                    if (logger.isLoggable(Level.CONFIG)) {
+                        logger.log(Level.CONFIG,
+                            "processing group-management-service property name=" +
+                                name + " value= " + value);
+                    }
+                    if (name.startsWith(GMS_PROPERTY_PREFIX)) {
+                        name = name.replaceFirst(GMS_PROPERTY_PREFIX_REGEXP, "");
+                    }
+                    configProps.put(name, value);
+                    if (! validateGMSProperty(name)) {
+                        logger.log(Level.WARNING, "gmsexception.ignoring.property",
+                                       new Object [] {name, value, ""} );
+                    }
                 }
             }
         }
@@ -457,7 +454,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                             " since value is unresolved symbolic token=" +
                             value);
                     }
-                } else if (name != null ) {
+                } else {
                         if (name.startsWith(GMS_PROPERTY_PREFIX)) {
                             name = name.replaceFirst(GMS_PROPERTY_PREFIX_REGEXP, "");
                         }
@@ -490,15 +487,18 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
     private boolean validateGMSProperty(String propertyName) {
         boolean result = false;
+        Object key = null;
         try {
-            GrizzlyConfigConstants key = GrizzlyConfigConstants.valueOf(propertyName);
+            key = GrizzlyConfigConstants.valueOf(propertyName);
             result = true;
         } catch (Throwable t) {}
-        try {
-            ServiceProviderConfigurationKeys key = ServiceProviderConfigurationKeys.valueOf(propertyName);
-            result = true;
-        } catch (Throwable t) {}
-        return result;
+        if (key == null) {
+            try {
+                key = ServiceProviderConfigurationKeys.valueOf(propertyName);
+                result = true;
+            } catch (Throwable t) {}
+        }
+        return key != null && result;
     }
 
     private void initializeGMS() throws GMSException{
@@ -584,22 +584,6 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 new Object[] {instanceName, clusterName});
 
         } else throw new GMSException("gms object is null.");
-    }
-
-    private void validateCoreMembers() {
-        List<String> currentCoreMembers = gms.getGroupHandle().getCurrentCoreMembers();
-        SortedSet<String> unknownMembers = new TreeSet<String>();
-        for (String member : currentCoreMembers) {
-            MemberStates state = gms.getGroupHandle().getMemberState(member, 10000, 0);
-            if (state == MemberStates.UNKNOWN) {
-                unknownMembers.add(member);
-
-            }
-        }
-        if (unknownMembers.size() > 0) {
-            logger.log(Level.INFO,
-                "gmsservice.member.state.unknown", unknownMembers);
-        }
     }
 
     private void printProps(Properties prop) {

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,7 +44,6 @@ import org.jvnet.hk2.annotations.Contract;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Interface for Logging Commands
@@ -59,11 +58,13 @@ public interface LoggingConfig {
     /* set propertyName to be propertyValue.  The logManager
         *  readConfiguration is not called in this method.
         */
+
     String setLoggingProperty(String propertyName, String propertyValue) throws IOException;
 
     /* set propertyName to be propertyValue.  The logManager
 	*  readConfiguration is not called in this method.
 	*/
+
     String setLoggingProperty(String propertyName, String propertyValue, String targetServer) throws IOException;
 
     /* update the properties to new values.  properties is a Map of names of properties and
@@ -72,6 +73,7 @@ public interface LoggingConfig {
        *
        * The readConfiguration method is called on the logManager after updating the properties.
       */
+
     Map<String, String> updateLoggingProperties(Map<String, String> properties) throws IOException;
 
     /* update the properties to new values for given target server..  properties is a Map of names of properties and
@@ -80,22 +82,32 @@ public interface LoggingConfig {
 	 *
 	 * The readConfiguration method is called on the logManager after updating the properties.
 	*/
+
     Map<String, String> updateLoggingProperties(Map<String, String> properties, String targetServer) throws IOException;
 
     /* get the properties and corresponding values in the logging.properties file for given target server..
         */
+
     Map<String, String> getLoggingProperties(String targetServer) throws IOException;
 
     /* get the properties and corresponding values in the logging.properties file.
 	*/
-    Map<String, String> getLoggingProperties() throws IOException;
 
-    /* remove a set of properties from the logging.properties file.
-        */
-    void removeLoggingProperties(Set<String> properties) throws IOException;
+    Map<String, String> getLoggingProperties() throws IOException;
 
     /* creates zip file for given sourceDirectory
         */
+
     String createZipFile(String sourceDir) throws IOException;
+
+    /* delete the properties from logging.properties file for given target.
+      */
+
+    public void deleteLoggingProperties(Map<String, String> properties, String targetConfigName) throws IOException;
+
+    /* delete the properties from logging.properties file. 
+      */
+
+    public void deleteLoggingProperties(Map<String, String> properties) throws IOException;
 
 }

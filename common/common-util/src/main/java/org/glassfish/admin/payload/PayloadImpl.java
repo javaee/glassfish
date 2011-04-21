@@ -55,7 +55,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.admin.Payload;
 
@@ -72,6 +71,7 @@ public class PayloadImpl implements Payload {
          */
         private final ArrayList<Payload.Part> parts = new ArrayList<Payload.Part>();
 
+        @Override
         public void addPart(
                 final String contentType,
                 final String name,
@@ -80,6 +80,7 @@ public class PayloadImpl implements Payload {
             parts.add(Part.newInstance(contentType, name, props, content));
         }
 
+        @Override
         public void addPart(
                 final String contentType,
                 final String name,
@@ -88,6 +89,7 @@ public class PayloadImpl implements Payload {
             parts.add(Part.newInstance(contentType, name, props, content));
         }
 
+        @Override
         public void addPart(
                 final int index,
                 final String contentType,
@@ -98,6 +100,7 @@ public class PayloadImpl implements Payload {
             parts.add(index, Part.newInstance(contentType, name, props, content));
         }
 
+        @Override
         public void attachFile(
                 final String contentType,
                 final URI fileURI,
@@ -106,6 +109,7 @@ public class PayloadImpl implements Payload {
             attachFile(contentType, fileURI, dataRequestName, null /* props */, file, false /* isRecursive */);
         }
 
+        @Override
         public void attachFile(
                 final String contentType,
                 final URI fileURI,
@@ -115,6 +119,7 @@ public class PayloadImpl implements Payload {
             attachFile(contentType, fileURI, dataRequestName, null /* props */, file, isRecursive);
         }
 
+        @Override
         public void attachFile(
                 final String contentType,
                 final URI fileURI,
@@ -124,6 +129,7 @@ public class PayloadImpl implements Payload {
             attachFile(contentType, fileURI, dataRequestName, props, file, false /* isRecursive */);
         }
 
+        @Override
         public void attachFile(
                 final String contentType,
                 final URI fileURI,
@@ -182,26 +188,38 @@ public class PayloadImpl implements Payload {
 	    enhancedProps.setProperty("last-modified", Long.toString(file.lastModified()));
 
             /*
-             * Add a part for the recursive replacement of the directory.
+             * Add a dummy part for the replacement of the directory - if
+             * the part refers to a directory.
              */
-            parts.add(Part.newInstance(
-                    "application/octet-stream", /* not much effect */
-                    fileURI.getRawPath(),
-                    enhancedProps,
-                    (String) null));
-
-            /*
-             * If this is a directory and it's a recursive replacement add
-             * file-xfer Parts for the files in the directory.
-             */
-            if (file.isDirectory() && isRecursive) {
-                enhancedProps.setProperty("data-request-type", "file-xfer");
-                attachContainedFilesRecursively(
-                        file.toURI(),
-                        fileURI,
-                        dataRequestName,
+            if (file.isDirectory()) {
+                parts.add(Part.newInstance(
+                        "application/octet-stream", /* not much effect */
+                        fileURI.getRawPath(),
                         enhancedProps,
-                        file);
+                        (String) null));
+                /*
+                 * If this is also a recursive replacement, add file-xfer
+                 * Parts for the files in the directory.
+                 */
+                if (isRecursive) {
+                    enhancedProps.setProperty("data-request-type", "file-xfer");
+                    attachContainedFilesRecursively(
+                            file.toURI(),
+                            fileURI,
+                            dataRequestName,
+                            enhancedProps,
+                            file);
+                }
+            } else {
+                /*
+                 * This is a non-directory file. Add a simple replacement
+                 * request part for the single file.
+                 */
+                parts.add(Part.newInstance(
+                            contentType, 
+                            fileURI.getRawPath(),
+                            enhancedProps,
+                            file));
             }
         }
 
@@ -307,10 +325,12 @@ public class PayloadImpl implements Payload {
         }
 
 
+        @Override
         public String getHeaderName() {
             return Payload.PAYLOAD_HEADER_NAME;
         }
 
+        @Override
         public String getContentType() {
             return (isComplex()) ? getComplexContentType() : getSinglePartContentType();
         }
@@ -333,6 +353,7 @@ public class PayloadImpl implements Payload {
          * @param os the OutputStream to which the Payload should be written
          * @throws java.io.IOException
          */
+        @Override
         public void writeTo(final OutputStream os) throws IOException {
             if (isComplex()) {
                 writePartsTo(os);
@@ -407,6 +428,7 @@ public class PayloadImpl implements Payload {
             }
         }
 
+        @Override
         public String getHeaderName() {
             return Payload.PAYLOAD_HEADER_NAME;
         }
@@ -416,6 +438,7 @@ public class PayloadImpl implements Payload {
          */
         private static final Inbound EMPTY_PAYLOAD = new Inbound() {
 
+            @Override
             public Iterator<Payload.Part> parts() {
                 return Collections.EMPTY_LIST.iterator();
             }
@@ -455,18 +478,22 @@ public class PayloadImpl implements Payload {
             isRecursive = Boolean.valueOf(this.props.getProperty("data-request-is-recursive"));
         }
 
+        @Override
         public String getName() {
             return name;
         }
 
+        @Override
         public String getContentType() {
             return contentType;
         }
 
+        @Override
         public Properties getProperties() {
             return props;
         }
 
+        @Override
         public boolean isRecursive() {
             return isRecursive;
         }
@@ -519,6 +546,7 @@ public class PayloadImpl implements Payload {
             return new Filed(contentType, name, props, file);
         }
 
+        @Override
         public void copy(final OutputStream os) throws IOException {
             int bytesRead;
             byte [] buffer = new byte[1024];
@@ -555,6 +583,7 @@ public class PayloadImpl implements Payload {
                 this.is = is;
             }
 
+            @Override
             public InputStream getInputStream() {
                 return is;
             }
@@ -584,6 +613,7 @@ public class PayloadImpl implements Payload {
 
             }
 
+            @Override
             public InputStream getInputStream() {
                 if (is == null) {
                     /*
@@ -612,7 +642,6 @@ public class PayloadImpl implements Payload {
          */
         static class Filed extends PayloadImpl.Part {
             private final File file;
-            private InputStream myStream;
 
             Filed(final String contentType,
                     final String name,

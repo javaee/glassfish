@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,9 +40,6 @@
 
 package org.glassfish.webservices;
 
-import com.sun.enterprise.config.serverbeans.Config;
-
-import java.io.File;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 import org.glassfish.api.deployment.ApplicationContainer;
@@ -55,20 +52,15 @@ import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.container.EndpointRegistrationException;
 
 import java.util.Set;
-import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.net.URL;
 
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.util.WebServerInfo;
 import org.glassfish.grizzly.http.server.HttpHandler;
-import org.jvnet.hk2.component.Habitat;
-
 
 /**
  * This class implements the ApplicationContainer and will be used
@@ -95,22 +87,16 @@ public class WebServicesApplication implements ApplicationContainer {
 
     private ResourceBundle rb = logger.getResourceBundle();
 
-    private Config config = null;
-
-    private Habitat habitat = null;
-
     private ClassLoader cl;
     private Application app;
     private Set<String> publishedFiles;
 
-    public WebServicesApplication(DeploymentContext context, ServerEnvironment env, RequestDispatcher dispatcherString, Config config, Habitat habitat, Set<String> publishedFiles){
+    public WebServicesApplication(DeploymentContext context, ServerEnvironment env, RequestDispatcher dispatcherString, Set<String> publishedFiles){
         this.deploymentCtx = context;
         this.dispatcher = dispatcherString;
         this.serverEnvironment = env;
         this.ejbendpoints = getEjbEndpoints();
         this.httpHandler = new EjbWSAdapter();
-        this.config = config;
-        this.habitat = habitat;
         this.publishedFiles = publishedFiles;
     }
     
@@ -182,8 +168,8 @@ public class WebServicesApplication implements ApplicationContainer {
     public boolean stop(ApplicationContext stopContext) {
         try {
             Iterator<EjbEndpoint> iter = ejbendpoints.iterator();
-            String contextRoot = null;
-            EjbEndpoint endpoint = null;
+            String contextRoot;
+            EjbEndpoint endpoint;
             while(iter.hasNext()) {
                 endpoint = iter.next();
                 contextRoot = endpoint.contextRoot;

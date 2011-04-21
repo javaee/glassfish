@@ -409,6 +409,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                     try {
                           moduleInfo = prepareModule(sortedEngineInfos, appName, context, tracker);
                     } catch(Throwable prepareException) {
+                        prepareException.printStackTrace();
                         report.failure(logger, "Exception while preparing the app", null);
                         report.setFailureCause(prepareException);
                         logger.log(Level.SEVERE, prepareException.getMessage(), prepareException);
@@ -609,7 +610,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
 
         DeploymentTracing tracing = context.getModuleMetaData(DeploymentTracing.class);
         
-        if (sniffers.size()==0) {
+        if (!snifferManager.containsPrimarySniffer(sniffers)) {
             report.failure(logger,localStrings.getLocalString("deploy.unknownmoduletpe","Module type not recognized for module {0}", context.getSourceDir()));
             return null;
         }
@@ -663,7 +664,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 }
 
                 // now start all containers, by now, they should be all setup...
-                if (!startContainers(containersInfo, logger, context)) {
+                if (containersInfo != null && !startContainers(containersInfo, logger, context)) {
                     final String msg = "Aborting, Failed to start container " + containerName;
                     report.failure(logger, msg, null);
                     throw new Exception(msg);
@@ -1039,7 +1040,6 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
         }
         
         appRegistry.remove(appName);
-        info = null;
     }
 
     // prepare application config change for later registering
@@ -1277,8 +1277,15 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                         targets = domain.getAllReferencedTargetsForApplication(appName);
                     }
 
+                    Domain dmn;
+                    if (param instanceof Domain) {
+                        dmn = (Domain)param;
+                    } else {
+                        return Boolean.FALSE;
+                    }
+
                     for (String target : targets) {
-                        Server servr = ((Domain)param).getServerNamed(target);
+                        Server servr = dmn.getServerNamed(target);
                         if (servr != null) {
                             // remove the application-ref from standalone 
                             // server instance
@@ -1293,7 +1300,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                             }
                         }
               
-                        Cluster cluster = ((Domain)param).getClusterNamed(target);
+                        Cluster cluster = dmn.getClusterNamed(target);
                         if (cluster != null) {
                             // remove the application-ref from cluster
                             ConfigBeanProxy cluster_w = t.enroll(cluster);
@@ -1323,7 +1330,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
 
                     if (!appRefOnly) {
                         // remove application element
-                        Applications apps = ((Domain)param).getApplications();
+                        Applications apps = dmn.getApplications();
                         ConfigBeanProxy apps_w = t.enroll(apps);
                         for (ApplicationName module : apps.getModules()) {
                             if (module.getName().equals(appName)) {
@@ -1346,8 +1353,15 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 // get the transaction
                 Transaction t = Transaction.getTransaction(param);
                 if (t!=null) {
+                    Domain dmn;
+                    if (param instanceof Domain) {
+                        dmn = (Domain)param;
+                    } else {
+                        return Boolean.FALSE;
+                    }
+
                     if (enabled || DeploymentUtils.isDomainTarget(target)) {
-                        Application app = ((Domain)param).getApplications().getApplication(appName);
+                        Application app = dmn.getApplications().getApplication(appName);
                         ConfigBeanProxy app_w = t.enroll(app);
                        ((Application)app_w).setEnabled(String.valueOf(enabled));
 
@@ -1361,7 +1375,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                     }
 
                     for (String target : targets) {
-                        Server servr = ((Domain)param).getServerNamed(target);
+                        Server servr = dmn.getServerNamed(target);
                         if (servr != null) {
                             // update the application-ref from standalone
                             // server instance
@@ -1375,7 +1389,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                             }
                             updateClusterAppRefWithInstanceUpdate(t, servr, appName, enabled);
                         }
-                        Cluster cluster = ((Domain)param).getClusterNamed(target);
+                        Cluster cluster = dmn.getClusterNamed(target);
                         if (cluster != null) {
                             // update the application-ref from cluster
                             for (ApplicationRef appRef :
@@ -1852,11 +1866,14 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             final byte[] buffer = new byte[1024];
             final InputStream is = new BufferedInputStream(new FileInputStream(f));
             int bytesRead;
-            while ((bytesRead = is.read(buffer)) != -1) {
-                zipOS.write(buffer, 0, bytesRead);
+            try {
+                while ((bytesRead = is.read(buffer)) != -1) {
+                    zipOS.write(buffer, 0, bytesRead);
+                }
+            } finally {
+                is.close();
+                zipOS.closeEntry();
             }
-            is.close();
-            zipOS.closeEntry();
         } else {
             /*
              * A directory entry has no content itself.
@@ -2014,8 +2031,8 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             appContext.getModuleDeploymentContexts();
 
         // install at module level 
-        for (String moduleUri : moduleContexts.keySet()) {
-            ExtendedDeploymentContext context = moduleContexts.get(moduleUri);
+        for (Map.Entry<String, ExtendedDeploymentContext> entry : moduleContexts.entrySet()) {
+            ExtendedDeploymentContext context = entry.getValue();
             installTransformersOnModule(context, false);
         }
     }

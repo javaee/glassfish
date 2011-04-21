@@ -194,10 +194,8 @@ public class JavaEETransactionManagerSimplified
             // ignore
         }
 
-        Properties cacheProps = null;
-
         resourceTable = new BaseCache();
-        ((BaseCache)resourceTable).init(maxEntries, loadFactor, cacheProps);
+        ((BaseCache)resourceTable).init(maxEntries, loadFactor, null);
         // END IASRI 4705808 TTT001
 
         if (habitat != null) {
@@ -323,7 +321,7 @@ public class JavaEETransactionManagerSimplified
        JavaEETransactionManagerDelegate d = setDelegate();
        boolean useLAO = d.useLAO();
 
-       if ( (tx.getNonXAResource()!=null) && (!useLAO || (useLAO && !h.supportsXA()))) {
+       if ( (tx.getNonXAResource()!=null) && (!useLAO || !h.supportsXA())) {
            boolean isSameRM=false;
            try {
                isSameRM = h.getXAResource().isSameRM(tx.getNonXAResource().getXAResource());
@@ -415,7 +413,7 @@ public class JavaEETransactionManagerSimplified
         TransactionInternal jtsTx = getDelegate().startJTSTx(tx, tx.isAssociatedTimeout());
 
         // The local Transaction was promoted to global Transaction
-        if (tx!=null && monitoringEnabled){
+        if (monitoringEnabled){
             if(activeTransactions.remove(tx)){
                 monitor.transactionDeactivatedEvent();
             }
@@ -569,27 +567,14 @@ public class JavaEETransactionManagerSimplified
 
     private JavaEETransactionImpl initJavaEETransaction(int timeout) {
         JavaEETransactionImpl tx = null;
-        if (timeout > 0)
-            tx = new JavaEETransactionImpl(timeout);
-        else
-            tx = new JavaEETransactionImpl();
-
         // Do not need to use injection.
-        tx.javaEETM = this;
+        if (timeout > 0)
+            tx = new JavaEETransactionImpl(timeout, this);
+        else
+            tx = new JavaEETransactionImpl(this);
+
         setCurrentTransaction(tx);
         return tx;
-    }
-
-    private List getExistingResourceList(Object instance) {
-        throw new IllegalStateException("Should not be called");
-/**
-        if (instance == null)
-            return null;
-        Object key = getResourceTableKey(instance);
-        if (key == null)
-            return null;
-        return (List) resourceTable.get(key);
-**/
     }
 
     public List getExistingResourceList(Object instance, ComponentInvocation inv) {
@@ -674,7 +659,7 @@ public class JavaEETransactionManagerSimplified
     public boolean isTimedOut() {
         JavaEETransaction tx = transactions.get();
         if ( tx != null)
-            return tx.isTimedout();
+            return tx.isTimedOut();
         else
             return false;
     }
@@ -942,8 +927,7 @@ public class JavaEETransactionManagerSimplified
                 // in this JVM (possible for distributed loopbacks).
                 tx = (JavaEETransaction)globalTransactions.get(jtsTx);
                 if ( tx == null ) {
-                    tx = new JavaEETransaction(jtsTx);
-                    tx.setImportedTransaction();
+                    tx = new JavaEETransaction(jtsTx, this);
                     try {
                         jtsTx.registerSynchronization(
                                 new JTSSynchronization(jtsTx, this));
@@ -1247,13 +1231,12 @@ public class JavaEETransactionManagerSimplified
         public void run() {
             if (resourceTable != null) {
                 Map stats = resourceTable.getStats();
-                Iterator it = stats.keySet().iterator();
-                String key;
+                Iterator it = stats.entrySet().iterator();
                 _logger.log(Level.INFO, 
                         "********** JavaEETransactionManager resourceTable stats *****");
                 while (it.hasNext()) {
-                    key = (String)it.next();
-                    _logger.log(Level.INFO, key + ": " + stats.get(key).toString());
+                    Map.Entry entry = (Map.Entry)it.next();
+                    _logger.log(Level.INFO, (String)entry.getKey() + ": " + entry.getValue());
                 }
             }
         }
@@ -1546,8 +1529,7 @@ public class JavaEETransactionManagerSimplified
     
     public JavaEETransaction createImportedTransaction(TransactionInternal jtsTx) 
             throws SystemException { 
-        JavaEETransactionImpl tx = new JavaEETransactionImpl(jtsTx);
-        tx.setImportedTransaction();
+        JavaEETransactionImpl tx = new JavaEETransactionImpl(jtsTx, this);
         try {
             jtsTx.registerSynchronization(
                     new JTSSynchronization(jtsTx, this));
@@ -1565,7 +1547,7 @@ public class JavaEETransactionManagerSimplified
 /****************************************************************************/
 /** Implementation of javax.transaction.Synchronization *********************/
 /****************************************************************************/
-    private class JTSSynchronization implements Synchronization {
+    private static class JTSSynchronization implements Synchronization {
         private TransactionInternal jtsTx;
         private JavaEETransactionManagerSimplified javaEETM;
     

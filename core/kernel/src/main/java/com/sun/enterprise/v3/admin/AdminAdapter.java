@@ -40,24 +40,8 @@
 
 package com.sun.enterprise.v3.admin;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.URLDecoder;
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.config.serverbeans.Config;
@@ -66,12 +50,7 @@ import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.common_impl.LogHelper;
-import com.sun.enterprise.universal.GFBase64Decoder;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.v3.admin.adapter.AdminEndpointDecider;
-import com.sun.enterprise.v3.admin.listener.GenericJavaConfigListener;
-import com.sun.enterprise.v3.admin.listener.SystemPropertyListener;
 import com.sun.logging.LogDomains;
 import org.glassfish.admin.payload.PayloadImpl;
 import org.glassfish.api.ActionReport;
@@ -80,8 +59,29 @@ import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.Payload;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.container.Adapter;
 import org.glassfish.api.event.EventListener;
+import org.glassfish.api.container.Adapter;
+import org.jvnet.hk2.component.PostConstruct;
+
+import java.net.InetAddress;
+import java.net.URLDecoder;
+import java.util.StringTokenizer;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import com.sun.enterprise.util.SystemPropertyConstants;
+
+import java.net.HttpURLConnection;
+import com.sun.enterprise.universal.GFBase64Decoder;
+import com.sun.enterprise.v3.admin.adapter.AdminEndpointDecider;
+
+import java.io.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
+
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.RestrictTo;
@@ -95,9 +95,6 @@ import org.glassfish.internal.api.ServerContext;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.ObservableBean;
 
 /**
  * Listen to admin commands...
@@ -107,8 +104,8 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
 
     public final static String VS_NAME="__asadmin";
     public final static String PREFIX_URI = "/" + VS_NAME;
-    public final static Logger logger = LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER);
-    public final static LocalStringManagerImpl adminStrings = new LocalStringManagerImpl(AdminAdapter.class);
+    private final static LocalStringManagerImpl adminStrings = new LocalStringManagerImpl(AdminAdapter.class);
+    private final static Logger aalogger = LogDomains.getLogger(AdminAdapter.class, LogDomains.ADMIN_LOGGER);
     private final static String GET = "GET";
     private final static String POST = "POST";
     private static final GFBase64Decoder decoder = new GFBase64Decoder();
@@ -155,10 +152,7 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
 
     @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private volatile Server server;
-
-    @Inject
-    GenericJavaConfigListener listener;
-    
+   
     private SecureAdmin secureAdmin;
 
     final Class<? extends Privacy> privacyClass;
@@ -177,11 +171,11 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
         return this;
     }
 
+    @Override
     public void postConstruct() {
         events.register(this);
         
-        epd = new AdminEndpointDecider(config, logger);
-        registerDynamicReconfigListeners();
+        epd = new AdminEndpointDecider(config, aalogger);
         addDocRoot(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/asadmindocroot/");
         secureAdmin = habitat.getComponent(SecureAdmin.class);
     }
@@ -204,10 +198,8 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
     @Override
     public void onMissingResource(Request req, Response res) {
 
-
-        LogHelper.getDefaultLogger().finer("Admin adapter !");
-        LogHelper.getDefaultLogger().finer("Received something on " + req.getRequestURI());
-        LogHelper.getDefaultLogger().finer("QueryString = " + req.getQueryString());
+        LogHelper.getDefaultLogger().log(Level.FINER, "Received something on {0}", req.getRequestURI());
+        LogHelper.getDefaultLogger().log(Level.FINER, "QueryString = {0}", req.getQueryString());
 
         String requestURI = req.getRequestURI();
     /*    if (requestURI.startsWith("/__asadmin/ADMINGUI")) {
@@ -450,10 +442,10 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
         try {
             Payload.Inbound inboundPayload = PayloadImpl.Inbound
                 .newInstance(req.getContentType(), req.getInputStream(true));
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("***** AdminAdapter "+req.getMethod()+"  *****");
+            if (aalogger.isLoggable(Level.FINE)) {
+                aalogger.log(Level.FINE, "***** AdminAdapter {0}  *****", req.getMethod());
             }
-            AdminCommand adminCommand = commandRunner.getCommand(command, report, logger);
+            AdminCommand adminCommand = commandRunner.getCommand(command, report, aalogger);
             if (adminCommand==null) {
                 // maybe commandRunner already reported the failure?
                 if (report.getActionExitCode() == ActionReport.ExitCode.FAILURE)
@@ -462,7 +454,7 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
                     adminStrings.getLocalString("adapter.command.notfound",
                         "Command {0} not found", command);
                 // cound't find command, not a big deal
-                logger.log(Level.FINE, message);
+                aalogger.log(Level.FINE, message);
                 report.setMessage(message);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return report;
@@ -480,7 +472,7 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
                 catch(Exception e) {
                 }
             } else {
-                report.failure( logger,
+                report.failure( aalogger,
                                 adminStrings.getLocalString("adapter.wrongprivacy",
                                     "Command {0} does not have {1} visibility",
                                     command, privacyClass.getSimpleName().toLowerCase()),
@@ -542,7 +534,7 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
             try {
                 value = URLDecoder.decode(value, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                logger.log(Level.WARNING, adminStrings.getLocalString("adapter.param.decode",
+                aalogger.log(Level.WARNING, adminStrings.getLocalString("adapter.param.decode",
                         "Cannot decode parameter {0} = {1}"));
             }
 
@@ -559,24 +551,26 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
         }
 
         // Dump parameters...
-        if (logger.isLoggable(Level.FINER)) {
+        if (aalogger.isLoggable(Level.FINER)) {
             for (Map.Entry<String, List<String>> entry : parameters.entrySet()) {
                 for (String v : entry.getValue())
-                    logger.finer("Key " + entry.getKey() + " = " + v);
+                    aalogger.log(Level.FINER, "Key {0} = {1}", new Object[]{entry.getKey(), v});
             }
         }
         return parameters;
     }
 
+    @Override
     public void event(@RestrictTo(EventTypes.SERVER_READY_NAME) Event event) {
         if (event.is(EventTypes.SERVER_READY)) {
             latch.countDown();
-            logger.fine("Ready to receive administrative commands");       
+            aalogger.fine("Ready to receive administrative commands");       
         }
         //the count-down does not start if any other event is received
     }
     
     
+    @Override
     public int getListenPort() {
         return epd.getListenPort();
     }
@@ -586,6 +580,7 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
         return epd.getListenAddress();
     }
 
+    @Override
     public List<String> getVirtualServers() {
         return epd.getAsadminHosts();
     }
@@ -593,6 +588,7 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
     /**
      * Checks whether this adapter has been registered as a network endpoint.
      */
+    @Override
     public boolean isRegistered() {
 	return isRegistered;
     }
@@ -601,20 +597,8 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
      * Marks this adapter as having been registered or unregistered as a
      * network endpoint
      */
+    @Override
     public void setRegistered(boolean isRegistered) {
 	this.isRegistered = isRegistered;
-    }
-    
-    private void registerSystemPropertyListener() {
-        ObservableBean ob = (ObservableBean)ConfigSupport.getImpl(domain);
-        SystemPropertyListener ls = habitat.getComponent(SystemPropertyListener.class);
-        ob.addListener(ls); //there should be a better way to do this ...
-        ob = (ObservableBean)ConfigSupport.getImpl(server);
-        ob.addListener(ls);
-        ob = (ObservableBean)ConfigSupport.getImpl(config);
-        ob.addListener(ls);
-    }
-    private void registerDynamicReconfigListeners() {
-        registerSystemPropertyListener();
     }
 }

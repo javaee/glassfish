@@ -40,7 +40,6 @@
 
 package com.sun.enterprise.v3.server;
 
-import java.lang.reflect.Field;
 
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
@@ -49,9 +48,9 @@ import org.glassfish.grizzly.http.server.Response;
 
 public class HK2Dispatcher {
 
-    Field threadLocalsField;
-    Field tableField;
-    Field hashCode;
+/**    Field threadLocalsField = null;
+    Field tableField = null;
+    Field hashCode = null;
     Field value;
 
     private void init() {
@@ -76,7 +75,7 @@ public class HK2Dispatcher {
         }
     }
 
-
+*/
     public void dispatch(HttpHandler adapter, ClassLoader cl, Request req, Response res) {
 
         // save the thread local entries.

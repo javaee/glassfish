@@ -39,17 +39,17 @@
  */
 package org.glassfish.admin.mbeanserver;
 
-import javax.management.MBeanServer;
-
-import javax.management.remote.*;
-import javax.security.auth.*;
-
-import java.io.IOException;
-
-import org.glassfish.internal.api.AdminAccessController;
-import org.jvnet.hk2.component.*;
-
 import org.glassfish.grizzly.config.dom.Ssl;
+import org.jvnet.hk2.component.Habitat;
+
+import javax.management.MBeanServer;
+import javax.management.remote.JMXAuthenticator;
+import javax.management.remote.JMXConnectorServer;
+import javax.management.remote.JMXServiceURL;
+import javax.security.auth.Subject;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
 Start and stop JMX connectors, base class.
@@ -74,11 +74,13 @@ abstract class ConnectorStarter {
         return mJMXServiceURL;
     }
 
-    public String hostname() {
+    public String hostname() throws UnknownHostException {
+        InetAddress.getByName(mHostName);
         if (mHostName.equals("") || mHostName.equals("0.0.0.0")) {
             return Util.localhost();
+        } else if (mHostName.contains(":") && !mHostName.startsWith("[")) {
+            return "["+mHostName+"]";
         }
-
         return mHostName;
     }
 

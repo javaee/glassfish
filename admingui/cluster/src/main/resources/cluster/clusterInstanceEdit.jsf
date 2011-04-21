@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -124,6 +124,22 @@
             <sun:button id="logViewer" text="$resource{i18n.button.logViewer}"  disabled="#{pageSession.isStopped}" primary="#{false}"
                 onClick="javascript:var win=window.open('#{facesContext.externalContext.requestContextPath}/common/logViewer/logViewer.jsf?instanceName=#{pageSession.instanceName}&loglevel=INFO&viewResults=true','LogViewerWindow','width='+(screen.width-300)+',height='+(screen.height-75)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus(); return false;"
             />
+
+        <sun:button id="rotateLog" text="$resource{i18n.button.rotateLog}" primary="#{false}" disabled="#{pageSession.isStopped}"
+                onClick="if ( getConfirm(this, '$resource{i18nc.msg.JS.confirmRotateLog}') )
+                { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
+                    else {return false;} " >
+            <!command
+                createMap(result="#{requestScope.map}");
+                mapPut(map="#{requestScope.map}", key="target", value="#{pageSession.encodedInstanceName}");
+                    gf.restRequest(
+                    endpoint="#{sessionScope.REST_URL}/rotate-log"
+                    attrs="#{requestScope.map}"
+                    method="POST"
+                    result="#{pageSession.props}");
+            gf.redirect("#{pageSession.selfPage}");/>
+
+            </sun:button>
 
             <sun:button id="recoverTrans" text="$resource{i18n.button.recoverTrans}" primary="#{false}">
                 <!command

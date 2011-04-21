@@ -78,7 +78,7 @@ public class PortInfoImpl implements PortInfo {
     public boolean equals(Object obj) {
         if (obj instanceof PortInfo) {
             PortInfo info = (PortInfo) obj;
-            if (bindingId.toString().equals(info.getBindingID().toString()) &&
+            if (bindingId.toString().equals(info.getBindingID()) &&
                 portName.equals(info.getPortName()) &&
                 serviceName.equals(info.getServiceName())) {
                 return true;

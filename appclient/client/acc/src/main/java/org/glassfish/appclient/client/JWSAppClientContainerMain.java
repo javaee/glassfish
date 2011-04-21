@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,16 +40,15 @@
 
 package org.glassfish.appclient.client;
 
-import com.sun.enterprise.glassfish.bootstrap.ASMainStatic;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -69,6 +68,8 @@ public class JWSAppClientContainerMain {
     public static final String SECURITY_CONFIG_PATH_PLACEHOLDER = "security.config.path";
 
     private static final Logger logger = Logger.getLogger(JWSAppClientContainerMain.class.getName());
+    
+    private static final String ENDORSED_PACKAGE_PROPERTY_NAME = "endorsed-standard-packages";
 
     /** localizable strings */
     private static final ResourceBundle rb =
@@ -122,8 +123,13 @@ public class JWSAppClientContainerMain {
 
             final String agentArgsText = System.getProperty("agent.args");
             LaunchSecurityHelper.setPermissions();
+            
+            /*
+             * Prevent the Java Web Start class loader from delegating to its
+             * parent when resolving classes and resources that should come from
+             * the GlassFish-provided endorsed JARs.
+             */
             insertMaskingLoader();
-
 
             final ClientRunner runner = new ClientRunner(agentArgsText, args);
             if (runOnSwingThread()) {
@@ -131,16 +137,11 @@ public class JWSAppClientContainerMain {
             } else {
                 runner.run();
             }
-            System.err.flush();
-            System.out.flush();
         } catch (Throwable thr) {
             if (isTestMode()){
                 exitManager.recordFailure(thr);
             }
-            System.err.println(rb.getString("jwsacc.errorLaunch"));
-            System.err.println(thr.toString());
-            thr.printStackTrace();
-            System.exit(1);
+            throw new RuntimeException(rb.getString("jwsacc.errorLaunch"), thr);
         }
 
     }
@@ -168,10 +169,6 @@ public class JWSAppClientContainerMain {
                 AppClientFacade.launch(args);
                 logger.log(Level.FINE, "JWSAppClientContainer finished after {0} ms",
                     (System.currentTimeMillis() - now));
-            if (exitAfterReturn()) {
-                    logger.log(Level.FINE, "Explicitly exiting after return from client");
-                    System.exit(0);
-                }
             } catch (UserError ue) {
                 if ( ! isTestMode()) {
                     ErrorDisplayDialog.showUserError(ue, rb);
@@ -191,7 +188,8 @@ public class JWSAppClientContainerMain {
         props.load(sr);
 
         final ClassLoader jwsLoader = Thread.currentThread().getContextClassLoader();
-        final ClassLoader mcl = ASMainStatic.getMaskingClassLoader(
+
+        final ClassLoader mcl = getMaskingClassLoader(
                 jwsLoader.getParent(), props);
 
         final Field jwsLoaderParentField = ClassLoader.class.getDeclaredField("parent");
@@ -200,6 +198,25 @@ public class JWSAppClientContainerMain {
     }
 
 
+    private static ClassLoader getMaskingClassLoader(final ClassLoader parent,
+            final Properties props) {
+
+        final Collection<String> endorsedPackagesToMask = prepareEndorsedPackages(
+                props.getProperty(ENDORSED_PACKAGE_PROPERTY_NAME));
+        return new JWSACCMaskingClassLoader(parent, endorsedPackagesToMask);
+    }
+
+    private static Collection<String> prepareEndorsedPackages(final String packageNames) {
+        final Collection<String> result = new HashSet<String>();
+        for (String s : packageNames.split(",")) {
+            s = s.trim();
+            if (s.length() > 0) {
+                result.add(s);
+            }
+        }
+        return result;
+    }
+    
     /**
      *Interpret the JWSACC arguments (if any) supplied on the command line.
      *@param args the JWSACC arguments
@@ -223,10 +240,6 @@ public class JWSAppClientContainerMain {
 
     private static boolean runOnSwingThread() {
         return jwsaccSettings.containsKey(JWSACCSetting.RUN_ON_SWING_THREAD);
-    }
-
-    private static boolean exitAfterReturn() {
-        return jwsaccSettings.containsKey(JWSACCSetting.EXIT_AFTER_RETURN);
     }
 
     private static boolean forceError() {

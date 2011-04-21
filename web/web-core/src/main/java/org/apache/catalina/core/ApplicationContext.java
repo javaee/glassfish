@@ -95,10 +95,9 @@ public class ApplicationContext implements ServletContext {
      *
      * @param context The associated Context instance
      */
-    public ApplicationContext(String basePath, StandardContext context) {
+    public ApplicationContext(StandardContext context) {
         super();
         this.context = context;
-        this.basePath = basePath;
 
         setAttribute("com.sun.faces.useMyFaces",
                      Boolean.valueOf(context.isUseMyFaces()));
@@ -156,18 +155,16 @@ public class ApplicationContext implements ServletContext {
     /**
      * The merged context initialization parameters for this Context.
      */
-    private Map<String, String> parameters = null;
+    private Map<String, String> parameters =
+        new ConcurrentHashMap<String, String>();
+
+    private volatile boolean parametersMerged = false;
 
     /**
      * The string manager for this package.
      */
     private static final StringManager sm =
       StringManager.getManager(Constants.Package);
-
-    /**
-     * Base path.
-     */
-    private String basePath = null;
 
     private boolean isRestricted;
 
@@ -249,9 +246,7 @@ public class ApplicationContext implements ServletContext {
      */
     public String getInitParameter(final String name) {
         mergeParameters();
-        synchronized (parameters) {
-            return parameters.get(name);
-        }
+        return parameters.get(name);
     }
 
     /**
@@ -260,9 +255,7 @@ public class ApplicationContext implements ServletContext {
      */
     public Enumeration<String> getInitParameterNames() {
         mergeParameters();
-        synchronized (parameters) {
-           return (new Enumerator<String>(parameters.keySet()));
-        }
+        return (new Enumerator<String>(parameters.keySet()));
     }
 
     /**
@@ -279,7 +272,7 @@ public class ApplicationContext implements ServletContext {
         }
         try {
             context.addParameter(name, value);
-            if (parameters != null) {
+            if (parametersMerged) {
                 // Avoid call to mergeParameters
                 parameters.put(name, value);
             }
@@ -1019,13 +1012,13 @@ public class ApplicationContext implements ServletContext {
      * server configuration, respecting the <code>override</code> property of
      * the application parameters appropriately.
      */
-    private void mergeParameters() {
-        if (parameters != null) {
+    private synchronized void mergeParameters() {
+        if (parametersMerged) {
             return;
         }
-        Map<String, String> results = new ConcurrentHashMap<String, String>();
+
         for (String name : context.findParameters()) {
-            results.put(name, context.findParameter(name));
+            parameters.put(name, context.findParameter(name));
         }
         List<ApplicationParameter> params =
             context.findApplicationParameters();
@@ -1034,14 +1027,14 @@ public class ApplicationContext implements ServletContext {
             while (i.hasNext()) {
                 ApplicationParameter param = i.next();
                 if (param.getOverride()) {
-                    if (results.get(param.getName()) == null)
-                        results.put(param.getName(), param.getValue());
+                    if (parameters.get(param.getName()) == null)
+                        parameters.put(param.getName(), param.getValue());
                 } else {
-                    results.put(param.getName(), param.getValue());
+                    parameters.put(param.getName(), param.getValue());
                 }
             }
         }
-        parameters = results;
+        parametersMerged = true;
     }
 
 }

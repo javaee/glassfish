@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,6 +56,7 @@ import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -76,18 +77,20 @@ public class WebAppHandlers {
    //This is called when user change the default web module of a VS.
    //Need to ensure this VS is in the application-ref virtual server list. If not add it and restart the app for
    //change to take into effect.  refer to issue#8671
-   @Handler(id = "EnsureDefaultWebModule",
+   @Handler(id = "gf.ensureDefaultWebModule",
         input = {
             @HandlerInput(name = "endpoint", type = String.class, required = true),
             @HandlerInput(name = "vsName", type = String.class, required = true),
             @HandlerInput(name = "instanceList", type=List.class, required=true)
         })
-    public static void EnsureDefaultWebModule(HandlerContext handlerCtx) throws Exception {
+    public static void ensureDefaultWebModule(HandlerContext handlerCtx) throws Exception {
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
         String vsName = (String) handlerCtx.getInputValue("vsName");
-        List instanceList = (List) handlerCtx.getInputValue("instanceList");
-        Map vsAttrs = RestUtil.getAttributesMap(endpoint+"/" + vsName);
-        String webModule= (String) vsAttrs.get("DefaultWebModule");
+        String encodedName = URLEncoder.encode(vsName, "UTF-8");
+        List<String> instanceList = (List) handlerCtx.getInputValue("instanceList");
+        
+        Map vsAttrs = RestUtil.getAttributesMap(endpoint + "/" + encodedName);
+        String webModule= (String) vsAttrs.get("defaultWebModule");
         if (GuiUtil.isEmpty(webModule))
             return;
         String appName = webModule;
@@ -96,17 +99,24 @@ public class WebAppHandlers {
             appName=webModule.substring(0, index);
         }
         String serverEndPoint = GuiUtil.getSessionValue("REST_URL") + "/servers/server/";
-        for (Object serverName : instanceList) {
-            String apprefEndpoint = serverEndPoint + serverName + "/application-ref/" + appName;
-            Map apprefAttrs = RestUtil.getAttributesMap(apprefEndpoint+"/" + vsName);
-            String vsStr = (String) apprefAttrs.get("VirtualServers");
-            List vsList = GuiUtil.parseStringList(vsStr, ",");
-            if (vsList.contains(vsName)){
-                continue;   //the default web module app is already deployed to this vs, no action needed
-            }
+        for (String serverName : instanceList) {
+            String encodedAppName = URLEncoder.encode(appName, "UTF-8");
+            String encodedServerName = URLEncoder.encode(serverName, "UTF-8");
+            String apprefEndpoint = serverEndPoint + encodedServerName + "/application-ref/" + encodedAppName;
+            Map apprefAttrs = RestUtil.getAttributesMap(apprefEndpoint);
+            String vsStr = (String) apprefAttrs.get("virtualServers");
             //Add to the vs list of this application-ref, then restart the app.
-            vsStr=vsStr+","+vsName;
-            apprefAttrs.put("VirtualServers", vsStr);
+            if (GuiUtil.isEmpty(vsStr)){
+                vsStr = vsName;
+            }else{
+                List vsList = GuiUtil.parseStringList(vsStr, ",");
+                if (vsList.contains(vsName)){
+                    continue;   //the default web module app is already deployed to this vs, no action needed
+                }else{
+                    vsStr=vsStr+","+vsName;
+                }
+            }
+            apprefAttrs.put("virtualServers", vsStr);
             RestResponse response = RestUtil.sendUpdateRequest(apprefEndpoint, apprefAttrs, null, null, null);
             if (!response.isSuccess()) {
                 GuiUtil.getLogger().severe("Update virtual server failed.  parent=" + apprefEndpoint + "; attrsMap =" + apprefAttrs);

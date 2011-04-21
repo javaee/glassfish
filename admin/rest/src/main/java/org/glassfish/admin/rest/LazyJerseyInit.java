@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.rest;
 
 import com.sun.enterprise.config.serverbeans.Config;
@@ -90,9 +89,8 @@ import org.jvnet.hk2.config.DomDocument;
  * It is safe to have imports on com.sun.jersey.* APIs in this class.
  * @author ludo
  */
-public class LazyJerseyInit  implements LazyJerseyInterface{
+public class LazyJerseyInit implements LazyJerseyInterface {
 
-    
     /**
      * Called via introspection in the RestAdapter service() method only when the GrizzlyAdapter is not initialized
      * @param classes set of Jersey Resources classes
@@ -100,9 +98,9 @@ public class LazyJerseyInit  implements LazyJerseyInterface{
      * @return the correct GrizzlyAdapter
      * @throws EndpointRegistrationException
      */
+    @Override
     public HttpHandler exposeContext(Set classes, ServerContext sc, Habitat habitat)
             throws EndpointRegistrationException {
-        
 
         HttpHandler httpHandler = null;
         Reloader r = new Reloader();
@@ -110,8 +108,8 @@ public class LazyJerseyInit  implements LazyJerseyInterface{
         rc.getMediaTypeMappings().put("xml", MediaType.APPLICATION_XML_TYPE);
         rc.getMediaTypeMappings().put("json", MediaType.APPLICATION_JSON_TYPE);
         rc.getMediaTypeMappings().put("html", MediaType.TEXT_HTML_TYPE);
-        rc.getMediaTypeMappings().put("js", new MediaType("application","x-javascript"));
-        
+        rc.getMediaTypeMappings().put("js", new MediaType("application", "x-javascript"));
+
         RestConfig restConf = getRestConfig(habitat);
         if (restConf != null) {
             if (restConf.getLogOutput().equalsIgnoreCase("true")) { //enable output logging
@@ -147,12 +145,11 @@ public class LazyJerseyInit  implements LazyJerseyInterface{
             Thread.currentThread().setContextClassLoader(originalContextClassLoader);
         }
         //add a rest config listener for possible reload of Jersey
-        new RestConfigChangeListener(habitat, r ,rc , sc);
+        new RestConfigChangeListener(habitat, r, rc, sc);
         return httpHandler;
     }
-    
-    
-    @Override 
+
+    @Override
     public RestConfig getRestConfig(Habitat habitat) {
         if (habitat == null) {
             return null;
@@ -189,7 +186,7 @@ public class LazyJerseyInit  implements LazyJerseyInterface{
             } else {
                 res.setContentType("text/html");
                 provider = new ActionReportResultHtmlProvider();
- }
+            }
             res.setStatus(statusCode);
             res.getOutputStream().write(provider.getContent(new ActionReportResult(report)).getBytes());
             res.getOutputStream().flush();
@@ -309,7 +306,7 @@ public class LazyJerseyInit  implements LazyJerseyInterface{
             DomDocument document = dom.document;
             ConfigModel rootModel = dom.document.getRoot().model;
 
-            ResourcesGenerator resourcesGenerator = new ASMResourcesGenerator();
+            ResourcesGenerator resourcesGenerator = new ASMResourcesGenerator(habitat);
             resourcesGenerator.generateSingle(rootModel, document);
             resourcesGenerator.endGeneration();
         } catch (Exception ex) {
@@ -317,4 +314,3 @@ public class LazyJerseyInit  implements LazyJerseyInterface{
         }
     }
 }
-

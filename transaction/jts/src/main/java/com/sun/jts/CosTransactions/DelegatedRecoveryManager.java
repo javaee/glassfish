@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -316,9 +316,9 @@ public class DelegatedRecoveryManager {
                         
                         DelegatedTimeoutManager tmoutMgr = getTimeoutManager(logPath);
                         tmoutMgr.setTimeout(
-                        new Long(coord.getLocalTID()),
-                        DelegatedTimeoutManager.IN_DOUBT_TIMEOUT,
-                        60);
+                                coord.getLocalTID(),
+                                DelegatedTimeoutManager.IN_DOUBT_TIMEOUT,
+                                60);
                         
                     } else if (state == Status.StatusCommitted) {
                         
@@ -611,7 +611,7 @@ public class DelegatedRecoveryManager {
                         // is registered with the coordinator per transaction
                         // per RM.
                         
-                        String xidStr = stringifyXid(inDoubtXids[i]);
+                        //String xidStr = stringifyXid(inDoubtXids[i]);
                         if (!uniqueXids.contains(inDoubtXids[i])) { // unique xid
                             if(_logger.isLoggable(Level.FINE))
                             {
@@ -834,5 +834,5 @@ class RecoveryStateHolder {
     
     Hashtable coordsByGlobalTID = new Hashtable();
     Hashtable coordsByLocalTID = new Hashtable();
-    Hashtable transactionIds = new Hashtable();
+    //Hashtable transactionIds = new Hashtable();
 }

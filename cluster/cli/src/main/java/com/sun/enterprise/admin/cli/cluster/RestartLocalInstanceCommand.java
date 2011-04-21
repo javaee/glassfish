@@ -37,11 +37,11 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.enterprise.admin.cli.cluster;
 
-import com.sun.enterprise.admin.cli.CLICommand;
-import com.sun.enterprise.admin.cli.remote.*;
 import java.io.*;
+import java.util.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandException;
 import org.glassfish.api.admin.CommandValidationException;
@@ -49,6 +49,8 @@ import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
+import com.sun.enterprise.admin.cli.CLICommand;
+import com.sun.enterprise.admin.cli.remote.*;
 
 /**
  *
@@ -60,6 +62,7 @@ public class RestartLocalInstanceCommand extends StopLocalInstanceCommand {
 
     @Param(name = "debug", optional = true)
     private Boolean debug;
+
     @Inject
     private Habitat habitat;
 
@@ -68,6 +71,9 @@ public class RestartLocalInstanceCommand extends StopLocalInstanceCommand {
         // see StopLocalInstance for comments.  These 2 lines can be refactored.
         setLocalPassword();
         programOpts.setInteractive(false);
+
+        if(!isRestartable())
+            throw new CommandException(Strings.get("restart.notRestartable"));
 
         // find out how long the server has been up
         long uptimeOldServer = getUptime();  // may throw CommandException
@@ -93,6 +99,37 @@ public class RestartLocalInstanceCommand extends StopLocalInstanceCommand {
     protected int instanceNotRunning() throws CommandException {
         logger.warning(Strings.get("restart.instanceNotRunning"));
         CLICommand cmd = habitat.getComponent(CLICommand.class, "start-local-instance");
-        return cmd.execute(argv);
+        /*
+         * Collect the arguments that also apply to start-instance-domain.
+         * The start-local-instance CLICommand object will already have the
+         * ProgramOptions injected into it so we don't need to worry
+         * about them here.
+         *
+         * Usage: asadmin [asadmin-utility-options] start-local-instance
+         *    [--verbose[=<verbose(default:false)>]]
+         *    [--debug[=<debug(default:false)>]] [--sync <sync(default:normal)>]
+         *    [--nodedir <nodedir>] [--node <node>]
+         *    [-?|--help[=<help(default:false)>]] [instance_name]
+         *
+         * Only --debug, --nodedir, -node, and the operand apply here.
+         */
+        List<String> opts = new ArrayList<String>();
+        opts.add("start-local-instance");
+        if (debug != null) {
+            opts.add("--debug");
+            opts.add(debug.toString());
+        }
+        if (nodeDir != null) {
+            opts.add("--nodedir");
+            opts.add(nodeDir);
+        }
+        if (node != null) {
+            opts.add("--node");
+            opts.add(node);
+        }
+        if (instanceName != null)
+            opts.add(instanceName);
+
+        return cmd.execute(opts.toArray(new String[opts.size()]));
     }
 }

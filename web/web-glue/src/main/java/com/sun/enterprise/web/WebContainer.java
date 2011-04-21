@@ -45,6 +45,7 @@ import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SessionProperties;
+import com.sun.enterprise.container.common.spi.JCDIService;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.container.common.spi.util.JavaEEIOUtils;
@@ -88,6 +89,7 @@ import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.web.TldProvider;
+import org.glassfish.embeddable.CommandRunner;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.data.ApplicationRegistry;
@@ -107,10 +109,6 @@ import org.jvnet.hk2.config.ObservableBean;
 import org.jvnet.hk2.config.types.Property;
 import org.xml.sax.EntityResolver;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.ConversationScoped;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
 import javax.imageio.ImageIO;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
@@ -177,58 +175,68 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     // ----------------------------------------------------- Instance Variables
 
     @Inject
-    private Domain domain;
-
-    @Inject
-    private Habitat habitat;
-
-    @Inject
-    ServerContext _serverContext;
-
-    @Inject
     private ApplicationRegistry appRegistry;
-
-    @Inject
-    private ComponentEnvManager componentEnvManager;
-
-    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    private Config serverConfig;
-
-    @Inject(optional = true)
-    private DasConfig dasConfig;
-
-    @Inject
-    private Events events;
 
     @Inject
     private ClassLoaderHierarchy clh;
 
     @Inject
-    private GrizzlyService grizzlyService;
+    private ComponentEnvManager componentEnvManager;
 
     @Inject
-    private LoggingConfigImpl logConfig;
+    Configs configs;
 
-    //@Inject
-    //MonitoringService monitoringService;
+    @Inject(optional = true)
+    private DasConfig dasConfig;
+
+    @Inject
+    private Domain domain;
+
+    @Inject
+    private Events events;
 
     @Inject
     private FileLoggerHandlerFactory fileLoggerHandlerFactory;
 
     @Inject
+    private GrizzlyService grizzlyService;
+
+    @Inject
+    private Habitat habitat;
+
+    @Inject
     private JavaEEIOUtils javaEEIOUtils;
+
+    @Inject(optional = true)
+    private JCDIService jcdiService;
+
+    @Inject
+    private LoggingConfigImpl logConfig;
+
+    @Inject
+    CommandRunner runner;
+
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Server server;
+
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Config serverConfig;
+
+    @Inject
+    ServerContext _serverContext;
+
 
     private HashMap<String, WebConnector> connectorMap = new HashMap<String, WebConnector>();
 
     private EmbeddedWebContainer _embedded;
+
     private Engine engine;
+
     private String instanceName;
-
-    private String logLevel = "INFO";
-
 
     private WebConnector jkConnector;
 
+    private String logLevel = "INFO";
     /**
      * Allow disabling accessLog mechanism
      */
@@ -519,6 +527,13 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     serverConfig.getAvailabilityService());
             bean.addListener(configListener);
         }
+
+        bean = (ObservableBean) ConfigSupport.getImpl(server);
+        bean.addListener(configListener);
+
+        String instanceConfig = server.getConfigRef();
+        Config config = configs.getConfigByName(instanceConfig);
+        configListener.setNetworkConfig(config.getNetworkConfig());
 
         // embedded mode does not have manager-propertie in domain.xml
         if (configListener.managerProperties != null) {
@@ -1193,6 +1208,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
          * whether a new Host needs to be added to the HTTP listener's Mapper.
          */
         configureHost(vs, securityService);
+        vs.setServerEnvironment(instance);
+        vs.setDomain(domain);
+        vs.setCommandRunner(runner);
 
         // Add Host to Engine
         engine.addChild(vs);
@@ -1814,7 +1832,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
         String j2eeServer = _serverContext.getInstanceName();
         String domain = _serverContext.getDefaultDomainName();
-        String server = domain + ":j2eeType=J2EEServer,name=" + j2eeServer;
         // String[] javaVMs = J2EEModuleUtil.getjavaVMs();
         ctx.setDomain(domain);
 
@@ -3370,11 +3387,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * @Dependent scope. All other scopes are invalid and must be rejected.
      */
     private void validateJSR299Scope(Class<?> clazz) {
-        if (clazz.isAnnotationPresent(RequestScoped.class) ||
-                clazz.isAnnotationPresent(ApplicationScoped.class) ||
-                clazz.isAnnotationPresent(SessionScoped.class) ||
-                clazz.isAnnotationPresent(ConversationScoped.class)) {
-
+        if (jcdiService != null && jcdiService.isCDIScoped(clazz)) {
             String msg = rb.getString("webcontainer.invalidAnnotationScope");
             msg = MessageFormat.format(msg, clazz.getName());
             throw new IllegalArgumentException(msg);

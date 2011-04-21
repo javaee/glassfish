@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -1085,6 +1085,10 @@ public class QueryWrapper implements Query {
                     query.setLockMode(lockMode);
                     break;
 
+             default :
+
+                 assert (false) : "A new value has been added to enum SetterType. Please add a case clause in this method to handle it ";
+                 throw new RuntimeException("A new value has been added to enum SetterType without being coded in apply.");
             }
         }
 

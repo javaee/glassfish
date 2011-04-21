@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,6 +47,8 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -133,11 +135,21 @@ public final class ClassPathBuilder {
     }
 
     public ClassLoader create() {
-        return new URLClassLoader(urls.toArray(new URL[urls.size()]),parent);
+        return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+            @Override
+            public ClassLoader run() {
+                return new URLClassLoader(urls.toArray(new URL[urls.size()]),parent);
+            }
+        });
     }
 
-    public ClassLoader createExtensible(List<Repository> repositories) {
-        return new ExtensibleClassLoader(urls.toArray(new URL[urls.size()]),parent,repositories);
+    public ClassLoader createExtensible(final List<Repository> repositories) {
+        return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+            @Override
+            public ClassLoader run() {
+                return new ExtensibleClassLoader(urls.toArray(new URL[urls.size()]),parent,repositories);
+            }
+        });
     }
 
 

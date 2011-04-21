@@ -608,8 +608,8 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
 
         if (list.size() == 0) return;
 
-        ResourceHandle[] handles = (ResourceHandle[]) list.toArray(
-                new ResourceHandle[0]);
+        ResourceHandle[] handles = new ResourceHandle[list.size()];
+        handles = (ResourceHandle[]) list.toArray(handles);
         for (ResourceHandle h : handles) {
             ResourceSpec spec = h.getResourceSpec();
             if (spec.isLazyAssociatable()) {
@@ -695,6 +695,11 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
      */
     public PoolStatus getPoolStatus(PoolInfo poolInfo) {
         ResourcePool pool = poolTable.get(poolInfo);
-        return pool.getPoolStatus();
+        if(pool != null) {
+            return pool.getPoolStatus();
+        } else {
+            //TODO log exception
+            return null;
+        }
     }
 }

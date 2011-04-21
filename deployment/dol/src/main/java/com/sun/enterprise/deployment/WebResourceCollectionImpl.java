@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -132,8 +132,7 @@ public class WebResourceCollectionImpl extends Descriptor
         if (httpMethods == null){
             return (String[]) null;
         }
-        String[] array = (String[])httpMethods.toArray(new String[0]);
-        return array;
+        return httpMethods.toArray(new String[httpMethods.size()]);
     }
 
     /**
@@ -181,8 +180,7 @@ public class WebResourceCollectionImpl extends Descriptor
         if (httpMethodOmissions == null){
             return (String[]) null;
         }
-        String[] array = (String[])httpMethodOmissions.toArray(new String[0]);
-        return array;
+        return httpMethodOmissions.toArray(new String[httpMethodOmissions.size()]);
     }
     /**
      * Sets the set of HTTP method omissions this collection has.

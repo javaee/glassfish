@@ -50,6 +50,8 @@ import java.security.ProtectionDomain;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.admin.rest.ResourceUtil;
+import org.jvnet.hk2.component.Habitat;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -63,10 +65,12 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
 
     private org.objectweb.asm.ClassWriter cw = new org.objectweb.asm.ClassWriter(0);
     private String className;
+    Habitat habitat;
   //  private String baseClassName;
   //  private String resourcePath;
 
-    public ASMClassWriter(String className, String baseClassName, String resourcePath) {
+    public ASMClassWriter(Habitat habitat, String className, String baseClassName, String resourcePath) {
+        this.habitat = habitat;
         this.className = className;
    //     this.baseClassName = baseClassName;
    //     this.resourcePath = resourcePath;
@@ -135,10 +139,17 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
 
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "getCommandResourcesPaths", "()[[Ljava/lang/String;", null, null);
         mv.visitCode();
-        mv.visitIntInsn(BIPUSH, commandMetaData.size());   //11 number of entries
+        int size = 0;
+        for (CommandResourceMetaData metaData : commandMetaData) {
+            if (ResourceUtil.commandIsPresent(habitat, metaData.command)){
+                size++;
+            }
+        }
+        mv.visitIntInsn(BIPUSH, size);   //11 number of entries
         mv.visitTypeInsn(ANEWARRAY, "[Ljava/lang/String;");  //first outer array
         int index= -1;
         for (CommandResourceMetaData metaData : commandMetaData) {
+            if (ResourceUtil.commandIsPresent(habitat, metaData.command)){
             index++;
             switch (index){//inner array has 3 strings,
                 case 0: mv.visitInsn(DUP);mv.visitInsn(ICONST_0);mv.visitInsn(ICONST_3);break;
@@ -160,6 +171,7 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
             mv.visitInsn(AASTORE);mv.visitInsn(DUP);mv.visitInsn(ICONST_2);
             mv.visitLdcInsn(metaData.command);
             mv.visitInsn(AASTORE);mv.visitInsn(AASTORE);
+          }
 
         } //for
 
@@ -421,7 +433,9 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
                 break;
             }
         }
-
+        if (jm==null){//should never happen, makes findbug happy
+            throw new RuntimeException("cannot find method called defineclass...");
+        }
         final java.lang.reflect.Method clM = jm;
         try {
             java.security.AccessController.doPrivileged(

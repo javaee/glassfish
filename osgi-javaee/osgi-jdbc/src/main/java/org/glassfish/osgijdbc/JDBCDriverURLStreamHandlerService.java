@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,6 +45,8 @@ import org.osgi.service.url.AbstractURLStreamHandlerService;
 
 import java.io.*;
 import java.net.*;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.jar.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -72,9 +74,13 @@ public class JDBCDriverURLStreamHandlerService extends AbstractURLStreamHandlerS
 
 
             URI embeddedURI = new URI(u.toURI().getSchemeSpecificPart());
-            URL embeddedURL = embeddedURI.toURL();
+            final URL embeddedURL = embeddedURI.toURL();
             final URLConnection con = embeddedURL.openConnection();
-            final URLClassLoader cl = new URLClassLoader(new URL[]{embeddedURL}, apiClassLoader);
+            final URLClassLoader cl = AccessController.doPrivileged(new PrivilegedAction<URLClassLoader>() {
+                public URLClassLoader run() {
+                    return new URLClassLoader(new URL[]{embeddedURL}, apiClassLoader);
+                }
+            });
             return new URLConnection(embeddedURL) {
                 private Manifest m;
 

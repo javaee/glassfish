@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,7 @@ package org.glassfish.deployment.admin;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.api.ActionReport;
@@ -64,6 +65,7 @@ import org.jvnet.hk2.config.Transaction;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.Properties;
+import java.util.List;
 
 /**
  * Create lifecycle modules.
@@ -106,6 +108,9 @@ public class CreateLifecycleModuleCommand implements AdminCommand {
     @Inject
     Deployment deployment;
 
+    @Inject
+    Domain domain;
+
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateLifecycleModuleCommand.class);
    
     public void execute(AdminCommandContext context) {
@@ -113,11 +118,13 @@ public class CreateLifecycleModuleCommand implements AdminCommand {
         ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
 
-        if (deployment.isRegistered(name)) {
-            report.setMessage(localStrings.getLocalString("lifecycle.alreadyreg","Lifecycle module {0} already registered", name));
+        try {
+            validateTarget(target, name);
+        } catch (IllegalArgumentException ie) {
+            report.setMessage(ie.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
-        }
+        } 
 
         DeployCommandParameters commandParams = new DeployCommandParameters();
         commandParams.name = name;
@@ -158,5 +165,20 @@ public class CreateLifecycleModuleCommand implements AdminCommand {
         }
 
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+    }
+
+    private void validateTarget(String target, String name) {
+        List<String> referencedTargets = domain.getAllReferencedTargetsForApplication(name);
+        if (referencedTargets.isEmpty()) {
+            if (deployment.isRegistered(name)) {
+                throw new IllegalArgumentException(localStrings.getLocalString("lifecycle.use.create_app_ref_2", "Lifecycle module {0} is already created in this domain. Please use create application ref to create application reference on target {1}", name, target));
+            }
+        } else {
+            if (referencedTargets.contains(target)) {
+                throw new IllegalArgumentException(localStrings.getLocalString("lifecycle.alreadyreg", "Lifecycle module {0} is already created on this target {1}", name, target));
+            } else {
+                throw new IllegalArgumentException(localStrings.getLocalString("lifecycle.use.create_app_ref", "Lifecycle module {0} is already referenced by other target(s). Please use create application ref to create application reference on target {1}", name, target));
+            }
+        }
     }
 }

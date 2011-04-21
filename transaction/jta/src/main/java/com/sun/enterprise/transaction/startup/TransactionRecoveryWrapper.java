@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,8 +48,6 @@ import org.glassfish.api.Startup;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.EventListener;
-import com.sun.enterprise.config.serverbeans.Applications;
-import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.logging.LogDomains;
 
@@ -71,9 +69,6 @@ public class TransactionRecoveryWrapper implements Startup, PostConstruct {
     @Inject
     Events events;
 
-    @Inject
-    Applications applications;
-
     private static Logger _logger = LogDomains.getLogger(TransactionRecoveryWrapper.class, LogDomains.JTA_LOGGER);
 
     @Override
@@ -82,10 +77,10 @@ public class TransactionRecoveryWrapper implements Startup, PostConstruct {
             @Override
             public void event(Event event) {
                 if (event.is(EventTypes.SERVER_READY)) {
-                    _logger.fine("ON READY");
+                    _logger.fine("TM RECOVERY WRAPPER - ON READY");
                     onReady();
                 } else if (event.is(EventTypes.PREPARE_SHUTDOWN)) {  
-                    _logger.fine("ON SHUTDOWN");
+                    _logger.fine("TM RECOVERY WRAPPER - ON SHUTDOWN");
                     onShutdown();
                 }
             }
@@ -94,11 +89,12 @@ public class TransactionRecoveryWrapper implements Startup, PostConstruct {
     }
 
     public void onReady() {
-        final List<Application> apps = applications.getApplications();
-        if (apps!=null && apps.size()>0) {
-            JavaEETransactionManager tm = habitat.getByContract(JavaEETransactionManager.class);
-            tm.initRecovery(false);
-        }
+        _logger.fine("TM RECOVERY WRAPPER - ON READY STARTED");
+
+        JavaEETransactionManager tm = habitat.getByContract(JavaEETransactionManager.class);
+        tm.initRecovery(false);
+
+        _logger.fine("TM RECOVERY WRAPPER - ON READY FINISHED");
     }
 
     public void onShutdown() {

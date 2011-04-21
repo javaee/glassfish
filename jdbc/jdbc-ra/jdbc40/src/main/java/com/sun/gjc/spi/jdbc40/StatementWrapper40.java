@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -233,11 +233,9 @@ public class StatementWrapper40 extends StatementWrapper {
      *                      SQL statement produces anything other than a single
      *                      <code>ResultSet</code> object
      */
-    public java.sql.ResultSet executeQuery(String sql) throws
+    public java.sql.ResultSet executeQuery(final String sql) throws
             java.sql.SQLException {
         ResultSet rs = jdbcStatement.executeQuery(sql);
-        if (rs == null)
-            return null;
         return new ResultSetWrapper40(this, rs);
     }
 }

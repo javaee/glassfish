@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -90,7 +90,7 @@ public class ServerFactory {
     /**
      * Return the singleton <code>Server</code> instance for this JVM.
      */
-    public static Server getServer() {
+    public static synchronized Server getServer() {
         if( server==null )
             server=new StandardServer();
         return (server);
@@ -106,7 +106,7 @@ public class ServerFactory {
      *
      * @param theServer The new singleton instance
      */
-    public static void setServer(Server theServer) {
+    public static synchronized void setServer(Server theServer) {
 
         if (server == null)
             server = theServer;

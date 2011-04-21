@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -87,7 +87,7 @@ public final class NamingService
     /**
      * Status of the Slide domain.
      */
-    private int state = STOPPED;
+    private State state = State.STOPPED;
     
     /**
      * Notification sequence number.
@@ -143,17 +143,11 @@ public final class NamingService
     /**
      * Returns the state.
      */
-    public int getState() {
+    public State getState() {
         return state;
     }
     
     
-    /**
-     * Returns a String representation of the state.
-     */
-    public String getStateString() {
-        return states[state];
-    }
     
     
     /**
@@ -164,17 +158,17 @@ public final class NamingService
         
         Notification notification = null;
         
-        if (state != STOPPED)
+        if (state != State.STOPPED)
             return;
         
-        state = STARTING;
+        state = State.STARTING;
         
         // Notifying the MBEan server that we're starting
         
         notification = new AttributeChangeNotification
             (this, sequenceNumber++, System.currentTimeMillis(), 
-             "Starting " + NAME, "State", "java.lang.Integer", 
-             Integer.valueOf(STOPPED), Integer.valueOf(STARTING));
+             "Starting " + NAME, "State", "org.apache.naming.NamingServiceMBean$State", 
+             State.STOPPED, State.STARTING);
         sendNotification(notification);
         
         try {
@@ -197,19 +191,19 @@ public final class NamingService
             }
             
         } catch (Throwable t) {
-            state = STOPPED;
+            state = State.STOPPED;
             notification = new AttributeChangeNotification
                 (this, sequenceNumber++, System.currentTimeMillis(), 
-                 "Stopped " + NAME, "State", "java.lang.Integer", 
-                 Integer.valueOf(STARTING), Integer.valueOf(STOPPED));
+                 "Stopped " + NAME, "State", "org.apache.naming.NamingServiceMBean$State", 
+                 State.STARTING, State.STOPPED);
             sendNotification(notification);
         }
         
-        state = STARTED;
+        state = State.STARTED;
         notification = new AttributeChangeNotification
             (this, sequenceNumber++, System.currentTimeMillis(), 
-             "Started " + NAME, "State", "java.lang.Integer", 
-             Integer.valueOf(STARTING), Integer.valueOf(STARTED));
+             "Started " + NAME, "State", "org.apache.naming.NamingServiceMBean$State", 
+             State.STARTING, State.STARTED);
         sendNotification(notification);
         
     }
@@ -222,15 +216,15 @@ public final class NamingService
         
         Notification notification = null;
         
-        if (state != STARTED)
+        if (state != State.STARTED)
             return;
         
-        state = STOPPING;
+        state = State.STOPPING;
         
         notification = new AttributeChangeNotification
             (this, sequenceNumber++, System.currentTimeMillis(), 
-             "Stopping " + NAME, "State", "java.lang.Integer", 
-             Integer.valueOf(STARTED), Integer.valueOf(STOPPING));
+             "Stopping " + NAME, "State", "org.apache.naming.NamingServiceMBean$State", 
+             State.STARTED, State.STOPPING);
         sendNotification(notification);
         
         try {    
@@ -241,12 +235,12 @@ public final class NamingService
                 "Unable to restore original system properties", t);
         }
         
-        state = STOPPED;
+        state = State.STOPPED;
         
         notification = new AttributeChangeNotification
             (this, sequenceNumber++, System.currentTimeMillis(), 
-             "Stopped " + NAME, "State", "java.lang.Integer", 
-             Integer.valueOf(STOPPING), Integer.valueOf(STOPPED));
+             "Stopped " + NAME, "State", "org.apache.naming.NamingServiceMBean$State", 
+             State.STOPPING, State.STOPPED);
         sendNotification(notification);
         
     }
@@ -257,7 +251,7 @@ public final class NamingService
      */
     public void destroy() {
         
-        if (getState() != STOPPED)
+        if (getState() != State.STOPPED)
             stop();
         
     }

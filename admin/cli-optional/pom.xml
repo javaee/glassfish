@@ -56,15 +56,6 @@
     
     <developers>
         <developer>
-            <id>janey</id>
-            <name>Jane Young</name>
-            <organization>Oracle, Inc.</organization>
-            <roles>
-                <role>lead</role>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
             <id>bnevins</id>
             <name>Byron Nevins</name>
             <organization>Oracle, Inc.</organization>
@@ -73,19 +64,12 @@
             </roles>
         </developer>        
         <developer>
-            <id>pa100654</id>
-            <name>Prashant Abbagani</name>
+            <id>tmueller</id>
+            <name>Tom Mueller</name>
             <organization>Oracle, Inc.</organization>
             <roles>
                 <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>km</id>
-            <name>Kedar Mhaswade</name>
-            <organization>Oracle, Inc.</organization>
-            <roles>
-                <role>developer</role>
+                <role>lead</role>
             </roles>
         </developer>
         <developer>

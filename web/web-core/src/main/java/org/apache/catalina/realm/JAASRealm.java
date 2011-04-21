@@ -416,7 +416,6 @@ public class JAASRealm
      */
     protected Principal createPrincipal(String username, Subject subject) {
         // Prepare to scan the Principals for this Subject
-        char[] password = null; // Will not be carried forward
         ArrayList<String> roles = new ArrayList<String>();
 
         // Scan the Principals for this Subject
@@ -456,7 +455,8 @@ public class JAASRealm
 
         // Create the resulting Principal for our authenticated user
         if (username != null) {
-            return (new GenericPrincipal(this, username, password, roles));
+            // Set password null as it will not be carried forward
+            return (new GenericPrincipal(this, username, null, roles));
         } else {
             return (null);
         }

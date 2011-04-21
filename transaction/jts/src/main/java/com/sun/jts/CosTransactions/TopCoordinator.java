@@ -231,8 +231,7 @@ public class TopCoordinator extends CoordinatorImpl {
             // Set the state of the transaction to active before making
             // it visible to the TransactionManager.
 
-            LogicErrorException exc =
-                new LogicErrorException(
+            LogicErrorException exc = new LogicErrorException(
 					LogFormatter.getLocalizedMessage(_logger,
 					"jts.invalid_state_change"));
             throw exc;
@@ -244,8 +243,7 @@ public class TopCoordinator extends CoordinatorImpl {
                                                 tranState.localTID,
                                                 this,
                                                 timeOut)) {
-                LogicErrorException exc =
-                    new LogicErrorException(
+                LogicErrorException exc = new LogicErrorException(
 						LogFormatter.getLocalizedMessage(_logger,
 						"jts.transaction_id_already_in_use"));
                 throw exc;
@@ -329,16 +327,14 @@ public class TopCoordinator extends CoordinatorImpl {
         // visible to the RecoveryManager.
 
         if (!tranState.setState(TransactionState.STATE_ACTIVE)) {
-            LogicErrorException exc =
-                new LogicErrorException(
+            LogicErrorException exc = new LogicErrorException(
 					LogFormatter.getLocalizedMessage(_logger,
 					"jts.invalid_state_change"));
             throw exc;
         } else {
             if (!RecoveryManager.addCoordinator(globalTID, tranState.localTID,
                                                 this, timeOut)) {
-                LogicErrorException exc =
-                    new LogicErrorException(
+                LogicErrorException exc = new LogicErrorException(
 						LogFormatter.getLocalizedMessage(_logger,
 						"jts.transaction_id_already_in_use"));
                 throw exc;
@@ -393,29 +389,9 @@ public class TopCoordinator extends CoordinatorImpl {
         case TransactionState.STATE_COMMITTED_ONE_PHASE_OK :
         case TransactionState.STATE_COMMIT_ONE_PHASE_ROLLED_BACK :
 
-	    /*
-            if (tranState != null) {
-                tranState.finalize();
-            }
-	    */
-
             if (superInfo != null) {
                 superInfo.doFinalize();
             }
-
-	    /*
-            if (nestingInfo != null) {
-                nestingInfo.doFinalize();
-            }
-
-            if (participants != null) {
-                participants.finalize();
-            }
-
-            if (synchronizations != null) {
-                synchronizations.finalize();
-            }
-	    */
 
             tranState = null;
             superInfo = null;
@@ -1426,7 +1402,7 @@ public class TopCoordinator extends CoordinatorImpl {
         if (tranState != null) {
             if (name == null)
                 name = superInfo.globalTID.toString();
-            result = new String(name);
+            result = name;
         } else {
             INVALID_TRANSACTION exc = new INVALID_TRANSACTION(
                                             MinorCode.Completed,
@@ -1496,7 +1472,7 @@ public class TopCoordinator extends CoordinatorImpl {
 
             result = new ControlImpl(terminator, child,
                                      new GlobalTID(child.getGlobalTID()),
-                                     new Long(child.getLocalTID())
+                                     child.getLocalTID()
                                     ).object();
         } catch (Throwable exc) {
             Inactive ex2 = new Inactive();
@@ -1810,8 +1786,6 @@ public class TopCoordinator extends CoordinatorImpl {
     Vote prepare()
             throws INVALID_TRANSACTION, HeuristicMixed, HeuristicHazard {
 
-        Vote result = Vote.VoteRollback;
-
         // Until we actually distribute prepare flows, synchronize the method.
 
         synchronized(this) {
@@ -1843,7 +1817,10 @@ public class TopCoordinator extends CoordinatorImpl {
 
                 if (!tranState.
                         setState(TransactionState.STATE_PREPARED_FAIL)) {
-                    // empty
+		     if(_logger.isLoggable(Level.FINE)) {
+		         _logger.log(Level.FINE,
+                                "TopCoordinator - setState(TransactionState.STATE_PREPARED_FAIL) returned false");
+                     }
                 }
 
                 return Vote.VoteRollback;
@@ -1897,7 +1874,10 @@ public class TopCoordinator extends CoordinatorImpl {
                     heuristicExc = exc;
                     if (!tranState.
                             setState(TransactionState.STATE_ROLLED_BACK)) {
-                        // empty
+		        if(_logger.isLoggable(Level.FINE)) {
+			    _logger.log(Level.FINE,
+                                "TopCoordinator - setState(TransactionState.STATE_ROLLED_BACK) returned false");
+                        }
                     }
 
                     /* comented out (Ram J) for memory leak fix.
@@ -2283,7 +2263,10 @@ public class TopCoordinator extends CoordinatorImpl {
 
             if( !temporary &&
                     !tranState.setState(TransactionState.STATE_ROLLING_BACK)) {
-                // empty
+                if(_logger.isLoggable(Level.FINE)) {
+		    _logger.log(Level.FINE,
+                           "TopCoordinator - setState(TransactionState.STATE_ROLLED_BACK) returned false");
+                }
             }
 
             // Rollback outstanding children.  If the NestingInfo instance
@@ -2328,7 +2311,10 @@ public class TopCoordinator extends CoordinatorImpl {
 
             if (!temporary &&
                     !tranState.setState(TransactionState.STATE_ROLLED_BACK)) {
-                // empty
+	        if(_logger.isLoggable(Level.FINE)) {
+		    _logger.log(Level.FINE,
+                          "TopCoordinator - setState(TransactionState.STATE_ROLLED_BACK) returned false");
+                }
             }
 
             // Clean up the TopCoordinator after a rollback.
@@ -2510,7 +2496,7 @@ public class TopCoordinator extends CoordinatorImpl {
 						"register_synchronization()",
 						"SynchronizationImpl :" + sync +
 						" has been registeredwith TopCoordinator :"+
-						"GTID is : "+ superInfo.globalTID.toString().toString());
+						"GTID is : "+ superInfo.globalTID.toString());
             }
 
         } else {

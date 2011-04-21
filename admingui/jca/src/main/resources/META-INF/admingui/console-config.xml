@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -103,6 +103,32 @@
         priority="300"
         parentId="form"
         content="rar|org.glassfish.admingui.core.Strings|deploy.type.rar"
+    />
+
+    <!-- add dropdown option for the resource dropdown of cluster/standalone instance resource table. -->
+    <integration-point
+            id="jcaResourceDropDown"
+            type="org.glassfish.admingui:resourceTypeDropdown"
+            priority="200"
+            content="jca/connectorResourceNew.jsf|org.glassfish.admingui.core.Strings|tree.connectorResources"
+    />
+    <integration-point
+            id="adminObjResourceDropDown"
+            type="org.glassfish.admingui:resourceTypeDropdown"
+            priority="300"
+            content="jca/adminObjectNew.jsf|org.glassfish.admingui.core.Strings|tree.adminObjectResources"
+    />
+    <integration-point
+            id="jcaResourceFilter"
+            type="org.glassfish.admingui:resFilterDropdown"
+            priority="200"
+            content="connector-resource|org.glassfish.admingui.core.Strings|tree.connectorResources"
+    />
+    <integration-point
+            id="adminObjResourceFilter"
+            type="org.glassfish.admingui:resFilterDropdown"
+            priority="300"
+            content="admin-object-resource|org.glassfish.admingui.core.Strings|tree.adminObjectResources"
     />
 
 </console-config>

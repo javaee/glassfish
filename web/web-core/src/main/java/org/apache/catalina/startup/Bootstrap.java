@@ -90,8 +90,8 @@ public final class Bootstrap {
     // ------------------------------------------------------------ Constants
 
 
-    protected static final String CATALINA_HOME_TOKEN = "${catalina.home}";
-    protected static final String CATALINA_BASE_TOKEN = "${catalina.base}";
+    private static final String CATALINA_HOME_TOKEN = "${catalina.home}";
+    private static final String CATALINA_BASE_TOKEN = "${catalina.base}";
 
 
     // ----------------------------------------------------- Static Variables
@@ -108,7 +108,7 @@ public final class Bootstrap {
     /**
      * Debugging detail level for processing the startup.
      */
-    protected int debug = 0;
+    private int debug = 0;
 
 
     /**
@@ -117,9 +117,9 @@ public final class Bootstrap {
     private Object catalinaDaemon = null;
 
 
-    protected ClassLoader commonLoader = null;
-    protected ClassLoader catalinaLoader = null;
-    protected ClassLoader sharedLoader = null;
+    private ClassLoader commonLoader = null;
+    private ClassLoader catalinaLoader = null;
+    private ClassLoader sharedLoader = null;
 
 
     // ------------------------------------------------------ Private Methods
@@ -185,9 +185,9 @@ public final class Bootstrap {
             }
         }
 
-        File[] unpacked = unpackedList.toArray(new File[0]);
-        File[] packed = packedList.toArray(new File[0]);
-        URL[] urls = urlList.toArray(new URL[0]);
+        File[] unpacked = unpackedList.toArray(new File[unpackedList.size()]);
+        File[] packed = packedList.toArray(new File[packedList.size()]);
+        URL[] urls = urlList.toArray(new URL[urlList.size()]);
 
         return ClassLoaderFactory.createClassLoader
             (unpacked, packed, urls, parent);

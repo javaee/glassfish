@@ -58,8 +58,6 @@ import org.glassfish.api.web.TldProvider;
 import org.glassfish.loader.util.ASClassLoaderUtil;
 import org.jvnet.hk2.component.Habitat;
 
-import javax.enterprise.inject.spi.BeanManager;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import java.io.File;
@@ -168,7 +166,7 @@ final class WebModuleListener
         ServletContext servletContext = webModule.getServletContext();
         servletContext.setAttribute(
             "org.glassfish.jsp.isStandaloneWebapp",
-            new Boolean(webModule.isStandalone()));
+            Boolean.valueOf(webModule.isStandalone()));
 
         // Find tld URI and set it to ServletContext attribute
         List<URI> appLibUris = webModule.getDeployAppLibs();
@@ -315,14 +313,7 @@ final class WebModuleListener
             JCDIService jcdiService = defaultHabitat.getByContract(JCDIService.class);
             // JCDIService can be absent if weld integration is missing in the runtime, so check for null is needed.
             if (jcdiService != null && jcdiService.isCurrentModuleJCDIEnabled()) {
-                InitialContext context = new InitialContext();
-                BeanManager beanManager = (BeanManager)
-                    context.lookup("java:comp/BeanManager");
-                if (beanManager != null) {
-                    servletContext.setAttribute(
-                        "org.glassfish.jsp.beanManagerELResolver",
-                        beanManager.getELResolver());
-                }
+                jcdiService.setELResolver(servletContext);
             }
         } catch (NamingException e) {
             // Ignore

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -78,14 +78,9 @@ public class EjbOptionalIntfGenerator
 
     private Map<String, byte[]> classMap = new HashMap<String, byte[]>();
 
-    private Map<String, Class> loadedClasses = new HashMap<String, Class>()
-            ;
     private ClassLoader loader;
 
     private ProtectionDomain protectionDomain;
-
-
-    private static final boolean _debug = Boolean.valueOf(System.getProperty("emit.ejb.optional.interface"));
 
     public EjbOptionalIntfGenerator(ClassLoader loader) {
         this.loader = loader;
@@ -137,11 +132,10 @@ public class EjbOptionalIntfGenerator
 //                ? new TraceClassVisitor(cw, new PrintWriter(System.out)) : cw;
         ClassVisitor tv = cw;
         String intfInternalName = intfClassName.replace('.', '/');
-        String objectInternalName = Type.getType(Object.class).getInternalName();
         tv.visit(V1_1, ACC_PUBLIC + ACC_ABSTRACT + ACC_INTERFACE,
                 intfInternalName, null,
                 Type.getType(Object.class).getInternalName(), 
-                (ejbClass instanceof Serializable)? new String[] {Type.getType(Serializable.class).getInternalName()} : null);
+                (new String[] {Type.getType(Serializable.class).getInternalName()}) );
 
         Set<java.lang.reflect.Method> allMethods = new HashSet<java.lang.reflect.Method>();
         for (Class clz = ejbClass; clz != Object.class; clz = clz.getSuperclass()) {
@@ -192,8 +186,6 @@ public class EjbOptionalIntfGenerator
 //        ClassVisitor tv = (_debug)
 //                ? new TraceClassVisitor(cw, new PrintWriter(System.out)) : cw;
         
-        boolean isSuperClassSerializable = superClass.isAssignableFrom(Serializable.class);
-
         String[] interfaces = new String[] {
                 OptionalLocalInterfaceProvider.class.getName().replace('.', '/'),
                 com.sun.ejb.spi.io.IndirectlySerializable.class.getName().replace('.', '/')
@@ -397,7 +389,6 @@ public class EjbOptionalIntfGenerator
                                                   String subClassName)
         throws Exception {
 
-        String delegateInternalName = Type.getType(delegateClass).getInternalName();
         Class optProxyClass = OptionalLocalInterfaceProvider.class;
         java.lang.reflect.Method proxyMethod = optProxyClass.getMethod(
                 "setOptionalLocalIntfProxy", java.lang.reflect.Proxy.class);

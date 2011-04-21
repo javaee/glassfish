@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -536,8 +536,6 @@ public class EntityContainer
      * for local and remote invocations, and from the EJBHome for create/find.
      */
     protected ComponentContext _getContext(EjbInvocation inv) {
-        String name = inv.method.getName();
-        
         if ( inv.invocationInfo.isCreateHomeFinder ) { 
             // create*, find*, home methods
             // Note: even though CMP finders dont need an instance,
@@ -1309,7 +1307,6 @@ public class EntityContainer
         }
         
         EntityContextImpl context = (EntityContextImpl)ctx;
-        EntityBean ejb = (EntityBean)context.getEJB();
         // Start of IAS 4661771
         synchronized ( context ) {
             try {
@@ -1599,13 +1596,12 @@ public class EntityContainer
     
     // CacheListener interface
     public void trimEvent(Object primaryKey, Object context) {
-        boolean addTask = false;
         synchronized (asyncTaskSemaphore) {
             passivationCandidates.add(context);
             if (addedASyncTask == true) {
                 return;
             }
-            addTask = addedASyncTask = true;
+            addedASyncTask = true;
         }
         
         try {
@@ -1631,12 +1627,12 @@ public class EntityContainer
                 //We need to set the context class loader for this 
                 //(deamon) thread!!      
                 if(System.getSecurityManager() == null) {
-                    currentThread.setContextClassLoader(loader);
+                    currentThread.setContextClassLoader(myClassLoader);
                 } else {
                     java.security.AccessController.doPrivileged(
                             new java.security.PrivilegedAction() {
                         public java.lang.Object run() {
-                            currentThread.setContextClassLoader(loader);
+                            currentThread.setContextClassLoader(myClassLoader);
                             return null;
                         }
                     }
@@ -2230,13 +2226,13 @@ public class EntityContainer
         
         public CacheProperties() {
             numberOfVictimsToSelect = 
-                new Integer(ejbContainer.getCacheResizeQuantity()).intValue();
-            maxCacheSize=new Integer(ejbContainer.getMaxCacheSize()).intValue();
+                Integer.parseInt(ejbContainer.getCacheResizeQuantity());
+            maxCacheSize=Integer.parseInt(ejbContainer.getMaxCacheSize());
             cacheIdleTimeoutInSeconds = 
-            new Integer(ejbContainer.getCacheIdleTimeoutInSeconds()).intValue();
+            Integer.parseInt(ejbContainer.getCacheIdleTimeoutInSeconds());
             victimSelectionPolicy = ejbContainer.getVictimSelectionPolicy();
             removalTimeoutInSeconds = 
-            new Integer(ejbContainer.getRemovalTimeoutInSeconds()).intValue();
+            Integer.parseInt(ejbContainer.getRemovalTimeoutInSeconds());
             
             if(beanCacheDes != null) {
                 int temp = 0;
@@ -2273,13 +2269,13 @@ public class EntityContainer
         
         public PoolProperties() {
             
-            maxPoolSize = new Integer(ejbContainer.getMaxPoolSize()).intValue();
-            poolIdleTimeoutInSeconds = new Integer(
-                ejbContainer.getPoolIdleTimeoutInSeconds()).intValue();
-            poolResizeQuantity = new Integer(
-                ejbContainer.getPoolResizeQuantity()).intValue();
-            steadyPoolSize = new Integer(
-                ejbContainer.getSteadyPoolSize()).intValue();
+            maxPoolSize = Integer.parseInt(ejbContainer.getMaxPoolSize());
+            poolIdleTimeoutInSeconds = Integer.parseInt(
+                ejbContainer.getPoolIdleTimeoutInSeconds());
+            poolResizeQuantity = Integer.parseInt(
+                ejbContainer.getPoolResizeQuantity());
+            steadyPoolSize = Integer.parseInt(
+                ejbContainer.getSteadyPoolSize());
             if(beanPoolDes != null) {
                 int temp = 0;
                 if (( temp = beanPoolDes.getMaxPoolSize()) != -1) {
@@ -2597,12 +2593,12 @@ public class EntityContainer
         
         sbuf.append("\n\t[").append(header).append(": ");
         if (map != null) {
-            Iterator iter = map.keySet().iterator();
+            Iterator iter = map.entrySet().iterator();
             
             while (iter.hasNext()) {
-                String name = (String)iter.next();
-                sbuf.append(name).append("=").append(map.get(name))
-		    .append("; ");
+                Map.Entry entry = (Map.Entry)iter.next();
+                sbuf.append((String)entry.getKey()).append("=")
+                        .append(entry.getValue()).append("; ");
             }
         } else {
             sbuf.append("NONE");
@@ -2745,7 +2741,6 @@ public class EntityContainer
         }
 
         InvocationInfo invInfo = inv.invocationInfo;
-        Throwable exception = inv.exception;
         EntityContextImpl context = (EntityContextImpl)inv.context;
         Transaction tx = context.getTransaction();
 
@@ -2867,12 +2862,12 @@ public class EntityContainer
             try {
             //We need to set the context class loader for this (deamon) thread!!
                 if(System.getSecurityManager() == null) {
-                    currentThread.setContextClassLoader(loader);
+                    currentThread.setContextClassLoader(myClassLoader);
                 } else {
                     java.security.AccessController.doPrivileged(
                             new java.security.PrivilegedAction() {
                         public java.lang.Object run() {
-                            currentThread.setContextClassLoader(loader);
+                            currentThread.setContextClassLoader(myClassLoader);
                             return null;
                         }
                     }

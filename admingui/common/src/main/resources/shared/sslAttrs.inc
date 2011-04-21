@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -116,7 +116,7 @@
                 selectedItemsLabel="$resource{i18n.ssl.selectedCommonCiphersLabel}">
             </sun:addRemove>
             <!beforeCreate
-                StringArrayToSelectItemArray(stringArray="#{requestScope.availableCommon}" item="#{pageSession.commonCiphers}")
+                gf.stringArrayToSelectItemArray(stringArray="#{requestScope.availableCommon}" item="#{pageSession.commonCiphers}")
             />
         </sun:property>
 
@@ -129,7 +129,7 @@
                 selectedItemsLabel="$resource{i18n.ssl.selectedEphCiphersLabel}">
             </sun:addRemove>
             <!beforeCreate
-                StringArrayToSelectItemArray(stringArray="#{requestScope.availableEphemeral}" item="#{pageSession.ephCiphers}")
+                gf.stringArrayToSelectItemArray(stringArray="#{requestScope.availableEphemeral}" item="#{pageSession.ephCiphers}")
             />
          </sun:property>
 
@@ -142,7 +142,7 @@
             selectedItemsLabel="$resource{i18n.ssl.selectedOtherCiphersLabel}">
         </sun:addRemove>
         <!beforeCreate
-                StringArrayToSelectItemArray(stringArray="#{requestScope.availableOther}" item="#{pageSession.other}")
+                gf.stringArrayToSelectItemArray(stringArray="#{requestScope.availableOther}" item="#{pageSession.other}")
             />
      </sun:property>
      <sun:property id="EccCiphersProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{true}" >
@@ -154,7 +154,7 @@
             selectedItemsLabel="$resource{i18n.ssl.selectedEccCiphersLabel}">
         </sun:addRemove>
         <!beforeCreate
-                StringArrayToSelectItemArray(stringArray="#{requestScope.availableEcc}" item="#{pageSession.eccCiphers}")
+                gf.stringArrayToSelectItemArray(stringArray="#{requestScope.availableEcc}" item="#{pageSession.eccCiphers}")
             />
      </sun:property>
 </sun:propertySheetSection>

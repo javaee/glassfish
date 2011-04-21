@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,20 +45,28 @@
 
 package com.sun.enterprise.v3.admin.listener;
 
+import com.sun.enterprise.config.serverbeans.Cluster;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.JavaConfig;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Profiler;
+import com.sun.enterprise.config.serverbeans.SystemProperty;
+import com.sun.logging.LogDomains;
 import org.jvnet.hk2.config.types.Property;
 
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.Startup;
+import org.glassfish.api.admin.ServerEnvironment;
 
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.PostConstruct;
@@ -68,6 +76,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.NotProcessed;
+import org.jvnet.hk2.config.ObservableBean;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 /**
@@ -107,23 +116,51 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
  */
 
 @Service
-public final class GenericJavaConfigListener implements PostConstruct, ConfigListener {
-    @Inject JavaConfig jc;
+public final class GenericJavaConfigListener implements PostConstruct, ConfigListener, Startup {
+    /* The following objects are injected so that this
+     * ConfigListener receives config events related to those objects.
+     */   
+    @Inject
+    private Domain domain; //note: this should be current, and does contain the already modified values!
+    
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME, optional=true)
+    Cluster cluster;
+    
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config; // this is the server's Config
+    
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Server server;
+    
+    // The JavaConfig cannot be injected because it might not be the right 
+    // one that gets injected.  The JavaConfig is obtained from the Config
+    // in postConstruct below.
+    private JavaConfig jc;
+
     
     volatile List<String> oldProps;
     /* Implementation note: See 6028*/
     
     volatile Map<String,String>  oldAttrs;
     
-    @Inject 
-    Logger logger; //gets a root logger, which is ok for now.
+    static final Logger logger = LogDomains.getLogger(GenericJavaConfigListener.class, LogDomains.ADMIN_LOGGER);
     
+    @Override
     public void postConstruct() {
-        if(jc != null && jc.getJvmOptions() != null) {
+        jc = config.getJavaConfig();
+        if (jc != null) {
+            // register to listen for config events on the JavaConfig
+            ((ObservableBean)ConfigSupport.getImpl(jc)).addListener(this);            
+        }
+        if (jc != null && jc.getJvmOptions() != null) {
             oldProps = new ArrayList<String>(jc.getJvmOptions()); //defensive copy
-            
             oldAttrs = collectAttrs(jc);
         }
+    }
+
+    @Override
+    public Lifecycle getLifecycle() {
+        return Startup.Lifecycle.SERVER;
     }
         
     /**
@@ -132,7 +169,7 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
         <p>
         This list must contain all attributes that are relevant to restart-required.
      */
-    private static final Map<String,String> collectAttrs(final JavaConfig jc)
+    private static Map<String,String> collectAttrs(final JavaConfig jc)
     {
         final Map<String,String> values = new HashMap<String,String>();
         values.put( "JavaHome", jc.getJavaHome() );
@@ -153,18 +190,20 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
     }
     
     /* force serial behavior; don't allow more than one thread to make a mess here */
+    @Override
     public synchronized UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         final UnprocessedChangeEvents unp = ConfigSupport.sortAndDispatch(events, new Changed() {
+            @Override
             public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> tc, T t) {
                 NotProcessed result = null;
                 
-                if ( t instanceof Profiler ) {
+                if (t instanceof Profiler) {
                     result = new NotProcessed("Creation or changes to a profiler require restart");
                 }
-                else if ( t instanceof Property ) {
+                else if (t instanceof Property && t.getParent() instanceof JavaConfig) {
                     result = new NotProcessed("Addition of properties to JavaConfig requires restart");
                 }
-                else if ( t instanceof JavaConfig ) {
+                else if (t instanceof JavaConfig) {
                     final JavaConfig njc = (JavaConfig) t; 
                     logFine(type, njc);
                     
@@ -182,10 +221,19 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
                     reasons.addAll( handleAttrs( oldAttrs, curAttrs ) );
                     oldAttrs = curAttrs;
                     
-                    result = reasons.size() == 0 ? null : new NotProcessed( GenericJavaConfigListener.toString(reasons) );
+                    result = reasons.isEmpty() ? null : new NotProcessed( GenericJavaConfigListener.toString(reasons) );
+                }
+                else if (t instanceof SystemProperty) {
+                    // check to see if this system property is referenced by any of the options
+                    final SystemProperty sp = (SystemProperty) t;
+                    String pname = sp.getName();
+                    if (referencesProperty(pname, oldProps) ||
+                        referencesProperty(pname, oldAttrs.values())) {
+                        result = new NotProcessed("The system-property, " + pname + ", that is referenced by the Java configuration, was modified");
+                    }
                 }
                 else {
-                    throw new IllegalArgumentException( "Unknown interface: " + tc.getName() );
+                    // ignore other changes that are reported
                 }
 
                 return result;
@@ -201,9 +249,9 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
             logger.log(level, "<java-config> changed");
             int os = oldProps.size(), ns = njc.getJvmOptions().size();
             if (os > ns) {
-                logger.log(level, "a system property or a JVM option was removed (old size = " + os + "), new size: (" + ns + "), restart is required, based on the property");
+                logger.log(level, "a system property or a JVM option was removed (old size = {0}), new size: ({1}), restart is required, based on the property", new Object[]{os, ns});
             } else if(os < ns) {
-                logger.log(level, "a system property or a JVM option was added, (old size = " + os + "), new size: (" + ns + "), restart is required, based on the property");
+                logger.log(level, "a system property or a JVM option was added, (old size = {0}), new size: ({1}), restart is required, based on the property", new Object[]{os, ns});
             } else {
                 logger.log(level, "an attribute was changed, restart required");
             }
@@ -248,6 +296,7 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
     //using C-style ;)
     private static final String SYS_PROP_REGEX = "=";
     
+    //TODO need to handle system property substitution here
     private String[] nvp(final String s) {
         final String[] nv = s.split(SYS_PROP_REGEX);
         final String name  = nv[0];
@@ -343,6 +392,20 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
         if (s.startsWith(DPREFIX) && !s.startsWith("-Djava.")
             && !s.startsWith("-Djavax.")) 
             return true;
+        return false;
+    }
+  
+    /*
+     * Deterines whether the given property name, pname, is references by any
+     * of the values in the values list. A reference is of the form ${pname}.
+     * Returns true if the pname is referenced.
+     */
+    static private boolean referencesProperty(String pname, Collection<String> values) {
+        String ref = "${" + pname + "}";
+        for (String v : values) {
+            if ((v != null) && (v.contains(ref))) 
+                return true;
+        }
         return false;
     }
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,7 @@ package com.sun.ejb.portable;
 
 import java.util.Properties;
 import java.io.FileInputStream;
+import java.io.IOException;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -150,16 +151,15 @@ public class HandleDelegateUtil
     private static Properties getJndiProperties() 
         throws Exception
     {
-
         synchronized(HandleDelegateUtil.class) {
             if( !checkedJndiProperties ) {
+                FileInputStream fis = null;
                 try {
                     String jndiPropertyFileName = 
                         System.getProperty(JNDI_PROPERTY_FILE_NAME);
                     
                     if( jndiPropertyFileName != null ) {
-                        FileInputStream fis = 
-                            new FileInputStream(jndiPropertyFileName);
+                        fis = new FileInputStream(jndiPropertyFileName);
                         jndiProperties = new Properties();
                         jndiProperties.load(fis);
                         // Let an exception encountered here bubble up, so
@@ -170,12 +170,17 @@ public class HandleDelegateUtil
                     // Always set to true so we don't keep doing this 
                     // system property and file access multiple times
                     checkedJndiProperties = true;
+                    if(fis != null) {
+                        try {
+                            fis.close();
+                        } catch (IOException e) {
+                            //ignore
+                        }
+                    }
                 }
             }
         }
 
         return jndiProperties;
     }
-
-
 }

@@ -57,9 +57,8 @@
 
     <developers>
         <developer>
-            <id>ludo</id>
-            <name>Ludovic Champenois</name>
-            <url>http://weblogs.java.net/blog/ludo/</url>
+            <id>jdlee</id>
+            <name>Jason Lee</name>
             <organization>Oracle, Inc.</organization>
             <roles>
                 <role>lead</role>
@@ -67,12 +66,19 @@
             </roles>
         </developer>
         <developer>
-            <id>rajeshwar</id>
-            <name>Rajeshwar Patil</name>
-            <url>http://blogs.sun.com/aquatic/</url>
+            <id>ludo</id>
+            <name>Ludovic Champenois</name>
+            <url>http://weblogs.java.net/blog/ludo/</url>
             <organization>Oracle, Inc.</organization>
             <roles>
-                <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>mm110999</id>
+            <name>Mitesh Meswani</name>
+            <organization>Oracle, Inc.</organization>
+            <roles>
                 <role>developer</role>
             </roles>
         </developer>

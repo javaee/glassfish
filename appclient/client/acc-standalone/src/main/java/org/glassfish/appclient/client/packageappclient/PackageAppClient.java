@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -99,7 +99,10 @@ public class PackageAppClient {
     private final static String DOMAIN_1_CONFIG = "glassfish/domains/domain1/config";
 
     private final static String INDENT = "  ";
-
+    
+    private final static String ACC_CONFIG_FILE_DEFAULT = "/glassfish-acc.xml";
+    private final static String ACC_CONFIG_FILE_DEFAULT_OLD = "/sun-acc.xml";
+    
 
     /* DIRS_TO_COPY entries are all relative to the installation directory */
     private final static String[] DIRS_TO_COPY = new String[] {
@@ -121,8 +124,14 @@ public class PackageAppClient {
     };
 
     /* default sun-acc.xml is relative to the installation directory */
-    private final static String DEFAULT_SUN_ACC_XML =
-            DOMAIN_1_CONFIG + "/sun-acc.xml";
+    private final static String DEFAULT_ACC_XML =
+            DOMAIN_1_CONFIG + ACC_CONFIG_FILE_DEFAULT;
+    private final static String OLD_ACC_XML = 
+            DOMAIN_1_CONFIG + ACC_CONFIG_FILE_DEFAULT_OLD;
+    
+    private final static String[] ACC_CONFIG_FILES = {
+        DEFAULT_ACC_XML, OLD_ACC_XML
+        };
 
     private final static String IMQJMSRA_APP =
             GLASSFISH_LIB + "/install/applications/jmsra/imqjmsra.jar";
@@ -174,8 +183,7 @@ public class PackageAppClient {
         File outputFile = chooseOutputFile(installDir, args);
         if (outputFile.exists()) {
             if ( ! outputFile.delete()) {
-                System.err.println(strings.get("errDel", outputFile.getAbsolutePath()));
-                System.exit(1);
+                throw new RuntimeException(strings.get("errDel", outputFile.getAbsolutePath()));
             };
             System.out.println(strings.get("replacingFile", outputFile.getAbsolutePath()));
         } else {
@@ -231,9 +239,11 @@ public class PackageAppClient {
         }
 
         /*
-         * The sun-acc.xml file.
+         * The glassfish-acc.xml file and sun-acc.xml files.
          */
-        addFile(os, installDir.toURI(), configFile.toURI(), outputFile, "");
+        for (String configFilePath : ACC_CONFIG_FILES) {
+            addFile(os, installDir.toURI(), new URI(configFilePath), outputFile, "");
+        }
         
         os.close();
     }
@@ -384,14 +394,6 @@ public class PackageAppClient {
         }
     }
 
-    private void addDirEntry(
-            final JarOutputStream os,
-            final URI installDirURI,
-            final URI absoluteDirURIToAdd,
-            final File outputFile) {
-
-    }
-
     /**
      * Copies the contents of a given file to the output stream.
      * @param os
@@ -404,12 +406,17 @@ public class PackageAppClient {
             final URI uriToCopy) throws FileNotFoundException, IOException {
         File fileToCopy = new File(uriToCopy);
         InputStream is = new BufferedInputStream(new FileInputStream(fileToCopy));
-        int bytesRead;
-        byte [] buffer = new byte[4096];
-        while ((bytesRead = is.read(buffer)) != -1) {
-            os.write(buffer, 0, bytesRead);
+        try {
+            int bytesRead;
+            byte [] buffer = new byte[4096];
+            while ((bytesRead = is.read(buffer)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+        } finally {
+            if (is != null) {
+                is.close();
+            }
         }
-        is.close();
     }
 
     /**
@@ -459,13 +466,13 @@ public class PackageAppClient {
     }
 
     /**
-     * Returns the user-specified or default sun-acc.xml config file.
+     * Returns the user-specified or default glassfish-acc.xml config file.
      * @param installDir
      * @param args
      * @return
      */
     private File chooseConfigFile(final File installDir, final String[] args) {
-        return chooseFile("-xml", DEFAULT_SUN_ACC_XML, installDir, args);
+        return chooseFile("-xml", DEFAULT_ACC_XML, installDir, args);
     }
 
     private File findInstallDir(final File currentJarFile) throws URISyntaxException {

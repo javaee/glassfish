@@ -19,7 +19,7 @@
  you own identifying information: 
  "Portions Copyrighted [year] [name of copyright owner]"
  
- Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2011 Sun Microsystems, Inc. All rights reserved.
 -->
 <!-- ENTITIES -->
 <!-- boolean
@@ -1021,7 +1021,7 @@
   attributes
     iponly                                                                     
         if the IP address of the user agent should be specified or a  
-        DNL lookup should be done                                     
+        DNS lookup should be done                                     
     log-directory                                                              
         location of the access logs specified as a directory.This     
         defaults to the domain.log-root, which by default is          

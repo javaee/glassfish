@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -119,6 +119,15 @@ public class InstanceHandler {
         String target = (String) handlerCtx.getInputValue("target");
         try {
             List<Map> options = (List<Map>) handlerCtx.getInputValue("options");
+            ArrayList<String> newList = new ArrayList();
+            for (Map oneRow : options) {
+                newList.add((String) oneRow.get(PROPERTY_VALUE));
+            }
+            ArrayList<String> oldList = getJvmOptions(handlerCtx);
+            if (newList.equals(oldList)) {
+                // if old list is same as new list, return without saving anything
+                return;
+            }
             Map<String, Object> payload = new HashMap<String, Object>();
             if (endpoint.contains("profiler")) {
                 payload.put("profiler", "true");

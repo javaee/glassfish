@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -127,7 +127,7 @@ public class SunDeploymentManager implements DeploymentManager {
 
     private static final String ENABLED_ATTRIBUTE_NAME = "Enabled"; // NOI18N
 
-    private static Habitat habitat;
+    private Habitat habitat;
 
 
     /** Creates a new instance of DeploymentManager */
@@ -139,6 +139,7 @@ public class SunDeploymentManager implements DeploymentManager {
         deploymentFacility = 
             DeploymentFacilityFactory.getDeploymentFacility();
         deploymentFacility.connect(sci);
+        prepareHabitat();
     }
 
     /**     
@@ -305,7 +306,7 @@ public class SunDeploymentManager implements DeploymentManager {
             /*
              *Return an array of runtime type TargetModuleIDImpl [].
              */
-            TargetModuleID [] answer = (TargetModuleID []) resultingTMIDs.toArray(new TargetModuleIDImpl[0]);
+            TargetModuleID [] answer = (TargetModuleID []) resultingTMIDs.toArray(new TargetModuleIDImpl[resultingTMIDs.size()]);
             return answer;
 
 
@@ -432,7 +433,6 @@ public class SunDeploymentManager implements DeploymentManager {
      */
     private void setWebApplicationTargetModuleIDInfo(TargetModuleID tmid, HostAndPort webHost) throws MalformedURLException, IOException {
 
-        TargetImpl targetImpl = (TargetImpl) tmid.getTarget();
         String path = deploymentFacility.getContextRoot(tmid.getModuleID());
         if (!path.startsWith("/")) { //NOI18N
             path = "/" + path; //NOI18N
@@ -1247,22 +1247,6 @@ public class SunDeploymentManager implements DeploymentManager {
         return (Properties)dProps;
     }
     
-    /**
-     *Extract the name part of the path except for any file type at the end, following the "dot" character.
-     *@param path the path from which the leading path and type are to be excluded
-     *@return the name with no file type
-     */
-    private String pathExcludingType(String path) {
-        /*
-         *Use the last part of the path up to but not including the archive type.
-         */
-        path = path.substring(path.lastIndexOf('/')+1);
-        if (path.lastIndexOf('.')!=-1) {
-            path = path.substring(0, path.lastIndexOf('.'));
-        }
-        return path;
-    }
-
    /**
     * The distribute method performs three tasks; it validates the
     * deployment configuration data, generates all container specific 
@@ -1335,20 +1319,17 @@ public class SunDeploymentManager implements DeploymentManager {
     }
     
     private void prepareHabitat() {
-        if ( (habitat == null) ) {
-            // Bootstrap a hk2 environment.
-            ModulesRegistry registry = new StaticModulesRegistry(getClass().getClassLoader());
-            habitat = registry.createHabitat("default");
+        // Bootstrap a hk2 environment.
+        ModulesRegistry registry = new StaticModulesRegistry(getClass().getClassLoader());
+        habitat = registry.createHabitat("default");
 
-            StartupContext startupContext = new StartupContext();
-            habitat.add(new ExistingSingletonInhabitant(startupContext));
+        StartupContext startupContext = new StartupContext();
+        habitat.add(new ExistingSingletonInhabitant(startupContext));
 
-            habitat.addComponent(null, new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
-        }
+        habitat.addComponent(null, new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
     }
 
     private ArchiveFactory getArchiveFactory() {
-        prepareHabitat();
         return habitat.getComponent(ArchiveFactory.class);
     }
 
@@ -1372,7 +1353,7 @@ public class SunDeploymentManager implements DeploymentManager {
      *from each work element
      *</ul>
      */
-    protected class TargetModuleIDCollection {
+    protected static class TargetModuleIDCollection {
         /* Maps the module ID to that module's instance of DeploymentFacilityModuleWork. */
         private HashMap moduleIDToInfoMap = new HashMap();
         
@@ -1397,7 +1378,6 @@ public class SunDeploymentManager implements DeploymentManager {
                     localStrings.getLocalString("enterprise.deployapi.spi.nott", //NOI18N
                         "Expected TargetImpl instance but found instance of {0}", new Object[] {candidateTarget.getClass().getName() } )); //NOI18N
                 }
-                TargetImpl candidateTargetImpl = (TargetImpl) candidateTarget;
                 String moduleID = targetModuleIDs[i].getModuleID();
                 
                 /*
@@ -1460,7 +1440,7 @@ public class SunDeploymentManager implements DeploymentManager {
      *single module), a collection of all the targets to be included in the operation on that
      *module, and the progress object resulting from the DF method invocation.
      */
-    protected class DeploymentFacilityModuleWork {
+    protected static class DeploymentFacilityModuleWork {
         
         /** The module ID this work handles */
         private String moduleID = null;
@@ -1500,7 +1480,7 @@ public class SunDeploymentManager implements DeploymentManager {
          *@return array of Target
          */
         public Target [] targets() {
-            return (Target []) targets.toArray(new TargetImpl[] {});
+            return (Target []) targets.toArray(new TargetImpl[targets.size()]);
         }
         
         /**

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -258,7 +258,7 @@ class LogHandle {
 
         // Initialise instance members.
 
-        logFileName = new String(logName);
+        logFileName = logName;
         upcallTarget = upcall;
         logControl = control;
         logFileHandle = controlFH;
@@ -362,7 +362,7 @@ class LogHandle {
             // fail.  We cannot run the short-on-storage upcall to try to free the
             // extent as the upcall needs to write information to the offending extent.
 
-            if( extentTable.containsKey(new Integer(LogExtent.modExtent(nextExtent))) )
+            if( extentTable.containsKey(LogExtent.modExtent(nextExtent)) )
                 throw new LogException(null,LogException.LOG_WRITE_FAILURE,9);
 
             // Create link record containing
@@ -395,7 +395,7 @@ class LogHandle {
             try {
                 bytesWritten = logEDP.fileHandle.fileWrite(linkBytes); 
             } catch( LogException le ) {
-                extentTable.remove(new Integer(logControlDescriptor.headLSN.extent));
+                extentTable.remove(logControlDescriptor.headLSN.extent);
                 nextEDP.doFinalize();
                 throw new LogException(LogException.LOG_WRITE_FAILURE, 10, 
                         sm.getString("jts.log_add_link_failed"), le);
@@ -835,7 +835,7 @@ class LogHandle {
         //   Return LOG_SUCCESS
         // ELSE let the error pass to the caller.
 
-        int bytesWritten = logFileHandle.fileWrite(writeBytes);
+        logFileHandle.fileWrite(writeBytes);
 
         activeRestartVersion = alternate;
 
@@ -903,7 +903,7 @@ class LogHandle {
         // Issue a READV for the restart data
         // IF not successful let the error pass to the caller.
 
-        int bytesRead = logFileHandle.readVector(readVect);
+        logFileHandle.readVector(readVect);
 
         LogRestartDescriptor logRD    = new LogRestartDescriptor(readVect[0],0);
         LogRestartDescriptor logRDEnd = new LogRestartDescriptor(readVect[2],0);
@@ -988,7 +988,7 @@ class LogHandle {
                 Boolean isdeleted = (Boolean) java.security.AccessController.doPrivileged(
                     new java.security.PrivilegedAction() {
                         public Object run(){
-                            return new Boolean(tmplogEDP.file.delete());
+                            return tmplogEDP.file.delete();
                         }
                     }
                 );
@@ -1001,7 +1001,7 @@ class LogHandle {
             // Clear the signature in the Log_ExtentDescriptor block
             // Deallocate the Log_ExtentDescriptor block
 
-            extentTable.remove(new Integer(logEDP.extentNumber));
+            extentTable.remove(logEDP.extentNumber);
             logEDP.doFinalize();
         }
 
@@ -1018,7 +1018,7 @@ class LogHandle {
         // IF not successful allow the error to pass to the caller.
 
         logFileHandle.fileClose();
-        // logFileHandle.finalize();
+        // logFileHandle.destroy();
 
         // If deletion of the logfile was requested, delete it's
         // control File and the cushion file.
@@ -1031,7 +1031,7 @@ class LogHandle {
             Boolean isdeleted = (Boolean) java.security.AccessController.doPrivileged(
                 new java.security.PrivilegedAction() {
                     public Object run(){
-                        return new Boolean(logControl.controlFile.delete());
+                        return logControl.controlFile.delete();
                     }
                 }
             );
@@ -1273,7 +1273,7 @@ class LogHandle {
             // Issue CLOSE for extent file
             // IF not successful allow the error to pass to the caller.
 
-            LogExtent logEDP = (LogExtent)extentTable.get(new Integer(extent));
+            LogExtent logEDP = (LogExtent)extentTable.get(extent);
             if( logEDP != null )
                 logEDP.fileHandle.fileClose();
 
@@ -1287,7 +1287,7 @@ class LogHandle {
             Boolean isdeleted = (Boolean) java.security.AccessController.doPrivileged(
 		new java.security.PrivilegedAction() {
 		    public Object run(){
-                        return new Boolean(tmplogEDP.file.delete());
+                        return tmplogEDP.file.delete();
                     }
                 }
             );
@@ -1297,7 +1297,7 @@ class LogHandle {
             // Unchain the Log_ExtentDescriptor block, set its BlockValid
             // field to binary zeroes and deallocate it.
 
-            extentTable.remove(new Integer(extent));
+            extentTable.remove(extent);
             logEDP.doFinalize();
         }
 
@@ -1423,7 +1423,7 @@ class LogHandle {
             //     ELSE
             //       Set 'extent written' flag to FALSE
 
-            LogExtent logEDP = (LogExtent)extentTable.get(new Integer(extent));
+            LogExtent logEDP = (LogExtent)extentTable.get(extent);
             if( logEDP != null &&
                 logEDP.writtenSinceLastForce ) {
                 logEDP.fileHandle.fileSync();
@@ -1534,11 +1534,6 @@ class LogHandle {
         // the Log_FileDescriptor (CursorDescriptorHead)
 
         cursors.remove(cursor);
-
-        // Deallocate the Log_CursorDescriptor block
-
-       //  cursor.finalize();
-
     }
 
     /**Positions the file pointer to the given position in the log.
@@ -1563,7 +1558,7 @@ class LogHandle {
 
         // Run the extent chain to see if extent file is already open
 
-        LogExtent extent = (LogExtent)extentTable.get(new Integer(currentLSN.extent));
+        LogExtent extent = (LogExtent)extentTable.get(currentLSN.extent);
 
         // Open the extent file if it was not found in the extent chain
 
@@ -1600,7 +1595,7 @@ class LogHandle {
                     extent.fileHandle.fileSeek(currentLSN.offset+extra-extent.cursorPosition,LogFileHandle.SEEK_RELATIVE);
             } catch( LogException le ) {
                 if( extentJustOpened ) {
-                    extentTable.remove(new Integer(currentLSN.extent));
+                    extentTable.remove(currentLSN.extent);
                     extent.doFinalize();
                 }
 
@@ -1708,7 +1703,7 @@ class LogHandle {
                 try {
                     cushionFH.allocFileStorage(CUSHION_SIZE);
                 } catch( LogException le ) {
-                    cushionFH.finalize();
+                    cushionFH.destroy();
                     // Start IASRI 4720539
                     //logControl.cushionFile.delete();
                     java.security.AccessController.doPrivileged(
@@ -1732,7 +1727,7 @@ class LogHandle {
 
                 // CLOSE the cushion file
 
-                cushionFH.finalize();
+                cushionFH.destroy();
             }
 
             cushionExists = true;
@@ -1785,7 +1780,7 @@ class LogHandle {
 
         byte[] controlBytes = new byte[LogControlDescriptor.SIZEOF];
         logControlDescriptor.toBytes(controlBytes,0);
-        int bytesWritten = logFileHandle.fileWrite(controlBytes);
+        logFileHandle.fileWrite(controlBytes);
 
     }
 
@@ -1820,15 +1815,11 @@ class LogHandle {
         // Allocate a Log_ExtentDescriptor block and initialise it
 
         LogExtent logEDP = new LogExtent(extent,extentFH,extentFile);
-        if( logEDP == null ) {
-            extentFH.finalize();
-            throw new LogException(null,LogException.LOG_INSUFFICIENT_MEMORY,2);
-        }
 
         // Use the already hashed extent number to find the position in the
         // hash table and add it to the chain
 
-        extentTable.put(new Integer(extent),logEDP);
+        extentTable.put(extent,logEDP);
         logEDP.blockValid = logEDP;
 
         return logEDP;
@@ -1919,7 +1910,7 @@ class LogHandle {
             if( logRD.restartValid == restartPosition(restartNumber) ) {
                 fileHandle.fileSeek(logRD.restartDataLength,
                                     LogFileHandle.SEEK_RELATIVE);
-                bytesRead = fileHandle.fileRead(restartBytes);
+                fileHandle.fileRead(restartBytes);
                 LogRestartDescriptor logRDEnd = new LogRestartDescriptor(restartBytes,0);
 
 
@@ -1989,7 +1980,7 @@ class LogHandle {
         Enumeration extents = extentTable.elements();
         while( extents.hasMoreElements() ) {
             LogExtent logEDP = (LogExtent)extents.nextElement();
-            extentTable.remove(new Integer(logEDP.extentNumber));
+            extentTable.remove(logEDP.extentNumber);
             logEDP.doFinalize();
         }
         extentTable = null;

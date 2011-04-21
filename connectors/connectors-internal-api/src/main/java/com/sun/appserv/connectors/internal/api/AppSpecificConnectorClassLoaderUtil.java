@@ -66,12 +66,13 @@ import java.util.logging.Logger;
 public class AppSpecificConnectorClassLoaderUtil {
 
     @Inject
-    ApplicationRegistry appRegistry;
+    private ApplicationRegistry appRegistry;
 
     @Inject
-    Habitat habitat;
+    private Habitat habitat;
 
-    private Logger _logger = LogDomains.getLogger(ConnectorRuntime.class, LogDomains.RSR_LOGGER);
+    private static final Logger _logger =
+            LogDomains.getLogger(AppSpecificConnectorClassLoaderUtil.class, LogDomains.RSR_LOGGER);
 
     /**
      * {@inheritDoc}
@@ -433,7 +434,7 @@ public class AppSpecificConnectorClassLoaderUtil {
             //it is possible that connector-service is not yet defined in domain.xml
 
             if (connectorService != null) {
-                if (appName != null && appName.trim().length() > 0) {
+                if (appName.trim().length() > 0) {
                     Property property = connectorService.getProperty(appName.trim());
                     if (property != null) {
                         String requiredRarsString = property.getValue();

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -96,6 +96,7 @@ public class GlassFishTldProvider
     /**
      * Gets a mapping from JAR files to their TLD resources.
      */
+    @SuppressWarnings("unchecked")
     public Map<URI, List<String>> getTldMap() {
         return (tldMap == null) ? null :
             (Map<URI, List<String>>)((HashMap)tldMap).clone();
@@ -161,7 +162,7 @@ public class GlassFishTldProvider
         if (uris != null && uris.length > 0) {
             Pattern pattern = Pattern.compile("META-INF/.*\\.tld");
             for (URI uri : uris) {
-                List entries =  JarURIPattern.getJarEntries(uri, pattern);
+                List<String> entries =  JarURIPattern.getJarEntries(uri, pattern);
                 if (entries != null && entries.size() > 0) {
                     tldMap.put(uri, entries);
                 }

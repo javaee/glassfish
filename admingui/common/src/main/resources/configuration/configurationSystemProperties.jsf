@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -175,7 +175,9 @@
                     <sun:textField columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.common.PropertyValue']}" id="col1St" value="#{td.value.value}" />
                 </sun:tableColumn>
                 <sun:tableColumn headerText="$resource{i18n.systemProps.colInstanceValues}" sort="value" rowHeader="$boolean{false}" id="col4" rendered="#{!pageSession.isServerConfig}">
-                    <sun:hyperlink id="instanceLink" text="$resource{i18n.systemProps.colInstanceValues}" url="/common/configuration/sysInstanceValues.jsf?propName=#{td.value.name}&configName=#{pageSession.configName}"/>
+                    <sun:hyperlink id="instanceLink" text="$resource{i18n.systemProps.colInstanceValues}" 
+                                   rendered="#{!empty td.value.name}"
+                                   url="/common/configuration/sysInstanceValues.jsf?propName=#{td.value.name}&configName=#{pageSession.configName}"/>
                 </sun:tableColumn>
                 "<br/>
             </sun:tableRowGroup>

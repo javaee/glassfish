@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -96,14 +96,18 @@ public class EjbInWarScanner
         if (lib.exists()) {
             File[] jarFiles = lib.listFiles(new FileFilter() {
                  public boolean accept(File pathname) {
-                     return (pathname.isFile() &&
-                            pathname.getAbsolutePath().endsWith(".jar"));
+                     return (pathname.getAbsolutePath().endsWith(".jar"));
                  }
             });
 
             if (jarFiles != null && jarFiles.length > 0) {
                 for (File jarFile : jarFiles) {
-                    addScanJar(jarFile);
+                    // support exploded jar file
+                    if (jarFile.isDirectory()) {
+                        addScanDirectory(jarFile);
+                    } else {
+                        addScanJar(jarFile);
+                    }
                 }
             }
         }

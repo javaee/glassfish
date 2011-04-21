@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -93,11 +93,11 @@ import com.sun.jts.utils.LogFormatter;
 public class FailureInducer {
 
     // static finals
-    public static final Integer ACTIVE = new Integer(0);
-    public static final Integer PREPARING = new Integer(1);
-    public static final Integer PREPARED = new Integer(2);
-    public static final Integer COMPLETING = new Integer(3);
-    public static final Integer COMPLETED = new Integer(4);
+    public static final int ACTIVE = 0;
+    public static final int PREPARING = 1;
+    public static final int PREPARED = 2;
+    public static final int COMPLETING = 3;
+    public static final int COMPLETED = 4;
 
     // static fields
 
@@ -186,7 +186,7 @@ public class FailureInducer {
         GlobalTID gtid = getGlobalTID();
         if (gtid != null) {
             waitList.put(gtid, waitPoint);
-            waitTime.put(gtid, new Integer(waitDuration));
+            waitTime.put(gtid, waitDuration);
         }
     }
 
@@ -296,10 +296,6 @@ public class FailureInducer {
         }
 
         String msg = messages.getString(key);
-        if (msg == null) {
-            return null;
-        }
-
         if (inserts == null) {
             return msg;
         } else {

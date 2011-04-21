@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,14 +41,12 @@
 package org.glassfish.ejb.startup;
 
 import com.sun.ejb.containers.EjbContainerUtil;
-import org.glassfish.internal.api.ServerContext;
 import org.glassfish.api.container.Container;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 
-import java.util.logging.Logger;
 
 /**
  * Ejb container service
@@ -59,25 +57,18 @@ import java.util.logging.Logger;
 public class EjbContainerStarter
     implements Container, PostConstruct, PreDestroy {
 
-    //@Inject Domain domain;
-
-    @Inject
-    ServerContext _serverContext;
-
+    /**
+     * Initializes EjbContainerUtilImpl instance with this injection so that
+     * its instance is available to subsequent request, e.g., with
+     * EjbContainerUtilImpl.getInstance().
+     */
     @Inject
     EjbContainerUtil ejbContainerUtilImpl;
 
-    @Inject
-    Logger logger;
-
-    private String instanceName;
-
     public void postConstruct() {
-        instanceName = _serverContext.getInstanceName();
     }    
     
     public void preDestroy() {
-        
     }
 
     public String getName() {

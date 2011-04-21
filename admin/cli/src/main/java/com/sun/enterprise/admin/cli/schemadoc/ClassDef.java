@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,7 +48,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Comparator;
 import java.util.List;
-import java.lang.annotation.Annotation;
 
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.Attribute;
@@ -63,18 +62,17 @@ public class ClassDef {
     private Set<ClassDef> subclasses = new HashSet<ClassDef>();
     private Map<String, String> types = new HashMap<String, String>();
     private Map<String, Attribute> attributes = new TreeMap<String, Attribute>();
-    private Map<String, Annotation> validators = new TreeMap<String, Annotation>();
     private boolean deprecated;
     private Set<PropertyDesc> properties = new TreeSet<PropertyDesc>(new Comparator<PropertyDesc>() {
         @Override
-        public int compare(final PropertyDesc left, final PropertyDesc right) {
+        public int compare(PropertyDesc left, PropertyDesc right) {
             return left.name().compareTo(right.name());
         }
     });
 
-    public ClassDef(final String def, final List<String> intfs) {
+    public ClassDef(String def, List<String> interfaces) {
         this.def = def;
-        interfaces = intfs;
+        this.interfaces = interfaces;
     }
 
     public String getDef() {
@@ -86,7 +84,7 @@ public class ClassDef {
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
@@ -105,7 +103,7 @@ public class ClassDef {
         return def != null ? def.hashCode() : 0;
     }
 
-    public void addSubclass(final ClassDef classDef) {
+    public void addSubclass(ClassDef classDef) {
         subclasses.add(classDef);
     }
 
@@ -113,12 +111,8 @@ public class ClassDef {
         return subclasses;
     }
 
-    public void addAggregatedType(final String name, final String type) {
+    public void addAggregatedType(String name, String type) {
         types.put(name, type);
-    }
-
-    public String getAggregatedType(final String name) {
-        return types.get(name);
     }
 
     public Map<String, String> getAggregatedTypes() {
@@ -130,19 +124,15 @@ public class ClassDef {
         return def;
     }
 
-    public String getSimpleName() {
-        return Dom.convertName(def);
-    }
-
     public Map<String, Attribute> getAttributes() {
         return attributes;
     }
 
-    public void addAttribute(String attrName, Attribute annotation) {
-        attributes.put(Dom.convertName(attrName), annotation);
+    public void addAttribute(String name, Attribute annotation) {
+        attributes.put(Dom.convertName(name), annotation);
     }
 
-    public void removeAttribute(final String name) {
+    public void removeAttribute(String name) {
         attributes.remove(Dom.convertName(name));
     }
 
@@ -150,7 +140,7 @@ public class ClassDef {
         return deprecated;
     }
 
-    public void setDeprecated(final boolean deprecated) {
+    public void setDeprecated(boolean deprecated) {
         this.deprecated = deprecated;
     }
 
@@ -158,7 +148,7 @@ public class ClassDef {
         return properties;
     }
 
-    public void addProperty(final PropertyDesc prop) {
+    public void addProperty(PropertyDesc prop) {
         properties.add(prop);
     }
 

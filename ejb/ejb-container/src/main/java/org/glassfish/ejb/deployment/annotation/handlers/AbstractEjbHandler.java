@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -249,8 +249,7 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
 
             // create the actual ejb descriptor using annotation info and 
             // the information from dummy ejb descriptor if applicable
-            if (dummyEjbDesc != null && 
-                dummyEjbDesc instanceof DummyEjbDescriptor ) {
+            if (dummyEjbDesc != null) {
                 currentBundle.removeEjb(dummyEjbDesc);
                 ejbDesc.addEjbDescriptor(dummyEjbDesc);
                 // reset ejbClassName on ejbDesc
@@ -525,8 +524,7 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
             (clientInterfaces.size() == 0) &&
             !ejbDesc.hasWebServiceEndpointInterface() &&
             ( !canDoWebServiceAnnCheck ||
-                (canDoWebServiceAnnCheck &&
-                (ejbClass.getAnnotation(javax.jws.WebService.class) == null)) ) ) {
+              (ejbClass.getAnnotation(javax.jws.WebService.class) == null) ) ) {
             ejbDesc.setLocalBean(true);
         }
         

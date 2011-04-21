@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,62 +38,27 @@
  * holder.
  */
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+package org.glassfish.tests.embedded.web;
 
-package org.glassfish.flashlight.xml;
+import java.io.*;
+import javax.servlet.*;
 
-import java.util.*;
+public class NewFilter implements Filter {
 
-/**
- *
- * @author Mahesh Meswani
- */
-public class Probe {
-    String probeName = null;
-    String probeMethod = null;
-    List<ProbeParam> probeParams = null;
-    boolean hasSelf = false;
-    boolean isHidden = false;
+    String filterInitParam;
 
-    public String getProbeName() {
-        return probeName;
+    public void init(FilterConfig filterConfig) throws ServletException {
+        filterInitParam = filterConfig.getInitParameter("filterInitName");
     }
 
-    public String getProbeMethod() {
-        return probeMethod;
+    public void doFilter(ServletRequest request, ServletResponse response,
+                         FilterChain chain)
+            throws IOException, ServletException {
+        request.setAttribute("filterInitName", filterInitParam);
+        chain.doFilter(request, response);
     }
 
-    public List<ProbeParam> getProbeParams() {
-        return probeParams;
-    }
-
-    public boolean hasSelf() {
-        return hasSelf;
-    }
-
-    public boolean isHidden() {
-        return isHidden;
-    }
-
-    public Probe(String probeName, String method, List<ProbeParam> params, boolean hasSelf, boolean isHidden) {
-        this.probeName = probeName;
-        probeMethod = method;
-        probeParams = params;
-        this.hasSelf = hasSelf;
-        this.isHidden = isHidden;
-
-    }
-
-    @Override
-    public String toString() {
-        String paramsStr = "     \n";
-        for (ProbeParam param : probeParams) {
-            paramsStr += "         , Param " + param.toString();
-        }
-        return (" Probe name = " + probeName +
-                " , method = " + probeMethod + paramsStr);
+    public void destroy() {
+        // do nothing
     }
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -81,6 +81,7 @@ public class Constants {
 
     // Cookie name for single sign on support
     public static final String SINGLE_SIGN_ON_COOKIE = "JSESSIONIDSSO";
+    public static final String SINGLE_SIGN_ON_VERSION_COOKIE = "JSESSIONIDSSOVERSION";
 
 
     // --------------------------------------------------------- Request Notes
@@ -128,6 +129,12 @@ public class Constants {
     public static final String REQ_SSOID_NOTE =
       "org.apache.catalina.request.SSOID";
 
+    /**
+     * The notes key to track the single-sign-on version with which this
+     * request is associated.
+     */
+    public static final String REQ_SSO_VERSION_NOTE =
+      "org.apache.catalina.request.SSOVersion";
 
     // ---------------------------------------------------------- Session Notes
 

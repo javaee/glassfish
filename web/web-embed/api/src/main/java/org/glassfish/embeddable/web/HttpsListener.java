@@ -55,6 +55,9 @@ public class HttpsListener extends WebListenerBase  {
 
     private SslConfig sslConfig;
 
+    /**
+     * Initializes a newly created HttpsListener object with HTTPS protocol.
+     */
     public HttpsListener() {
         super();
         //TODO: Define a constant for this

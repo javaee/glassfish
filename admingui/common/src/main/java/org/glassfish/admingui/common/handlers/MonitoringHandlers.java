@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -81,10 +81,10 @@ public class MonitoringHandlers {
             Map<String, Object> attrs = RestUtil.getEntityAttrs(monitoringServiceEndPoint + "/container-monitoring", "entitiy");
 
             if (attrs != null) {
-                for (String prop : attrs.keySet()) {
+                for (Map.Entry<String, Object> e : attrs.entrySet()){
                     Map oneRow = new HashMap();
                     String cname = null;
-                    String pname = prop;
+                    String pname = e.getKey();
                     ListIterator ci = containerDispList.listIterator();
                     ListIterator vi = containerNameList.listIterator();
                     while (ci.hasNext() && vi.hasNext()) {
@@ -95,7 +95,7 @@ public class MonitoringHandlers {
                         }
                     }
                     oneRow.put("monCompName", (cname == null) ? pname : cname);
-                    oneRow.put("level", attrs.get(prop));
+                    oneRow.put("level", e.getValue());
                     oneRow.put("selected", false);
                     result.add(oneRow);
                 }
@@ -103,7 +103,7 @@ public class MonitoringHandlers {
 
             String monitoringLevelsEndPoint = monitoringServiceEndPoint + "/module-monitoring-levels";
             attrs = RestUtil.getEntityAttrs(monitoringLevelsEndPoint, "entity");
-            for (String oneMonComp : attrs.keySet()) {
+            for(Map.Entry<String,Object> e : attrs.entrySet()){
                 Map oneRow = new HashMap();
                 String name = null;
                 ListIterator ni = monDisplayList.listIterator();
@@ -111,15 +111,15 @@ public class MonitoringHandlers {
                 while (ni.hasNext() && vi.hasNext()) {
                     String dispName = (String) ni.next();
                     String value = (String) vi.next();
-                    if ((oneMonComp.equals(value))) {
+                    if ((e.getKey().equals(value))) {
                         name = dispName;
                     }
                 }
                 if (name == null) {
-                    name = oneMonComp;
+                    name = e.getKey();
                 }
                 oneRow.put("monCompName", name);
-                oneRow.put("level", attrs.get(oneMonComp));
+                oneRow.put("level", e.getValue());
                 oneRow.put("selected", false);
                 result.add(oneRow);
             }
@@ -158,19 +158,19 @@ public class MonitoringHandlers {
                     //Jersey monitoring data format
                     if (statType != null && statType.equals("jersey")) {
                         Map<String, Object> jerseyStats = new HashMap<String, Object>();
-                        for (String stat : stats.keySet()) {
-                            Map<String, Object> jerseyStat = (Map<String, Object>) stats.get(stat);
+                        for(Map.Entry<String,Object> e : stats.entrySet()){
+                            Map<String, Object> jerseyStat = (Map<String, Object>) e.getValue();
                             if (jerseyStat != null) {
                                 jerseyStats.putAll(jerseyStat);
                             }
                         }
                         stats = jerseyStats;
                     }
-                    for (String statName : stats.keySet()) {
-                        if (!(stats.get(statName).getClass().equals(HashMap.class))) {
+                    for(Map.Entry<String,Object> e : stats.entrySet()){
+                        if (!(e.getValue().getClass().equals(HashMap.class))) {
                             continue;
                         }
-                        Map<String, Object> monAttrs = (Map<String, Object>) stats.get(statName);
+                        Map<String, Object> monAttrs = (Map<String, Object>) e.getValue();
                         Map<String, String> statMap = new HashMap();
                         String val = "";
                         String details = "--";
@@ -183,7 +183,7 @@ public class MonitoringHandlers {
                         String queuesize = null;
                         String thresholds = "--";
 
-                        if (monAttrs.size() != 0) {
+                        if (!monAttrs.isEmpty()) {
 
                             if (monAttrs.containsKey("name")) {
                                 mname = (String) monAttrs.get("name");
@@ -528,15 +528,15 @@ public class MonitoringHandlers {
         String comp = (String) handlerCtx.getInputValue("compVal");
         String monitorURL = (String) handlerCtx.getInputValue("monitorURL");
         Map<String, String> moduleProps = (Map<String, String>) handlerCtx.getInputValue("moduleProps");
-        String statUrl = "EMPTY";
+        StringBuilder statUrl = new StringBuilder();
         String statType = "";
 
         if (comp != null) {
             String[] compStrs = comp.split("/");
             try {
-                statUrl = monitorURL + "/applications/" + app;
+                statUrl = statUrl.append(monitorURL).append("/applications/").append(app);
                 for (String str : compStrs) {
-                    statUrl = statUrl + "/" + URLEncoder.encode(str, "UTF-8");
+                    statUrl = statUrl.append("/").append(URLEncoder.encode(str, "UTF-8"));
                 }
             } catch (UnsupportedEncodingException ex) {
                 GuiUtil.getLogger().log(Level.INFO, "{0}{1}", new Object[]{GuiUtil.getCommonMessage("log.error.getStatsUrl"), ex.getLocalizedMessage()});
@@ -545,16 +545,18 @@ public class MonitoringHandlers {
                 }
             }
 
-            if (RestUtil.doesProxyExist(statUrl)) {
+            if (RestUtil.doesProxyExist(statUrl.toString())) {
                 if (compStrs.length == 1) {
                     statType = (String) moduleProps.get(compStrs[0]);
                 } else {
                     statType = modifyStatType(compStrs[1]);
                 }
             }
+        }else{
+            statUrl.append("EMPTY");
         }
 
-        handlerCtx.setOutputValue("statUrl", statUrl);
+        handlerCtx.setOutputValue("statUrl", statUrl.toString());
         handlerCtx.setOutputValue("statType", statType);
     }
     /*
@@ -712,68 +714,68 @@ public class MonitoringHandlers {
 
     public static String modifyStatType(String name) {
         String[] nameStrs = name.split("-");
-        String modifiedName = "";
+        StringBuilder modifiedName = new StringBuilder();
         for (int i = 0; i < nameStrs.length; i++) {
-            String tmp = nameStrs[i].substring(0, 1).toUpperCase() + nameStrs[i].substring(1);
-            modifiedName = modifiedName + tmp;
+            String tmp = nameStrs[i].substring(0, 1).toUpperCase(GuiUtil.guiLocale) + nameStrs[i].substring(1);
+            modifiedName.append(tmp);
         }
-        return modifiedName;
+        return modifiedName.toString();
     }
 
     private static String formatActiveIdsForDisplay(String str) {
-        String values = " ";
+        StringBuilder values = new StringBuilder(" ");
         String[] strArray = str.split("%%%EOL%%%");
         if (strArray != null && strArray.length > 0) {
-            values = values + "<table>";
+            values.append("<table>");
             for (String s : (String[]) strArray) {
                 if (s.startsWith("Transaction")) {
                     String sh = s.replaceFirst(" ", "_");
                     String[] strHeaders = sh.split(" ");
                     if (strHeaders != null && strHeaders.length > 0) {
-                        values = values + "<tr>";
+                        values.append("<tr>");
                         for (String h : (String[]) strHeaders) {
                             if (!h.isEmpty()) {
-                                values = values + "<td>" + h + "</td>";
+                                values.append("<td>").append("</td>");
                             }
 
                         }
-                        values = values + "</tr>";
+                        values.append("</tr>");
                     }
                 } else {
                     String[] strData = s.split(" ");
                     if (strData != null && strData.length > 0) {
-                        values = values + "<tr>";
+                        values.append("<tr>");
                         for (String d : (String[]) strData) {
                             if (!d.isEmpty()) {
-                                values = values + "<td>" + d + "</td>";
+                                values.append("<td>").append(d).append("</td>");
                             }
 
                         }
-                        values = values + "</tr>";
+                        values.append("</tr>");
                     }
 
                 }
             }
-            values = values + "</table>";
+            values.append("</table>");
         }
-        return values;
+        return values.toString();
     }
 
     private static String formatStringForDisplay(String strToFormat) {
         String[] strs = strToFormat.split(",");
-        String formattedStr = "";
+        StringBuilder formattedStr = new StringBuilder();
         if (strs != null && strs.length > 10) {
             for (int i = 0; i < strs.length; i++) {
                 String str = strs[i];
-                if (!formattedStr.equals("")) {
-                    formattedStr = formattedStr + ",";
+                if (! (formattedStr.length() == 0)) {
+                    formattedStr.append(",");
                 }
                 if (i % 10 == 0 && i != 0) {
-                    formattedStr = formattedStr + "\n";
+                    formattedStr.append("\n");
                 }
-                formattedStr = formattedStr + str;
+                formattedStr.append(str);
             }
-            return formattedStr;
+            return formattedStr.toString();
         }
         return strToFormat;
     }
@@ -793,7 +795,7 @@ public class MonitoringHandlers {
                 }
             }
         } catch (Exception ex) {
-            GuiUtil.getLogger().severe("Error in getMonitoringStatInfo ; \nendpoint = " + endpoint + "attrs=" + "method=GET");
+            GuiUtil.getLogger().log(Level.SEVERE,"Error in getMonitoringStatInfo ; \nendpoint = {0}" + "attrs=" + "method=GET", endpoint);
             //we don't need to call GuiUtil.handleError() because thats taken care of in restRequest() when we pass in the handler.
         }
         return monitorInfoMap;

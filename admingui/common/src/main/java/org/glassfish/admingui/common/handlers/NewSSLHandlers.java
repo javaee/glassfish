@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,6 +54,7 @@ import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
+import org.glassfish.admingui.common.util.GuiUtil;
 
 /**
  *
@@ -102,7 +103,6 @@ public class NewSSLHandlers {
 
     @Handler(id="convertCiphersItemsToStr",
     input={
-        @HandlerInput(name="test", type=Object.class),
         @HandlerInput(name="common",    type=String[].class),
         @HandlerInput(name="ephemeral", type=String[].class),
         @HandlerInput(name="other",     type=String[].class),
@@ -112,7 +112,6 @@ public class NewSSLHandlers {
     )
     public static void convertCiphersItemsToStr(HandlerContext handlerCtx) {
 
-        Object test = handlerCtx.getInputValue("test");
         String[] common = (String[])handlerCtx.getInputValue("common");
         String[] ephemeral = (String[])handlerCtx.getInputValue("ephemeral");
         String[] other = (String[])handlerCtx.getInputValue("other");
@@ -144,35 +143,21 @@ public class NewSSLHandlers {
         }
         
         private static String processSelectedCiphers(String[] selectedCiphers, String ciphers){
+            StringBuilder sb = new StringBuilder();
+            String sep = "";
+            if ( ! GuiUtil.isEmpty(ciphers)){
+                sb.append(ciphers);
+                sep = ",";
+            }
             if(selectedCiphers != null){
-                if (ciphers == null){
-                    ciphers = "";
-                }
                 for (int i = 0; i < selectedCiphers.length; i++) {
-                    if(! ciphers.equals("")){
-                        ciphers += ",";
-                    }
-                    ciphers += "+" + selectedCiphers[i];
+                    sb.append(sep).append("+").append(selectedCiphers[i]);
+                    sep = ",";
                 }
             }
-            return ciphers;
+            return sb.toString();
         }
-        
-        private static String processDeletedCiphers(String[] oldCiphers, String ciphers){
-            if(oldCiphers != null){
-                for (int i = 0; i < oldCiphers.length; i++) {
-                    String cipVal = oldCiphers[i];
-                    if(ciphers.indexOf(cipVal) != -1){
-                        if(! ciphers.equals("")){
-                            ciphers += ",";
-                        }
-                        ciphers += "-" + cipVal;
-                    }
-                }
-            }
-            return ciphers;
-        }
-        
+
         private static Vector getCiphersVector(String[] allCiphers){
             Vector ciphers = new Vector();
             if (allCiphers != null){

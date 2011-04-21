@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,8 +43,8 @@ package org.glassfish.config.support;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.ExceptionUtil;
 import com.sun.hk2.component.InjectionResolver;
+import java.util.logging.Level;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.I18n;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.common.util.admin.GenericCommandModel;
@@ -52,12 +52,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.*;
-import com.sun.logging.LogDomains;
-
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.beans.PropertyVetoException;
 
 /**
@@ -72,7 +67,7 @@ import java.beans.PropertyVetoException;
  * @author Jerome Dochez
  */
 @Scoped(PerLookup.class)
-public class GenericCreateCommand extends GenericCrudCommand implements AdminCommand, PostConstruct, CommandModelProvider {
+public class GenericCreateCommand extends GenericCrudCommand implements AdminCommand {
 
     @Inject
     Habitat habitat;
@@ -81,8 +76,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
     GenericCommandModel model;
     Create create;
 
-    final static Logger logger = LogDomains.getLogger(GenericCreateCommand.class, LogDomains.ADMIN_LOGGER);
-
+    @Override
     public void postConstruct() {
 
         super.postConstruct();
@@ -97,7 +91,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
             if (logger.isLoggable(level)) {
                 for (String paramName : model.getParametersNames()) {
                     CommandModel.ParamModel param = model.getModelFor(paramName);
-                    logger.fine("I take " + param.getName() + " parameters");
+                    logger.log(Level.FINE, "I take {0} parameters", param.getName());
                 }
             }
         } catch(Exception e) {
@@ -115,6 +109,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
 
 
 
+    @Override
     public void execute(final AdminCommandContext context) {
 
         final ActionReport result = context.getActionReport();
@@ -140,6 +135,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
         
         try {
             ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy> () {
+                @Override
                 public Object run(ConfigBeanProxy writableParent) throws PropertyVetoException, TransactionFailure {
 
 
@@ -213,6 +209,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
         }
     }
 
+    @Override
     public CommandModel getModel() {
         return model;
     }

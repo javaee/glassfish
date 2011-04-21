@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -177,7 +177,7 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
         }
     }
 
-    private class GroupManagementServiceConfigCode implements SingleConfigCode<Config> {
+    static private class GroupManagementServiceConfigCode implements SingleConfigCode<Config> {
         public Object run(Config config) throws PropertyVetoException, TransactionFailure {
             GroupManagementService gms = config.getGroupManagementService();
             Transaction t = Transaction.getTransaction(config);
@@ -249,11 +249,11 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
 
     // copied from config-api com.sun.enterprise.config.serverbeans.Cluster.java in order to generate a valid v3.1 value for this required properties.
     private String generateHeartbeatPort() {
-        final long MIN_GMS_MULTICAST_PORT = 2048;
-        final long MAX_GMS_MULTICAST_PORT = 32000;
+        final int MIN_GMS_MULTICAST_PORT = 2048;
+        final int MAX_GMS_MULTICAST_PORT = 32000;
 
-        long portInterval = MAX_GMS_MULTICAST_PORT - MIN_GMS_MULTICAST_PORT;
-        return new Long(Math.round(Math.random() * portInterval) + MIN_GMS_MULTICAST_PORT).toString();
+        int portInterval = MAX_GMS_MULTICAST_PORT - MIN_GMS_MULTICAST_PORT;
+        return Integer.valueOf(Math.round((float)(Math.random() * portInterval)) + MIN_GMS_MULTICAST_PORT).toString();
     }
 
     // copied from config-api com.sun.enterprise.config.serverbeans.Cluster.java in order to generate a valid v3.1 value for this required properties.

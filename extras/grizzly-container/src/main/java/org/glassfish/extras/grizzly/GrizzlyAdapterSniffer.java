@@ -50,7 +50,7 @@ import org.glassfish.internal.deployment.GenericSniffer;
  * @author Jerome Dochez
  */
 @Service(name="grizzly")
-public class GrizzlyAdapterSniffer extends GenericSniffer implements Sniffer {
+public class GrizzlyAdapterSniffer extends GenericSniffer {
     
     final static private String[] containerNames = { "org.glassfish.extras.grizzly.GrizzlyContainer" };
 

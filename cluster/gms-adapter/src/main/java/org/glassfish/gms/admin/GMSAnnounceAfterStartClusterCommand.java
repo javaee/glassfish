@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -98,9 +98,6 @@ public class GMSAnnounceAfterStartClusterCommand implements AdminCommand {
                 List<String> members = null;
                 GMSConstants.groupStartupState groupStartupState = GMSConstants.groupStartupState.COMPLETED_FAILED;
 
-                logger.log(Level.INFO, "after.start", new Object [] {
-                    report.getActionExitCode(), members, gmsInfo.clusterMembers
-                });
                 switch (report.getActionExitCode()) {
                     case SUCCESS:
                         // all instances started
@@ -129,6 +126,9 @@ public class GMSAnnounceAfterStartClusterCommand implements AdminCommand {
 
                     default:
                 }
+                logger.log(Level.INFO, "after.start", new Object [] {
+                    report.getActionExitCode(), members, gmsInfo.clusterMembers
+                });
                 try {
                     if (gmsInfo.gms != null) {
                         if (members == null) {

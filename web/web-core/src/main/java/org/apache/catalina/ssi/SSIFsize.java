@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -72,8 +72,8 @@ import java.text.DecimalFormat;
  * @version $Revision: 1.4 $, $Date: 2007/05/05 05:32:20 $
  */
 public final class SSIFsize implements SSICommand {
-    protected final static int ONE_KILOBYTE = 1024;
-    protected final static int ONE_MEGABYTE = 1024 * 1024;
+    private final static int ONE_KILOBYTE = 1024;
+    private final static int ONE_MEGABYTE = 1024 * 1024;
 
 
     /**

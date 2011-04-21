@@ -356,16 +356,6 @@ public class TransactionImpl implements TransactionInternal {
     }
 
 
-    /**
-     * a simple assertion mechanism that print stack trace
-     * if assertion fails
-     */
-    static private void assert_prejdk14(boolean value) {
-        if (!value) {
-            Exception e = new Exception();
-			_logger.log(Level.WARNING,"jts.assert",e);
-        }
-    }
     // START IASRI 4662745
     /*
      * This method is used for the Admin Framework displaying
@@ -402,7 +392,7 @@ class SynchronizationListener implements Synchronization {
         try {
 	    tranState.beforeCompletion();
 	}catch(XAException xaex){
-	    _logger.log(Level.WARNING,"jts.unexpected_xa_error_in_beforecompletion", new java.lang.Object[] {new Integer(xaex.errorCode), xaex.getMessage()});
+	    _logger.log(Level.WARNING,"jts.unexpected_xa_error_in_beforecompletion", new java.lang.Object[] {xaex.errorCode, xaex.getMessage()});
 	    _logger.log(Level.WARNING,"",xaex);
         } catch (Exception ex) {
 	    _logger.log(Level.WARNING,"jts.unexpected_error_in_beforecompletion",ex);

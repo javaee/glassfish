@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -92,7 +92,6 @@ import com.sun.jts.utils.LogFormatter;
 class Log {
 
     /**A reference to the LogControl object.
-     * @seecom.ibm.jts.logger.LogControl
      */
     private LogControl logControl = null;
 
@@ -118,64 +117,14 @@ class Log {
         // prior to SOMTR_Init.
 
         // Initialise the instance variables.
-
-        logControl = null;
-
-        // Get the log path.  If it is not set, or blank, then set it to the current
-        // directory.
-
-        if( logPath == null ) {
-            int[] result = new int[1];
-            logPath = Configuration.getDirectory(Configuration.LOG_DIRECTORY,
-                                                 Configuration.JTS_SUBDIRECTORY,
-                                                 result);
-
-            // If a default was used, display a message.
-
-            if( result[0] == Configuration.DEFAULT_USED ||
-                result[0] == Configuration.DEFAULT_INVALID ) {
-
-                // In the case where the SOMBASE default is used, only display a message
-                // if an invalid value was specified in the environment value.
-
-                if( logPath.length() > 0 ) {
-						_logger.log(Level.WARNING,"jts.invalid_log_path",logPath);
-                }
-
-                // In the case where the SOMBASE default is invalid, the value returned is
-                // the invalid default. We then default to the current directory.
-
-                if( result[0] == Configuration.DEFAULT_INVALID ) {
-						_logger.log(Level.WARNING,"jts.invalid_default_log_path");
-                    logPath = "."/*#Frozen*/;
-                }
-            }
-        }
+        logPath = LogControl.getLogPath();
 
     }
 
 
     Log(String logPath) {
-        logControl = null;
         this.logPath = logPath;
     }
-
-    /**Default Log destructor.
-     *
-     * @param
-     *
-     * @return
-     *
-     * @see
-     */
-    /*
-    public void finalize() {
-
-        logControl = null;
-        logPath = null;
-
-    }
-    */
 
     /**Initialises the log.
      *
@@ -268,40 +217,13 @@ class Log {
      * @see
      */
     static boolean checkFileExists( String serverName ) {
+        // Check whether the file exists.
         boolean exists = false;
 
-        // Check whether the file exists.
-
         if( serverName != null ) {
-            String logPath = null;
-            int[] result = new int[1];
-            logPath = Configuration.getDirectory(Configuration.LOG_DIRECTORY,
-                                                 Configuration.JTS_SUBDIRECTORY,
-                                                 result);
-
-            // If a default was used, display a message.
-
-            if( result[0] == Configuration.DEFAULT_USED ||
-                result[0] == Configuration.DEFAULT_INVALID ) {
-
-                // In the case where the SOMBASE default is used, only display a message
-                // if an invalid value was specified in the environment value.
-
-                if( logPath.length() > 0 ) {
-                     _logger.log(Level.WARNING,"jts.invalid_log_path",logPath);
-                }
-
-                // In the case where the SOMBASE default is invalid, the value returned is
-                // the invalid default. We then default to the current directory.
-
-                if( result[0] == Configuration.DEFAULT_INVALID ) {
-                                                _logger.log(Level.WARNING,"jts.invalid_default_log_path");
-                    logPath = "."/*#Frozen*/;
-                }
-            }
+            String logPath = LogControl.getLogPath();
             exists = LogControl.checkFileExists(serverName,logPath);
         }
-
 
         return exists;
     }

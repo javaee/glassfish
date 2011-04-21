@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -174,7 +174,7 @@ public class RestApiHandlers {
                 (List) handlerCtx.getInputValue("onlyUseAttrs"), (List) handlerCtx.getInputValue("convertToFalse"));
 
         boolean throwException = (Boolean) handlerCtx.getInputValue("throwException");
-        Map resultMap = parseResponse(response, handlerCtx, endpoint, attrs, false, throwException);
+        parseResponse(response, handlerCtx, endpoint, attrs, false, throwException);
         //??? I believe this should return a Map, whats the point of returning the endpoint that was passed in.
         //But i haven't looked through all the code, so decide to leave it for now.
         handlerCtx.setOutputValue("result", endpoint);

@@ -46,6 +46,8 @@ import org.glassfish.hk2.classmodel.reflect.*;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.annotation.HandlesTypes;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -256,66 +258,69 @@ public class ServletContainerInitializerUtil {
              */
             if (types==null || Boolean.getBoolean("org.glassfish.web.parsing")) {
                 ClassDependencyBuilder classInfo = new ClassDependencyBuilder();
-                for(URL u : ((URLClassLoader)cl).getURLs()) {
-                    String path = u.getPath();
-                    try {
-                        if(path.endsWith(".jar")) {
-                            JarFile jf = new JarFile(path);
-                            try {
-                                Enumeration<JarEntry> entries = jf.entries();
-                                while(entries.hasMoreElements()) {
-                                    JarEntry anEntry = entries.nextElement();
-                                    if(anEntry.isDirectory())
-                                        continue;
-                                    if(!anEntry.getName().endsWith(".class"))
-                                        continue;
-                                    InputStream jarInputStream = null;
-                                    try {
-                                        jarInputStream = jf.getInputStream(anEntry);
-                                        int size = (int) anEntry.getSize();
-                                        byte[] classData = new byte[size];
-                                        for(int bytesRead = 0; bytesRead < size;) {
-                                            int r2 = jarInputStream.read(classData, bytesRead, size - bytesRead);
-                                            bytesRead += r2;
-                                        }
-                                        classInfo.loadClassData(classData);
-                                    } catch (Throwable t) {
-                                        if (log.isLoggable(Level.FINE)) {
-                                            log.log(Level.FINE,
-                                                "servletContainerInitializerUtil.classLoadingError",
-                                                new Object[] {
-                                                    anEntry.getName(),
-                                                    t.toString()});
-                                        }
-                                        continue;
-                                    } finally {
-                                        if(jarInputStream != null) {
-                                            jarInputStream.close();
+                if (cl instanceof URLClassLoader) {
+                    URLClassLoader ucl = (URLClassLoader) cl;
+                    for(URL u : ucl.getURLs()) {
+                        String path = u.getPath();
+                        try {
+                            if(path.endsWith(".jar")) {
+                                JarFile jf = new JarFile(path);
+                                try {
+                                    Enumeration<JarEntry> entries = jf.entries();
+                                    while(entries.hasMoreElements()) {
+                                        JarEntry anEntry = entries.nextElement();
+                                        if(anEntry.isDirectory())
+                                            continue;
+                                        if(!anEntry.getName().endsWith(".class"))
+                                            continue;
+                                        InputStream jarInputStream = null;
+                                        try {
+                                            jarInputStream = jf.getInputStream(anEntry);
+                                            int size = (int) anEntry.getSize();
+                                            byte[] classData = new byte[size];
+                                            for(int bytesRead = 0; bytesRead < size;) {
+                                                int r2 = jarInputStream.read(classData, bytesRead, size - bytesRead);
+                                                bytesRead += r2;
+                                            }
+                                            classInfo.loadClassData(classData);
+                                        } catch (Throwable t) {
+                                            if (log.isLoggable(Level.FINE)) {
+                                                log.log(Level.FINE,
+                                                    "servletContainerInitializerUtil.classLoadingError",
+                                                    new Object[] {
+                                                        anEntry.getName(),
+                                                        t.toString()});
+                                            }
+                                            continue;
+                                        } finally {
+                                            if(jarInputStream != null) {
+                                                jarInputStream.close();
+                                            }
                                         }
                                     }
+                                } finally {
+                                    jf.close();
                                 }
-                            } finally {
-                                jf.close();
-                            }
-                        } else {
-                            File file = new File(path);
-                            if (file.exists()) {
-                                if (file.isDirectory()) {
-                                    scanDirectory(file, classInfo);
-                                } else {
-                                    log.log(Level.WARNING,
-                                        "servletContainerInitializerUtil.invalidUrlClassLoaderPath",
-                                        path);
+                            } else {
+                                File file = new File(path);
+                                if (file.exists()) {
+                                    if (file.isDirectory()) {
+                                        scanDirectory(file, classInfo);
+                                    } else {
+                                        log.log(Level.WARNING,
+                                            "servletContainerInitializerUtil.invalidUrlClassLoaderPath",
+                                            path);
+                                    }
                                 }
                             }
+                        } catch(IOException ioex) {
+                            String msg = rb.getString(
+                                "servletContainerInitializerUtil.ioError");
+                            msg = MessageFormat.format(msg,
+                                new Object[] { path });
+                            log.log(Level.SEVERE, msg, ioex);
+                            return null;
                         }
-                    } catch(IOException ioex) {
-                        String msg = rb.getString(
-                            "servletContainerInitializerUtil.ioError");
-                        msg = MessageFormat.format(msg,
-                            new Object[] { path });
-                        log.log(Level.SEVERE, msg, ioex);
-                        return null;
                     }
                 }
 
@@ -369,18 +374,21 @@ public class ServletContainerInitializerUtil {
                 String fileName = file.getPath();
                 if (fileName.endsWith(".class")) {
                     try {
-                        byte[] classData = null;
                         InputStream is = null;
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         try {
-                            is = new FileInputStream(fileName);
-                            int size = is.available();
-                            classData = new byte[size];
-                            is.read(classData);
-                            classInfo.loadClassData(classData);
+                            is = new BufferedInputStream(new FileInputStream(fileName));
+                            byte[] bs = new byte[2048];
+                            int size = -1;
+                            while ((size = is.read(bs)) >= 0) {
+                                baos.write(bs, 0, size);
+                            } 
+                            classInfo.loadClassData(baos.toByteArray());
                         } finally {
                             if (is != null) {
                                 is.close();
                             }
+                            baos.close();
                         }
                     } catch (Throwable t) {
                         if (log.isLoggable(Level.WARNING)) {
@@ -413,7 +421,10 @@ public class ServletContainerInitializerUtil {
         if (classInfo==null) {
             return initializerList;
         }
-        for (Class c: interestList.keySet()) {
+        for (Map.Entry<Class<?>, List<Class<? extends ServletContainerInitializer>>> e:
+                interestList.entrySet()) {
+
+            Class<?> c = e.getKey();
             Type type = classInfo.getBy(c.getName());
             if (type==null)
                 continue;
@@ -460,7 +471,7 @@ public class ServletContainerInitializerUtil {
             if(initializerList == null) {
                 initializerList = new HashMap<Class<? extends ServletContainerInitializer>, Set<Class<?>>>();
             }
-            List<Class<? extends ServletContainerInitializer>> containerInitializers = interestList.get(c);
+            List<Class<? extends ServletContainerInitializer>> containerInitializers = e.getValue();
             for(Class<? extends ServletContainerInitializer> initializer : containerInitializers) {
                 Set<Class<?>> classSet = initializerList.get(initializer);
                 if(classSet == null) {
@@ -489,7 +500,10 @@ public class ServletContainerInitializerUtil {
                                 Map<Class<?>, List<Class<? extends ServletContainerInitializer>>> interestList,
                                 Map<Class<? extends ServletContainerInitializer>, Set<Class<?>>> initializerList,
                                 ClassLoader cl) {
-        for(Class c : interestList.keySet()) {
+        for(Map.Entry<Class<?>, List<Class<? extends ServletContainerInitializer>>> e :
+                interestList.entrySet()) {
+
+            Class<?> c = e.getKey();
             Set<String> resultFromClassInfo = classInfo.computeResult(c.getName());
             if(resultFromClassInfo.isEmpty()) {
                 continue;
@@ -511,7 +525,7 @@ public class ServletContainerInitializerUtil {
             if(initializerList == null) {
                 initializerList = new HashMap<Class<? extends ServletContainerInitializer>, Set<Class<?>>>();
             }
-            List<Class<? extends ServletContainerInitializer>> containerInitializers = interestList.get(c);
+            List<Class<? extends ServletContainerInitializer>> containerInitializers = e.getValue();
             for(Class<? extends ServletContainerInitializer> initializer : containerInitializers) {
                 Set<Class<?>> classSet = initializerList.get(initializer);
                 if(classSet == null) {

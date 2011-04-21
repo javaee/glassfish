@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,6 +43,7 @@ package com.sun.enterprise.web.reconfig;
 import com.sun.enterprise.config.serverbeans.AccessLog;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.ManagerProperties;
+import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.config.serverbeans.WebContainerAvailability;
 import com.sun.enterprise.v3.services.impl.MapperUpdateListener;
@@ -57,6 +58,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.grizzly.config.dom.NetworkConfig;
 import org.glassfish.grizzly.config.dom.NetworkListeners;
 import org.glassfish.grizzly.http.server.util.Mapper;
 
@@ -72,25 +74,16 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
     public HttpService httpService;
     
     @Inject(optional=true)
-    public AccessLog accessLog;
-    
-    @Inject(optional=true)
     public ManagerProperties managerProperties;
 
     @Inject(optional=true)
     public List<Property> property;
-
-    @Inject(name="accessLoggingEnabled",optional=true)
-    public Property accessLoggingEnabledProperty;
-
-    @Inject(name="docroot",optional=true)
-    public Property docroot;
     
     private WebContainer container;
 
     private Logger logger;
 
-    volatile boolean received=false;
+    private NetworkConfig networkConfig;
     
     /**
      * Set the Web Container for this ConfigListener.
@@ -103,6 +96,10 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
 
     public void setLogger(Logger logger) {
         this.logger = logger;
+    }
+
+    public void setNetworkConfig(NetworkConfig config) {
+        this.networkConfig = config;
     }
 
     /**
@@ -155,8 +152,16 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
                         } else {
                             container.updateHttpService(httpService);
                         }
+                     } else if (t instanceof SystemProperty) {
+                        if (((SystemProperty)t).getName().endsWith("LISTENER_PORT")) {
+                            for (NetworkListener listener : networkConfig.getNetworkListeners().getNetworkListener()) {
+                                if (listener.getPort().equals(((SystemProperty)t).getValue())) {
+                                    container.updateConnector(listener, httpService);
+                                }
+                            }
+                        }
                     } else {
-                        container.updateHttpService(httpService);
+                        // Ignore other unrelated events
                     }
                 } catch (LifecycleException le) {
                     logger.log(Level.SEVERE, "webcontainer.exceptionConfigHttpService", le);

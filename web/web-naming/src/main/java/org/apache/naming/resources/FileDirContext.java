@@ -368,8 +368,10 @@ public class FileDirContext extends BaseDirContext {
         }
         // END S1AS8PE 4965170
         
-        file.renameTo(newFile);
-        
+        if (!file.renameTo(newFile)) {
+            throw new NamingException(sm.getString("resources.renameFail",
+                    oldName, newName));
+        }
     }
 
 
@@ -907,8 +909,7 @@ public class FileDirContext extends BaseDirContext {
             }
             if (canPath == null) {
                 if (logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.FINE, sm.getString("fileResources.nullCanonicalPath",
-                            canPath));
+                    logger.log(Level.FINE, sm.getString("fileResources.nullCanonicalPath"));
                 }
                 return null;
             }
@@ -933,18 +934,17 @@ public class FileDirContext extends BaseDirContext {
                 if (fileAbsPath.endsWith("."))
                     fileAbsPath = fileAbsPath + "/";
                 String absPath = normalize(fileAbsPath);
-                if (canPath != null)
-                    canPath = normalize(canPath);
+                canPath = normalize(canPath);
+                if ((canPath == null) || (absPath == null)) {
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.log(Level.FINE, sm.getString("fileResources.nullAbsPath",
+                                canPath,absPath));
+                    }
+                    return null;
+                }
                 if ((absoluteBase.length() < absPath.length()) 
                     && (absoluteBase.length() < canPath.length())) {
                     absPath = absPath.substring(absoluteBase.length() + 1);
-                    if ((canPath == null) || (absPath == null)) {
-                        if (logger.isLoggable(Level.FINE)) {
-                            logger.log(Level.FINE, sm.getString("fileResources.nullAbsPath",
-                                    canPath,absPath));
-                        }
-                        return null;
-                    }
                     if (absPath.equals(""))
                         absPath = "/";
                     canPath = canPath.substring(absoluteBase.length() + 1);
@@ -1041,7 +1041,7 @@ public class FileDirContext extends BaseDirContext {
      * This specialized resource implementation avoids opening the InputStream
      * to the file right away (which would put a lock on the file).
      */
-    protected class FileResource extends Resource {
+    protected static class FileResource extends Resource {
         
         
         // -------------------------------------------------------- Constructor
@@ -1097,7 +1097,7 @@ public class FileDirContext extends BaseDirContext {
      * reading (to speed up simple checks, like checking the last modified 
      * date).
      */
-    protected class FileResourceAttributes extends ResourceAttributes {
+    protected static class FileResourceAttributes extends ResourceAttributes {
 
 
         // -------------------------------------------------------- Constructor

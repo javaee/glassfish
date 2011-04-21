@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -356,8 +356,6 @@ class CoordinatorLog extends java.lang.Object implements LogUpcallTarget {
 
         result = (CoordinatorLogSection) sectionMapping.get(sectionName);
         if (result == null) {
-            int nameLength = sectionName.length();
-
             // Create a new section.
             // If a section info structure cannot be allocated, return.
             // Note that the section name is added to the end of the section
@@ -1275,7 +1273,7 @@ class CoordinatorLog extends java.lang.Object implements LogUpcallTarget {
                 DataInputStream dataInput = new DataInputStream(byteInput);
 
                 try {
-                    Long localTID = new Long(dataInput.readLong());
+                    Long localTID = dataInput.readLong();
                     CoordinatorLog coordLog = (CoordinatorLog)logStateHolder.activeLogs.get(localTID);
                     if( coordLog == null ) {
 
@@ -1344,7 +1342,7 @@ class CoordinatorLog extends java.lang.Object implements LogUpcallTarget {
                 DataInputStream dataInput = new DataInputStream(byteInput);
 
                 try {
-                    Long localTID = new Long(dataInput.readLong());
+                    Long localTID = dataInput.readLong();
                     CoordinatorLog coordLog = (CoordinatorLog)logStateHolder.activeLogs.get(localTID);
                     if( coordLog == null ) {
 

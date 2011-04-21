@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -193,10 +193,6 @@ class SuperiorInfo {
      */
     public void doFinalize() {
 
-        // Destroy the global transaction identifier.
-
-        //$ if( globalTID != null ) globalTID.finalize();
-
         // Release superior Coordinator references.
 
         if (superior != null &&
@@ -283,8 +279,8 @@ class SuperiorInfo {
                     // TN - used to be com.sun.CORBA.iiop.CORBAObjectImpl
                     java.lang.Object rcimpl = logObjects[0];
                         
-                    String[] ids = StubAdapter.getTypeIds(rcimpl);
                     /*
+                    String[] ids = StubAdapter.getTypeIds(rcimpl);
                     for (int i = 0; i < ids.length; i++)
                         if( trc != null )
                             trc.exit(998).data(i).data(ids[i]).write();
@@ -293,8 +289,8 @@ class SuperiorInfo {
                     // TN - used to be com.sun.CORBA.iiop.CORBAObjectImpl
                     java.lang.Object crimpl = logObjects[1];
                         
-                    ids = StubAdapter.getTypeIds(crimpl);
                     /*
+                    ids = StubAdapter.getTypeIds(crimpl);
                     for( int i = 0; i < ids.length; i++ )
                         if( trc != null )
                             trc.exit(998).data(i).data(ids[i]).write();
@@ -357,8 +353,8 @@ class SuperiorInfo {
                     // TN - used to be com.sun.CORBA.iiop.CORBAObjectImpl
                     java.lang.Object rcimpl = logObjects[0];
                         
-                    String[] ids = StubAdapter.getTypeIds(rcimpl);
                     /*
+                    String[] ids = StubAdapter.getTypeIds(rcimpl);
                     for (int i = 0; i < ids.length; i++)
                         if( trc != null )
                             trc.exit(998).data(i).data(ids[i]).write();
@@ -367,8 +363,8 @@ class SuperiorInfo {
                     // TN - used to be com.sun.CORBA.iiop.CORBAObjectImpl
                     java.lang.Object crimpl = logObjects[1];
                         
-                    ids = StubAdapter.getTypeIds(crimpl);
                     /*
+                    ids = StubAdapter.getTypeIds(crimpl);
                     for( int i = 0; i < ids.length; i++ )
                         if( trc != null )
                             trc.exit(998).data(i).data(ids[i]).write();

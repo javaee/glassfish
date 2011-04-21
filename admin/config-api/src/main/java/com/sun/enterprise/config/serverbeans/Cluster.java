@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,8 @@ package com.sun.enterprise.config.serverbeans;
 
 import com.sun.enterprise.config.serverbeans.customvalidators.NotTargetKeyword;
 import com.sun.enterprise.config.serverbeans.customvalidators.NotDuplicateTargetName;
+import com.sun.enterprise.config.serverbeans.customvalidators.ConfigRefConstraint;
+import com.sun.enterprise.config.serverbeans.customvalidators.ConfigRefValidator;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
@@ -88,6 +90,7 @@ import javax.validation.constraints.Pattern;
  */
 @Configured
 @SuppressWarnings("unused")
+@ConfigRefConstraint(message="{configref.invalid}", payload= ConfigRefValidator.class)
 @NotDuplicateTargetName(message="{cluster.duplicate.name}", payload=Cluster.class)
 public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer, Payload {
 
@@ -554,7 +557,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                 instance.setGmsMulticastAddress(generateHeartbeatAddress());
             }
             if (instance.getGmsMulticastPort() == null) {
-                instance.setGmsMulticastPort(Integer.toString(generateHeartbeatPort()));
+                instance.setGmsMulticastPort(generateHeartbeatPort());
             }
 
             Property gmsListenerPort = instance.createChild(Property.class);
@@ -628,15 +631,15 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
             }
         }
 
-        private int generateHeartbeatPort () {
-            final long MIN_GMS_MULTICAST_PORT = 2048;
-            final long MAX_GMS_MULTICAST_PORT = 32000;
-            long portInterval = MAX_GMS_MULTICAST_PORT - MIN_GMS_MULTICAST_PORT;
-            return new Long(Math.round(Math.random()*portInterval)+ MIN_GMS_MULTICAST_PORT)
-                      .intValue();
-        }
+    private String generateHeartbeatPort() {
+        final int MIN_GMS_MULTICAST_PORT = 2048;
+        final int MAX_GMS_MULTICAST_PORT = 32000;
 
-        private String generateHeartbeatAddress () {
+        int portInterval = MAX_GMS_MULTICAST_PORT - MIN_GMS_MULTICAST_PORT;
+        return Integer.valueOf(Math.round((float)(Math.random() * portInterval)) + MIN_GMS_MULTICAST_PORT).toString();
+    }
+
+    private String generateHeartbeatAddress () {
             final int MAX_GMS_MULTICAST_ADDRESS_SUBRANGE = 255;
 
             final StringBuffer heartbeatAddressBfr = new StringBuffer( "228.9.");

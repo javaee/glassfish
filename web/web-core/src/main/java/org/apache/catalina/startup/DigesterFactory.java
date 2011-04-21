@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -166,8 +166,8 @@ public class DigesterFactory {
      * Turn on DTD and/or validation (based on the parser implementation)
      */
     protected void turnOnValidation(Digester digester){
-        URL url = getClass().getResource(Constants.WebSchemaResourcePath_24);
-        digester.setSchema(url.toString());     
+        URL url = DigesterFactory.class.getResource(Constants.WebSchemaResourcePath_24);
+        digester.setSchema(url.toString());
     }
 
 

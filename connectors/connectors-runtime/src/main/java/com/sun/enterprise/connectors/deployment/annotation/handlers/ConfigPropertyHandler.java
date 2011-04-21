@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,6 +52,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.IllegalStateException;
+import java.util.Locale;
 import java.util.Set;
 import java.util.List;
 import java.util.Iterator;
@@ -103,7 +104,7 @@ public class ConfigPropertyHandler extends AbstractHandler {
             boolean supportsDynamicUpdates = configProperty.supportsDynamicUpdates();
             boolean confidential = configProperty.confidential();
 
-            Class type = configProperty.type();
+            Class type ;
 
             if (element.getElementType().equals(ElementType.METHOD)) {
                 Method m = (Method) element.getAnnotatedElement();
@@ -201,7 +202,7 @@ public class ConfigPropertyHandler extends AbstractHandler {
      * correct accessor and mutator method names for a give property.
      */
     private static String getCamelCasedPropertyName(String propertyName) {
-        return propertyName.substring(0, 1).toUpperCase() +
+        return propertyName.substring(0, 1).toUpperCase(Locale.getDefault()) +
                 propertyName.substring(1);
     }
 
@@ -469,7 +470,7 @@ public class ConfigPropertyHandler extends AbstractHandler {
         Class type = property.type();
         Class[] parameters = m.getParameterTypes();
         Class propertyType;
-        if (parameters != null) {
+        if (parameters.length != 0) {
             if (parameters.length == 1) {
                 propertyType = parameters[0];
             } else {

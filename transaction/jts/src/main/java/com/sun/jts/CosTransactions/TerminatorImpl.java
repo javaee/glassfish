@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -147,29 +147,10 @@ class TerminatorImpl extends TerminatorPOA implements Terminator {
      }
 
     /**
-     * Cleans up the state of the object.
-     *
-     * @param
-     *
-     * @return
-     *
-     * @see
-     */
-    /*
-    synchronized public void finalize() {
-
-        if (coordTerm != null) {
-            coordTerm.finalize();
-            coordTerm = null;
-        }
-    }
-    */
-
-    /**
      * This implements the checked behaviour for threads calling
      * the terminator object's completion methods directly.
      */
-    private void PreCompletionCheck()
+    private void preCompletionCheck()
         throws TRANSACTION_ROLLEDBACK, INVALID_TRANSACTION {
 
         /* This method has been newly added (Ram J) */
@@ -237,7 +218,7 @@ class TerminatorImpl extends TerminatorPOA implements Terminator {
         throws HeuristicMixed, HeuristicHazard, TRANSACTION_ROLLEDBACK {
 
         // for checked transaction behaviour (Ram J)
-        PreCompletionCheck();
+        preCompletionCheck();
 
         // Try to commit the transaction.  If the client does not want a
         // heuristic report, then the transaction can be completed promptly.
@@ -295,7 +276,7 @@ class TerminatorImpl extends TerminatorPOA implements Terminator {
     public void rollback() throws SystemException {
 
         // for checked transaction behaviour (Ram J)
-        PreCompletionCheck();
+        preCompletionCheck();
 
         // Roll the transaction back.
         // If a Heuristic exception was raised, forget it.
@@ -384,7 +365,6 @@ class TerminatorImpl extends TerminatorPOA implements Terminator {
             }
         }
 
-        //finalize();
     }
 
     /*

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -83,9 +83,15 @@ public class ContainerMapper extends StaticHttpHandler {
     private Mapper mapper;
     private final GrizzlyListener listener;
     private String defaultHostName = "server";
+//    private final UDecoder urlDecoder;
     private final GrizzlyService grizzlyService;
     protected final static Note<MappingData> MAPPING_DATA =
             Request.<MappingData>createNote("MappingData");
+    // Make sure this value is always aligned with {@link org.apache.catalina.connector.CoyoteAdapter}
+    // (@see org.apache.catalina.connector.CoyoteAdapter)
+    private final static Note<DataChunk> DATA_CHUNK =
+            Request.<DataChunk>createNote("DataChunk");
+
     private final HK2Dispatcher hk2Dispatcher = new HK2Dispatcher();
     private String version;
     private static final AfterServiceListener afterServiceListener =
@@ -188,7 +194,7 @@ public class ContainerMapper extends StaticHttpHandler {
             if (httpService == null || httpService instanceof ContainerMapper) {
                 String ext = decodedURI.toString();
                 String type = "";
-                if (ext.indexOf(".") > 0) {
+                if (ext.lastIndexOf(".") > 0) {
                     ext = "*" + ext.substring(ext.lastIndexOf("."));
                     type = ext.substring(ext.lastIndexOf(".") + 1);
                 }
@@ -299,14 +305,22 @@ public class ContainerMapper extends StaticHttpHandler {
             semicolonPos = decodedURI.indexOf(';', 0);
         }
 
-        if (semicolonPos == -1) {
-            semicolonPos = oldEnd;
+        DataChunk localDecodedURI = decodedURI;
+        if (semicolonPos >= 0) {
+            charChunk.setEnd(semicolonPos);
+            // duplicate the URI path, because Mapper may corrupt the attributes,
+            // which follow the path
+            localDecodedURI = req.getNote(DATA_CHUNK);
+            if (localDecodedURI == null) {
+                localDecodedURI = DataChunk.newInstance();
+                req.setNote(DATA_CHUNK, localDecodedURI);
+            }
+            localDecodedURI.duplicate(decodedURI);
         }
 
-        charChunk.setEnd(semicolonPos);
 
         try {
-            return map(req, decodedURI, mappingData);
+            return map(req, localDecodedURI, mappingData);
         } finally {
             charChunk.setStart(oldStart);
             charChunk.setEnd(oldEnd);

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,6 +47,7 @@ import org.jvnet.hk2.component.*;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.CompositeSniffer;
+import org.glassfish.api.container.SecondarySniffer;
 import org.glassfish.internal.deployment.SnifferManager;
 import org.glassfish.internal.deployment.ApplicationInfoProvider;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
@@ -245,6 +246,19 @@ public class SnifferManagerImpl implements SnifferManager {
                 }
             }
         }
+    }
+
+    public boolean containsPrimarySniffer(
+        Collection<? extends Sniffer> sniffers) {
+        if (sniffers == null || sniffers.isEmpty()) {
+            return false;
+        }
+        for (Sniffer sniffer : sniffers) {
+            if (! (sniffer instanceof SecondarySniffer)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private List<URI> getURIs(DeploymentContext context) {

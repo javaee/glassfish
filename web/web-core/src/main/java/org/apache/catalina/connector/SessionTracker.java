@@ -82,10 +82,10 @@ import java.util.ArrayList;
 public class SessionTracker implements SessionListener {
 
     // The number of currently tracked sessions
-    private int count;
+    private volatile int count;
 
     // The session id that is shared by all tracked sessions
-    private String trackedSessionId;
+    private volatile String trackedSessionId;
 
     private Response response;
 

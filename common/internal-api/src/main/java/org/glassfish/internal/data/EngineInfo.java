@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -70,7 +70,6 @@ public class EngineInfo<T extends Container, U extends ApplicationContainer> {
     final Inhabitant<T> container;
     final Sniffer sniffer;
     ContainerRegistry registry = null;
-    Map<WeakReference<Thread>, Set<Integer>> addedThreadLocals = new HashMap();
     Deployer deployer;
 
     /**
@@ -135,71 +134,6 @@ public class EngineInfo<T extends Container, U extends ApplicationContainer> {
      */
     public void setRegistry(ContainerRegistry registry) {
         this.registry = registry;
-    }
-
-    /**
-     * Adds number of threadlocal hashcodes
-     */
-    public synchronized void addThreadLocal(Thread t, Set<Integer> newEntries) {
-
-        Set<Integer> existingEntries = null;
-        for (Map.Entry<WeakReference<Thread>, Set<Integer>> entry : addedThreadLocals.entrySet()) {
-            if (entry.getKey().get()!=null) {
-                if (entry.getKey().get().equals(t)) {
-                    // found our guy
-                    existingEntries = entry.getValue();
-                    break;
-                }
-            } else {
-                // thread is dead, cleanup since we are at it.
-                addedThreadLocals.remove(entry.getKey());
-            }
-        }
-        if (existingEntries==null) {
-            existingEntries = new HashSet();
-            addedThreadLocals.put(new WeakReference(t), existingEntries);
-        }
-        
-        existingEntries.addAll(newEntries);
-    }
-
-    private void cleanup() {
-        for (Map.Entry<WeakReference<Thread>, Set<Integer>> entry : addedThreadLocals.entrySet()) {
-            if (entry.getKey().get()!=null) {
-                try {
-                    Field threadLocalsField = Thread.class.getDeclaredField("threadLocals");
-                    threadLocalsField.setAccessible(true);
-                    Class c = Class.forName("java.lang.ThreadLocal$ThreadLocalMap");
-                    Field tableField = c.getDeclaredField("table");
-                    Method remove = c.getDeclaredMethod("remove", ThreadLocal.class);
-                    tableField.setAccessible(true);
-                    c = Class.forName("java.lang.ThreadLocal$ThreadLocalMap$Entry");
-                    Field value = c.getDeclaredField("value");
-                    value.setAccessible(true);
-                    Thread t = entry.getKey().get();                                
-                    Object threadLocals = threadLocalsField.get(t);
-                    WeakReference<ThreadLocal>[] table = (WeakReference<ThreadLocal>[]) tableField.get(threadLocals);
-                    int len = table.length;
-                    for (int j = 0; j < len; j++) {
-                        WeakReference<ThreadLocal> e = table[j];
-                        if (e != null) {
-                            remove.invoke(threadLocalsField, e.get());
-                            System.out.println("Removed " + value.get(e));
-                        }
-                    }
-                } catch(NoSuchFieldException e) {
-                    e.printStackTrace();
-                } catch(ClassNotFoundException e) {
-                    e.printStackTrace();
-                } catch(IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch(NoSuchMethodException e) {
-                    e.printStackTrace();
-                } catch(InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 
     // Todo : take care of Deployer when unloading...

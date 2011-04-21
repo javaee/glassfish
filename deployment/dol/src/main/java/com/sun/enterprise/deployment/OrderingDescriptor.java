@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -163,11 +163,15 @@ public class OrderingDescriptor extends Descriptor {
                         remaining.remove(othersNode);
                     }
                     for (String name : after.getNames()) {
-                        Node nameNode = name2NodeMap.get(name);
                         // nameNode --> wfNode
-                        wfNode.getInEdges().add(getEdge(nameNode, wfNode, map));
-                        nameNode.getOutEdges().add(getEdge(nameNode, wfNode, map));
-                        remaining.remove(nameNode);
+                        Node nameNode = name2NodeMap.get(name);
+                        if (nameNode != null) {
+                            wfNode.getInEdges().add(
+                                    getEdge(nameNode, wfNode, map));
+                            nameNode.getOutEdges().add(
+                                    getEdge(nameNode, wfNode, map));
+                            remaining.remove(nameNode);
+                        }
                     }
                 }
 
@@ -180,11 +184,15 @@ public class OrderingDescriptor extends Descriptor {
                         remaining.remove(othersNode);
                     }
                     for (String name : before.getNames()) {
-                        Node nameNode = name2NodeMap.get(name);
                         // wfNode --> nameNode
-                        wfNode.getOutEdges().add(getEdge(wfNode, nameNode, map));
-                        nameNode.getInEdges().add(getEdge(wfNode, nameNode, map));
-                        remaining.remove(nameNode);
+                        Node nameNode = name2NodeMap.get(name);
+                        if (nameNode != null) {
+                            wfNode.getOutEdges().add(
+                                    getEdge(wfNode, nameNode, map));
+                            nameNode.getInEdges().add(
+                                    getEdge(wfNode, nameNode, map));
+                            remaining.remove(nameNode);
+                        }
                     }
                 }
 

@@ -264,6 +264,7 @@ public class DeleteNodeSshCommand implements AdminCommand, PostConstruct {
                 out.write("AS_ADMIN_SSHPASSWORD=" + nu.sshL.expandPasswordAlias(sshpassword) + "\n");
                 if(sshkeypassphrase != null)
                     out.write("AS_ADMIN_SSHKEYPASSPHRASE=" + nu.sshL.expandPasswordAlias(sshkeypassphrase) + "\n");
+                out.flush();
             } catch (IOException ioe) {
                 if(logger.isLoggable(Level.FINE)) {
                     logger.fine("Failed to create password file: " + ioe.getMessage());
@@ -274,9 +275,12 @@ public class DeleteNodeSshCommand implements AdminCommand, PostConstruct {
             finally {
                 try {
                     if (out != null)
-                        out.flush();
                         out.close();
-                } catch(final Exception ignore){}
+                } catch(final Exception ex){
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.fine("Failed to close stream: " + ex.getMessage());
+                    }
+                }
             }
             
             fullcommand.add("--passwordfile");
@@ -324,7 +328,12 @@ public class DeleteNodeSshCommand implements AdminCommand, PostConstruct {
         }
         
         if (f != null) {
-            f.delete();
+            boolean didDelete = f.delete();
+            if(!didDelete) {
+                if(logger.isLoggable(Level.WARNING)) {
+                    logger.log(Level.WARNING, Strings.get("node.ssh.passfile.delete.error", f.getPath()));
+                }
+            }
         }
         return exit;
     }

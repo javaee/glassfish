@@ -140,7 +140,9 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
         Archivist archivist = archivistFactory.getArchivist(
                 sourceArchive, cl);
         if (archivist == null) {
-            throw new RuntimeException(localStrings.getLocalString("invalid.javaee.archive", "Archive [{0}] was deployed as a Java EE archive while it does not contain any valid Java EE components. Please check the packaging of the archive.", name));
+            // if no JavaEE medata was found in the archive, we return 
+            // an empty Application object
+            return new Application(habitat);
         }
         archivist.setAnnotationProcessingRequested(true);
         String xmlValidationLevel = dasConfig.getDeployXmlValidation();
@@ -299,13 +301,17 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
         if (application != null) {
             ReadableArchive archive = archiveFactory.openArchive(
                 context.getSourceDir());
-            context.getScratchDir("xml").mkdirs();
-            WritableArchive archive2 = archiveFactory.createArchive(
-                context.getScratchDir("xml"));
-            descriptorArchivist.write(application, archive, archive2);
+            boolean isMkdirs = context.getScratchDir("xml").mkdirs();
+            if (isMkdirs) {
+                WritableArchive archive2 = archiveFactory.createArchive(
+                    context.getScratchDir("xml"));
+                descriptorArchivist.write(application, archive, archive2);
 
-            // copy the additional webservice elements etc
-            applicationArchivist.copyExtraElements(archive, archive2);
+                // copy the additional webservice elements etc
+                applicationArchivist.copyExtraElements(archive, archive2);
+            } else {
+                context.getLogger().log(Level.WARNING, "Error in creating directory " + context.getScratchDir("xml").getAbsolutePath());
+            }
         }
     }
 

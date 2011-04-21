@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -74,7 +74,7 @@ public class SFSBTxCheckpointCoordinator {
 
     void doTxCheckpoint() {
         SessionContextImpl[] contexts = (SessionContextImpl[]) ctxList.toArray(
-                new SessionContextImpl[0]);
+                new SessionContextImpl[ctxList.size()]);
         int size = contexts.length;
         ArrayList<StoreAndBeanState> states = new ArrayList<StoreAndBeanState>(size);
 
@@ -90,7 +90,7 @@ public class SFSBTxCheckpointCoordinator {
         }
 
         if (states.size() > 0) {
-            StoreAndBeanState[] beanStates = states.toArray(new StoreAndBeanState[0]);
+            StoreAndBeanState[] beanStates = states.toArray(new StoreAndBeanState[states.size()]);
 
             try {
                 for (StoreAndBeanState st : states) {

@@ -91,7 +91,7 @@ public class PropertiesBagResource {
     protected String tagName;
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(PropertiesBagResource.class);
 
-    static public class PropertyResource extends TemplateResource {
+    static public class PropertyResource extends TemplateRestResource {
         @Override
         public String getDeleteCommand() {
             return "GENERIC-DELETE";
@@ -112,7 +112,6 @@ public class PropertiesBagResource {
             return new GetResultList(new ArrayList(), "", new String[][]{}, new OptionsResult(Util.getResourceName(uriInfo)));//empty dom list
         }
 
-        String resultType = ResourceUtil.getResultType(requestHeaders);
         RestActionReporter ar = new RestActionReporter();
         ar.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         ar.setActionDescription("Property");

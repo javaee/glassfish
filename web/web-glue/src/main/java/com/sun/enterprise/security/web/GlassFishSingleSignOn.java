@@ -296,6 +296,7 @@ public class GlassFishSingleSignOn
         HttpServletResponse hres =
                         (HttpServletResponse) response.getResponse();
         request.removeNote(Constants.REQ_SSOID_NOTE);
+        request.removeNote(Constants.REQ_SSO_VERSION_NOTE);
 
         // Has a valid user already been authenticated?
         //S1AS8 6155481 START
@@ -325,9 +326,15 @@ public class GlassFishSingleSignOn
             return INVOKE_NEXT;
         }
         Cookie cookie = null;
-        for (int i = 0; i < cookies.length; i++) {
-            if (Constants.SINGLE_SIGN_ON_COOKIE.equals(cookies[i].getName())) {
-                cookie = cookies[i];
+        Cookie versionCookie = null;
+        for (Cookie c : cookies) {
+            if (Constants.SINGLE_SIGN_ON_COOKIE.equals(c.getName())) {
+                cookie = c;
+            } else if (Constants.SINGLE_SIGN_ON_VERSION_COOKIE.equals(c.getName())) {
+                versionCookie = c;
+            }
+
+            if (cookie != null && versionCookie != null) {
                 break;
             }
         }
@@ -390,7 +397,12 @@ public class GlassFishSingleSignOn
             logger.fine(" Checking for cached principal for "
                         + cookie.getValue());
         }
-        SingleSignOnEntry entry = lookup(cookie.getValue());
+
+        long version = 0;
+        if (isVersioningSupported() && versionCookie != null) {
+            version = Long.parseLong(versionCookie.getValue());
+        }
+        SingleSignOnEntry entry = lookup(cookie.getValue(), version);
         if (entry != null) {
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine(" Found cached principal '"
@@ -407,6 +419,11 @@ public class GlassFishSingleSignOn
                 ((HttpRequest) request).setUserPrincipal(entry.getPrincipal());
                 // Touch the SSO entry access time
                 entry.setLastAccessTime(System.currentTimeMillis());
+                if (isVersioningSupported()) {
+                    long ver = entry.incrementAndGetVersion();
+                    request.setNote(Constants.REQ_SSO_VERSION_NOTE,
+                            Long.valueOf(ver));
+                }
                 // update hit atomic counter
                 hitCount.incrementAndGet();
             } else {

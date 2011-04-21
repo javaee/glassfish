@@ -823,6 +823,15 @@ public class ContextConfig
         }
 
         if (source == null) {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch(IOException e) {
+                    log.log(Level.SEVERE,
+                            sm.getString("contextConfig.defaultClose"), e);
+                }
+            }
+
             return;
         }
 

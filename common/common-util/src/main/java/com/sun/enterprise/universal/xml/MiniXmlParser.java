@@ -1,4 +1,4 @@
-/*
+  /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
  * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
@@ -37,27 +37,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.universal.xml;
 
 import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.common.util.logging.LoggingPropertyNames;
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.HostAndPort;
-import java.io.UnsupportedEncodingException;
+import com.sun.enterprise.util.StringUtils;
 
 import javax.xml.stream.XMLInputFactory;
-import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -66,6 +62,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static javax.xml.stream.XMLStreamConstants.*;
+
 /**
  * A fairly simple but very specific stax XML Parser. Give it the location of domain.xml and the name of the server
  * instance and it will return JVM options. Currently it is all package private.
@@ -73,7 +71,6 @@ import java.util.logging.Logger;
  * @author bnevins
  */
 public class MiniXmlParser {
-
     public MiniXmlParser(File domainXml) throws MiniXmlParserException {
         this(domainXml, "server");  // default for a domain
     }
@@ -83,14 +80,17 @@ public class MiniXmlParser {
         this.domainXml = domainXml;
         try {
             read();
+
+            if (!sawConfig)
+                throw new EndDocumentException(); // handled just below...
+
             valid = true;
         }
         catch (EndDocumentException e) {
             throw new MiniXmlParserException(strings.get("enddocument", configRef, serverName));
         }
         catch (Exception e) {
-            String msg = strings.get("toplevel", e);
-            throw new MiniXmlParserException(e);
+            throw new MiniXmlParserException(strings.get("toplevel", e), e);
         }
         finally {
             try {
@@ -151,7 +151,7 @@ public class MiniXmlParser {
         if (!valid) {
             throw new MiniXmlParserException(strings.get("invalid"));
         }
-        return sysProps;
+        return sysProps.getCombinedSysProps();
     }
 
     public String getDomainName() {
@@ -173,24 +173,53 @@ public class MiniXmlParser {
         loggingConfig.setupConfigDir(configDir, installDir);
     }
 
-    /** 
+    /**
      * loggingConfig will return an IOException if there is no
      * logging properties file.
-     * 
+     *
      * @return the log filename if available, otherwise return null
      */
     public String getLogFilename() {
-        logFilename = null;
-
+        String logFilename = null;
         try {
             Map<String, String> map = loggingConfig.getLoggingProperties();
-            if (map != null)
+            String logFileContains = new String("${com.sun.aas.instanceName}");
+            if (map != null) {
                 logFilename = map.get(LoggingPropertyNames.file);
+            }
+            if (logFilename != null && logFilename.contains(logFileContains)) {
+                logFilename = replaceOld(logFilename,logFileContains,this.serverName);
+            }  
         }
         catch (Exception e) {
             // just return null
         }
         return logFilename;
+    }
+
+    private static String replaceOld(
+            final String aInput,
+            final String aOldPattern,
+            final String aNewPattern
+    ) {
+        final StringBuffer result = new StringBuffer();
+        //startIdx and idxOld delimit various chunks of aInput; these
+        //chunks always end where aOldPattern begins
+        int startIdx = 0;
+        int idxOld = 0;
+        while ((idxOld = aInput.indexOf(aOldPattern, startIdx)) >= 0) {
+            //grab a part of aInput which does not include aOldPattern
+            result.append(aInput.substring(startIdx, idxOld));
+            //add aNewPattern to take place of aOldPattern
+            result.append(aNewPattern);
+
+            //reset the startIdx to just after the current match, to see
+            //if there are any further matches
+            startIdx = idxOld + aOldPattern.length();
+        }
+        //the final chunk will go to the end of aInput
+        result.append(aInput.substring(startIdx));
+        return result.toString();
     }
 
     public boolean isMonitoringEnabled() {
@@ -200,35 +229,36 @@ public class MiniXmlParser {
     public boolean hasNetworkConfig() {
         return sawNetworkConfig;
     }
-    
+
     public boolean hasDefaultConfig() {
         return sawDefaultConfig;
     }
 
     /////////////////////  all private below  /////////////////////////
+
     private void read() throws XMLStreamException, EndDocumentException, FileNotFoundException {
         createParser();
         getConfigRefName();
         try {
             // this will fail if config is above servers in domain.xml!
             getConfig(); // might throw
-            findDomainNameAndEnd();
-            return;
+            findOtherStuff();
         }
         catch (EndDocumentException ex) {
             createParser();
             skipRoot("domain");
             getConfig();
-            findDomainNameAndEnd();
+            findOtherStuff();
             Logger.getLogger(MiniXmlParser.class.getName()).log(
                     Level.FINE, strings.get("secondpass"));
         }
+        finalTouches();
     }
 
     private void createParser() throws FileNotFoundException, XMLStreamException {
         reader = new InputStreamReader(new FileInputStream(domainXml));
         parser = getXmlInputFactory().createXMLStreamReader(
-            domainXml.toURI().toString(), reader);
+                domainXml.toURI().toString(), reader);
     }
 
     // In JDK 1.6, StAX is part of JRE, so we use no argument variant of
@@ -238,19 +268,18 @@ public class MiniXmlParser {
     // Thread's context class loader to locate the factory. See:
     // https://glassfish.dev.java.net/issues/show_bug.cgi?id=6428
     // 
-    
+
     private XMLInputFactory getXmlInputFactory() {
-        Class   clazz = XMLInputFactory.class;
+        Class clazz = XMLInputFactory.class;
         ClassLoader cl = clazz.getClassLoader();
 
         // jdk6+
-        if(cl == null)
+        if (cl == null)
             return XMLInputFactory.newInstance();
 
         // jdk5
         return XMLInputFactory.newInstance(clazz.getName(), cl);
-     }
-
+    }
 
     private void getConfigRefName() throws XMLStreamException, EndDocumentException {
         if (configRef != null) {
@@ -259,13 +288,19 @@ public class MiniXmlParser {
         skipRoot("domain");
         // complications -- look for this element as a child of Domain...
         // <property name="administrative.domain.name" value="domain1"/>
+        // also have to handle system-property at the domain level
         while (true) {
-            skipTo("servers", "property");
+            skipTo("servers", "property", "clusters", "system-property");
             String name = parser.getLocalName();
             if ("servers".equals(name)) {
                 break;
             }
-            parseDomainName(); // maybe it is the domain name?
+            else if ("clusters".equals(name))
+                parseClusters();
+            else if ("system-property".equals(name))
+                parseSystemProperty(SysPropsHandler.Type.DOMAIN);
+            else
+                parseDomainProperty(); // maybe it is the domain name?
         }
         // the cursor is at the start-element of <servers>
         while (true) {
@@ -283,8 +318,7 @@ public class MiniXmlParser {
                 parseSysPropsFromServer();
                 skipToEnd("servers");
                 return;
-            }
-            else
+            } else
                 skipToEnd("server");
         }
     }
@@ -292,20 +326,28 @@ public class MiniXmlParser {
     private void getConfig() throws XMLStreamException, EndDocumentException {
         // complications -- look for this element as a child of Domain...
         // <property name="administrative.domain.name" value="domain1"/>
+        // also have to handle system-property at the domain level
         while (true) {
-            skipTo("configs", "property");
+            skipTo("configs", "property", "clusters", "system-property");
             String name = parser.getLocalName();
             if ("configs".equals(name)) {
                 break;
             }
-            parseDomainName(); // maybe it is the domain name?
+            if ("clusters".equals(name))
+                parseClusters();
+            else if ("system-property".equals(name))
+                parseSystemProperty(SysPropsHandler.Type.DOMAIN);
+            else
+                parseDomainProperty(); // maybe it is the domain name?
         }
         while (skipToButNotPast("configs", "config")) {
             // get the attributes for this <config>
             Map<String, String> map = parseAttributes();
             String thisName = map.get("name");
-            if ("default-config".equals(thisName)) sawDefaultConfig = true;
+            if ("default-config".equals(thisName))
+                sawDefaultConfig = true;
             if (configRef.equals(thisName)) {
+                sawConfig = true;
                 parseConfig();
             } else {
                 skipTree("config");
@@ -327,26 +369,20 @@ public class MiniXmlParser {
                 if ("config".equals(parser.getLocalName())) {
                     return;
                 }
-            }
-            else if (event == START_ELEMENT) {
+            } else if (event == START_ELEMENT) {
                 String name = parser.getLocalName();
                 if ("system-property".equals(name)) {
-                    parseSystemPropertyNoOverride();
-                }
-                else if ("java-config".equals(name)) {
+                    parseSystemProperty(SysPropsHandler.Type.CONFIG);
+                } else if ("java-config".equals(name)) {
                     parseJavaConfig();
-                }
-                else if ("http-service".equals(name)) {
+                } else if ("http-service".equals(name)) {
                     parseHttpService();
-                }
-                else if ("network-config".equals(name)) {
+                } else if ("network-config".equals(name)) {
                     sawNetworkConfig = true;
                     parseNetworkConfig();
-                }
-                else if ("monitoring-service".equals(name)) {
+                } else if ("monitoring-service".equals(name)) {
                     parseMonitoringService();
-                }
-                else {
+                } else {
                     skipTree(name);
                 }
             }
@@ -354,7 +390,7 @@ public class MiniXmlParser {
     }
 
     private void parseNetworkConfig()
-                        throws XMLStreamException, EndDocumentException {
+            throws XMLStreamException, EndDocumentException {
         // cursor --> <network-config>
         while (true) {
             int event = next();
@@ -363,8 +399,7 @@ public class MiniXmlParser {
                 if ("network-config".equals(parser.getLocalName())) {
                     return;
                 }
-            }
-            else if (event == START_ELEMENT) {
+            } else if (event == START_ELEMENT) {
                 String name = parser.getLocalName();
                 if ("protocols".equals(name)) {
                     parseProtocols();
@@ -379,8 +414,6 @@ public class MiniXmlParser {
     private void parseSysPropsFromServer() throws XMLStreamException, EndDocumentException {
         // cursor --> <server>
         // these are the system-properties that OVERRIDE the ones in the <config>
-        // This code executes BEFORE the <config> is read so we can just add them to the Map here
-        // w/o doing anything special.
         while (true) {
             int event = next();
             // return when we get to the </config>
@@ -388,36 +421,24 @@ public class MiniXmlParser {
                 if ("server".equals(parser.getLocalName())) {
                     return;
                 }
-            }
-            else if (event == START_ELEMENT) {
+            } else if (event == START_ELEMENT) {
                 String name = parser.getLocalName();
                 if ("system-property".equals(name)) {
-                    parseSystemPropertyWithOverride();
-                }
-                else {
+                    parseSystemProperty(SysPropsHandler.Type.SERVER);
+                } else {
                     skipTree(name);
                 }
             }
         }
     }
 
-    private void parseSystemPropertyNoOverride() {
-        parseSystemProperty(false);
-    }
-
-    private void parseSystemPropertyWithOverride() {
-        parseSystemProperty(true);
-    }
-
-    private void parseSystemProperty(boolean override) {
+    private void parseSystemProperty(SysPropsHandler.Type type) {
         // cursor --> <system-property>
         Map<String, String> map = parseAttributes();
         String name = map.get("name");
         String value = map.get("value");
         if (name != null) {
-            if (override || !sysProps.containsKey(name)) {
-                sysProps.put(name, value);
-            }
+            sysProps.add(type, name, value);
         }
     }
 
@@ -432,8 +453,7 @@ public class MiniXmlParser {
         while (skipToButNotPast("java-config", "jvm-options", "profiler")) {
             if ("jvm-options".equals(parser.getLocalName())) {
                 jvmOptions.add(parser.getElementText());
-            }
-            else {// profiler
+            } else {// profiler
                 parseProfiler();
             }
         }
@@ -446,14 +466,13 @@ public class MiniXmlParser {
         while (skipToButNotPast("profiler", "jvm-options", "property")) {
             if ("jvm-options".equals(parser.getLocalName())) {
                 profilerJvmOptions.add(parser.getElementText());
-            }
-            else {
+            } else {
                 parseProperty(profilerSysProps);
             }
         }
     }
 
-    private void parseProperty(Map<String, String> map) throws XMLStreamException, EndDocumentException {
+    private void parseProperty(Map<String, String> map) {
         // cursor --> START_ELEMENT of property
         // it has 2 attributes:  name and value
         Map<String, String> prop = parseAttributes();
@@ -489,47 +508,24 @@ public class MiniXmlParser {
     }
 
     /**
-     * The cursor will be pointing at the START_ELEMENT of name when it returns note that skipTree must be called.
-     * Otherwise we could be fooled by a sub-element with the same name as an outer element
-     *
-     * @param name the Element to skip to
-     *
-     * @throws javax.xml.stream.XMLStreamException
-     */
-    private void skipTo(String name) throws XMLStreamException, EndDocumentException {
-        while (true) {
-            skipNonStartElements();
-            // cursor is at a START_ELEMENT
-            String localName = parser.getLocalName();
-            if (name.equals(localName)) {
-                return;
-            }
-            else {
-                skipTree(localName);
-            }
-        }
-    }
-
-    /**
      * The cursor will be pointing at the START_ELEMENT of name1 or name2 when it returns note that skipTree must be
      * called.  Otherwise we could be fooled by a sub-element with the same name as an outer element
      *
-     * @param the first eligible Element to skip to
-     * @param the second eligible Element to skip to
-     *
-     * @throws javax.xml.stream.XMLStreamException
+     * @param nameArgs An array of eligible element names to skip to
+     * @throws XMLStreamException
      */
-    private void skipTo(String name1, String name2) throws XMLStreamException, EndDocumentException {
+    private void skipTo(final String... namesArgs) throws XMLStreamException, EndDocumentException {
+        final List<String> names = Arrays.asList(namesArgs);
+
         while (true) {
             skipNonStartElements();
             // cursor is at a START_ELEMENT
             String localName = parser.getLocalName();
-            if (name1.equals(localName) || name2.equals(localName)) {
+
+            if (names.contains(localName))
                 return;
-            }
-            else {
-                skipTree(localName);
-            }
+
+            skipTree(localName);
         }
     }
 
@@ -538,9 +534,8 @@ public class MiniXmlParser {
      * Otherwise we could be fooled by a sub-element with the same name as an outer element Multiple startNames are
      * accepted.
      *
-     * @param name the Element to skip to
-     *
-     * @throws javax.xml.stream.XMLStreamException
+     * @param endName the Element to skip to
+     * @throws XMLStreamException
      */
     private boolean skipToButNotPast(String endName, String... startNames)
             throws XMLStreamException, EndDocumentException {
@@ -595,22 +590,27 @@ public class MiniXmlParser {
         return event;
     }
 
-    private void dump() throws XMLStreamException {
-        StringBuilder sb = new StringBuilder();
-        System.out.println(sb.toString());
-    }
-
-    private void findDomainNameAndEnd() {
+    private void findOtherStuff() {
         try {
-            // find the domain name, if it is there
+            // find the domain name and/or clusters, if it is there
             // If we bump into the domain end tag first -- no sweat
-            while (skipToButNotPast("domain", "property")) {
-                parseDomainName(); // property found -- maybe it is the domain name?
+            //
+            // notice how everything is MUCH more difficult to understand because
+            // we are going through domain.xml in one long relentless sweep and
+            // we can't back up!
+
+            while (skipToButNotPast("domain", "property", "clusters", "system-property")) {
+                String name = parser.getLocalName();
+                if ("clusters".equals(name))
+                    parseClusters();
+                else if ("system-property".equals(name))
+                    parseSystemProperty(SysPropsHandler.Type.DOMAIN);
+                else if ("property".equals(name))
+                    parseDomainProperty(); // property found -- maybe it is the domain name?
             }
             if (domainName == null) {
                 Logger.getLogger(MiniXmlParser.class.getName()).log(
                         Level.INFO, strings.get("noDomainName"));
-
             }
         }
         catch (Exception e) {
@@ -618,18 +618,21 @@ public class MiniXmlParser {
         }
     }
 
-    private void parseDomainName() {
+    private void parseDomainProperty() {
         // cursor --> pointing at "property" element that is a child of "domain" element
         // <property name="administrative.domain.name" value="domain1"/>
         if (domainName != null) {
             return; // found it already
         }
+
         Map<String, String> map = parseAttributes();
         String name = map.get("name");
         String value = map.get("value");
+
         if (name == null || value == null) {
             return;
         }
+        
         if ("administrative.domain.name".equals(name)) {
             domainName = value;
         }
@@ -644,11 +647,9 @@ public class MiniXmlParser {
         String s = parseAttributes().get("monitoring-enabled");
         if (s == null) {
             monitoringEnabled = true;  // case 1
-        }
-        else if ("false".equals(s)) {
+        } else if ("false".equals(s)) {
             monitoringEnabled = false; // case 2
-        }
-        else {
+        } else {
             monitoringEnabled = true;  // case 3
         }
     }
@@ -665,11 +666,9 @@ public class MiniXmlParser {
             String name = parser.getLocalName();
             if ("http-listener".equals(name)) {
                 listenerAttributes.add(parseAttributes());
-            }
-            else if ("virtual-server".equals(name)) {
+            } else if ("virtual-server".equals(name)) {
                 vsAttributes.add(parseAttributes());
-            }
-            else if ("http-service".equals(name)) {
+            } else if ("http-service".equals(name)) {
                 break;
             }
         }
@@ -690,8 +689,7 @@ public class MiniXmlParser {
             final String name = parser.getLocalName();
             if ("network-listener".equals(name)) {
                 listenerAttributes.add(parseAttributes());
-            }
-            else if ("network-listeners".equals(name)) {
+            } else if ("network-listeners".equals(name)) {
                 break;
             }
         }
@@ -704,8 +702,7 @@ public class MiniXmlParser {
             final String name = parser.getLocalName();
             if ("protocol".equals(name)) {
                 protocolAttributes.add(parseAttributes());
-            }
-            else if ("protocols".equals(name)) {
+            } else if ("protocols".equals(name)) {
                 break;
             }
         }
@@ -757,18 +754,19 @@ public class MiniXmlParser {
                                     addr = "localhost";
                                 if (StringUtils.isToken(addr))
                                     addr = sysProps.get(
-                                                StringUtils.stripToken(addr));
+                                            StringUtils.stripToken(addr));
                                 boolean secure = false;
                                 String protocol = atts.get("protocol");
                                 atts = getProtocolByName(protocol);
                                 if (atts != null) {
                                     String sec = atts.get("security-enabled");
-                                    secure = sec != null &&
-                                                sec.equalsIgnoreCase("true");
+                                    secure = sec != null
+                                            && "true".equalsIgnoreCase(sec);
                                 }
                                 if (GFLauncherUtils.ok(addr))
                                     adminAddresses.add(
-                                        new HostAndPort(addr, port, secure));
+                                            new HostAndPort(addr, port, secure));
+                                // ed: seven end-braces is six too many for my code!
                             }
                             break;
                         }
@@ -822,12 +820,72 @@ public class MiniXmlParser {
         return map;
     }
 
-    // this is so we can return from arbitrarily nested calls
-    private static class EndDocumentException extends Exception {
+    // clusters is short and sweet.  Just parse the whole thing first -- and then do
+    // the logic of finding our server in it and picking out sysprops...
+    private void parseClusters() throws XMLStreamException, EndDocumentException {
+        // cursor ==> clusters
+        // if there is more than one clusters element (!weird!) only use the last one
+        clusters = new ArrayList<ParsedCluster>();
 
+        while (skipToButNotPast("clusters", "cluster")) {
+            // cursor ==> "cluster"
+            ParsedCluster pc = new ParsedCluster(parseAttributes().get("name"));
+            clusters.add(pc);
+            parseCluster(pc);
+        }
+    }
+
+    /*
+     * the cluster element has one server-ref for each server in the cluster.
+     * cluster has an attribute for the config-ref which is the same as in the server element
+     * that would make this MUCH simpler - compare server's config-ref with this
+     * cluster's config-ref.  If they match -- then the server belongs to this cluster
+     * But we can't depend on it because of the nature of this serial parser.  I.e.
+     * we may not yet have seen the server element.  BUT we are given the server name
+     * in the constructor -- so we ALWAYS have that.  So we check the more complex
+     * server-ref's
+     */
+    private void parseCluster(ParsedCluster pc) throws XMLStreamException, EndDocumentException {
+        // cursor --> cluster element
+        while (skipToButNotPast("cluster", "system-property", "server-ref")) {
+            String name = parser.getLocalName();
+            if ("system-property".equals(name)) {
+                // NOT parseSystemProperty() because this might not be "our" cluster
+                // finalTouches() will add the correct system-property's
+                parseProperty(pc.sysProps);
+            }
+            else if ("server-ref".equals(name)) {
+                Map<String, String> atts = parseAttributes();
+                // atts is guaranteed to be non-null
+                String sname = atts.get("ref");
+                if (GFLauncherUtils.ok(sname))
+                    pc.serverNames.add(sname);
+            }
+        }
+    }
+
+    // add any cluster system props to the data structure...
+    private void finalTouches() {
+        if (clusters == null)
+            return;
+
+        for (ParsedCluster pc : clusters) {
+            Map<String, String> props = pc.getMySysProps(serverName);
+
+            if (props != null) {
+                sysProps.add(SysPropsHandler.Type.CLUSTER, props);
+                break;  // done!!
+            }
+        }
+    }
+
+    // this is so we can return from arbitrarily nested calls
+
+    private static class EndDocumentException extends Exception {
         EndDocumentException() {
         }
     }
+
     private static final String DEFAULT_ADMIN_VS_ID = "__asadmin";
     private static final String DEFAULT_VS_ID = "server";
     private LoggingConfigImpl loggingConfig = new LoggingConfigImpl();
@@ -840,12 +898,10 @@ public class MiniXmlParser {
     private List<String> profilerJvmOptions = new ArrayList<String>();
     private Map<String, String> javaConfig;
     private Map<String, String> profilerConfig = Collections.emptyMap();
-    private Map<String, String> sysProps = new HashMap<String, String>();
     private Map<String, String> profilerSysProps = new HashMap<String, String>();
     private boolean valid = false;
     private List<HostAndPort> adminAddresses = new ArrayList<HostAndPort>();
     private String domainName;
-    private String logFilename;
     private static final LocalStringsImpl strings = new LocalStringsImpl(MiniXmlParser.class);
     private boolean monitoringEnabled = true; // Issue 12762 Absent <monitoring-service /> element means monitoring-enabled=true by default
     private List<Map<String, String>> vsAttributes = new ArrayList<Map<String, String>>();
@@ -853,4 +909,7 @@ public class MiniXmlParser {
     private List<Map<String, String>> protocolAttributes = new ArrayList<Map<String, String>>();
     private boolean sawNetworkConfig;
     private boolean sawDefaultConfig;
+    private boolean sawConfig;
+    private SysPropsHandler sysProps = new SysPropsHandler();
+    private List<ParsedCluster> clusters = null;
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -174,14 +174,14 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
     public void createConnectorConnectionPool(ConnectorConnectionPool connectorPoolObj)
             throws ConnectorRuntimeException {
 
-        PoolInfo poolInfo = connectorPoolObj.getPoolInfo();
-        if (connectorPoolObj == null || poolInfo == null) {
+        if(connectorPoolObj == null) {
             if(_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "Wrong parameters for pool creation ");
             }
             String i18nMsg = localStrings.getString("ccp_adm.wrong_params_for_create");
             throw new ConnectorRuntimeException(i18nMsg);
         }
+        PoolInfo poolInfo = connectorPoolObj.getPoolInfo();
         String jndiNameForPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(poolInfo);
         try {
 
@@ -242,7 +242,6 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             String i18nMsg = localStrings.getString("ccp_adm.wrong_params_for_create");
             throw new ConnectorRuntimeException(i18nMsg);
         }
-        PoolInfo poolInfo = connectorPoolObj.getPoolInfo();
         String moduleName =
                 connectorPoolObj.getConnectorDescriptorInfo().getRarName();
         String connectionDefinitionName =
@@ -747,7 +746,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         while (mcfConfPropsIter.hasNext()) {
             ConnectorConfigProperty  envProp = (ConnectorConfigProperty ) mcfConfPropsIter.next();
 
-            if (envProp.getName().toUpperCase().equals(prop)) {
+            if (envProp.getName().toUpperCase(Locale.getDefault()).equals(prop)) {
                 result = envProp.getValue();
             } 
         }
@@ -1067,7 +1066,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
                         if (lazyAssoc) {
                             String str = System.getProperty(
                                     "com.sun.enterprise.resource.AllowLazyAssociationWithPM", "FALSE");
-                            if (str.toUpperCase().trim().equals("FALSE")) {
+                            if (str.toUpperCase(Locale.getDefault()).trim().equals("FALSE")) {
                                 lazyAssoc = false;
                             }
                         }
@@ -1536,7 +1535,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             //if user is null we will use default authentication
             //TODO: Discuss if this is the right thing to do
             ResourcePrincipal prin = (user == null) ?
-                    null : new ResourcePrincipal(user, password);
+                    null : new ResourcePrincipal(user, passwd);
             con = (java.sql.Connection) getUnpooledConnection(poolInfo, prin, true);
             if (con == null) {
                 String i18nMsg = localStrings.getString(

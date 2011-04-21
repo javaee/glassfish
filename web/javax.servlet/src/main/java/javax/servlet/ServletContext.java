@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -1381,7 +1381,7 @@ public interface ServletContext {
      * {@link ServletContextListener}, in addition to the interfaces listed
      * above.
      *
-     * <p>If the given <tt>listenerClass</tt<> implements a listener
+     * <p>If the given <tt>listenerClass</tt> implements a listener
      * interface whose invocation order corresponds to the declaration order
      * (i.e., if it implements {@link ServletRequestListener},
      * {@link ServletContextListener}, or

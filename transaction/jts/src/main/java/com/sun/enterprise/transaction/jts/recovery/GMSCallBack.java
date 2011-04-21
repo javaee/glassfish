@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -118,6 +118,8 @@ public class GMSCallBack implements CallBack {
                 gms = gmsAdapter.getModule();
                 // Set the member details when GMS service is ready to store it
                 try {
+                     _logger.log(Level.INFO, "Storing GMS instance " + instanceName +
+                             " data " + TXLOGLOCATION + " : " + logdir);
                      gms.updateMemberDetails(instanceName, TXLOGLOCATION, logdir);
                 } catch (Exception e) {
                     _logger.log(Level.WARNING, "jts.error_updating_gms", e);
@@ -140,7 +142,7 @@ public class GMSCallBack implements CallBack {
             // the database, otherwise while doing the recovery an instance may not
             // get all the correct indoubt xids.
             try {
-                Thread.sleep(waitTime*1000);
+                Thread.sleep(waitTime*1000L);
             } catch(InterruptedException e) {
                 e.printStackTrace();
             }
@@ -153,7 +155,8 @@ public class GMSCallBack implements CallBack {
             }
 
             synchronized(lock) {
-                _logger.log(Level.INFO, "[GMSCallBack] Recovering for instance: " + instance);
+                _logger.log(Level.INFO, "[GMSCallBack] Recovering for instance: " + instance + 
+                        " logdir: " + logdir);
                 doRecovery(logdir, instance, timestamp);
 
                 // Find records of not finished delegated recovery and do delegated recovery on those instances.

@@ -40,6 +40,7 @@
 
 package org.glassfish.config.support;
 
+import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.module.ModulesRegistry;
@@ -51,7 +52,6 @@ import com.sun.enterprise.universal.NanoDuration;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
-import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.ConfigurationCleanup;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
@@ -65,10 +65,11 @@ import org.jvnet.hk2.config.DomDocument;
 import javax.xml.stream.XMLInputFactory;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
+import java.net.URL;
 import java.util.logging.LogRecord;
+import org.glassfish.api.admin.RuntimeType;
 
 /**
  * Locates and parses the portion of <tt>domain.xml</tt> that we care.
@@ -146,7 +147,12 @@ public abstract class DomainXml implements Populator {
 
         habitat.addIndex(new ExistingSingletonInhabitant<Config>(habitat.getComponent(Config.class, server.getConfigRef())),
                 Config.class.getName(), ServerEnvironment.DEFAULT_INSTANCE_NAME);
-
+        
+        Cluster c = server.getCluster();
+        if (c != null) {
+            habitat.addIndex(new ExistingSingletonInhabitant<Cluster>(c),
+                Cluster.class.getName(), ServerEnvironment.DEFAULT_INSTANCE_NAME);
+        }
     }
 
     protected void upgrade() {
@@ -214,9 +220,9 @@ public abstract class DomainXml implements Populator {
             ServerReaderFilter xsr = null;
 
             if (env.getRuntimeType() == RuntimeType.DAS || env.getRuntimeType() == RuntimeType.EMBEDDED)
-                xsr = new DasReaderFilter(habitat, domainXml, xif);
+                xsr = new DasReaderFilter(domainXml, xif);
             else if (env.getRuntimeType() == RuntimeType.INSTANCE)
-                xsr = new InstanceReaderFilter(env.getInstanceName(), habitat, domainXml, xif);
+                xsr = new InstanceReaderFilter(env.getInstanceName(), domainXml, xif);
             else
                 throw new RuntimeException("Internal Error: Unknown server type: "
                         + env.getRuntimeType());

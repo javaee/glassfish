@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,12 +50,12 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
 
 import java.beans.PropertyChangeEvent;
 import java.util.logging.Logger;
 import java.util.List;
+import org.glassfish.api.Startup;
 
 /** Listens to changes made to the <code>&lt;system-property> </code> elements in domain.xml. All <code>&lt;system-property></code> elements
  *  are implemented to be Java System Properties (available via java.lang.System). Note however that there is a hierarchy
@@ -82,7 +82,7 @@ import java.util.List;
  * @author Kedar Mhaswade (km@dev.java.net)
  */
 @Service
-public class SystemPropertyListener implements ConfigListener, PostConstruct {
+public class SystemPropertyListener implements ConfigListener, PostConstruct, Startup {
 
     /*
     Implementation note: I still think that this kind of code is an unfortunate result of how config system handles
@@ -100,16 +100,30 @@ public class SystemPropertyListener implements ConfigListener, PostConstruct {
     Date: 10/10/2009.
     */
 
-    Logger logger = LogDomains.getLogger(SystemPropertyListener.class, LogDomains.ADMIN_LOGGER);
+    static final Logger logger = LogDomains.getLogger(SystemPropertyListener.class, LogDomains.ADMIN_LOGGER);
 
+    /* The following objects are injected so that this
+     * ConfigListener receives config events related to those objects.
+     */
     @Inject
-    private volatile Domain domain; //note: this should be current, and does contain the already modified values!
+    private Domain domain; //note: this should be current, and does contain the already modified values!
     
-    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME, optional=true)
+    private Cluster cluster;
+    
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Config config; // this is the server's Config
+    
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Server server;
 
     @Override
     public void postConstruct() {
+    }
+
+    @Override
+    public Lifecycle getLifecycle() {
+        return Startup.Lifecycle.SERVER;
     }
 
     @Override
@@ -165,8 +179,16 @@ public class SystemPropertyListener implements ConfigListener, PostConstruct {
         }, logger);
     }
 
+    /* 
+     * Notification events can come out of order, i.e., a create-system-properties
+     * on an existing property sends an ADD or the new one, a CHANGE, followed by 
+     * a REMOVE of the old one. So we need to check if the property is still
+     * there.
+     */
     private NotProcessed removeFromServer(SystemProperty sp) {
-        SystemProperty sysProp = getClusterSystemProperty(sp.getName());
+        SystemProperty sysProp = getServerSystemProperty(sp.getName());
+        if (sysProp == null)
+            sysProp = getClusterSystemProperty(sp.getName());
         if (sysProp == null)
             sysProp = getConfigSystemProperty(sp.getName());
         if (sysProp == null)
@@ -241,68 +263,50 @@ public class SystemPropertyListener implements ConfigListener, PostConstruct {
 
     private boolean configHas(SystemProperty sp) {
         Config c = domain.getConfigNamed(server.getConfigRef());
-        List<SystemProperty> ssps = c.getSystemProperty();
-        return hasSystemProperty(ssps, sp);
+        return c != null ? hasSystemProperty(c.getSystemProperty(), sp) : false;
     }
 
     private boolean clusterHas(SystemProperty sp) {
         Cluster c = domain.getClusterForInstance(server.getName());
-        if (c != null) {
-            List<SystemProperty> ssps = c.getSystemProperty();
-            return hasSystemProperty(ssps, sp);
-        } else {
-            return false;
-        }
+        return c != null ? hasSystemProperty(c.getSystemProperty(), sp) : false;
+    }
+    
+    private SystemProperty getServerSystemProperty(String spName) {
+        return getSystemProperty(server.getSystemProperty(), spName);
     }
 
     private SystemProperty getClusterSystemProperty(String spName) {
         Cluster c = domain.getClusterForInstance(server.getName());
-        if (c != null) {
-            List<SystemProperty> ssps = c.getSystemProperty();
-            if (ssps != null) {
-                for (SystemProperty sp : ssps) {
-                    if (sp.getName().equals(spName))
-                        return sp;
-                }
-            }
-        }
-        return null;
+        return c != null ? getSystemProperty(c.getSystemProperty(), spName) : null;
     }
 
     private SystemProperty getConfigSystemProperty(String spName) {
         Config c = domain.getConfigNamed(server.getConfigRef());
-        if (c != null) {
-            List<SystemProperty> ssps = c.getSystemProperty();
-            if (ssps != null) {
-                for (SystemProperty sp : ssps) {
-                    if (sp.getName().equals(spName))
-                        return sp;
-                }
-            }
-        }
-        return null;
+        return c != null ? getSystemProperty(c.getSystemProperty(), spName) : null;
     }
 
     private SystemProperty getDomainSystemProperty(String spName) {
-        List<SystemProperty> ssps = domain.getSystemProperty();
-        if (ssps != null) {
+        return getSystemProperty(domain.getSystemProperty(), spName);
+    }
+
+    private boolean hasSystemProperty(List<SystemProperty> ssps, SystemProperty sp) {
+        return getSystemProperty(ssps, sp.getName()) != null;
+    }
+    
+    /*
+     * Return the SystemProperty from the list of system properties with the
+     * given name. If the property is not there, or the list is null, return 
+     * null.
+     */
+    private SystemProperty getSystemProperty(List<SystemProperty> ssps, String spName) {
+         if (ssps != null) {
             for (SystemProperty sp : ssps) {
                 if (sp.getName().equals(spName)) {
                     return sp;
                 }
             }
         }
-        return null;
-    }
-
-    private boolean hasSystemProperty(List<SystemProperty> ssps, SystemProperty sp) {
-        if (ssps != null) {
-            for (SystemProperty candidate : ssps) {
-                if (candidate.getName().equals(sp.getName()))
-                    return true;
-            }
-        }
-        return false;
+        return null;       
     }
 }
 

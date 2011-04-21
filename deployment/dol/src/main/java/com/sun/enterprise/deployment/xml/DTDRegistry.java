@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -116,7 +116,7 @@ public final class DTDRegistry {
     public static final String SUN_APPLICATION_130_DTD_PUBLIC_ID =
         "-//Sun Microsystems, Inc.//DTD Sun ONE Application Server 7.0 J2EE Application 1.3//EN";
     public static final String SUN_APPLICATION_130_DTD_SYSTEM_ID =
-        "http://www.sun.com/software/sunone/appserver/dtds/sun-application_1_4-0.dtd";
+        "http://www.sun.com/software/sunone/appserver/dtds/sun-application_1_3-0.dtd";
     public static final String SUN_APPLICATION_140beta_DTD_PUBLIC_ID =
         "-//Sun Microsystems, Inc.//DTD Sun ONE Application Server 8.0 J2EE Application 1.4//EN";
     public static final String SUN_APPLICATION_140beta_DTD_SYSTEM_ID =
@@ -261,7 +261,7 @@ public final class DTDRegistry {
     public static final String SUN_CMP_MAPPING_700_DTD_PUBLIC_ID =
         "-//Sun Microsystems, Inc.//DTD Sun ONE Application Server 7.0 OR Mapping //EN";
     public static final String SUN_CMP_MAPPING_700_DTD_SYSTEM_ID =
-        "http://www.sun.com/software/sunone/appserver/dtds/sun-cmp-mapping.dtd";
+        "http://www.sun.com/software/sunone/appserver/dtds/sun-cmp-mapping_1_0.dtd";
 
     public static final String SUN_CMP_MAPPING_800_DTD_PUBLIC_ID =
         "-//Sun Microsystems, Inc.//DTD Application Server 8.0 OR Mapping//EN";

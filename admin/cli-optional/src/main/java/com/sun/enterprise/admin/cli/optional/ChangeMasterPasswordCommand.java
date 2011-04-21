@@ -166,6 +166,7 @@ public class ChangeMasterPasswordCommand extends CLICommand {
         } else  {
             if (domainDirParam != null) {
                 domainDirs = new DomainDirs(new File(domainDirParam),domainNameOrNodeName);
+                return domainDirs.isValid();
             }
             if (domainNameOrNodeName != null) {
                 return new File(DomainDirs.getDefaultDomainsDir(),domainNameOrNodeName).isDirectory();

@@ -66,8 +66,8 @@ public class ProcessingResultImpl implements ProcessingResult {
     public void add(ProcessingResult pr) {
         
         Map<AnnotatedElement, HandlerProcessingResult> results = pr.getResults();
-        for (AnnotatedElement element : results.keySet()) {
-            add(element, results.get(element));
+        for (Map.Entry<AnnotatedElement, HandlerProcessingResult> element : results.entrySet()) {
+            add(element.getKey(), element.getValue());
         }
     }
     

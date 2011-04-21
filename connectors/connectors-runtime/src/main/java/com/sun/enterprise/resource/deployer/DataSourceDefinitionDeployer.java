@@ -756,9 +756,9 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
         public List<Property> getProperty() {
             Properties p = desc.getProperties();
             List<Property> dataSourceProperties = new ArrayList<Property>();
-            for (Object o : p.keySet()) {
-                String key = (String) o;
-                String value = (String) p.get(o);
+            for (Map.Entry entry : p.entrySet()) {
+                String key = (String) entry.getKey();
+                String value = (String) entry.getValue();
                 DataSourceProperty dp = convertProperty(key, value);
                 dataSourceProperties.add(dp);
             }

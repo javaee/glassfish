@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -91,12 +91,6 @@ public class BasicAuthenticator
 
 
     /**
-     * The Base64 helper object for this class.
-     */
-    protected static final Base64 base64Helper = new Base64();
-
-
-    /**
      * Descriptive information about this implementation.
      */
     protected static final String info =
@@ -145,8 +139,6 @@ public class BasicAuthenticator
         }
 
         // Validate any credentials already included with this request
-        HttpServletRequest hreq =
-            (HttpServletRequest) request.getRequest();
         HttpServletResponse hres =
             (HttpServletResponse) response.getResponse();
         String authorization = request.getAuthorization();
@@ -193,7 +185,7 @@ public class BasicAuthenticator
             realmName = REALM_NAME;
     //        if (debug >= 1)
     //            log("Challenging for realm '" + realmName + "'");
-        hres.setHeader("WWW-Authenticate",
+        hres.setHeader(AUTH_HEADER_NAME,
                        "Basic realm=\"" + realmName + "\"");
         hres.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         //      hres.flushBuffer();
@@ -221,7 +213,7 @@ public class BasicAuthenticator
 
         // Decode and parse the authorization credentials
         String unencoded =
-          new String(base64Helper.decode(authorization.getBytes()));
+          new String(Base64.decode(authorization.getBytes()));
         int colon = unencoded.indexOf(':');
         if (colon < 0)
             return (null);
@@ -248,7 +240,7 @@ public class BasicAuthenticator
 
         // Decode and parse the authorization credentials
         String unencoded =
-          new String(base64Helper.decode(authorization.getBytes()));
+          new String(Base64.decode(authorization.getBytes()));
         int colon = unencoded.indexOf(':');
         if (colon < 0)
             return (null);

@@ -109,7 +109,7 @@ public class AdminConsoleConfigUpgrade
         }
     }
 
-    private class AdminConsoleConfigCode
+    static private class AdminConsoleConfigCode
         implements SingleConfigCode<SecurityService> {
 
         @Override

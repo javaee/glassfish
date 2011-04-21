@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.config.serverbeans;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -52,6 +51,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 
 import java.beans.PropertyVetoException;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -61,43 +61,33 @@ import java.util.logging.Logger;
  * {@link Cluster} and {@link Server} classes to copy the default-configs
  * 
  */
-
 public abstract class CopyConfig implements AdminCommand {
 
-    @Param(primary=true, multiple=true)
+    @Param(primary = true, multiple = true)
     protected List<String> configs;
-
     @Inject
     protected Domain domain;
-
-    @Param(optional=true, separator=':')
+    @Param(optional = true, separator = ':')
     protected String systemproperties;
-
     protected Config copyOfConfig;
-
-
     @Inject
     ServerEnvironment env;
-
     @Inject
     ServerEnvironmentImpl envImpl;
-
-
     final private static LocalStringManagerImpl localStrings =
-        new LocalStringManagerImpl(CopyConfig.class);
+            new LocalStringManagerImpl(CopyConfig.class);
 
-
-    public Config copyConfig(Configs configs, Config config,String destConfigName,Logger logger) throws PropertyVetoException,
-    TransactionFailure{
+    public Config copyConfig(Configs configs, Config config, String destConfigName, Logger logger) throws PropertyVetoException,
+            TransactionFailure {
         final Config destCopy = (Config) config.deepCopy(configs);
         if (systemproperties != null) {
-            final Properties properties = GenericCrudCommand.convertStringToProperties(systemproperties,':');
+            final Properties properties = GenericCrudCommand.convertStringToProperties(systemproperties, ':');
 
             for (final Object key : properties.keySet()) {
                 final String propName = (String) key;
                 //cannot update a system property so remove it first
-                List<SystemProperty> sysprops = destCopy.getSystemProperty() ;
-                for (SystemProperty sysprop:sysprops) {
+                List<SystemProperty> sysprops = destCopy.getSystemProperty();
+                for (SystemProperty sysprop : sysprops) {
                     if (propName.equals(sysprop.getName())) {
                         sysprops.remove(sysprop);
                         break;
@@ -116,36 +106,34 @@ public abstract class CopyConfig implements AdminCommand {
         copyOfConfig = destCopy;
 
         String srcConfig = "";
-        if(config!=null) {
-            srcConfig = config.getName();
-        }
+        srcConfig = config.getName();
 
         try {
-                File configConfigDir = new File(env.getConfigDirPath(),
-                        configName);
-                new File(configConfigDir, "docroot").mkdirs();
-                new File(configConfigDir, "lib/ext").mkdirs();
-
-                String srcConfigLoggingFile = env.getInstanceRoot().getAbsolutePath() + File.separator + "config" + File.separator +
-                        srcConfig + File.separator + ServerEnvironmentImpl.kLoggingPropertiesFileName;
-                File src = new File(srcConfigLoggingFile);
-
-                if(!src.exists()) {
-                    String rootFolder = envImpl.getProps().get(com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
-                    String templateDir = rootFolder + File.separator + "lib" + File.separator + "templates";
-                    src = new File(templateDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
-                }
-
-                File dest = new File(configConfigDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
-                FileUtils.copy(src, dest);
-            }catch(Exception e) {
-                logger.warning(localStrings.getLocalString(
-                        "config.copyConfigError",
-                        "CopyConfig error caused by"
-                        ,e.getLocalizedMessage()));
+            File configConfigDir = new File(env.getConfigDirPath(),
+                    configName);
+            if (!(new File(configConfigDir, "docroot").mkdirs() &&
+                  new File(configConfigDir, "lib/ext").mkdirs())) {
+                throw new IOException(localStrings.getLocalString("config.mkdirs",
+                        "error creating config specific directories"));
             }
+
+            String srcConfigLoggingFile = env.getInstanceRoot().getAbsolutePath() + File.separator + "config" + File.separator
+                    + srcConfig + File.separator + ServerEnvironmentImpl.kLoggingPropertiesFileName;
+            File src = new File(srcConfigLoggingFile);
+
+            if (!src.exists()) {
+                String rootFolder = envImpl.getProps().get(com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
+                String templateDir = rootFolder + File.separator + "lib" + File.separator + "templates";
+                src = new File(templateDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
+            }
+
+            File dest = new File(configConfigDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
+            FileUtils.copy(src, dest);
+        } catch (Exception e) {
+            logger.warning(localStrings.getLocalString(
+                    "config.copyConfigError",
+                    "CopyConfig error caused by {0}", e.getLocalizedMessage()));
+        }
         return destCopy;
     }
-
-
 }

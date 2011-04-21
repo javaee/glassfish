@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -63,7 +63,7 @@ import org.glassfish.external.probe.provider.annotations.ProbeParam;
 public class WorkManagementStatsProvider {
 
     private String moduleName; //ra-name
-    private final String DOTTED_NAME = "glassfish:jca:work-management:";
+    private static final String DOTTED_NAME = "glassfish:jca:work-management:";
 
     public WorkManagementStatsProvider(String moduleName) {
         this.moduleName = moduleName;

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -159,10 +159,10 @@ public class StatefulContainerBuilder
             throws Exception {
         if (availabilityService != null) {
             this.HAEnabled = Boolean.valueOf(availabilityService.getAvailabilityEnabled());
-            _logger.log(Level.INFO, "TopLevel AvailabilityService.getAvailabilityEnabled => " + this.HAEnabled);
+            _logger.log(Level.INFO, "ejb.sfsb_builder_top_level_availability_service_enabled", this.HAEnabled);
             if ((this.HAEnabled) && (ejbAvailability != null)) {
                 this.HAEnabled = Boolean.valueOf(ejbAvailability.getAvailabilityEnabled());
-                _logger.log(Level.INFO, "TopLevel EjbAvailabilityService.getAvailabilityEnabled => " + this.HAEnabled);
+                _logger.log(Level.INFO, "ejb.sfsb_builder_ejb_availability_service_enabled", this.HAEnabled);
             }
 
             boolean appLevelHAEnabled = false;
@@ -177,16 +177,16 @@ public class StatefulContainerBuilder
                         }
                     }
                     
-                    _logger.log(Level.INFO, "**Global AvailabilityEnabled => " + this.HAEnabled
-                        + "; isAppHAEnabled: " + appLevelHAEnabled);
+                    _logger.log(Level.INFO, "ejb.sfsb_builder_global_and_app_availability_enabled",
+                            new Object[] {this.HAEnabled, appLevelHAEnabled});
                 }
             } catch (Exception ex) {
-                _logger.log(Level.WARNING, "Exception while trying to determine availability-enabled settings for this app", ex);
+                _logger.log(Level.WARNING, "ejb.sfsb_builder_determine_availability_exception", ex);
                 appLevelHAEnabled = false;
             }
 
             HAEnabled = HAEnabled && appLevelHAEnabled;
-            _logger.log(Level.INFO, "StatefulContainerBuilder AvailabilityEnabled for this app => " + this.HAEnabled);
+            _logger.log(Level.INFO, "ejb.sfsb_builder_resolved_availability_enabled", this.HAEnabled);
         }
 
 
@@ -240,7 +240,7 @@ public class StatefulContainerBuilder
         BackingStoreConfiguration<Serializable, SimpleMetadata> conf = new BackingStoreConfiguration<Serializable, SimpleMetadata>();
         String storeName = ejbDescriptor.getName() + "-" + ejbDescriptor.getUniqueId() + "-BackingStore";
 
-        _logger.log(Level.INFO, "StatefulContainerBuilder.buildStoreManager() storeName: " + storeName);
+        _logger.log(Level.INFO, "ejb.sfsb_builder_store_name", storeName);
         
         String subDirName = "";
 
@@ -285,7 +285,8 @@ public class StatefulContainerBuilder
         try {
             factory = habitat.getComponent(BackingStoreFactory.class, persistenceStoreType);
         } catch (Exception ex) {
-            _logger.log(Level.WARNING, "Could not instantiate backing store for type: " + persistenceStoreType, ex);
+            _logger.log(Level.WARNING, "ejb.sfsb_builder_instantiate_backing_store_exception", persistenceStoreType);
+            _logger.log(Level.WARNING, "", ex);
         }
 
         try {
@@ -294,11 +295,13 @@ public class StatefulContainerBuilder
             }
             this.backingStore = factory.createBackingStore(conf);
         } catch (Exception ex) {
-            _logger.log(Level.WARNING, "Could not instantiate BackingStore for persistence type: " + persistenceStoreType, ex);
-            throw new BackingStoreException("Could not instantiate BackingStore for persistence type: " + persistenceStoreType, ex);
+            _logger.log(Level.WARNING, "ejb.sfsb_builder_instantiate_backing_store_exception", persistenceStoreType);
+            _logger.log(Level.WARNING, "", ex);
+            throw new BackingStoreException(_logger.getResourceBundle().getString(
+                    "ejb.sfsb_builder_instantiate_backing_store_exception"), ex);
         }
-        _logger.log(Level.WARNING, "StatefulContainerbuilder instantiated store: " +
-            backingStore + "; ha-enabled: " + HAEnabled + " ==> " + conf);
+        _logger.log(Level.INFO, "ejb.sfsb_builder_instantiated_backing_store",
+                new Object[]{backingStore, HAEnabled, conf});
     }
 
     private void buildCache() {
@@ -349,11 +352,8 @@ public class StatefulContainerBuilder
         }
 
         if (_logger.isLoggable(TRACE_LEVEL)) {
-            _logger.log(TRACE_LEVEL, "Created cache [for "
-                    + ejbDescriptor.getName() + "] "
-                    + cacheProps + "; loadFactor: "
-                    + loadFactor
-                    + "; backingStore: " + this.backingStore);
+            _logger.log(TRACE_LEVEL, "ejb.sfsb_builder_created_cache",
+                new Object[]{ejbDescriptor.getName(), cacheProps, loadFactor, this.backingStore});
         }
     }
 
@@ -366,15 +366,13 @@ public class StatefulContainerBuilder
                 sfsbContainer.invokePeriodically(timeout, timeout,
                         new CachePassivatorTask(ejbName, sessionCache, _logger));
                 if (_logger.isLoggable(TRACE_LEVEL)) {
-                    _logger.log(TRACE_LEVEL,
-                            "[SFSBBuilder]: Added CachePassivator for: "
-                                    + ejbName + ". To run after "
-                                    + timeout + " millis...");
+                    _logger.log(TRACE_LEVEL, "ejb.sfsb_builder_added_cache_passivator",
+                            new Object[]{ejbName, timeout});
                 }
 
             } catch (Throwable th) {
                 _logger.log(Level.WARNING,
-                        "ejb.sfsb_helper_add_idle_passivatortask_failed", th);
+                        "ejb.sfsb_helper_add_idle_passivator_task_failed", th);
             }
         }
 
@@ -385,14 +383,12 @@ public class StatefulContainerBuilder
                         new ExpiredSessionsRemovalTask(ejbName,
                                 this.sfsbContainer, _logger));
                 if (_logger.isLoggable(TRACE_LEVEL)) {
-                    _logger.log(TRACE_LEVEL,
-                            "[SFSBBuilder]: Added StorePassivator for: "
-                                    + ejbName + ". To run after "
-                                    + "after " + timeout + " millis...");
+                    _logger.log(TRACE_LEVEL, "ejb.sfsb_builder_added_store_passivator",
+                            new Object[]{ejbName, timeout});
                 }
             } catch (Throwable th) {
                 _logger.log(Level.WARNING,
-                        "ejb.sfsb_helper_add_remove_passivatortask_failed", th);
+                        "ejb.sfsb_helper_add_remove_passivator_task_failed", th);
             }
         }
 
@@ -449,15 +445,3 @@ class ExpiredSessionsRemovalTask
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

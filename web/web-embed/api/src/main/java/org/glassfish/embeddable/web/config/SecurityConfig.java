@@ -59,7 +59,6 @@ public class SecurityConfig {
      * Create an instance of SecurityConfig
      */
     public SecurityConfig() {
-        
     }
 
     /**

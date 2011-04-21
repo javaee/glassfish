@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -290,10 +290,16 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                 return deploy(targets, tempSourceFile.toURI(), tempPlanURI, deploymentOptions);
             } finally {
                 if (tempSourceFile != null) {
-                    tempSourceFile.delete();
+                    boolean isDeleted = tempSourceFile.delete();
+                    if (!isDeleted) {
+                        Logger.getAnonymousLogger().log(Level.WARNING, "Error in deleting file " + tempSourceFile.getAbsolutePath());
+                    }
                 }
                 if (tempPlanFile != null) {
-                    tempPlanFile.delete();
+                    boolean isDeleted =tempPlanFile.delete();
+                    if (!isDeleted) {
+                        Logger.getAnonymousLogger().log(Level.WARNING, "Error in deleting file " + tempPlanFile.getAbsolutePath());
+                    }
                 }
             }
         } else {
@@ -307,24 +313,34 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
 
     private File writeMemoryMappedArchiveToTempFile(MemoryMappedArchive mma, String fileSuffix) throws IOException {
         File tempFile = File.createTempFile("jsr88-", fileSuffix);
-        BufferedOutputStream bos = 
-            new BufferedOutputStream(new FileOutputStream(tempFile));
+        BufferedOutputStream bos = null; 
+        BufferedInputStream bis = null;
         int chunkSize = 32 * 1024;
         long remaining = mma.getArchiveSize();
-        BufferedInputStream bis = new BufferedInputStream(
-            new ByteArrayInputStream(mma.getByteArray()));
-        while(remaining != 0) {
-            int actual = (remaining < chunkSize) ? (int) remaining : chunkSize;
-            byte[] bytes = new byte[actual];
-            try {
-                bis.read(bytes);
-                bos.write(bytes);
-            } catch (EOFException eof) {
-                break;
+        try {
+            bos = new BufferedOutputStream(new FileOutputStream(tempFile));
+            bis = new BufferedInputStream(
+                new ByteArrayInputStream(mma.getByteArray()));
+            while(remaining != 0) {
+                int actual = (remaining < chunkSize) ? (int) remaining : chunkSize;
+                byte[] bytes = new byte[actual];
+                try {
+                    bis.read(bytes);
+                    bos.write(bytes);
+                } catch (EOFException eof) {
+                    break;
+                }
+                remaining -= actual;
             }
-            remaining -= actual;
+        } finally {
+            if (bos != null) {
+                bos.flush();
+                bos.close();
+            }
+            if (bis != null) {
+                bis.close(); 
+            }
         }
-        bos.flush();
         return tempFile;
     } 
 
@@ -358,7 +374,6 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
             po.setupForAbnormalExit(localStrings.getLocalString("enterprise.deployment.client.archive_no_read_permission", "Archive to be deployed does not have read permission."), domain);
             return po;
         }
-        boolean isDirectoryDeploy = tmpFile.isDirectory();
         try {
             if (deploymentPlan != null) {
                 File dp = new File(deploymentPlan.getSchemeSpecificPart());
@@ -526,14 +541,14 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                         "remote command execution failed on the server");
                 commandExecutionException.initCause(
                         new RuntimeException(mainStatus.getAllStageMessages()));
-                throw commandExecutionException;
+                throw (IOException)commandExecutionException;
             }
             return subModuleInfoList;
         } catch (Throwable ex) {
             if (commandExecutionException == null) {
                 throw new RuntimeException("error submitting remote command", ex);
             } else {
-                throw (IOException) ex;
+                throw (IOException)commandExecutionException;
             }
         }
     }
@@ -576,14 +591,14 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                         "remote command execution failed on the server");
                 commandExecutionException.initCause(
                         new RuntimeException(mainStatus.getAllStageMessages()));
-                throw commandExecutionException;
+                throw (IOException)commandExecutionException;
             }
             return enabledAttr;
         } catch (Throwable ex) {
             if (commandExecutionException == null) {
                 throw new RuntimeException("error submitting remote command", ex);
             } else {
-                throw (IOException) ex;
+                throw (IOException)commandExecutionException;
             }
         }
     }
@@ -623,14 +638,14 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                         "remote command execution failed on the server");
                 commandExecutionException.initCause(
                         new RuntimeException(mainStatus.getAllStageMessages()));
-                throw commandExecutionException;
+                throw (IOException)commandExecutionException;
             }
             return contextRoot;
         } catch (Throwable ex) {
             if (commandExecutionException == null) {
                 throw new RuntimeException("error submitting remote command", ex);
             } else {
-                throw (IOException) ex;
+                throw (IOException)commandExecutionException;
             }
         }
     }
@@ -668,13 +683,13 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                         "remote command execution failed on the server");
                 commandExecutionException.initCause(
                         new RuntimeException(mainStatus.getAllStageMessages()));
-                throw commandExecutionException;
+                throw (IOException)commandExecutionException;
             }
         } catch (Throwable ex) {
             if (commandExecutionException == null) {
                 throw new RuntimeException("error submitting remote command", ex);
             } else {
-                throw (IOException) ex;
+                throw (IOException)commandExecutionException;
             }
         }
     }
@@ -718,13 +733,13 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                         "remote command execution failed on the server");
                 commandExecutionException.initCause(
                         new RuntimeException(mainStatus.getAllStageMessages()));
-                throw commandExecutionException;
+                throw (IOException)commandExecutionException;
             }
         } catch (Throwable ex) {
             if (commandExecutionException == null) {
                 throw new RuntimeException("error submitting remote command", ex);
             } else {
-                throw (IOException) ex;
+                throw (IOException)commandExecutionException;
             }
         }
     }
@@ -755,13 +770,13 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                         "remote command execution failed on the server");
                 commandExecutionException.initCause(
                         new RuntimeException(mainStatus.getAllStageMessages()));
-                throw commandExecutionException;
+                throw (IOException)commandExecutionException;
             }
         } catch (Throwable ex) {
             if (commandExecutionException == null) {
                 throw new RuntimeException("error submitting remote command", ex);
             } else {
-                throw (IOException) ex;
+                throw (IOException)commandExecutionException;
             }
         }
     }
@@ -796,7 +811,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
         if (virtualServer != null) {
             commandParams.put("virtualServer", virtualServer);
         }
-        commandParams.put("securityEnabled", new Boolean(securityEnabled));
+        commandParams.put("securityEnabled", Boolean.valueOf(securityEnabled));
         DFDeploymentStatus mainStatus = null;
         Throwable commandExecutionException = null;
         try {
@@ -823,13 +838,13 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                         "remote command execution failed on the server");
                 commandExecutionException.initCause(
                         new RuntimeException(mainStatus.getAllStageMessages()));
-                throw commandExecutionException;
+                throw (IOException)commandExecutionException;
             }
         } catch (Throwable ex) {
             if (commandExecutionException == null) {
                 throw new RuntimeException("error submitting remote command", ex);
             } else {
-                throw (IOException) ex;
+                throw (IOException)commandExecutionException;
             }
         }
     }
@@ -870,14 +885,14 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                         "remote command execution failed on the server");
                     commandExecutionException.initCause(
                         new RuntimeException(mainStatus.getAllStageMessages()));
-                    throw commandExecutionException;
+                    throw (IOException)commandExecutionException;
                 }
             }
         } catch (Throwable ex) {
             if (commandExecutionException == null) {
                 throw new RuntimeException("error submitting remote command", ex);
             } else {
-                throw (IOException) ex;
+                throw (IOException)commandExecutionException;
             }
         }
         TargetModuleIDImpl[] result =
@@ -961,13 +976,13 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                         "remote command execution failed on the server");
                 commandExecutionException.initCause(
                         new RuntimeException(mainStatus.getAllStageMessages()));
-                throw commandExecutionException;
+                throw (IOException)commandExecutionException;
             }
         } catch (Throwable ex) {
             if (commandExecutionException == null) {
                 throw new RuntimeException("error submitting remote command", ex);
             } else {
-                throw (IOException) ex;
+                throw (IOException)commandExecutionException;
             }
         }
     }
@@ -1102,14 +1117,6 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
 
     protected ServerConnectionIdentifier getTargetDAS() {
         return targetDAS;
-    }
-
-    private String getValueFromDottedNameListResult(String result) {
-        if (result == null) {
-            return null;
-        }
-        int index = result.lastIndexOf(".");
-        return result.substring(index+1);
     }
 
     private String getValueFromDottedNameGetResult(String result) {

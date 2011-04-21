@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -132,7 +132,6 @@ public class PersistentValve
          throws IOException, ServletException {
 
         // Select the Context to be used for this Request
-        StandardHost host = (StandardHost) getContainer();
         Context context = request.getContext();
         if (context == null) {
             ((HttpServletResponse) response.getResponse()).sendError
@@ -199,7 +198,6 @@ public class PersistentValve
 
         // Update the session last access time for our session (if any)
         HttpServletRequest hreq = (HttpServletRequest) request.getRequest();
-        String sessionId = hreq.getRequestedSessionId();
         Manager manager = context.getManager();
 
         // Read the sessionid after the response.

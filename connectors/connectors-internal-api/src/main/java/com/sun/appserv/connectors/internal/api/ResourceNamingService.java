@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -80,7 +80,7 @@ public class ResourceNamingService implements ConnectorConstants {
     @Inject
     private ProcessEnvironment pe;
 
-    private Logger _logger = LogDomains.getLogger(ConnectorRuntime.class, LogDomains.RSR_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(ResourceNamingService.class, LogDomains.RSR_LOGGER);
 
 
     public void publishObject(GenericResourceInfo resourceInfo, String jndiName, Object object,boolean rebind)

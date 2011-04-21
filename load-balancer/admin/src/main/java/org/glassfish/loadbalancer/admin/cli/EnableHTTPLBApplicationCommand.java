@@ -106,7 +106,6 @@ public final class EnableHTTPLBApplicationCommand implements AdminCommand {
                 String msg = localStrings.getLocalString("AppEnabled",
                         "Application [{0}] is already enabled for [{1}].", name, target);
                 logger.warning(msg);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage(msg);
             } else {
                 try {

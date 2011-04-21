@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -114,7 +114,6 @@
             </sun:panelGroup>
         </facet>
 #include "/common/shared/nameSection.inc"
-		 "<br /><br />
             <sun:propertySheet id="propertySheet">
                     <sun:propertySheetSection id="viewPropertySection">
             <sun:property id="ApplicationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}">
@@ -157,8 +156,6 @@
                                     getClientId(component="$this{component}" clientId=>$page{dropDownId});
                                 />
                             </sun:dropDown>
-                    "<br /><br />
-                    
             </sun:property>
        </sun:propertySheetSection>
                 </sun:propertySheet>   

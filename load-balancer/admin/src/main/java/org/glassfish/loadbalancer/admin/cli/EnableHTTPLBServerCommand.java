@@ -110,7 +110,6 @@ public final class EnableHTTPLBServerCommand extends LBCommandsBase
                     if (enabled == true) {
                         String msg = localStrings.getLocalString("ServerEnabled",
                                 "Server [{0}] is already enabled.", sRef.getRef());
-                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                         report.setMessage(msg);
                         return;
                     }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -97,19 +97,12 @@ public class ClientConfigurationImpl implements ClientConfiguration {
             // retrieve the stubs from the server
             String location = target.exportClientStubs(moduleID, System.getProperty("java.io.tmpdir"));
        
-            // get the module id for the appclient
-            String id = targetModuleID.getModuleID();
-            if (id.indexOf('#')!=-1) {
-                id = id.substring(id.indexOf('#')+1);
-            }
-        
             // invoke now the appclient...
             String j2eeHome = System.getProperty("com.sun.aas.installRoot");
             String appClientBinary = j2eeHome + File.separatorChar + "bin" + File.separatorChar + "appclient";
             String command = appClientBinary + " -client " + location;
             
             Process p = Runtime.getRuntime().exec(command);
-            InputStream is = p.getInputStream();
             
         } catch(Exception e) {
             Logger.getAnonymousLogger().log(Level.WARNING, "Error occurred", e); 

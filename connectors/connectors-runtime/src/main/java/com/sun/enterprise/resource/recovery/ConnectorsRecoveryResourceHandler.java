@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -107,6 +107,8 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
     private ResourcesUtil resourcesUtil = null;
     
     private static Logger _logger = LogDomains.getLogger(ConnectorsRecoveryResourceHandler.class, LogDomains.RSR_LOGGER);
+    
+    private static final Locale locale = Locale.getDefault();
 
 
     private Collection<ConnectorResource> getAllConnectorResources() {
@@ -393,7 +395,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
         if (properties != null) {
             boolean foundUserPassword = false;
             for (Property elementProperty : properties) {
-                String prop = elementProperty.getName().toUpperCase();
+                String prop = elementProperty.getName().toUpperCase(locale);
 
                 if ("USERNAME".equals(prop) || "USER".equals(prop)) {
                     userPassword[0] = elementProperty.getValue();
@@ -422,7 +424,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
         Set configProps = cdd.getConfigProperties();
         for (Iterator iter = configProps.iterator(); iter.hasNext();) {
             ConnectorConfigProperty  envProp = (ConnectorConfigProperty ) iter.next();
-            String prop = envProp.getName().toUpperCase();
+            String prop = envProp.getName().toUpperCase(locale);
 
             if ("USER".equals(prop) || "USERNAME".equals(prop)) {
 

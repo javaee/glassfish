@@ -41,14 +41,11 @@
 package com.sun.enterprise.deploy.shared;
 
 import com.sun.enterprise.deployment.deploy.shared.Util;
-import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.jvnet.hk2.annotations.Inject;
@@ -103,6 +100,8 @@ import java.net.URI;
 @Scoped(PerLookup.class)
 public class FileArchive extends AbstractReadableArchive implements WritableArchive {
 
+    private final static Level DEBUG_LEVEL = Level.FINE;
+
     @Inject
     ArchiveFactory archiveFactory;
     
@@ -116,24 +115,16 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
     private static final Logger logger = LogDomains.getLogger(FileArchive.class, LogDomains.DPL_LOGGER);
 
     /*
-     * time-stamps the archive and filters the archive's contents
+     * tracks stale files in the archive and filters the archive's contents to
+     * exclude stale entries
      */
-    private TimestampManager timestampManager;
+    private StaleFileManager staleFileManager;
 
-    private boolean isNew;
-
-    /*
-     * records directories that have been created implicitly by putNextEntry
-     * (and therefore their lastModified dates adjusted).  We only need to
-     * adjust each directory once so by recording which we've already set we
-     * avoid redundant setLastModified invocations on those directories.
-     */
-    private final Set<File> dirsCreated = new HashSet<File>();
-    
     /** 
      * Open an abstract archive
      * @param uri path to the archive
      */
+    @Override
     public void open(URI uri) throws IOException {
         if (!uri.getScheme().equals("file")) {
             throw new IOException("Wrong scheme for FileArchive : " + uri.getScheme());
@@ -143,8 +134,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
         if (!archive.exists()) {
             throw new FileNotFoundException(uri.getSchemeSpecificPart());
         }
-        timestampManager = TimestampManager.Util.getInstanceForExistingFile(archive);
-        isNew = false;
+        staleFileManager = StaleFileManager.Util.getInstance(archive);
     }
 
     /**
@@ -160,6 +150,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      * Get the size of the archive
      * @return tje the size of this archive or -1 on error
      */
+    @Override
     public long getArchiveSize() throws NullPointerException, SecurityException {
         if(uri == null) {
             return -1;
@@ -172,14 +163,18 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      * creates a new abstract archive with the given path
      * @param uri path to create the archive
      */
+    @Override
     public void create(URI uri) throws IOException {
 
 
         this.uri = uri;
         archive = new File(uri);
-        timestampManager = TimestampManager.Util.getInstanceForNewFile(archive);
+        /*
+         * Get the stale file manager before creating the directories; it's
+         * slightly faster that way.
+         */
+        staleFileManager = StaleFileManager.Util.getInstance(archive);
         archive.mkdirs();
-        isNew = true;
     }
 
     /**
@@ -188,6 +183,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      * @param subArchive output stream to close
      * @link Archive.getSubArchive}
      */
+    @Override
     public void closeEntry(WritableArchive subArchive) throws IOException {
         subArchive.close();
 
@@ -196,26 +192,29 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
     /**
      * close the abstract archive
      */
+    @Override
     public void close() throws IOException {
-        if (isNew) {
-            for (File f : dirsCreated) {
-                f.setLastModified(timestampManager.archiveCreation());
-            }
-        }
     }
            
     /**
      * delete the archive
      */
+    @Override
     public boolean delete() {
         // delete the directory structure...
         try {
-            return deleteDir(archive);
+            final boolean result = deleteDir(archive);
+            /*
+             * Create the stale file marker file, if needed.
+             */
+            StaleFileManager.Util.markDeletedArchive(this);
+            return result;
         } catch (IOException e) {
             return false;
         }
     }
 
+    @Override
     public boolean isDirectory(String name) {
         final File candidate = new File(this.archive, name);
         return isEntryValid(candidate) && candidate.isDirectory();
@@ -225,10 +224,11 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      * @return an @see java.util.Enumeration of entries in this abstract
      * archive
      */
+    @Override
     public Enumeration entries() {
-        Vector namesList = new Vector();
+        final List namesList = new ArrayList();
         getListOfFiles(archive, namesList, null);
-        return namesList.elements();
+        return Collections.enumeration(namesList);
     }
 
     /**
@@ -236,6 +236,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      * archive
      * @return enumeration of directories under the root of this archive
      */
+    @Override
     public Collection<String> getDirectories() throws IOException {
         List<String> results = new ArrayList<String>();
         for (File f : archive.listFiles()) {
@@ -252,14 +253,14 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      * entries as part of this archive
      */
      public Enumeration entries(Enumeration embeddedArchives) {
-     	Vector nameList = new Vector();
+     	List<String> nameList = new ArrayList<String>();
         List massagedNames = new ArrayList();
 	while (embeddedArchives.hasMoreElements()) {
 		String subArchiveName  = (String) embeddedArchives.nextElement();
                 massagedNames.add(FileUtils.makeFriendlyFilenameExtension(subArchiveName));
 	}        
      	getListOfFiles(archive, nameList, massagedNames);
-     	return nameList.elements();
+     	return Collections.enumeration(nameList);
      }
 
     /** 
@@ -271,17 +272,19 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      * @param prefix the prefix of entries to be included
      * @return an enumeration of the archive file entries. 
      */ 
+    @Override
     public Enumeration<String> entries(String prefix) {
         prefix = prefix.replace('/', File.separatorChar);
         File file = new File(archive, prefix);
-        Vector<String> namesList = new Vector<String>();
+        List<String> namesList = new ArrayList<String>();
         getListOfFiles(file, namesList, null);
-        return namesList.elements();
+        return Collections.enumeration(namesList);
     }
     
     /**
      * @return true if this archive exists
      */
+    @Override
     public boolean exists() {
         return archive.exists();
     }
@@ -292,11 +295,21 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      *
      * @param name name of the embedded archive.
      */
+    @Override
     public ReadableArchive getSubArchive(String name) throws IOException {
         String subEntryName = getFileSubArchivePath(name);
         File subEntry = new File(subEntryName);
         if (subEntry.exists() && isEntryValid(subEntry)) {
-            return archiveFactory.openArchive(subEntry);
+            logger.log(DEBUG_LEVEL, "FileArchive.getSubArchive for {0} found that it is valid",
+                    subEntry.getAbsolutePath());
+            ReadableArchive result = archiveFactory.openArchive(subEntry);
+            if (result instanceof AbstractReadableArchive) {
+                ((AbstractReadableArchive) result).setParentArchive(this);
+            }
+            return result;
+        } else if (subEntry.exists()) {
+            logger.log(DEBUG_LEVEL, "FileArchive.getSubArchive for {0} found that it is not a valid entry; it is stale",
+                    subEntry.getAbsolutePath());
         }
         return null;
     }
@@ -305,17 +318,30 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      *
      * @param name name of the embedded archive.
      */
+    @Override
     public WritableArchive createSubArchive(String name) throws IOException {
         String subEntryName = getFileSubArchivePath(name);
         File subEntry = new File(subEntryName);
         if (!subEntry.exists()) {
             // time to create a new sub directory
-            final long now = System.currentTimeMillis();
             subEntry.mkdirs();
-            subEntry.setLastModified(now);
-            adjustInterveningDirsLastModified(subEntry, timestampManager.archiveCreation());
+            logger.log(DEBUG_LEVEL, "FileArchive.createSubArchive created dirs for {0}",
+                subEntry.getAbsolutePath());
+        } else {
+            logger.log(DEBUG_LEVEL, "FileArchive.createSubArchive found existing dir for {0}",
+                    subEntry.getAbsolutePath());
+            /*
+             * This subdirectory already exists, so it might be marked as
+             * stale. Because this invocation is creating the subarchive in
+             * the current archive, the subdirectory is no longer stale.
+             */
+            staleFileManager().recordValidEntry(subEntry);
         }
-        return archiveFactory.createArchive(subEntry);
+        final WritableArchive result = archiveFactory.createArchive(subEntry);
+        if (result instanceof AbstractReadableArchive) {
+            ((AbstractReadableArchive) result).setParentArchive(this);
+        }
+        return result;
     }
 
     /**
@@ -355,6 +381,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      * @param name the file name relative to the root of the module.     
      * @return the existence the given entry name.
      */
+    @Override
     public boolean exists(String name) throws IOException {
         name = name.replace('/', File.separatorChar);
         File input = new File(archive, name);
@@ -366,6 +393,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      * the current abstract archive
      * @param name the entry name
      */
+    @Override
     public InputStream getEntry(String name) throws IOException {
             
         File input = getEntryFile(name);
@@ -382,14 +410,10 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
                 try {
                     fis.close();
                 } catch (Throwable thr) {
-                    IOException ioe = new IOException("Error closing FileInputStream after error opening BufferedInputStream for entry " + name);
-                    ioe.initCause(thr);
-                    throw ioe;
+                    throw new IOException("Error closing FileInputStream after error opening BufferedInputStream for entry " + name, thr);
                 }
             }
-            IOException ioe = new IOException("Error opening BufferedInputStream for entry " + name);
-            ioe.initCause(tx);
-            throw ioe;
+            throw new IOException("Error opening BufferedInputStream for entry " + name, tx);
         }
     }
 
@@ -404,6 +428,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      * @param name the entry name
      * @return the entry size
      */
+    @Override
     public long getEntrySize(String name) {
         name = name.replace('/', File.separatorChar);
         File input = new File(archive, name);
@@ -416,6 +441,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
     /**
      * @return the manifest information for this abstract archive
      */
+    @Override
     public Manifest getManifest() throws IOException {
         InputStream is = null;
         try {
@@ -437,6 +463,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      *
      * @return the URI for this archive.
      */
+    @Override
     public URI getURI() {
         return uri;
     }
@@ -446,6 +473,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      *
      * @param name the archive name
      */
+    @Override
     public boolean renameTo(String name) {
         return FileUtils.renameFile(archive, new File(name));
     }
@@ -466,7 +494,27 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      * @return
      */
     private boolean isEntryValid(final File entry) {
-        return timestampManager.isEntryValid(entry);
+        return isEntryValid(entry, true, logger);
+    }
+
+    private boolean isEntryValid(final File entry, final boolean isLogging) {
+        return isEntryValid(entry, isLogging, logger);
+    }
+
+    private boolean isEntryValid(final File entry, final boolean isLogging, final Logger logger) {
+        return staleFileManager().isEntryValid(entry, isLogging, logger);
+    }
+
+    private StaleFileManager staleFileManager() {
+        ReadableArchive parent = getParentArchive();
+        if (parent == null) {
+            return staleFileManager;
+        }
+        if (parent instanceof FileArchive) {
+            return ((FileArchive) parent).staleFileManager();
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -475,8 +523,8 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      * @param entryName name of the entry to check
      * @return
      */
-    private boolean isEntryValid(final String entryName) {
-        return isEntryValid(getEntryFile(entryName));
+    private boolean isEntryValid(final String entryName, final Logger logger) {
+        return isEntryValid(getEntryFile(entryName), true, logger);
     }
     
     /**
@@ -486,18 +534,25 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
         if (!directory.isDirectory()) {
             throw new FileNotFoundException(directory.getPath());
         }
-        
+
+        boolean allDeletesSucceeded = true;
         // delete contents
         File[] entries = directory.listFiles();
         for (int i=0;i<entries.length;i++) {
             if (entries[i].isDirectory()) {
-                deleteDir(entries[i]);
+                allDeletesSucceeded &= deleteDir(entries[i]);
             } else {
-                FileUtils.deleteFile(entries[i]);
+                if ( ! entries[i].equals(StaleFileManager.Util.markerFile(archive))) {
+                    final boolean fileDeleteOK = FileUtils.deleteFile(entries[i]);
+                    if (fileDeleteOK) {
+                        staleFileManager.recordDeletedEntry(entries[i]);
+                    }
+                    allDeletesSucceeded &= fileDeleteOK;
+                }
             }
         }
         // delete self
-        return FileUtils.deleteFile(directory);
+        return (allDeletesSucceeded && FileUtils.deleteFile(directory));
     } 
     
     /**
@@ -505,7 +560,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      * sub directories
      */
 
-    private void getListOfFiles(File directory, Vector<String> files, List embeddedArchives) {
+    private void getListOfFiles(File directory, List<String> files, List embeddedArchives) {
         getListOfFiles(directory, files, embeddedArchives, logger);
     }
 
@@ -518,7 +573,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      * @param embeddedArchives collection of embedded archives in the current archive
      * @param logger logger to which to report inability to get the list of files from the directory
      */
-    void getListOfFiles(File directory, Vector<String> files, List embeddedArchives, final Logger logger) {
+    void getListOfFiles(File directory, List<String> files, List embeddedArchives, final Logger logger) {
         if(directory == null || !directory.isDirectory())
             return;
         final File[] fileList = directory.listFiles();
@@ -527,14 +582,14 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
                     directory.getAbsolutePath());
             return;
         }
-        for (File aList : directory.listFiles()) {
+        for (File aList : fileList) {
             String fileName = aList.getAbsolutePath().substring(archive.getAbsolutePath().length() + 1);
             fileName = fileName.replace(File.separatorChar, '/');
             if (!aList.isDirectory()) {
-                if (!fileName.equals(JarFile.MANIFEST_NAME) && isEntryValid(fileName)) {
+                if (!fileName.equals(JarFile.MANIFEST_NAME) && isEntryValid(fileName, logger)) {
                     files.add(fileName);
                 }
-            } else if (isEntryValid(fileName)) {
+            } else if (isEntryValid(fileName, logger)) {
                 files.add(fileName); // Add entry corresponding to the directory also to the list
                 if (embeddedArchives != null) {
                     if (!embeddedArchives.contains(fileName)) {
@@ -560,17 +615,24 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      *
      */
     public boolean deleteEntry(String name) {
+        return deleteEntry(name, true);
+    }
+
+    private boolean deleteEntry(String name, final boolean isLogging) {
         name = name.replace('/', File.separatorChar);
         File input = new File(archive, name);
-        if (!input.exists() || ! isEntryValid(input)) {
+        if (!input.exists() || ! isEntryValid(input, isLogging)) {
             return false;
         }
-        return input.delete();
+        final boolean result = input.delete();
+        staleFileManager.recordDeletedEntry(input);
+        return result;
     }
 
     /**
      * Closes the current entry
      */
+    @Override
     public void closeEntry() throws IOException {
         if (os!=null) {
             os.flush();
@@ -584,13 +646,16 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      * current abstract archive.
      * @param name the entry name
      */    
+    @Override
     public OutputStream putNextEntry(String name) throws java.io.IOException {
         name = name.replace('/', File.separatorChar);
         
         File newFile = new File(archive, name);
         if (newFile.exists()) {
-            if (!deleteEntry(name)) {
-                // XXX add fine-level logging later
+            if (!deleteEntry(name, false /* isLogging */)) {
+                logger.log(Level.FINE, 
+                        "Could not delete file {0} in FileArchive {1} during putNextEntry; continuing", 
+                        new Object[]{name, uri.toASCIIString()});
             }
         }
         // if the entry name contains directory structure, we need
@@ -599,34 +664,9 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
             String dirs = name.substring(0, name.lastIndexOf(File.separatorChar));            
             (new File(archive, dirs)).mkdirs();
         }
+        staleFileManager().recordValidEntry(newFile);
         os = new BufferedOutputStream(new FileOutputStream(newFile));
-        /*
-         * Update the file's timestamp so it is recognized as a legitimate
-         * entry in this archive.
-         */
-        final long now = System.currentTimeMillis();
-        newFile.setLastModified(now);
-        adjustInterveningDirsLastModified(newFile, timestampManager.archiveCreation());
         return os;   
-    }
-
-    /**
-     * Sets the lastModified for all directories from a new file's parent (the
-     * directory containing it) up to the archive's
-     * top-level directory .
-     *
-     * @param newFile the newly-created file within the FileArchive
-     * @param timestamp timestamp to be used for ancestor directories
-     */
-    private void adjustInterveningDirsLastModified(final File newFile, final long timestamp) {
-        File parent = newFile.getParentFile();
-        while ( ! parent.equals(archive)) {
-            if ( ! dirsCreated.contains(parent)) {
-                parent.setLastModified(timestamp);
-                dirsCreated.add(parent);
-            }
-            parent = parent.getParentFile();
-        }
     }
 
     /**
@@ -644,23 +684,27 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      * @return the name of the archive
      * 
      */
+    @Override
     public String getName() {
         return Util.getURIName(getURI());
     }
 
     /**
-     * API which FileArchive methods should use for dealing with the TimestampManager
+     * API which FileArchive methods should use for dealing with the StaleFileManager
      * implementation.
      */
-    private static interface TimestampManager {
+    public static interface StaleFileManager {
 
         /**
          * Returns whether the specified file is valid - that is, is dated
          * after the archive was created.
          * @param f the file to check
+         * @param isLogging whether to log a warning about the check of the entry
          * @return true if the file is valid; false otherwise
          */
-        boolean isEntryValid(File f);
+        boolean isEntryValid(File f, boolean isLogging);
+
+        boolean isEntryValid(File f, boolean isLogging, Logger logger);
 
         /**
          * Returns whether the specified file is for the hidden timestamp file
@@ -668,205 +712,236 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
          * @param f the file to check
          * @return true if the File is the hidden timestamp file; false otherwise
          */
-        boolean isEntryTimestampFile(File f);
+        boolean isEntryMarkerFile(File f);
 
-        /**
-         * Returns the creation time of the archive
-         * @return
-         */
-        long archiveCreation();
+        void recordValidEntry(File f);
 
-        class Util {
+        void recordDeletedEntry(File f);
 
-            private final static long TIME_ROUNDING_FACTOR = 2000;
+        void flush();
 
-            /**
-             * Factory method for a TimestampManager set up for an existing
-             * directory (that is, a FileArchive which is opened rather than
-             * created).
-             * @param archive the directory to contain the archive
-             * @return TimestampManager for the FileArchive to use
-             */
-            static TimestampManager getInstanceForExistingFile(final File archive) throws IOException {
-//                return new TimestampManagerImpl(archive);
-                return new TimestampManagerImplNoop(archive);
+        public class Util {
+
+            private final static String MARKER_FILE_PATH = ".glassfishStaleFiles";
+            
+            private static File markerFile(final File archive) {
+                return new File(archive, MARKER_FILE_PATH);
             }
 
             /**
-             * Factory method for a TimestampManager set up for a new
-             * directory (that is, a FileArchive which is created rather than
-             * opened).
-             * @param archive the directory to contain the archive
-             * @return TimestampManager for the FileArchive to use
-             * @throws FileNotFoundException
+             * Creates a marker file in the archive directory - if it still
+             * exists and contains any stale files.
+             * @param archive the File for the archive to mark
              */
-            static TimestampManager getInstanceForNewFile(final File archive) throws FileNotFoundException {
-                /*
-                 * The resolution on file dates/times can be coarser than
-                 * miliseconds.  So we need to round the current time down to the
-                 * nearest second using it as the archive's creation time.
-                 */
-//                return new TimestampManagerImpl(archive, roundTimeDown(System.currentTimeMillis()));
-                return new TimestampManagerImplNoop(archive, roundTimeDown(System.currentTimeMillis()));
+            public static void markDeletedArchive(final Archive archive) {
+                if ( ! (archive instanceof FileArchive)) {
+                    return;
+                }
+                
+                final File archiveFile = new File(archive.getURI());
+                markDeletedArchive(archiveFile);
             }
 
-            private static long roundTimeDown(final long time) {
-                return TIME_ROUNDING_FACTOR * (time / TIME_ROUNDING_FACTOR);
+            /**
+             * Creates a marker file in the archive directory - if it still
+             * exists and contains any stale files.
+             * @param archive the File for the archive to mark
+             */
+            public static void markDeletedArchive(final File archiveFile) {
+                if ( ! archiveFile.exists()) {
+                    return;
+                }
+
+                final Iterator<File>staleFileIt = findFiles(archiveFile);
+                if ( ! staleFileIt.hasNext()) {
+                    return;
+                }
+
+                final URI archiveURI = archiveFile.toURI();
+                PrintStream ps = null;
+                try {
+                    ps = new PrintStream(markerFile(archiveFile));
+                } catch (FileNotFoundException ex) {
+                    throw new RuntimeException(ex);
+                }
+                for ( ; staleFileIt.hasNext(); ) {
+                    final URI relativeURI = archiveURI.relativize(staleFileIt.next().toURI());
+                    ps.println(relativeURI);
+                    logger.log(DEBUG_LEVEL, "FileArchive.StaleFileManager recording left-over file {0}", relativeURI);
+                }
+                ps.close();
+            }
+
+            /**
+             * Returns an Iterator over the files contained in the directory tree
+             * anchored at the given directory, excluding any stale file
+             * marker file.
+             * <p>
+             * For efficiency, this implementation avoids creating a list of
+             * all the files in the directory tree all at once.  It traverses
+             * each directory as it encounters it.
+             * @param dir root of the directory tree to be traversed
+             * @return Iterator over the contained files
+             */
+            private static Iterator<File> findFiles(final File dir) {
+                return new Iterator<File>() {
+
+                    private final List<File> fileList;
+                    private final ListIterator<File> fileListIt;
+
+                    {
+                        fileList = new ArrayList<File>(Arrays.asList(dir.listFiles(
+                                new MarkerExcluderFileFilter())));
+                        fileListIt = fileList.listIterator();
+                    }
+
+
+                    @Override
+                    public boolean hasNext() {
+                        return fileListIt.hasNext();
+                    }
+
+                    @Override
+                    public File next() {
+
+                        final File result = fileListIt.next();
+                        if (result.isDirectory()) {
+                            for (File f : result.listFiles(
+                                    new MarkerExcluderFileFilter())) {
+                                fileListIt.add(f);
+                                /*
+                                 * Back up so the next invocation of this method
+                                 * will return the just-added entry.
+                                 */
+                                fileListIt.previous();
+                            }
+                        }
+                        return result;
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+
+                };
+            }
+
+            private static final class MarkerExcluderFileFilter implements FileFilter {
+
+                @Override
+                public boolean accept(File pathname) {
+                    return ! pathname.getName().equals(MARKER_FILE_PATH);
+                }
+            }
+
+            /**
+             * Factory method for a StaleFileManager.
+             * <p>
+             * Callers should invoke this method only after they have finished with
+             * the FileArchive and have tried to delete it.  If the directory
+             * for the archive remains then it contains one or more stale files
+             * that could not be deleted, and the factory method returns a
+             * instance that tracks the stale files.  If the directory no longer
+             * exists then the delete succeeded, there are
+             * @param archive the directory to contain the archive
+             * @return StaleFileManager for the FileArchive to use
+             */
+            static StaleFileManager getInstance(final File archive) throws IOException {
+                if (archive.exists()) {
+                    return new StaleFileManagerImpl(archive);
+                } else {
+                    return new StaleFileManagerImplNoop();
+                }
             }
         }
     }
 
-    private static class TimestampManagerImplNoop implements TimestampManager {
+    /**
+     * Acts as a stale file manager but does no real work.
+     * <p>
+     * Used as a stale file manager for an archive that was successfully
+     * deleted and therefore contains no stale files.
+     */
+    private static class StaleFileManagerImplNoop implements StaleFileManager {
 
-        private TimestampManagerImplNoop(final File archive) {
-
-        }
-
-        private TimestampManagerImplNoop(final File archive, final long timestamp) {
-
-        }
         @Override
-        public boolean isEntryValid(File f) {
+        public boolean isEntryValid(File f, boolean isLogging) {
             return true;
         }
 
         @Override
-        public boolean isEntryTimestampFile(File f) {
+        public boolean isEntryValid(File f, boolean isLogging, Logger logger) {
+            return true;
+        }
+
+        @Override
+        public boolean isEntryMarkerFile(File f) {
             return false;
         }
 
         @Override
-        public long archiveCreation() {
-            return 0L;
+        public void recordValidEntry(File f) {
         }
 
+        @Override
+        public void recordDeletedEntry(File f) {
+        }
+
+        @Override
+        public void flush() {
+        }
     }
 
     /**
-     * Implementation of the TimestampManager interface.
-     * <p>
-     * When used for a FileArchive around an existing directory, this class
-     * will look for (but not require) the hidden timestamp file.  If it exists,
-     * the TimestampManager will use the contents to init the archive creation
-     * time.
-     * <p>
-     * When used for a FileArchive around a new directory, this class
-     * will create a timestamp file and write into it the time when the
-     * FileArchive was created.  This will allow future opens of the archive
-     * to know when the archive was created.
-     * <p>
-     * We cannot rely on the file
-     * system lastModified for the archive's top-level directory.
-     * Users might use the GlassFish dynamic reload
-     * feature by using "touch applications/appName/.reload" which, if the
-     * .reload file did not exist, will update the applications/appName
-     * directory's lastModified.
+     * Implements stale file manager that might contain stale files.
      */
-    private static class TimestampManagerImpl implements TimestampManager {
-            
-        /*
-         * Hidden file path used for recording when GlassFish created the
-         * FileArchive.
-         */
-        private final static String STAMP_FILE_PATH = ".glassfishArchive";
+    private static class StaleFileManagerImpl implements StaleFileManager {
 
-        /*
-         * marker value for the archive's creation time if it was not, in
-         * fact, created by GlassFish.  In that case we cannot filter the
-         * contents.
-         */
-        private final static long NON_GLASSFISH_ARCHIVE_LAST_MODIFIED = -1;
-
-        /*
-         * format used for reading and writing the archive creation time in
-         * the marker file
-         */
-        private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-
-        /*
-         * Records when the archive was created by GlassFish, if applicable.
-         */
-        private long archiveCreation = NON_GLASSFISH_ARCHIVE_LAST_MODIFIED;
-
-        private final File archive;
-        private final File timestampFile;
+        private final static String LINE_SEP = System.getProperty("line.separator");
+        private final File archiveFile;
+        private final URI archiveURI;
+        private final Collection<String> staleEntryNames;
+        private final File markerFile;
+        
+        private StaleFileManagerImpl(final File archive) throws FileNotFoundException, IOException {
+            archiveFile = archive;
+            archiveURI = archive.toURI();
+            markerFile = StaleFileManager.Util.markerFile(archive);
+            staleEntryNames = readStaleEntryNames(markerFile);
+        }
 
         /**
-         * Creates a manager for a FileArchive around an existing directory.
-         * @param archive
+         * Reads entry names of stale files from the marker file, if it exists.
+         * @param markerFile the marker file to be read
+         * @return Collection of stale entry names.
+         * @throws FileNotFoundException if the marker file existed initially but vanished before it could be opened
+         * @throws IOException in case of errors reading the marker file
          */
-        private TimestampManagerImpl(final File archive) throws IOException {
-            this.archive = archive;
-            timestampFile = timestampFile(archive);
-            archiveCreation = OS.isWindows() ? readTimeFromFile(timestampFile) : NON_GLASSFISH_ARCHIVE_LAST_MODIFIED;
-        }
-        
-        /**
-         * Creates a manager for a FileArchive around a new directory.
-         */
-        private TimestampManagerImpl(final File archive, final long stamp) throws FileNotFoundException {
-            this.archive = archive;
-            archiveCreation = stamp;
-            timestampFile = timestampFile(archive);
-            writeTimeToFile(timestampFile, stamp);
-        }
-        
-
-        private static File timestampFile(final File archive) {
-            return new File(archive, STAMP_FILE_PATH);
-        }
-
-
-        @Override
-        public boolean isEntryValid(final File f) {
-            final boolean isFileAfterArchive = archiveCreation <= f.lastModified();
-            final boolean result = ( ! f.equals(timestampFile))
-                    &&
-                    ((archiveCreation == NON_GLASSFISH_ARCHIVE_LAST_MODIFIED) ||
-                     isFileAfterArchive
-                    );
-            if ( ! isFileAfterArchive) {
-                logger.log(Level.WARNING,
-                        "enterprise.deployment.filePredatesArchive",
-                        new Object[]{
-                            f.getAbsolutePath(),
-                            dateFormat.format(new Date(f.lastModified())),
-                            archive.getAbsolutePath(),
-                            dateFormat.format(new Date(archiveCreation))});
+        private static Collection<String> readStaleEntryNames(final File markerFile) throws FileNotFoundException, IOException {
+            final Collection<String> result = new ArrayList<String>();
+            if ( ! markerFile.exists()) {
+                return result;
             }
-            return result;
-        }
-
-        @Override
-        public boolean isEntryTimestampFile(File f) {
-            return timestampFile(archive).equals(f);
-        }
-
-        private long readTimeFromFile(final File stampFile) throws IOException {
             LineNumberReader reader = null;
             try {
-                reader = new LineNumberReader(new FileReader(stampFile));
-                final String stampText = reader.readLine();
-                try {
-                    final Date stamp = dateFormat.parse(stampText);
-                    logger.log(Level.FINE, "FileArchive.TimestampManagerImpl read timestamp {0} from archive {1}",
-                            new Object[]{
-                                dateFormat.format(stamp),
-                                archive.getAbsolutePath()});
-                    return stamp.getTime();
-                } catch (ParseException ex) {
-                    logger.log(Level.WARNING, stampFile.getAbsolutePath(), ex);
-                    return NON_GLASSFISH_ARCHIVE_LAST_MODIFIED;
+                reader = new LineNumberReader(new FileReader(markerFile));
+
+                // Avoid some work if logging is coarser than FINE.
+                final boolean isShowEntriesToBeSkipped = logger.isLoggable(DEBUG_LEVEL);
+                final StringBuffer entriesToSkip = isShowEntriesToBeSkipped ? new StringBuffer() : null;
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    result.add(line);
+                    if (isShowEntriesToBeSkipped) {
+                        entriesToSkip.append(line).append(LINE_SEP);
+                    }
                 }
-                
-            } catch (FileNotFoundException ex) {
-                logger.log(Level.FINE, "Filearchive.TimestampManagerImpl did not find timestamp file in archive {0}; treating as not timestamped",
-                        archive.getAbsolutePath());
-                return NON_GLASSFISH_ARCHIVE_LAST_MODIFIED;
-            } catch (IOException ex) {
-                logger.log(Level.FINE, "FileArchive.TimestampManagerImpl detected eror reading timestamp file for archive " + archive.getAbsolutePath(),
-                        ex);
-                return NON_GLASSFISH_ARCHIVE_LAST_MODIFIED;
+                if (isShowEntriesToBeSkipped) {
+                    logger.log(DEBUG_LEVEL, "FileArchive.StaleFileManager will skip following file(s): {0}{1}",
+                            new Object[] {LINE_SEP, entriesToSkip.toString()});
+                }
+                return result;
             } finally {
                 if (reader != null) {
                     reader.close();
@@ -875,16 +950,121 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
         }
 
         @Override
-        public long archiveCreation() {
-            return archiveCreation;
+        public boolean isEntryValid(final File f, final boolean isLogging) {
+            return isEntryValid(f, isLogging, logger);
         }
 
 
-        private void writeTimeToFile(final File stampFile, long stamp) throws FileNotFoundException {
-            final PrintWriter pw = new PrintWriter(stampFile);
-            pw.println(dateFormat.format(new Date(stamp)));
-            pw.close();
+        @Override
+        public boolean isEntryValid(final File f, final boolean isLogging, final Logger logger) {
+            final boolean result = ( ! isEntryMarkerFile(f)) && 
+                    ( ! staleEntryNames.contains(archiveURI.relativize(f.toURI()).getPath()));
+            if ( ! result && ! isEntryMarkerFile(f) && isLogging) {
+                logger.log(Level.WARNING, "enterprise.deployment.filePredatesArchive",
+                        new Object[] {archiveURI.relativize(f.toURI()).toASCIIString(), archiveFile.getAbsolutePath()});
+            }
+            return result;
         }
+
+        @Override
+        public boolean isEntryMarkerFile(File f) {
+            return markerFile.equals(f);
+        }
+
+        /**
+         * Records that the specified file is valid.
+         * <p>
+         * If the file had previously been marked as stale, it will no longer be
+         * considered stale.
+         * @param f the File which is now valid
+         */
+        @Override
+        public void recordValidEntry(File f) {
+            if (updateStaleEntry(f, "FileArchive.StaleFileManager marking formerly stale entry {0} as active")) {
+                /*
+                 * Process not only the file itself but the directories from the
+                 * file to the owning archive, since the directories are now
+                 * implicitly valid as well.
+                 */
+                do {
+                    f = f.getParentFile();
+                    updateStaleEntry(f, "FileArchive.StaleFileManager marking formerly stale ancestor {0} as active");
+                } while ( ! f.equals(archiveFile));
+                flush();
+            }
+        }
+
+        @Override
+        public void recordDeletedEntry(File f) {
+            if (updateStaleEntry(f, "FileArchive.StaleFileManager recording deletion of entry {0}")) {
+                /*
+                 * If there are no other stale files in the same directory as
+                 * the file just deleted, then remove the directory from
+                 * the stale files collection and check its ancestors.
+                 */
+                do {
+                    if (isStaleEntryInDir(f.getParentFile())) {
+                        return;
+                    }
+                    updateStaleEntry(f, "FileArchive.StaleFileManager recording that formerly stale directory {0} is no longer stale");
+                    f = f.getParentFile();
+                } while ( ! f.equals(archiveFile));
+
+                flush();
+            }
+        }
+
+        private boolean isStaleEntryInDir(final File dir) {
+            final String dirURIPath = archiveURI.relativize(dir.toURI()).getPath();
+            for (String staleEntryName : staleEntryNames) {
+                if (staleEntryName.startsWith(dirURIPath) && ! staleEntryName.equals(dirURIPath)) {
+                    logger.log(DEBUG_LEVEL, "FileArchive.StaleFileManager.isStaleEntryInDir found remaining stale entry {0} in {1}",
+                            new Object[] {staleEntryName, dir.getAbsolutePath()});
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private boolean updateStaleEntry(File f, final String msg) {
+            if (staleEntryNames.isEmpty()) {
+                logger.log(DEBUG_LEVEL, "FileArchive.StaleFileManager.updateStaleEntry finds staleEntryNames is empty; skipping");
+                return false;
+            }
+
+            final String entryName = archiveURI.relativize(f.toURI()).toASCIIString();
+            final boolean wasStale = staleEntryNames.remove(entryName);
+            if (wasStale) {
+                logger.log(DEBUG_LEVEL, msg,
+                        entryName);
+            } else {
+                logger.log(DEBUG_LEVEL, "updateStaleEntry did not find {0} in the stale entries {1}",
+                        new Object[] {entryName, staleEntryNames.toString()});
+            }
+            return wasStale;
+        }
+
+        @Override
+        public void flush() {
+            if (staleEntryNames.isEmpty()) {
+                logger.log(DEBUG_LEVEL, "FileArchive.StaleFileManager.flush deleting marker file; no more stale entries");
+                Util.markerFile(archiveFile).delete();
+                return;
+            }
+            PrintStream ps = null;
+            try {
+                ps = new PrintStream(Util.markerFile(archiveFile));
+            } catch (FileNotFoundException ex) {
+                throw new RuntimeException(ex);
+            }
+            for (String staleEntryName : staleEntryNames) {
+                ps.println(staleEntryName);
+            }
+            ps.close();
+            logger.log(DEBUG_LEVEL, "FileArchive.StaleFileManager.flush rewrote on-disk file {0} containing {1}",
+                    new Object[] {markerFile.getAbsolutePath(), staleEntryNames.toString()});
+        }
+
+
     }
-    
 }

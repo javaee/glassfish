@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -231,10 +231,9 @@ public interface MonitoringService extends ConfigBeanProxy, Injectable, Property
             while (itr.hasNext()) {
                 String methodName = itr.next();
                 if (rName.equalsIgnoreCase(methodName.substring(3))) {
-                    Class [] params = null;
                     try {
-                        Method mthd = ModuleMonitoringLevels.class.getMethod(methodName, params);
-                        level = (String) mthd.invoke(ms.getModuleMonitoringLevels(), null);
+                        Method mthd = ModuleMonitoringLevels.class.getMethod(methodName, (Class[])null);
+                        level = (String) mthd.invoke(ms.getModuleMonitoringLevels(), (Object[])null);
                     } catch (NoSuchMethodException nsme) {
                         Logger.getAnonymousLogger().log(Level.WARNING, nsme.getMessage(), nsme);
                     } catch (IllegalAccessException ile) {

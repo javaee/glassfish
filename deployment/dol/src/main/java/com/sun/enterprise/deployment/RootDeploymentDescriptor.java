@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -333,6 +333,30 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
         ((RootDeploymentDescriptor)instance).index = index;
         values.add(instance);
 
+    }
+
+    /**
+     * @return whether this descriptor is an extension descriptor
+     *         of a main descriptor, e.g. the EjbBundleDescriptor for
+     *         ejb in war case should return true.
+     */
+    public boolean isExtensionDescriptor() {
+        if (getModuleDescriptor().getDescriptor() != this) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @return the main descriptor associated with it if it's
+     *         an extension descriptor, otherwise return itself
+     */
+    public RootDeploymentDescriptor getMainDescriptor() {
+        if (isExtensionDescriptor()) {
+            return getModuleDescriptor().getDescriptor();
+        } else {
+            return this;
+        }
     }
 
     /**

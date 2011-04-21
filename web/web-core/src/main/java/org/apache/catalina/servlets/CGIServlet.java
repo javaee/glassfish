@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -927,7 +927,7 @@ public final class CGIServlet extends HttpServlet {
             String path = null;
             String name = null;
             String scriptname = null;
-            String cginame = "";
+            String cginame = null;
 
             if ((webAppRootDir != null)
                 && (webAppRootDir.lastIndexOf(File.separator) ==
@@ -952,14 +952,18 @@ public final class CGIServlet extends HttpServlet {
             if (debug >= 3) {
                 log("findCGI: currentLoc=" + currentLocation);
             }
+
+            StringBuilder sb = new StringBuilder("");
             while (!currentLocation.isFile() && dirWalker.hasMoreElements()) {
                 if (debug >= 3) {
                     log("findCGI: currentLoc=" + currentLocation);
                 }
                 String nextElement = (String)dirWalker.nextElement();
                 currentLocation = new File(currentLocation, nextElement);
-                cginame = cginame + "/" + nextElement;
+                sb.append("/").append(nextElement);
             }
+            cginame = sb.toString();
+            
             if (!currentLocation.isFile()) {
                 return new String[] { null, null, null, null };
             } else {
@@ -974,7 +978,7 @@ public final class CGIServlet extends HttpServlet {
                     scriptname = contextPath + servletPath;
                 }
                 if (!servletPath.equals(cginame)) {
-                    scriptname = scriptname = cginame;
+                    scriptname = scriptname + cginame;
                 }
             }
 
@@ -2007,14 +2011,14 @@ public final class CGIServlet extends HttpServlet {
                 // LF
                 switch(state) {
                     case STATE_CHARACTER:
-                        state = STATE_FIRST_LF;
-                        break;
                     case STATE_FIRST_CR:
                         state = STATE_FIRST_LF;
                         break;
                     case STATE_FIRST_LF:
                     case STATE_SECOND_CR:
                         state = STATE_HEADER_END;
+                        break;
+                    default:
                         break;
                 }
 
@@ -2029,6 +2033,8 @@ public final class CGIServlet extends HttpServlet {
                         break;
                     case STATE_FIRST_LF:
                         state = STATE_SECOND_CR;
+                        break;
+                    default:
                         break;
                 }
 

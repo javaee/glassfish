@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -91,8 +91,7 @@ public class EjbContainerServicesImpl implements EjbContainerServices, Serializa
         
         if (businessInterface != null) {
             String intfName = businessInterface.getName();
-            if ((localObjectImpl != null) &&
-                    ejbDesc.getLocalBusinessClassNames().contains(intfName)) {
+            if (ejbDesc.getLocalBusinessClassNames().contains(intfName)) {
 
                 // Get proxy corresponding to this business interface.
                 businessObject = (S) localObjectImpl.getClientObject(intfName);

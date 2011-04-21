@@ -68,10 +68,13 @@ public class RestTestBase {
     protected static final String AUTH_PASSWORD = "dummypass";
 
     protected Client client;
+    protected String adminPort;
+    protected String instancePort;
 
     public RestTestBase() {
-        String port = getParameter("admin.port", "4848");
-        baseUrl = "http://localhost:" + port + "/management";
+        adminPort = getParameter("admin.port", "4848");
+        instancePort = getParameter("instance.port", "8080");
+        baseUrl = "http://localhost:" + adminPort + "/management";
     }
 
     @Before
@@ -187,22 +190,6 @@ public class RestTestBase {
 
         String xml = response.getEntity(String.class);
         Map responseMap = MarshallingUtils.buildMapFromDocument(xml);
-//        if ((xml != null) && !xml.isEmpty()) {
-//            try {
-//                Document doc = getDocument(xml);
-//                Element root = doc.getDocumentElement();
-//                NamedNodeMap nnm = root.getAttributes();
-//
-//                for (int i = 0; i < nnm.getLength(); i++) {
-//                    Node attr = nnm.item(i);
-//                    String name = attr.getNodeName();
-//                    String value = attr.getNodeValue();
-//                    map.put(name, value);
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//            }
-//        }
         Object obj = responseMap.get("extraProperties");
         if (obj != null) {
             return (Map)((Map) obj).get("entity");
@@ -280,7 +267,9 @@ public class RestTestBase {
     protected void checkStatusForSuccess(ClientResponse cr) {
         int status = cr.getStatus();
         if ((status < 200) || (status > 299)) {
-            fail("Expected a status between 200 and 299 (inclusive).  Found " + status);
+            String message = getErrorMessage(cr);
+            fail("Expected a status between 200 and 299 (inclusive).  Found " + status +
+                    ((message != null) ? ":  " + message : ""));
         }
     }
 
@@ -289,6 +278,16 @@ public class RestTestBase {
         if ((status < 200) && (status > 299)) {
             fail("Expected a status less than 200 or greater than 299 (inclusive).  Found " + status);
         }
+    }
+    
+    protected String getErrorMessage(ClientResponse cr) {
+        String message = null;
+        Map map = MarshallingUtils.buildMapFromDocument(cr.getEntity(String.class));
+        if (map != null) {
+            message = (String)map.get("message");
+        }
+        
+        return message;
     }
 
     protected static String getParameter(String paramName, String defaultValue) {

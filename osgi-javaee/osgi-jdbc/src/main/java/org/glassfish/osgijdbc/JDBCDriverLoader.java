@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -74,6 +74,7 @@ public class JDBCDriverLoader {
     private static final String DRIVER_PROPERTIES = "driver.properties";
     private static final String VENDOR_PROPERTIES = "dbvendor.properties";
 
+    private static final Locale locale = Locale.getDefault();
 
     public static final Map<String, Map<String, String>> dbVendorMappings = new HashMap<String, Map<String, String>>();
 
@@ -147,7 +148,7 @@ public class JDBCDriverLoader {
         if(fileProperties == null){
             throw new IllegalStateException("Unknown resource type [ " + resType + " ]");
         }
-        return (String)fileProperties.get(dbVendor.toUpperCase());
+        return (String)fileProperties.get(dbVendor.toUpperCase(locale));
     }
 
 
@@ -220,7 +221,7 @@ public class JDBCDriverLoader {
                         //java.sql.Driver.TODO : this should go outside .class check.
                         //TODO : Some classnames might not have these strings
                         //in their classname. Logic should be flexible in such cases.
-                        if (entry.toUpperCase().contains("DATASOURCE")) {
+                        if (entry.toUpperCase(locale).contains("DATASOURCE")) {
                             implClass = getClassName(entry);
                             if (implClass != null) {
                                 if (isLoaded(implClass, Constants.XADS, cl)) {
@@ -249,7 +250,7 @@ public class JDBCDriverLoader {
                                     }
                                 }
                             }
-                        } else if (entry.toUpperCase().contains("DRIVER")) {
+                        } else if (entry.toUpperCase(locale).contains("DRIVER")) {
                             implClass = getClassName(entry);
                             if (implClass != null) {
                                 if (isLoaded(implClass, Constants.DRIVER, cl)) {
@@ -335,8 +336,8 @@ public class JDBCDriverLoader {
                         //java.sql.Driver.TODO : this should go outside .class check.
                         //TODO : Some classnames might not have these strings
                         //in their classname. Logic should be flexible in such cases.
-                        if (entry.toUpperCase().indexOf("DATASOURCE") != -1 ||
-                                entry.toUpperCase().indexOf("DRIVER") != -1) {
+                        if (entry.toUpperCase(locale).indexOf("DATASOURCE") != -1 ||
+                                entry.toUpperCase(locale).indexOf("DRIVER") != -1) {
                             implClass = getClassName(entry);
                             if (implClass != null) {
                                 if (isLoaded(implClass, resType, cl)) {
@@ -480,7 +481,7 @@ public class JDBCDriverLoader {
         } else {
             //Got from Manifest file.
             if (vendor.equalsIgnoreCase(dbVendor) ||
-                    vendor.toUpperCase().indexOf(dbVendor.toUpperCase()) != -1) {
+                    vendor.toUpperCase(locale).indexOf(dbVendor.toUpperCase(locale)) != -1) {
                 isVendorSpecific = true;
             }
         }
@@ -497,7 +498,7 @@ public class JDBCDriverLoader {
      * @return true if the className in question is vendor specific.
      */
     private boolean isVendorSpecific(String dbVendor, String className) {
-        return className.toUpperCase().indexOf(dbVendor.toUpperCase()) != -1;
+        return className.toUpperCase(locale).indexOf(dbVendor.toUpperCase(locale)) != -1;
     }
 
     /**

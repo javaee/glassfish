@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,15 +40,11 @@
 
 package org.glassfish.deployment.admin;
 
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
-import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.Applications;
-import com.sun.enterprise.config.serverbeans.ApplicationRef;
-import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import org.glassfish.deployment.common.DeploymentUtils;
@@ -148,6 +144,14 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
          */
         name = (new File(name)).getName();
 
+
+        // I should really look if the associated cluster is virtual
+        Cluster cluster = domain.getClusterNamed(name);
+        if (cluster!=null) {
+            target = name;
+        }
+
+
         // retrieve matched version(s) if exist
         List<String> matchedVersions = null;
         try {
@@ -209,24 +213,22 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
             if (info==null) {
                 // disabled application or application failed to be
                 // loaded for some reason
-                if (application!=null) {
-                    URI uri = null;
-                    try {
-                        uri = new URI(application.getLocation());
-                    } catch (URISyntaxException e) {
-                        logger.severe("Cannot determine original location for application : " + e.getMessage());
-                    }
-                    if (uri != null) {
-                        File location = new File(uri);
-                        if (location.exists()) {
-                            try {
-                                source = archiveFactory.openArchive(location);
-                            } catch (IOException e) {
-                                logger.log(Level.INFO, e.getMessage(),e );
-                            }
-                        } else {
-                            logger.warning("Originally deployed application at "+ location + " not found");
+                URI uri = null;
+                try {
+                    uri = new URI(application.getLocation());
+                } catch (URISyntaxException e) {
+                    logger.severe("Cannot determine original location for application : " + e.getMessage());
+                }
+                if (uri != null) {
+                    File location = new File(uri);
+                    if (location.exists()) {
+                        try {
+                            source = archiveFactory.openArchive(location);
+                        } catch (IOException e) {
+                            logger.log(Level.INFO, e.getMessage(),e );
                         }
+                    } else {
+                        logger.warning("Originally deployed application at "+ location + " not found");
                     }
                 }
             } else {
@@ -353,11 +355,14 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                 //remove context from generated
                 deploymentContext.clean();
 
-                //if directory deployment then do no remove the directory
-                if (source!=null) {
-                    if ( (! keepreposdir) && !isDirectoryDeployed && source.exists()) {
-                        FileUtils.whack(new File(source.getURI()));
-                    }
+                //if directory deployment then do not remove the directory
+                if ( (! keepreposdir) && !isDirectoryDeployed && source.exists()) {
+                    /*
+                     * Delete the repository directory as an archive so
+                     * any special handling (such as stale file handling)
+                     * known to the archive can run.
+                     */
+                    source.delete();
                 }
 
             } // else a message should have been provided.

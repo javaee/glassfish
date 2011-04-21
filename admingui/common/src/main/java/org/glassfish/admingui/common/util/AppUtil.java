@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,6 +52,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 
 /**
@@ -135,6 +136,30 @@ public class AppUtil {
             return null;
         }
         return (Map) modMap.get(componentName);
+    }
+
+    static public void manageAppTarget(String applicationName, String targetName, boolean add, String enabled, List clusterList, List standaloneList, HandlerContext handlerCtx){
+        List clusters = (clusterList == null) ? TargetUtil.getClusters() : clusterList;
+        String clusterEndpoint = GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/";
+        String serverEndpoint = GuiUtil.getSessionValue("REST_URL")+"/servers/server/";
+        String endpoint ;
+        Map attrs = new HashMap();
+
+        if (clusters.contains(targetName)){
+            endpoint = clusterEndpoint + targetName + "/application-ref" ;
+        }else{
+            endpoint = serverEndpoint + targetName + "/application-ref" ;
+        }
+        if (add){
+            attrs.put("id", applicationName);
+            if (enabled != null){
+                attrs.put("enabled", enabled);
+            }
+        }else{
+            endpoint = endpoint + "/" + applicationName;
+        }
+        attrs.put("target", targetName);
+        RestUtil.restRequest(endpoint, attrs, (add)? "POST" : "DELETE", handlerCtx, false);
     }
 
     static final public List sniffersHide = new ArrayList();

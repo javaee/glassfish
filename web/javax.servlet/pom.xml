@@ -68,6 +68,16 @@
                 <role>lead</role>
             </roles>
         </developer>
+        <developer>
+            <id>swchan2</id>
+            <name>Shing Wai Chan</name>
+            <url>http://weblogs.java.net/blog/swchan2</url>
+            <organization>Oracle</organization>
+            <roles>
+                <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
 
     <build>

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,7 +58,8 @@ import java.util.logging.*;
  */
 public class ConnectionDefinitionUtils {
 
-    static Logger _logger= LogDomains.getLogger(ConnectionDefinitionUtils.class,LogDomains.RSR_LOGGER);
+    private final static Logger _logger= LogDomains.getLogger(ConnectionDefinitionUtils.class,LogDomains.RSR_LOGGER);
+    private final static Locale locale = Locale.getDefault();
 
     /**
 	 * Gets the properties of the Java bean connection definition class that
@@ -113,7 +114,7 @@ public class ConnectionDefinitionUtils {
            oracleClasses.add("oracle.jdbc.pool.oracleconnectionpooldatasource");
            oracleClasses.add("oracle.jdbc.xa.client.oraclexadatasource");
            oracleClasses.add("oracle.jdbc.xa.oraclexadataSource");
-           if(oracleClasses.contains(className.toLowerCase())){
+           if(oracleClasses.contains(className.toLowerCase(locale))){
                boolean property1Removed = removePropertyFromMap("connectionCachingEnabled", map);
                boolean property2Removed = removePropertyFromMap("fastConnectionFailoverEnabled",map);
                if(property1Removed || property2Removed){
@@ -286,8 +287,8 @@ public class ConnectionDefinitionUtils {
                 .getConnectionDefinitionPropertiesAndDefaults(
                 "sun.jdbc.odbc.ee.DataSource", "javax.sql.DataSource");
 
-        for (Iterator iter= m.keySet().iterator(); iter.hasNext();) {
-            String element= (String) iter.next();
+        Set<String> keys = m.keySet();
+        for(String element : keys) {
             System.out.println(element + " : " + m.get(element));
         }
     }

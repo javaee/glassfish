@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -443,6 +443,27 @@ public class RecoveryManager {
 
         boolean result = false;
 
+        String manualRecovery =
+            Configuration.getPropertyValue(Configuration.MANUAL_RECOVERY);
+
+        // if ManualRecovery property is not set, do not attempt XA recovery.
+        if (manualRecovery == null  ||
+                !(manualRecovery.equalsIgnoreCase("true"/*#Frozen*/))) {
+
+            // Quickly release all locks
+
+            // Post the recovery in progress event so that requests
+            // waiting for recovery to complete may proceed.
+            recoveryInProgress.post();
+
+            // And finish resync
+            try {
+                resyncComplete(false, false);
+            } catch (Throwable ex) { }
+
+            return result;
+        }
+
         // Check the log for transactions.  If there are any outstanding
         // transactions, recover the Coordinator objects and set up the
         // OMGtid to Coordinator map.
@@ -558,7 +579,7 @@ public class RecoveryManager {
                         // Synchronization objects.
 
                         TimeoutManager.setTimeout(
-                            new Long(coord.getLocalTID()),
+                            coord.getLocalTID(),
                             TimeoutManager.IN_DOUBT_TIMEOUT,
                             60);
 
@@ -896,7 +917,7 @@ public class RecoveryManager {
                  }
              } catch (XAException e) {
 	        _logger.log(Level.WARNING,"jts.xaexception_in_recovery", e.errorCode);
-            _logger.log(Level.WARNING,"",e);
+            _logger.log(Level.WARNING, com.sun.jts.trace.TraceUtil.getXAExceptionInfo(e, _logger), e);
                 break;
              }
 
@@ -998,7 +1019,7 @@ public class RecoveryManager {
                         // is registered with the coordinator per transaction
                         // per RM.
                         
-                        String xidStr = stringifyXid(inDoubtXids[i]);
+                        //String xidStr = stringifyXid(inDoubtXids[i]);
                         if (!uniqueXids.contains(inDoubtXids[i])) { // unique xid
                             if(_logger.isLoggable(Level.FINE))
                             {
@@ -1198,7 +1219,7 @@ public class RecoveryManager {
                         // is registered with the coordinator per transaction
                         // per RM.
                         
-                        String xidStr = stringifyXid(inDoubtXids[i]);
+                        //String xidStr = stringifyXid(inDoubtXids[i]);
                         if (!uniqueXids.contains(inDoubtXids[i])) { // unique xid
                             if(_logger.isLoggable(Level.FINE))
                             {
@@ -1439,7 +1460,7 @@ public class RecoveryManager {
     }
 
     static void addToIncompleTx(CoordinatorImpl coord, boolean commit) {
-        inCompleteTxMap.put(coord, new Boolean(commit));
+        inCompleteTxMap.put(coord, commit);
     }
 
     public static Boolean isIncompleteTxRecoveryRequired() {
@@ -1494,7 +1515,7 @@ public class RecoveryManager {
                         // is registered with the coordinator per transaction
                         // per RM.
 
-                        String xidStr = stringifyXid(inDoubtXids[i]);
+                        //String xidStr = stringifyXid(inDoubtXids[i]);
                         if (!uniqueXids.contains(inDoubtXids[i])) { // unique xid
                             if(_logger.isLoggable(Level.FINE))
                             {
@@ -1609,7 +1630,7 @@ public class RecoveryManager {
 
     static void createRecoveryFile(String serverName) {
         try {
-            String logPath = getLogDirectory();
+            String logPath = LogControl.getLogPath();
             File recoveryFile = LogControl.recoveryIdentifierFile(serverName,logPath);
             RandomAccessFile raf = new RandomAccessFile(recoveryFile,"rw");
             raf.writeBytes(serverName);
@@ -1648,23 +1669,6 @@ public class RecoveryManager {
     }
 
     /**
-     * return transaction log directory
-     */
-    public static String getLogDirectory() {
-        int[] result = new int[1];
-        String logDir = Configuration.getDirectory(Configuration.LOG_DIRECTORY,
-                     Configuration.JTS_SUBDIRECTORY, result);
-        if( result[0] == Configuration.DEFAULT_USED ||
-                result[0] == Configuration.DEFAULT_INVALID ) {
-            if( result[0] == Configuration.DEFAULT_INVALID ) {
-                logDir = ".";
-            }
-        }
-
-        return logDir;
-    }
-
-    /**
      * return true if commit_one_phase should be used during recovery
      */
     private static boolean getCommitOnePhaseDuringRecovery() {
@@ -1682,6 +1686,10 @@ public class RecoveryManager {
         if (resyncThread == null) {
             initialise();
         }
+	if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE,"RecoveryManager.startResyncThread Configuration.isRecoverable? "
+                    + Configuration.isRecoverable());
+	}
         if (Configuration.isRecoverable()) {
             resyncThread.start();
         }

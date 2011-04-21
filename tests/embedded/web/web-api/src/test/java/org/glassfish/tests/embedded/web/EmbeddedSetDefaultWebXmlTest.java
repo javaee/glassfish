@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -67,7 +67,7 @@ public class EmbeddedSetDefaultWebXmlTest {
     static GlassFish glassfish;
     static WebContainer embedded;
     static File root;
-    static String contextRoot = "/test";
+    static String contextRoot = "test";
 
     @BeforeClass
     public static void setupServer() throws Exception {
@@ -95,7 +95,7 @@ public class EmbeddedSetDefaultWebXmlTest {
         embedded.addContext(context, contextRoot);
 
         // test if dir listing is getting picked up from default-web.xml
-        URL servlet = new URL("http://localhost:8080"+contextRoot);
+        URL servlet = new URL("http://localhost:8080/"+contextRoot);
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(
@@ -108,7 +108,7 @@ public class EmbeddedSetDefaultWebXmlTest {
         }
         in.close();
         
-        Thread.sleep(100);
+        embedded.removeContext(context);
         
      }
 

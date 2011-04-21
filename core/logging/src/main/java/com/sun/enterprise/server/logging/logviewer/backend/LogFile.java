@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,8 +40,6 @@
 
 package com.sun.enterprise.server.logging.logviewer.backend;
 
-import com.sun.enterprise.util.StringUtils;
-
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -73,7 +71,7 @@ public class LogFile implements java.io.Serializable {
      * Constructor
      */
     public LogFile(String name) {
-        _recordIdx.add(new Long(0));
+        _recordIdx.add(Long.valueOf(0));
         setLogFileName(name);
         //START CR 6697509
         //buildLogFileIndex();
@@ -188,8 +186,7 @@ public class LogFile implements java.io.Serializable {
                             // to index size. Time to add a new entry
                             // into the index.
                             recordCount = 0;
-                            _recordIdx.add(
-                                    new Long(charPos - (recordBeginMarkerLen + 1)));
+                            _recordIdx.add(Long.valueOf(charPos - (recordBeginMarkerLen + 1)));
                         }
                     }
                 } catch (EOFException ex) {
@@ -293,7 +290,7 @@ public class LogFile implements java.io.Serializable {
             return reader;
         } catch (Exception ex) {
             Logger.getAnonymousLogger().log(Level.INFO, "Exception in openFile...", ex);
-        }
+        } 
         return null;
     }
 
@@ -315,7 +312,7 @@ public class LogFile implements java.io.Serializable {
         }
         _logFileName = filename;
         _recordIdx = new ArrayList();
-        _recordIdx.add(new Long(0));
+        _recordIdx.add(Long.valueOf(0));
     }
 
 

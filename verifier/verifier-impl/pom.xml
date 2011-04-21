@@ -53,6 +53,10 @@
     <packaging>hk2-jar</packaging>
     <name>Verifier implementation module</name>
 
+    <properties>
+        <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
+    </properties>
+
     <build>
       <plugins>
         <plugin>

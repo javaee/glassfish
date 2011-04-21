@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -111,7 +111,7 @@ public class ProbeProviderStaxParser extends StaxParser{
         }
         
         Map<String,String> atts = parseAttributes();
-        List<Probe> probes = parseProbes();
+        List<XmlProbe> probes = parseProbes();
 
         return new Provider(atts.get(MODULE_PROVIDER_NAME),
                             atts.get(MODULE_NAME),
@@ -120,8 +120,8 @@ public class ProbeProviderStaxParser extends StaxParser{
                             probes );
     }
 
-    private List<Probe> parseProbes() throws XMLStreamException {
-        List<Probe> probes = new ArrayList<Probe>();
+    private List<XmlProbe> parseProbes() throws XMLStreamException {
+        List<XmlProbe> probes = new ArrayList<XmlProbe>();
 
         boolean done = false;
         while(!done) {
@@ -142,7 +142,7 @@ public class ProbeProviderStaxParser extends StaxParser{
         return probes;
     }
 
-    private Probe parseProbe() throws XMLStreamException {
+    private XmlProbe parseProbe() throws XMLStreamException {
         if(!parser.getLocalName().equals(PROBE)) {
             String errStr = localStrings.getLocalString("invalidStartElement",
                                 "START_ELEMENT is supposed to be {0}" +
@@ -153,7 +153,7 @@ public class ProbeProviderStaxParser extends StaxParser{
         // for some unknown reason method is an element not an attribute
         // Solution -- use the last item if there are more than one
 
-        List<ProbeParam> params = new ArrayList<ProbeParam>();
+        List<XmlProbeParam> params = new ArrayList<XmlProbeParam>();
         Map<String,String> atts = parseAttributes();
         String method = null;
         String name = atts.get(PROBE_NAME);
@@ -179,9 +179,9 @@ public class ProbeProviderStaxParser extends StaxParser{
                 done = true;
             }
         }
-        return new Probe(name, method, params, self, hidden);
+        return new XmlProbe(name, method, params, self, hidden);
     }
-    private ProbeParam parseParam() throws XMLStreamException {
+    private XmlProbeParam parseParam() throws XMLStreamException {
         if(!parser.getLocalName().equals(PROBE_PARAM)){
             String errStr = localStrings.getLocalString("invalidStartElement",
                                 "START_ELEMENT is supposed to be {0}" +
@@ -191,7 +191,7 @@ public class ProbeProviderStaxParser extends StaxParser{
 
         Map<String,String> atts = parseAttributes();
 
-        return new ProbeParam(atts.get(PROBE_PARAM_NAME), atts.get(PROBE_PARAM_TYPE));
+        return new XmlProbeParam(atts.get(PROBE_PARAM_NAME), atts.get(PROBE_PARAM_TYPE));
     }
 
     private List<Provider> providers = null;

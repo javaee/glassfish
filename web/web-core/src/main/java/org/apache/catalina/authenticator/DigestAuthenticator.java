@@ -128,6 +128,8 @@ public class DigestAuthenticator
      */
     protected static final String DEFAULT_ALGORITHM = "MD5";
 
+    private static final String EMPTY_STRING = "";
+
 
     // ----------------------------------------------------------- Constructors
 
@@ -346,7 +348,7 @@ public class DigestAuthenticator
 
         byte[] buffer = digest(a2.getBytes());
         char[] md5a2 = digestEncoder.encode(buffer);
-        char[] responseCharArray = ((response != null) ? response.toCharArray() : null);
+        char[] responseCharArray = response.toCharArray();
 
         return (realm.authenticate(userName, responseCharArray, nOnce, nc, cnonce, qop,
                                    realmName, md5a2));
@@ -403,7 +405,7 @@ public class DigestAuthenticator
         } else if (quotedString.length() > 2) {
             return quotedString.substring(1, quotedString.length() - 1);
         } else {
-            return new String();
+            return EMPTY_STRING;
         }
     }
 
@@ -480,7 +482,7 @@ public class DigestAuthenticator
         String authenticateHeader = "Digest realm=\"" + realmName + "\", "
             +  "qop=\"auth\", nonce=\"" + nOnce + "\", " + "opaque=\""
             + String.valueOf(digestEncoder.encode(buffer)) + "\"";
-        response.setHeader("WWW-Authenticate", authenticateHeader);
+        response.setHeader(AUTH_HEADER_NAME, authenticateHeader);
 
     }
 

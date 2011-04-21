@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,8 +41,6 @@
 package org.glassfish.webservices;
 
 
-import com.sun.enterprise.config.serverbeans.Applications;
-import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.archivist.Archivist;
 import com.sun.enterprise.deployment.util.WebServerInfo;
@@ -85,7 +83,6 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.deployment.common.Artifacts;
 
 
@@ -110,9 +107,6 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
     @Inject
     private RequestDispatcher dispatcher;
-
-    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    private Config config;
 
     @Inject
     private ArchiveFactory archiveFactory;
@@ -284,7 +278,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
     }
 
     /**
-     *  This method downloads the main wsdl/schema and its imports in to the directory specified and returns the name of downloded root
+     *  This method downloads the main wsdl/schema and its imports in to the directory specified and returns the name of downloaded root
      * document.
      * @param httpUrl
      * @param wsdlDir
@@ -456,11 +450,11 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
     /**
      * Collect all relative imports from a web service's main wsdl document.
      *
-     *@param wsdlFileUrl
-     * @param wsdlRelativeImports outupt param in which wsdl relative imports
+     * @param wsdlFileUrl
+     * @param wsdlRelativeImports output param in which wsdl relative imports
      * will be added
      *
-     *@param schemaRelativeImports outupt param in which schema relative
+     * @param schemaRelativeImports output param in which schema relative
      * imports will be added
      * @param schemaIncludes output param in which schema includes will be added
      */
@@ -779,7 +773,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         }
 
 
-        return new WebServicesApplication(context, env, dispatcher, config, habitat,publishedFiles);
+        return new WebServicesApplication(context, env, dispatcher, publishedFiles);
     }
 
     /**
@@ -889,7 +883,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         }
     }
     /**
-     * This is to be used for filepublishing only. Incase of wsdlImports and wsdlIncludes
+     * This is to be used for file publishing only. In case of wsdlImports and wsdlIncludes
      * we need to copy the nested wsdls from applications folder to the generated/xml folder
      *
      */

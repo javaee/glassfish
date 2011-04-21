@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -459,7 +459,7 @@ public abstract class DeploymentDescriptorNode<T> implements XMLNode<T>  {
                 toInvoke.invoke(target, new Object[] {Integer.valueOf(value)});
             } catch (NumberFormatException nfe) {
                 DOLUtils.getDefaultLogger().log(Level.WARNING, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
-			new Object []{ getXMLPath().toString() , nfe.toString()});
+			new Object []{ getXMLPath() , nfe.toString()});
 	    } catch(NoSuchMethodException e2) {
                 // try with boolean as a parameter
                 Method toInvoke = target.getClass().getMethod(methodName, new Class[] { boolean.class });

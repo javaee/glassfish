@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -343,7 +343,7 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
         List<Property> properties = jdbcConnectionPool.getProperty();
         if (properties != null && properties.size() > 0) {
             for (Property property : properties) {
-                String prop = property.getName().toUpperCase();
+                String prop = property.getName().toUpperCase(Locale.getDefault());
                 if ("USERNAME".equals(prop) || "USER".equals(prop)) {
                     userPassword[0] = property.getValue();
                 } else if ("PASSWORD".equals(prop)) {

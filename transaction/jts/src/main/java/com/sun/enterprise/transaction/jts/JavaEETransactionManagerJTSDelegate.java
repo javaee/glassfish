@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,9 +60,11 @@ import javax.resource.spi.work.WorkException;
 import com.sun.jts.jta.TransactionManagerImpl;
 import com.sun.jts.jta.TransactionServiceProperties;
 import com.sun.jts.CosTransactions.Configuration;
+import com.sun.jts.CosTransactions.DefaultTransactionService;
 import com.sun.jts.CosTransactions.RecoveryManager;
 import com.sun.jts.CosTransactions.DelegatedRecoveryManager;
 import com.sun.jts.CosTransactions.RWLock;
+import com.sun.jts.CosTransactions.LogControl;
 
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.TransactionService;
@@ -312,21 +314,26 @@ public class JavaEETransactionManagerJTSDelegate
     public boolean enlistLAOResource(Transaction tran, TransactionalResource h)
            throws RollbackException, IllegalStateException, SystemException {
 
-        JavaEETransactionImpl tx = (JavaEETransactionImpl)tran;
-        ((JavaEETransactionManagerSimplified) javaEETM).startJTSTx(tx);
+        if (tran instanceof JavaEETransaction) {
+            JavaEETransaction tx = (JavaEETransaction)tran;
+            ((JavaEETransactionManagerSimplified) javaEETM).startJTSTx(tx);
 
-        //If transaction conatains a NonXA and no LAO, convert the existing
-        //Non XA to LAO
-        if(useLAO()) {
-            if(h != null && (tx.getLAOResource() == null) ) {
-                tx.setLAOResource(h);
-                if (h.isTransactional()) {
-                    XAResource res = h.getXAResource();
-                    return tran.enlistResource(res);
+            //If transaction conatains a NonXA and no LAO, convert the existing
+            //Non XA to LAO
+            if(useLAO()) {
+                if(h != null && (tx.getLAOResource() == null) ) {
+                    tx.setLAOResource(h);
+                    if (h.isTransactional()) {
+                        XAResource res = h.getXAResource();
+                        return tran.enlistResource(res);
+                    }
                 }
             }
+            return true;
+        } else {
+            // Should not be called
+            return false;
         }
-        return true;
 
     }
 
@@ -522,26 +529,28 @@ public class JavaEETransactionManagerJTSDelegate
                         new SybaseXAResource());
                 }
         
-                if (Boolean.parseBoolean(txnService.getPropertyValue("delegated-recovery")) && 
-                        Boolean.parseBoolean(txnService.getAutomaticRecovery())) {
-                    // Register GMS notification callback
-                    if (_logger.isLoggable(Level.FINE))
-                        _logger.log(Level.FINE,"TM: Registering for GMS notification callback");
+                if (Boolean.parseBoolean(txnService.getAutomaticRecovery())) {
+                    // If recovery on server startup is set, initialize other properties as well
+                    Properties props = TransactionServiceProperties.getJTSProperties(habitat, false);
+                    DefaultTransactionService.setServerName(props);
 
-                    int waitTime = 60;
-                    value = txnService.getPropertyValue("wait-time-before-recovery-insec");
-                    if (value != null) {
-                        try {
-                            waitTime = Integer.parseInt(value);
-                        } catch(Exception e) {
-                            _logger.log(Level.WARNING,"error_wait_time_before_recovery",e);
+                    if (Boolean.parseBoolean(txnService.getPropertyValue("delegated-recovery"))) {
+                        // Register GMS notification callback
+                        if (_logger.isLoggable(Level.FINE))
+                            _logger.log(Level.FINE,"TM: Registering for GMS notification callback");
+
+                        int waitTime = 60;
+                        value = txnService.getPropertyValue("wait-time-before-recovery-insec");
+                        if (value != null) {
+                            try {
+                                waitTime = Integer.parseInt(value);
+                            } catch(Exception e) {
+                                _logger.log(Level.WARNING,"error_wait_time_before_recovery",e);
+                            }
                         }
+                        new GMSCallBack(waitTime, habitat);
                     }
-                    new GMSCallBack(waitTime, habitat);
                 }
-    
-                // Other Properties from EjbServiceGroup.initJTSProperties are initialized 
-                // when an XA transaction is started or interceptor is registered.
             }
         }
     }
@@ -597,7 +606,7 @@ public class JavaEETransactionManagerJTSDelegate
     /** {@inheritDoc}
     */
     public String getTxLogLocation() {
-            return RecoveryManager.getLogDirectory();
+            return LogControl.getLogPath();
     }
 
     /** {@inheritDoc}

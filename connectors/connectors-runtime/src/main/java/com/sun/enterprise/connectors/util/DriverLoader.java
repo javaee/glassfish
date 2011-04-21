@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -57,6 +57,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
@@ -186,7 +187,7 @@ public class DriverLoader implements ConnectorConstants {
             }
         }
         return fileProperties.getProperty(
-                dbVendor.toUpperCase());
+                dbVendor.toUpperCase(Locale.getDefault()));
     }
     
     /**
@@ -197,7 +198,7 @@ public class DriverLoader implements ConnectorConstants {
      * @return
      */
     private String getEquivalentName(String dbVendor) {
-        if (dbVendor.toUpperCase().startsWith(DATABASE_VENDOR_JAVADB) ||
+        if (dbVendor.toUpperCase(Locale.getDefault()).startsWith(DATABASE_VENDOR_JAVADB) ||
                 dbVendor.equalsIgnoreCase(DATABASE_VENDOR_EMBEDDED_DERBY)) {
             return DATABASE_VENDOR_DERBY;
         } else if (dbVendor.equalsIgnoreCase(DATABASE_VENDOR_MSSQLSERVER) ||
@@ -323,8 +324,8 @@ public class DriverLoader implements ConnectorConstants {
                         //java.sql.Driver.TODO : this should go outside .class check.
                         //TODO : Some classnames might not have these strings
                         //in their classname. Logic should be flexible in such cases.
-                        if (entry.toUpperCase().indexOf("DATASOURCE") != -1 || 
-                                entry.toUpperCase().indexOf("DRIVER") != -1) {
+                        if (entry.toUpperCase(Locale.getDefault()).indexOf("DATASOURCE") != -1 ||
+                                entry.toUpperCase(Locale.getDefault()).indexOf("DRIVER") != -1) {
                             implClass = getClassName(entry);
                             if (implClass != null) {
                                 if (isLoaded(implClass, resType)) {
@@ -548,9 +549,9 @@ public class DriverLoader implements ConnectorConstants {
 
         if(origDbVendor != null) {
             if(origDbVendor.equalsIgnoreCase(DATABASE_VENDOR_EMBEDDED_DERBY)) {
-                return className.toUpperCase().indexOf(DATABASE_VENDOR_EMBEDDED) != -1;
+                return className.toUpperCase(Locale.getDefault()).indexOf(DATABASE_VENDOR_EMBEDDED) != -1;
             } else if(origDbVendor.endsWith(DATABASE_VENDOR_30)) {
-                return !(className.toUpperCase().endsWith(DATABASE_VENDOR_40));
+                return !(className.toUpperCase(Locale.getDefault()).endsWith(DATABASE_VENDOR_40));
             }
             
         }
@@ -566,7 +567,8 @@ public class DriverLoader implements ConnectorConstants {
         } else {
             //Got from Manifest file.
             if (vendor.equalsIgnoreCase(dbVendor) || 
-                    vendor.toUpperCase().indexOf(dbVendor.toUpperCase()) != -1) {
+                    vendor.toUpperCase(Locale.getDefault()).indexOf(
+                    dbVendor.toUpperCase(Locale.getDefault())) != -1) {
                 isVendorSpecific = true;
             }
         }
@@ -591,7 +593,7 @@ public class DriverLoader implements ConnectorConstants {
     
     private static class JarFileFilter implements FilenameFilter {
 
-        private final String JAR_EXT = ".jar";
+        private static final String JAR_EXT = ".jar";
 
         public boolean accept(File dir, String name) {
             return name.endsWith(JAR_EXT);
@@ -607,7 +609,8 @@ public class DriverLoader implements ConnectorConstants {
      * @return true if f is vendor specific.
      */
     private boolean isVendorSpecific(String dbVendor, String className) {
-        return className.toUpperCase().indexOf(dbVendor.toUpperCase()) != -1;
+        return className.toUpperCase(Locale.getDefault()).indexOf(
+                dbVendor.toUpperCase(Locale.getDefault())) != -1;
     }
 
     /**

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -211,7 +211,7 @@ public class CommonHandlers {
 		if(list != null) {
 			if(selectedIndex == null) {
 				//default to 0
-				selectedIndex = new Integer(INDEX);
+				selectedIndex = Integer.valueOf(INDEX);
 			}
 			listItem = new String[]{list.get(selectedIndex)};
 		}
@@ -364,7 +364,12 @@ public class CommonHandlers {
         List<Map<String, String>> modifiedProps = new java.util.ArrayList<Map<String, String>>();
         if (props != null) {
             for (Map<String, String> prop : props) {
-                if (!(GuiUtil.isEmpty(prop.get("name")) || GuiUtil.isEmpty(prop.get("value")))) {
+                if (!(GuiUtil.isEmpty(prop.get("name")))) {
+                    if (GuiUtil.isEmpty(prop.get("value"))) {
+                        continue;
+                    } else if (prop.get("value").equals("()")) {
+                        prop.put("value", "");
+                    }
                     modifiedProps.add(prop);
                 }
             }
@@ -429,10 +434,10 @@ public class CommonHandlers {
     public void longAdd(HandlerContext handlerCtx) {
         Long long1 = (Long)handlerCtx.getInputValue("Long1");
         Long long2 = (Long)handlerCtx.getInputValue("Long2");
-        Long result = new Long(0);
+        Long result = Long.valueOf(0);
         try{
             // Add the 2 numbers together
-            result = new Long(long1.longValue()+long2.longValue());
+            result = Long.valueOf(long1.longValue()+long2.longValue());
         }catch(Exception ex){
             Logger logger = GuiUtil.getLogger();
             if (logger.isLoggable(Level.WARNING)) {
@@ -679,11 +684,13 @@ public class CommonHandlers {
             if (attrNames == null) {
                 resultMap = map;
             } else {
-                for (String key : map.keySet()) {
+
+                for(Map.Entry<String,String> e : map.entrySet()){
+                    String key = e.getKey();
                     if (attrNames.contains(key) && keep) {
-                        resultMap.put(key, map.get(key));
+                        resultMap.put(key, e.getValue());
                     } else if ((!attrNames.contains(key)) && (!keep)) {
-                        resultMap.put(key, map.get(key));
+                        resultMap.put(key, e.getValue());
                     }
                 }
             }

@@ -224,8 +224,7 @@ public class UtilHandlers {
             @HandlerOutput(name="Name", type=String.class)})
     public static void fileGetName(HandlerContext handlerCtx) {
         File file = (File) handlerCtx.getInputValue("File");
-        String name = file != null ? file.getName() : "" ;
-        handlerCtx.setOutputValue("Name", name != null ? name : "");        
+        handlerCtx.setOutputValue("Name", (file == null) ? "" : file.getName() );
     }
     
     /**
@@ -769,12 +768,12 @@ public class UtilHandlers {
             String s1 = values.trim().replaceAll("\\.jar:", "\\.jar\\$\\{path.separator\\}");
             String s2 = s1.replaceAll("\\.jar;", "\\.jar\\$\\{path.separator\\}");
             String[] strArray = s2.split("\\$\\{path.separator\\}");
-            String result = "";
+            StringBuilder result = new StringBuilder("");
             for (String s : strArray) {
-                result = result + s + "\n";
+                result.append(s).append("\n");
             }
 
-            handlerCtx.setOutputValue("formattedString", result.trim());
+            handlerCtx.setOutputValue("formattedString", result.toString().trim());
 
 
         }
@@ -789,20 +788,17 @@ public class UtilHandlers {
         @HandlerOutput(name = "formattedString", type = String.class)})
     public static void formatPathSeperatorStringsforSaving(HandlerContext handlerCtx) {
         String values = (String) handlerCtx.getInputValue("string");
-        String token = "";
+        StringBuilder token = new StringBuilder("");
+        String sep = "";
         if ((values != null) &&
-                (values.toString().trim().length() != 0)) {
-            Iterator it = GuiUtil.parseStringList(values, "\t\n\r\f").iterator();
-            while (it.hasNext()) {
-                String nextToken = (String) it.next();
-                token += nextToken + PATH_SEPARATOR;
-            }
-            int end = token.length() - PATH_SEPARATOR.length();
-            if (token.lastIndexOf(PATH_SEPARATOR) == end) {
-                token = token.substring(0, end);
+                (values.trim().length() != 0)) {
+            List<String> strList = GuiUtil.parseStringList(values, "\t\n\r\f");
+            for(String nextToken : strList){
+                token.append(sep).append(nextToken);
+                sep = PATH_SEPARATOR;
             }
         }
-        handlerCtx.setOutputValue("formattedString", token);
+        handlerCtx.setOutputValue("formattedString", token.toString());
     }    
 
     /**

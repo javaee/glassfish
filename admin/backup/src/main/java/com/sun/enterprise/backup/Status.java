@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -71,14 +71,21 @@ class Status {
         }
         statusFile = new File(backupFileDir, Constants.PROPS_FILENAME);
 
+        FileOutputStream out = null;
         try {
             setProps();
-            FileOutputStream out = new FileOutputStream(statusFile);
+
+            out = new FileOutputStream(statusFile);
             props.store(out, Constants.PROPS_HEADER);
             return propsToString(false);
-        }
-        catch(Exception e) {
+        } catch(Exception e) {
             return StringHelper.get("backup-res.CantWriteStatus", statusFile);
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch(IOException ex) {}
+	    }
         }
     }
     
@@ -196,9 +203,16 @@ class Status {
 
     String getBackupConfigName(){
        if(props == null)
-            return new String("");
+            return "";
 
         return props.getProperty(Constants.BACKUP_CONFIG, "");
+    }
+
+    String getBackupType(){
+       if(props == null)
+            return "";
+
+        return props.getProperty(Constants.PROPS_TYPE, "");
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -250,16 +264,21 @@ class Status {
     }
     
     private void readPropertiesFile(File propsFile) {
+
+        BufferedInputStream in = null;
         try {
-            BufferedInputStream in =
-                new BufferedInputStream(new FileInputStream(propsFile));
+            in = new BufferedInputStream(new FileInputStream(propsFile));
             props = new Properties();
             props.load(in);
-            in.close();
-        }
-        catch(IOException ioe) {
+        } catch(IOException ioe) {
             props = null;
-        }
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch(IOException ex) {}
+	    }
+	}
     }
 
     private void setProps() {
@@ -290,7 +309,7 @@ class Status {
          
         String type = request.configOnly ? Constants.CONFIG_ONLY :
                 Constants.FULL;
-        props.setProperty(Constants.PROPS_TYPE,type);
+        props.setProperty(Constants.PROPS_TYPE, type);
         String bc = (request.backupConfig == null) ? Constants.NO_CONFIG : request.backupConfig;
         props.setProperty(Constants.BACKUP_CONFIG,bc);
     }

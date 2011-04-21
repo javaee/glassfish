@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -123,13 +123,26 @@ class ApplicationDispatcherForward {
             RequestDispatcher.ERROR_EXCEPTION);
         String errorReportValveClass = 
             ((StandardHost)(context.getParent())).getErrorReportValveClass();
-        if (errorReportValveClass != null && statusCode >= 400
-                && exception == null) {
+        boolean hasErrorReportValve = (errorReportValveClass != null &&
+                errorReportValveClass.length() > 0);
+        ResponseFacade responseFacade = getResponseFacade(hres);
+        if (hasErrorReportValve && responseFacade.isError() &&
+                statusCode >= 400 && exception == null) {            
             boolean matchFound = status(hreq, hres,
-                getResponseFacade(hres), context, wrapper, statusCode);
+                responseFacade, context, wrapper, statusCode);
             if (!matchFound) {
-                serveDefaultErrorPage(hreq, hres,
-                    getResponseFacade(hres), statusCode);
+                boolean isDefaultErrorPageEnabled = true;
+                if (wrapper != null) {
+                    String initParam =
+                            wrapper.findInitParameter(Constants.IS_DEFAULT_ERROR_PAGE_ENABLED_INIT_PARAM);
+                    if (initParam != null) {
+                        isDefaultErrorPageEnabled = Boolean.parseBoolean(initParam);
+                    }
+                }
+                if (isDefaultErrorPageEnabled) {
+                    serveDefaultErrorPage(hreq, hres,
+                        responseFacade, statusCode);
+                }
             }
         }
 
@@ -137,7 +150,7 @@ class ApplicationDispatcherForward {
          * Commit the response only if no exception
          */
         if (statusCode < 400
-                || (exception == null && errorReportValveClass != null)) {
+                || (exception == null && hasErrorReportValve)) {
             closeResponse(response);
         }
     }

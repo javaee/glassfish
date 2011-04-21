@@ -43,6 +43,7 @@ package org.glassfish.deployment.admin;
 import java.net.URISyntaxException;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.ActionReport;
@@ -62,6 +63,7 @@ import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.*;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
+import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -248,6 +250,13 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                   name = sb.toString();
                 }
             }
+            // needs to be fixed in hk2, we don't generate the right innerclass index. it should use $
+            Collection<Interceptor> interceptors = habitat.getAllByContract("org.glassfish.deployment.admin.DeployCommand.Interceptor");
+            if (interceptors!=null) {
+                for (Interceptor interceptor : interceptors) {
+                    interceptor.intercept(this, initialContext);
+                }
+            }
             
             boolean isRegistered = deployment.isRegistered(name);
             isredeploy = isRegistered && force;
@@ -268,7 +277,16 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             // clean up any left over repository files
             if ( ! keepreposdir.booleanValue()) {
-                FileUtils.whack(new File(env.getApplicationRepositoryPath(), VersioningUtils.getRepositoryName(name)));
+                final File reposDir = new File(env.getApplicationRepositoryPath(), VersioningUtils.getRepositoryName(name));
+                if (reposDir.exists()) {
+                    /*
+                     * Delete the repository directory as an archive to allow
+                     * any special processing (such as stale file handling)
+                     * to run.
+                     */
+                    final FileArchive arch = DeploymentUtils.openAsFileArchive(reposDir, archiveFactory);
+                    arch.delete();
+                }
             }
 
             if (!DeploymentUtils.isDomainTarget(target) && enabled) {
@@ -454,7 +472,22 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 // to print the same message again
                 report.setFailureCause(null);
                 if (expansionDir!=null) {
-                   FileUtils.whack(expansionDir);
+                    final FileArchive arch;
+                        try {
+                            /*
+                             * Open and then delete the expansion directory as
+                             * a file archive so stale file handling can run.
+                             */
+                            arch = DeploymentUtils.openAsFileArchive(expansionDir, archiveFactory);
+                            arch.delete();
+                        } catch (IOException ex) {
+                            final String msg = localStrings.getLocalString(
+                                    "deploy.errDelRepos",
+                                    "Error deleting repository directory {0}",
+                                    expansionDir.getAbsolutePath());
+                            report.failure(logger, msg, ex);
+                        }
+
                 }
             }
         }
@@ -480,7 +513,10 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             final ExtendedDeploymentContext deploymentContext,
             final Logger logger) throws IOException {
         final File finalUploadDir = deploymentContext.getAppInternalDir();
-        finalUploadDir.mkdirs();
+        if ( ! finalUploadDir.mkdirs()) {
+            logger.log(Level.FINE," Attempting to create upload directory {0} was reported as failed; attempting to continue",
+                    new Object[] {finalUploadDir.getAbsolutePath()});
+        }
         safeCopyOfApp = renameUploadedFileOrCopyInPlaceFile(
                 finalUploadDir, originalPathValue, logger);
         safeCopyOfDeploymentPlan = renameUploadedFileOrCopyInPlaceFile(
@@ -514,7 +550,12 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
              */
             result = new File(finalUploadDir, fileParam.getName());
             FileUtils.renameFile(fileParam, result);
-            result.setLastModified(fileParam.lastModified());
+            if ( ! result.setLastModified(fileParam.lastModified())) { 
+                    logger.log(Level.FINE, "In renaming {0} to {1} could not setLastModified; continuing",
+                            new Object[] {fileParam.getAbsolutePath(),
+                                result.getAbsolutePath()
+                            });
+            }
         } else {
             final boolean copyInPlaceArchive = Boolean.valueOf(
                     System.getProperty(COPY_IN_PLACE_ARCHIVE_PROP_NAME, "true"));
@@ -526,7 +567,10 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 final long startTime = System.currentTimeMillis();
                 result = new File(finalUploadDir, fileParam.getName());
                 FileUtils.copy(fileParam, result);
-                result.setLastModified(fileParam.lastModified());
+                if ( ! result.setLastModified(fileParam.lastModified())) {
+                    logger.log(Level.FINE, "Could not set lastModified for {0}; continuing",
+                            result.getAbsolutePath());
+                }
                 if (logger.isLoggable(Level.FINE)) {
                     logger.log(Level.FINE, "*** In-place archive copy of {0} took {1} ms",
                             new Object[]{
@@ -789,5 +833,19 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             subReport.setMessage(warningMsg);
             context.getLogger().log(Level.WARNING, warningMsg);
         }
+    }
+
+    /**
+     * Crude interception mechanisms for deploy comamnd execution
+     */
+    @Contract
+    public interface Interceptor {
+        /**
+         * Called by the deployment command to intercept a deployment activity.
+         *
+         * @param self the deployment command in flight.
+         * @param context of the deployment
+         */
+        void intercept(DeployCommand self, DeploymentContext context);
     }
 }

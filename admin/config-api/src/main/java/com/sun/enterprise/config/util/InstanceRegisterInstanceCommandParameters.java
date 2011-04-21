@@ -54,7 +54,7 @@ import org.jvnet.hk2.config.types.Property;
  * 
  * @author Jennifer Chou
  */
-public class InstanceRegisterInstanceCommandParameters extends RegisterInstanceCommandParameters implements CommandParameters {
+public class InstanceRegisterInstanceCommandParameters extends RegisterInstanceCommandParameters {
 
     @Param(name = ParameterNames.PARAM_NODEDIR, optional = true)
     public String nodedir = null;

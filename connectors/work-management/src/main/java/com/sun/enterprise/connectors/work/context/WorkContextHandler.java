@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -78,10 +78,11 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
             new ArrayList<Class<? extends WorkContext>>();
     private static final Logger logger =
             LogDomains.getLogger(WorkCoordinator.class, LogDomains.RESOURCE_BUNDLE);
+    private final static Locale locale = Locale.getDefault();
+
     @Inject
     private ConnectorRuntime runtime ;
     private ClassLoader rarCL;
-    private String raName;
 
     static {
         containerSupportedContexts.add(TransactionContext.class);
@@ -98,7 +99,6 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
 
     public WorkContextHandler(ConnectorRuntime runtime, String raName, ClassLoader cl) {
         this.runtime = runtime;
-        this.raName = raName;
         this.rarCL = cl;
     }
 
@@ -106,7 +106,6 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
      * {@inheritDoc}
      */
     public void init(String raName, ClassLoader cl){
-        this.raName = raName;
         this.rarCL = cl;
     }
 
@@ -279,8 +278,8 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
     private boolean isUniqueSubmission(WorkContext ic, Collection<WorkContext> supportedContexts) {
         //TODO JSR-322-WORK-CONTEXT : can we use workContext.getName() ??
         for (WorkContext workContext : supportedContexts) {
-            String workContextName = workContext.getClass().getName().toLowerCase();
-            String icName = ic.getClass().getName().toLowerCase();
+            String workContextName = workContext.getClass().getName().toLowerCase(locale);
+            String icName = ic.getClass().getName().toLowerCase(locale);
             if (workContextName.equalsIgnoreCase(icName)) {
                 debug("Not a unique workContext submission : " + workContext.getClass().getName());
                 return false;
@@ -336,14 +335,10 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
 
     private void setupHintsContext(HintsContext ic, WorkContextLifecycleListener listener, OneWork work) {
         Map<String, Serializable> hints = ic.getHints();
-        for(String key : hints.keySet()){
-            if(HintsContext.NAME_HINT.equals(key)){
-                Object value = hints.get(key);
-                if(value != null){
-                    work.setName(value.toString());
-                    notifyContextSetupComplete(listener);
-                }
-            }
+        Object value = hints.get(HintsContext.NAME_HINT);
+        if(value != null){
+            work.setName(value.toString());
+            notifyContextSetupComplete(listener);
         }
     }
 

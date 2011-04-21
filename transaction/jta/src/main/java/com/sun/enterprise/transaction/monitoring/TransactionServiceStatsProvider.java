@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -125,7 +125,6 @@ public class TransactionServiceStatsProvider {
     @ManagedAttribute(id="activeids")
     @Description( "List of inflight transactions." )
     public StringStatistic getActiveIds() {
-        StringBuffer strBuf = new StringBuffer(1024);
 
         if (txMgr == null) {
             _logger.warning("transaction.monitor.tm_null");
@@ -134,6 +133,7 @@ public class TransactionServiceStatsProvider {
         }
 
         List aList = txMgr.getActiveTransactions();
+        StringBuffer strBuf = new StringBuffer(1024);
         if (!aList.isEmpty()) {
             //Set the headings for the tabular output
             int componentNameLength = COLUMN_LENGTH;
@@ -182,7 +182,7 @@ public class TransactionServiceStatsProvider {
 
         _logger.fine("Prepared inflightTransactions text: \n" + strBuf);
 
-        inflightTransactions.setCurrent((strBuf == null)? "" : strBuf.toString());
+        inflightTransactions.setCurrent(strBuf.toString());
         return inflightTransactions.getStatistic();
     }
     

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -274,7 +274,7 @@ public class EJBHandler extends AbstractResourceHandler {
             // Assume remote for now. We can't know for sure until the
             // post-validation stage.  Even though local business will 
             // probably be more common than remote business, defaulting 
-            // to remote business simplies the post-application 
+            // to remote business simplifies the post-application 
             // validation logic considerably.  See 
             // EjbBundleValidator.accept(EjbReferenceDescriptor) 
             // for more details.

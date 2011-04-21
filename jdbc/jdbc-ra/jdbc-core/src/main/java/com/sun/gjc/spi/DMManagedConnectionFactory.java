@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,6 +50,8 @@ import javax.resource.spi.ConnectionRequestInfo;
 import javax.resource.spi.security.PasswordCredential;
 import java.sql.DriverManager;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Set;
@@ -120,10 +122,12 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
         //Will return a set of properties that would have setURL and <url> as objects
         //Get a set of normal case properties
         Hashtable properties = dsObjBuilder.parseDriverProperties(spec, false);
-        Set<String> keys = (Set<String>)properties.keySet();
-        for( String key : keys ) {
+        Set<Map.Entry<String,Vector>> entries =
+                (Set<Map.Entry<String, Vector>>) properties.entrySet();
+        for(Map.Entry<String, Vector> entry : entries) {
             String value = null;
-            Vector values = (Vector) properties.get(key);
+            String key = (String) entry.getKey();
+            Vector values = (Vector) entry.getValue();
             if(!values.isEmpty() && values.size() == 1) {
                 value = (String) values.firstElement();
             } else if(values.size() > 1) {
@@ -137,7 +141,6 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
                 }
             }
         }
-
         try {
             if (cxRequestInfo != null) {
                 driverProps.setProperty("user", pc.getUserName());
@@ -197,7 +200,7 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
                     _logger.log(Level.FINE, "jdbc.exc_caught_ign", iobe.getMessage());
                 }
             }
-            if (parsedKey.equals("")) {
+            if (parsedKey != null && parsedKey.equals("")) {
                 throw new ResourceException("Invalid driver properties string - " +
                         "Key cannot be an empty string");
             }
@@ -267,7 +270,7 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
                         _logger.log(Level.FINE, "jdbc.exc_caught_ign", iobe.getMessage());
                     }
                 }
-                if (key.equals("")) {
+                if (key != null && key.equals("")) {
                     throw new ResourceException("Invalid driver properties string - " +
                             "Key cannot be an empty string");
                 }

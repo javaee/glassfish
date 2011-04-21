@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,12 +59,12 @@ public abstract class JControlPOA extends org.omg.PortableServer.Servant
   private static java.util.Hashtable _methods = new java.util.Hashtable ();
   static
   {
-    _methods.put ("getGlobalTID", new java.lang.Integer (0));
-    _methods.put ("getLocalTID", new java.lang.Integer (1));
-    _methods.put ("getTranState", new java.lang.Integer (2));
-    _methods.put ("setTranState", new java.lang.Integer (3));
-    _methods.put ("get_terminator", new java.lang.Integer (4));
-    _methods.put ("get_coordinator", new java.lang.Integer (5));
+    _methods.put ("getGlobalTID", 0);
+    _methods.put ("getLocalTID", 1);
+    _methods.put ("getTranState", 2);
+    _methods.put ("setTranState", 3);
+    _methods.put ("get_terminator", 4);
+    _methods.put ("get_coordinator", 5);
   }
 
   public org.omg.CORBA.portable.OutputStream _invoke (String $method,

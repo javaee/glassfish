@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -365,7 +365,10 @@ public class UpgradeStartup implements ModuleStartup {
         // get temporary file directory of the system and set targetDir to it
         File tmp = File.createTempFile("upgrade", null);
         String targetParentDir = tmp.getParent();
-        tmp.delete();
+        boolean isDeleted = tmp.delete();
+        if (!isDeleted) {
+            logger.log(Level.WARNING, "Error in deleting file " + tmp.getAbsolutePath());
+        }
 
         if (moduleType.equals(ServerTags.J2EE_APPLICATION)) {
             return repackageApplication(repositoryDir, targetParentDir, suffix);
@@ -383,7 +386,10 @@ public class UpgradeStartup implements ModuleStartup {
         File tempEar = new File(targetParentDir, appName + suffix);
 
         if (tempEar.exists()) {
-            tempEar.delete();
+            boolean isDeleted = tempEar.delete();
+            if (!isDeleted) {
+                logger.log(Level.WARNING, "Error in deleting file " + tempEar.getAbsolutePath());
+            }
         }
 
         WritableArchive target = archiveFactory.createArchive("jar", tempEar);
@@ -490,7 +496,10 @@ public class UpgradeStartup implements ModuleStartup {
         File tempJar = new File(targetParentDir, moduleName + suffix);
 
         if (tempJar.exists()) {
-            tempJar.delete();
+            boolean isDeleted = tempJar.delete();
+            if ( !isDeleted) {
+                logger.log(Level.WARNING, "Error in deleting file " + tempJar.getAbsolutePath());
+            }
         }
 
         WritableArchive target = archiveFactory.createArchive("jar", tempJar);
@@ -584,13 +593,12 @@ public class UpgradeStartup implements ModuleStartup {
     private void processManifest(Manifest m, String moduleName) {
         // remove signature related entries from the file
         Map<String, Attributes> entries = m.getEntries(); 
-        Iterator<String> entryKeyItr = entries.keySet().iterator(); 
-        while (entryKeyItr.hasNext()) {
-            String entryKey = entryKeyItr.next();
-            Attributes attr = entries.get(entryKey);
-            Iterator attrKeyItr  = attr.keySet().iterator();
-            while (attrKeyItr.hasNext()) {
-                Object attrKey = attrKeyItr.next();
+        Iterator<Map.Entry<String, Attributes>> entryItr = entries.entrySet().iterator(); 
+        while (entryItr.hasNext()) {
+            Attributes attr = entryItr.next().getValue();
+            Iterator<Map.Entry<Object, Object>> attrItr  = attr.entrySet().iterator();
+            while (attrItr.hasNext()) {
+                Object attrKey = attrItr.next().getKey();
                 if (attrKey instanceof Attributes.Name) {
                     Attributes.Name attrKey2 = (Attributes.Name) attrKey;
                     if (attrKey2.toString().trim().equals("Digest-Algorithms")
@@ -598,12 +606,12 @@ public class UpgradeStartup implements ModuleStartup {
                         logger.log(Level.INFO, "Removing signature attribute " 
                             + attrKey2 + " from manifest in "  + 
                             moduleName + "\n");
-                        attrKeyItr.remove();
+                        attrItr.remove();
                     }
                 }
             }
             if (attr.size() == 0) {
-                entryKeyItr.remove();
+                entryItr.remove();
             }
         }
     }

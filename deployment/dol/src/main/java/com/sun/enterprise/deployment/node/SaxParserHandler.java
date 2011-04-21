@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -124,7 +124,7 @@ public class SaxParserHandler extends DefaultHandler {
     }
     
     public SaxParserHandler() {
-        Init();
+        init();
 
         // Create helper class to manage namespace contexts.
         namespaces = new NamespaceSupport();
@@ -133,7 +133,7 @@ public class SaxParserHandler extends DefaultHandler {
     /**
         @return the Map of root nodes.
      */
-    private static void Init() {
+    private static void init() {
         if ( _MappingStuffInited ) {    // '_MappingStuffInited' MUST be 'volatile'
             return;
         }
@@ -383,7 +383,7 @@ public class SaxParserHandler extends DefaultHandler {
             Class rootNodeClass = (Class) _mappingStuff.mRootNodes.get(localName);
             if (rootNodeClass==null) {
                 DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
-                        new Object[] {localName , " not supprted !"});                
+                        new Object[] {localName , " not supported !"});                
 	        if (stopOnXMLErrors) {
                     throw new IllegalArgumentException(localStrings.getLocalString("invalid.root.element", "{0} Element [{1}] is not a valid root element", new Object[]{errorReportingString, localName}));
                 }

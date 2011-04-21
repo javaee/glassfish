@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -61,14 +61,12 @@ import java.io.*;
 import java.text.FieldPosition;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.*;
+import java.util.logging.Formatter;
 
 /**
  * GFFileHandler publishes formatted log Messages to a FILE.
@@ -143,6 +141,16 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
 
     boolean dayBasedFileRotation = false;
 
+    private String RECORD_BEGIN_MARKER = "[#|";
+    private String RECORD_END_MARKER = "|#]";
+    private String RECORD_FIELD_SEPARATOR = "|";
+    private String RECORD_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+
+    String recordBeginMarker;
+    String recordEndMarker;
+    String recordFieldSeparator;
+    String recordDateFormat;
+
     public void postConstruct() {
 
         LogManager manager = LogManager.getLogManager();
@@ -181,7 +189,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
         if (rotationOnDateChange != null && !("").equals(rotationOnDateChange.trim()) && Boolean.parseBoolean(rotationOnDateChange)) {
 
             dayBasedFileRotation = true;
-            
+
             Long rotationTimeLimitValue = 0L;
 
             int MILLIS_IN_DAY = 1000 * 60 * 60 * 24;
@@ -194,6 +202,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
             try {
                 nextDay = dateFormat.parse(nextDate);
             } catch (ParseException e) {
+                nextDay = new Date();
                 lr = new LogRecord(Level.WARNING,
                         "Cannot parse the date.");
                 lr.setThreadID((int) Thread.currentThread().getId());
@@ -212,7 +221,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
 
             LogRotationTimer.getInstance().startTimer(
                     new LogRotationTimerTask(rotationTask,
-                            rotationTimeLimitValue/60000));
+                            rotationTimeLimitValue / 60000));
             // Disable the Size Based Rotation if the Time Based
             // Rotation is set.
             setLimitForRotation(0);
@@ -224,7 +233,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                 rotationTimeLimitValue = Long.parseLong(manager.getProperty(cname + ".rotationTimelimitInMinutes"));
             } catch (NumberFormatException e) {
                 lr = new LogRecord(Level.SEVERE,
-                        "Cannot read rotationTimelimitInMinutes property from logging config file");
+                        "Can't find rotationTimelimitInMinutes property from logging config file");
                 lr.setThreadID((int) Thread.currentThread().getId());
                 this.publish(lr);
             }
@@ -255,7 +264,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                     rotationLimitAttrValue = Integer.parseInt(manager.getProperty(cname + ".rotationLimitInBytes"));
                 } catch (NumberFormatException e) {
                     lr = new LogRecord(Level.WARNING,
-                            "Cannot read rotationLimitInBytes property from logging config file. Using default.");
+                            "Can't find rotationLimitInBytes property from logging config file so using default.");
                     lr.setThreadID((int) Thread.currentThread().getId());
                     this.publish(lr);
                 }
@@ -273,7 +282,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                 flushFrequency = Integer.parseInt(manager.getProperty(cname + ".flushFrequency"));
             } catch (NumberFormatException e) {
                 lr = new LogRecord(Level.WARNING,
-                        "Cannot read flushFrequency property from logging config file. Using default.");
+                        "Can't find flushFrequency property from logging config file so using default.");
                 lr.setThreadID((int) Thread.currentThread().getId());
                 this.publish(lr);
 
@@ -282,14 +291,73 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
             flushFrequency = 1;
 
         String formatterName = manager.getProperty(cname + ".formatter");
-        if (formatterName == null || UniformLogFormatter.class.getName().equals(formatterName)) {
 
+        if (formatterName == null || UniformLogFormatter.class.getName().equals(formatterName)) {
+            UniformLogFormatter formatterClass = null;
             // set the formatter
             if (agent != null) {
-                setFormatter(new UniformLogFormatter(new AgentFormatterDelegate(agent)));
+                formatterClass = new UniformLogFormatter(new AgentFormatterDelegate(agent));
+                setFormatter(formatterClass);
             } else {
-                setFormatter(new UniformLogFormatter());
+                formatterClass = new UniformLogFormatter();
+                setFormatter(formatterClass);
             }
+
+            if (formatterClass != null) {
+                recordBeginMarker = manager.getProperty(cname + ".logFormatBeginMarker");
+                if (recordBeginMarker == null || ("").equals(recordBeginMarker)) {
+                    //lr = new LogRecord(Level.WARNING,
+                    //        "Record begin marker is not a proper value so using default.");
+                    //lr.setThreadID((int) Thread.currentThread().getId());
+                    //this.publish(lr);
+                    recordBeginMarker = RECORD_BEGIN_MARKER;
+                }
+
+                recordEndMarker = manager.getProperty(cname + ".logFormatEndMarker");
+                if (recordEndMarker == null || ("").equals(recordEndMarker)) {
+                    //lr = new LogRecord(Level.WARNING,
+                    //        "Record end marker is not a proper value so using default.");
+                    //lr.setThreadID((int) Thread.currentThread().getId());
+                    //this.publish(lr);
+                    recordEndMarker = RECORD_END_MARKER;
+                }
+
+                recordFieldSeparator = manager.getProperty(cname + ".logFormatFieldSeparator");
+                if (recordFieldSeparator == null || ("").equals(recordFieldSeparator) || recordFieldSeparator.length() > 1) {
+                    //lr = new LogRecord(Level.WARNING,
+                    //       "Log Format field separator is not a proper value so using default.");
+                    //lr.setThreadID((int) Thread.currentThread().getId());
+                    //this.publish(lr);
+                    recordFieldSeparator = RECORD_FIELD_SEPARATOR;
+                }
+
+                recordDateFormat = manager.getProperty(cname + ".logFormatDateFormat");
+                if (recordDateFormat != null && !("").equals(recordDateFormat)) {
+                    SimpleDateFormat sdf = new SimpleDateFormat(recordDateFormat);
+                    try {
+                        sdf.format(new Date());
+                    } catch (Exception e) {
+                        //lr = new LogRecord(Level.WARNING,
+                        //        "Date Format specified is wrong so using default.");
+                        //lr.setThreadID((int) Thread.currentThread().getId());
+                        //this.publish(lr);
+                        recordDateFormat = RECORD_DATE_FORMAT;
+                    }
+                } else {
+                    //lr = new LogRecord(Level.WARNING,
+                    //        "Date Format specified is wrong so using default.");
+                    //lr.setThreadID((int) Thread.currentThread().getId());
+                    //this.publish(lr);
+                    recordDateFormat = RECORD_DATE_FORMAT;
+                }
+
+                formatterClass.setRecordBeginMarker(recordBeginMarker);
+                formatterClass.setRecordEndMarker(recordEndMarker);
+                formatterClass.setRecordDateFormat(recordDateFormat);
+                formatterClass.setRecordFieldSeparator(recordFieldSeparator);
+
+            }
+
         } else {
             try {
                 setFormatter((Formatter) this.getClass().getClassLoader().loadClass(formatterName).newInstance());
@@ -315,7 +383,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
             maxHistoryFiles = Integer.parseInt(manager.getProperty(cname + ".maxHistoryFiles"));
         } catch (NumberFormatException e) {
             lr = new LogRecord(Level.WARNING,
-                    "Cannot read maxHistoryFiles property from logging config file. Using default.");
+                    "Can't find maxHistoryFiles property from logging config file so using default.");
             lr.setThreadID((int) Thread.currentThread().getId());
             this.publish(lr);
         }
@@ -326,7 +394,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
 
     public void preDestroy() {
         // stop the Queue consummer thread.
-        LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER).fine("Logger handler killed");
+        LogDomains.getLogger(GFFileHandler.class, LogDomains.CORE_LOGGER).fine("Logger handler killed");
         done.tryReleaseShared(1);
         pump.interrupt();
 
@@ -486,7 +554,12 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
         java.util.Arrays.sort(pathes);
         try {
             for (int i = 0; i < pathes.length - maxHistoryFiles; i++) {
-                new File((String) pathes[i]).delete();
+                File logFile = new File((String) pathes[i]);
+                boolean delFile = logFile.delete();
+                if(!delFile) {
+                    publish(new LogRecord(Level.SEVERE,
+                                    "Error, could not delete log file: " + logFile.getAbsolutePath()));    
+                }
             }
         } catch (Exception e) {
             new ErrorManager().error("FATAL ERROR: COULD NOT DELETE LOG FILE..",
@@ -534,8 +607,8 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                             // This will ensure that the log rotation timer
                             // will be restarted if there is a value set
                             // for time based log rotation
-                            if(dayBasedFileRotation) {
-                                LogRotationTimer.getInstance().restartTimerForDayBasedRotation();                                
+                            if (dayBasedFileRotation) {
+                                LogRotationTimer.getInstance().restartTimerForDayBasedRotation();
                             } else {
                                 LogRotationTimer.getInstance().restartTimer();
                             }

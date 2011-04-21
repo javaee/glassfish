@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -164,23 +164,26 @@ public class BasicPasswordAuthenticationService
                     ConnectorRuntime.getRuntime().getInvocationManager().getCurrentInvocation();
             EJBInvocation ejbInvocation = (EJBInvocation) componentInvocation;
             EJBContext ejbcontext = ejbInvocation.getEJBContext();
-            Set s = groupNameSecurityMap.keySet();
+            Set<Map.Entry> s = (Set<Map.Entry>) groupNameSecurityMap.entrySet();
             Iterator i = s.iterator();
-            while (i.hasNext()) {
-                String entry = (String) i.next();
+            while(i.hasNext()) {
+                Map.Entry mapEntry = (Map.Entry) i.next();
+                String key = (String) mapEntry.getKey();
+                Principal entry = (Principal) mapEntry.getValue();
+
                 boolean isInRole = false;
                 try {
-                    isInRole = ejbcontext.isCallerInRole(entry);
+                    isInRole = ejbcontext.isCallerInRole(key);
                 } catch (Exception ex) {
                     if(_logger.isLoggable(Level.FINE)) {
-                        _logger.log(Level.FINE, "BasicPasswordAuthentication::caller not in role " + entry);
+                        _logger.log(Level.FINE, "BasicPasswordAuthentication::caller not in role " + key);
                     }
                 }
                 if (isInRole) {
-                    return (Principal) groupNameSecurityMap.get(entry);
+                    return entry;
                 }
             }
-        }
+       }
 
         // Check if caller's group(s) is/are present in the Group Map
         for (int j = 0; j < groupNames.size(); j++) {
@@ -214,11 +217,9 @@ public class BasicPasswordAuthenticationService
                 securityRoleMapperFactory.getRoleMapper(wbd.getModuleID());
 
         Map<String, Subject> map = securityRoleMapper.getRoleToSubjectMapping();
-        Set<String> roleSet = map.keySet();
-        Iterator iter = roleSet.iterator();
-        while (iter.hasNext()) {
-            roleName = (String) iter.next();
-            Subject subject = (Subject) map.get(roleName);
+        for (Map.Entry<String, Subject> entry : map.entrySet()) {
+            roleName = entry.getKey();
+            Subject subject = entry.getValue();
             Set principalSet = subject.getPrincipals();
             if (principalSet.contains(callerPrincipal)) {
                 return roleName;

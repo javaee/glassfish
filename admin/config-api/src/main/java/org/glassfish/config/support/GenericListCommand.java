@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,7 +41,7 @@
 package org.glassfish.config.support;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.logging.LogDomains;
+import java.util.logging.Level;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -56,7 +56,6 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.*;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Generic list command implementation.
@@ -73,9 +72,7 @@ public class GenericListCommand  extends GenericCrudCommand implements AdminComm
     CommandModel model;
     Listing listing;
 
-
-    final static Logger logger = LogDomains.getLogger(GenericCreateCommand.class, LogDomains.ADMIN_LOGGER);
-
+    @Override
     public void postConstruct() {
 
         super.postConstruct();
@@ -91,7 +88,7 @@ public class GenericListCommand  extends GenericCrudCommand implements AdminComm
             if (logger.isLoggable(level)) {
                 for (String paramName : model.getParametersNames()) {
                     CommandModel.ParamModel param = model.getModelFor(paramName);
-                    logger.fine("I take " + param.getName() + " parameters");
+                    logger.log(Level.FINE, "I take {0} parameters", param.getName());
                 }
             }
         } catch(Exception e) {
@@ -106,6 +103,7 @@ public class GenericListCommand  extends GenericCrudCommand implements AdminComm
 
     }
 
+    @Override
     public void execute(final AdminCommandContext context) {
 
         final ActionReport result = context.getActionReport();

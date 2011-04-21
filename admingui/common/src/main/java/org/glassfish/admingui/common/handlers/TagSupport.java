@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,14 +40,10 @@
 
 package org.glassfish.admingui.common.handlers;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -56,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.prefs.Preferences;
+import org.glassfish.admingui.common.util.GuiUtil;
 
 /**
  *  <p>	This class provides API support for managing {@link Tag}s.</p>
@@ -265,8 +262,8 @@ public class TagSupport {
 	    // Include everything...
 	    results = new ArrayList<Tag>();
 	    Map<String, List<Tag>> map = maps[TAG_NAME_MAP_IDX];
-	    for (String key : map.keySet()) {
-		results.addAll(map.get(key));
+            for(Map.Entry<String,List<Tag>> e : map.entrySet()){
+		results.addAll(e.getValue());
 	    }
 	}
 
@@ -324,7 +321,7 @@ public class TagSupport {
 	if (tagName == null) {
 	    throw new IllegalArgumentException("Tag name cannot be null!");
 	}
-	return tagName.replaceAll("\\s", "").toLowerCase();
+	return tagName.replaceAll("\\s", "").toLowerCase(GuiUtil.guiLocale);
     }
 
     /**

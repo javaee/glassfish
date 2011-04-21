@@ -1246,43 +1246,6 @@ public class Connector
     };
 
 
-    // -------------------------------------------------- Private Methods
-
-    /**
-     * Log a message on the Logger associated with our Container (if any).
-     *
-     * @param message Message to be logged
-     */
-    private void log(String message) {
-        org.apache.catalina.Logger logger = container.getLogger();
-        String localName = "Connector";
-        if (logger != null) {
-            logger.log(localName + " " + message);
-        } else {
-            if (log.isLoggable(Level.INFO)) {
-                log.info(localName + " " + message);
-            }
-        }
-    }
-
-    /**
-     * Log a message on the Logger associated with our Container (if any).
-     *
-     * @param message Message to be logged
-     * @param t Associated exception
-     */
-    private void log(String message, Throwable t) {
-        org.apache.catalina.Logger logger = container.getLogger();
-        String localName = "Connector";
-        if (logger != null) {
-            logger.log(localName + " " + message, t,
-                org.apache.catalina.Logger.WARNING);
-        } else {
-            log.log(Level.WARNING, localName + " " + message, t);
-        }
-    }
-
-
     // ------------------------------------------------------ Lifecycle Methods
 
     /**

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,6 +52,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.*;
 import java.io.IOException;
 
@@ -99,8 +101,12 @@ public class AppLibClassLoaderServiceImpl {
             return connectorCL;
         }
 
-        ClassLoader commonCL = commonCLS.getCommonClassLoader();
-        DelegatingClassLoader applibCL = new DelegatingClassLoader(commonCL);
+        final ClassLoader commonCL = commonCLS.getCommonClassLoader();
+        DelegatingClassLoader applibCL = AccessController.doPrivileged(new PrivilegedAction<DelegatingClassLoader>() {
+                       public DelegatingClassLoader run() {
+                           return new DelegatingClassLoader(commonCL);
+                       }
+                   });
 
         // order of classfinders is important here :
         // connector's classfinders should be added before libraries' classfinders
@@ -137,8 +143,12 @@ public class AppLibClassLoaderServiceImpl {
      */
     public DelegatingClassLoader.ClassFinder getAppLibClassFinder(Collection<URI> libURIs)
             throws MalformedURLException {
-        ClassLoader commonCL = commonCLS.getCommonClassLoader();
-        DelegatingClassLoader appLibClassFinder = new AppLibClassFinder(commonCL);
+        final ClassLoader commonCL = commonCLS.getCommonClassLoader();
+        DelegatingClassLoader appLibClassFinder = AccessController.doPrivileged(new PrivilegedAction<DelegatingClassLoader>() {
+            public DelegatingClassLoader run() {
+                return new AppLibClassFinder(commonCL);
+            }
+        });
         addDelegates(libURIs, appLibClassFinder);
         return (DelegatingClassLoader.ClassFinder)appLibClassFinder;
     }

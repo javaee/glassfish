@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,9 +42,8 @@ package org.glassfish.admin.mbeanserver;
 
 
 import com.sun.logging.LogDomains;
-import java.util.logging.Logger;
 
-import org.glassfish.server.ServerEnvironmentImpl;
+import java.util.logging.Logger;
 
 /**
 Can't use things in amx-api, so a few methods are place here.
@@ -65,7 +64,7 @@ public final class Util
 
     public static Logger getLogger()
     {
-        return LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER);
+        return LogDomains.getLogger(Util.class, LogDomains.ADMIN_LOGGER);
     }
 
 }

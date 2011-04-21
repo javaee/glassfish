@@ -68,6 +68,7 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletRequest;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Factory for the creation and caching of Filters and creation
@@ -258,8 +259,8 @@ public final class ApplicationFilterFactory {
 
         // START SJSWS 6324431
         if (!caseSensitiveMapping) {
-            requestPath = requestPath.toLowerCase();
-            testPath = testPath.toLowerCase();
+            requestPath = requestPath.toLowerCase(Locale.ENGLISH);
+            testPath = testPath.toLowerCase(Locale.ENGLISH);
         }
         // END SJSWS 6324431
 

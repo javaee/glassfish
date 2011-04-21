@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -507,13 +507,14 @@ public final class EJBSecurityManager
             Map mpMap = eDescriptor.getMethodPermissionsFromDD();
             if (mpMap != null) {
 
-                Iterator mpIt = mpMap.keySet().iterator();
+                Iterator mpIt = mpMap.entrySet().iterator();
 
                 while (mpIt.hasNext()) {
 
-                    MethodPermission mp = (MethodPermission) mpIt.next();
+                    Map.Entry entry = (Map.Entry)mpIt.next();
+                    MethodPermission mp = (MethodPermission) entry.getKey();
 
-                    Iterator mdIt = ((ArrayList) mpMap.get(mp)).iterator();
+                    Iterator mdIt = ((ArrayList) entry.getValue()).iterator();
 
                     while (mdIt.hasNext()) {
 
@@ -588,12 +589,12 @@ public final class EJBSecurityManager
             }
             if (rolePermissionsTable != null) {
 
-                Iterator roleIt = rolePermissionsTable.keySet().iterator();
+                Iterator roleIt = rolePermissionsTable.entrySet().iterator();
 
                 while (roleIt.hasNext()) {
-                    String roleName = (String) roleIt.next();
-                    pc.addToRole(roleName,
-                            (Permissions) rolePermissionsTable.get(roleName));
+                    Map.Entry entry = (Map.Entry)roleIt.next();
+                    pc.addToRole((String) entry.getKey(),
+                            (Permissions) entry.getValue());
                 }
             }
         }
@@ -650,7 +651,7 @@ public final class EJBSecurityManager
                 _logger.fine("JACC: returning cached ProtectionDomain PrincipalSet: null");
             } else {
                 StringBuffer pBuf = null;
-                principals = (Principal[]) principalSet.toArray(new Principal[0]);
+                principals = (Principal[]) principalSet.toArray(new Principal[principalSet.size()]);
                 for (int i = 0; i < principals.length; i++) {
                     if (i == 0) pBuf = new StringBuffer(principals[i].toString());
                     else pBuf.append(" " + principals[i].toString());
@@ -786,10 +787,8 @@ public final class EJBSecurityManager
         // and preInvoke is not call before
         if ((!isWebService || (inv.getAuth() != null && inv.getAuth().booleanValue()))
                 && !inv.isPreInvokeDone()) {
-            if (runAs != null) {
-                inv.setOldSecurityContext(SecurityContext.getCurrent());
-                loginForRunAs();
-            }
+            inv.setOldSecurityContext(SecurityContext.getCurrent());
+            loginForRunAs();
             inv.setPreInvokeDone(true);
         }
     }

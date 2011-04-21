@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,16 +39,7 @@
  */
 package com.sun.enterprise.v3.services.impl;
 
-import com.sun.enterprise.config.serverbeans.Config;
 import java.beans.PropertyChangeEvent;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,6 +49,8 @@ import org.glassfish.grizzly.config.dom.Protocol;
 import org.glassfish.grizzly.config.dom.Ssl;
 import org.glassfish.grizzly.config.dom.ThreadPool;
 import org.glassfish.grizzly.config.dom.Transport;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.SystemProperty;
 import org.jvnet.hk2.config.Changed;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigListener;
@@ -76,8 +69,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
-import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.config.GrizzlyListener;
+import org.glassfish.grizzly.config.dom.NetworkConfig;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.SafeFutureImpl;
 
@@ -89,6 +82,7 @@ import org.glassfish.grizzly.impl.SafeFutureImpl;
 public class DynamicConfigListener implements ConfigListener {
     private static final String ADMIN_LISTENER = "admin-listener";
     private GrizzlyService grizzlyService;
+    private NetworkConfig networkConfig;
     private String config;
     private final Logger logger;
     private static final int RECONFIG_LOCK_TIMEOUT_SEC = 30;
@@ -136,6 +130,15 @@ public class DynamicConfigListener implements ConfigListener {
                         return notProcessed;
                     } else if (t instanceof VirtualServer && !grizzlyService.hasMapperUpdateListener()) {
                         return processVirtualServer(type, (VirtualServer) t);
+                    } else if (t instanceof SystemProperty) {
+                        if ((networkConfig != null) && ((SystemProperty)t).getName().endsWith("LISTENER_PORT")) {
+                            for (NetworkListener listener : networkConfig.getNetworkListeners().getNetworkListener()) {
+                                if (listener.getPort().equals(((SystemProperty)t).getValue())) {
+                                    return processNetworkListener(Changed.TYPE.CHANGE, listener, events);
+                                }
+                            }
+                        }
+                        return null;
                     }
                     return null;
                 }
@@ -207,7 +210,7 @@ public class DynamicConfigListener implements ConfigListener {
         while(bean != null && ! (bean instanceof Config)) {
             bean = bean.getParent();
         }
-        return bean instanceof Config ? ((Config) bean).getName() : "";
+        return bean != null ? ((Config) bean).getName() : "";
     }
 
     private boolean isAdminDynamic(PropertyChangeEvent[] events) {
@@ -248,6 +251,10 @@ public class DynamicConfigListener implements ConfigListener {
 
     public void setGrizzlyService(GrizzlyService grizzlyService) {
         this.grizzlyService = grizzlyService;
+    }
+
+    public void setNetworkConfig(NetworkConfig networkConfig) {
+        this.networkConfig = networkConfig;
     }
 
     public Logger getLogger() {

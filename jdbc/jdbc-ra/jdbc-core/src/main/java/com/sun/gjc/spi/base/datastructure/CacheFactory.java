@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,7 +42,6 @@ package com.sun.gjc.spi.base.datastructure;
 
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.gjc.common.DataSourceObjectBuilder;
-import com.sun.gjc.spi.ManagedConnectionFactory;
 import com.sun.logging.LogDomains;
 import org.glassfish.resource.common.PoolInfo;
 
@@ -61,7 +60,7 @@ import javax.resource.ResourceException;
  */
 public class CacheFactory {
     protected final static Logger _logger = 
-            LogDomains.getLogger(ManagedConnectionFactory.class, LogDomains.RSR_LOGGER);
+            LogDomains.getLogger(CacheFactory.class, LogDomains.RSR_LOGGER);
 
     protected final static StringManager localStrings =
             StringManager.getManager(DataSourceObjectBuilder.class);

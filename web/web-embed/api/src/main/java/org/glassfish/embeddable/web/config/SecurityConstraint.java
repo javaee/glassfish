@@ -72,6 +72,13 @@ public class SecurityConstraint {
     private TransportGuarantee tg;
 
     /**
+     * Create an instance of SecurityConstraint
+     */
+    public SecurityConstraint() {
+    }
+
+
+    /**
      * Sets the web resource collection associated with this
      * security constrint
      *

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -61,11 +61,9 @@ import javax.ws.rs.core.Response;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.util.zip.GZIPOutputStream;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.StreamingOutput;
@@ -161,9 +159,9 @@ public class LogViewerResource {
         long size = writeLogTo(start, spool);
 
         //       response.addHeader("X-Text-Size", String.valueOf(r));
-        if (!completed) {
+       // if (!completed) {
             //           response.addHeader("X-More-Data", "true");
-        }
+       // }
         if (size < 10000) {
             gzipOK = false;
         }

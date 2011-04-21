@@ -57,11 +57,12 @@
 
     <developers>
       <developer>
-            <id>hzhang</id>
+            <id>hzhang_jn</id>
             <name>Hong Zhang</name>
             <url>http://blogs.sun.com/misty</url>
             <organization>Oracle, Inc.</organization>
             <roles>
+                <role>lead</role>
                 <role>developer</role>
             </roles>
         </developer>

@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -48,6 +48,7 @@
     setPageSessionAttribute(key="showVS" value="#{false}")
     setPageSessionAttribute(key="showContextRoot" value="#{false}")
     setPageSessionAttribute(key="showAvailability" value="#{false}")
+    setPageSessionAttribute(key="showOsgiType" value="#{false}")
     setPageSessionAttribute(key="editPage" value="#{request.contextPath}/jca/apps/editRar.jsf")
     setPageSessionAttribute(key="hasPageTitleHelp" value="#{true}")
     setPageSessionAttribute(key="hasPageTitle" value="#{true}")

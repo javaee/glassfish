@@ -55,6 +55,8 @@ import java.io.FileReader;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.MalformedURLException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.*;
@@ -293,8 +295,8 @@ public class ASMainStatic extends ASMainNonOSGi {
     
         String punchins = props.getProperty("jre-1.6");
         StringTokenizer st = new StringTokenizer(punchins, ",");
-        List<String> p = new ArrayList<String>();
-        List<String> multiples = new ArrayList<String>();
+        final List<String> p = new ArrayList<String>();
+        final List<String> multiples = new ArrayList<String>();
         multiples.add("org.jvnet");
         multiples.add("org.glassfish");
         while (st.hasMoreTokens()) {
@@ -304,7 +306,12 @@ public class ASMainStatic extends ASMainNonOSGi {
             }
             p.add(tk.trim());
         }
-        return new MaskingClassLoader(parent, p, multiples, useExplicitSystemClassLoaderCalls);
+        return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+            @Override
+            public ClassLoader run() {
+                return new MaskingClassLoader(parent, p, multiples, useExplicitSystemClassLoaderCalls);
+            }
+        });
     }
     
 

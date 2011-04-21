@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -57,8 +57,6 @@ import java.security.Principal;
 public class HASingleSignOnEntry extends SingleSignOnEntry {
     protected long maxIdleTime;
 
-    protected long version;
-
     protected JavaEEIOUtils ioUtils;
 
     protected HASingleSignOnEntryMetadata metadata = null;
@@ -71,7 +69,7 @@ public class HASingleSignOnEntry extends SingleSignOnEntry {
     public HASingleSignOnEntry(Container container, HASingleSignOnEntryMetadata m,
             JavaEEIOUtils ioUtils) {
         this(m.getId(), null, m.getAuthType(),
-                m.getUsername(), m.getRealmName(),
+                m.getUserName(), m.getRealmName(),
                 m.getLastAccessTime(), m.getMaxIdleTime(), m.getVersion(),
                 ioUtils);
 
@@ -123,16 +121,15 @@ public class HASingleSignOnEntry extends SingleSignOnEntry {
             long lastAccessTime, long maxIdleTime, long version,
             JavaEEIOUtils ioUtils) {
         
-        super(id, principal, authType, username, realmName);
+        super(id, version, principal, authType, username, realmName);
         this.lastAccessTime = lastAccessTime;
         this.maxIdleTime = maxIdleTime;
-        this.version = version;
         this.ioUtils = ioUtils;
 
         metadata = new HASingleSignOnEntryMetadata(
-                id, convertToByteArray(principal), authType,
+                id, version, convertToByteArray(principal), authType,
                 username, realmName,
-                lastAccessTime, maxIdleTime, version);
+                lastAccessTime, maxIdleTime);
     }
 
     public HASingleSignOnEntryMetadata getMetadata() {
@@ -141,10 +138,6 @@ public class HASingleSignOnEntry extends SingleSignOnEntry {
 
     public long getMaxIdleTime() {
         return maxIdleTime;
-    }
-
-    public long getVersion() {
-        return version;
     }
 
     @Override
@@ -171,6 +164,13 @@ public class HASingleSignOnEntry extends SingleSignOnEntry {
         metadata.setLastAccessTime(lastAccessTime);
     }
 
+    @Override
+    public long incrementAndGetVersion() {
+        long ver = super.incrementAndGetVersion();
+        metadata.setVersion(ver);
+        return ver;
+    }
+
     // convert a Serializable object into byte array
     private byte[] convertToByteArray(Object obj) {
         ByteArrayOutputStream baos = null;
@@ -178,8 +178,8 @@ public class HASingleSignOnEntry extends SingleSignOnEntry {
         ObjectOutputStream oos = null;
         try {
             baos = new ByteArrayOutputStream();
-            bos = new BufferedOutputStream(bos);
-            oos = ioUtils.createObjectOutputStream(baos, true);
+            bos = new BufferedOutputStream(baos);
+            oos = ioUtils.createObjectOutputStream(bos, true);
             oos.writeObject(obj);
         } catch(Exception ex) {
             throw new IllegalStateException(ex);

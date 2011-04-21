@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -397,41 +397,59 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
         }
     }
 
-    /*
-      * remove the listed properties from the logging.properties file.
-      * The readConfiguration method is called on the logManager after updating the properties.
-      *
-      * @param properties Set of the names of properties to remove
+    /* delete the properties from logging.properties file.  properties is a Map of names of properties and
+      * their cooresponding value.
+      * 
+      * @param properties Map of the name and value of property to delete
       *
       * @throws  IOException
       */
-    public void removeLoggingProperties(Set<String> properties) throws IOException {
+
+    public void deleteLoggingProperties(Map<String, String> properties) throws IOException {
         try {
             openPropFile();
 
-            Iterator i = properties.iterator();
-            while (i.hasNext()) {
-                try {
-                    Object p = i.next();
-                    logger.log(Level.FINER, "Remove from logging.properties file property ", p);
-
-                    props.remove((String) p);
-                } catch (java.util.NoSuchElementException e) {
-                    //System.out.println("Attempt to remove nonexistent property "+e);
-                    Logger.getAnonymousLogger().log(Level.WARNING, "Attempt to remove nonexistent property ", e);
-                    // continue;
+            // need to map the name given to the new name in logging.properties file
+            String key = null;
+            for (Map.Entry<String, String> e : properties.entrySet()) {
+                key = LoggingXMLNames.xmltoPropsMap.get(e.getKey());
+                if (key == null) {
+                    key = e.getKey();
                 }
+                props.remove(key);
             }
-            closePropFile();
 
-            try {
-                logMgr.readConfiguration();
-            } catch (java.io.IOException e) {
-                Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot reconfigure LogManager : ", e);
-                throw new IOException();
+            closePropFile();
+        } catch (Exception e) {
+            // e.printStackTrace();
+        }
+    }
+
+    /* delete the properties from logging.properties file for given target.  properties is a Map of names of properties and
+      * their cooresponding value.
+      *
+      * @param properties Map of the name and value of property to delete
+      *
+      * @throws  IOException
+      */
+
+    public void deleteLoggingProperties(Map<String, String> properties, String targetConfigName) throws IOException {
+        try {
+            openPropFile(targetConfigName);
+
+            // need to map the name given to the new name in logging.properties file
+            String key = null;
+            for (Map.Entry<String, String> e : properties.entrySet()) {
+                key = LoggingXMLNames.xmltoPropsMap.get(e.getKey());
+                if (key == null) {
+                    key = e.getKey();
+                }
+                props.remove(key);
             }
-        } catch (IOException ex) {
-            throw ex;
+
+            closePropFile();
+        } catch (Exception e) {
+            // e.printStackTrace();
         }
     }
 
@@ -441,6 +459,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
       * @param sourceDir Directory underneath zip file should be created.
       *
       */
+
     private String getZipFileName(String sourceDir) {
 
         final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
@@ -461,12 +480,12 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
       *
       * @throws  IOException
       */
+
     public String createZipFile(String sourceDir) throws IOException {
 
         String zipFile = getZipFileName(sourceDir);
         boolean zipDone = false;
-        try
-        {
+        try {
             //create object of FileOutputStream
             FileOutputStream fout = new FileOutputStream(zipFile);
 
@@ -481,8 +500,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
             //close the ZipOutputStream
             zout.close();
         }
-        catch (IOException ioe)
-        {
+        catch (IOException ioe) {
             Logger.getAnonymousLogger().log(Level.SEVERE, "Error while creating zip file :", ioe);
             throw ioe;
         }
@@ -498,6 +516,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
       *
       * @throws  IOException
       */
+
     private boolean addDirectory(ZipOutputStream zout, File fileSource) throws IOException {
 
         boolean zipDone = false;
@@ -505,24 +524,21 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
         //get sub-folder/files list
         File[] files = fileSource.listFiles();
 
-        for (int i = 0; i < files.length; i++)
-        {
+        for (int i = 0; i < files.length; i++) {
             //if the file is directory, call the function recursively
-            if (files[i].isDirectory())
-            {
+            if (files[i].isDirectory()) {
                 addDirectory(zout, files[i]);
                 continue;
             }
 
-			if(files[i].getAbsolutePath().contains(".zip")) {
+            if (files[i].getAbsolutePath().contains(".zip")) {
                 continue;
             }
-             /*
-                    * we are here means, its file and not directory, so
-                    * add it to the zip file
-                    */
-            try
-            {
+            /*
+            * we are here means, its file and not directory, so
+            * add it to the zip file
+            */
+            try {
                 //create byte buffer
                 byte[] buffer = new byte[1024];
 
@@ -535,8 +551,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
                             * write the file.
                             */
                 int length;
-                while ((length = fin.read(buffer)) > 0)
-                {
+                while ((length = fin.read(buffer)) > 0) {
                     zout.write(buffer, 0, length);
                 }
 
@@ -553,12 +568,95 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
 
                 zipDone = true;
             }
-            catch (IOException ioe)
-            {
+            catch (IOException ioe) {
                 Logger.getAnonymousLogger().log(Level.SEVERE, "Error while creating zip file :", ioe);
                 throw ioe;
             }
         }
         return zipDone;
     }
+
+    /* Return a logging file details  in the logging.properties file.
+      * @throws  IOException
+      */
+
+    public String getLoggingFileDetails() throws IOException {
+        try {
+            if (!openPropFile())
+                return null;
+            Enumeration e = props.propertyNames();
+
+            while (e.hasMoreElements()) {
+                String key = (String) e.nextElement();
+                // convert the name in domain.xml to the name in logging.properties if needed
+                if (LoggingXMLNames.xmltoPropsMap.get(key) != null) {
+                    key = LoggingXMLNames.xmltoPropsMap.get(key);
+                }
+
+                if (key != null && key.equals("com.sun.enterprise.server.logging.GFFileHandler.file")) {
+                    return props.getProperty(key);
+                }
+            }
+        } catch (IOException ex) {
+            throw ex;
+        }
+        return null;
+    }
+
+    /* Return a logging file details  in the logging.properties file for given target.
+      * @throws  IOException
+      */
+
+    public String getLoggingFileDetails(String targetConfigName) throws IOException {
+        try {
+            if (!openPropFile(targetConfigName))
+                return null;
+            Enumeration e = props.propertyNames();
+
+            while (e.hasMoreElements()) {
+                String key = (String) e.nextElement();
+                // convert the name in domain.xml to the name in logging.properties if needed
+                if (LoggingXMLNames.xmltoPropsMap.get(key) != null) {
+                    key = LoggingXMLNames.xmltoPropsMap.get(key);
+                }
+
+                if (key != null && key.equals("com.sun.enterprise.server.logging.GFFileHandler.file")) {
+                    return props.getProperty(key);
+                }
+
+            }
+        } catch (IOException ex) {
+            throw ex;
+        }
+        return null;
+    }
+
+    /* Return a Map of all the properties and corresponding values from the logging.properties file from template..
+      * @throws  IOException
+      */
+
+    public Map<String, String> getDefaultLoggingProperties() throws IOException {
+        Map<String, String> m = new HashMap<String, String>();
+        String rootFolder = env.getProps().get(com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
+        String templateDir = rootFolder + File.separator + "lib" + File.separator + "templates";
+        File loggingTemplateFile = new File(templateDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
+
+        Properties propsLoggingTempleate = new Properties();
+        FileInputStream fisForLoggingTemplate = new java.io.FileInputStream(loggingTemplateFile);
+        propsLoggingTempleate.load(fisForLoggingTemplate);
+        fisForLoggingTemplate.close();
+
+        Enumeration e = propsLoggingTempleate.propertyNames();
+
+        while (e.hasMoreElements()) {
+            String key = (String) e.nextElement();
+            // convert the name in domain.xml to the name in logging.properties if needed
+            if (LoggingXMLNames.xmltoPropsMap.get(key) != null) {
+                key = LoggingXMLNames.xmltoPropsMap.get(key);
+            }
+            m.put(key, propsLoggingTempleate.getProperty(key));
+        }
+        return m;
+    }
+
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,12 +48,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.glassfish.deployment.client.DFDeploymentStatus;
-import org.glassfish.deployment.client.DeploymentFacility;
-import org.glassfish.deployment.client.DFProgressObject;
-import org.glassfish.deployment.client.DFDeploymentProperties;
-
-
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
@@ -71,6 +65,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.admingui.common.util.AppUtil;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.RestUtil;
@@ -98,6 +93,8 @@ public class DeploymentHandler {
         String filePath = (String) handlerCtx.getInputValue("filePath");
         Map allMaps = (Map) handlerCtx.getInputValue("allMaps");
         Map attrMap = new HashMap((Map) allMaps.get(appType));
+        Map payload = new HashMap();
+        List<String> appRefs = new ArrayList();
 
         if (GuiUtil.isEmpty(origPath)) {
             GuiUtil.getLogger().info("deploy(): origPath is NULL");
@@ -111,23 +108,18 @@ public class DeploymentHandler {
         }catch(Exception ex){
             //ignore
         }
-        String[] targets = (String[])handlerCtx.getInputValue("targets");
-        if (targets == null || targets.length==0)
-            targets = null;
-
-        DFDeploymentProperties deploymentProps = new DFDeploymentProperties();
+        
 
         /* Take care some special properties, such as VS  */
-
         //do not send VS if user didn't specify, refer to bug#6542276
-        String[] vs = (String[]) attrMap.get(DFDeploymentProperties.VIRTUAL_SERVERS);
+        String[] vs = (String[]) attrMap.get("virtualservers");
         if (vs != null && vs.length > 0) {
             if (!GuiUtil.isEmpty(vs[0])) {
                 String vsTargets = GuiUtil.arrayToString(vs, ",");
-                deploymentProps.setProperty(DFDeploymentProperties.VIRTUAL_SERVERS, vsTargets);
+                payload.put("virtualservers", vsTargets);
             }
         }
-        attrMap.remove(DFDeploymentProperties.VIRTUAL_SERVERS);
+        attrMap.remove("virtualservers");
 
         //Take care of checkBox
         List<String> convertToFalseList = (List) attrMap.get("convertToFalseList");
@@ -140,6 +132,8 @@ public class DeploymentHandler {
             attrMap.remove("convertToFalseList");
         }
 
+        StringBuilder sb = new StringBuilder();
+        String sep = "";
         Properties props = new Properties();
         for (Object attr : attrMap.keySet()) {
             String key = (String) attr;
@@ -151,10 +145,12 @@ public class DeploymentHandler {
             if (key.startsWith(prefix)) {
                 if (! value.equals("")){
                     props.setProperty(key.substring(prefix.length()), value);
+                    sb.append(sep).append(key.substring(prefix.length())).append("=").append(value);
+                    sep=":";
                 }
 
             } else {
-                deploymentProps.setProperty(key, value);
+                payload.put(key, value);
             }
         }
         // include any  additional property that user enters
@@ -183,25 +179,42 @@ public class DeploymentHandler {
 
             }
         }
-        if (props.size() > 0) {
-            deploymentProps.setProperties(props);
+        if (sb.length() > 0){
+            payload.put("properties", sb.toString());
         }
-
+        payload.put("id", filePath);
+        String[] targets = (String[])handlerCtx.getInputValue("targets");
+        if (targets == null || targets.length==0){
+            payload.put("target", "domain");
+        }else{
+            //deploy to the 1st target, and add ref to the remaining target.
+            payload.put("target", targets[0]);
+            for(int i=1; i< targets.length; i++){
+                appRefs.add(targets[i]);
+            }
+        }
         try {
-            DeployUtil.deploy(targets, deploymentProps, filePath, handlerCtx);
+            String prefix = (String) GuiUtil.getSessionValue("REST_URL");
+            RestUtil.restRequest(prefix +  "/applications/application", payload, "post", null, true);
+            //Create application-ref if needed.
+            if (appRefs.size() > 0){
+                List clusters = TargetUtil.getClusters();
+                List standalone = TargetUtil.getStandaloneInstances();
+                for(int i=0; i< appRefs.size(); i++){
+                    AppUtil.manageAppTarget((String)attrMap.get("name"), appRefs.get(i), true, (String)attrMap.get("enabled"), clusters, standalone, handlerCtx);
+                }
+            }
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
-
     }
 
     /**
      *  <p> This handler redeploy any application
      */
-    @Handler(id = "redeploy",
+    @Handler(id = "gf.redeploy",
     input = {
         @HandlerInput(name = "filePath", type = String.class, required = true),
-        @HandlerInput(name = "origPath", type = String.class, required = true),
         @HandlerInput(name = "deployMap", type = Map.class, required = true),
         @HandlerInput(name = "convertToFalse", type = List.class, required = true),
         @HandlerInput(name = "valueMap", type = Map.class, required = true)
@@ -209,7 +222,6 @@ public class DeploymentHandler {
     public static void redeploy(HandlerContext handlerCtx) {
         try {
             String filePath = (String) handlerCtx.getInputValue("filePath");
-            String origPath = (String) handlerCtx.getInputValue("origPath");
             Map<String,String> deployMap = (Map) handlerCtx.getInputValue("deployMap");
             Map<String,String> valueMap = (Map) handlerCtx.getInputValue("valueMap");
             List<String> convertToFalsList = (List<String>) handlerCtx.getInputValue("convertToFalse");
@@ -220,53 +232,51 @@ public class DeploymentHandler {
                 }
             }
             String appName = deployMap.get("appName");
-            DFDeploymentProperties deploymentProps = new DFDeploymentProperties();
+            Map payload = new HashMap();
 
              //If we are redeploying a web app, we want to preserve context root.
-             String ctxRoot = valueMap.get(DFDeploymentProperties.CONTEXT_ROOT);
+             String ctxRoot = valueMap.get("contextroot");
              if (ctxRoot != null){
-                 deploymentProps.setContextRoot(ctxRoot);
+                 payload.put("contextroot", ctxRoot);
              }
 
-             String availabilityEnabled = valueMap.get(DFDeploymentProperties.AVAILABILITY_ENABLED);
+             String availabilityEnabled = valueMap.get("availabilityenabled");
              if (availabilityEnabled != null){
-                deploymentProps.setAvailabilityEnabled(Boolean.parseBoolean(availabilityEnabled));
+                payload.put("availabilityenabled", Boolean.parseBoolean(availabilityEnabled));
              }
              String keepState = deployMap.get("keepState");
              if (keepState != null){
-                deploymentProps.setProperty("keepState", keepState);
+                payload.put("keepstate",keepState);
              }
 
-             deploymentProps.setForce(true);
-             deploymentProps.setUpload(false);
-             deploymentProps.setName(appName);
-             deploymentProps.setVerify(Boolean.parseBoolean(deployMap.get(DFDeploymentProperties.VERIFY)));
-             deploymentProps.setPrecompileJSP(Boolean.parseBoolean(deployMap.get(DFDeploymentProperties.PRECOMPILE_JSP)));
+             payload.put("id", filePath);
+             payload.put("force", "true");
+             payload.put("name", appName);
+             payload.put("verify", deployMap.get("verify"));
+             payload.put("precompilejsp", deployMap.get("precompilejsp"));
              if ("osgi".equals(deployMap.get("type"))){
-                 deploymentProps.setProperty("type", "osgi");
+                 payload.put("type", "osgi");
              }
-             Properties props = new Properties();
-             _setProps(deployMap, props, DFDeploymentProperties.DEPLOY_OPTION_JAVA_WEB_START_ENABLED);
-             _setProps(deployMap, props, "preserveAppScopedResources");
-             deploymentProps.setProperties(props);
 
-             //deploy to the same target
-             List<String> targetList = DeployUtil.getApplicationTarget(appName, "application-ref");
-             String[] targetArray = null;
-             if ( ! targetList.isEmpty()){
-                 targetArray = (String[])targetList.toArray(new String[targetList.size()]);
+             StringBuilder sb = new StringBuilder();
+             String sep = "";
+             if (deployMap.containsKey("java-web-start-enabled")){
+               sb.append("java-web-start-enabled").append(deployMap.get("java-web-start-enabled"));
+               sep = ":";
              }
-             DeployUtil.invokeDeploymentFacility( targetArray, deploymentProps, filePath, handlerCtx, "redeploy.warning");
-        } catch (Exception ex) {
+             if (deployMap.containsKey("preserveAppScopedResources")){
+                 sb.append(sep).append("preserveAppScopedResources").append(deployMap.get("preserveAppScopedResources"));
+             }
+             if (sb.length()> 0){
+                payload.put("properties", sb);
+             }
+
+             payload.put("target", "domain");
+             String prefix = (String) GuiUtil.getSessionValue("REST_URL");
+             RestUtil.restRequest(prefix +  "/applications/application", payload, "POST", null, true);
+         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
-        }
-    }
-
-    private static void _setProps(Map deployMap, Properties props, String pName){
-        String str = (String) deployMap.get(pName);
-        if (str != null){
-            props.setProperty(pName, str);
-        }
+         }
     }
 
     /**
@@ -282,51 +292,42 @@ public class DeploymentHandler {
 
         Object obj = handlerCtx.getInputValue("selectedRows");
 
-        Properties dProps = new Properties();
-//        if(appType.equals("connector")) {
-//                //Default cascade is true. May be we can issue a warning,
-//                //bcz undeploy will fail anyway if cascade is false.
-//                dProps.put(DFDeploymentProperties.CASCADE, "true");
-//        }
-
-        //List errorList = new ArrayList();
+        List warningList = new ArrayList();
         //List undeployedAppList = new ArrayList();
         List selectedRows = (List) obj;
-        DFProgressObject progressObject = null;
-        DeploymentFacility df = GuiUtil.getDeploymentFacility();
         //Hard coding to server, fix me for actual targets in EE.
         for (int i = 0; i < selectedRows.size(); i++) {
-            boolean domainOnly = false;
             Map oneRow = (Map) selectedRows.get(i);
             String appName = (String) oneRow.get("name");
             List targets = DeployUtil.getApplicationTarget(appName, "application-ref");
-            if (targets.isEmpty()){
-                targets.add("domain");
-                domainOnly = true;
-            }
 
-            String[] targetArray = (String[])targets.toArray(new String[targets.size()]);
-            progressObject = df.undeploy(df.createTargets(targetArray), appName, dProps);
-            progressObject.waitFor();
-            DFDeploymentStatus status = progressObject.getCompletedStatus();
-            //we DO want it to continue and call the rest handlers, ie navigate(). This will
-            //re-generate the table data because there may be some apps thats been undeployed 
-            //successfully.  If we stopProcessing, the table data is stale and still shows the
-            //app that has been gone.
-            if (DeployUtil.checkDeployStatus(status, handlerCtx, false, "undeploy.warning")) {
-                if(! domainOnly){
+            Map payload = new HashMap();
+            payload.put("target", "domain");
+            String prefix = (String) GuiUtil.getSessionValue("REST_URL");
+            try {
+                Map responseMap = RestUtil.restRequest(prefix +  "/applications/application/" + appName, payload, "DELETE", null, true, true);
+                if (targets.size() > 0){
                     removeFromDefaultWebModule(appName, targets);
                 }
-            }else{
-                //errorList.add(appName);
+                if (RestUtil.hasWarning(responseMap)){
+                    warningList.add(appName);
+                }
+            }catch(Exception ex){
+                //we DO want it to continue and call the rest handlers, ie navigate(). This will
+                //re-generate the table data because there may be some apps thats been undeployed
+                //successfully.  If we stopProcessing, the table data is stale and still shows the
+                //app that has been gone.
+
+                //TODO: we should display the list of warning that happens before.
+                GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), ex.getMessage());
                 return;
             }
+            
         }
-//        if (errorList.size() > 0){
-//            GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), GuiUtil.getMessage("msg.deploy.UndeployError") + " " + GuiUtil.listToString(errorList, ","));
-//        }
+        if (warningList.size() > 0){
+            GuiUtil.prepareAlert("warning", GuiUtil.getCommonMessage("msg.Undeployment.warning"),  GuiUtil.getCommonMessage("msg.referToApp") + warningList );
+        }
     }
-
 
     //For any undeployed applications, we need to ensure that it is no longer specified as the
     //default web module of any VS.
@@ -369,41 +370,7 @@ public class DeploymentHandler {
             }
         }
     }
-        
-    /**
-     *	<p> This handler takes in selected rows, and change the status of the app
-     *  <p> Input  value: "selectedRows" -- Type: <code>java.util.List</code></p>
-     *  <p> Input  value: "appType" -- Type: <code>String</code></p>
-     *  <p> Input  value: "enabled" -- Type: <code>Boolean</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id = "gf.changeAppStatus",
-    input = {
-        @HandlerInput(name = "selectedRows", type = List.class, required = true),
-        @HandlerInput(name = "target", type = String.class, defaultValue = "server"),
-        @HandlerInput(name = "enabled", type = Boolean.class, required = true)
-    })
-    public static void changeAppStatus(HandlerContext handlerCtx) {
-
-        List obj = (List) handlerCtx.getInputValue("selectedRows");
-        String target = (String) handlerCtx.getInputValue("target");
-        boolean enabled = ((Boolean) handlerCtx.getInputValue("enabled")).booleanValue();
-        DeploymentFacility df = GuiUtil.getDeploymentFacility();
-        //Hard coding to server, fix me for actual targets in EE.
-        List selectedRows = (List) obj;
-        for (int i = 0; i < selectedRows.size(); i++) {
-            Map oneRow = (Map) selectedRows.get(i);
-            String appName = (String) oneRow.get("name");
-            if (DeployUtil.enableApp(appName, target, handlerCtx, enabled)){
-                String msg = GuiUtil.getMessage((enabled) ? "msg.enableSuccessfulPE" : "msg.disableSuccessfulPE");
-                GuiUtil.prepareAlert("success", msg, null);
-            }else{
-                //stop changing other app status.
-                break;
-            }
-        }
-    }
-
+     
     /**
      *	<p> This method returns the deployment descriptors for a given app. </p>
      *
@@ -413,13 +380,11 @@ public class DeploymentHandler {
             
     @Handler(id = "gf.getDeploymentDescriptorList",
     input = {
-        @HandlerInput(name = "appName", type = String.class, required = true),
         @HandlerInput(name = "data", type = List.class, required = true)},
     output = {
         @HandlerOutput(name = "descriptors", type = List.class)
     })
     public static void getDeploymentDescriptorList(HandlerContext handlerCtx) {
-        String appName = (String) handlerCtx.getInputValue("appName");
         List<Map<String, Object>> ddList = (List) handlerCtx.getInputValue("data");
         List result = new ArrayList();
         if ((ddList != null) && ddList.size() > 0) {
@@ -438,7 +403,6 @@ public class DeploymentHandler {
 
     @Handler(id = "gf.getDeploymentDescriptor",
     input = {
-        @HandlerInput(name = "appName", type = String.class, required = true),
         @HandlerInput(name = "moduleName", type = String.class, required = true),
         @HandlerInput(name = "descriptorName", type = String.class, required = true),
         @HandlerInput(name = "data", type = List.class, required = true)
@@ -446,8 +410,7 @@ public class DeploymentHandler {
         @HandlerOutput(name = "content", type = String.class),
         @HandlerOutput(name = "encoding", type = String.class)
     })
-    public static void getDeploymentDesciptor(HandlerContext handlerCtx) {
-        String appName = (String) handlerCtx.getInputValue("appName");
+    public static void getDeploymentDescriptor(HandlerContext handlerCtx) {
         String moduleName = (String) handlerCtx.getInputValue("moduleName");
         if (moduleName == null){
             moduleName = "";   //for application.xml and sun-application.xml  where it is at top leverl, with a module name.

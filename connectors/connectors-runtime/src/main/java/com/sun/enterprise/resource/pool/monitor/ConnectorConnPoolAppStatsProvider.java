@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -80,14 +80,12 @@ public class ConnectorConnPoolAppStatsProvider {
     private CountStatisticImpl numConnReleased = new CountStatisticImpl(
             "NumConnReleased", StatisticImpl.UNIT_COUNT, "Number of logical " +
             "connections released to the pool.");
-    private final String JCA_APP_PROBE_LISTENER = "glassfish:connector-pool:applications:";
+    private static final String JCA_APP_PROBE_LISTENER = "glassfish:connector-pool:applications:";
 
     private String poolName;
     private String appName;
-    private PoolInfo poolInfo;
 
     public ConnectorConnPoolAppStatsProvider(PoolInfo poolInfo, String appName) {
-        this.poolInfo = poolInfo;
         this.poolName = poolInfo.getName();
         this.appName = appName;
     }

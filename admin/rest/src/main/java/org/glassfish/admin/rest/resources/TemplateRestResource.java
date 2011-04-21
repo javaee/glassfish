@@ -72,7 +72,7 @@ import static org.glassfish.admin.rest.Util.upperCaseFirstLetter;
  */
 @Produces({"text/html;qs=2", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
 @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-public class TemplateResource {
+public class TemplateRestResource {
     @Context
     protected HttpHeaders requestHeaders;
 
@@ -88,7 +88,7 @@ public class TemplateResource {
     protected Dom parent;
     protected String tagName;
     protected ConfigModel childModel; //good model even if the child entity is null
-    public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateResource.class);
+    public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateRestResource.class);
     final private static List<String> attributesToSkip = new ArrayList<String>() {
         {
             add("parent");
@@ -101,7 +101,7 @@ public class TemplateResource {
     /**
      * Creates a new instance of xxxResource
      */
-    public TemplateResource() {
+    public TemplateRestResource() {
     }
 
     @GET
@@ -141,12 +141,12 @@ public class TemplateResource {
             ActionReporter ar = Util.applyChanges(data, uriInfo, habitat);
             if(ar.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
                 //TODO better error handling.
-                return Response.status(400).entity(ResourceUtil.getActionReportResult(400, "Could not apply changes" + ar.getMessage(), requestHeaders, uriInfo)).build();
+                return Response.status(400).entity(ResourceUtil.getActionReportResult(400, ar, "Could not apply changes" + ar.getMessage(), requestHeaders, uriInfo)).build();
             }
 
             String successMessage = localStrings.getLocalString("rest.resource.update.message",
                     "\"{0}\" updated successfully.", uriInfo.getAbsolutePath());
-            return Response.ok(ResourceUtil.getActionReportResult(200, successMessage, requestHeaders, uriInfo)).build();
+            return Response.ok(ResourceUtil.getActionReportResult(200, ar, successMessage, requestHeaders, uriInfo)).build();
         } catch (Exception ex) {
             if (ex.getCause() instanceof ValidationException) {
                 return Response.status(400).entity(ResourceUtil.getActionReportResult(400, ex.getMessage(), requestHeaders, uriInfo)).build();
@@ -215,17 +215,17 @@ public class TemplateResource {
                 if (exitCode != ActionReport.ExitCode.FAILURE) {
                     String successMessage = localStrings.getLocalString("rest.resource.delete.message",
                             "\"{0}\" deleted successfully.", new Object[]{uriInfo.getAbsolutePath()});
-                    return Response.ok(ResourceUtil.getActionReportResult(200, successMessage, requestHeaders, uriInfo)).build(); //200 - ok
+                    return Response.ok(ResourceUtil.getActionReportResult(200, actionReport, successMessage, requestHeaders, uriInfo)).build(); //200 - ok
                 }
 
                 String errorMessage = actionReport.getMessage();
 
-                return Response.status(400).entity(ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo)).build(); //400 - bad request
+                return Response.status(400).entity(ResourceUtil.getActionReportResult(400, actionReport, errorMessage, requestHeaders, uriInfo)).build(); //400 - bad request
             }
 
             String message = localStrings.getLocalString("rest.resource.delete.forbidden",
                     "DELETE on \"{0}\" is forbidden.", new Object[]{uriInfo.getAbsolutePath()});
-            return Response.status(400).entity(ResourceUtil.getActionReportResult(403, message, requestHeaders, uriInfo)).build(); //403 - forbidden
+            return Response.status(400).entity(ResourceUtil.getActionReportResult(403, actionReport, message, requestHeaders, uriInfo)).build(); //403 - forbidden
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
@@ -295,7 +295,7 @@ public class TemplateResource {
             Set<String> ss = m1.keySet();
             for (String fieldName : ss) {
                 FormDataBodyPart n = formData.getField(fieldName);
-                Logger.getLogger(TemplateResource.class.getName()).log(Level.INFO, "fieldName=" + fieldName);
+                Logger.getLogger(TemplateRestResource.class.getName()).log(Level.INFO, "fieldName={0}", fieldName);
 
 
                 if (n.getContentDisposition().getFileName() != null) {//we have a file
@@ -321,7 +321,7 @@ public class TemplateResource {
 
                 } else {
                     try {
-                        Logger.getLogger(TemplateResource.class.getName()).log(Level.INFO, "Values=" + fieldName + " === " + n.getValue());
+                        Logger.getLogger(TemplateRestResource.class.getName()).log(Level.INFO, "Values={0} === {1}", new Object[]{fieldName, n.getValue()});
                         data.put(fieldName, n.getValue());
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -329,7 +329,7 @@ public class TemplateResource {
                 }
             }
         } catch (Exception ex) {
-            Logger.getLogger(TemplateResource.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TemplateRestResource.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             formData.cleanup();
         }
@@ -417,12 +417,12 @@ public class TemplateResource {
         File f = null;
         try {
             if (fileName.contains(".")) {
-                String prefix = fileName.substring(0, fileName.indexOf("."));
-                String suffix = fileName.substring(fileName.indexOf("."), fileName.length());
-                if (prefix.length() < 3) {
-                    prefix = "glassfish" + prefix;
-                }
-                f = File.createTempFile(prefix, suffix);
+                //String prefix = fileName.substring(0, fileName.indexOf("."));
+                // String suffix = fileName.substring(fileName.indexOf("."), fileName.length());
+                //if (prefix.length() < 3) {
+                //    prefix = "glassfish" + prefix;
+                //}
+                f = new File(new File(System.getProperty("java.io.tmpdir")), fileName);
             }
 
 
@@ -434,27 +434,18 @@ public class TemplateResource {
             }
             return f;
         } catch (IOException ex) {
-            Logger.getLogger(TemplateResource.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TemplateRestResource.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
                 if (out != null) {
                     out.close();
                 }
             } catch (IOException ex) {
-                Logger.getLogger(TemplateResource.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(TemplateRestResource.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return null;
     }
-
-    /*
-     * see if we can understand the ConfigBeans annotations like:
-     * @RestRedirects(
-    {
-    @RestRedirect(opType= RestRedirect.OpType.DELETE, commandName="undeploy"),
-    @RestRedirect(opType= RestRedirect.OpType.POST, commandName = "redeploy")
-    }
-     **/
 
     /**
      * Returns the list of command resource paths [command, http method, url/path]

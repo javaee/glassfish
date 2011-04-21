@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -104,7 +104,7 @@ import org.xml.sax.XMLReader;
  */
 public class AppClientFacade {
 
-    private static final String SUN_ACC_CONTENT_PROPERTY_NAME = "sun-acc.xml.content";
+    private static final String ACC_CONFIG_CONTENT_PROPERTY_NAME = "glassfish-acc.xml.content";
     private static final String MAN_PAGE_PATH = "/org/glassfish/appclient/client/acc/appclient.1m";
 
     private static final Class<?> stringsAnchor = ACCClassLoader.class;
@@ -555,15 +555,15 @@ public class AppClientFacade {
          * During a Java Web Start launch, the config is passed as a property
          * value.
          */
-        String configInProperty = System.getProperty(SUN_ACC_CONTENT_PROPERTY_NAME);
+        String configInProperty = System.getProperty(ACC_CONFIG_CONTENT_PROPERTY_NAME);
         if (configInProperty != null) {
             /*
-             * Awkwardly, the sun-acc.xml content refers to a config file.
+             * Awkwardly, the glassfish-acc.xml content refers to a config file.
              * We work around this for Java Web Start launch by capturing the
              * content of that config file into a property setting in the
              * generated JNLP document.  We need to write that content into
              * a temporary file here on the client and then replace a
-             * placeholder in the sun-acc.xml content with the path to that
+             * placeholder in the glassfish-acc.xml content with the path to that
              * temp file.
              */
             final File securityConfigTempFile = Util.writeTextToTempFile(
@@ -599,9 +599,9 @@ public class AppClientFacade {
         reader.setEntityResolver(new SaxParserHandlerBundled());
 
         /*
-         * To support installation-directory independence the default sun-acc.xml
+         * To support installation-directory independence the default glassfish-acc.xml
          * refers to the wss-config file using ${com.sun.aas.installRoot}...  So
-         * preprocess the sun-acc.xml file to replace any tokens with the
+         * preprocess the glassfish-acc.xml file to replace any tokens with the
          * corresponding values, then submit that result to JAXB.
          */
         InputSource inputSource = replaceTokensForParsing(configReader);

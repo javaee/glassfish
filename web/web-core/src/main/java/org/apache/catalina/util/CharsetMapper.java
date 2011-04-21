@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -125,13 +125,20 @@ public class CharsetMapper implements Cloneable {
      */
     public CharsetMapper(String name) {
 
+        InputStream stream = null;
         try {
-            InputStream stream =
-              this.getClass().getResourceAsStream(name);
+            stream =
+                this.getClass().getResourceAsStream(name);
             map.load(stream);
-            stream.close();
         } catch (Throwable t) {
             throw new IllegalArgumentException(t.toString());
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch(Throwable t2) {
+                }
+            }
         }
 
 

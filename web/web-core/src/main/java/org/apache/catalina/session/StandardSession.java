@@ -327,6 +327,11 @@ public class StandardSession
      */
     protected String ssoId = null;
 
+    /**
+     * single sign on version.
+     */
+    protected volatile long ssoVersion = 0L;
+
 
     // ----------------------------------------------------- Session Properties
 
@@ -350,7 +355,6 @@ public class StandardSession
      */
     public void setAuthType(String authType) {
 
-        String oldAuthType = this.authType;
         this.authType = authType;
     }
 
@@ -626,7 +630,6 @@ public class StandardSession
      */
     public void setPrincipal(Principal principal) {
 
-        Principal oldPrincipal = this.principal;
         this.principal = principal;
     }
 
@@ -1019,7 +1022,7 @@ public class StandardSession
 
         if (maxInactiveInterval >= 0
                 && (System.currentTimeMillis() - thisAccessedTime >=
-                    maxInactiveInterval * 1000)) {
+                    maxInactiveInterval * 1000L)) {
             return true;
         } else {
             return false;
@@ -1066,6 +1069,22 @@ public class StandardSession
      */
     public void setSsoId(String ssoId) {
         this.ssoId = ssoId;
+    }
+
+
+    /**
+     * Return the single sign on version.
+     */
+    public long getSsoVersion() {
+        return ssoVersion;
+    }
+
+
+    /**
+     * Set the single sign on version.
+     */
+    public void setSsoVersion(long value) {
+        ssoVersion = value;
     }
 
 

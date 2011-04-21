@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -343,28 +343,6 @@ public class JPAJava2DBProcessor {
         return providerClassName.equals(TOPLINK_PERSISTENCE_PROVIDER_CLASS_NAME_OLD) ||
                 providerClassName.equals(TOPLINK_PERSISTENCE_PROVIDER_CLASS_NAME_NEW) ||
                 providerClassName.equals(ECLIPSELINK_PERSISTENCE_PROVIDER_CLASS_NAME);
-    }
-
-   /**
-    * Create and read the ddl file constructing the proper disk location.
-    * @param bundle the persistence unit descriptor that is being worked on.
-    * @param fileName the name of the file.
-    * @param create true if this event results in creating tables.
-    * @return the jdbc ddl file.
-    */
-    private File getDDLFile(PersistenceUnitDescriptor bundle,
-            String fileName, boolean create) {
-        // Application location might be already set to the
-        // generated directory but that would happen only if the
-        // deploy happened in the same VM as a redeploy or an undeploy.
-        String appLocation = getPersistencePropVal(bundle,
-                providerPropertyNamesHolder.appLocation,
-                helper.getGeneratedLocation(bundle.getName()));
-
-        helper.setGeneratedLocation(appLocation, bundle.getName());
-
-        // Delegate the rest to the helper instance.
-        return helper.getDDLFile(appLocation + File.separator + fileName, create);
     }
 
     /**

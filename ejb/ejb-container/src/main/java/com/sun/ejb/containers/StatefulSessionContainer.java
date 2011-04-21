@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -143,7 +143,7 @@ public final class StatefulSessionContainer
 
     private long instanceCount = 1;
 
-    protected ArrayList passivationCandidates = new ArrayList();
+    private ArrayList passivationCandidates = new ArrayList();
     private Object asyncTaskSemaphore = new Object();
 
 
@@ -160,7 +160,7 @@ public final class StatefulSessionContainer
     private SFSBUUIDUtil uuidGenerator;
     private ArrayList scheduledTimerTasks = new ArrayList();
 
-    protected int statMethodReadyCount = 0;
+    private int statMethodReadyCount = 0;
 
     private Level TRACE_LEVEL = Level.FINE;
 
@@ -206,8 +206,6 @@ public final class StatefulSessionContainer
         super(conType, desc, loader);
         super.createCallFlowAgent(ComponentType.SFSB);
         this.ejbName = desc.getName();
-
-        EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) desc;
 
         this.traceInfoPrefix = "sfsb-" + ejbName + ": ";
     }
@@ -1221,7 +1219,6 @@ public final class StatefulSessionContainer
             if (ctx.getState() != BeanState.INVOKING) {
                 try {
                     // call ejbRemove on the bean
-                    Object ejb = ctx.getEJB();
                     ctx.setInEjbRemove(true);
                     interceptorManager.intercept(
                             CallbackType.PRE_DESTROY, ctx);
@@ -1283,12 +1280,12 @@ public final class StatefulSessionContainer
 
     EJBObjectImpl getEJBObjectImpl(byte[] instanceKey) {
         SessionContextImpl sc = _getContextForInstance(instanceKey);
-        return (sc != null) ? sc.getEJBObjectImpl() : null;
+        return sc.getEJBObjectImpl();
     }
 
     EJBObjectImpl getEJBRemoteBusinessObjectImpl(byte[] instanceKey) {
         SessionContextImpl sc = _getContextForInstance(instanceKey);
-        return (sc != null) ? sc.getEJBRemoteBusinessObjectImpl() : null;
+        return sc.getEJBRemoteBusinessObjectImpl();
     }
 
     /**
@@ -1427,8 +1424,8 @@ public final class StatefulSessionContainer
         }
 
         MethodLockInfo lockInfo = inv.invocationInfo.methodLockInfo;
-        boolean allowSerializedAccess = (lockInfo == null) ||
-                ( (lockInfo != null) && ( lockInfo.getTimeout() != CONCURRENCY_NOT_ALLOWED ));
+        boolean allowSerializedAccess = 
+                (lockInfo == null) || (lockInfo.getTimeout() != CONCURRENCY_NOT_ALLOWED);
 
         if( allowSerializedAccess ) {
 
@@ -1864,7 +1861,6 @@ public final class StatefulSessionContainer
         }
 
         SessionContextImpl sc = (SessionContextImpl) context;
-        Object ejb = sc.getEJB();
         boolean committed = (status == Status.STATUS_COMMITTED)
                 || (status == Status.STATUS_NO_TRANSACTION);
 
@@ -1941,7 +1937,7 @@ public final class StatefulSessionContainer
                     byte[] serializedState = IOUtils.serializeObject(sc, true);
                     simpleMetadata = new SimpleMetadata(sc.getVersion(),
                             System.currentTimeMillis(),
-                            removalGracePeriodInSeconds*1000, serializedState);
+                            removalGracePeriodInSeconds*1000L, serializedState);
                     simpleMetadata.setVersion(newCtxVersion);
                     interceptorManager.intercept(
                             CallbackType.POST_ACTIVATE, sc);
@@ -2774,12 +2770,12 @@ public final class StatefulSessionContainer
                 // We need to set the context class loader for
                 // this (deamon) thread!!
                 if (System.getSecurityManager() == null) {
-                    currentThread.setContextClassLoader(loader);
+                    currentThread.setContextClassLoader(myClassLoader);
                 } else {
                     java.security.AccessController.doPrivileged
                             (new java.security.PrivilegedAction() {
                                 public java.lang.Object run() {
-                                    currentThread.setContextClassLoader(loader);
+                                    currentThread.setContextClassLoader(myClassLoader);
                                     return null;
                                 }
                             });
@@ -2849,7 +2845,7 @@ public final class StatefulSessionContainer
             _logger.log(Level.FINE, "StatefulContainer Removing expired sessions....");
             long val = 0;
             if (backingStore != null) {
-                val = backingStore.removeExpired(this.removalGracePeriodInSeconds * 1000);
+                val = backingStore.removeExpired(this.removalGracePeriodInSeconds * 1000L);
             }
 
             if (cacheProbeNotifier != null) {
@@ -2920,7 +2916,7 @@ public final class StatefulSessionContainer
                     //TODO sc.getInstanceKey(), version);
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "Added [synced] version: "
-                        + sc.getVersion() + " for key: " + sc.getInstanceKey());
+                        + version + " for key: " + sc.getInstanceKey());
             }
         }
     }
@@ -2987,7 +2983,7 @@ public final class StatefulSessionContainer
                         SimpleMetadata beanState =
                                new SimpleMetadata(
                                         sc.getVersion(), sc.getLastAccessTime(),
-                                        removalGracePeriodInSeconds*1000, serializedState);
+                                        removalGracePeriodInSeconds*1000L, serializedState);
                         beanState.setVersion(newCtxVersion);
                         backingStore.save((Serializable) sc.getInstanceKey(), beanState, !sc.existsInStore());
 

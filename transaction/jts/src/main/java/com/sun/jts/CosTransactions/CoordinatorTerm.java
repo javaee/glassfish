@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -146,35 +146,6 @@ class CoordinatorTerm implements CompletionHandler {
 
     }
 
-    /**Cleans up the objects state.
-     *
-     * @param
-     *
-     * @return
-     *
-     * @see
-     */
-    /*
-    public void finalize() {
-
-        // If the transaction has not been completed as far as the CoordinatorTerm
-        // object is concerned, then roll back the Coordinator.
-
-        if( !completed ) {
-            completing = true;
-            try {
-                coordinator.rollback(true);
-            } catch( Throwable exc ) {
-            }
-            if( !subtransaction )
-                ((TopCoordinator)coordinator).afterCompletion(Status.StatusRolledBack);
-        }
-
-        coordinator = null;
-
-    }
-    */
-
     /**Informs the object that the transaction is to be committed.
      * <p>
      * Uses a private interface to pass the Terminator's commit request on to the
@@ -225,8 +196,7 @@ class CoordinatorTerm implements CompletionHandler {
         if( coordinator == null ) {
 			String msg = LogFormatter.getLocalizedMessage(_logger,
 									  "jts.no_coordinator_available");
-            LogicErrorException exc =
-                new LogicErrorException(msg);
+            LogicErrorException exc = new LogicErrorException(msg);
             throw exc;
         }
 
@@ -267,7 +237,7 @@ class CoordinatorTerm implements CompletionHandler {
                     !sameCoordinator ) {
                     establishedControl = new ControlImpl(null,coordinator,
                                                          new GlobalTID(coordinator.getGlobalTID()),
-                                                         new Long(coordinator.getLocalTID()));
+                                                         coordinator.getLocalTID());
                     CurrentTransaction.setCurrent(establishedControl,true);
                 }
             } catch( Throwable exc ) {
@@ -508,8 +478,7 @@ class CoordinatorTerm implements CompletionHandler {
 			 String msg = LogFormatter.getLocalizedMessage(_logger,
 			 							"jts.no_coordinator_available");
 			 						   
-            LogicErrorException exc =
-                new LogicErrorException(msg);
+            LogicErrorException exc = new LogicErrorException(msg);
             throw exc;
         }
 

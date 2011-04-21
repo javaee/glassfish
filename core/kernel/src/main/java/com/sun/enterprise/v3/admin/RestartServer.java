@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.ModulesRegistry;
@@ -64,7 +63,6 @@ import java.util.logging.*;
  * @author Byron Nevins
  */
 public class RestartServer {
-
     protected final void setDebug(Boolean b) {
         debug = b;
     }
@@ -207,7 +205,7 @@ public class RestartServer {
         return true;
     }
 
-    private final void handleDebug() {
+    private void handleDebug() {
         if (debug == null) // nothing to do!
             return;
 
@@ -279,12 +277,12 @@ public class RestartServer {
     private void stripOperandFromArgs() {
         // remove the domain-name operand
         // it may not be here!
-        if(args.length < 2 || !StringUtils.ok(serverName))
+        if (args.length < 2 || !StringUtils.ok(serverName))
             return;
 
         int newlen = args.length - 1;
 
-        if(serverName.equals(args[newlen])) {
+        if (serverName.equals(args[newlen])) {
             String[] newargs = new String[newlen];
             System.arraycopy(args, 0, newargs, 0, newlen);
             args = newargs;

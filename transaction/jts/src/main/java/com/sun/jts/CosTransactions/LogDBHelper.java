@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -112,10 +112,14 @@ class LogDBHelper {
                 return false;
             } finally {
                 try {
-                if (prepStmt1 != null) 
-                    prepStmt1.close();
-                if (conn != null)
-                    conn.close();
+                    if (prepStmt1 != null) 
+                        prepStmt1.close();
+                } catch (Exception ex1) {
+                    _logger.log(Level.SEVERE,"jts.exception_in_db_log_resource",ex1);
+                }
+                try {
+                    if (conn != null)
+                        conn.close();
                 } catch (Exception ex1) {
                     _logger.log(Level.SEVERE,"jts.exception_in_db_log_resource",ex1);
                 }
@@ -165,7 +169,7 @@ class LogDBHelper {
                 prepStmt1.setString(1,Configuration.getServerName());
                 rs = prepStmt1.executeQuery();
                 while (rs.next()) {
-                    Long localTID = new Long(rs.getLong(1));
+                    Long localTID = rs.getLong(1);
                     byte[] gtridbytes = rs.getBytes(3);
                     gtidMap.put(GlobalTID.fromTIDBytes(rs.getBytes(3)), localTID);
                 }
@@ -173,12 +177,20 @@ class LogDBHelper {
                 _logger.log(Level.SEVERE,"jts.exception_in_db_log_resource",ex);
             } finally {
                 try {
-                if (rs != null) 
-                    rs.close();
-                if (prepStmt1 != null) 
-                    prepStmt1.close();
-                if (conn != null)
-                    conn.close();
+                    if (rs != null) 
+                        rs.close();
+                } catch (Exception ex1) {
+                    _logger.log(Level.SEVERE,"jts.exception_in_db_log_resource",ex1);
+                }
+                try {
+                    if (prepStmt1 != null) 
+                        prepStmt1.close();
+                } catch (Exception ex1) {
+                    _logger.log(Level.SEVERE,"jts.exception_in_db_log_resource",ex1);
+                }
+                try {
+                    if (conn != null)
+                        conn.close();
                 } catch (Exception ex1) {
                     _logger.log(Level.SEVERE,"jts.exception_in_db_log_resource",ex1);
                 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -249,30 +249,6 @@ public abstract class AppClientInfo {
 
     protected ClassLoader getClassLoader() {
         return classLoader;
-    }
-
-    protected File createTmpArchiveDir(File forArchive) 
-        throws IOException {
-        /*
-         *Create a temporary file (cannot create temp directories directly),
-         *use the unique file name as a directory name.
-         */
-        String name = forArchive.getName();
-        
-        File tmpDir = File.createTempFile("acc-" + name, "");
-        tmpDir.delete();
-
-        tmpDir.mkdirs();
-
-        /*
-         *We will try to delete the directory when we finish with it, but this
-         *is a back-up.
-         */
-        if (!_keepExplodedDir) {
-            tmpDir.deleteOnExit();
-        }
-
-        return tmpDir;
     }
 
     protected void close() throws IOException {

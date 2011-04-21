@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,6 +60,7 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -204,7 +205,7 @@ public final class ConnectionPoolObjectsUtils {
      */
     public static int convertSpecTxSupportToContainerTxSupport(
             javax.resource.spi.TransactionSupport.TransactionSupportLevel mcfTS) {
-        int containerEquivalentValue = ConnectorConstants.UNDEFINED_TRANSACTION_INT;
+        int containerEquivalentValue ;
         switch (mcfTS) {
             case LocalTransaction:
                 containerEquivalentValue =  ConnectorConstants.LOCAL_TRANSACTION_INT;
@@ -214,6 +215,9 @@ public final class ConnectionPoolObjectsUtils {
                 break;
             case XATransaction:
                 containerEquivalentValue = ConnectorConstants.XA_TRANSACTION_INT;
+                break;
+            default :
+                containerEquivalentValue = ConnectorConstants.UNDEFINED_TRANSACTION_INT;
                 break;
         }
         if (_logger.isLoggable(Level.FINE)) {
@@ -436,7 +440,7 @@ public final class ConnectionPoolObjectsUtils {
         if ( prop == null ) {
             return defaultVal;
         }
-        return Boolean.valueOf(((String) prop).toLowerCase());
+        return Boolean.valueOf(((String) prop).toLowerCase(Locale.getDefault()));
      }
 
     public static int getTransactionSupportFromRaXml(String rarName) throws

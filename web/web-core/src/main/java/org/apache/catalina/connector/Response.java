@@ -81,6 +81,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.sun.appserv.ProxyHandler;
 import java.util.ArrayList;
+import java.util.Map;
 import org.apache.catalina.Connector;
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
@@ -1213,8 +1214,8 @@ public class Response
     public String encodeRedirectURL(String url) {
         if (isEncodeable(toAbsolute(url))) {
             String sessionVersion = null;
-            HashMap<String, String> sessionVersions = (HashMap<String, String>)
-                request.getAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE);
+            Map<String, String> sessionVersions = 
+                request.getSessionVersionsRequestAttribute();
             if (sessionVersions != null) {
                 sessionVersion = RequestUtil.createSessionVersionString(
                     sessionVersions);
@@ -1256,8 +1257,8 @@ public class Response
                 url = absolute;
             }
             String sessionVersion = null;
-            HashMap<String, String> sessionVersions = (HashMap<String, String>)
-                request.getAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE);
+            Map<String, String> sessionVersions = 
+                request.getSessionVersionsRequestAttribute();
             if (sessionVersions != null) {
                 sessionVersion = RequestUtil.createSessionVersionString(
                     sessionVersions);
@@ -1698,8 +1699,7 @@ public class Response
 
         boolean leadingSlash = location.startsWith("/");
 
-        if (leadingSlash 
-            || !leadingSlash && location.indexOf("://") == -1) {
+        if (leadingSlash || (location.indexOf("://") == -1)) {
 
             redirectURLCC.recycle();
 

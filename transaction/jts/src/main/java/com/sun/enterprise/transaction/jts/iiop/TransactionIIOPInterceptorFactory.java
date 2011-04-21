@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -81,9 +81,6 @@ public class TransactionIIOPInterceptorFactory implements IIOPInterceptorFactory
     // The log message bundle is in com.sun.jts package
     private static Logger _logger =
             LogDomains.getLogger(InterceptorImpl.class, LogDomains.TRANSACTION_LOGGER);
-
-    private static StringManager localStrings =
-            StringManager.getManager(InterceptorImpl.class);
 
     private static String jtsClassName = "com.sun.jts.CosTransactions.DefaultTransactionService";
 

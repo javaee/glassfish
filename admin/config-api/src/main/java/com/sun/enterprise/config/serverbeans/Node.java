@@ -44,10 +44,8 @@ import com.sun.enterprise.config.serverbeans.customvalidators.NotTargetKeyword;
 import com.sun.enterprise.config.serverbeans.customvalidators.NotDuplicateTargetName;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.net.NetUtils;
-import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.logging.LogDomains;
-import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -422,7 +420,6 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
                 PropertyVetoException, TransactionFailure{
             Logger logger = LogDomains.getLogger(Node.class, LogDomains.ADMIN_LOGGER);
             LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Node.class);
-            final ActionReport report = context.getActionReport();
             String nodeName = child.getName();
             
             if (nodeName.equals("localhost-" + domain.getName()))  { // can't delete localhost node

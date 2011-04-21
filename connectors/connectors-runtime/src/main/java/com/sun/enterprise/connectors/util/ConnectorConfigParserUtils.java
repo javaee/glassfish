@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -64,7 +64,7 @@ import javax.resource.spi.ResourceAdapterAssociation;
  */
 public class ConnectorConfigParserUtils {
 
-    static Logger _logger = LogDomains.getLogger(ConnectorRuntime.class, LogDomains.RSR_LOGGER);
+    private final static Logger _logger = LogDomains.getLogger(ConnectorConfigParserUtils.class, LogDomains.RSR_LOGGER);
 
     /**
      *  Default constructor.
@@ -206,9 +206,6 @@ public class ConnectorConfigParserUtils {
         Class loadedClass = javaBeanInstance.getClass();
 
         Method[] methods = loadedClass.getMethods();
-        if(methods == null) {
-            return null;
-        }
         Properties props = new Properties();
         String name = null;
         String value = null;
@@ -254,9 +251,6 @@ public class ConnectorConfigParserUtils {
         Class loadedClass = loadClass(className, rarName);
         Object loadedInstance = instantiate(loadedClass);
         Method[] methods = loadedClass.getMethods();
-        if(methods == null) {
-            return null;
-        }
         Properties props = new Properties();
         String name = null;
         String value = null;
@@ -367,9 +361,6 @@ public class ConnectorConfigParserUtils {
                                           Class loadedClass) {
 
         Method[] allMethods = loadedClass.getMethods();
-        if(allMethods == null) {
-            return null;
-        }
         int length = "set".length();
         String methodName = setMethod.getName();
         Class[] parameterTypes = null;
@@ -440,7 +431,7 @@ public class ConnectorConfigParserUtils {
 
     private String convertToString(Object obj) {
         if(obj == null) {
-            return new String();
+            return "";
         }
 
         if(obj instanceof String) {
@@ -455,7 +446,7 @@ public class ConnectorConfigParserUtils {
               obj instanceof Short ) {  
             return String.valueOf(obj);
         } else {
-            return new String();
+            return "";
         }
     }
   

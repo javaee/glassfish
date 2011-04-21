@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -147,8 +147,7 @@ public class TransactionManagerImpl implements TransactionManager {
         statusMap = new HashMap();
         int calcMaxStatus = 0;
         for (int i=0; i<CosTransactionStatus.length; i++) {
-            statusMap.put(CosTransactionStatus[i],
-                          new Integer(JTAStatus[i]));
+            statusMap.put(CosTransactionStatus[i], JTAStatus[i]);
             calcMaxStatus = Math.max(calcMaxStatus, CosTransactionStatus[i].value());
         }
         maxStatus = calcMaxStatus;
@@ -195,7 +194,11 @@ public class TransactionManagerImpl implements TransactionManager {
                 current = dts.get_current();
             }
 
+            // This will release locks in RecoveryManager which were created
+            // by RecoveryManager.initialize() call in the TransactionFactoryImpl constructor
+            // if startup recovery didn't happen yet.
             TransactionServiceProperties.initRecovery(true);
+
             // V2-commented-out transactionStates = new Hashtable();
         } catch (InvalidName inex) { 
 			_logger.log(Level.SEVERE,
@@ -641,18 +644,6 @@ public class TransactionManagerImpl implements TransactionManager {
         return new XATerminatorImpl();
     }
 
-    /**
-     * a simple assertion mechanism that print stack trace
-     * if assertion fails
-     */
-    static private void assert_prejdk14(boolean value) {
-        if (!value) {
-            Exception e = new Exception();
-			_logger.log(Level.WARNING,"jts.assert",e);
-        }
-    }
-
-	
   	//START IASRI 4706150 
 	/**
 	* used to set XAResource timeout
@@ -684,7 +675,7 @@ public class TransactionManagerImpl implements TransactionManager {
             try {
 	      tranState.beforeCompletion();
 	    }catch(XAException xaex){
-	      _logger.log(Level.WARNING,"jts.unexpected_xa_error_in_beforecompletion", new java.lang.Object[] {new Integer(xaex.errorCode), xaex.getMessage()});
+	      _logger.log(Level.WARNING,"jts.unexpected_xa_error_in_beforecompletion", new java.lang.Object[] {xaex.errorCode, xaex.getMessage()});
 	      _logger.log(Level.WARNING,"",xaex);
             } catch (Exception ex) {
 				_logger.log(Level.WARNING,"jts.unexpected_error_in_beforecompletion",ex);

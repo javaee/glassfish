@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -154,7 +154,7 @@ public class InstanceStateService implements Startup {
         }
     }
 
-    public InstanceState.StateType getState(String instanceName) {
+    public synchronized InstanceState.StateType getState(String instanceName) {
         init();
         InstanceState s = instanceStates.get(instanceName);
         if (s == null)
@@ -162,7 +162,7 @@ public class InstanceStateService implements Startup {
         return s.getState();
     }
 
-    public List<String> getFailedCommands(String instanceName) {
+    public synchronized List<String> getFailedCommands(String instanceName) {
         init();
         InstanceState s = instanceStates.get(instanceName);
         if(s == null)

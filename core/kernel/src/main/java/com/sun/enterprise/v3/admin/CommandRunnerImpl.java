@@ -50,6 +50,8 @@ import java.io.*;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
@@ -247,11 +249,9 @@ public class CommandRunnerImpl implements CommandRunner {
         ActionReport report = context.getActionReport();
         report.setActionDescription(model.getCommandName() + " command");
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        try {
+        if (command instanceof GenericCrudCommand) {
             GenericCrudCommand c = GenericCrudCommand.class.cast(command);
             c.setInjectionResolver(injector);
-        } catch(ClassCastException e) {
-            // do nothing.
         }
 
         // inject
@@ -723,7 +723,13 @@ public class CommandRunnerImpl implements CommandRunner {
         try {
             final Field f =
                 command.getClass().getDeclaredField("skipParamValidation");
-            f.setAccessible(true);
+            AccessController.doPrivileged(new PrivilegedAction<Object>() {
+                @Override
+                public Object run() {
+                    f.setAccessible(true);
+                    return null;
+                }
+            }) ;
             if (f.getType().isAssignableFrom(boolean.class)) {
                 return f.getBoolean(command);
             }
@@ -752,10 +758,9 @@ public class CommandRunnerImpl implements CommandRunner {
         } catch (Exception ex) {
             return null;
         } finally {
-            if (br != null)
-                try {
-                    br.close();
-                } catch (IOException ioex) { }
+            try {
+                br.close();
+            } catch (IOException ioex) { }
         }
     }
 
@@ -1280,11 +1285,17 @@ public class CommandRunnerImpl implements CommandRunner {
 
             // look for the name in the list of parameters passed.
             if (target instanceof Field) {
-                Field targetField = (Field) target;
+                final Field targetField = (Field) target;
                 try {
                     Field sourceField =
                         parameters.getClass().getField(targetField.getName());
-                    targetField.setAccessible(true);
+                    AccessController.doPrivileged(new PrivilegedAction<Object>() {
+                        @Override
+                        public Object run() {
+                            targetField.setAccessible(true);
+                            return null;
+                        }
+                    });
                     Object paramValue = sourceField.get(parameters);
                     /*
                      * If this field is a File, then replace the param value

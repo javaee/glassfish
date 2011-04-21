@@ -53,7 +53,7 @@ import org.glassfish.embeddable.web.config.SecurityConfig;
  * @author Jan Luehe
  */
 // TODO: Add support for configuring environment entries
-public interface Context extends ServletContext, Lifecycle {
+public interface Context extends ServletContext {
     
     /**
      * Adds the given <tt>Valve</tt> to this <tt>Context</tt>.

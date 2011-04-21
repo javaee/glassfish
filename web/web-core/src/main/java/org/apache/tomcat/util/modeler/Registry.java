@@ -422,7 +422,7 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
             ids.put( domain, id); 
         }
         int code=id[0]++;
-        domainTable.put( name, new Integer( code ));
+        domainTable.put( name, Integer.valueOf( code ));
         return code;
     }
     
@@ -468,7 +468,8 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
      * @since 1.0
      */
     public String[] findManagedBeans() {
-        return descriptors.keySet().toArray(new String[0]);
+        Set<String> keySet = descriptors.keySet();
+        return keySet.toArray(new String[keySet.size()]);
     }
 
 
@@ -486,8 +487,10 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
         Iterator<ManagedBean> items = descriptors.values().iterator();
         while (items.hasNext()) {
             ManagedBean item = items.next();
-            if ((group == null) && (item.getGroup() == null)) {
-                results.add(item.getName());
+            if (group == null) {
+                if (item.getGroup() == null) {
+                    results.add(item.getName());
+                }
             } else if (group.equals(item.getGroup())) {
                 results.add(item.getName());
             }
@@ -688,10 +691,10 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
             }
         } else if( "java.lang.Integer".equals( type ) ||
                 "int".equals( type )) {
-            objValue=new Integer( value );
+            objValue=Integer.valueOf( value );
         } else if( "java.lang.Boolean".equals( type ) ||
                 "boolean".equals( type )) {
-            objValue=new Boolean( value );
+            objValue=Boolean.valueOf( value );
         }
         return objValue;
     }
@@ -908,6 +911,7 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
         
         String className=type;
         String pkg=className;
+        // pkg.indexOf(".") must be greater than 0 for a valid package name.
         while( pkg.indexOf( ".") > 0 ) {
             int lastComp=pkg.lastIndexOf( ".");
             if( lastComp <= 0 ) return;

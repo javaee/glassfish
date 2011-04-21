@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.server.logging.logviewer.backend;
 
+import com.sun.common.util.logging.LoggingConfigImpl;
+import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -48,6 +50,7 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.TranslatedConfigView;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -91,6 +94,9 @@ public class LogFilter {
 
     @Inject
     private Habitat habitat;
+
+    @Inject
+    LoggingConfigImpl loggingConfig;
 
     private static final Logger logger =
             LogDomains.getLogger(LogFilter.class, LogDomains.CORE_LOGGER);
@@ -136,20 +142,31 @@ public class LogFilter {
         //return getLogRecordsUsingQuery(logFileName, fromRecord, next, forward, requestedCount,
         //        fromDate, toDate, logLevel, onlyLevel, listOfModules, nameValueMap, anySearch, "in2", false);
 
-
         LogFile logFile = null;
+        String logFileDetailsForServer = "";
+
+        try {
+            logFileDetailsForServer = loggingConfig.getLoggingFileDetails();
+            logFileDetailsForServer = TranslatedConfigView.getTranslatedValue(logFileDetailsForServer).toString();
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, "logging.backend.error.fetchrecord", ex);
+            return new AttributeList();
+        }
+
+
         if ((logFileName != null)
                 && (logFileName.length() != 0)) {
-            if (logFileName.contains("${com.sun.aas.instanceRoot}")) {
-                String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
-                String f = logFileName.replace("${com.sun.aas.instanceRoot}", instanceRoot);
-                logFileName = f;
+            logFileName = logFileDetailsForServer.substring(0, logFileDetailsForServer.lastIndexOf(File.separator)) + File.separator +
+                    logFileName.trim();
+            if (new File(logFileName).exists()) {
+                logFile = getLogFile(logFileName);
             } else {
-                logFileName = System.getProperty("com.sun.aas.instanceRoot") + File.separator + "logs" + File.separator + logFileName.trim();
+                logFileName = logFileDetailsForServer;
+                logFile = getLogFile(logFileName);
             }
-            logFile = getLogFile(logFileName);
         } else {
-            logFile = getLogFile();
+            logFileName = logFileDetailsForServer;
+            logFile = getLogFile(logFileName);
         }
         boolean forwd = (forward == null) ? true : forward.booleanValue();
         boolean nxt = (next == null) ? true : next.booleanValue();
@@ -195,7 +212,18 @@ public class LogFilter {
         Vector allInstanceFileNames = new Vector();
 
         if (targetServer.isDas()) {
-            File logsDir = new File(env.getDomainRoot() + File.separator + "logs");
+            String logFileDetailsForServer = "";
+
+            try {
+                // getting log file attribute value from logging.properties file
+                logFileDetailsForServer = loggingConfig.getLoggingFileDetails();
+                logFileDetailsForServer = TranslatedConfigView.getTranslatedValue(logFileDetailsForServer).toString();
+            } catch (Exception ex) {
+                logger.log(Level.SEVERE, "logging.backend.error.fetchrecord", ex);
+                return new Vector();
+            }
+
+            File logsDir = new File(logFileDetailsForServer.substring(0, logFileDetailsForServer.lastIndexOf(File.separator)));
             File allLogFileNames[] = logsDir.listFiles();
             for (File file : allLogFileNames) {
                 String fileName = file.getName();
@@ -206,13 +234,37 @@ public class LogFilter {
             }
         } else {
             try {
-                allInstanceFileNames = new LogFilterForInstance().getInstanceLogFileNames(habitat, targetServer, domain, logger, instanceName);
-            } catch (IOException ex) {
+                // getting log file attribute value from logging.properties file
+                String instanceLogFileDirectory = getInstanceLogFileDirectory(targetServer);
+                allInstanceFileNames = new LogFilterForInstance().getInstanceLogFileNames(habitat, targetServer, domain, logger, instanceName, instanceLogFileDirectory);
+            } catch (Exception ex) {
                 logger.log(Level.SEVERE, "logging.backend.error.fetchrecord", ex);
                 return new Vector();
             }
         }
         return allInstanceFileNames;
+    }
+
+    /*
+        This function is used to get log file details from logging.properties file for given target.
+     */
+
+    private String getInstanceLogFileDirectory(Server targetServer) throws IOException {
+
+        String logFileDetailsForServer = "";
+        String targetConfigName = "";
+
+        Cluster clusterForInstance = targetServer.getCluster();
+        if (clusterForInstance != null) {
+            targetConfigName = clusterForInstance.getConfigRef();
+        } else {
+            targetConfigName = targetServer.getConfigRef();
+        }
+
+        logFileDetailsForServer = loggingConfig.getLoggingFileDetails(targetConfigName);
+
+        return logFileDetailsForServer;
+
     }
 
 
@@ -239,17 +291,47 @@ public class LogFilter {
 
             String serverNode = targetServer.getNodeRef();
             Node node = domain.getNodes().getNode(serverNode);
+            String loggingDir = "";
+            String instanceLogFileName = "";
+            try {
+                // getting lof file details for given target.
+                instanceLogFileName = getInstanceLogFileDirectory(targetServer);
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "logging.backend.error.instance", e);
+                return new AttributeList();
+            }
+
+
             if (node.isLocal()) {
 
-                instanceLogFile = new File(env.getInstanceRoot().getAbsolutePath() + File.separator + ".." + File.separator
-                        + ".." + File.separator + "nodes" + File.separator + serverNode
-                        + File.separator + instanceName + File.separator + "logs" + File.separator + logFileName);
+                if (instanceLogFileName.contains("${com.sun.aas.instanceRoot}/logs")) {
+                    // this code is used if no changes made to log file name under logging.properties file
+                    loggingDir = env.getInstanceRoot().getAbsolutePath() + File.separator + ".." + File.separator
+                            + ".." + File.separator + "nodes" + File.separator + serverNode
+                            + File.separator + instanceName + File.separator + "logs";
+                    instanceLogFile = new File(loggingDir + File.separator + logFileName);
+
+                    // verifying loggingFile presents or not if not then changing logFileName value to server.log. It means wrong name is coming
+                    // from GUI to back end code.
+                    if (!instanceLogFile.exists()) {
+                        instanceLogFile = new File(loggingDir + File.separator + "server.log");
+                    }
+                } else {
+                    // this code is used when user changes the attributes value(com.sun.enterprise.server.logging.GFFileHandler.file) in
+                    // logging.properties file to something else.
+                    loggingDir = instanceLogFileName.substring(0, instanceLogFileName.lastIndexOf(File.separator));
+                    instanceLogFile = new File(loggingDir + File.separator + logFileName);
+                    if (!instanceLogFile.exists()) {
+                        instanceLogFile = new File(instanceLogFileName);
+                    }
+                }
 
             } else {
 
                 try {
+                    // this code is used when the node is not local.
                     instanceLogFile = new LogFilterForInstance().downloadGivenInstanceLogFile(habitat, targetServer,
-                            domain, logger, instanceName, env.getDomainRoot().getAbsolutePath(), logFileName);
+                            domain, logger, instanceName, env.getDomainRoot().getAbsolutePath(), logFileName, instanceLogFileName);
                 } catch (Exception e) {
                     logger.log(Level.SEVERE, "logging.backend.error.instance", e);
                     return new AttributeList();
@@ -441,7 +523,7 @@ public class LogFilter {
         while (iterator.hasNext()) {
             LogFile.LogEntry entry = (LogFile.LogEntry) iterator.next();
             ArrayList logRecord = new ArrayList();
-            logRecord.add(new Long(entry.getRecordNumber()));
+            logRecord.add(Long.valueOf(entry.getRecordNumber()));
             logRecord.add(entry.getLoggedDateTime());
             logRecord.add(entry.getLoggedLevel());
             logRecord.add(entry.getLoggedProduct());
@@ -508,38 +590,6 @@ public class LogFilter {
         }
         return logFile;
     }
-
-
-    /**
-     *
-     */
-    public synchronized void setLogFile(LogFile logFile) {
-        _logFile = logFile;
-    }
-
-
-    /**
-     * Utility method to replace the Module Names with their actual logger
-     * names.
-     */
-    protected void updateModuleList(List listOfModules) {
-        if (listOfModules == null) {
-            return;
-        }
-        Iterator iterator = listOfModules.iterator();
-        /*
-        int index = 0;
-        while (iterator.hasNext()) {
-            String[] loggerNames = ModuleToLoggerNameMapper.getLoggerNames(
-                ((String)iterator.next()).trim());
-            if (loggerNames!=null && loggerNames.length>0) {
-               listOfModules.set(index, loggerNames[0]);  //todo: support multiple loggers per module
-            }
-            index++;
-        }
-        */
-    }
-
 
     /**
      * This method accepts the first line of the Log Record and checks
@@ -685,7 +735,7 @@ public class LogFilter {
     }
 
 
-    protected static final String[] LOG_LEVELS = {"SEVERE", "WARNING",
+    static final String[] LOG_LEVELS = {"SEVERE", "WARNING",
             "INFO", "CONFIG", "FINE", "FINER", "FINEST"};
 
     private static SimpleDateFormat SIMPLE_DATE_FORMAT =

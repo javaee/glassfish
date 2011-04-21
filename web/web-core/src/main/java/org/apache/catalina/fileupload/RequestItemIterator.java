@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -89,7 +89,7 @@ import java.util.Map;
  */
 class RequestItemIterator {
 
-    private class RequestItemImpl implements RequestItem {
+    private static class RequestItemImpl implements RequestItem {
 
         // The file items content type.
         private final String contentType;
@@ -111,6 +111,8 @@ class RequestItemIterator {
 
         /**
          * Creates a new instance.
+         * @param multipart The multipart instance for accessing global properties
+         * @param multistream The multi part stream to process
          * @param pHeaders The item headers
          * @param pName The items file name, or null.
          * @param pFieldName The items field name.
@@ -119,7 +121,8 @@ class RequestItemIterator {
          * @param pContentLength The items content length, if known, or -1
          * @throws ServletException Creating the file item failed.
          */
-        RequestItemImpl(PartHeaders pHeaders, String pName, String pFieldName,
+        RequestItemImpl(Multipart multipart, MultipartStream multiStream,
+                    PartHeaders pHeaders, String pName, String pFieldName,
                     String pContentType, boolean pFormField,
                     long pContentLength) throws ServletException {
 
@@ -363,7 +366,8 @@ class RequestItemIterator {
                         continue;
                     }
                     String fileName = getFileName(headers);
-                    currentItem = new RequestItemImpl(headers, fileName,
+                    currentItem = new RequestItemImpl(
+                            multipart, multiStream, headers, fileName,
                             fieldName, headers.getHeader(CONTENT_TYPE),
                             fileName == null, getContentLength(headers));
                     notifier.noteItem();
@@ -373,7 +377,8 @@ class RequestItemIterator {
             } else {
                 String fileName = getFileName(headers);
                 if (fileName != null) {
-                    currentItem = new RequestItemImpl(headers, fileName,
+                    currentItem = new RequestItemImpl(
+                            multipart, multiStream, headers, fileName,
                             currentFieldName,
                             headers.getHeader(CONTENT_TYPE),
                             false, getContentLength(headers));
@@ -495,7 +500,8 @@ class RequestItemIterator {
             if (start == end) {
                 break;
             }
-            String header = headerPart.substring(start, end);
+            StringBuilder header =
+                new StringBuilder(headerPart.substring(start, end));
             start = end + 2;
             while (start < len) {
                 int nonWs = start;
@@ -511,17 +517,17 @@ class RequestItemIterator {
                 }
                 // Continuation line found
                 end = parseEndOfLine(headerPart, nonWs);
-                header += " " + headerPart.substring(nonWs, end);
+                header.append(" ").append(headerPart.substring(nonWs, end));
                 start = end + 2;
             }
-            final int colonOffset = header.indexOf(':');
+            final int colonOffset = header.indexOf(":");
             if (colonOffset == -1) {
                 // This header line is malformed, skip it.
                 continue;
             }
             String headerName = header.substring(0, colonOffset).trim();
             String headerValue =
-                header.substring(header.indexOf(':') + 1).trim();
+                header.substring(header.indexOf(":") + 1).trim();
             headers.addHeader(headerName, headerValue);
         }
         return headers;

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -87,14 +87,13 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
     Map<String, Object> modulesMetaData = new HashMap<String, Object>();
     List<ClassFileTransformer> transformers = new ArrayList<ClassFileTransformer>();
     Phase phase = Phase.UNKNOWN;
-    boolean finalClassLoaderAccessedDuringPrepare = false;
-    boolean tempClassLoaderInvalidated = false;
     ClassLoader sharableTemp = null;
     Map<String, Properties> modulePropsMap = new HashMap<String, Properties>();
     Map<String, Object> transientAppMetaData = new HashMap<String, Object>();
     Map<String, ArchiveHandler> moduleArchiveHandlers = new HashMap<String, ArchiveHandler>();
     Map<String, ExtendedDeploymentContext> moduleDeploymentContexts = new HashMap<String, ExtendedDeploymentContext>();
     ExtendedDeploymentContext parentContext = null;
+    String moduleUri = null;
 
     /** Creates a new instance of DeploymentContext */
     public DeploymentContextImpl(Deployment.DeploymentContextBuilder builder, ServerEnvironment env) {
@@ -139,7 +138,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
         return logger;
     }
 
-    public void preDestroy() {
+    public synchronized void preDestroy() {
         try {
             PreDestroy.class.cast(sharableTemp).preDestroy();
         } catch (Exception e) {
@@ -191,7 +190,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
 
     // this classloader will be used for sniffer retrieval, metadata parsing 
     // and the prepare
-    public void createDeploymentClassLoader(ClassLoaderHierarchy clh, ArchiveHandler handler)
+    public synchronized void createDeploymentClassLoader(ClassLoaderHierarchy clh, ArchiveHandler handler)
             throws URISyntaxException, MalformedURLException {
         this.addTransientAppMetaData(ExtendedDeploymentContext.IS_TEMP_CLASSLOADER, Boolean.TRUE);
         this.sharableTemp = createClassLoader(clh, handler, null); 
@@ -253,8 +252,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
         File rootScratchDir = env.getApplicationStubPath();
         if (subDirName != null )
             rootScratchDir = new File(rootScratchDir, subDirName);
-        String appDirName = parameters.name();
-        appDirName = VersioningUtils.getRepositoryName(parameters.name());
+        String appDirName = VersioningUtils.getRepositoryName(parameters.name());
         return new File(rootScratchDir, appDirName);
     }
 
@@ -476,6 +474,24 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
      */
     public ExtendedDeploymentContext getParentContext() {
         return parentContext;
+    }
+
+    /**
+     * Gets the module uri for this module context
+     *
+     * @return the module uri
+     */
+    public String getModuleUri() {
+        return moduleUri;
+    }
+
+   /**
+     * Sets the module uri for this module context
+     *
+     * @param moduleUri
+     */
+    public void setModuleUri(String moduleUri) {
+        this.moduleUri = moduleUri;
     }
 
 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -57,23 +57,6 @@ import org.glassfish.admingui.common.util.GuiUtil;
  * @author Anissa Lam
  */
 public class WebHandlers {
-
-
-    private static void putA(Map nMap, Map attrMap, String key){
-        String val = (String) attrMap.get(key);
-        if (! GuiUtil.isEmpty(val)){
-            nMap.put(key, val);
-        }
-    }
-
-    private static void putA(Map nMap, Map attrMap, String key, String defaultValue){
-        String val = (String) attrMap.get(key);
-        if (! GuiUtil.isEmpty(val)){
-            nMap.put(key, val);
-        }else{
-            nMap.put(key, defaultValue);
-        }
-    }
 
     @Handler(id="changeNetworkListenersInVS",
     input={

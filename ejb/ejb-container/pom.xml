@@ -62,7 +62,6 @@
             <url>http://forum.java.sun.com/profile.jspa?userID=487934</url>
             <organization>Oracle, Inc.</organization>
             <roles>
-                <role>lead</role>
                 <role>developer</role>
             </roles>
         </developer>
@@ -71,10 +70,19 @@
             <name>Marina Vatkina</name>
             <organization>Oracle, Inc.</organization>
             <roles>
+                <role>lead</role>
                 <role>developer</role>
             </roles>
         </developer>
-    </developers>
+        <developer>
+            <id>cf126330</id>
+            <name>Cheng Fang</name>
+            <organization>Oracle, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+     </developers>
 
     <properties>
         <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>

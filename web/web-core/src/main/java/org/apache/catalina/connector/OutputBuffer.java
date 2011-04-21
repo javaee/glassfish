@@ -58,16 +58,18 @@
 
 package org.apache.catalina.connector;
 
+import org.apache.catalina.core.StandardHost;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.Writer;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpSession;
 
 import org.apache.catalina.Globals;
 import org.apache.catalina.Session;
@@ -680,6 +682,7 @@ public class OutputBuffer extends Writer
             addSessionCookieWithJReplica(req, ctx, sess);
             addPersistedSessionCookie(req, ctx, sess);
             addJrouteCookie(req, ctx, sess);
+            addSsoVersionCookie(req, ctx);
         }
     }
 
@@ -688,8 +691,8 @@ public class OutputBuffer extends Writer
      */
     private void addSessionVersionCookie(Request request,
                                          StandardContext context) {
-        HashMap<String, String> sessionVersions = (HashMap<String, String>)
-            request.getAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE);
+        Map<String, String> sessionVersions =
+            request.getSessionVersionsRequestAttribute();
         if (sessionVersions != null) {
             Cookie cookie = new Cookie(
                 Globals.SESSION_VERSION_COOKIE_NAME,
@@ -755,6 +758,33 @@ public class OutputBuffer extends Writer
 
     }
 
+    /**
+     * Adds JSESSIONSSOVERSION cookie
+     */
+    private void addSsoVersionCookie(Request request, StandardContext ctx) {
+
+        Long ssoVersion = (Long)request.getNote(
+                org.apache.catalina.authenticator.Constants.REQ_SSO_VERSION_NOTE);
+        if (ssoVersion != null) {
+            Cookie cookie = new Cookie(
+                    org.apache.catalina.authenticator.Constants.SINGLE_SIGN_ON_VERSION_COOKIE,
+                    ssoVersion.toString());
+            cookie.setMaxAge(-1);
+            cookie.setPath("/");
+            StandardHost host = (StandardHost) ctx.getParent();
+            HttpServletRequest hreq =
+                    (HttpServletRequest)request.getRequest();
+            if (host != null) {
+                host.configureSingleSignOnCookieSecure(cookie, hreq);
+                host.configureSingleSignOnCookieHttpOnly(cookie);
+            } else {
+                cookie.setSecure(hreq.isSecure());
+            }
+
+            response.addHeader(SET_COOKIE_HEADER,
+                    coyoteResponse.getCookieString(cookie));
+        }
+    }
 
     private void addPersistedSessionCookie(Request request, StandardContext ctx,
             Session sess) throws IOException {

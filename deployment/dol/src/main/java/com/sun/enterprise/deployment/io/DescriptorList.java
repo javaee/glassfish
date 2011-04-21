@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,31 +54,31 @@ import com.sun.enterprise.deployment.util.XModuleType;
 
 public class DescriptorList {
 
-	public final static String [] earList = {
+	private final static String [] earList = {
 		DescriptorConstants.APPLICATION_DD_ENTRY,
 		DescriptorConstants.S1AS_APPLICATION_DD_ENTRY
 	};
 
-	public final static String [] ejbList = {
+	private final static String [] ejbList = {
 		DescriptorConstants.EJB_DD_ENTRY,
 		DescriptorConstants.S1AS_EJB_DD_ENTRY,
 		DescriptorConstants.S1AS_CMP_MAPPING_DD_ENTRY,
 		DescriptorConstants.EJB_WEBSERVICES_JAR_ENTRY
 	};
 
-	public final static String [] warList = {
+	private final static String [] warList = {
 		DescriptorConstants.WEB_DD_ENTRY,
 		DescriptorConstants.S1AS_WEB_DD_ENTRY,
 		DescriptorConstants.WEB_WEBSERVICES_JAR_ENTRY,
 		DescriptorConstants.JAXRPC_JAR_ENTRY
 	};
 
-	public final static String [] rarList = {
+	private final static String [] rarList = {
 		DescriptorConstants.RAR_DD_ENTRY,
 		DescriptorConstants.S1AS_RAR_DD_ENTRY
 	};
 
-	public final static String [] carList = {
+	private final static String [] carList = {
 		DescriptorConstants.APP_CLIENT_DD_ENTRY,
 		DescriptorConstants.S1AS_APP_CLIENT_DD_ENTRY
 	};
@@ -86,15 +86,15 @@ public class DescriptorList {
 	public final static String [] getDescriptorsList (XModuleType moduleType) {
 		if (moduleType == null) return null;
 		if (moduleType == XModuleType.EAR) {
-			return earList;
+			return (String[])earList.clone();
 		} else if (moduleType == XModuleType.EJB) {
-			return ejbList;
+			return (String[])ejbList.clone();
 		} else if (moduleType == XModuleType.WAR) {
-			return warList;
+			return (String[])warList.clone();
 		} else if (moduleType == XModuleType.RAR) {
-			return rarList;
+			return (String[])rarList.clone();
 		} else if (moduleType == XModuleType.CAR) {
-			return carList;
+			return (String[])carList.clone();
 		}
 		return null;
 	}

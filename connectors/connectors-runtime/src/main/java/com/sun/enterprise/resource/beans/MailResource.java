@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,8 +40,6 @@
 
 package com.sun.enterprise.resource.beans;
 
-import java.io.Serializable;
-
 import com.sun.enterprise.deployment.interfaces.MailResourceIntf;
 import com.sun.appserv.connectors.internal.api.JavaEEResourceBase;
 import com.sun.appserv.connectors.internal.api.JavaEEResource;
@@ -53,8 +51,7 @@ import org.glassfish.resource.common.ResourceInfo;
  *
  * @author James Kong
  */
-public class MailResource extends JavaEEResourceBase
-        implements Serializable, MailResourceIntf {
+public class MailResource extends JavaEEResourceBase implements MailResourceIntf {
 
     private String resType_;
     private String factoryClass_;

@@ -107,6 +107,8 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
 
     static private Logger _logger = LogDomains.getLogger(JdbcConnectionPoolDeployer.class,LogDomains.RSR_LOGGER);
 
+    private static final Locale locale = Locale.getDefault();
+
     private ExecutorService execService =
     Executors.newSingleThreadExecutor(new ThreadFactory() {
            public Thread newThread(Runnable r) {
@@ -400,7 +402,7 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
             Iterator mcfConfigPropsIter = mcfConfigProps.iterator();
             while (mcfConfigPropsIter.hasNext()) {
                 String key = ((ConnectorConfigProperty) mcfConfigPropsIter.next()).getName();
-                mcfConPropKeys.put(key.toUpperCase(), key);
+                mcfConPropKeys.put(key.toUpperCase(locale), key);
             }
 
             String driverProperties = "";
@@ -413,30 +415,30 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                 //The idea here is to convert the Environment Properties coming from
                 //the admin connection pool to standard pool properties thereby
                 //making it easy to compare in the event of a reconfig
-                if ("MATCHCONNECTIONS".equals(name.toUpperCase())) {
+                if ("MATCHCONNECTIONS".equals(name.toUpperCase(locale))) {
                     //JDBC - matchConnections if not set is decided by the ConnectionManager
                     //so default is false
                     conConnPool.setMatchConnections(toBoolean(rp.getValue(), false));
                     logFine("MATCHCONNECTIONS");
 
-                } else if ("ASSOCIATEWITHTHREAD".equals(name.toUpperCase())) {
+                } else if ("ASSOCIATEWITHTHREAD".equals(name.toUpperCase(locale))) {
                     conConnPool.setAssociateWithThread(toBoolean(rp.getValue(), false));
                     logFine("ASSOCIATEWITHTHREAD");
 
-                } else if ("LAZYCONNECTIONASSOCIATION".equals(name.toUpperCase())) {
+                } else if ("LAZYCONNECTIONASSOCIATION".equals(name.toUpperCase(locale))) {
                     ConnectionPoolObjectsUtils.setLazyEnlistAndLazyAssocProperties(rp.getValue(),
                             adminPool.getProperty(), conConnPool);
                     logFine("LAZYCONNECTIONASSOCIATION");
 
-                } else if ("LAZYCONNECTIONENLISTMENT".equals(name.toUpperCase())) {
+                } else if ("LAZYCONNECTIONENLISTMENT".equals(name.toUpperCase(Locale.getDefault()))) {
                     conConnPool.setLazyConnectionEnlist(toBoolean(rp.getValue(), false));
                     logFine("LAZYCONNECTIONENLISTMENT");
 
-                } else if ("POOLDATASTRUCTURE".equals(name.toUpperCase())) {
+                } else if ("POOLDATASTRUCTURE".equals(name.toUpperCase(Locale.getDefault()))) {
                     conConnPool.setPoolDataStructureType(rp.getValue());
                     logFine("POOLDATASTRUCTURE");
 
-                } else if (ConnectorConstants.DYNAMIC_RECONFIGURATION_FLAG.equals(name.toLowerCase())) {
+                } else if (ConnectorConstants.DYNAMIC_RECONFIGURATION_FLAG.equals(name.toLowerCase(locale))) {
                     String value = rp.getValue();
                     try {
                         conConnPool.setDynamicReconfigWaitTimeout(Long.parseLong(rp.getValue()) * 1000L);
@@ -445,54 +447,54 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                         _logger.log(Level.WARNING, "Invalid value for "
                                 + "'" + ConnectorConstants.DYNAMIC_RECONFIGURATION_FLAG + "' : " + value);
                     }
-                } else if ("POOLWAITQUEUE".equals(name.toUpperCase())) {
+                } else if ("POOLWAITQUEUE".equals(name.toUpperCase(locale))) {
                     conConnPool.setPoolWaitQueue(rp.getValue());
                     logFine("POOLWAITQUEUE");
 
-                } else if ("DATASTRUCTUREPARAMETERS".equals(name.toUpperCase())) {
+                } else if ("DATASTRUCTUREPARAMETERS".equals(name.toUpperCase(locale))) {
                     conConnPool.setDataStructureParameters(rp.getValue());
                     logFine("DATASTRUCTUREPARAMETERS");
 
-                } else if ("USERNAME".equals(name.toUpperCase())
-                        || "USER".equals(name.toUpperCase())) {
+                } else if ("USERNAME".equals(name.toUpperCase(Locale.getDefault()))
+                        || "USER".equals(name.toUpperCase(locale))) {
 
                     propList.add(new ConnectorConfigProperty("User",
                             rp.getValue(), "user name", "java.lang.String"));
 
-                } else if ("PASSWORD".equals(name.toUpperCase())) {
+                } else if ("PASSWORD".equals(name.toUpperCase(locale))) {
 
                     propList.add(new ConnectorConfigProperty("Password",
                             rp.getValue(), "Password", "java.lang.String"));
 
-                } else if ("JDBC30DATASOURCE".equals(name.toUpperCase())) {
+                } else if ("JDBC30DATASOURCE".equals(name.toUpperCase(locale))) {
 
                     propList.add(new ConnectorConfigProperty("JDBC30DataSource",
                             rp.getValue(), "JDBC30DataSource", "java.lang.String"));
 
-                } else if ("PREFER-VALIDATE-OVER-RECREATE".equals(name.toUpperCase())) {
+                } else if ("PREFER-VALIDATE-OVER-RECREATE".equals(name.toUpperCase(Locale.getDefault()))) {
                     String value = rp.getValue();
                     conConnPool.setPreferValidateOverRecreate(toBoolean(value, false));
                     logFine("PREFER-VALIDATE-OVER-RECREATE : " + value);
 
-                } else if ("STATEMENT-CACHE-TYPE".equals(name.toUpperCase())) {
+                } else if ("STATEMENT-CACHE-TYPE".equals(name.toUpperCase(Locale.getDefault()))) {
 
                     propList.add(new ConnectorConfigProperty("StatementCacheType",
                             rp.getValue(), "StatementCacheType", "java.lang.String"));
 
-                } else if ("NUMBER-OF-TOP-QUERIES-TO-REPORT".equals(name.toUpperCase())) {
+                } else if ("NUMBER-OF-TOP-QUERIES-TO-REPORT".equals(name.toUpperCase(Locale.getDefault()))) {
 
                     propList.add(new ConnectorConfigProperty("NumberOfTopQueriesToReport",
                             rp.getValue(), "NumberOfTopQueriesToReport", "java.lang.String"));
 
-                } else if ("TIME-TO-KEEP-QUERIES-IN-MINUTES".equals(name.toUpperCase())) {
+                } else if ("TIME-TO-KEEP-QUERIES-IN-MINUTES".equals(name.toUpperCase(Locale.getDefault()))) {
 
                     propList.add(new ConnectorConfigProperty("TimeToKeepQueriesInMinutes",
                             rp.getValue(), "TimeToKeepQueriesInMinutes", "java.lang.String"));
 
-                } else if (mcfConPropKeys.containsKey(name.toUpperCase())) {
+                } else if (mcfConPropKeys.containsKey(name.toUpperCase(Locale.getDefault()))) {
 
                     propList.add(new ConnectorConfigProperty(
-                            (String) mcfConPropKeys.get(name.toUpperCase()),
+                            (String) mcfConPropKeys.get(name.toUpperCase(Locale.getDefault())),
                             rp.getValue() == null ? "" : rp.getValue(),
                             "Some property",
                             "java.lang.String"));
@@ -551,7 +553,7 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
         if (prop == null) {
             return defaultVal;
         }
-        return Boolean.valueOf(((String) prop).toLowerCase());
+        return Boolean.valueOf(((String) prop).toLowerCase(locale));
     }
 
     /**

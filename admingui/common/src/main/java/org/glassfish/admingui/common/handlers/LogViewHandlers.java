@@ -295,7 +295,7 @@ public class LogViewHandlers {
 		if (truncate && (message.length() > truncLen)) {
 		    message = message.substring(0, truncLen).concat("...\n");
 		}
-		record.put("Message", (message == null) ? " " : Util.htmlEscape(message));
+		record.put("Message", Util.htmlEscape(message));
 	    }
 	}
 
@@ -456,7 +456,6 @@ public class LogViewHandlers {
 		String temp = firstLogRow;
 		firstLogRow = lastLogRow;
 		lastLogRow = temp;
-		firstRow = lastRow;
 	    }
             handlerCtx.setOutputValue("First", firstLogRow);
             handlerCtx.setOutputValue("Last", lastLogRow);
@@ -473,7 +472,7 @@ public class LogViewHandlers {
         if ((diag == null) || (diag.length == 0)) {
 	    return "";
 	}
-        StringBuffer buf = new StringBuffer("<br>");
+        StringBuilder buf = new StringBuilder("<br>");
         for(int i=0; i<diag.length; i++){
             buf.append( (String)diag[i]);
 	    buf.append("<br>");
@@ -622,7 +621,7 @@ public class LogViewHandlers {
      *	If the number to display is not specified, this value will be used
      *	(40).
      */
-    public static final Integer DEFAULT_NUMBER_TO_DISPLAY = new Integer(40);
+    public static final Integer DEFAULT_NUMBER_TO_DISPLAY = Integer.valueOf(40);
 
     /**
      *

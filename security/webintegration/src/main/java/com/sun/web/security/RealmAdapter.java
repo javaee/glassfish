@@ -118,8 +118,13 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import static com.sun.enterprise.security.auth.digest.api.Constants.A1;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
+import com.sun.enterprise.util.net.NetUtils;
+import java.net.InetAddress;
 import java.net.URLEncoder;
 import javax.security.jacc.PolicyContext;
+import org.glassfish.grizzly.config.dom.NetworkConfig;
+import org.glassfish.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListeners;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.PostConstruct;
 
@@ -212,6 +217,9 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     private Habitat habitat;
     @Inject
     private SecurityService secService;
+    private NetworkListeners nwListeners;
+    
+
     
     public RealmAdapter() {
         //used during Injection in WebContainer (glue code)
@@ -498,6 +506,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
                 realm_name = CertificateRealm.AUTH_TYPE;
             } else {
                 realm_name = _realmName;
+               
                 LoginContextDriver.login(username, password, realm_name);
             }
             success = true;
@@ -939,13 +948,116 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         return true;
     }
 
+    private List<String> getHostAndPort(HttpRequest request) throws IOException {
+        boolean isWebServerRequest = false;
+        Enumeration headerNames = ((HttpServletRequest) request.getRequest()).getHeaderNames();
+
+        String[] hostPort = new String[2];
+        boolean isHeaderPresent = false;
+        while (headerNames.hasMoreElements()) {
+            String headerName = (String) headerNames.nextElement();
+            String hostVal = "";
+            if (headerName.equalsIgnoreCase("Host")) {
+                hostVal = ((HttpServletRequest) request.getRequest()).getHeader(headerName);
+                isHeaderPresent = true;
+                hostPort = hostVal.split(":");
+            }
+        }
+
+        //If the port in the Header is empty (it refers to the default port), which is
+        //not one of the GlassFish listener ports -> GF is front-ended by a proxy (LB plugin)
+        boolean isHostPortNullOrEmpty = (hostPort[1] == null || hostPort[1].trim().isEmpty());
+        if (!isHeaderPresent) {
+            isWebServerRequest = false;
+        } else if (isHostPortNullOrEmpty) {
+            isWebServerRequest = true;
+        } else {
+            boolean breakFromLoop = false;
+
+            for (NetworkListener nwListener : nwListeners.getNetworkListener()) {
+                //Loop through the network listeners
+                String nwAddress = nwListener.getAddress();
+                InetAddress[] localHostAdresses = new InetAddress[10];
+                if (nwAddress == null || nwAddress.equals("0.0.0.0")) {
+                    nwAddress = NetUtils.getCanonicalHostName();
+                    if (!nwAddress.equals(hostPort[0])) {
+                        // compare the InetAddress objects
+                        //only if the hostname in the header
+                        //does not match with the hostname in the
+                        //listener-To avoid performance overhead
+                        localHostAdresses = NetUtils.getHostAddresses();
+
+                        InetAddress hostAddress = InetAddress.getByName(hostPort[0]);
+                        for (InetAddress inetAdress : localHostAdresses) {
+                            if (inetAdress.equals(hostAddress)) {
+                                //Hostname of the request in the listener and the hostname in the Host header match.
+                                //Check the port
+                                String nwPort = nwListener.getPort();
+                                //If the listener port is different from the port
+                                //in the Host header, then request is received by WS frontend
+                                if (!nwPort.equals(hostPort[1])) {
+                                    isWebServerRequest = true;
+
+                                } else {
+                                    isWebServerRequest = false;
+                                    breakFromLoop = true;
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        //Host names are the same, compare the ports
+                        String nwPort = nwListener.getPort();
+                        //If the listener port is different from the port
+                        //in the Host header, then request is received by WS frontend
+                        if (!nwPort.equals(hostPort[1])) {
+                            isWebServerRequest = true;
+
+                        } else {
+                            isWebServerRequest = false;
+                            breakFromLoop = true;
+
+                        }
+
+                    }
+                }
+                if (breakFromLoop && !isWebServerRequest) {
+                    break;
+                }
+            }
+        }
+        String serverHost = request.getRequest().getServerName();
+        int redirectPort = request.getConnector().getRedirectPort();
+
+        //If the request is a from a webserver frontend, redirect to the url
+        //with the webserver frontend host and port
+        if (isWebServerRequest) {
+            serverHost = hostPort[0];
+            if (isHostPortNullOrEmpty) {
+                //Use the default port
+                redirectPort = -1;
+            } else {
+                redirectPort = Integer.parseInt(hostPort[1]);
+            }
+        }
+        List<String> hostAndPort = new ArrayList<String>();
+        hostAndPort.add(serverHost);
+        hostAndPort.add(String.valueOf(redirectPort));
+        return hostAndPort;
+
+    }
+
+
     private boolean redirect(HttpRequest request, HttpResponse response) throws IOException {
         // Initialize variables we need to determine the appropriate action
         HttpServletRequest hrequest =
                 (HttpServletRequest) request.getRequest();
         HttpServletResponse hresponse =
                 (HttpServletResponse) response.getResponse();
+        
+        
         int redirectPort = request.getConnector().getRedirectPort();
+
 
         // Is redirecting disabled?
         if (redirectPort <= 0) {
@@ -959,7 +1071,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         }
 
         String protocol = "https";
-        String serverHost = hrequest.getServerName();
+       
         StringBuffer file = new StringBuffer(hrequest.getRequestURI());
         String requestedSessionId = hrequest.getRequestedSessionId();
         if ((requestedSessionId != null) &&
@@ -973,6 +1085,9 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
             file.append(queryString);
         }
         URL url = null;
+        List<String> hostAndPort = getHostAndPort(request);
+        String serverHost = hostAndPort.get(0);
+        redirectPort = Integer.valueOf((hostAndPort.get(1)));
         try {
             url = new URL(protocol, serverHost, redirectPort, file.toString());
             hresponse.sendRedirect(url.toString());
@@ -1619,5 +1734,6 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
 
     public void postConstruct() {
         webSecurityManagerFactory = habitat.getComponent(WebSecurityManagerFactory.class);
+        nwListeners = habitat.getComponent(NetworkConfig.class).getNetworkListeners();
     }
 }

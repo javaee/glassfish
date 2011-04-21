@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -55,6 +55,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Provides an implementation of the Archive that maps to
@@ -112,7 +114,10 @@ public class OutputJarArchive extends JarArchive implements WritableArchive {
         File file = new File(uri.getSchemeSpecificPart());
         // if teh file exists, we delete it first
         if (file.exists()) {
-            file.delete();
+            boolean isDeleted = file.delete();
+            if (!isDeleted) {
+                Logger.getAnonymousLogger().log(Level.WARNING, "Error in deleting file " + file.getAbsolutePath());
+            }
         }
         FileOutputStream fos = new FileOutputStream(file);
         BufferedOutputStream bos = new BufferedOutputStream(fos);

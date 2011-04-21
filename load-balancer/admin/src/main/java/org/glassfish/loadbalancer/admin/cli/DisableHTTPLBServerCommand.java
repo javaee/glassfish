@@ -121,7 +121,6 @@ public final class DisableHTTPLBServerCommand extends LBCommandsBase
                     if ((enabled == false) && (curTout == t)) {
                         String msg = localStrings.getLocalString("ServerDisabled",
                                 "Server [{0}] is already disabled.", sRef.getRef());
-                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                         report.setMessage(msg);
                         return;
                     }

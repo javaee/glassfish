@@ -126,7 +126,7 @@ public class AdminRESTConfigUpgrade
     }
 
 
-    private class HttpConfigCode implements SingleConfigCode<Http> {
+    static private class HttpConfigCode implements SingleConfigCode<Http> {
 
         @Override
         public Object run(Http http) throws PropertyVetoException,

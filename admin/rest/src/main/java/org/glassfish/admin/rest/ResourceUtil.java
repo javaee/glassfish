@@ -41,6 +41,7 @@
 package org.glassfish.admin.rest;
 
 
+import com.sun.enterprise.v3.common.ActionReporter;
 import java.util.Locale;
 import org.glassfish.admin.rest.generator.CommandResourceMetaData;
 import java.lang.reflect.Method;
@@ -77,7 +78,6 @@ import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.DomDocument;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
-import org.glassfish.admin.rest.generator.ResourcesGeneratorBase;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.provider.ParameterMetaData;
 import org.glassfish.admin.rest.provider.ProviderUtil;
@@ -93,7 +93,7 @@ import static org.glassfish.admin.rest.provider.ProviderUtil.getElementLink;
 
 /**
  * Resource utilities class. Used by resource templates,
- * <code>TemplateListOfResource</code> and <code>TemplateResource</code>
+ * <code>TemplateListOfResource</code> and <code>TemplateRestResource</code>
  *
  * @author Rajeshwar Patil
  */
@@ -128,9 +128,9 @@ public class ResourceUtil {
     public static void adjustParameters(Map<String, String> data) {
         if (data != null) {
             if (!(data.containsKey("DEFAULT"))) {
-                boolean isRenamed = renameParameter(data, "name", "DEFAULT");
+                boolean isRenamed = renameParameter(data, "id", "DEFAULT");
                 if (!isRenamed) {
-                    renameParameter(data, "id", "DEFAULT");
+                    renameParameter(data, "name", "DEFAULT");
                 }
             }
         }
@@ -293,6 +293,14 @@ public class ResourceUtil {
     public static void resolveParentParamValue(HashMap<String, String> commandParams, UriInfo uriInfo) {
         String parent = getParentName(uriInfo);
         if (parent != null) {
+            for (String key : commandParams.keySet()) {
+                if (commandParams.get(key).equals(Constants.VAR_PARENT)) {
+                    commandParams.put(key, parent);
+                    break;
+                }
+                
+            }
+            /*
             Set<String> keys = commandParams.keySet();
             Iterator<String> iterator = keys.iterator();
             String key;
@@ -303,6 +311,7 @@ public class ResourceUtil {
                     break;
                 }
             }
+            */
         }
     }
 
@@ -436,6 +445,15 @@ public class ResourceUtil {
         }
     }
 
+    /* test if a command really exists in the current runningVM
+     * 
+     */
+    public static boolean commandIsPresent(Habitat habitat , String commandName){
+        CommandRunner cr = habitat.getComponent(CommandRunner.class);
+        CommandModel cm = cr.getModel(commandName, RestService.logger);
+        return (cm!=null);
+        
+    }
     /**
      * Constructs and returns the parameter meta-data.
      *
@@ -534,12 +552,25 @@ public class ResourceUtil {
         return Response.status(status).entity(message).build();
     }
 
+    public static ActionReportResult getActionReportResult(Response.Status status, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
+        return getActionReportResult(status.getStatusCode(), null, message, requestHeaders, uriInfo);
+    }
+    
     public static ActionReportResult getActionReportResult(int status, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
+        return getActionReportResult(status, null, message, requestHeaders, uriInfo);
+    }
+    
+    public static ActionReportResult getActionReportResult(int status, ActionReport parentActionReport, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
         if (isBrowser(requestHeaders)) {
             message = getHtml(message, uriInfo, false);
         }
         RestActionReporter ar = new RestActionReporter();
+        if (parentActionReport != null) {
+            ar.getSubActionsReport().addAll(((ActionReporter)parentActionReport).getSubActionsReport());
+        }
+        
         ActionReportResult result = new ActionReportResult(ar);
+        
         if ((status >= 200) && (status <= 299)) {
             ar.setSuccess();
         } else {

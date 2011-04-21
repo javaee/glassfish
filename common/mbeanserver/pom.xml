@@ -57,9 +57,8 @@
     
     <developers>
         <developer>
-            <id>llc</id>
-            <name>Lloyd Chambers</name>
-            <url>http://blogs.sun.com/lchambers</url>
+            <id>naman_mehta</id>
+            <name>Naman Mehta</name>
             <organization>Oracle, Inc.</organization>
             <roles>
                 <role>lead</role>

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -288,8 +288,8 @@ public class UserTransactionImpl implements UserTransaction, Serializable
         transactionManager.setTransactionTimeout(seconds);
     }
 
-    public void setForTesting(TransactionManager tm, InvocationManager im) {
-        transactionManager = (JavaEETransactionManager)tm;
+    public void setForTesting(JavaEETransactionManager tm, InvocationManager im) {
+        transactionManager = tm;
         invocationManager = im;
         ((JavaEETransactionManagerSimplified)transactionManager).invMgr = im;
     }

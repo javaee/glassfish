@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -118,7 +118,7 @@ public class InboundRecoveryHandler implements RecoveryResourceHandler {
                 return;
             }
             // List of CMT enabled MDB descriptors on the application server instance.
-            ArrayList<EjbDescriptor> xaEnabledMDBList = new ArrayList<EjbDescriptor>();
+            List<EjbDescriptor> xaEnabledMDBList = new ArrayList<EjbDescriptor>();
 
             for (Application application : applications) {
                 Vector ejbDescVec = getEjbDescriptors(application, appsRegistry);
@@ -145,18 +145,14 @@ public class InboundRecoveryHandler implements RecoveryResourceHandler {
             ConnectorRuntime cr = connectorRuntimeHabitat.getComponent(ConnectorRuntime.class);
             ConnectorRegistry creg = ConnectorRegistry.getInstance();
 
-            // for each RA (key in the hashtable) get the list (value) of MDB Descriptors
-            Hashtable mappings = createRAEjbMapping(xaEnabledMDBList);
-            // To iterate through the keys(ramid), get the key Set from Hashtable.
-            Set raMidSet = mappings.keySet();
-
-            Iterator iter = raMidSet.iterator();
+            // for each RA (key in the map) get the list (value) of MDB Descriptors
+            Map<String, List<EjbDescriptor>> mappings = createRAEjbMapping(xaEnabledMDBList);
 
             //For each RA
-            while (iter.hasNext()) {
+            for (Map.Entry entry : mappings.entrySet()) {
 
-                String raMid = (String) iter.next();
-                ArrayList respectiveDesc = (ArrayList) mappings.get(raMid);
+                String raMid = (String) entry.getKey();
+                List<EjbDescriptor> respectiveDesc = mappings.get(raMid);
 
                 try {
                     createActiveResourceAdapter(raMid);
@@ -170,7 +166,7 @@ public class InboundRecoveryHandler implements RecoveryResourceHandler {
                 ActiveInboundResourceAdapter activeInboundRA = (ActiveInboundResourceAdapter) creg
                         .getActiveResourceAdapter(raMid);
 
-                assert activeInboundRA instanceof ActiveInboundResourceAdapter;
+                //assert activeInboundRA instanceof ActiveInboundResourceAdapter;
 
                 boolean isSystemJmsRA = false;
                 if (ConnectorsUtil.isJMSRA(activeInboundRA.getModuleName())) {
@@ -227,7 +223,7 @@ public class InboundRecoveryHandler implements RecoveryResourceHandler {
 
                     // Get XA resources from RA.
 
-                    ActivationSpec[] activationSpecArray = (ActivationSpec[]) activationSpecList.toArray(new ActivationSpec[]{});
+                    ActivationSpec[] activationSpecArray = activationSpecList.toArray(new ActivationSpec[activationSpecList.size()]);
                     XAResource[] xar = resourceAdapter.getXAResources(activationSpecArray);
 
                     // Add the resources to the xaresList which is used by the RecoveryManager
@@ -277,14 +273,14 @@ public class InboundRecoveryHandler implements RecoveryResourceHandler {
         return ejbDescriptors;
     }
 
-    private Hashtable createRAEjbMapping(ArrayList<EjbDescriptor> list) {
+    private Map<String, List<EjbDescriptor>> createRAEjbMapping(List<EjbDescriptor> ejbDescriptors) {
 
-        Hashtable ht = new Hashtable();
+        Map<String, List<EjbDescriptor>> map = new HashMap<String, List<EjbDescriptor>>();
 
-        for (Object aList : list) {
-            ArrayList ejbmdbd = new ArrayList();
+        for (EjbDescriptor ejbDescriptor : ejbDescriptors) {
+            List<EjbDescriptor> ejbmdbd = new ArrayList<EjbDescriptor>();
             String ramid =
-                    ((EjbMessageBeanDescriptor) aList).getResourceAdapterMid();
+                    ((EjbMessageBeanDescriptor) ejbDescriptor).getResourceAdapterMid();
             if ((ramid == null) || (ramid.equalsIgnoreCase(""))) {
                 ramid = ConnectorConstants.DEFAULT_JMS_ADAPTER;
             }
@@ -293,15 +289,15 @@ public class InboundRecoveryHandler implements RecoveryResourceHandler {
             // and add the current MDB Descriptor (list[i]) to the list and put the
             // pair back into hashtable.
             // Otherwise, add the RAMid and the current MDB Descriptor to the hashtable
-            if (ht.containsKey(ramid)) {
-                ejbmdbd = (ArrayList) ht.get(ramid);
-                ht.remove(ramid);
+            if (map.containsKey(ramid)) {
+                ejbmdbd = map.get(ramid);
+                map.remove(ramid);
             }
 
-            ejbmdbd.add(aList);
-            ht.put(ramid, ejbmdbd);
+            ejbmdbd.add(ejbDescriptor);
+            map.put(ramid, ejbmdbd);
         }
-        return ht;
+        return map;
     }
 
     private void createActiveResourceAdapter(String rarModuleName) throws ConnectorRuntimeException {

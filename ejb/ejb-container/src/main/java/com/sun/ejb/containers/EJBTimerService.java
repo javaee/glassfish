@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -339,7 +339,7 @@ public class EJBTimerService
 
         TransactionManager tm = ejbContainerUtil.getTransactionManager();
 
-        Set toRestore = new HashSet();
+        Set toRestore = null;
 	int totalTimersMigrated = 0;
 
         try {
@@ -356,9 +356,6 @@ public class EJBTimerService
             // occurred.  This could be the expected result in the case that
             // multiple server instances attempted the migration at the same
             // time.  
-            //FindBugs [Deadstore]: toRestore = new HashSet();
-// XXX There will be no exception but the return value will be 0 (hopefully) XXX
-
             logger.log(Level.FINE, "timer migration error", e);
 
             try {
@@ -452,10 +449,8 @@ public class EJBTimerService
 
         boolean result = false;
         try{
-            Properties props = System.getProperties();
-            String str=props.getProperty( strDBReadBeforeTimeout );
+            String str=System.getProperty( strDBReadBeforeTimeout );
             if( null != str) {
-		str = str.toLowerCase();
                 performDBReadBeforeTimeout = Boolean.valueOf(str).booleanValue();
 
                 if( logger.isLoggable(Level.FINE) ) {
@@ -470,7 +465,7 @@ public class EJBTimerService
             logger.log(Level.INFO,
                 "ContainerFactoryImpl.getDebugMonitoringDetails(), " +
                 " Exception when trying to " + 
-                "get the System properties - ", e);
+                "get the System property - ", e);
         }
         return result;
     }
@@ -1270,10 +1265,12 @@ public class EJBTimerService
                         " persistent timers for containerId: " + containerId);
             }
 
+            boolean schedulesExist = (schedules.size() > 0);
             for (TimerState timer : timers) {
                 TimerSchedule ts = timer.getTimerSchedule();
-                if (ts != null && ts.isAutomatic() && schedules != null) {
-                    for (Method m : schedules.keySet()) {
+                if (ts != null && ts.isAutomatic() && schedulesExist) {
+                    for (Map.Entry<Method, List<ScheduledTimerDescriptor>> entry : schedules.entrySet()) {
+                        Method m = entry.getKey();
                         if (m.getName().equals(ts.getTimerMethodName()) &&
                                 m.getParameterTypes().length == ts.getMethodParamCount()) {
                             result.put(new TimerPrimaryKey(timer.getTimerId()), m);
@@ -1338,7 +1335,8 @@ public class EJBTimerService
             Map<TimerPrimaryKey, Method> result,
             String server_name, boolean startTimers, boolean deploy) throws Exception {
 
-        for (Object key : schedules.keySet()) {
+        for (Map.Entry<?, List<ScheduledTimerDescriptor>> entry : schedules.entrySet()) {
+            Object key = entry.getKey();
             String mname = null;
             int args_length = 0;
             if (key instanceof Method) {
@@ -1349,7 +1347,7 @@ public class EJBTimerService
                 args_length = ((MethodDescriptor)key).getJavaParameterClassNames().length;
             }
 
-            for (ScheduledTimerDescriptor sch : schedules.get(key)) {
+            for (ScheduledTimerDescriptor sch : entry.getValue()) {
                 boolean persistent = sch.getPersistent();
                 if ((persistent && !deploy) || (!persistent && !startTimers)) {
                     // Do not recreate schedule-based timers on restart or create
@@ -1369,7 +1367,7 @@ public class EJBTimerService
                         logger.log(Level.FINE, "@@@ CREATED new schedule: " + ts.getScheduleAsString() + " FOR method: " + key);
                 }
 
-                if (startTimers) {
+                if (startTimers && result != null) {
                     result.put(tpk, (Method)key);
                 }
             }
@@ -1630,7 +1628,7 @@ public class EJBTimerService
         // so always ask the database.  Investigate possible use of
         // timer cache for optimization.
 
-        TimerState timer = getPersistentTimer(timerId);
+        getPersistentTimer(timerId);
         // If we reached here, it means the timer is persistent
         return true;
     }
@@ -1885,11 +1883,11 @@ public class EJBTimerService
                         shutdown();
                     } else if (rescheduleFailedTimer) {
                         logger.log(Level.INFO, "ejb.timer_reschedule_after_max_deliveries",
-                           new Object[] { timerState.toString(), new Integer(numDeliv)});
+                           new Object[] { timerState.toString(), numDeliv});
                         reschedule = true;
                     } else {
                         logger.log(Level.INFO, "ejb.timer_exceeded_max_deliveries",
-                           new Object[] { timerState.toString(), new Integer(numDeliv)});
+                           new Object[] { timerState.toString(), numDeliv});
                         expungeTimer(timerId, true);
                     }
                 } else {
@@ -2148,10 +2146,10 @@ public class EJBTimerService
 
         // @@@ Add cluster ID
 
-        return new String(nextTimerIdCounter_ +
+        return "" + nextTimerIdCounter_ +
                           TIMER_ID_SEP + nextTimerIdMillis_ +
                           TIMER_ID_SEP + ownerIdOfThisServer_ + 
-                          TIMER_ID_SEP + domainName_);
+                          TIMER_ID_SEP + domainName_;
     }
 
     //
@@ -2430,7 +2428,7 @@ public class EJBTimerService
     //
     // Note : this class supports concurrent access.
     //
-    private class TimerCache {
+    private static class TimerCache {
 
         // Maps timer id to timer state.
         private Map timers_;
@@ -2471,7 +2469,7 @@ public class EJBTimerService
                 nonpersistentTimers_.put(timerId, timerState);
             }
 
-            Long containerId = new Long(timerState.getContainerId());
+            Long containerId = timerState.getContainerId();
 
             Object containerInfo = containerTimers_.get(containerId);
 
@@ -2488,8 +2486,8 @@ public class EJBTimerService
                 }
                 entityBeans.add(timerState.getTimedObjectPrimaryKey());
             } else {
-                Long timerCount = (containerInfo == null) ? new Long(1) :
-                    new Long(((Long) containerInfo).longValue() + 1);
+                Long timerCount = (containerInfo == null) ? 1 :
+                    ((Long) containerInfo).longValue() + 1;
                 containerTimers_.put(containerId, timerCount);
             }
 
@@ -2515,7 +2513,7 @@ public class EJBTimerService
             if (!timerState.isPersistent()) {
                 nonpersistentTimers_.remove(timerId);
             }
-            Long containerId = new Long(timerState.getContainerId());
+            Long containerId = timerState.getContainerId();
             Object containerInfo = containerTimers_.get(containerId);
                 
             if( containerInfo != null ) {
@@ -2537,7 +2535,7 @@ public class EJBTimerService
                         // Only one left -- blow away the container
                         containerTimers_.remove(containerId);
                     } else {
-                        Long newCount = new Long(timerCount - 1);
+                        Long newCount = timerCount - 1;
                         containerTimers_.put(containerId, newCount);
                     }                         
                 }
@@ -2557,7 +2555,7 @@ public class EJBTimerService
         // True if the given entity bean has any timers and false otherwise.
         public synchronized boolean entityBeanHasTimers(long containerId, 
                                                         Object pkey) {
-            Object containerInfo = containerTimers_.get(new Long(containerId));
+            Object containerInfo = containerTimers_.get(containerId);
             return (containerInfo != null) ?
                 ((Collection) containerInfo).contains(pkey) : false;
         }
@@ -2565,7 +2563,7 @@ public class EJBTimerService
         // True if the ejb represented by this container id has any timers
         // and false otherwise.  
         public synchronized boolean containerHasTimers(long containerId) {
-            return containerTimers_.containsKey(new Long(containerId));
+            return containerTimers_.containsKey(containerId);
         }
 
         // Placeholder for logic to ensure timer cache consistency.
@@ -2576,8 +2574,9 @@ public class EJBTimerService
         public synchronized Set<TimerPrimaryKey> getNonPersistentTimerIdsForContainer(
                                         long containerId_) {
             Set<TimerPrimaryKey> result = new HashSet<TimerPrimaryKey>();
-            for (TimerPrimaryKey key : nonpersistentTimers_.keySet()) {
-                RuntimeTimerState rt = nonpersistentTimers_.get(key);
+            for (Map.Entry<TimerPrimaryKey, RuntimeTimerState> entry : nonpersistentTimers_.entrySet()) {
+                TimerPrimaryKey key = entry.getKey();
+                RuntimeTimerState rt = entry.getValue();
                 if ((rt.getContainerId() == containerId_)) {
                     result.add(key);
                 }
@@ -2590,8 +2589,9 @@ public class EJBTimerService
         public synchronized Set<TimerPrimaryKey> getNonPersistentActiveTimerIdsForContainer(
                                         long containerId_) {
             Set<TimerPrimaryKey> result = new HashSet<TimerPrimaryKey>();
-            for (TimerPrimaryKey key : nonpersistentTimers_.keySet()) {
-                RuntimeTimerState rt = nonpersistentTimers_.get(key);
+            for (Map.Entry<TimerPrimaryKey, RuntimeTimerState> entry : nonpersistentTimers_.entrySet()) {
+                TimerPrimaryKey key = entry.getKey();
+                RuntimeTimerState rt = entry.getValue();
                 if ((rt.getContainerId() == containerId_) && rt.isActive()) {
                     result.add(key);
                 }
@@ -2603,8 +2603,9 @@ public class EJBTimerService
         // Returns a Set of active non-persistent timer ids for this server
         public synchronized Set<TimerPrimaryKey> getActiveTimerIdsByThisServer() {
             Set<TimerPrimaryKey> result = new HashSet<TimerPrimaryKey>();
-            for (TimerPrimaryKey key : nonpersistentTimers_.keySet()) {
-                RuntimeTimerState rt = nonpersistentTimers_.get(key);
+            for (Map.Entry<TimerPrimaryKey, RuntimeTimerState> entry : nonpersistentTimers_.entrySet()) {
+                TimerPrimaryKey key = entry.getKey();
+                RuntimeTimerState rt = entry.getValue();
                 if (rt.isActive()) {
                     result.add(key);
                 }
@@ -2616,22 +2617,26 @@ public class EJBTimerService
     } //TimerCache{}
 
     private File getTimerServiceShutdownFile() throws Exception {
-        File timerServiceShutdownDirectory;
-        File timerServiceShutdownFile;
+        File timerServiceShutdownFile = null;
 
         String j2eeAppPath = 
                 ConfigBeansUtilities.getLocation(appID);
 
-        timerServiceShutdownDirectory = new File(j2eeAppPath + File.separator);
-        timerServiceShutdownDirectory.mkdirs();
+        File timerServiceShutdownDirectory = new File(j2eeAppPath + File.separator);
+        if (!timerServiceShutdownDirectory.mkdirs()) {
+            if( logger.isLoggable(Level.FINE) ) {
+                logger.log(Level.FINE, "Failed to create timerServiceShutdownDirectory");
+            }
+        }
         timerServiceShutdownFile = new File(j2eeAppPath + File.separator
-                + TIMER_SERVICE_FILE);
+                    + TIMER_SERVICE_FILE);
 
         return timerServiceShutdownFile;
     }
 
     private long getTimerServiceDownAt() {
         long timerServiceWentDownAt = -1;
+        BufferedReader br = null;
         try {
             File timerServiceShutdownFile  = getTimerServiceShutdownFile();
 
@@ -2640,13 +2645,18 @@ public class EJBTimerService
                     new SimpleDateFormat(TIMER_SERVICE_DOWNTIME_FORMAT);
         
                 FileReader fr = new FileReader(timerServiceShutdownFile);
-                BufferedReader br = new BufferedReader(fr, 128);
+                br = new BufferedReader(fr, 128);
                 String line = br.readLine();
 
-                Date myDate = dateFormat.parse(line);
-                timerServiceWentDownAt = myDate.getTime();
-                logger.log(Level.INFO, "ejb.timer_service_last_shutdown",
-                           new Object[] { line });
+                if (line != null) {
+                    Date myDate = dateFormat.parse(line);
+                    timerServiceWentDownAt = myDate.getTime();
+                    logger.log(Level.INFO, "ejb.timer_service_last_shutdown",
+                               new Object[] { line });
+                } else {
+                    logger.log(Level.WARNING, "ejb.timer_service_shutdown_unknown",
+                               new Object[] { timerServiceShutdownFile });
+                }
             } else {
                 logger.log(Level.WARNING, "ejb.timer_service_shutdown_unknown",
                            new Object[] { timerServiceShutdownFile });
@@ -2655,6 +2665,14 @@ public class EJBTimerService
             logger.log(Level.WARNING, "ejb.timer_service_shutdown_unknown",
                        new Object[] { "" });
             logger.log(Level.WARNING, "", th);
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (Exception ex) {
+                    logger.log(Level.FINE, "Error closing timer service shutdown file", ex);
+                }
+            }
         }
         return timerServiceWentDownAt;
     }
@@ -2671,16 +2689,21 @@ public class EJBTimerService
             String downTimeStr = dateFormat.format(new Date());
 
             File timerServiceShutdownFile  = getTimerServiceShutdownFile();
-            FileWriter fw = new FileWriter(timerServiceShutdownFile);
-            PrintWriter pw = new PrintWriter(fw);
+            if (timerServiceShutdownFile.exists()) {
+                FileWriter fw = new FileWriter(timerServiceShutdownFile);
+                PrintWriter pw = new PrintWriter(fw);
 
-            pw.println(downTimeStr);
+                pw.println(downTimeStr);
 
-            pw.flush();
-            pw.close();
-            fw.close();
-            logger.log(Level.INFO, "ejb.timer_service_shutdown_msg",
+                pw.flush();
+                pw.close();
+                fw.close();
+                logger.log(Level.INFO, "ejb.timer_service_shutdown_msg",
                        new Object[] { downTimeStr });
+            } else {
+                logger.log(Level.WARNING, "ejb.timer_service_shutdown_unknown",
+                       new Object[] { TIMER_SERVICE_FILE });
+            } 
         } catch (Throwable th) {
             logger.log(Level.WARNING, "ejb.timer_service_shutdown_unknown",
                        new Object[] { TIMER_SERVICE_FILE });
@@ -2761,6 +2784,9 @@ public class EJBTimerService
                     timerService_.expungeTimer(timerId_);
                     container_.incrementRemovedTimedObject();
                 }
+                break;
+            default :
+                // do nothing if the state is not one of the above
                 break;
             }
         }

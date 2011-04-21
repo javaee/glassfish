@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -119,19 +119,19 @@ public class SetLogAttributes implements AdminCommand {
             "com.sun.enterprise.server.logging.GFFileHandler.retainErrorsStasticsForHours",
             "log4j.logger.org.hibernate.validator.util.Version",
             "com.sun.enterprise.server.logging.GFFileHandler.maxHistoryFiles",
-            "java.util.logging.FileHandler.pattern"};
+            "java.util.logging.FileHandler.pattern",
+            "com.sun.enterprise.server.logging.GFFileHandler.rotationOnDateChange",
+            "com.sun.enterprise.server.logging.GFFileHandler.logFormatDateFormat"};
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(SetLogLevel.class);
 
-
     public void execute(AdminCommandContext context) {
-
 
         final ActionReport report = context.getActionReport();
         boolean isCluster = false;
         boolean isDas = false;
         boolean isInstance = false;
-        String successMsg = "";
+        StringBuffer sbfSuccessMsg = new StringBuffer();
         boolean success = false;
         boolean invalidAttribute = false;
         boolean isConfig = false;
@@ -148,8 +148,8 @@ public class SetLogAttributes implements AdminCommand {
                     if (s.equals(att_name)) {
                         m.put(att_name, att_value);
                         vlvl = true;
-                        successMsg += localStrings.getLocalString(
-                                "set.log.attribute.properties", "{0} logging attribute set with value {1}.\n", att_name, att_value);
+                        sbfSuccessMsg.append(localStrings.getLocalString(
+                                "set.log.attribute.properties", "{0} logging attribute set with value {1}.\n", att_name, att_value));
                     }
                 }
                 if (!vlvl) {
@@ -170,7 +170,7 @@ public class SetLogAttributes implements AdminCommand {
                     isConfig = true;
 
                     Server targetServer = domain.getServerNamed(SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME);
-                    if (targetServer!=null && targetServer.getConfigRef().equals(target)) {
+                    if (targetServer != null && targetServer.getConfigRef().equals(target)) {
                         isDas = true;
                     }
                     targetServer = null;
@@ -217,9 +217,9 @@ public class SetLogAttributes implements AdminCommand {
                 }
 
                 if (success) {
-                    successMsg += localStrings.getLocalString(
-                            "set.log.attribute.success", "These logging attributes are set for {0}.", target);
-                    report.setMessage(successMsg);
+                    sbfSuccessMsg.append(localStrings.getLocalString(
+                            "set.log.attribute.success", "These logging attributes are set for {0}.", target));
+                    report.setMessage(sbfSuccessMsg.toString());
                     report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
                 }
             }

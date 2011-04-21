@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -95,7 +95,7 @@ public class SingletonLifeCycleManager {
     void addSingletonContainer(EjbApplication ejbApp, AbstractSingletonContainer c) {
         c.setSingletonLifeCycleManager(this);
         EjbSessionDescriptor sdesc = (EjbSessionDescriptor) c.getEjbDescriptor();
-        String modName = sdesc.getEjbBundleDescriptor().getName();
+        //String modName = sdesc.getEjbBundleDescriptor().getName();
         //System.out.println("BundleName: " + modName);
         String src = normalizeSingletonName(sdesc.getName(), sdesc);
         
@@ -118,7 +118,7 @@ public class SingletonLifeCycleManager {
     }
 
     private String normalizeSingletonName(String origName, EjbSessionDescriptor sessionDesc) {
-        String normalizedName = origName;
+        String normalizedName;
         boolean fullyQualified = origName.contains("#");
 
         Application app = sessionDesc.getEjbBundleDescriptor().getApplication();
@@ -144,7 +144,6 @@ public class SingletonLifeCycleManager {
 
     void doStartup(EjbApplication ejbApp) {
         Collection<EjbDescriptor> ejbs = ejbApp.getEjbBundleDescriptor().getEjbs();
-        int descSz = ejbs.size();
 
         for (EjbDescriptor desc : ejbs) {
             if (desc instanceof EjbSessionDescriptor) {
@@ -241,11 +240,14 @@ public class SingletonLifeCycleManager {
     private void addDependency(String src, String depends) {
         src = src.trim();
         Set<String> deps = getExistingDependecyList(src);
-        StringTokenizer tok = new StringTokenizer(depends, " ,");
-        while (tok.hasMoreTokens()) {
-            String dep = tok.nextToken();
-            deps.add(dep);
-            getExistingDependecyList(dep);
+
+        if (depends != null) {
+            StringTokenizer tok = new StringTokenizer(depends, " ,");
+            while (tok.hasMoreTokens()) {
+                String dep = tok.nextToken();
+                deps.add(dep);
+                getExistingDependecyList(dep);
+            }
         }
     }
 
@@ -291,7 +293,7 @@ public class SingletonLifeCycleManager {
 
         } while (dependencies.size() < name2Index.size());
 
-        return dependencies.toArray(new String[0]);
+        return dependencies.toArray(new String[dependencies.size()]);
 
     }
 
@@ -485,7 +487,7 @@ public class SingletonLifeCycleManager {
         //ts.addDependency("R", "J");
 
         String[] dep = ts.getPartialOrdering();
-        for (String s : ts.getPartialOrdering()) {
+        for (String s : dep) {
             System.out.print(s + " ");
         }
         System.out.println();
@@ -494,7 +496,6 @@ public class SingletonLifeCycleManager {
         ts2.addDependency("E", ts.computeDependencies("E"));
         ts2.addDependency("U", ts.computeDependencies("U"));
         ts2.addDependency("H", ts.computeDependencies("H"));
-        String[] dep2 = ts2.getPartialOrdering();
         for (String s : ts2.getPartialOrdering()) {
             System.out.print(s + " ");
         }
@@ -507,7 +508,7 @@ public class SingletonLifeCycleManager {
         ts.addDependency("C", (String) null);
 
         String[] dep = ts.getPartialOrdering();
-        for (String s : ts.getPartialOrdering()) {
+        for (String s : dep) {
             System.out.print(s + " ");
         }
         System.out.println();
@@ -531,7 +532,7 @@ public class SingletonLifeCycleManager {
         ts.addDependency("K", (List) null);
 
         String[] dep = ts.getPartialOrdering();
-        for (String s : ts.getPartialOrdering()) {
+        for (String s : dep) {
             System.out.print(s + " ");
         }
         System.out.println();

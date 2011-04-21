@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,11 +40,12 @@
 
 package org.glassfish.admin.rest.utils;
 
+import java.io.Serializable;
 import org.jvnet.hk2.config.ConfigModel;
 
 import java.util.Comparator;
 
-public class ConfigModelComparator implements Comparator<ConfigModel> {
+public class ConfigModelComparator implements Comparator<ConfigModel>, Serializable {
     @Override
     public int compare(ConfigModel o1, ConfigModel o2) {
         return o1.getTagName().compareTo(o2.getTagName());

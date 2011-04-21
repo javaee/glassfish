@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,7 +54,7 @@ import org.jvnet.hk2.config.Dom;
  * 
  * @author ludo
  */
-public class GlassFishDomainResource extends TemplateResource {
+public class GlassFishDomainResource extends TemplateRestResource {
 
     public GlassFishDomainResource() {
         //moved init code in the setHabitat callback from Jersey, to get the correct habitat

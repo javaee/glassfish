@@ -45,135 +45,54 @@
 
 package org.glassfish.admingui.common.util;
 
-import java.io.*;
-import java.util.Properties;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.glassfish.deployment.client.DFDeploymentStatus;
-import org.glassfish.deployment.client.DeploymentFacility;
-import org.glassfish.deployment.client.DFProgressObject;
-import org.glassfish.deployment.client.DFDeploymentProperties;
-
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
-import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.Map;
-import javax.enterprise.deploy.spi.Target;
+
 /**
  *
  * @author anilam
  */
 
 public class DeployUtil {
-    // using DeploymentFacility API
-     public static void deploy(String[] targets, Properties deploymentProps, String location,  HandlerContext handlerCtx) throws Exception {
-            
-        deploymentProps.setProperty(DFDeploymentProperties.UPLOAD, "false");
-        boolean status = invokeDeploymentFacility(targets, deploymentProps, location, handlerCtx, "deploy.warning");
-        if(status){
-            //String mesg = GuiUtil.getMessage("msg.deploySuccess", new Object[] {"", "deployed"});
-            //GuiUtil.prepareAlert("success", mesg, null);
-        }
-    }
-     
-     public static boolean invokeDeploymentFacility(String[] targets, Properties props, String archivePath, HandlerContext handlerCtx, String warningMsgKey)
-     	throws Exception {
-     	if(archivePath == null) {
-            GuiUtil.getLogger().info("invokeDeploymentFacility(): archivePath = NULL");
-            //Localize this message.
-            GuiUtil.handleError(handlerCtx, "invokeDeploymentFacility: " + GuiUtil.getMessage("msg.deploy.nullArchiveError"));
-     	}
-        
-        if (targets == null){
-            String defaultTarget =  "domain" ;
-            targets = new String[] {defaultTarget};
-        }
-        
-        File filePath = new File(archivePath);
-        URI source = filePath.toURI();
-        DeploymentFacility df = GuiUtil.getDeploymentFacility();
-        DFProgressObject progressObject = null;
-        progressObject = df.deploy(df.createTargets(targets), source, null , props);  //null for deployment plan
-        progressObject.waitFor();
-        DFDeploymentStatus status = progressObject.getCompletedStatus();
-        boolean ret = checkDeployStatus(status, handlerCtx, true, warningMsgKey);
-     	return ret;
-     }
 
-     public static boolean checkDeployStatus(DFDeploymentStatus status, HandlerContext handlerCtx, boolean stopProcessing, String warningMsgKey)
-     {
-         //TODO-V3 get more msg to user.
-        //parse the deployment status and retrieve failure/warning msg
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        PrintWriter pw = new PrintWriter(bos);
-        DFDeploymentStatus.parseDeploymentStatus(status, pw);
-        byte[] statusBytes = bos.toByteArray();
-        String statusString = new String(statusBytes);
-
-         if (status!=null && status.getStatus() == DFDeploymentStatus.Status.FAILURE){
-            if (stopProcessing) 
-                GuiUtil.handleError(handlerCtx, statusString);
-            else
-                GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), statusString);
-                
+    /* reload application for each target.  If the app is disabled for the target, it is an no-op.
+     * otherwise, the app is disabled and then enabled to force the reload.
+     */
+    static public boolean reloadApplication(String appName, List<String> targets, HandlerContext handlerCtx){
+        try{
+            String decodedName = URLDecoder.decode(appName, "UTF-8");
+            List clusters =  TargetUtil.getClusters();
+            String clusterEndpoint = GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/";
+            String serverEndpoint = GuiUtil.getSessionValue("REST_URL")+"/servers/server/";
+            for(String targetName : targets){
+                String endpoint ;
+                if (clusters.contains(targetName)){
+                    endpoint = clusterEndpoint + targetName + "/application-ref/" + decodedName ;
+                }else{
+                    endpoint = serverEndpoint + targetName + "/application-ref/"  + decodedName ;
+                }
+                String status = (String) RestUtil.getAttributesMap(endpoint).get("enabled");
+                if ( Boolean.parseBoolean(status)){
+                    Map attrs = new HashMap();
+                    attrs.put("enabled", "false");
+                    RestUtil.restRequest(endpoint, attrs, "POST", null, false, true);
+                    attrs.put("enabled", "true");
+                    RestUtil.restRequest(endpoint, attrs, "POST", null, false, true);
+                }
+            }
+       }catch(Exception ex){
+            GuiUtil.handleError(handlerCtx, ex.getMessage());
             return false;
-         }
-         if (status!=null && status.getStatus() == DFDeploymentStatus.Status.WARNING){
-            //We may need to log this mesg.
-            GuiUtil.prepareAlert("warning", GuiUtil.getMessage(warningMsgKey),statusString);
-            return false;
-         }
-         return true;
-     }
-    
-    //Status of app-ref created will be the same as the app itself.
-    static public void handleAppRefs(String appName, String[] targetNames, HandlerContext handlerCtx, boolean addFlag, Boolean enableFlag) {
-        if (targetNames != null && targetNames.length > 0){
-            DeploymentFacility df= GuiUtil.getDeploymentFacility();        
-            DFProgressObject progressObject = null;
-            Properties dProps = new Properties();
-
-            if (enableFlag != null)
-                dProps.setProperty(DFDeploymentProperties.ENABLED, enableFlag.toString());
-            
-            if (addFlag)
-                progressObject = df.createAppRef(df.createTargets(targetNames), appName, dProps);
-            else
-                progressObject = df.deleteAppRef(df.createTargets(targetNames), appName, dProps);
-            DFDeploymentStatus status = df.waitFor(progressObject);
-            checkDeployStatus(status, handlerCtx, true, "appAction.warnig");
-        }
+       }
+        return true;
     }
 
-    static public boolean reloadApplication(String appName, List targets, HandlerContext handlerCtx){
-        //disable application and then enable it.
-        String[] targetArray = (String[])targets.toArray(new String[targets.size()]);
-        if (enableApp(appName, targetArray, handlerCtx, false)){
-            return enableApp(appName, targetArray, handlerCtx, true);
-        }
-        return false;
-    }
-
-
-    static public boolean enableApp(String appName, String target, HandlerContext handlerCtx, boolean enable){
-        String[] targets = new String[]{target};
-        return enableApp(appName, targets, handlerCtx, enable);
-
-    }
-
-    static public boolean enableApp(String appName, String[] targetNamess, HandlerContext handlerCtx, boolean enable){
-        DeploymentFacility df = GuiUtil.getDeploymentFacility();
-        Target[] targets = df.createTargets(targetNamess);
-        DFProgressObject  progressObject  = (enable) ? df.enable(targets,appName) : df.disable(targets, appName);
-        progressObject.waitFor();
-        DFDeploymentStatus status = progressObject.getCompletedStatus();
-        boolean ret = checkDeployStatus(status, handlerCtx, false, "appAction.warning" );
-        return ret;
-    }
 
     //This method returns the list of targets (clusters and standalone instances) of any deployed application
     static public List getApplicationTarget(String appName, String ref){

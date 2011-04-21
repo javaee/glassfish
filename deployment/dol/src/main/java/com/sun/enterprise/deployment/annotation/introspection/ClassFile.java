@@ -148,7 +148,6 @@ public class ClassFile {
     MethodInfo		    methods[];
     AttributeInfo	    attributes[];
      */
-    boolean		        isValidClass = false;
 
     private static final int magic = 0xCAFEBABE;
     

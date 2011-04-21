@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -205,10 +205,10 @@ class TransactionFactoryImpl extends TransactionFactoryPOA implements Transactio
 
             // result = new ControlImpl(terminator, coordinator,
             //                         new GlobalTID(coordinator.getGlobalTID()),
-            //                          new Long(coordinator.getLocalTID()));
+            //                          coordinator.getLocalTID());
             result = new ControlImpl(terminator, coordinator,
                                      coordinator.getGlobalTid(),
-                                     new Long(coordinator.getLocalTID()));
+                                     coordinator.getLocalTID());
             if(_logger.isLoggable(Level.FINE))
             {
                 _logger.logp(Level.FINE,"TransactionFactoryImpl","localCreate()",
@@ -431,11 +431,11 @@ class TransactionFactoryImpl extends TransactionFactoryPOA implements Transactio
 
             if (Configuration.isLocalFactory()) {
                 result = (Control) new ControlImpl(null, subordinate, globalTID,
-                                     new Long(subordinate.getLocalTID())
+                                     subordinate.getLocalTID()
                                     );
             } else {
                 result = new ControlImpl(null, subordinate, globalTID,
-                                     new Long(subordinate.getLocalTID())
+                                     subordinate.getLocalTID()
                                     ).object();
             }
 
@@ -515,11 +515,11 @@ class TransactionFactoryImpl extends TransactionFactoryPOA implements Transactio
             // We do not create a local Terminator.
             if (Configuration.isLocalFactory()) {
                 result = (Control) new ControlImpl(null, subordinate, tid,
-                                     new Long(subordinate.getLocalTID())
+                                     subordinate.getLocalTID()
                                     );
             } else {
                 result = new ControlImpl(null, subordinate, tid,
-                                     new Long(subordinate.getLocalTID())
+                                     subordinate.getLocalTID()
                                     ).object();
             }
         } catch (Throwable exc) {
@@ -529,7 +529,6 @@ class TransactionFactoryImpl extends TransactionFactoryPOA implements Transactio
              String msg = LogFormatter.getLocalizedMessage(_logger,
                                         "jts.unable_to_create_subordinate_coordinator");
             INTERNAL intExc = new INTERNAL(msg);
-            //INTERNAL intExc = new INTERNAL("tx recreate failed");
             intExc.initCause(exc);
             throw intExc;
         }

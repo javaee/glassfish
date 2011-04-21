@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -184,13 +184,11 @@ class EJBObjectOutputStream
             byte[] oid = protocolMgr.getObjectID(obj);
 
 
-            long containerId = -1;
-            int keyLength = -1;
             if ((oid != null) && (oid.length > INSTANCEKEY_OFFSET)) {
-                containerId = Utility.bytesToLong(oid, EJBID_OFFSET);
+                long containerId = Utility.bytesToLong(oid, EJBID_OFFSET);
                 //To be really sure that is indeed a ref generated
                 //  by our container we do the following checks
-                keyLength = Utility.bytesToInt(oid, INSTANCEKEYLEN_OFFSET);
+                int keyLength = Utility.bytesToInt(oid, INSTANCEKEYLEN_OFFSET);
                 if (oid.length == keyLength + INSTANCEKEY_OFFSET) {
                     boolean isHomeReference =
                         ((keyLength == 1) && (oid[INSTANCEKEY_OFFSET] == HOME_KEY));
@@ -362,8 +360,8 @@ final class SerializableS1ASEJBObjectReference
 {
     private byte[] instanceKey;
     private Object sfsbKey;
-    protected long sfsbClientVersion;
-    protected boolean haEnabled;
+    private long sfsbClientVersion;
+    private boolean haEnabled;
 
     // If 3.0 Remote business view, the name of the remote business
     // interface to which this stub corresponds.

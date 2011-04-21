@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,6 +43,7 @@ package org.glassfish.persistence.jpa;
 
 import org.glassfish.internal.deployment.GenericSniffer;
 import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.container.SecondarySniffer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -59,7 +60,7 @@ import java.io.IOException;
  */
 @Service(name="jpa")
 @Scoped(Singleton.class)
-public class JPASniffer  extends GenericSniffer implements Sniffer {
+public class JPASniffer  extends GenericSniffer implements Sniffer, SecondarySniffer {
 
     private static final String[] containers = { "org.glassfish.persistence.jpa.JPAContainer" };
 

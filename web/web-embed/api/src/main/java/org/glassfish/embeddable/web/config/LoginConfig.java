@@ -53,7 +53,6 @@ package org.glassfish.embeddable.web.config;
  *      LoginConfig loginConfig = new LoginConfig();
  *      loginConfig.setAuthMethod(AuthMethod.FORM);
  *      loginConfig.setRealmName("userauth");
- *      loginConfig.setRealmType(RealmType.BASIC);
  *      loginConfig.setFormLoginConfig(form);
  * </pre>
  *
@@ -67,7 +66,6 @@ public class LoginConfig {
     private AuthMethod authMethod;
     private FormLoginConfig formLoginConfig;
     String realmName;
-    RealmType realmType;
 
     /**
      * Set the authentication scheme to be used for a given
@@ -107,30 +105,6 @@ public class LoginConfig {
     }
 
     /**
-     * Sets the realm type for the context. The realm type
-     * must be one of the supported realm types as defined in the
-     * <tt>RealmType</tt> enumeration
-     *
-     * @see RealmType
-     *
-     * @param realmType the realm type for the context
-     */
-    public void setRealmType(RealmType realmType) {
-        this.realmType = realmType;
-    }
-
-    /**
-     * Gets the realm type for the context
-     *
-     * @see RealmType
-     * 
-     * @return the realm type for the context
-     */
-    public RealmType getRealmType() {
-        return realmType;
-    }
-
-    /**
      * Set the form login configuration, if the authentication
      * method is form based authentication
      *
@@ -163,7 +137,6 @@ public class LoginConfig {
         toStringBuffer.append(" authMethod: ").append(authMethod);
         toStringBuffer.append(" formLoginConfig: ").append(formLoginConfig);
         toStringBuffer.append(" realmName ").append(realmName);
-        toStringBuffer.append(" realmType ").append(realmType);
         return toStringBuffer.toString();
     }
 

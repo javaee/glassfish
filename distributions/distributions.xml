@@ -49,7 +49,7 @@
 <property name="installer.image.dir.l10n" value="${image.root}/installer-l10n"/>
 <property name="glassfish.image.dir.l10n" value="${image.root}/glassfish-l10n"/>
 <property name="install.dir.name" value="glassfish3"/>
-<property name="repo.url" value="http://repine.sfbay.sun.com:40000"/>
+<property name="repo.url" value="http://repine.us.oracle.com:40000"/>
 <!-- property name="repo.url" value="http://localhost:10000"/ -->
 <property name="repo.host" value="http://pkg.glassfish.org"/>
 <property name="title" value="GlassFish 3"/>
@@ -66,8 +66,8 @@
 
 <property name="sun.contrib.authority" value="contrib.glassfish.oracle.com"/>
 <property name="javaeesdk.release.authority" value="release.javaeesdk.oracle.com"/>
-<property name="javaeesdk.release.repository.url" value="http://pkg.sun.com/javaeesdk/6/release/"/>
-<property name="sun.contrib.repository.url" value="http://pkg.sun.com/glassfish/v3/contrib/"/>
+<property name="javaeesdk.release.repository.url" value="http://pkg.oracle.com/javaeesdk/6/release/"/>
+<property name="sun.contrib.repository.url" value="http://pkg.oracle.com/glassfish/v3/contrib/"/>
 
 <target name="init"> 
     

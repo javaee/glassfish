@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,10 +40,12 @@
 package org.glassfish.admin.rest.resources;
 
 import com.sun.enterprise.config.serverbeans.Domain;
+import java.io.FileOutputStream;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -88,6 +90,9 @@ public class StatusGenerator {
     private Set<String> allCommands = new TreeSet<String>();
     private Set<String> restRedirectCommands = new TreeSet<String>();
     private Map<String, String> commandsToResources = new TreeMap<String, String>();
+    private Map<String, String> resourcesToDeleteCommands = new TreeMap<String, String>();
+    
+    private Properties propsI18N= new Properties();
 
     @GET
     @Produces({"text/plain"})
@@ -100,7 +105,7 @@ public class StatusGenerator {
             DomDocument document = dom.document;
             ConfigModel rootModel = dom.document.getRoot().model;
 
-            ResourcesGenerator resourcesGenerator = new NOOPResourcesGenerator();
+            ResourcesGenerator resourcesGenerator = new NOOPResourcesGenerator(habitat);
             resourcesGenerator.generateSingle(rootModel, document);
             resourcesGenerator.endGeneration();
         } catch (Exception ex) {
@@ -148,6 +153,21 @@ public class StatusGenerator {
             }
 
         }
+         status.append("\n------------------------");
+        status.append("Resources with Delete Commands in REST Admin (not counting RESTREDIRECT:\n");       
+        for (String ss : resourcesToDeleteCommands.keySet()) {
+            status.append(ss + "      :::      " + resourcesToDeleteCommands.get(ss) + "\n");
+        }     
+        
+        FileOutputStream f;
+        try {
+            f = new FileOutputStream(System.getProperty("user.home")+"/GlassFishI18NData.properties");
+            propsI18N.store(f, "");
+            f.close();
+
+        } catch (Exception ex) {
+            Logger.getLogger(StatusGenerator.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return status.toString();
     }
 
@@ -179,8 +199,9 @@ public class StatusGenerator {
 
         public NOOPClassWriter(String className, String baseClassName, String resourcePath) {
             this.className = className;
-//            StatusGenerator.this.status.append(className);
-//            StatusGenerator.this.status.append("\n");
+            if (baseClassName.equals("TemplateRestResource"))
+            resourcesToDeleteCommands.put(className, ""); //init the map with empty values
+
         }
 
         @Override
@@ -234,6 +255,7 @@ public class StatusGenerator {
             } else {
                 commandsToResources.put(commandName, className);
             }
+            resourcesToDeleteCommands.put(className, commandName);
         }
 
         @Override
@@ -249,6 +271,7 @@ public class StatusGenerator {
             } else {
                 commandsToResources.put(commandName, className);
             }
+            
         }
 
         @Override
@@ -296,6 +319,10 @@ public class StatusGenerator {
 
     class NOOPResourcesGenerator extends ResourcesGeneratorBase {
 
+        public NOOPResourcesGenerator(Habitat h){
+            super(h);
+            
+        }
         @Override
         public ClassWriter getClassWriter(String className, String baseClassName, String resourcePath) {
             return new NOOPClassWriter(className, baseClassName, resourcePath);
@@ -308,11 +335,19 @@ public class StatusGenerator {
 
         @Override
         public void configModelVisited(ConfigModel model) {
+            //I18n Calculation
+            for (String a : model.getAttributeNames()) {
+
+                propsI18N.setProperty(model.targetTypeName + "." + a, "");
+            }
+            
+            
             Class<? extends ConfigBeanProxy> cbp = null;
             try {
                 cbp = (Class<? extends ConfigBeanProxy>) model.classLoaderHolder.get().loadClass(model.targetTypeName);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
+                return;
             }
             RestRedirects restRedirects = cbp.getAnnotation(RestRedirects.class);
             if (restRedirects != null) {
@@ -338,7 +373,7 @@ try{
             CommandModel.ParamModel paramModel;
             while (iterator.hasNext()) {
                 paramModel = iterator.next();
-                Param param = paramModel.getParam();
+             //   Param param = paramModel.getParam();
                 if (paramModel.getName().equals("target")) {
                     return true;
                 }

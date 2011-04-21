@@ -40,7 +40,8 @@
 
 package org.glassfish.admingui.devtests;
 
-import com.thoughtworks.selenium.Selenium;
+import org.glassfish.admingui.devtests.util.ElementFinder;
+import org.glassfish.admingui.devtests.util.SeleniumHelper;
 import com.thoughtworks.selenium.SeleniumException;
 import org.junit.*;
 import org.openqa.selenium.*;
@@ -54,7 +55,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.glassfish.admingui.devtests.util.SeleniumWrapper;
 
 public class BaseSeleniumTestClass {
     public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
@@ -68,12 +69,12 @@ public class BaseSeleniumTestClass {
     @Rule
     public SpecificTestRule specificTestRule = new SpecificTestRule();
 
-    protected static final int TIMEOUT = 90;
+    protected static final int TIMEOUT = 120;
     protected static final int BUTTON_TIMEOUT = 750;
     protected static final Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
     
-    private static Selenium selenium;
-    private static WebDriver driver;
+    protected static SeleniumWrapper selenium;
+    protected static WebDriver driver;
     private static String currentTestClass = "";
     private boolean processingLogin = false;
     private static final String AJAX_INDICATOR = "ajaxIndicator";
@@ -168,7 +169,7 @@ public class BaseSeleniumTestClass {
     @After
     public void afterTest() {
         if (Boolean.parseBoolean(SeleniumHelper.getParameter("releaseAfter", "false"))) {
-            helper.releaseSeleniumInstance();
+//            helper.releaseSeleniumInstance();
         }
     }
     
@@ -366,11 +367,11 @@ public class BaseSeleniumTestClass {
         return count;
     }
 
-    protected void openAndWait(String url, String triggerText) {
+    public void openAndWait(String url, String triggerText) {
         openAndWait(url, triggerText, TIMEOUT);
     }
 
-    protected void openAndWait(String url, String triggerText, int timeout) {
+    public void openAndWait(String url, String triggerText, int timeout) {
         open(url);
         // wait for 2 minutes, as that should be enough time to insure that the admin console app has been deployed by the server
         waitForPageLoad(triggerText, timeout);
@@ -418,12 +419,10 @@ public class BaseSeleniumTestClass {
         waitForButtonEnabled(id);
     }
 
-    // Argh!
     protected void sleep(int millis) {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
-//            e.printStackTrace();
         }
     }
 
@@ -452,21 +451,20 @@ public class BaseSeleniumTestClass {
                 Assert.fail("The operation timed out waiting for the page to load.");
             }
 
-            RenderedWebElement ajaxPanel = (RenderedWebElement)
-                    elementFinder.findElement(By.id(AJAX_INDICATOR), TIMEOUT,
-                    new ExpectedCondition<Boolean>() {
-                @Override
-                public Boolean apply(WebDriver driver) {
-                    RenderedWebElement ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
-                    return !ajaxPanel.isDisplayed();
-                }
-
-            });
-//                if (!ajaxPanel.isDisplayed()) {
+            RenderedWebElement ajaxPanel = null;
+            boolean panelIsDisplayed = false;
+            
+            try {
+                ajaxPanel = selenium.findElement(By.id(AJAX_INDICATOR));
+                panelIsDisplayed = ajaxPanel.isDisplayed();
+            } catch (Exception ex) {
+                
+            }
+            if (!panelIsDisplayed) {
                 if (callback.executeTest()) {
                     break;
                 }
-//                }
+            }
 
             sleep(TIMEOUT_CALLBACK_LOOP);
         }
@@ -532,23 +530,19 @@ public class BaseSeleniumTestClass {
      * @return
      */
     protected String getLinkIdByLinkText(String baseId, String value) {
-        WebElement link = elementFinder.findElement(By.linkText(value), TIMEOUT);
-                //driver.findElement(By.linkText(value));
-        return (link == null) ?  null : (String)link.getAttribute("id");
-        /*
-        String[] links = selenium.getAllLinks();
-
-        for (String link : links) {
-            if (link.startsWith(baseId)) {
-                String linkText = selenium.getText(link);
-                if (value.equals(linkText)) {
-                    return link;
-                }
-            }
+        String id = null;
+        WebElement link = null;
+        try {
+            link = selenium.findElement(By.linkText(value));
+            id = ((link == null) ?  null : (String)link.getAttribute("id"));
+        } catch (StaleElementReferenceException sere) {
+            // Sleep and try again
+            sleep(1000);
+            link = selenium.findElement(By.linkText(value));
+            id = ((link == null) ?  null : (String)link.getAttribute("id"));
         }
-
-        return null;
-        */
+                //;
+        return id;
     }
     
     protected boolean isTextPresent(String text) {
@@ -925,19 +919,28 @@ public class BaseSeleniumTestClass {
         }
         
         try {
-            RenderedWebElement element = (RenderedWebElement) elementFinder.findElement(By.id(id), TIMEOUT);
-                    //driver.findElement(By.id(id));
+            RenderedWebElement element = (RenderedWebElement) selenium.findElement(By.id(id), TIMEOUT);
             if (element.isDisplayed()) {
                 return;
             }
-        } catch (StaleElementReferenceException sere) {
+        } catch (Exception ex) {
             
         }
         
         final String parentId = id.substring(0, id.lastIndexOf(":"));
-        final RenderedWebElement parentElement = (RenderedWebElement) elementFinder.findElement(By.id(parentId), TIMEOUT);
-//                driver.findElement(By.id(parentId));
-        if (!parentElement.isDisplayed()) {
+        boolean parentIsDisplayed = false;
+
+        try {
+            RenderedWebElement parentElement = (RenderedWebElement) selenium.findElement(By.id(parentId), TIMEOUT);
+            parentIsDisplayed = parentElement.isDisplayed();
+        } catch (StaleElementReferenceException sere) {
+            sleep(1000);
+            RenderedWebElement parentElement = (RenderedWebElement) selenium.findElement(By.id(parentId), TIMEOUT);
+            parentIsDisplayed = parentElement.isDisplayed();
+            
+        }
+
+        if (!parentIsDisplayed) {
             insureElementIsVisible(parentId);
             String grandParentId = parentId.substring(0, parentId.lastIndexOf(":"));
             String nodeId = grandParentId.substring(grandParentId.lastIndexOf(":")+1);

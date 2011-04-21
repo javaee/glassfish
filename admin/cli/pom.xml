@@ -56,14 +56,6 @@
     
     <developers>
         <developer>
-            <id>janey</id>
-            <name>Jane Young</name>
-            <organization>Oracle, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
             <id>bnevins</id>
             <name>Byron Nevins</name>
             <organization>Oracle, Inc.</organization>
@@ -72,16 +64,8 @@
             </roles>
         </developer>        
         <developer>
-            <id>pa100654</id>
-            <name>Prashant Abbagani</name>
-            <organization>Oracle, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>km</id>
-            <name>Kedar Mhaswade</name>
+            <id>tmueller</id>
+            <name>Tom Mueller</name>
             <organization>Oracle, Inc.</organization>
             <roles>
                 <role>lead</role>
@@ -143,26 +127,6 @@
                         <!-- 5776: we do not need backup jar entry, but I retain it, Kedar -->
                         </manifestEntries>
                     </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>generate-command-metadata-classes</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <schemaLanguage>DTD</schemaLanguage>
-                    <schemaDirectory>src/main/resources</schemaDirectory>
-                    <generatePackage>org.glassfish.admin.ncli.metadata</generatePackage>
-                    <schemaIncludes>
-                        <include>cmd-metadata.dtd</include>
-                    </schemaIncludes>
                 </configuration>
             </plugin>
              <plugin>

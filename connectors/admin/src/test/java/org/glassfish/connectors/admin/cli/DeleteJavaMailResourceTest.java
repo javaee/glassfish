@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -77,7 +77,7 @@ public class DeleteJavaMailResourceTest extends ConfigApiTest {
         cr = habitat.getComponent(CommandRunner.class);
         resources = habitat.getComponent(Domain.class).getResources();
         context = new AdminCommandContext(
-                LogDomains.getLogger(ListJavaMailResourcesTest.class, LogDomains.ADMIN_LOGGER),
+                LogDomains.getLogger(DeleteJavaMailResourceTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());
     }
 

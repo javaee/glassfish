@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -347,7 +347,7 @@ public class FlashlightProbeProviderFactory
         if (logger.isLoggable(Level.FINE))
             logger.fine("processProbeProviderXML for " + xml);
         try {
-            InputStream is = cl.getResourceAsStream(xml);
+            InputStream is;
             if (inBundle) {
                 is = cl.getResourceAsStream(xml);
             } else {
@@ -466,7 +466,7 @@ public class FlashlightProbeProviderFactory
         String moduleName = provider.getModuleName();
         String probeProviderName = provider.getProbeProviderName();
         String providerClass = provider.getProbeProviderClass();
-        List<org.glassfish.flashlight.xml.Probe> probes = provider.getProbes();
+        List<org.glassfish.flashlight.xml.XmlProbe> probes = provider.getProbes();
         Class<?> providerClazz = null;
 
         try {
@@ -488,7 +488,7 @@ public class FlashlightProbeProviderFactory
         FlashlightProbeProvider flProvider = new FlashlightProbeProvider(
             		moduleProviderName, moduleName, probeProviderName, providerClazz);
 
-        for (org.glassfish.flashlight.xml.Probe probe : probes) {
+        for (org.glassfish.flashlight.xml.XmlProbe probe : probes) {
             String probeName = probe.getProbeName();
             String probeMethod = probe.getProbeMethod();
             boolean hasSelf = probe.hasSelf();
@@ -499,7 +499,7 @@ public class FlashlightProbeProviderFactory
             Class<?>[] paramTypes = new Class[probe.getProbeParams().size()];
 
             int i = 0;
-            for (org.glassfish.flashlight.xml.ProbeParam param : probe.getProbeParams()) {
+            for (org.glassfish.flashlight.xml.XmlProbeParam param : probe.getProbeParams()) {
                 probeParams[i] = param.getName();
                 if (logger.isLoggable(Level.FINE))
                     logger.fine("          probeParam[" + i + "] = " + probeParams[i]);

@@ -41,6 +41,7 @@
 package org.glassfish.embeddable.web.config;
 
 import java.util.Set;
+import org.glassfish.embeddable.GlassFishException;
 
 /**
  * This class represents a list of URL patterns and HTTP
@@ -112,8 +113,16 @@ public class WebResourceCollection {
      * Sets the HTTP methods that should be protected
      *
      * @param httpMethods the HTTP methods
+     *
+     * @throws GlassFishException if HttpMethodOmissions is already defined
      */
-    public void setHttpMethods(Set<String> httpMethods) {
+    public void setHttpMethods(Set<String> httpMethods)
+            throws GlassFishException {
+        if (httpMethodOmissions != null) {
+            throw new GlassFishException(
+                    "Invalid content was found starting with element 'http-method'. " +
+                            "One of 'http-method' or 'http-method-omission' is expected.");
+        }
         this.httpMethods = httpMethods;
     }
 
@@ -131,8 +140,16 @@ public class WebResourceCollection {
      *
      * @param httpMethodOmissions the HTTP methods to be 
      * omitted from protection
+     *
+     * @throws GlassFishException if HttpMethods is already defined
      */
-    public void setHttpMethodOmissions(Set<String> httpMethodOmissions) {
+    public void setHttpMethodOmissions(Set<String> httpMethodOmissions)
+            throws GlassFishException {
+        if (httpMethods != null) {
+            throw new GlassFishException(
+                    "Invalid content was found starting with element 'http-method-omission'. " +
+                            "One of 'http-method' or 'http-method-omission' is expected.");
+        }
         this.httpMethodOmissions = httpMethodOmissions;
     }
 

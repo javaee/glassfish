@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -198,8 +198,7 @@ public class BaseCache implements Cache {
         if (maxEntries <= 0) {
             String msg = _rb.getString("cache.BaseCache.illegalMaxEntries");
             
-            Integer obj = new Integer(maxEntries);
-            Object[] params = { obj };
+            Object[] params = { maxEntries };
             msg = MessageFormat.format(msg, params);
             
             throw new IllegalArgumentException(msg);
@@ -965,25 +964,25 @@ public class BaseCache implements Cache {
             return null;
 
         if (key.equals(Constants.STAT_BASECACHE_MAX_ENTRIES))
-            stat = new Integer(maxEntries);
+            stat = maxEntries;
         else if (key.equals(Constants.STAT_BASECACHE_THRESHOLD))
-            stat = new Integer(threshold);
+            stat = threshold;
         else if (key.equals(Constants.STAT_BASECACHE_TABLE_SIZE))
-            stat = new Integer(maxBuckets);
+            stat = maxBuckets;
         else if (key.equals(Constants.STAT_BASECACHE_ENTRY_COUNT))
-            stat = new Integer(entryCount);
+            stat = entryCount;
         else if (key.equals(Constants.STAT_BASECACHE_HIT_COUNT))
-            stat = new Integer(hitCount);
+            stat = hitCount;
         else if (key.equals(Constants.STAT_BASECACHE_MISS_COUNT))
-            stat = new Integer(missCount);
+            stat = missCount;
         else if (key.equals(Constants.STAT_BASECACHE_REMOVAL_COUNT))
-            stat = new Integer(removalCount);
+            stat = removalCount;
         else if (key.equals(Constants.STAT_BASECACHE_REFRESH_COUNT))
-            stat = new Integer(refreshCount);
+            stat = refreshCount;
         else if (key.equals(Constants.STAT_BASECACHE_OVERFLOW_COUNT))
-            stat = new Integer(overflowCount);
+            stat = overflowCount;
         else if (key.equals(Constants.STAT_BASECACHE_ADD_COUNT))
-            stat = new Integer(addCount);
+            stat = addCount;
 
         return stat;
     }
@@ -997,25 +996,25 @@ public class BaseCache implements Cache {
         HashMap stats = new HashMap();
 
         stats.put(Constants.STAT_BASECACHE_MAX_ENTRIES, 
-                  new Integer(maxEntries));
+                  maxEntries);
         stats.put(Constants.STAT_BASECACHE_THRESHOLD, 
-                  new Integer(threshold));
+                  threshold);
         stats.put(Constants.STAT_BASECACHE_TABLE_SIZE, 
-                  new Integer(maxBuckets));
+                  maxBuckets);
         stats.put(Constants.STAT_BASECACHE_ENTRY_COUNT, 
-                  new Integer(entryCount));
+                  entryCount);
         stats.put(Constants.STAT_BASECACHE_HIT_COUNT, 
-                  new Integer(hitCount));
+                  hitCount);
         stats.put(Constants.STAT_BASECACHE_MISS_COUNT, 
-                  new Integer(missCount));
+                  missCount);
         stats.put(Constants.STAT_BASECACHE_REMOVAL_COUNT, 
-                  new Integer(removalCount));
+                  removalCount);
         stats.put(Constants.STAT_BASECACHE_REFRESH_COUNT, 
-                  new Integer(refreshCount));
+                  refreshCount);
         stats.put(Constants.STAT_BASECACHE_OVERFLOW_COUNT, 
-                  new Integer(overflowCount));
+                  overflowCount);
         stats.put(Constants.STAT_BASECACHE_ADD_COUNT, 
-                  new Integer(addCount));
+                  addCount);
 
         return stats;
     }

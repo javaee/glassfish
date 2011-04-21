@@ -406,7 +406,6 @@ public class ApplicationInfo extends ModuleInfo {
     }
 
     public void clean(ExtendedDeploymentContext context) throws Exception {
-        Logger logger = context.getLogger();
 
         // clean the app level classloader if it's not already
         // cleaned

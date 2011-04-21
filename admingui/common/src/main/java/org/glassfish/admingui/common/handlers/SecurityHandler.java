@@ -235,6 +235,7 @@ public class SecurityHandler {
         List<Map<String,String>> propListOrig = (List)handlerCtx.getInputValue("propList");
         List<Map<String,String>> propList = new ArrayList(propListOrig);
         Map<String,String> attrMap = (Map)handlerCtx.getInputValue("attrMap");
+        Boolean edit = (Boolean) handlerCtx.getInputValue("edit");
 
         if (attrMap == null) {
             attrMap = new HashMap();
@@ -250,8 +251,13 @@ public class SecurityHandler {
                 putOptional(attrMap, propList, "assign-groups", "fileAsGroups");
             }else
             if(classname.indexOf("LDAPRealm")!= -1){
-                attrMap.put("baseDn", "\"" + attrMap.get("baseDn") + "\"");
-                attrMap.put("directory", "\"" + attrMap.get("directory") + "\"");
+                if (!edit) {
+                    attrMap.put("baseDn", "\"" + attrMap.get("baseDn") + "\"");
+                    attrMap.put("directory", "\"" + attrMap.get("directory") + "\"");
+                    for (Map<String,String> m : propList) {
+                        m.put("value", "\"" + m.get("value") + "\"");
+                    }
+                }
                 putOptional(attrMap, propList, "jaas-context", "ldapJaax");
                 putOptional(attrMap, propList, "base-dn", "baseDn");
                 putOptional(attrMap, propList, "directory", "directory");
@@ -287,7 +293,6 @@ public class SecurityHandler {
            classname = attrMap.get("classnameInput");
         }
 
-        Boolean edit = (Boolean) handlerCtx.getInputValue("edit");
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
         //for edit case, only properties will be changed since we don't allow classname change.
         //return the prop list so it can continue processing in the .jsf
@@ -367,7 +372,6 @@ public class SecurityHandler {
             attrs.put("id", configName);
             attrs.put("realmName", realmName);
             RestUtil.restRequest(tmpEP, attrs, "POST", handlerCtx, false);
-            attrs = new HashMap<String, Object>();
             String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName + "/security-service/auth-realm/" + realmName ;
             if (Boolean.valueOf(createNew)) {
                 endpoint = endpoint +  "/create-user?target=" + configName;
@@ -375,19 +379,19 @@ public class SecurityHandler {
                 endpoint = endpoint + "/update-user?target=" + configName;
             }
 
-                final String USERPASSWORD = "AS_ADMIN_USERPASSWORD";
+            final String USERPASSWORD = "AS_ADMIN_USERPASSWORD";
 
-                attrs = new HashMap<String, Object>();
-                attrs.put("id", userid);
-                attrs.put(USERPASSWORD, password);
-                attrs.put("target", configName);
-                if (grouplist != null && grouplist.contains(","))
-                    grouplist = grouplist.replace(',', ':');
-                List<String> grpList = new ArrayList();
-                if (grouplist != null && !grouplist.equals(""))
-                    grpList.add(grouplist);
-                attrs.put("groups", grpList);
-                RestUtil.restRequest(endpoint, attrs, "POST", null, true, true );
+            attrs = new HashMap<String, Object>();
+            attrs.put("id", userid);
+            attrs.put(USERPASSWORD, password);
+            attrs.put("target", configName);
+            if (grouplist != null && grouplist.contains(","))
+                grouplist = grouplist.replace(',', ':');
+            List<String> grpList = new ArrayList();
+            if (grouplist != null && !grouplist.equals(""))
+                grpList.add(grouplist);
+            attrs.put("groups", grpList);
+            RestUtil.restRequest(endpoint, attrs, "POST", null, true, true );
         } catch(Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
@@ -677,7 +681,37 @@ public class SecurityHandler {
                     providerMap.put("className", attrMap.get("ClassName"));
                     providerMap.put("providerType", attrMap.get("ProviderType"));
                     RestUtil.restRequest(providerEndpoint, providerMap, "POST", null, false);
-
+                    Map attrs = new HashMap();
+                    String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
+                                    "/security-service/message-security-config/" + attrMap.get("msgSecurityName");
+                    attrs.put("authLayer", attrMap.get("msgSecurityName"));
+                    if (attrMap.get("defaultProvider") != null && attrMap.get("defaultProvider").equals("true")){
+                        if (providerMap.get("providerType").equals("client")) {
+                            attrs.put("defaultClientProvider", providerName);
+                        }
+                        else if (providerMap.get("providerType").equals("server")) {
+                            attrs.put("defaultProvider", providerName);
+                        }
+                        else if (providerMap.get("providerType").equals("client-server")) {
+                            attrs.put("defaultProvider", providerName);
+                            attrs.put("defaultClientProvider", providerName);
+                        }
+                    }
+                    if (attrMap.get("defaultProvider") == null){
+                        if (providerMap.get("providerType").equals("client") && attrMap.get("defaultClientProvider").equals(providerName)) {
+                            attrs.put("defaultClientProvider", "");
+                        }
+                        else if (providerMap.get("providerType").equals("server") && attrMap.get("defaultProvider").equals(providerName)) {
+                            attrs.put("defaultProvider", "");
+                        }
+                        else if (providerMap.get("providerType").equals("client-server")) {
+                            if (attrMap.get("defaultServerProvider").equals(providerName) && attrMap.get("defaultClientProvider").equals(providerName)) {
+                                attrs.put("defaultProvider", "");
+                                attrs.put("defaultClientProvider", "");
+                            }
+                        }
+                    }
+                    RestUtil.sendUpdateRequest(endpoint, attrs, null, null, null);
                 }
             }else{
                 String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
@@ -739,7 +773,7 @@ public class SecurityHandler {
                 list = new ArrayList<String>();
             Boolean status = isSecurityManagerEnabled(list);
             String value= (String) handlerCtx.getInputValue("value");
-            Boolean userValue = new Boolean(value);
+            Boolean userValue = Boolean.valueOf(value);
             if (status.equals(userValue)){
                 //no need to change
                 return;
@@ -793,10 +827,6 @@ public class SecurityHandler {
             }
         }
         return Boolean.FALSE;
-    }
-
-    private static String str(String aa){
-        return (aa==null) ? "" : aa;
     }
 
     private static final String JVM_OPTION_SECURITY_MANAGER = "-Djava.security.manager";

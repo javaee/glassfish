@@ -46,11 +46,8 @@ import com.sun.enterprise.container.common.spi.util.JavaEEIOUtils;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.annotation.handlers.ServletSecurityHandler;
 import com.sun.enterprise.deployment.runtime.web.*;
-import com.sun.enterprise.deployment.web.LoginConfiguration;
-import com.sun.enterprise.deployment.web.SecurityConstraint;
-import com.sun.enterprise.deployment.web.ServletFilterMapping;
-import com.sun.enterprise.deployment.web.UserDataConstraint;
-import com.sun.enterprise.deployment.web.WebResourceCollection;
+import com.sun.enterprise.deployment.runtime.web.SessionConfig;
+import com.sun.enterprise.deployment.web.*;
 import com.sun.enterprise.security.integration.RealmInitializer;
 import com.sun.enterprise.universal.GFBase64Decoder;
 import com.sun.enterprise.universal.GFBase64Encoder;
@@ -69,18 +66,13 @@ import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.servlets.DefaultServlet;
 import org.apache.catalina.session.StandardManager;
 import org.apache.jasper.servlet.JspServlet;
-import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.embeddable.web.Context;
-import org.glassfish.embeddable.web.config.AuthMethod;
 import org.glassfish.embeddable.web.config.FormLoginConfig;
 import org.glassfish.embeddable.web.config.LoginConfig;
-import org.glassfish.embeddable.web.config.RealmType;
 import org.glassfish.embeddable.web.config.SecurityConfig;
 import org.glassfish.embeddable.web.config.TransportGuarantee;
 import org.glassfish.hk2.classmodel.reflect.Types;
 import org.glassfish.internal.api.ServerContext;
-import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
 import org.glassfish.web.admin.monitor.SessionProbeProvider;
 import org.glassfish.web.admin.monitor.WebModuleProbeProvider;
@@ -99,10 +91,7 @@ import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.lang.ClassLoader;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
@@ -112,7 +101,7 @@ import java.util.logging.Logger;
  * Class representing a web module for use by the Application Server.
  */
 
-public class WebModule extends PwcWebModule implements Context {
+public class WebModule extends PwcWebModule {
 
     // ----------------------------------------------------- Class Variables
 
@@ -1272,33 +1261,6 @@ public class WebModule extends PwcWebModule implements Context {
         return uris;
     }
 
-    private boolean validateURLPattern(String urlPattern) {
-
-        if (urlPattern == null) {
-            return (false);
-	}
-
-        if (urlPattern.indexOf('\n') >= 0 || urlPattern.indexOf('\r') >= 0) {
-            logger.log(Level.WARNING,
-                       "webmodule.alternateDocBase.crlfInUrlPattern",
-                       urlPattern);
-            return false;
-        }
-
-        if (urlPattern.startsWith("*.")) {
-            if (urlPattern.indexOf('/') < 0) {
-                return (true);
-            } else {
-                return (false);
-            }
-        }
-        if ( (urlPattern.startsWith("/")) &&
-	     (!urlPattern.contains("*."))) {
-            return (true);
-        } else {
-            return (false);
-        }
-    }
 
     /**
      * Configure miscellaneous settings such as the pool size for
@@ -2127,46 +2089,9 @@ public class WebModule extends PwcWebModule implements Context {
             }
         }
     }
-    
-    
-    // --------------------------------------------------------- embedded Methods
-    
-    private SecurityConfig config;
 
-    /**
-     * Should we generate directory listings?
-     */
-    protected boolean directoryListing = false;
-        
-    /**
-     * Enables or disables directory listings on this <tt>Context</tt>.
-     */
-    public void setDirectoryListing(boolean directoryListing) {
-        this.directoryListing = directoryListing;
-        Wrapper wrapper = (Wrapper) findChild(
-                org.apache.catalina.core.Constants.DEFAULT_SERVLET_NAME);
-        if (wrapper !=null) {
-            Servlet servlet = ((StandardWrapper)wrapper).getServlet();
-            if (servlet instanceof DefaultServlet) {
-                ((DefaultServlet)servlet).setListings(directoryListing);
-            }
-        }
-    }
-
-    /**
-     * Checks whether directory listings are enabled or disabled on this
-     * <tt>Context</tt>.
-     */ 
-    public boolean isDirectoryListing() {
-        return directoryListing;
-    }
-
-    /**
-     * Set the security related configuration for this context
-     */
     public void setSecurityConfig(SecurityConfig config) {
 
-        this.config = config;
         if (config == null) {
             return;
         }
@@ -2192,7 +2117,7 @@ public class WebModule extends PwcWebModule implements Context {
                 config.getSecurityConstraints();
         for (org.glassfish.embeddable.web.config.SecurityConstraint sc : securityConstraints) {
 
-            SecurityConstraint securityConstraint = new SecurityConstraintImpl();
+            com.sun.enterprise.deployment.web.SecurityConstraint securityConstraint = new SecurityConstraintImpl();
 
             Set<org.glassfish.embeddable.web.config.WebResourceCollection> wrcs =
                         sc.getWebResourceCollection();
@@ -2225,8 +2150,16 @@ public class WebModule extends PwcWebModule implements Context {
                                 UserDataConstraint.NONE_TRANSPORT));
                 securityConstraint.setUserDataConstraint(udc);
 
-                for (String httpMethod : wrc.getHttpMethods()) {
-                    webResourceColl.addHttpMethod(httpMethod);
+                if (wrc.getHttpMethods() != null) {
+                    for (String httpMethod : wrc.getHttpMethods()) {
+                        webResourceColl.addHttpMethod(httpMethod);
+                    }
+                }
+
+                if (wrc.getHttpMethodOmissions() != null) {
+                    for (String httpMethod :  wrc.getHttpMethodOmissions()) {
+                        webResourceColl.addHttpMethodOmission(httpMethod);
+                    }
                 }
 
                 getWebBundleDescriptor().addSecurityConstraint(securityConstraint);
@@ -2236,12 +2169,12 @@ public class WebModule extends PwcWebModule implements Context {
 
         if (pipeline != null) {
             GlassFishValve basic = pipeline.getBasic();
-            if ((basic != null) && (basic instanceof Authenticator)) {
+            if ((basic != null) && (basic instanceof java.net.Authenticator)) {
                 removeValve(basic);
             }
             GlassFishValve valves[] = pipeline.getValves();
             for (int i = 0; i < valves.length; i++) {
-                if (valves[i] instanceof Authenticator) {
+                if (valves[i] instanceof java.net.Authenticator) {
                     removeValve(valves[i]);
                 }
             }
@@ -2257,50 +2190,6 @@ public class WebModule extends PwcWebModule implements Context {
             setRealm(realm);
         }
 
-        try {
-            // todo try to avoid this
-            // restart this context for security constraints
-            stop();
-            start();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-    }
-
-    /**
-     * Gets the security related configuration for this context
-     */
-    public SecurityConfig getSecurityConfig() {
-        return config;
-    }
-        
-    // --------------------------------------------- embedded Lifecycle Methods
-            
-    /**
-     * Enables this component.
-     * 
-     * @throws LifecycleException if this component fails to be enabled
-     */    
-    public void enable() throws GlassFishException {
-       try {
-            start();
-        } catch (LifecycleException e) {
-            throw new GlassFishException(e);
-        }
-    }
-
-    /**
-     * Disables this component.
-     * 
-     * @throws GlassFishException if this component fails to be disabled
-     */
-    public void disable() throws GlassFishException {
-       try {
-            stop();
-        } catch (LifecycleException e) {
-            throw new GlassFishException(e);
-        }        
     }
     
 }

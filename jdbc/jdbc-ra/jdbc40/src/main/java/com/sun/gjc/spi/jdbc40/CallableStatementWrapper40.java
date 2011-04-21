@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -1402,8 +1402,6 @@ public class CallableStatementWrapper40 extends CallableStatementWrapper {
      */
     public java.sql.ResultSet executeQuery() throws java.sql.SQLException {
         ResultSet rs = callableStatement.executeQuery();
-        if (rs == null)
-            return null;
         return new ResultSetWrapper40(this, rs);
     }
 
@@ -1423,8 +1421,6 @@ public class CallableStatementWrapper40 extends CallableStatementWrapper {
     public java.sql.ResultSet executeQuery(String sql) throws
             java.sql.SQLException {
         ResultSet rs = callableStatement.executeQuery(sql);
-        if (rs == null)
-            return null;
         return new ResultSetWrapper40(this, rs);
     }
 

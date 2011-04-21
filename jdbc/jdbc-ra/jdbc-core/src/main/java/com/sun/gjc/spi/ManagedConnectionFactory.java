@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -63,6 +63,7 @@ import java.sql.Connection;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Timer;
@@ -192,9 +193,9 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     }
 
     /**
-     * Get the <code>ResourceAdapter</code> for this <code>ManagedConnectionFactory</code> instance.
+     * Get the <code>ResourceAdapterImpl</code> for this <code>ManagedConnectionFactory</code> instance.
      *
-     * @return <code>ResourceAdapter</code> associated with this <code>ManagedConnectionFactory</code> instance
+     * @return <code>ResourceAdapterImpl</code> associated with this <code>ManagedConnectionFactory</code> instance
      * @see <code>setResourceAdapter</code>
      */
     public javax.resource.spi.ResourceAdapter getResourceAdapter() {
@@ -305,13 +306,13 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         String conVal = spec.getDetail(DataSourceSpec.CONNECTIONVALIDATIONREQUIRED);
 
         boolean connectionValidationRequired =
-                (conVal == null) ? false : Boolean.valueOf(conVal.toLowerCase());
+                (conVal == null) ? false : Boolean.valueOf(conVal.toLowerCase(Locale.getDefault()));
         if (!connectionValidationRequired) {
             return;
         }
 
 
-        String validationMethod = spec.getDetail(DataSourceSpec.VALIDATIONMETHOD).toLowerCase();
+        String validationMethod = spec.getDetail(DataSourceSpec.VALIDATIONMETHOD).toLowerCase(Locale.getDefault());
 
         mc.checkIfValid();
         /**
@@ -441,7 +442,8 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         java.sql.PreparedStatement stmt = null;
         java.sql.ResultSet rs = null;
         try {
-            stmt = con.prepareStatement("SELECT COUNT(*) FROM " + tableName);
+            final String statement = "SELECT COUNT(*) FROM " + tableName;
+            stmt = con.prepareStatement(statement);
             rs = stmt.executeQuery();
         } catch (Exception sqle) {
             _logger.log(Level.INFO, "jdbc.exc_table_validation", tableName);
@@ -517,7 +519,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
             String guaranteeIsolationLevel = spec.getDetail(DataSourceSpec.GUARANTEEISOLATIONLEVEL);
 
             if (guaranteeIsolationLevel != null && !guaranteeIsolationLevel.equals("")) {
-                boolean guarantee = Boolean.valueOf(guaranteeIsolationLevel.toLowerCase());
+                boolean guarantee = Boolean.valueOf(guaranteeIsolationLevel.toLowerCase(Locale.getDefault()));
 
                 if (guarantee) {
                     int tranIsolationInt = getTransactionIsolationInt(tranIsolation);
@@ -676,9 +678,9 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     }
 
     /**
-     * Set the associated <code>ResourceAdapter</code> JavaBean.
+     * Set the associated <code>ResourceAdapterImpl</code> JavaBean.
      *
-     * @param ra <code>ResourceAdapter</code> associated with this
+     * @param ra <code>ResourceAdapterImpl</code> associated with this
      *           <code>ManagedConnectionFactory</code> instance
      * @see <code>getResourceAdapter</code>
      */
@@ -1408,7 +1410,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
                 if(_logger.isLoggable(Level.FINEST)) {
                     _logger.finest("Scheduling timer task for sql trace caching");
                 }
-                Timer timer = ((com.sun.gjc.spi.ResourceAdapter) ra).getTimer();
+                Timer timer = ((com.sun.gjc.spi.ResourceAdapterImpl) ra).getTimer();
                 jdbcStatsProvider.getSqlTraceCache().scheduleTimerTask(timer);
             }
             if(_logger.isLoggable(Level.FINEST)) {
@@ -1455,6 +1457,6 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        ra = com.sun.gjc.spi.ResourceAdapter.getInstance();
+        ra = com.sun.gjc.spi.ResourceAdapterImpl.getInstance();
     }
 }

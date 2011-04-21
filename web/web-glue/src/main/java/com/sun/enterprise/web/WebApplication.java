@@ -54,6 +54,7 @@ import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.deployment.common.ApplicationConfigInfo;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.web.plugin.common.ContextParam;
@@ -102,7 +103,6 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         // release DeploymentContext in memory
         wmInfo.setDeploymentContext(null);
 
-        props = null;
         if (results == null) {
             logger.log(Level.SEVERE, "webApplication.unknownError");
             return false;
@@ -152,7 +152,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
                                       wmInfo.getVirtualServers(), props);
 
             if (keepSessions) {
-                Properties actionReportProps = deployContext.getActionReport().getExtraProperties();
+                Properties actionReportProps = getActionReportProperties(deployContext);
                 // should not be null here
                 if (actionReportProps != null) {
                     actionReportProps.putAll(props);
@@ -293,6 +293,15 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
              */
             logger.log(Level.WARNING, "", ex);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Properties getActionReportProperties(DeploymentContext deployContext) {
+        if (!wmInfo.getDescriptor().getApplication().isVirtual()) {
+            deployContext = ((ExtendedDeploymentContext)deployContext).getParentContext();
+        }
+
+        return deployContext.getActionReport().getExtraProperties();
     }
 
     /*

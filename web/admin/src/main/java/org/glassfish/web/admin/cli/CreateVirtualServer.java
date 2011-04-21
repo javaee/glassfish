@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -128,7 +128,9 @@ public class CreateVirtualServer implements AdminCommand {
             return;
         }
         //use the listener parameter provided by the user.
-        networkListeners = networkListeners != null ? networkListeners : httpListeners;
+        if (networkListeners == null) {
+            networkListeners = httpListeners;
+        }
         HttpService httpService = config.getHttpService();
         // ensure we don't already have one of this name
         for (VirtualServer virtualServer : httpService.getVirtualServer()) {

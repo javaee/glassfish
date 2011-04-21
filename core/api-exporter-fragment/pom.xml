@@ -332,7 +332,7 @@ org.xml.sax.ext; \
 org.xml.sax.helpers; \
 com.sun.enterprise.v3.admin; \
 com.sun.enterprise.naming.impl; \
-com.sun.grizzly.http.res; \
+org.glassfish.grizzly.http.server.res; \
 com.sun.enterprise.security.ssl; \
 com.sun.org.apache.xerces.internal.jaxp; \
 com.sun.org.apache.xalan.internal.xsltc.trax; \

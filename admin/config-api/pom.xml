@@ -56,16 +56,29 @@
 
     <developers>
         <developer>
-            <id>km</id>
-            <name>Kedar Mahswade</name>
-            <url>http://weblogs.java.net/blog/km</url>
+            <id>tmueller</id>
+            <name>Tom Mueller</name>
             <organization>Oracle, Inc.</organization>
             <roles>
                 <role>lead</role>
                 <role>developer</role>
             </roles>
         </developer>
+        <developer>
+            <id>dochez</id>
+            <name>Jerome Dochez</name>
+            <url>http://blogs.sun.com/dochez</url>
+            <organization>Oracle, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
+
+    <properties>
+        <findbugs.exclude>exclude.xml</findbugs.exclude>
+    </properties>
+
     <build>
         <resources>
             <resource>

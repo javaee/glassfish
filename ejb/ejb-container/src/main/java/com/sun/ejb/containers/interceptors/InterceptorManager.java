@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,15 +38,8 @@
  * holder.
  */
 
-/*
- * Created on Jan 7, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package com.sun.ejb.containers.interceptors;
 
-import com.sun.ejb.EjbInvocation;
 import com.sun.ejb.containers.BaseContainer;
 import com.sun.ejb.containers.StatelessSessionContainer;
 import com.sun.ejb.containers.MessageBeanContainer;
@@ -54,7 +47,6 @@ import com.sun.ejb.containers.EJBContextImpl;
 import com.sun.enterprise.deployment.*;
 import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJBException;
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -252,8 +244,7 @@ public class InterceptorManager {
                 continue;
             }
 
-            List<LifecycleCallbackDescriptor> orderedAIInterceptors =
-                new ArrayList<LifecycleCallbackDescriptor>();
+            List<LifecycleCallbackDescriptor> orderedAIInterceptors = null;
             try {
                 orderedAIInterceptors = interceptor.getOrderedAroundInvokeDescriptors(loader);
             } catch (Exception e) {
@@ -311,8 +302,7 @@ public class InterceptorManager {
                 continue;
             }
 
-            List<LifecycleCallbackDescriptor> orderedATInterceptors =
-                new ArrayList<LifecycleCallbackDescriptor>();
+            List<LifecycleCallbackDescriptor> orderedATInterceptors;
             try {
                 orderedATInterceptors = interceptor.getOrderedAroundTimeoutDescriptors(loader);
             } catch (Exception e) {
@@ -573,7 +563,6 @@ public class InterceptorManager {
     private void initCallbackIndices(List<InterceptorDescriptor> callbackList,
                                      CallbackType callbackType) throws Exception {
 
-        int size = CallbackType.values().length;
         ArrayList<CallbackInterceptor> callbacks = new ArrayList<CallbackInterceptor>();
 
         int index = callbackType.ordinal();
@@ -1027,10 +1016,3 @@ class BeanCallbackInterceptor
         return "beancallback[" + index + "]: " + method;
     }
 }
-
-class RuntimeInterceptorDescriptor {
-    int index;
-    Object interceptorInstance;
-    Method postConstructMethod;
-}
-

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -406,7 +406,7 @@ public class InstalledLibrariesResolver {
                                         libraries[i].getAbsolutePath() +
                                         "; it is a directory");
                         continue;
-                    } else if (!libraries[i].getName().toLowerCase().endsWith(".jar")) {
+                    } else if (!libraries[i].getName().toLowerCase(Locale.getDefault()).endsWith(".jar")) {
                         logger.log(Level.FINE,
                                 "Skipping installed library processing on " +
                                         libraries[i].getAbsolutePath() +
@@ -439,7 +439,7 @@ public class InstalledLibrariesResolver {
                                     logger.log(Level.WARNING,
                                             "enterprise.deployment.backend.optionalpkg.dependency.specversion.null",
                                             new Object[]{extName, jarFile.getName()});
-                                    specVersion = new String("");
+                                    specVersion = "";
                                 }
 
                                 Extension extension = new Extension(extName);

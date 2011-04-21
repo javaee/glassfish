@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -71,6 +71,7 @@ import com.sun.enterprise.util.Result;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Does basic level verification of domain.xml. This is helpful as in v3 there
@@ -223,7 +224,8 @@ public class DomainXmlVerifier {
             keys.add(key);
         }
 
-        WeakHashMap errorKeyBeanMap = new WeakHashMap();
+        WeakHashMap<String, Class<ConfigBeanProxy>> errorKeyBeanMap = 
+                new WeakHashMap<String, Class<ConfigBeanProxy>>();
         String[] strKeys = keys.toArray(new String[beans.size()]);
         for (int i = 0; i < strKeys.length; i++) {
             boolean foundDuplicate = false;
@@ -240,8 +242,8 @@ public class DomainXmlVerifier {
             }
         }
 
-        for (Object errorKey : errorKeyBeanMap.keySet()) {
-            Result result = new Result(strings.get("VerifyDupKey", errorKey, errorKeyBeanMap.get(errorKey)));
+        for (Map.Entry e : errorKeyBeanMap.entrySet()) {
+            Result result = new Result(strings.get("VerifyDupKey", e.getKey(), e.getValue()));
             output(result);
         }
     }    

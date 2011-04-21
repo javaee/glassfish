@@ -191,7 +191,9 @@ public final class DerbyControl
             }
             else if (!fDBLog.exists()) {
                 //create log file
-                fDBLog.createNewFile();
+                if (!fDBLog.createNewFile()) {
+                    System.out.println(lsm.getString("UnableToCreateDatabaseLog", dbLogFileName));
+                }
             }
         }
         else {

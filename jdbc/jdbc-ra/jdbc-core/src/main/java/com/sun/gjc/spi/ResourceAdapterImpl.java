@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,7 +54,7 @@ import javax.resource.spi.endpoint.MessageEndpointFactory;
 import javax.transaction.xa.XAResource;
 
 /**
- * <code>ResourceAdapter</code> implementation for Generic JDBC Connector.
+ * <code>ResourceAdapterImpl</code> implementation for Generic JDBC Connector.
  *
  * @author Evani Sai Surya Kiran
  * @version 1.0, 02/08/05
@@ -70,20 +70,20 @@ import javax.transaction.xa.XAResource;
             credentialInterface=AuthenticationMechanism.CredentialInterface.PasswordCredential)
     }
 )
-public class ResourceAdapter implements javax.resource.spi.ResourceAdapter {
-    private static ResourceAdapter ra;
+public class ResourceAdapterImpl implements javax.resource.spi.ResourceAdapter {
+    private static ResourceAdapterImpl ra;
     private BootstrapContext bootstrapContext;
     private Timer timer;
-    private static Logger _logger = LogDomains.getLogger(ResourceAdapter.class, LogDomains.RSR_LOGGER);
+    private static Logger _logger = LogDomains.getLogger(ResourceAdapterImpl.class, LogDomains.RSR_LOGGER);
 
-    public ResourceAdapter() {
+    public ResourceAdapterImpl() {
         if(ra == null){
             //we do not expect RA to be initialized multiple times as this is a System RAR
             ra = this;
         }
     }
 
-    public static ResourceAdapter getInstance() {
+    public static ResourceAdapterImpl getInstance() {
         if(ra == null) {
             throw new IllegalStateException("ResourceAdapter not initialized");
         }

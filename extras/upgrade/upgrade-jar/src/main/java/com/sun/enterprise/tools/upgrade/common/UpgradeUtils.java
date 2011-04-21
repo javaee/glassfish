@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,6 +51,9 @@ import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 // todo: fix formatting in separate commit
 public class UpgradeUtils {
@@ -135,7 +138,9 @@ public class UpgradeUtils {
 	 * job of the upgrade code in the application server. We're only
 	 * interested in the version information here, and if that is
 	 * somehow wrong then the upgrade process will fail downstream
-	 * as the document is parsed into serverbeans objects.
+	 * as the document is parsed into serverbeans objects. Since
+	 * we don't need to validate the document, we set our own
+	 * entity resolver to avoid the DTD lookup.
 	 */
     public Document getDomainDocumentElement(String domainFileName) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -143,6 +148,13 @@ public class UpgradeUtils {
         Document resultDoc = null;
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
+            builder.setEntityResolver(new EntityResolver() {
+                @Override
+                public InputSource resolveEntity(String s, String s1)
+                    throws SAXException, IOException {
+                    return new InputSource(new StringReader(""));
+                }
+            });
             resultDoc = builder.parse(new File(domainFileName));
         } catch (Exception ex) {
             logger.log(Level.WARNING,

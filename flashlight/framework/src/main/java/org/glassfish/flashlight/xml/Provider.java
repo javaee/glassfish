@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,7 +56,7 @@ public class Provider {
     private String moduleName = null;
     private String probeProviderName = null;
     private String probeProviderClass = null;
-    private List<Probe> probes = null;
+    private List<XmlProbe> probes = null;
 
     public String getModuleName() {
         return moduleName;
@@ -74,13 +74,13 @@ public class Provider {
         return probeProviderClass;
     }
 
-    public List<Probe> getProbes() {
+    public List<XmlProbe> getProbes() {
         return probes;
     }
 
     public Provider(String moduleProviderName, String moduleName,
                     String probeProviderName, String providerClass,
-                    List<Probe> probes) {
+                    List<XmlProbe> probes) {
         this.moduleProviderName = moduleProviderName;
         this.moduleName = moduleName;
         this.probeProviderName = probeProviderName;
@@ -91,11 +91,18 @@ public class Provider {
 
     @Override
     public String toString() {
-        String probeStr = "moduelProviderName=" + moduleProviderName + " moduleName=" +
-                moduleName + " probeProvidername=" + probeProviderName + " probeProviderClass=" + probeProviderClass;
-        for (Probe probe : probes) {
-            probeStr += "\n    " + probe.toString();
+        StringBuilder probeStr = new StringBuilder();
+        probeStr.append("moduelProviderName=")
+                .append(moduleProviderName)
+                .append(" moduleName=")
+                .append(moduleName)
+                .append(" probeProvidername=")
+                .append(probeProviderName)
+                .append(" probeProviderClass=")
+                .append(probeProviderClass);
+        for (XmlProbe probe : probes) {
+            probeStr.append("\n    ").append(probe.toString());
         }
-        return (probeStr);
+        return (probeStr.toString());
     }
 }

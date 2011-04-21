@@ -298,6 +298,7 @@ public class CreateNodeSshCommand implements AdminCommand  {
                 out.write("AS_ADMIN_SSHPASSWORD=" + launcher.expandPasswordAlias(sshpassword) + "\n");
                 if(sshkeypassphrase != null)
                     out.write("AS_ADMIN_SSHKEYPASSPHRASE=" + launcher.expandPasswordAlias(sshkeypassphrase) + "\n");
+                out.flush();
             } catch (IOException ioe) {
                 if (logger.isLoggable(Level.FINE)) {
                     logger.fine("Failed to create the temporary password file: " + ioe.getMessage());
@@ -307,10 +308,13 @@ public class CreateNodeSshCommand implements AdminCommand  {
             }
             finally {
                 try {
-                    if (out != null)
-                        out.flush();
+                    if (out != null)                        
                         out.close();
-                } catch(final Exception ignore){}
+                } catch(final Exception ex){
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.fine("Failed to close stream: " + ex.getMessage());
+                    }
+                }
             }
             
             fullcommand.add("--passwordfile");
@@ -359,7 +363,12 @@ public class CreateNodeSshCommand implements AdminCommand  {
         }
         
         if (f != null) {
-            f.delete();
+            boolean didDelete = f.delete();
+            if(!didDelete) {
+                if(logger.isLoggable(Level.WARNING)) {
+                    logger.log(Level.WARNING, Strings.get("node.ssh.passfile.delete.error", f.getPath()));
+                }
+            }
         }
         return exit;
     }

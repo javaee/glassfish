@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -411,7 +411,7 @@ public class ErrorReportValve
 
         sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"");
         sb.append(" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">");
-        sb.append("<html><head><title>");
+        sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>");
         if (serverInfo != null && !serverInfo.isEmpty()) {
             sb.append(serverInfo).append(" - ");
         }
@@ -569,13 +569,8 @@ public class ErrorReportValve
                                    ServerInfo.getServerInfo()));
             */
             // START SJSAS 6412710
-            if (serverInfo != null && !serverInfo.isEmpty()) {
-                sb.append(sm.getString("errorReportValve.rootCauseInLogs",
-                                       serverInfo, responseLocale));
-            } else {
-                sb.append(sm.getString("errorReportValve.rootCauseInLogs",
-                                       "server", responseLocale));
-            }
+            sb.append(sm.getString("errorReportValve.rootCauseInLogs",
+                                   serverInfo, responseLocale));
             // END SJSAS 6412710
             sb.append("</u></p>");
 

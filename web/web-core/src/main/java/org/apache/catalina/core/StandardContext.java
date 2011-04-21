@@ -68,6 +68,7 @@ import org.apache.catalina.mbeans.MBeanUtils;
 import org.apache.catalina.session.ManagerBase;
 import org.apache.catalina.session.PersistentManagerBase;
 import org.apache.catalina.session.StandardManager;
+import org.apache.catalina.servlets.DefaultServlet;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.util.*;
 import org.apache.naming.ContextBindings;
@@ -118,7 +119,7 @@ import org.glassfish.grizzly.http.util.MessageBytes;
 
 public class StandardContext
     extends ContainerBase
-    implements Context, Serializable, ServletContext
+    implements Context, ServletContext
 {
     private static final transient Logger log = Logger.getLogger(
         StandardContext.class.getName());
@@ -709,7 +710,7 @@ public class StandardContext
     protected ConcurrentHashMap<String, ServletRegistrationImpl> servletRegisMap =
         new ConcurrentHashMap<String, ServletRegistrationImpl>();
 
-    private ConcurrentHashMap<String, FilterRegistrationImpl> filterRegisMap =
+    protected ConcurrentHashMap<String, FilterRegistrationImpl> filterRegisMap =
         new ConcurrentHashMap<String, FilterRegistrationImpl>();
 
     /**
@@ -740,6 +741,9 @@ public class StandardContext
 
     // The minor Servlet spec version of the web.xml
     private int effectiveMinorVersion = 0;
+
+    // Created via embedded API
+    private boolean isEmbedded = false;
 
     // ----------------------------------------------------- Context Properties
 
@@ -1618,8 +1622,7 @@ public class StandardContext
      */
     public ServletContext getServletContext() {
         if (context == null) {
-            context = new ApplicationContext(getBasePath(getDocBase()),
-                                             this);
+            context = new ApplicationContext(this);
             if (altDDName != null
                     && context.getAttribute(Globals.ALT_DD_ATTR) == null){
                 context.setAttribute(Globals.ALT_DD_ATTR,altDDName);
@@ -1838,6 +1841,41 @@ public class StandardContext
     }
     // END S1AS8PE 4965017
 
+    public void setEmbedded(boolean isEmbedded) {
+        this.isEmbedded = isEmbedded;
+    }
+
+    public boolean isEmbedded() {
+        return isEmbedded;
+    }
+
+    /**
+     * Should we generate directory listings?
+     */
+    protected boolean directoryListing = false;
+
+    /**
+     * Enables or disables directory listings on this <tt>Context</tt>.
+     */
+    public void setDirectoryListing(boolean directoryListing) {
+        this.directoryListing = directoryListing;
+        Wrapper wrapper = (Wrapper) findChild(
+                org.apache.catalina.core.Constants.DEFAULT_SERVLET_NAME);
+        if (wrapper !=null) {
+            Servlet servlet = ((StandardWrapper)wrapper).getServlet();
+            if (servlet instanceof DefaultServlet) {
+                ((DefaultServlet)servlet).setListings(directoryListing);
+            }
+        }
+    }
+
+    /**
+     * Checks whether directory listings are enabled or disabled on this
+     * <tt>Context</tt>.
+     */
+    public boolean isDirectoryListing() {
+        return directoryListing;
+    }
 
     // ------------------------------------------------------ Public Properties
 
@@ -2386,6 +2424,13 @@ public class StandardContext
      */
     public FilterRegistration.Dynamic addFilter(
             String filterName, String className) {
+
+        if (isContextInitializedCalled) {
+            throw new IllegalStateException(
+                sm.getString("applicationContext.alreadyInitialized",
+                             "addFilter", getName()));
+        }
+
         synchronized (filterDefs) {
             // Make sure filter name is unique for this context
             if (findFilterDef(filterName) != null) {
@@ -2422,6 +2467,13 @@ public class StandardContext
      */
     public FilterRegistration.Dynamic addFilter(
             String filterName, Filter filter) {
+
+        if (isContextInitializedCalled) {
+            throw new IllegalStateException(
+                sm.getString("applicationContext.alreadyInitialized",
+                             "addFilter", getName()));
+        }
+
         if (filterName == null || filter == null) {
             throw new NullPointerException("Null filter instance or name");
         }
@@ -2497,6 +2549,13 @@ public class StandardContext
      */
     public FilterRegistration.Dynamic addFilter(String filterName,
             Class <? extends Filter> filterClass) {
+
+        if (isContextInitializedCalled) {
+            throw new IllegalStateException(
+                sm.getString("applicationContext.alreadyInitialized",
+                             "addFilter", getName()));
+        }
+
         synchronized (filterDefs) {
             if (findFilterDef(filterName) != null) {
                 return null;
@@ -2826,6 +2885,12 @@ public class StandardContext
     }
 
     public void declareRoles(String... roleNames) {
+        if (isContextInitializedCalled) {
+            throw new IllegalStateException(
+                sm.getString("applicationContext.alreadyInitialized",
+                             "declareRoles", getName()));
+        }
+
         for (String roleName : roleNames) {
             addSecurityRole(roleName);
         }
@@ -3218,6 +3283,12 @@ public class StandardContext
      */
     public ServletRegistration.Dynamic addServlet(
             String servletName, String className) {
+
+        if (isContextInitializedCalled) {
+            throw new IllegalStateException(
+                sm.getString("applicationContext.alreadyInitialized",
+                             "addServlet", getName()));
+        }
         synchronized (children) {
             if (findChild(servletName) == null) {
                 DynamicServletRegistrationImpl regis =
@@ -3260,6 +3331,12 @@ public class StandardContext
      */
     public ServletRegistration.Dynamic addServlet(String servletName,
             Class <? extends Servlet> servletClass) {
+
+        if (isContextInitializedCalled) {
+            throw new IllegalStateException(
+                sm.getString("applicationContext.alreadyInitialized",
+                             "addServlet", getName()));
+        }
         // Make sure servlet name is unique for this context
         synchronized (children) {
             if (findChild(servletName) == null) {
@@ -3325,6 +3402,13 @@ public class StandardContext
     public ServletRegistration.Dynamic addServlet(String servletName,
             Servlet servlet, Map<String, String> initParams,
             String... urlPatterns) {
+
+        if (isContextInitializedCalled) {
+            throw new IllegalStateException(
+                sm.getString("applicationContext.alreadyInitialized",
+                             "addServlet", getName()));
+        }
+
         if (servletName == null || servlet == null) {
             throw new NullPointerException("Null servlet instance or name");
         }
@@ -5365,8 +5449,9 @@ public class StandardContext
         // the condition. Time to call the initializers
         ServletContext ctxt = this.getServletContext();
         try {
-            for (Class<? extends ServletContainerInitializer> initializer :
-                    initializerList.keySet()) {
+            for (Map.Entry<Class<? extends ServletContainerInitializer>, Set<Class<?>>> e :
+                    initializerList.entrySet()) {
+                Class<? extends ServletContainerInitializer> initializer = e.getKey();
                 // See IT 11333
                 if (isUseMyFaces() &&
                         Globals.FACES_INITIALIZER.equals(initializer.getName())) {
@@ -5375,7 +5460,7 @@ public class StandardContext
                 try {
                     if (log.isLoggable(Level.FINE)) {
                         log.fine("Calling ServletContainerInitializer [" + initializer + "] onStartup with classes " +
-                                initializerList.get(initializer));
+                                e.getValue());
                     }
                     ServletContainerInitializer iniInstance =
                         initializer.newInstance();
@@ -6073,7 +6158,7 @@ public class StandardContext
      *
      * @param urlPattern URL pattern to be validated
      */
-    private boolean validateURLPattern(String urlPattern) {
+    protected boolean validateURLPattern(String urlPattern) {
         if (urlPattern == null) {
             return false;
         }
@@ -6398,7 +6483,7 @@ public class StandardContext
             // Temporary - /admin uses the old names
             return name;
         }
-        ObjectName result=super.preRegister(server,name);
+        super.preRegister(server,name);
         return name;
     }
 
@@ -6600,6 +6685,11 @@ public class StandardContext
      * context initialization parameter with a matching name
      */
     public boolean setInitParameter(String name, String value) {
+        if (isContextInitializedCalled) {
+            throw new IllegalStateException(
+                sm.getString("applicationContext.alreadyInitialized",
+                             "setInitParameter", getName()));
+        }
         return context.setInitParameter(name, value);
     }
 
@@ -6956,10 +7046,9 @@ public class StandardContext
         }
         try {
             // Trigger expansion of bundled JAR files
-            URL u = getMetaInfResource(path);
-            String realPath = (u != null ? u.getPath() : null);
-            if (realPath != null) {
-                File[] children = new File(realPath).listFiles();
+            File file = getExtractedMetaInfResourcePath(path);
+            if (file != null) {
+                File[] children = file.listFiles();
                 StringBuilder sb = null;
                 for (File child : children) {
                     sb = new StringBuilder(path);
@@ -7488,7 +7577,7 @@ public class StandardContext
     /**
      * Get resource from META-INF/resources/ in jars.
      */
-    URL getMetaInfResource(String path) {
+    private URL getMetaInfResource(String path) {
 
         path = Globals.META_INF_RESOURCES + path;
 
@@ -7499,5 +7588,19 @@ public class StandardContext
 
         // This probably won't happen
         return cl.getResource(path);
+    }
+
+    /**
+     * Get resource from META-INF/resources/ in jars.
+     */
+    private File getExtractedMetaInfResourcePath(String path) {
+        path = Globals.META_INF_RESOURCES + path;
+
+        ClassLoader cl = getLoader().getClassLoader();
+        if (cl instanceof WebappClassLoader) {
+            return ((WebappClassLoader)cl).getExtractedResourcePath(path);
+        }
+        
+        return null;
     }
 }

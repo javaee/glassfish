@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -154,22 +154,6 @@ class CoordinatorResourceImpl extends CoordinatorResourcePOA
             coord.setTerminator(this);
 
     }
-
-    /**Cleans up the state of the object.
-     *
-     * @param
-     *
-     * @return
-     *
-     * @see
-     */
-    /*
-    public void finalize() {
-
-        globalTID = null;
-
-    }
-    */
 
     /**Informs the CoordinatorResourceImpl object that the transaction it
      * represents has completed.
@@ -486,7 +470,7 @@ class CoordinatorResourceImpl extends CoordinatorResourcePOA
                     // The prepare operation may throw the HeuristicHazard exception.  In this case
                     // allow it to go back to the caller.
 
-                    Vote vote = Vote.VoteRollback;
+                    Vote vote;
                     try {
                         vote = coord.prepare();
                     } catch( HeuristicMixed exc ) {
@@ -971,7 +955,6 @@ class CoordinatorResourceImpl extends CoordinatorResourcePOA
 				
         }
 
-        // finalize();
         globalTID = null;
     }
 

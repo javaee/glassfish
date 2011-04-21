@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,7 +56,7 @@ public class Constants {
     static final String CONFIGS = "configs";
     static final String CONFIG_REF = "config-ref";
     static final String NAME = "name";
-    public static final String NAME_REGEX =        "[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_\\./;#]*";
-    public static final String NAME_SERVER_REGEX = "[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_\\.;]*";
-    public static final String NAME_APP_REGEX =    "[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_\\./;:#]*";
+    public static final String NAME_REGEX =        "[A-Za-z0-9_][A-Za-z0-9\\-_\\./;#]*";
+    public static final String NAME_SERVER_REGEX = "[A-Za-z0-9_][A-Za-z0-9\\-_\\.;]*";
+    public static final String NAME_APP_REGEX =    "[A-Za-z0-9_][A-Za-z0-9\\-_\\./;:#]*";
 }

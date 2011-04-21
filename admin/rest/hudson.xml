@@ -40,23 +40,32 @@
 
 -->
 
-<!--
-    To use this file, the Maven Ant tasks and Ant Contrib must be added to the local Ant installation
--->
-        
-<project name="GlassFish Admin Console Dev Test Hudson Helper" default="test" basedir="."
+<project name="GlassFish REST Interface Dev Test Hudson Helper" default="test" basedir="."
          xmlns:artifact="antlib:org.apache.maven.artifact.ant">
-    <property name="install.dir" value="binaries"/>
-    <property name="server.dir" value="${install.dir}/glassfish3"/>
 
     <property file="test.properties"/>
     <property environment="env"/>
+    
+    <property name="install.dir" value="binaries"/>
+    <property name="server.dir" value="${install.dir}/glassfish3"/>
+    <property name="glassfish.download.dir" value="."/> 
+    <property name="glassfish.download" value="${glassfish.download.dir}/glassfish.zip"/>
 
     <property name="http.proxyHost" value=""/>
     <property name="http.proxyPort" value=""/>
 
-    <property name="GUI_ADMIN_PORT" value="4848"/>
+    <property name="env.MAVEN_HOME" value="${user.home}/.m2"/>
     <property name="DOMAIN" value="domain1"/>
+    <property name="env.ADMIN_PORT" value="4848"/>
+    <property name="env.INSTANCE_PORT" value="8080"/>
+    <property name="env.JMS_PORT" value="7676"/>
+    <property name="env.JMX_PORT" value="8686"/>
+    <property name="env.ORB_PORT" value="3700"/>
+    <property name="env.SSL_PORT" value="8181"/>
+    <property name="env.ORB_SSL_PORT" value="3820"/>
+    <property name="env.ORB_SSL_MUTUALAUTH_PORT" value="3920"/>
+    <property name="env.OSGI_SHELL" value="6666"/>
+    <property name="env.DEBUGGER_PORT" value="9009"/>
 
     <property name="ant.contrib.url"
               value="http://mirrors.ibiblio.org/pub/mirrors/maven2/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar"/>
@@ -68,11 +77,11 @@
     <target name="download">
         <get src="${ant.contrib.url}" dest="ant-contrib.jar" skipexisting="true"/>
         <get src="${maven.ant.tasks.url}" dest="maven-ant-tasks.jar" skipexisting="true"/>
-        <get src="${glassfish.dist.url}" dest="glassfish.zip" usetimestamp="true"/>
+        <get src="${glassfish.dist.url}" dest="${glassfish.download}" usetimestamp="true"/>
 
         <delete dir="${install.dir}"/>
         <mkdir dir="${install.dir}"/>
-        <unzip src="glassfish.zip" dest="${install.dir}"/>
+        <unzip src="${glassfish.download}" dest="${install.dir}"/>
     </target>
 
     <target name="setup">
@@ -92,7 +101,44 @@
         </if>
     </target>
 
-    <target name="start-server" depends="shutdown-server">
+    <target name="recreate-domain" depends="shutdown-server">
+        <echo>
+            Port assigments:
+            Admin port: ${env.ADMIN_PORT}
+            Instance port: ${env.INSTANCE_PORT}
+            JMS Port: ${env.JMS_PORT}
+            JMX Port: ${env.JMX_PORT}
+            ORB Port: ${env.ORB_PORT}
+            SSL Port: ${env.SSL_PORT}
+            ORB SSL Port: ${env.ORB_SSL_PORT}
+            ORB SSL Mutual Auth Port: ${env.ORB_SSL_MUTUALAUTH_PORT}
+            OSGi Shell: ${env.OSGI_SHELL}
+            JAVA Debugger Port: ${env.DEBUGGER_PORT}
+        </echo>
+        
+        <exec executable="${executable}">
+            <arg value="--port"/>
+            <arg value="${env.ADMIN_PORT}"/>
+            <arg value="delete-domain"/>
+            <arg value="${DOMAIN}"/>
+        </exec>
+
+        <exec executable="${executable}">
+            <arg value="--port"/>
+            <arg value="${env.ADMIN_PORT}"/>
+            <arg value="create-domain"/>
+            <arg value="--adminport"/>
+            <arg value="${env.ADMIN_PORT}"/>
+            <arg value="--nopassword=true"/>
+            <arg value="--domainproperties"/>
+            <arg value="jms.port=${env.JMS_PORT}:domain.jmxPort=${env.JMX_PORT}:orb.listener.port=${env.ORB_PORT}:http.ssl.port=${env.SSL_PORT}:orb.ssl.port=${env.ORB_SSL_PORT}:orb.mutualauth.port=${env.ORB_SSL_MUTUALAUTH_PORT}:osgi.shell.telnet.port=${env.OSGI_SHELL}:java.debugger.port=${env.DEBUGGER_PORT}"/>
+            <arg value="--instanceport"/>
+            <arg value="${env.INSTANCE_PORT}"/>
+            <arg value="${DOMAIN}"/>
+        </exec>
+    </target>
+
+    <target name="start-server" depends="recreate-domain">
         <echo message="***** Starting GlassFish"/>
         <exec executable="${executable}">
             <arg value="start-domain"/>
@@ -104,9 +150,11 @@
         <trycatch>
             <try>
                 <antcall target="start-server"/>
-                <artifact:mvn pom="pom.xml" fork="true" mavenHome="${env.MAVEN_HOME}" failonerror="false" resultproperty="test.result">
+                <artifact:mvn pom="pom.xml" mavenHome="${env.MAVEN_HOME}" fork="true" failonerror="false" resultproperty="test.result">
                     <arg value="-Dhttp.proxyHost=${http.proxyHost}"/>
                     <arg value="-Dhttp.proxyPort=${http.proxyPort}"/>
+                    <arg value="-Dadmin.port=${env.ADMIN_PORT}"/>
+                    <arg value="-Dinstance.port=${env.INSTANCE_PORT}"/>
                     <arg value="-Prest-devtest"/>
                     <arg value="test"/>
                 </artifact:mvn>
@@ -116,12 +164,12 @@
             </finally>
         </trycatch>
         <fail message="The test run failed.  Please see the console output for details.">
-           <condition>
-             <not>
-                <equals arg1="${test.result}" arg2="0"/>
-             </not>
-           </condition>
-         </fail>
+            <condition>
+                <not>
+                    <equals arg1="${test.result}" arg2="0"/>
+                </not>
+            </condition>
+        </fail>
     </target>
 
     <target name="shutdown-server">

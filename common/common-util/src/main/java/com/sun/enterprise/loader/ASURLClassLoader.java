@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -238,8 +238,8 @@ public class ASURLClassLoader
             closeOpenStreams();
 
             // clears out the tables
-            // Clear all values.  Becaused fields are 'final' (for thread safety), cannot null them
-            if (this.urlSet != null)            { this.urlSet.clear();            }
+            // Clear all values.  Because fields are 'final' (for thread safety), cannot null them
+            this.urlSet.clear();
             if (this.notFoundResources != null) { this.notFoundResources.clear(); }
             if (this.notFoundClasses != null)   { this.notFoundClasses.clear();   }
         }

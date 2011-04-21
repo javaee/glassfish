@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -77,7 +77,7 @@ public final class ServerLifecycleModule {
     private ClassLoader urlClassLoader;
     private Properties props = new Properties();
 
-    private static Logger _logger = null;
+    private static Logger _logger = LogDomains.getLogger(ServerLifecycleModule.class, LogDomains.CORE_LOGGER);
     private static boolean _isTraceEnabled = false;
 
     private final static String LIFECYCLE_PREFIX = "lifecycle_"; 
@@ -90,8 +90,6 @@ public final class ServerLifecycleModule {
         this.ctx = ctx;
         this.leContext = new LifecycleEventContextImpl(ctx);
 
-        _logger = LogDomains.getLogger(ServerLifecycleModule.class, 
-            LogDomains.CORE_LOGGER);
         _isTraceEnabled = _logger.isLoggable(Level.FINE);
     }
     

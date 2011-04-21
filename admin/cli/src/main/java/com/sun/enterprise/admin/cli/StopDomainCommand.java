@@ -156,7 +156,10 @@ public class StopDomainCommand extends LocalDomainCommand {
 
         // by definition this is not an error
         // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
-        logger.warning(Strings.get("StopDomain.dasNotRunning"));
+        if (local)
+            logger.warning(Strings.get("StopDomain.dasNotRunning", getDomainRootDir()));
+        else
+            logger.warning(Strings.get("StopDomain.dasNotRunningRemotely"));
         return 0;
     }
 

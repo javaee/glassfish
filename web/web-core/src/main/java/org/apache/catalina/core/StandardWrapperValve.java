@@ -253,10 +253,7 @@ final class StandardWrapperValve extends ValveBase {
             exception(request, response, e);
             servlet = null;
         }
-        DataChunk requestPathMB = null;
-        if (hreq != null) {
-            requestPathMB = hrequest.getRequestPathMB();
-        }
+        DataChunk requestPathMB = hrequest.getRequestPathMB();
         hreq.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR,
                           requestPathMB);
 

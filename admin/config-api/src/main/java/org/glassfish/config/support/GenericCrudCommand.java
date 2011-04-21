@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,6 +43,7 @@ package org.glassfish.config.support;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.hk2.component.InhabitantsFile;
 import com.sun.hk2.component.InjectionResolver;
+import com.sun.hk2.component.LazyInhabitant;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandModelProvider;
@@ -77,7 +78,7 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
     private InjectionResolver<Param> injector;
 
     @Inject
-    Inhabitant<?> myself;    
+    LazyInhabitant<?> myself;
 
     final protected static Logger logger = LogDomains.getLogger(GenericCrudCommand.class, LogDomains.ADMIN_LOGGER);
     final protected static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(GenericCrudCommand.class);
@@ -153,9 +154,13 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
         }
 
         if (targetMethod.getParameterTypes().length==0) {
-            // return type matters.
-            targetType = Types.erasure(Types.getTypeArgument(
+            if (targetMethod.getGenericReturnType() instanceof ParameterizedType) {
+                targetType = Types.erasure(Types.getTypeArgument(
                             targetMethod.getGenericReturnType(),0));
+            } else {
+                targetType =(Class<ConfigBeanProxy>) targetMethod.getReturnType();
+            }
+
         } else {
             targetType = (Class<ConfigBeanProxy>) targetMethod.getParameterTypes()[0];
         }
@@ -254,7 +259,7 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                     }
                     final Class<? extends ConfigBeanProxy> itemType = Types.erasure(Types.getTypeArgument(
                             annotated instanceof Method?
-                            ((Method) annotated).getGenericReturnType():((Field) annotated).getGenericType(), 0));
+                            ((Method) annotated).getGenericReturnType():(Field.class.cast(annotated)).getGenericType(), 0));
                     if (logger.isLoggable(level)) {
                         logger.log(level, "Found that List<?> really is a List<" + itemType.toString() + ">");
                     }
@@ -321,7 +326,7 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                                 @Override
                                 public <V> V getValue(Object component, Inhabitant<?> onBehalfOf, AnnotatedElement annotated, Type genericType, Class<V> type) throws ComponentException {
                                     String name = annotated.getAnnotation(Attribute.class).value();
-                                    if (name==null || name.length()==0) {
+                                    if (name==null || name.length()==0 && annotated instanceof Method) {
 
                                         // maybe there is a better way to do this...
                                         name = ((Method) annotated).getName().substring(3);
@@ -363,7 +368,7 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
 
     protected Class loadClass(String type) throws ClassNotFoundException {
         // by default I use the inhabitant class loader
-        return myself.type().getClassLoader().loadClass(type);
+        return myself.getClassLoader().loadClass(type);
     }    
 
     /**

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,8 +50,6 @@ import com.sun.enterprise.deployment.InjectionInfo;
 import com.sun.enterprise.deployment.InjectionTarget;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
 
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
@@ -59,7 +57,6 @@ import org.glassfish.api.naming.GlassfishNamingManager;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -73,7 +70,6 @@ import java.util.logging.Logger;
 import javax.annotation.ManagedBean;
 import java.lang.reflect.Constructor;
 import org.glassfish.api.admin.ProcessEnvironment;
-import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 
 import org.jvnet.hk2.component.Habitat;
 
@@ -145,12 +141,14 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
             if( componentEnv != null ) {
                 inject(instance.getClass(), instance, componentEnv, null, invokePostConstruct);
             } else {
-                throw new InjectionException("No descriptor registered for " +
-                                             " current invocation : " + inv);
+                throw new InjectionException(localStrings.getLocalString(
+                        "injection-manager.no-descriptor-registered-for-invocation",
+                        "No descriptor registered for current invocation: {0}", inv));
             }
 
         } else {
-            throw new InjectionException("null invocation context");
+            throw new InjectionException(localStrings.getLocalString(
+                    "injection-manager.null-invocation-context", "Null invocation context"));
         }
 
     }
@@ -190,14 +188,14 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
             if( componentEnv != null ) {
                 inject(instance.getClass(), instance, componentEnv, componentId, invokePostConstruct);
             } else {
-                throw new InjectionException("No descriptor registered for " +
-                                             " componentId : " + componentId);
+                throw new InjectionException(localStrings.getLocalString(
+                        "injection-manager.no-descriptor-registered-for-component", 
+                        "No descriptor registered for componentId: {0}", componentId));
             }
-
         } else {
-            throw new InjectionException("null invocation context");
+            throw new InjectionException(localStrings.getLocalString(
+                    "injection-manager.null-invocation-context", "Null invocation context"));
         }
-
     }
 
     public void injectClass(Class clazz, 
@@ -241,12 +239,13 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
             if( componentEnv != null ) {
                 invokePreDestroy(instance.getClass(), instance, componentEnv);
             } else {
-                throw new InjectionException("No descriptor registered for " +
-                                             " current invocation : " + inv);
+                throw new InjectionException(localStrings.getLocalString(
+                        "injection-manager.no-descriptor-registered-for-invocation",
+                        "No descriptor registered for current invocation: {0}", inv));
             }
-
         } else {
-            throw new InjectionException("null invocation context");
+            throw new InjectionException(localStrings.getLocalString(
+                    "injection-manager.null-invocation-context", "Null invocation context"));
         }
     }
 
@@ -312,9 +311,10 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
 
                 }
             }
-
         } catch(Exception e) {
-            throw new InjectionException("Error creating managed object for " + clazz, e);
+            throw new InjectionException(localStrings.getLocalString(
+                    "injection-manager.error-creating-managed-object", 
+                    "Error creating managed object for class: {0}", clazz), e);
         }
 
         return managedObject;
@@ -379,7 +379,9 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
             }
 
         } catch(Exception e) {
-            throw new InjectionException("Error creating managed object for " + clazz, e);
+            throw new InjectionException(localStrings.getLocalString(
+                    "injection-manager.error-creating-managed-object",
+                    "Error creating managed object for class: {0}", clazz), e);
         }
 
         return managedObject;
@@ -613,26 +615,26 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
                         
                         if( Modifier.isStatic(f.getModifiers()) &&
                             (instance != null) ) {
-                            throw new InjectionException
-                                ("Illegal use of static field " + f + 
-                                 " on class that only supports instance-based" 
-                                 + " injection");
+                            throw new InjectionException(localStrings.getLocalString(
+                                "injection-manager.illegal-use-of-static-field",
+                                "Illegal use of static field on class that only supports instance-based injection: {0}",
+                                f));
                         }
 
                         if( (instance == null) &&
                             !Modifier.isStatic(f.getModifiers()) ) {
-                            throw new InjectionException
-                                ("Injected field " + f + 
-                                 " on Application Client class " + clazz +
-                                 " must be declared static");
+                            throw new InjectionException(localStrings.getLocalString(
+                                "injection-manager.appclient-injected-field-must-be-static",
+                                "Injected field: {0} on Application Client class: {1} must be declared static",
+                                f, clazz));
                         }
 
 
                         if(_logger.isLoggable(Level.FINE)) {
-                            _logger.fine("Injecting dependency with logical name "
-                                    + next.getComponentEnvName() +
-                                    " into field " + f + " on class " +
-                                    clazz);
+                            _logger.fine(localStrings.getLocalString(
+                                "injection-manager.injecting-dependency-field",
+                                "Injecting dependency with logical name: {0} into field: {1} on class: {2}", 
+                                next.getComponentEnvName(), f, clazz));
                         }
                         
                         // Wrap actual value insertion in doPrivileged to
@@ -654,25 +656,25 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
 
                         if( Modifier.isStatic(m.getModifiers()) &&
                             (instance != null) ) {
-                            throw new InjectionException
-                                ("Illegal use of static method " + m + 
-                                 " on class that only supports instance-based" 
-                                 + " injection");
+                            throw new InjectionException(localStrings.getLocalString(
+                                "injection-manager.illegal-use-of-static-method", 
+                                "Illegal use of static method on class that only supports instance-based injection: {0}", 
+                                m));
                         }
 
                         if( (instance == null) &&
                             !Modifier.isStatic(m.getModifiers()) ) {
-                            throw new InjectionException
-                                ("Injected method " + m + 
-                                 " on Application Client class " + clazz +
-                                 " must be declared static");
+                            throw new InjectionException(localStrings.getLocalString(
+                                "injection-manager.appclient-injected-method-must-be-static", 
+                                "Injected method: {0} on Application Client class: {1} must be declared static", 
+                                m, clazz));
                         }
                         
                         if(_logger.isLoggable(Level.FINE)) {
-                            _logger.fine("Injecting dependency with logical name "
-                                    + next.getComponentEnvName() +
-                                    " into method " + m + " on class " +
-                                    clazz);
+                            _logger.fine(localStrings.getLocalString(
+                                "injection-manager.injecting-dependency-method", 
+                                "Injecting dependency with logical name: {0} into method: {1} on class: {2}", 
+                                next.getComponentEnvName(), m, clazz));
                         }
 
                         if( System.getSecurityManager() != null ) {
@@ -691,16 +693,14 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
                     }
                 }
             } catch(Throwable t) {
-
-                String msg = "Exception attempting to inject " 
-                    + next + " into " + clazz;
-                _logger.log(Level.FINE, msg, t);
-                InjectionException ie = new InjectionException(msg);
                 Throwable cause = (t instanceof InvocationTargetException) ?
                     ((InvocationTargetException)t).getCause() : t;
-                ie.initCause( cause );
-                throw ie;
-
+                String msg = localStrings.getLocalString(
+                        "injection-manager.exception-to-inject",
+                        "Exception attempting to inject {0} into {1}: {2}",
+                        next, clazz, cause.getMessage());
+                _logger.log(Level.FINE, msg, t);
+                throw new InjectionException(msg, cause);
             }
         }
     }
@@ -712,9 +712,10 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
         try {
 
             if(_logger.isLoggable(Level.FINE)) {
-                _logger.fine("Calling lifeccle method " +
-                             lifecycleMethod + " on class " +
-                             lifecycleMethod.getDeclaringClass());
+                _logger.fine(localStrings.getLocalString(
+                    "injection-manager.calling-lifecycle-method",
+                    "Calling lifecycle method: {0} on class: {1}",
+                    lifecycleMethod, lifecycleMethod.getDeclaringClass()));
             }
 
             // Wrap actual value insertion in doPrivileged to
@@ -730,16 +731,15 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
                     }
                 });
         } catch( Throwable t) {
-
-                String msg = "Exception attempting invoke lifecycle " 
-                    + " method " + lifecycleMethod;
-                _logger.log(Level.FINE, msg, t);
-                InjectionException ie = new InjectionException(msg);
-                Throwable cause = (t instanceof InvocationTargetException) ?
-                    ((InvocationTargetException)t).getCause() : t;
-                ie.initCause( cause );
-                throw ie;
-
+            String msg = localStrings.getLocalString(
+                    "injection-manager.exception-invoke-lifecycle-method",
+                    "Exception attempting invoke lifecycle method: {0}", lifecycleMethod);
+            _logger.log(Level.FINE, msg, t);
+            InjectionException ie = new InjectionException(msg);
+            Throwable cause = (t instanceof InvocationTargetException) ?
+                ((InvocationTargetException)t).getCause() : t;
+            ie.initCause( cause );
+            throw ie;
         }
         
         return;
@@ -777,9 +777,10 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
         }
 
         if( f == null ) {
-            throw new Exception("InjectionManager exception.  Field " + 
-                                target.getFieldName() + 
-                                " not found in Class " + resourceClass);
+            throw new Exception(localStrings.getLocalString(
+                    "injection-manager.field-not-found",
+                    "InjectionManager exception.  Field: {0} not found in class: {1}",
+                    target.getFieldName(), resourceClass));
         }
 
         return f;
@@ -816,10 +817,10 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
         }
 
         if( m == null ) {
-            throw new Exception("InjectionManager exception.  Method " +
-                                "void " + target.getMethodName() +
-                                "(" + resource.getInjectResourceType() + ")" +
-                                " not found in Class " + resourceClass);
+            throw new Exception(localStrings.getLocalString(
+                "injection-manager.method-not-found", 
+                "InjectionManager exception.  Method: void {0} ({1}) not found in class: {2}",
+                target.getMethodName(), resource.getInjectResourceType(), resourceClass));
         }
 
         return m;
@@ -850,11 +851,10 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
         }
 
         if( m == null ) {
-            throw new InjectionException
-                ("InjectionManager exception. PostConstruct method " +
-                 injInfo.getPostConstructMethodName() + 
-                 " could not be found in class " + 
-                 injInfo.getClassName());
+            throw new InjectionException(localStrings.getLocalString(
+                "injection-manager.postconstruct-not-found",
+                "InjectionManager exception. PostConstruct method: {0} not found in class: {1}",
+                injInfo.getPostConstructMethodName(), injInfo.getClassName()));
         }
 
         return m;
@@ -884,11 +884,10 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
         }
 
         if( m == null ) {
-            throw new InjectionException
-                ("InjectionManager exception. PreDestroy method " +
-                 injInfo.getPreDestroyMethodName() + 
-                 " could not be found in class " + 
-                 injInfo.getClassName());
+            throw new InjectionException(localStrings.getLocalString(
+                "injection-manager.predestroy-not-found",
+                "InjectionManager exception. PreDestroy method: {0} not found in class: {1}",
+                injInfo.getPreDestroyMethodName(), injInfo.getClassName()));
         }
 
         return m;

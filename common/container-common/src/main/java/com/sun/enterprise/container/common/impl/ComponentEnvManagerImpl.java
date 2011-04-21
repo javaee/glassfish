@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -432,14 +432,13 @@ public class ComponentEnvManagerImpl
     private void addResourceReferences(ScopeType scope, Iterator resRefItr, Collection<JNDIBinding> jndiBindings) {
 
         while( resRefItr.hasNext() ) {
-
-
             ResourceReferenceDescriptor resourceRef =
                 (ResourceReferenceDescriptor) resRefItr.next();
 
             if( !dependencyAppliesToScope(resourceRef, scope)) {
                 continue;
             }
+            resourceRef.checkType();
 
             String name = descriptorToLogicalJndiName(resourceRef);
             Object value = null;
@@ -495,7 +494,7 @@ public class ComponentEnvManagerImpl
             if( !dependencyAppliesToScope(next, scope)) {
                 continue;
             }
-
+            next.checkType();
             jndiBindings.add(getCompEnvBinding(next));
         }
 

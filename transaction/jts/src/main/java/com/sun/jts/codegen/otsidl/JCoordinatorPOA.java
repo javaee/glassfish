@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,27 +59,27 @@ public abstract class JCoordinatorPOA extends org.omg.PortableServer.Servant
   private static java.util.Hashtable _methods = new java.util.Hashtable ();
   static
   {
-    _methods.put ("getGlobalTID", new java.lang.Integer (0));
-    _methods.put ("getLocalTID", new java.lang.Integer (1));
-    _methods.put ("getAncestors", new java.lang.Integer (2));
-    _methods.put ("isRollbackOnly", new java.lang.Integer (3));
-    _methods.put ("get_status", new java.lang.Integer (4));
-    _methods.put ("get_parent_status", new java.lang.Integer (5));
-    _methods.put ("get_top_level_status", new java.lang.Integer (6));
-    _methods.put ("is_same_transaction", new java.lang.Integer (7));
-    _methods.put ("is_related_transaction", new java.lang.Integer (8));
-    _methods.put ("is_ancestor_transaction", new java.lang.Integer (9));
-    _methods.put ("is_descendant_transaction", new java.lang.Integer (10));
-    _methods.put ("is_top_level_transaction", new java.lang.Integer (11));
-    _methods.put ("hash_transaction", new java.lang.Integer (12));
-    _methods.put ("hash_top_level_tran", new java.lang.Integer (13));
-    _methods.put ("register_resource", new java.lang.Integer (14));
-    _methods.put ("register_synchronization", new java.lang.Integer (15));
-    _methods.put ("register_subtran_aware", new java.lang.Integer (16));
-    _methods.put ("rollback_only", new java.lang.Integer (17));
-    _methods.put ("get_transaction_name", new java.lang.Integer (18));
-    _methods.put ("create_subtransaction", new java.lang.Integer (19));
-    _methods.put ("get_txcontext", new java.lang.Integer (20));
+    _methods.put ("getGlobalTID", 0);
+    _methods.put ("getLocalTID", 1);
+    _methods.put ("getAncestors", 2);
+    _methods.put ("isRollbackOnly", 3);
+    _methods.put ("get_status", 4);
+    _methods.put ("get_parent_status", 5);
+    _methods.put ("get_top_level_status", 6);
+    _methods.put ("is_same_transaction", 7);
+    _methods.put ("is_related_transaction", 8);
+    _methods.put ("is_ancestor_transaction", 9);
+    _methods.put ("is_descendant_transaction", 10);
+    _methods.put ("is_top_level_transaction", 11);
+    _methods.put ("hash_transaction", 12);
+    _methods.put ("hash_top_level_tran", 13);
+    _methods.put ("register_resource", 14);
+    _methods.put ("register_synchronization", 15);
+    _methods.put ("register_subtran_aware", 16);
+    _methods.put ("rollback_only", 17);
+    _methods.put ("get_transaction_name", 18);
+    _methods.put ("create_subtransaction", 19);
+    _methods.put ("get_txcontext", 20);
   }
 
   public org.omg.CORBA.portable.OutputStream _invoke (String $method,

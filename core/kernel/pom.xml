@@ -64,8 +64,29 @@
                 <role>developer</role>
             </roles>
         </developer>
+        <developer>
+            <id>hzhang_jn</id>
+            <name>Hong Zhang</name>
+            <url>http://blogs.sun.com/misty</url>
+            <organization>Oracle, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>tmueller</id>
+            <name>Tom Mueller</name>
+            <organization>Oracle, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
-    
+
+    <properties>
+	<findbugs.exclude>exclude.xml</findbugs.exclude>
+    </properties>
+
     <build>
         <resources>
             <resource>

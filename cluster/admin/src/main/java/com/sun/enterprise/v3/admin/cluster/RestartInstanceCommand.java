@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,6 +43,7 @@ import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.admin.remote.ServerRemoteAdminCommand;
 import com.sun.enterprise.admin.util.*;
 import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.util.StringUtils;
@@ -68,10 +69,15 @@ public class RestartInstanceCommand implements AdminCommand {
     @Override
     public void execute(AdminCommandContext context) {
         try {
+            ctx = context;
             helper = new RemoteInstanceCommandHelper(habitat);
             report = context.getActionReport();
             logger = context.getLogger();
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+
+            // Each of the methods below immediately returns if there has been an error
+            // This is just to avoid a ton of error-checking in this top-level method
+            // i.e. it's for readability.
 
             if (!env.isDas())
                 setError(Strings.get("restart.instance.notDas", env.getRuntimeType().toString()));
@@ -81,17 +87,23 @@ public class RestartInstanceCommand implements AdminCommand {
             logger.fine("Restart-instance old-pid = " + oldPid);
             callInstance();
             waitForRestart();
-            String msg = Strings.get("restart.instance.success", instanceName);
-            logger.info(msg);
-            report.setMessage(msg);
+
+            if (!isError()) {
+                String msg = Strings.get("restart.instance.success", instanceName);
+                logger.info(msg);
+                report.setMessage(msg);
+            }
         }
-        catch (CommandException ex) {
+        catch (InstanceNotRunningException inre) {
+            start();
+        }
+        catch (CommandException ce) {
             setError(Strings.get("restart.instance.racError", instanceName,
-                    ex.getLocalizedMessage()));
+                    ce.getLocalizedMessage()));
         }
     }
 
-    private void prepare() {
+    private void prepare() throws InstanceNotRunningException {
         if (isError())
             return;
 
@@ -119,6 +131,10 @@ public class RestartInstanceCommand implements AdminCommand {
             setError(Strings.get("stop.instance.noPort", instanceName));
             return;
         }
+
+        if (!isInstanceRestartable())
+            setError(Strings.get("restart.notRestartable", instanceName));
+
         logger.finer(ObjectAnalyzer.toString(this));
     }
 
@@ -140,6 +156,34 @@ public class RestartInstanceCommand implements AdminCommand {
             map.add("debug", debug);
 
         rac.executeCommand(map);
+    }
+
+    private boolean isInstanceRestartable() throws InstanceNotRunningException {
+        if (isError())
+            return false;
+
+        String cmdName = "_get-runtime-info";
+
+        RemoteAdminCommand rac;
+        try {
+            rac = createRac(cmdName);
+            rac.executeCommand(new ParameterMap());
+        }
+        catch (CommandException ex) {
+            // there is only one reason that _get-runtime-info would have a problem
+            // namely if the instance isn't running.
+            throw new InstanceNotRunningException();
+        }
+
+        Map<String, String> atts = rac.getAttributes();
+
+        if (atts != null) {
+            String val = atts.get("restartable_value");
+
+            if (val != null && val.equals("false"))
+                return false;
+        }
+        return true;
     }
 
     private void waitForRestart() {
@@ -177,6 +221,11 @@ public class RestartInstanceCommand implements AdminCommand {
         report.setMessage(s);
     }
 
+    private void setSuccess(String s) {
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        report.setMessage(s);
+    }
+
     private boolean isError() {
         return report.getActionExitCode() == ActionReport.ExitCode.FAILURE;
     }
@@ -198,12 +247,56 @@ public class RestartInstanceCommand implements AdminCommand {
         Map<String, String> map = rac.getAttributes();
         return map.get("pid_value");
     }
+
+    /* 
+     * The instance is not running -- so let's try to start it.
+     * There is no good way to call a Command on ourself.  So use the
+     * command directly.
+     * See issue 16322 for more details
+     */
+    private void start() {
+        // be VERY careful -- we are being called from within a catch block...
+        Exception exception = null;
+
+        try {
+            StartInstanceCommand sic =
+                    new StartInstanceCommand(habitat, instanceName,
+                    Boolean.parseBoolean(debug), env);
+            sic.execute(ctx);
+        }
+        catch (Exception e) {
+            // this is NOT normal!  start-instance communicates errors via the
+            // reporter.  This catch should never happen.  It is here for robustness.
+            // and especially for programmer/regression errors.
+            exception = e;
+
+            // Perhaps a NPE or something **after** the report was set to success???
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        }
+
+        // save start-instance's message
+        String messageFromStartCommand = report.getMessage();
+        String exceptionMessage = "";
+
+        if (exception != null)
+            exceptionMessage = Strings.get("restart.instance.exception", exception);
+
+        if (isError())
+            setError(Strings.get("restart.instance.startFailed", exceptionMessage, messageFromStartCommand));
+        else
+            setSuccess(Strings.get("restart.instance.startSucceeded", messageFromStartCommand));
+    }
+
+    private static class InstanceNotRunningException extends Exception {
+    }
     @Inject
     InstanceStateService stateSvc;
     @Inject
     private Habitat habitat;
     @Inject
     private ServerEnvironment env;
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config dasConfig;
     @Param(optional = false, primary = true)
     private String instanceName;
     // no default value!  We use the Boolean as a tri-state.
@@ -212,10 +305,10 @@ public class RestartInstanceCommand implements AdminCommand {
     private Logger logger;
     private RemoteInstanceCommandHelper helper;
     private ActionReport report;
-    private String errorMessage = null;
     private final static long WAIT_TIME_MS = 600000; // 10 minutes
     private Server instance;
     private String host;
     private int port;
     private String oldPid;
+    private AdminCommandContext ctx;
 }

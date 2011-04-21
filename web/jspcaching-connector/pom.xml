@@ -54,6 +54,27 @@
     <packaging>hk2-jar</packaging>
     <name>JSP caching taglib connector module</name>
 
+    <developers>
+        <developer>
+            <id>swchan2</id>
+            <name>Shing Wai Chan</name>
+            <url>http://weblogs.java.net/blog/swchan2</url>
+            <organization>Oracle</organization>
+            <roles>
+                <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>kchung</id>
+            <name>Kin-man Chung</name>
+            <organization>Oracle</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+
     <dependencies>
         <dependency>
             <groupId>com.sun.enterprise</groupId>

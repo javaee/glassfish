@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,19 +40,21 @@
 
 package org.glassfish.admin.rest.generator;
 
+import org.jvnet.hk2.component.Habitat;
+
 /**
  * @author Ludovic Champenois
  */
 public class ASMResourcesGenerator extends ResourcesGeneratorBase {
 
 
-    public ASMResourcesGenerator() {
-
+    public ASMResourcesGenerator(Habitat habitat) {
+        super (habitat);
     }
     
     @Override
     public ClassWriter getClassWriter(String className, String baseClassName, String resourcePath) {
-        ClassWriter writer = new ASMClassWriter( className, baseClassName, resourcePath);
+        ClassWriter writer = new ASMClassWriter( habitat,className, baseClassName, resourcePath);
         return writer;
     }
 

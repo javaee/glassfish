@@ -66,30 +66,6 @@
     <description>Common module for HTTP JMX connector client and server infrastructure in GF V3</description>
 
 
-    <developers>
-
-        <developer>
-
-            <id>ne110415</id>
-
-            <name>Nandini Ektare</name>
-
-            <url>http://blogs.sun.com/nektare</url>
-
-            <organization>Oracle, Inc.</organization>
-
-            <roles>
-
-                <role>lead</role>
-
-                <role>developer</role>
-
-            </roles>
-
-        </developer>
-
-    </developers>
-
     <build>
 
         <resources>

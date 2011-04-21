@@ -137,9 +137,7 @@ public class ConnectorConnectionPoolManager implements ResourceManager {
         try {
             ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                    ConnectorConnectionPool newResource = createConfigBean(param, properties);
-                    param.getResources().add(newResource);
-                    return newResource;
+                    return createResource(param, properties);
                 }
             }, resources);
 

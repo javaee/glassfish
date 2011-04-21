@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -73,10 +73,10 @@ public final class InvocationHandlerUtil {
                             Proxy.getInvocationHandler(args[0]) : args[0];
                             result = handler.equals(other);
                 }
-                returnValue = new Boolean(result);
+                returnValue = result;
                 break;
             case 'h' :
-                returnValue = new Integer(handler.hashCode());
+                returnValue = handler.hashCode();
                 break;
             case 't' :
                 returnValue = handler.toString();
@@ -108,7 +108,7 @@ public final class InvocationHandlerUtil {
                                     Class[] declaredExceptions) 
         throws Throwable 
     {
-        Throwable toThrow = t;
+        Throwable toThrow;
 
         if( (t instanceof java.lang.RuntimeException) ||
             (isDeclaredException(t, declaredExceptions)) ) {
@@ -126,7 +126,7 @@ public final class InvocationHandlerUtil {
                                      Class[] declaredExceptions)
         throws Throwable 
     {
-        Throwable toThrow = t;
+        Throwable toThrow;
 
         if( (t instanceof java.lang.RuntimeException) ||
             (t instanceof java.rmi.RemoteException) ||

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -57,16 +57,6 @@ public class SSHUtil {
     private static final List<Connection> activeConnections = 
                             new ArrayList<Connection>();
     private static final String NL = System.getProperty("line.separator");
-
-   /**
-       * Closes all the registered connections.
-       */
-      private static synchronized void closeRegisteredConnections() {
-          for (Connection connection : activeConnections) {
-              connection.close();
-          }
-          activeConnections.clear();
-      }
 
    /**
        * Registers a connection for cleanup when the plugin is stopped.
@@ -126,16 +116,12 @@ public class SSHUtil {
      */
     public static boolean isEncryptedKey(String sshkeyfile) throws IOException {
         boolean result = false;
-        try {
-            String f = FileUtils.readSmallFile(sshkeyfile);
-            if (f.startsWith("-----BEGIN ") && f.contains("ENCRYPTED")
-                    && f.endsWith(" PRIVATE KEY-----" + NL)) {
-                result=true;
-            }
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
-        }
 
+        String f = FileUtils.readSmallFile(sshkeyfile);
+        if (f.startsWith("-----BEGIN ") && f.contains("ENCRYPTED")
+                && f.endsWith(" PRIVATE KEY-----" + NL)) {
+            result=true;
+        }
         return result;
     }
 }

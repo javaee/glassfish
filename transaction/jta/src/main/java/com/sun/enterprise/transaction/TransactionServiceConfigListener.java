@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -118,7 +118,6 @@ public class TransactionServiceConfigListener implements ConfigListener {
 
            if (event.getSource() instanceof ModuleMonitoringLevels) {
                 if (eventName.equals(ServerTags.TRANSACTION_SERVICE)) {
-                    String oldlevel = oldValue.toString();
                     String newlevel = newValue.toString();
                     _logger.log(Level.FINE, "Changing transaction monitoring level"); 
                     if ("OFF".equals(newlevel)) {

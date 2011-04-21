@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,13 +40,19 @@
 
 package org.glassfish.admin.rest;
 
+import java.io.BufferedInputStream;
+import java.io.FileOutputStream;
+import java.io.BufferedOutputStream;
 import com.sun.jersey.api.client.ClientResponse;
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
+import static org.junit.Assert.*;
 import static org.junit.Assert.*;
 
 /**
@@ -55,6 +61,7 @@ import static org.junit.Assert.*;
  */
 public class ApplicationTest extends RestTestBase {
     public static final String URL_APPLICATION_DEPLOY = "/domain/applications/application";
+    public static final String URL_CODI_SAMPLE = "http://java.net/jira/secure/attachment/44850/GlassfishIssues.war";
     public static final String URL_CREATE_INSTANCE = "/domain/create-instance";
     public static final String URL_SUB_COMPONENTS = "/domain/applications/application/list-sub-components";
 
@@ -66,13 +73,43 @@ public class ApplicationTest extends RestTestBase {
                 put("contextroot", appName);
                 put("name", appName);
         }};
+        try {
+            Map<String, String> deployedApp = deployApp(newApp);
+            assertEquals(appName, deployedApp.get("name"));
 
-        Map<String, String> deployedApp = deployApp(newApp);
-        assertEquals(appName, deployedApp.get("name"));
+            assertEquals("/" + appName, deployedApp.get("contextRoot"));
+        } finally {
+            undeployApp(newApp);
+        }
+    }
+    
+    @Test
+    public void deployCodiApp() throws URISyntaxException, MalformedURLException, IOException {
+        try {
+            final String appName = "testApp" + generateRandomString();
 
-        assertEquals("/" + appName, deployedApp.get("contextRoot"));
+            Map<String, Object> newApp = new HashMap<String, Object>() {{
+                    put("id", downloadFile(new URL(URL_CODI_SAMPLE)));
+                    put("contextroot", appName);
+                    put("name", appName);
+            }};
 
-        undeployApp(newApp);
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("name", "CloudBeesDS");
+            params.put("poolName", "DerbyPool");
+
+            ClientResponse response = post (JdbcTest.BASE_JDBC_RESOURCE_URL, params);
+            assertTrue(isSuccess(response));
+
+            Map<String, String> deployedApp = deployApp(newApp);
+            assertEquals(appName, deployedApp.get("name"));
+
+            assertEquals("/" + appName, deployedApp.get("contextRoot"));
+
+            undeployApp(newApp);
+        } finally {
+            delete(JdbcTest.BASE_JDBC_RESOURCE_URL + "/CloudBeesDS");
+        }
     }
 
     @Test
@@ -90,7 +127,7 @@ public class ApplicationTest extends RestTestBase {
         assertEquals("/" + appName, deployedApp.get("contextRoot"));
 
         try {
-            String appUrl = "http://localhost:" + getParameter("instance.port", "8080") + "/" + appName;
+            String appUrl = "http://localhost:" + instancePort + "/" + appName;
             ClientResponse response = get(appUrl);
             assertEquals ("Test", response.getEntity(String.class).trim());
 
@@ -135,11 +172,6 @@ public class ApplicationTest extends RestTestBase {
         } finally {
             undeployApp(newApp);
         }
-    }
-
-    protected File getFile(String fileName) throws URISyntaxException {
-        final URL resource = getClass().getResource("/" + fileName);
-        return new File(resource.toURI());
     }
 
     @Test
@@ -208,6 +240,68 @@ public class ApplicationTest extends RestTestBase {
             undeployApp(newApp);
         }
     }
+    
+    @Test
+    public void testUndeploySubActionWarnings() throws URISyntaxException {
+        final String appName = "testApp" + generateRandomString();
+        final String serverName = "in" + generateRandomNumber();
+        Map<String, Object> newApp = new HashMap<String, Object>() {{
+                put("id", getFile("test.war"));
+                put("contextroot", appName);
+                put("name", appName);
+        }};
+        try {
+            ClientResponse response = post ("/domain/create-instance", new HashMap<String, String>() {{
+                put("id", serverName);
+                put("node", "localhost-domain1");
+            }});
+            checkStatusForSuccess(response);
+
+            response = post("/domain/servers/server/" + serverName + "/start-instance");
+            checkStatusForSuccess(response);
+           
+            deployApp(newApp);
+            addAppRef(appName, serverName);
+            
+            response = post("/domain/servers/server/" + serverName + "/stop-instance");
+            checkStatusForSuccess(response);
+            
+            response = delete ("/domain/applications/application/"+appName, new HashMap<String, String>() {{
+                put("target", "domain");
+            }});
+            assertTrue(response.getEntity(String.class).contains("WARNING: Instance " + serverName + " seems to be offline"));
+        } finally {
+            delete ("/domain/applications/application/" + appName, new HashMap<String, String>() {{
+                put("target", "domain");
+            }});
+        }
+    }
+
+    protected File getFile(String fileName) throws URISyntaxException {
+        final URL resource = getClass().getResource("/" + fileName);
+        return new File(resource.toURI());
+    }
+    
+    protected File downloadFile(URL url) throws IOException {
+        String urlText = url.getFile();
+        String fileName = urlText.substring(urlText.lastIndexOf("/")+1);
+        File file = new File(fileName);
+        file.deleteOnExit();
+        BufferedInputStream in = new BufferedInputStream(url.openStream());
+        FileOutputStream fos = new FileOutputStream(file);
+        BufferedOutputStream bout = new BufferedOutputStream(fos, 1024);
+        byte data[] = new byte[8192];
+        int read = in.read(data, 0, 8192);
+        while (read >= 0) {
+            bout.write(data, 0, read);
+            data = new byte[8192];
+            read = in.read(data, 0, 8192);
+        }
+        bout.close();
+        in.close();
+        
+        return file;
+    }
 
     protected Map<String, String> deployApp(Map<String, Object> app) {
         ClientResponse response = postWithUpload(URL_APPLICATION_DEPLOY, app);
@@ -215,10 +309,19 @@ public class ApplicationTest extends RestTestBase {
 
         return getEntityValues(get(URL_APPLICATION_DEPLOY + "/" + app.get("name")));
     }
-
-    protected void undeployApp(Map<String, Object> app) {
+    
+    protected void addAppRef(final String applicationName, final String targetName){
+        ClientResponse cr = post("/domain/servers/server/" + targetName + "/application-ref", new HashMap<String,String>() {{
+            put("id", applicationName);
+            put("target", targetName);
+        }});
+        checkStatusForSuccess(cr);
+    }
+    
+    protected ClientResponse undeployApp(Map<String, Object> app) {
         ClientResponse response = delete(URL_APPLICATION_DEPLOY + "/" + app.get("name"));
         checkStatusForSuccess(response);
-        response = delete(URL_APPLICATION_DEPLOY + "/stateles-simple");
+        
+        return response;
     }
 }

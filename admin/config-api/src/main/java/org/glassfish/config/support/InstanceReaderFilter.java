@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,7 +54,6 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import org.glassfish.config.support.DomainXmlPreParser.DomainXmlPreParserException;
-import org.jvnet.hk2.component.Habitat;
 import static org.glassfish.config.support.Constants.*;
 
 /**
@@ -65,10 +64,10 @@ import static org.glassfish.config.support.Constants.*;
  */
 class InstanceReaderFilter extends ServerReaderFilter {
 
-    InstanceReaderFilter(String theServerName, Habitat theHabitat, URL theDomainXml,
+    InstanceReaderFilter(String theServerName, URL theDomainXml,
             XMLInputFactory theXif) throws XMLStreamException, DomainXmlPreParserException {
 
-        super(theHabitat, theDomainXml, theXif);
+        super(theDomainXml, theXif);
         instanceName = theServerName;
         dxpp = new DomainXmlPreParser(domainXml, xif, instanceName);
     }

@@ -85,6 +85,13 @@ public class StartServerHelper {
         pidFile = serverDirs.getPidFile();
         masterPassword = masterPassword0;
         debug = debug0;
+                // it will be < 0 if both --debug is false and debug-enabled=false in jvm-config
+        debugPort = launcher.getDebugPort();
+        isDebugSuspend = launcher.isDebugSuspend();
+
+        if(isDebugSuspend && debugPort >= 0) {
+            logger.info(strings.get("ServerStart.DebuggerSuspendedMessage", "" + debugPort));
+        }
     }
 
     // TODO check the i18n messages
@@ -230,14 +237,6 @@ public class StartServerHelper {
             //ignore
         }
 
-        int debugPort = -1;
-        String debugPortString = "-1";
-
-        if (debug) {
-            debugPort = launcher.getDebugPort();
-            debugPortString = "" + debugPort;
-        }
-
         logger.info(strings.get(
                 "ServerStart.SuccessMessage",
                 info.isDomain() ? "domain " : "instance",
@@ -246,8 +245,9 @@ public class StartServerHelper {
                 logfile,
                 adminPortString));
 
-        if (debugPort >= 0)
-            logger.info(strings.get("ServerStart.DebuggerMessage", debugPortString));
+        if (debugPort >= 0) {
+            logger.info(strings.get("ServerStart.DebuggerMessage", "" + debugPort));
+        }
     }
 
     /**
@@ -311,6 +311,8 @@ public class StartServerHelper {
     private final String masterPassword;
     private final String serverOrDomainName;
     private final boolean debug;
+    private final int debugPort;
+    private final boolean isDebugSuspend;
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StartServerHelper.class);
 

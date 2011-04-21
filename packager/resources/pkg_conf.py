@@ -60,15 +60,15 @@
 # will use that. We will not add build numbers for these packages. For 
 # example, grizzly version would look like 1.8.2-0,0. 
 
-glassfish_version="3.1,0-${build.id}"
+glassfish_version="3.2,0-${build.id}"
 felix_version="3.0.8,0-0"
 javadb_version="10.5.3.0,0-0"
 corba_version="3.2.0,0-2"
-jsf_version="2.1.0,0-11"
+jsf_version="2.1.1,0-4"
 grizzly_version="2.0.0-SNAPSHOT,0-0"
 metro_version="2.1,0-30"
 javahelp_version="2.0.2,0-1"
-shoal_version="1.5.29,0-0"
+shoal_version="1.5.30,0-0"
 
 #description
 glassfish_description="GlassFish Application Server"

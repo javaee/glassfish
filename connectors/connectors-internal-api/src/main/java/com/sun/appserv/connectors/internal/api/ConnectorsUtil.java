@@ -520,7 +520,7 @@ public class ConnectorsUtil {
     }
 
     public static boolean parseBoolean(String enabled) {
-        return Boolean.parseBoolean(enabled.toString());
+        return Boolean.parseBoolean(enabled);
     }
 
     /**

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -158,7 +158,7 @@ public class ReDeployCommand extends DeployCommandParameters implements AdminCom
 
         //if path not specified on the command line then get it from domain.xml
         super.path = (path==null)?new File(ConfigBeansUtilities.getLocation(name)):path;
-        if (super.path == null) {
+        if (!super.path.exists()) {
                 //if unable to get path from domain.xml then return error.
             report.setMessage(localStrings.getLocalString("redeploy.command.invalid.path", "Cannot determine the path of application."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);

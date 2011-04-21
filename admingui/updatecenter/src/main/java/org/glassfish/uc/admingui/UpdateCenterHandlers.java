@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -70,6 +70,8 @@ import com.sun.pkg.client.Manifest;
 import com.sun.pkg.client.SystemInfo;
 import com.sun.pkg.client.SystemInfo.UpdateCheckFrequency;
 import com.sun.pkg.client.Version;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import javax.servlet.http.HttpSession;
 
 
@@ -207,7 +209,8 @@ public class UpdateCenterHandlers {
             else
             if (state.equals("addOn"))
                 displayList = getAddOnList(img);
-            
+
+          if (displayList != null){
             for (Fmri fmri : displayList){
                 Map oneRow = new HashMap();
                 try{
@@ -234,6 +237,7 @@ public class UpdateCenterHandlers {
                     }
                 }
             }
+          }
         }catch(Exception ex1){
             GuiUtil.getLogger().info("getUcList(): " +  ex1.getLocalizedMessage());
             if (GuiUtil.getLogger().isLoggable(Level.FINE)){
@@ -337,6 +341,30 @@ public class UpdateCenterHandlers {
         return result;
 
     }
+
+    /**
+     * Returns true if f1 supersedes f2
+     */
+    private static boolean supersedes(Fmri f1, Fmri f2, String pAuth) {
+        boolean f1Preferred = f1.getAuthority().equals(pAuth);
+        boolean f2Preferred = f2.getAuthority().equals(pAuth);
+
+        // If f1 is from the preferred authority and f2 is not, then
+        // f1 supersedes.
+        if (f1Preferred && ! f2Preferred) {
+            return true;
+        }
+
+        // If f2 is from the preferred authority and f1 is not, then
+        // f1 does not supersede
+        if (f2Preferred && ! f1Preferred) {
+            return false;
+        }
+
+        // Otherwise compare versions. f1 supersedes if it is a successor
+        return f1.isSuccessor(f2);
+    }
+
     
     private static List<Fmri> getAddOnList(Image image){
         List<String> installed = new ArrayList<String>();
@@ -344,30 +372,32 @@ public class UpdateCenterHandlers {
             installed.add(each.fmri.getName());
         }
         String pAuth = image.getPreferredAuthorityName();
-        Map<String, Fmri> pMap = new HashMap();
-        List<Fmri> allList = new ArrayList();
+        SortedMap<String, Fmri> addOnMap = new TreeMap();
         for (Image.FmriState each : image.getInventory(null, true)) {
             Fmri fmri = each.fmri;
-            if (!each.upgradable && !each.installed &&
-                    !installed.contains(fmri.getName())) {
-                allList.add(fmri);
-                if (fmri.getAuthority().equals(pAuth)){
-                    pMap.put(fmri.getName(), fmri);
-                }
-            }
-        }
-        
-        //If the package exist in different repo, only show the one thats from
-        //the preferred repo.
-        List result = new ArrayList();
-        for(Fmri test: allList){
-            if (pMap.get(test.getName()) == null){
-                result.add(test);
+            // If this exact package is installed, or another version
+            // of this package is installed, then skip it.
+            if (each.installed || installed.contains(fmri.getName())) {
                 continue;
             }
-            if (test.getAuthority().equals(pAuth)){
-                result.add(test);
+
+            if (addOnMap.containsKey(fmri.getName())) {
+               // We have seen this package name already. See if this
+               // version should replace the saved version.
+               Fmri saved = addOnMap.get(fmri.getName());
+               if (supersedes(fmri, saved, pAuth)) {
+                   addOnMap.put(fmri.getName(), fmri);
+               }
+            } else {
+               // We haven't seen this package name yet. Save fmri
+               addOnMap.put(fmri.getName(), fmri);
             }
+
+        }
+
+        List<Fmri> result = new ArrayList();
+        for(Fmri f: addOnMap.values()){
+            result.add(f);
         }
         return result;
     }
@@ -393,7 +423,7 @@ public class UpdateCenterHandlers {
             Image.ImagePlan ip = image.makeInstallPlan(pkgsName);
             Fmri[] proposed = ip.getProposedFmris();
             if (countOnly){
-                result.add(new Integer(proposed.length));
+                result.add(Integer.valueOf(proposed.length));
                 return result;
             }
             for( Fmri newPkg : proposed){
@@ -426,7 +456,7 @@ public class UpdateCenterHandlers {
             ex.printStackTrace();
             if (countOnly){
                 List tmpL = new ArrayList();
-                tmpL.add(new Integer(-1));
+                tmpL.add(Integer.valueOf(-1));
                 return tmpL;
             }
         }
@@ -453,16 +483,18 @@ public class UpdateCenterHandlers {
             return;
         }
         List<Map> selectedRows = (List) obj;
-        List<Fmri> fList = new ArrayList();
+        //do not use Fmri list to pass to installPackages, use String array to avoid UPDATECENTER2-2187
+        String[] fmris = new String[selectedRows.size()];
+        int i=0;
         try {
             for (Map oneRow : selectedRows) {
-                fList.add((Fmri)oneRow.get("fmri"));
+                fmris[i++]=((Fmri)oneRow.get("fmri")).toString();
             }
             if (install){
-                image.installPackages(fList);
+                image.installPackages(fmris);
                 //updateCountInSession(image);   No need to update the update count since the count will not change.  Only installing new component is allowed.
             }else{
-                image.uninstallPackages(fList);
+                image.uninstallPackages(fmris);
             }
             GuiUtil.setSessionValue("restartRequired", Boolean.TRUE);
         }catch(Exception ex){
@@ -527,7 +559,7 @@ public class UpdateCenterHandlers {
 
 
      public static Integer updateCountInSession(Image image){
-	 Integer countInt = new Integer(-1);
+	 Integer countInt = Integer.valueOf(-1);
 	 if (image != null){
 	    List list = getUpdateDisplayList(image, true);
 	    countInt = (Integer) list.get(0);
@@ -576,7 +608,8 @@ public class UpdateCenterHandlers {
             size/MB + GuiUtil.getMessage(BUNDLE, "sizeMB")  ;
         return sizep;
     }
-    
+
+    /* comment out un-used method.
     private static String getPkgDate(Version version){
         //TODO localize the date format
         int begin = version.toString().indexOf(":");
@@ -585,6 +618,8 @@ public class UpdateCenterHandlers {
         String result = dateStr.substring(0,4) + "/" + dateStr.substring(4,6) + "/" + dateStr.substring(6,8);
         return result;
     }
+     *
+     */
 
     
     public static Image getUpdateCenterImage(){

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -55,7 +55,7 @@ import java.util.logging.Logger;
 @Service(name = "com.sun.enterprise.connectors.module.ResourcesContainer")
 public class ResourcesContainer implements Container, PostConstruct, PreDestroy {
 
-    private static Logger _logger = LogDomains.getLogger(ConnectorContainer.class, LogDomains.RSR_LOGGER);
+    private final static Logger _logger = LogDomains.getLogger(ResourcesContainer.class, LogDomains.RSR_LOGGER);
 
     public void postConstruct() {
         logFine("postConstruct of ConnectorContainer");

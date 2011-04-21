@@ -116,26 +116,6 @@ public interface WebContainer {
     public Context createContext(File docRoot);
 
     /**
-     * Creates a <tt>Context</tt>, configures it with the given
-     * docroot and classloader, and registers it with the default
-     * <tt>VirtualServer</tt>.
-     *
-     * <p>The given classloader will be set as the thread's context
-     * classloader whenever the new <tt>Context</tt> or any of its
-     * resources are asked to process a request.
-     * If a <tt>null</tt> classloader is passed, the classloader of the
-     * class on which this method is called will be used.
-     *
-     * @param docRoot the docroot of the <tt>Context</tt>
-     * @param contextRoot the contextroot at which to register
-     * @param classLoader the classloader of the <tt>Context</tt>
-     *
-     * @return the new <tt>Context</tt>
-     */
-    public Context createContext(File docRoot, String contextRoot, 
-                                 ClassLoader classLoader);
-
-    /**
      * Creates a <tt>Context</tt> and configures it with the given
      * docroot and classloader.
      *
@@ -157,6 +137,26 @@ public interface WebContainer {
      * @see VirtualServer#addContext
      */
     public Context createContext(File docRoot, ClassLoader classLoader);
+
+    /**
+     * Creates a <tt>Context</tt>, configures it with the given
+     * docroot and classloader, and registers it with all
+     * <tt>VirtualServer</tt>.
+     *
+     * <p>The given classloader will be set as the thread's context
+     * classloader whenever the new <tt>Context</tt> or any of its
+     * resources are asked to process a request.
+     * If a <tt>null</tt> classloader is passed, the classloader of the
+     * class on which this method is called will be used.
+     *
+     * @param docRoot the docroot of the <tt>Context</tt>
+     * @param contextRoot the contextroot at which to register
+     * @param classLoader the classloader of the <tt>Context</tt>
+     *
+     * @return the new <tt>Context</tt>
+     */
+    public Context createContext(File docRoot, String contextRoot,
+                                 ClassLoader classLoader);
 
     /**
      * Registers the given <tt>Context</tt> with all <tt>VirtualServer</tt>

@@ -457,7 +457,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
                           
 
                             processAnnotations(o, extension.getKey().getScanner(), archive);
-                            if (o!=null && !o.isEmpty() && (o instanceof RootDeploymentDescriptor)) {
+                            if (o!=null && !o.isEmpty()) {
                                 extension.getKey().addExtension(descriptor, o);
                                 extensions.put(extension.getKey(), (RootDeploymentDescriptor) o);
                             }
@@ -637,9 +637,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
                     ddFile.setErrorReportingString(archive.getURI().getSchemeSpecificPart());
                 }
                 T result = ddFile.read(is);
-                if (result instanceof RootDeploymentDescriptor) {
-                    ((RootDeploymentDescriptor)result).setClassLoader(classLoader);
-                }
+                ((RootDeploymentDescriptor)result).setClassLoader(classLoader);
                 return result;
             } else {
                 /*
@@ -1592,11 +1590,21 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
     protected static void addFileToArchive(WritableArchive archive, String filePath, String entryName)
             throws IOException {
 
-        FileInputStream is = new FileInputStream(new File(filePath));
-        OutputStream os = archive.putNextEntry(entryName);
-        ArchivistUtils.copyWithoutClose(is, os);
-        is.close();
-        archive.closeEntry();
+        FileInputStream is = null;
+        try {
+            is =  new FileInputStream(new File(filePath));
+            OutputStream os = archive.putNextEntry(entryName);
+            ArchivistUtils.copyWithoutClose(is, os);
+        } finally {
+            try {
+                if (is!=null)
+                    is.close();
+            } catch(IOException e) {
+                archive.closeEntry();
+                throw e;
+            }
+            archive.closeEntry();
+        }
     }
 
     /**

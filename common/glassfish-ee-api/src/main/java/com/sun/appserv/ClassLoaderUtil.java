@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -269,8 +269,7 @@ public class ClassLoaderUtil {
                                      *could not be closed and add it to the list
                                      *of IOExceptions to be returned to the caller.
                                      */
-                                    String jarFileName = (jarFile == null) ? getMessage("classloaderutil.jarFileNameNotAvailable") : jarFile.getName();
-                                    String msg = getMessage("classloaderutil.errorClosingJar", jarFileName);
+                                    String msg = getMessage("classloaderutil.errorClosingJar", jarFile.getName());
                                     IOException newIOE = new IOException(msg);
                                     newIOE.initCause(ioe);
                                     ioExceptions.add(newIOE);

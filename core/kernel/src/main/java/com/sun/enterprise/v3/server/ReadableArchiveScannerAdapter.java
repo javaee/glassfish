@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -197,30 +197,28 @@ public class ReadableArchiveScannerAdapter extends AbstractAdapter {
                 return null;
             }
 
-            if (subArchive!=null) {
-                if (logger.isLoggable(level)) {
-                    logger.log(level, "Spawning sub parsing " + subArchive.getURI());
-                }
-                final ReadableArchiveScannerAdapter adapter = new InternalJarAdapter(this, subArchive, subArchive.getURI());
-                // we increment our release count, this tells us when we can safely close the parent
-                // archive.
-                releaseCount.incrementAndGet();
-                return parser.parse(adapter, new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            if (logger.isLoggable(level))
-                                logger.log(level, "Closing sub archive " + subArchive.getURI());
-                            adapter.close();
-                        } catch (IOException e) {
-                            logger.log(Level.SEVERE,
-                                localStrings.getLocalString("exception_while_closing",
-                                    "Cannot close sub archive {0}",
-                                    name), e);                                    
-                        }
-                    }
-                });
+            if (logger.isLoggable(level)) {
+                logger.log(level, "Spawning sub parsing " + subArchive.getURI());
             }
+            final ReadableArchiveScannerAdapter adapter = new InternalJarAdapter(this, subArchive, subArchive.getURI());
+            // we increment our release count, this tells us when we can safely close the parent
+            // archive.
+            releaseCount.incrementAndGet();
+            return parser.parse(adapter, new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if (logger.isLoggable(level))
+                            logger.log(level, "Closing sub archive " + subArchive.getURI());
+                        adapter.close();
+                    } catch (IOException e) {
+                        logger.log(Level.SEVERE,
+                            localStrings.getLocalString("exception_while_closing",
+                                "Cannot close sub archive {0}",
+                                name), e);
+                    }
+                }
+            });
         }
         return null;
     }
@@ -229,7 +227,7 @@ public class ReadableArchiveScannerAdapter extends AbstractAdapter {
      * Adapter for internal jar files. we don't process further down any more internal
      * jar files. In other words, no jars inside jars inside jars can be deployed...
      */
-    private class InternalJarAdapter extends ReadableArchiveScannerAdapter {
+    private static class InternalJarAdapter extends ReadableArchiveScannerAdapter {
         public InternalJarAdapter(ReadableArchiveScannerAdapter parent, ReadableArchive archive, URI uri) {
             super(parent, archive, uri);
         }

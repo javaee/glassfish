@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -212,9 +212,15 @@ public class PipeHelper extends ConfigHelper {
 	Subject s = (Subject) request.invocationProperties.get
 	    (PipeConstants.CLIENT_SUBJECT);
 
-	SecurityContext sC = new SecurityContext(s);
 
-	SecurityContext.setCurrent(sC);
+        if (s == null || (s!= null &&
+                s.getPrincipals().isEmpty() &&
+                s.getPublicCredentials().isEmpty())) {
+            SecurityContext.setUnauthenticatedContext();
+        } else {
+	    SecurityContext sC = new SecurityContext(s);
+            SecurityContext.setCurrent(sC);
+        }
 
 	// we should try to replace this endpoint specific
 	// authorization check with a generic web service message check

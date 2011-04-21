@@ -52,6 +52,7 @@ import org.jvnet.hk2.config.DomDocument;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.rmi.MarshalException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -114,6 +115,10 @@ public class GenericCommandModel extends CommandModel {
                             } else {
                                 params.put(attributeName, new AttributeBasedModel(attributeName, attr, paramI18n));
                             }
+                        } else {
+                            // use method name.
+                            String name = cm.trimPrefix(m.getName());
+                            params.put(name, new ParamBasedModel(name, p, paramI18n));
                         }
                     }
                 }

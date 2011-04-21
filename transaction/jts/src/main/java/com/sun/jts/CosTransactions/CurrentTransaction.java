@@ -591,7 +591,7 @@ public class CurrentTransaction {
 
             outStatus.value = Status.StatusRolledBack;
             try {
-                Long currentLocalTID = new Long(current.getLocalTID(outStatus));
+                Long currentLocalTID = current.getLocalTID(outStatus);
                 if( outStatus.value == Status.StatusActive )
                     if( currentLocalTID.equals(localTID) ) {
                         outstanding[0] |= current.isOutgoing();
@@ -1236,7 +1236,7 @@ public class CurrentTransaction {
 			_logger.log(Level.WARNING,"jts.unable_to_create_subordinate_coordinator", exc);
 			 String msg = LogFormatter.getLocalizedMessage(_logger,
 			 							"jts.unable_to_create_subordinate_coordinator");
-            throw new INVALID_TRANSACTION(
+            throw new INVALID_TRANSACTION(msg,
                 MinorCode.TX_RECREATE_FAILED, CompletionStatus.COMPLETED_MAYBE);
         }
     }

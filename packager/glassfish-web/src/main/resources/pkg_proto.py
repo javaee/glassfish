@@ -3,7 +3,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -54,7 +54,6 @@ pkg = {
                       },
     "depends"       : { 
                         "pkg:/glassfish-common" : {"type" : "require" },
-                        "pkg:/glassfish-jcdi" : {"type" : "require" },
                       },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {

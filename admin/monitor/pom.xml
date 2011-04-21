@@ -56,32 +56,14 @@
     <description>Glassfish Appserver Admin Monitoring Infrastructure</description>
     <developers>
         <developer>
-            <id>sirajg</id>
-            <name>Siraj Ghaffar</name>
-            <url>http://blogs.sun.com/sirajg/</url>
+            <id>bnevins</id>
+            <name>Byron Nevins</name>
             <organization>Oracle, Inc.</organization>
             <roles>
-                <role>Developer</role>
+                <role>developer</role>
+                <role>lead</role>
             </roles>
-        </developer>
-        <developer>
-            <id>harpreet</id>
-            <name>Harpreet Singh</name>
-            <url>http://blogs.sun.com/harpreet/</url>
-            <organization>Oracle, Inc.</organization>
-            <roles>
-                <role>Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>abbagani</id>
-	    <name>Prashanth Abbagani</name>
-            <url>http://blogs.sun.com/prashanth/</url>
-            <organization>Oracle, Inc.</organization>
-            <roles>
-                <role>Developer</role>
-            </roles>
-        </developer>
+        </developer>        
     </developers>
     <build>
         <resources>

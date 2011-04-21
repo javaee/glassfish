@@ -107,7 +107,6 @@ public final class RequestUtil {
             buf.append("\"");
         }
 
-        long age = cookie.getMaxAge();
         if (cookie.getMaxAge() >= 0) {
             buf.append("; Max-Age=\"");
             buf.append(cookie.getMaxAge());
@@ -554,21 +553,20 @@ public final class RequestUtil {
      * @return The resulting string representation, to be used as the value
      * of a JSESSIONIDVERSION cookie or jsessionidversion URI parameter
      */
-    public static String createSessionVersionString(HashMap<String, String> sessionVersions) {
+    public static String createSessionVersionString(Map<String, String> sessionVersions) {
         if (sessionVersions == null) {
             return null;
         }
 
         StringBuilder sb = new StringBuilder();
-        Iterator<String> iter = sessionVersions.keySet().iterator();
         boolean first = true;
-        while (iter.hasNext()) {
+        for (Map.Entry<String, String> e : sessionVersions.entrySet()) {
             if (first) {
                 first = false;
             } else {
                 sb.append(':');
             }
-            String contextPath = iter.next();
+            String contextPath = e.getKey();
             // encode so that there is no / or %2F
             try {
                 sb.append(new String(HexUtils.convert(contextPath.getBytes("UTF-8"))));
@@ -577,7 +575,7 @@ public final class RequestUtil {
                 throw new IllegalArgumentException(ex);
             }
             sb.append(SESSION_VERSION_SEPARATOR);
-            sb.append(sessionVersions.get(contextPath));
+            sb.append(e.getValue());
         }
 
         return sb.toString();

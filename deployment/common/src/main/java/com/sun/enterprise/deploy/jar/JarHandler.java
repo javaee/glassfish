@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,6 +58,8 @@ import java.lang.RuntimeException;
 import java.io.*;
 import java.util.logging.Level;
 import java.util.List;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -69,7 +71,7 @@ import static javax.xml.stream.XMLStreamConstants.*;
  * @author Jerome Dochez
  */
 @Service(name="DEFAULT")
-public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler {
+public class JarHandler extends AbstractArchiveHandler {
     private static XMLInputFactory xmlIf = null;
 
     static {
@@ -105,8 +107,14 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
         return true;
     }
 
-    public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context) {
-        ASURLClassLoader cloader = new ASURLClassLoader(parent);
+    public ClassLoader getClassLoader(final ClassLoader parent, DeploymentContext context) {
+        ASURLClassLoader cloader = AccessController.doPrivileged(new PrivilegedAction<ASURLClassLoader>() {
+            @Override
+            public ASURLClassLoader run() {
+                return new ASURLClassLoader(parent);
+            }
+        });
+
         try {              
             String compatProp = context.getAppProps().getProperty(
                 DeploymentProperties.COMPATIBILITY);
@@ -159,7 +167,7 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
         return cloader;
     }
 
-    private class GFEjbJarXMLParser {
+    private static class GFEjbJarXMLParser {
         private XMLStreamReader parser = null;
         private String compatValue = null;
 
@@ -286,7 +294,7 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
         }
     }
 
-    private class SunEjbJarXMLParser {
+    private static class SunEjbJarXMLParser {
         private XMLStreamReader parser = null;
         private String compatValue = null;
 

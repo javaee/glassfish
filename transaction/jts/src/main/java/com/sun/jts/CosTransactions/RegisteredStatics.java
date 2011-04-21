@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -100,25 +100,6 @@ class RegisteredStatics {
      * @see
      */
     RegisteredStatics() {}
-
-    /**
-     * Cleans up the state of the RegisteredStatics object.
-     *
-     * @param
-     *
-     * @return
-     *
-     * @see
-     */
-    /*
-    public void finalize() {
-
-        if (registered != null) {
-            registered.removeAllElements();
-        }
-        registered = null;
-    }
-    */
 
     /**
      * Informs all registered objects an association has started.

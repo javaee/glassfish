@@ -59,7 +59,7 @@ import org.glassfish.embeddable.GlassFishException;
  * @author Rajiv Mordani
  * @author Jan Luehe
  */
-public interface VirtualServer extends Lifecycle {
+public interface VirtualServer {
 
 
     /**

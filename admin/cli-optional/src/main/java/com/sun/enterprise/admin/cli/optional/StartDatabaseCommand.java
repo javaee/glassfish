@@ -195,7 +195,8 @@ public final class StartDatabaseCommand extends DatabaseCommand {
 
         if (installPath != null) {
             final File dbDir = new File(installPath, DATABASE_DIR_NAME);
-            dbDir.mkdir();
+            if (!dbDir.isDirectory() && !dbDir.mkdir())
+                logger.warning(strings.get("CantCreateDatabaseDir", dbDir));
             try {
                 return dbDir.getCanonicalPath();
             } catch (IOException ioe) {

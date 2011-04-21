@@ -74,14 +74,22 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
     private boolean verbose;
     @Param(optional = true, defaultValue = "false")
     private boolean upgrade;
-    @Param(optional = true, defaultValue = "false")
+    @Param(optional = true, shortName = "d", defaultValue = "false")
     private boolean debug;
     @Param(name = "domain_name", primary = true, optional = true)
     private String domainName0;
+    @Param(name = "_dry-run", shortName = "n", optional = true,
+            defaultValue = "false")
+    private boolean dry_run;
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StartDomainCommand.class);
     // the name of the master password option
     private StartServerHelper helper;
+
+    @Override
+    public List<String> getLauncherArgs() {
+        return launcher.getCommandLine();
+    }
 
     @Override
     public RuntimeType getType() {
@@ -118,6 +126,18 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
                 return ERROR;
             }
             doAutoUpgrade(mpv);
+
+            if (dry_run) {
+                logger.fine(Strings.get("dry_run_msg"));
+                List<String> cmd = launcher.getCommandLine();
+                StringBuilder sb = new StringBuilder();
+                for (String s : cmd) {
+                    sb.append(s);
+                    sb.append('\n');
+                }
+                logger.info(sb.toString());
+                return SUCCESS;
+            }
 
             // launch returns very quickly if verbose is not set
             // if verbose is set then it returns after the domain dies

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,8 +40,12 @@
 
 package org.glassfish.appclient.client.acc;
 
+import java.io.IOException;
+import java.util.Properties;
+import java.io.File;
 import com.sun.enterprise.transaction.JavaEETransactionManagerSimplified;
 import com.sun.logging.LogDomains;
+import java.io.FileWriter;
 import java.util.logging.Logger;
 import java.util.Arrays;
 import java.util.MissingResourceException;
@@ -60,6 +64,7 @@ public class AppclientCommandArgumentsTest {
     private static final String USER_VALUE = "joe-the-user";
     private static final String PASSWORDFILE_NAME = "topSecret.stuff";
     private static final String EXPECTED_TARGETSERVER_VALUE = "A:1234,B:5678";
+    private static final String EXPECTED_PASSWORD_IN_PASSWORD_FILE = "mySecretPassword";
 
     public AppclientCommandArgumentsTest() {
     }
@@ -146,4 +151,58 @@ public class AppclientCommandArgumentsTest {
             fail("could not find message key");
         }
     }
+    
+    @Test
+    public void checkPasswordInFile() {
+        final Properties props = new Properties();
+        props.setProperty(AppclientCommandArguments.PASSWORD_FILE_PASSWORD_KEYWORD, 
+                EXPECTED_PASSWORD_IN_PASSWORD_FILE);
+        try {
+            final AppclientCommandArguments cmdArgs = prepareWithPWFile(props);
+            final char[] pwInObject = cmdArgs.getPassword();
+            assertTrue("Password " + EXPECTED_PASSWORD_IN_PASSWORD_FILE + 
+                    " in password file does not match password " + new String(pwInObject) + 
+                    " returned from AppclientCommandArguments object", 
+                    Arrays.equals(pwInObject, EXPECTED_PASSWORD_IN_PASSWORD_FILE.toCharArray()));
+            
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+    
+    
+    
+    @Test
+    public void checkErrorHandlingIfRequiredPasswordInPasswordFileIsMissing() {
+        final Properties props = new Properties();
+        props.setProperty("UNEXPECTED", EXPECTED_PASSWORD_IN_PASSWORD_FILE);
+        try {
+            final AppclientCommandArguments cmdArgs = prepareWithPWFile(props);
+            fail("Missing password in password file NOT correctly detected and flagged");
+        } catch (UserError ue) {
+            /*
+             * This is what we expect - a UserError complaining about the 
+             * missing password value.
+             */
+            return;
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    private AppclientCommandArguments prepareWithPWFile(
+            final Properties props) throws UserError, IOException {
+        final File passwordFile = createTempPWFile(props);
+        
+        return AppclientCommandArguments.newInstance(
+                Arrays.asList("-passwordfile","\"" + passwordFile.getAbsolutePath() + "\""));
+    }
+    
+    private File createTempPWFile(final Properties props) throws IOException {
+        final File tempFile = File.createTempFile("accpw", ".txt");
+        props.store(new FileWriter(tempFile), "temp file for acc unit test");
+        return tempFile;
+    }
+
+    
 }

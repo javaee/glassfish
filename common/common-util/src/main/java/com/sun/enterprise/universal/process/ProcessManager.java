@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,12 +50,13 @@ package com.sun.enterprise.universal.process;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  */
 public class ProcessManager {
-
     public ProcessManager(String... cmds) {
         cmdline = cmds;
     }
@@ -84,7 +85,7 @@ public class ProcessManager {
     public final void waitForReaderThreads(boolean b) {
         waitForReaderThreads = b;
     }
-    
+
     ////////////////////////////////////////////////////////////////////////////
     /** Should the output of the process be echoed to stdout?
      *
@@ -126,6 +127,12 @@ public class ProcessManager {
             }
 
             throw new ProcessManagerException(e);
+        }
+        finally {
+            // Always wait for reader threads -- unless the boolean flag is false.
+            // note that this won't block when there was a timeout because the process
+            // has been forcibly destroyed above.
+            doWaitForReaderThreads();
         }
 
         return exit;
@@ -201,14 +208,6 @@ public class ProcessManager {
     ////////////////////////////////////////////////////////////////////////////
     private void waitForever() throws InterruptedException {
         process.waitFor();
-
-        if (waitForReaderThreads)
-        {
-            // wait for stdin and stderr to finish up
-            for (Thread t : threads) {
-                t.join();
-            }
-        }
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -217,6 +216,21 @@ public class ProcessManager {
             Thread processWaiter = new Thread(new TimeoutThread(process));
             processWaiter.start();
             processWaiter.join(timeout);
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    private void doWaitForReaderThreads() {
+        if (waitForReaderThreads) {
+            // wait for stdin and stderr to finish up
+            for (Thread t : threads) {
+                try {
+                    t.join();
+                }
+                catch (InterruptedException ex) {
+                    // nothing to do
+                }
+            }
         }
     }
 
@@ -268,7 +282,6 @@ public class ProcessManager {
     ////////////////////////////////////////////////////////////////////////////
 
     static class ReaderThread implements Runnable {
-
         ReaderThread(BufferedReader Reader, StringBuffer SB, boolean echo) {
             reader = Reader;
             sb = SB;
@@ -294,7 +307,6 @@ public class ProcessManager {
     }
 
     static class TimeoutThread implements Runnable {
-
         TimeoutThread(Process p) {
             process = p;
         }

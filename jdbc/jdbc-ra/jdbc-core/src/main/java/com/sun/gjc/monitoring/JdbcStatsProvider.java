@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -81,13 +81,11 @@ public class JdbcStatsProvider {
             "NumPotentialStatementLeak", StatisticImpl.UNIT_COUNT,
             "The total number of potential Statement leaks");
 
-    private String poolName;
     private PoolInfo poolInfo;
     private SQLTraceCache sqlTraceCache;
 
     public JdbcStatsProvider(String poolName, String appName, String moduleName, int sqlTraceCacheSize,
             long timeToKeepQueries) {
-        this.poolName = poolName;
         poolInfo = new PoolInfo(poolName, appName, moduleName);
         if(sqlTraceCacheSize > 0) {
             this.sqlTraceCache = new SQLTraceCache(poolName, appName, moduleName, sqlTraceCacheSize, timeToKeepQueries);

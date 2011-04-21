@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -422,8 +422,7 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
     }
 
     public final String toString() {
-        return new String ("OTSResource : XAResource " +
-                           xaRes + " XID " + xid);
+        return "OTSResource : XAResource " + xaRes + " XID " + xid;
     }
 
 
@@ -443,7 +442,6 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
 				_logger.log(Level.WARNING,"jts.object_destroy_error","OTSResource");
             }
         }
-        //  finalize();
     }
 
     /**
@@ -461,9 +459,8 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
      * is about to complete. This permits any database specific action to be
      * performed.prior to the actual xa operations marking completion.
      *
-     */
     private void ensureInitialized() {
-        /* COMMENT(Ram J) - we do not support native xa drivers.
+        // COMMENT(Ram J) - we do not support native xa drivers.
         if (this.xaRes instanceof NativeXAResourceImpl) {
             NativeXAResourceImpl xaResImpl = (NativeXAResourceImpl) xaRes;
 
@@ -476,8 +473,8 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
 
             xaResImpl.nativeXA.aboutToComplete(xaResImpl, (XID) xid);
         }
-        */
     }
+     */
 
     /*
      * These methods are there to satisy the compiler. At some point

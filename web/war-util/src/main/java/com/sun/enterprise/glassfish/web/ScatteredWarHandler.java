@@ -53,6 +53,8 @@ import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -60,7 +62,7 @@ import java.util.logging.Logger;
  * @author Jerome Dochez
  */
 @Service
-public class ScatteredWarHandler  extends WarHandler implements ArchiveHandler {
+public class ScatteredWarHandler extends WarHandler {
 
     private static final Logger logger = LogDomains.getLogger(ScatteredWarHandler.class, LogDomains.DPL_LOGGER);
     
@@ -76,9 +78,14 @@ public class ScatteredWarHandler  extends WarHandler implements ArchiveHandler {
     }
 
     @Override
-    public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context) {
+    public ClassLoader getClassLoader(final ClassLoader parent, DeploymentContext context) {
         ScatteredArchive archive = (ScatteredArchive) context.getSource();
-        WebappClassLoader cloader = new WebappClassLoader(parent);
+        WebappClassLoader cloader = AccessController.doPrivileged(new PrivilegedAction<WebappClassLoader>() {
+            @Override
+            public WebappClassLoader run() {
+                return new WebappClassLoader(parent);
+            }
+        });
         try {
             FileDirContext r = new FileDirContext();
             File base = archive.getResourcesDir();

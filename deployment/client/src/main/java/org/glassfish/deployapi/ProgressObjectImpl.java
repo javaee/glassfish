@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -429,7 +429,6 @@ public class ProgressObjectImpl extends DFProgressObject {
         for (Iterator listenersItr = currentListeners.iterator(); listenersItr.hasNext();) {
             ((ProgressListener)listenersItr.next()).handleProgressEvent(progressEvent);
         }
-        currentListeners = null;
     }
 
 
@@ -506,7 +505,7 @@ public class ProgressObjectImpl extends DFProgressObject {
             return null;
         }
         // if stage status is success, return as it is
-        if (status!=null && DFDeploymentStatus.Status.SUCCESS.isWorseThanOrEqual(status.getStatus())) {
+        if (DFDeploymentStatus.Status.SUCCESS.isWorseThanOrEqual(status.getStatus())) {
             return null;
         }
         ByteArrayOutputStream bos = new ByteArrayOutputStream();

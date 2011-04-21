@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -180,7 +180,6 @@ abstract class AbstractAuthAnnotationHandler extends AbstractCommonAttributeHand
             Class classAn = (Class)ainfo.getAnnotatedElement();
             for (Object next : ejbDesc.getSecurityBusinessMethodDescriptors()) {
                 MethodDescriptor md = (MethodDescriptor)next;
-                Method m = md.getMethod(ejbDesc);
                 // override by existing info
                 if (classAn.equals(ejbContext.getDeclaringClass(md)) &&
                         !hasMethodPermissionsFromDD(md, ejbDesc)) {
@@ -262,7 +261,6 @@ abstract class AbstractAuthAnnotationHandler extends AbstractCommonAttributeHand
         HashMap methodPermissionsFromDD = ejbDesc.getMethodPermissionsFromDD();
         if (methodPermissionsFromDD != null) {
             Set allMethods = ejbDesc.getMethodDescriptors();
-            String ejbClassSymbol = methodDesc.getEjbClassSymbol();
             for (Object mdObjsObj : methodPermissionsFromDD.values()) {
                 List mdObjs = (List)mdObjsObj;
                 for (Object mdObj : mdObjs) {

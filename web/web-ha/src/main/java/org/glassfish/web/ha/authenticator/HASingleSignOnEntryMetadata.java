@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,7 +56,7 @@ public class HASingleSignOnEntryMetadata implements Serializable {
 
     protected Set<HASessionData> sessionDataSet = new HashSet<HASessionData>();
 
-    protected String username = null;
+    protected String userName = null;
 
     protected String realmName = null;
 
@@ -70,18 +70,19 @@ public class HASingleSignOnEntryMetadata implements Serializable {
     public HASingleSignOnEntryMetadata() {
     }
 
-    public HASingleSignOnEntryMetadata(String id, byte[] principalBytes, String authType,
-            String username, String realmName,
-            long lastAccessTime, long maxIdleTime, long version) {
+    public HASingleSignOnEntryMetadata(String id, long version,
+            byte[] principalBytes, String authType,
+            String userName, String realmName,
+            long lastAccessTime, long maxIdleTime) {
         
         this.id = id;
+        this.version = version;
         this.principalBytes = ((principalBytes != null) ? ((byte[])principalBytes.clone()) : null);
         this.authType = authType;
-        this.username = username;;
+        this.userName = userName;;
         this.realmName = realmName;
         this.lastAccessTime = lastAccessTime;
         this.maxIdleTime = maxIdleTime;
-        this.version = version;
     }
 
     public String getId() {
@@ -96,8 +97,8 @@ public class HASingleSignOnEntryMetadata implements Serializable {
         return authType;
     }
 
-    public String getUsername() {
-        return username;
+    public String getUserName() {
+        return userName;
     }
 
     public String getRealmName() {
@@ -120,6 +121,10 @@ public class HASingleSignOnEntryMetadata implements Serializable {
         return version;
     }
 
+    void setVersion(long version) {
+        this.version = version;
+    }
+
     public long getMaxIdleTime() {
         return maxIdleTime;
     }
@@ -136,13 +141,13 @@ public class HASingleSignOnEntryMetadata implements Serializable {
     public String toString() {
         return "HASingleSignOnEntryMetadata{" +
                 "id='" + id + '\'' +
+                ", version=" + version +
                 ", authType='" + authType + '\'' +
                 ", sessionDataSet.size=" + sessionDataSet.size() +
-                ", username='" + username + '\'' +
+                ", userName='" + userName + '\'' +
                 ", realmName='" + realmName + '\'' +
                 ", lastAccessTime=" + lastAccessTime +
                 ", maxIdleTime=" + maxIdleTime +
-                ", version=" + version +
                 '}';
     }
 }

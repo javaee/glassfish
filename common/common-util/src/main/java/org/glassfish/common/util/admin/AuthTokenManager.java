@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -73,7 +73,7 @@ import org.jvnet.hk2.component.Singleton;
  * allows the request to run.
  * <p>
  * We allow each token to be used twice, once for retrieving the command
- * metadata and then the second time to execute the command.
+ * metadata and then the second time to execute the command. (Also see the note below.)
  * <p>
  * Tokens have a limited life as measured in time also.  If a token is created
  * but not fully consumed before it expires, then this manager considers the
@@ -99,13 +99,14 @@ public class AuthTokenManager {
 
     private final static int TOKEN_SIZE = 10;
 
-    private final static long TOKEN_EXPIRATION_IN_MS = 60 * 1000;
+    private final static long DEFAULT_TOKEN_LIFETIME = 60 * 1000;
+    private final static long TOKEN_EXPIRATION_IN_MS = 360 * 1000;
 
     private final SecureRandom rng = new SecureRandom();
 
     private final Map<String,TokenInfo> liveTokens = new HashMap<String,TokenInfo>();
 
-    private final Logger logger = LogDomains.getLogger(AuthTokenManager.class,
+    private final static Logger logger = LogDomains.getLogger(AuthTokenManager.class,
             LogDomains.ADMIN_LOGGER);
 
     private final static char REUSE_TOKEN_MARKER = '+';
@@ -119,31 +120,38 @@ public class AuthTokenManager {
         '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
 
-    private class TokenInfo {
+    private static class TokenInfo {
         private final String token;
         private int usesRemaining = 2; // each token is used once to get metadata, once to execute
-        private long expiration = System.currentTimeMillis() + (TOKEN_EXPIRATION_IN_MS);
-
-        private TokenInfo(final String value) {
+        private long expiration;
+        private final long lifetime;
+        
+        private TokenInfo(final String value, final long lifetime) {
             this.token = value;
+            this.lifetime = lifetime;
+            this.expiration = System.currentTimeMillis() + (lifetime);
         }
 
         private synchronized boolean use(final boolean isBeingReused, final long now) {
             if (isUsedUp(now)) {
-                final String msg = localStrings.getLocalString("AuthTokenInvalid",
+                if (logger.isLoggable(Level.FINER)) {
+                    final String msg = localStrings.getLocalString("AuthTokenInvalid",
                         "Use of auth token {2} attempted but token is invalid; usesRemaining = {0,number,integer}, expired = {1}",
-                        new Integer(usesRemaining), Boolean.toString(expiration <= now),
-                        logger.isLoggable(Level.FINER) ? token : SUPPRESSED_TOKEN_OUTPUT);
-                
+                        Integer.valueOf(usesRemaining), Boolean.toString(expiration <= now),
+                        token);
+                    logger.log(Level.FINER, msg);
+                }
                 return false;
             }
             if ( ! isBeingReused) {
                 usesRemaining--;
             }
-            logger.log(Level.FINER,
+            if (logger.isLoggable(Level.FINER)) {
+                logger.log(Level.FINER,
                         "Use of auth token {0} OK; isBeingReused = {2}; remaining uses = {1,number,integer}",
-                        new Object[] {token, new Integer(usesRemaining), Boolean.toString(isBeingReused)});
-            expiration += (TOKEN_EXPIRATION_IN_MS);
+                        new Object[] {token, Integer.valueOf(usesRemaining), Boolean.toString(isBeingReused)});
+            }
+            expiration += lifetime;
             return true;
         }
 
@@ -153,16 +161,27 @@ public class AuthTokenManager {
     }
 
     /**
-     * Creates a new limited use authentication token.
+     * Creates a new limited use authentication token with the specified
+     * lifetime (in ms).
+     * @param lifetime how long each use of the token extends its lifetime
      * @return auth token
      */
-    public String createToken() {
+    public String createToken(final long lifetime) {
         final byte[] newToken = new byte[TOKEN_SIZE];
         rng.nextBytes(newToken);
         final String token = toHex(newToken);
-        liveTokens.put(token, new TokenInfo(token));
+        liveTokens.put(token, new TokenInfo(token, lifetime));
         logger.log(Level.FINER, "Auth token {0} created", token);
         return token;
+    }
+    
+    /**
+     * Creates a new limited use authentication token with the default
+     * lifetime.
+     * @return auth token
+     */
+    public String createToken() {
+        return createToken(DEFAULT_TOKEN_LIFETIME);
     }
 
     /**

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,17 +38,18 @@
  * holder.
  */
 
-package org.glassfish.embeddable.web.config;
+package org.glassfish.api.container;
+
+import org.jvnet.hk2.annotations.Contract;
+
 
 /**
- * An Enumeration of supported realm types
+ * A tag interface to mark the secondary sniffer. By default, a sniffer is 
+ * a primary sniffer. 
+ * An archive needs to be recognized by at least one primary sniffer to 
+ * deploy to GlassFish.
  *
- * @author Rajiv Mordani
  */
-public enum RealmType {
-    certificate,
-    file,
-    jdbc,
-    ldap,
-    solaris
+@Contract
+public interface SecondarySniffer {
 }

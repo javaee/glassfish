@@ -139,7 +139,7 @@ import java.util.logging.Logger;
  * @version $Revision: 1.12 $ $Date: 2007/03/29 00:59:41 $
  */
 
-public class Embedded  extends StandardService implements Lifecycle {
+public class Embedded  extends StandardService {
 
     private static Logger log = Logger.getLogger(Embedded.class.getName());
 

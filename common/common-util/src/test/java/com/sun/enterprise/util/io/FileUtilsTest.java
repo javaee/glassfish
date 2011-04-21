@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,45 +38,44 @@
  * holder.
  */
 
-/*
- * PolicyWrapper.java
- *
- */
+package com.sun.enterprise.util.io;
 
-package com.sun.enterprise.security.provider;
-
-import java.security.Policy;
+import java.io.File;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
- * This class is a wrapper around the default jdk policy file
- * implementation. PolicyWrapper is installed as the JRE policy object
- * It multiplexes policy decisions to the context specific instance of
- * com.sun.enterprise.security.provider.PolicyFile.
- * Although this Policy provider is implemented using another Policy class,
- * this class is not a "delegating Policy provider" as defined by JACC, and
- * as such it SHOULD not be configured using the JACC system property
- * javax.security.jacc.policy.provider.
- * @author Harpreet Singh (harpreet.singh@sun.com)
- * @author Jean-Francois Arcand
- * @author Ron Monzillo
  *
+ * @author wnevins
  */
-public class CustomPolicyWrapper extends BasePolicyWrapper {
+public class FileUtilsTest {
+    /**
+     * Test of mkdirsMaybe method, of class FileUtils.
+     */
+    @Test
+    public void testMkdirsMaybe() {
+        assertFalse(FileUtils.mkdirsMaybe(null));
+        File f = new File(".").getAbsoluteFile();
+        assertFalse(FileUtils.mkdirsMaybe(null));
+        File d1 = new File("junk" + System.currentTimeMillis());
+        File d2 = new File("gunk" + System.currentTimeMillis());
 
-    // this is the jdk policy file instance
-    private java.security.Policy policy = null;
+        assertTrue(d1.mkdirs());
+        assertFalse(d1.mkdirs());
+        assertTrue(FileUtils.mkdirsMaybe(d1));
+        assertTrue(FileUtils.mkdirsMaybe(d1));
+        assertTrue(FileUtils.mkdirsMaybe(d2));
+        assertTrue(FileUtils.mkdirsMaybe(d2));
+        assertFalse(d2.mkdirs());
 
-    /** Creates a new instance of PolicyWrapper */
-    public CustomPolicyWrapper() {
-        // the jdk policy file implementation
-        policy = getNewPolicy();
-	// recompute the refreshTime that was computed by the superclass
-	defaultContextChanged();
+        if(!d1.delete())
+            d1.deleteOnExit();
+
+        if(!d2.delete())
+            d2.deleteOnExit();
+
     }
 
-    // override to change the implementation of PolicyFile
-    @Override
-    protected Policy getNewPolicy() {
-	return new com.sun.enterprise.security.provider.PolicyFile();
-    }
 }

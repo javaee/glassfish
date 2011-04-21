@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -186,11 +186,11 @@ public class TableHandlers {
         List data = new ArrayList();
         Map<String, Object> props = (Map)handlerCtx.getInputValue("Properties");	
         if(props != null ){
-            for(String key : props.keySet()){
+            for(Map.Entry<String,Object> e : props.entrySet()){
                 HashMap oneRow = new HashMap();
-                Object value = props.get(key);
+                Object value = e.getValue();
                 String valString = (value==null)? "" : value.toString();
-                oneRow.put("name", key);
+                oneRow.put("name", e.getKey());
                 oneRow.put("value", valString);
                 oneRow.put("selected", false);
                 data.add(oneRow);

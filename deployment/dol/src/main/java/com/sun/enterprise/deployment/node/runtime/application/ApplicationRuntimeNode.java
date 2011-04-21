@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -80,19 +80,17 @@ import java.util.Map;
  */
 public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
     
-    protected Application descriptor=null;
     private String currentWebUri=null;
     
     public ApplicationRuntimeNode(Application descriptor) {
         super(descriptor);
-	this.descriptor=descriptor;	
     }   
     
     /**
      * Initialize the child handlers
      */    
-    protected void Init() {     
-        super.Init();                          
+    protected void init() {     
+        super.init();                          
         registerElementHandler(new XMLElement(RuntimeTagNames.SECURITY_ROLE_MAPPING), 
                                SecurityRoleMappingNode.class);              
         registerElementHandler(new XMLElement(RuntimeTagNames.RESOURCE_REFERENCE),
@@ -220,8 +218,8 @@ public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
     public void addDescriptor(Object newDescriptor) {
         if (newDescriptor instanceof SecurityRoleMapping) {
             SecurityRoleMapping roleMap = (SecurityRoleMapping) newDescriptor;
-            descriptor.addSecurityRoleMapping(roleMap);
             if (descriptor!=null && !descriptor.isVirtual()) {
+                descriptor.addSecurityRoleMapping(roleMap);
                 Role role = new Role(roleMap.getRoleName());
                 SecurityRoleMapper rm = descriptor.getRoleMapper();
                 if (rm != null) {

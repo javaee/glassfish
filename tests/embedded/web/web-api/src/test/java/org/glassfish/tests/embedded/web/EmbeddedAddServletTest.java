@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -69,7 +69,7 @@ public class EmbeddedAddServletTest {
     static WebContainer embedded;
     static File root;
     static String vsname = "test-server";
-    static String contextRoot = "/test";
+    static String contextRoot = "test";
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
@@ -97,10 +97,8 @@ public class EmbeddedAddServletTest {
 
         VirtualServerConfig config = new VirtualServerConfig();
         config.setHostNames("localhost");
-        //VirtualServer vs = (VirtualServer)
-        //        embedded.createVirtualServer(vsname, root, webListeners);
         VirtualServer vs = (VirtualServer)
-                embedded.createVirtualServer(vsname, root);
+                embedded.createVirtualServer(vsname, root, webListeners);
         vs.setConfig(config);
         embedded.addVirtualServer(vs);
         boolean testvs = false;
@@ -112,12 +110,11 @@ public class EmbeddedAddServletTest {
         }
         Assert.assertTrue(testvs);    
         Context context = (Context) embedded.createContext(root);
-        //ServletRegistration sr = context.addServlet("NewServlet", new NewServlet());
-        //sr.addMapping(new String[] {"/new"});
-        //vs.addContext(context, contextRoot);
-        embedded.addContext(context, contextRoot);
+        ServletRegistration sr = context.addServlet("NewServlet", "org.glassfish.tests.embedded.web.NewServlet");
+        sr.addMapping(new String[] {"/newservlet"});
+        vs.addContext(context, contextRoot);
 
-        URL servlet = new URL("http://localhost:8080"+contextRoot+"/new");
+        URL servlet = new URL("http://localhost:9090/"+contextRoot+"/newservlet");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(
@@ -129,6 +126,7 @@ public class EmbeddedAddServletTest {
             sb.append(inputLine);
         }
         in.close();
+        vs.removeContext(context);
         
      }
 

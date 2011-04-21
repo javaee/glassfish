@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,9 +39,13 @@
  */
 package com.sun.enterprise.v3.admin;
 
+import java.io.*;
+import static com.sun.enterprise.util.StringUtils.ok;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.JavaConfig;
+import java.util.Properties;
+import org.glassfish.internal.api.Globals;
 import static com.sun.enterprise.util.StringUtils.ok;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.ActionReport;
@@ -128,7 +132,7 @@ public class RuntimeInfo implements AdminCommand {
         checkDtrace();
         setDasName();
         top.addProperty("java.vm.name", System.getProperty("java.vm.name"));
-
+        setRestartable();
         reportMessage.append(Strings.get("runtime.info.debug", jpdaEnabled ? "enabled" : "not enabled"));
         report.setMessage(reportMessage.toString());
     }
@@ -151,6 +155,54 @@ public class RuntimeInfo implements AdminCommand {
         catch (Exception ex) {
             // ignore
         }
+    }
+
+    /**
+     * March 11 2011 -- See JIRA 16197
+     * Say the user started the server with a passwordfile arg.  After they started it
+     * they deleted the password file. If we don't do anything special restart-server
+     * will take down the server -- but it will not startup again.  The user will have no clue why.
+     * We can NOT tell the user directly because the restart server command is asynchronous
+     * (@Async annotation).
+     * So -- this method was added as a pre-flight check.  The client restart commands
+     * should run this command and check the restartable flag to make sure
+     * the restart doesn't fail because of a missing password file.
+     */
+    private void setRestartable() {
+        // false positive is MUCH better than false negative.  Err on the side of
+        // trying to restart if in doubt.  No harm can result from that.
+        restartable = true;
+        String passwordFile = null;
+
+        try {
+            Properties props = Globals.get(StartupContext.class).getArguments();
+            String argsString = props.getProperty("-asadmin-args");
+
+            if (ok(argsString) && argsString.indexOf("--passwordfile") >= 0) {
+                String[] args = argsString.split(",,,");
+
+                for (int i = 0; i < args.length; i++) {
+                    if (args[i].equals("--passwordfile")) {
+                        if ((i + 1) < args.length && ok(args[i + 1])) {
+                            passwordFile = args[i + 1];
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+            // nothing to do, but I'll do this anyway because I'm paranoid
+            restartable = true;
+        }
+
+        if (ok(passwordFile)) {
+            // the --passwordfile is here -- so it had best point to a file that
+            // exists and can be read!  In all other cases -- restartable is true
+            File pwf = new File(passwordFile);
+            restartable = pwf.canRead();
+        }
+        top.addProperty("restartable", Boolean.toString(restartable));
     }
 
     private int parsePort(String s) {
@@ -185,4 +237,6 @@ public class RuntimeInfo implements AdminCommand {
     private ActionReport.MessagePart top;
     private Logger logger;
     private StringBuilder reportMessage = new StringBuilder();
+
+    private boolean restartable;
 }

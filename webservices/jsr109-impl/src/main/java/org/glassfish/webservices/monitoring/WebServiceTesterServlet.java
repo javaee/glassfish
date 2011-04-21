@@ -678,7 +678,7 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
 
     private String getPortClass(Endpoint ep, Class serviceClass)
                                             throws Exception {
-        String pkg = serviceClass.getPackage().getName();
+        
         for(Method m : serviceClass.getMethods()) {
             WebEndpoint webEP = (WebEndpoint) 
                 m.getAnnotation(WebEndpoint.class);

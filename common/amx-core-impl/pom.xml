@@ -52,14 +52,13 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>amx-core-impl</artifactId>
     <packaging>hk2-jar</packaging>
-	<name>AMX V3 Core implementation</name>
+    <name>AMX V3 Core implementation</name>
     <description>Implementation of core AMX APIs</description>
     
     <developers>
         <developer>
-            <id>llc</id>
-            <name>Lloyd Chambers</name>
-            <url>http://blogs.sun.com/lchambers</url>
+            <id>naman_mehta</id>
+            <name>Naman Mehta</name>
             <organization>Oracle, Inc.</organization>
             <roles>
                 <role>lead</role>

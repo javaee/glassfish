@@ -260,8 +260,8 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
             }
             session.invalidate();
             session = request.getSession(true);
-            for (String key : map.keySet()) {
-                session.setAttribute(key, map.get(key));
+            for (Map.Entry<String, Object> e : map.entrySet()) {
+                session.setAttribute(e.getKey(), e.getValue());
             }
 
             if (session != null) {

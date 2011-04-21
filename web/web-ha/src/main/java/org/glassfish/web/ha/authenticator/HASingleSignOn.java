@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -81,7 +81,7 @@ public class HASingleSignOn extends GlassFishSingleSignOn {
         // Look up and remove the corresponding SingleSignOnEntry
         SingleSignOnEntry sso = null;
         synchronized (cache) {
-            sso = (SingleSignOnEntry) cache.remove(ssoId);
+            sso = cache.remove(ssoId);
         }
 
         if (sso == null)
@@ -126,7 +126,7 @@ public class HASingleSignOn extends GlassFishSingleSignOn {
     }
 
     @Override
-    public void associate(String ssoId, Session session) {
+    public void associate(String ssoId, long ssoVersion, Session session) {
 
         if (!started) {
             return;
@@ -135,7 +135,7 @@ public class HASingleSignOn extends GlassFishSingleSignOn {
         if (debug >= 1)
             log("Associate sso id " + ssoId + " with session " + session);
 
-        HASingleSignOnEntry sso = (HASingleSignOnEntry)lookup(ssoId);
+        HASingleSignOnEntry sso = (HASingleSignOnEntry)lookup(ssoId, ssoVersion);
         if (sso != null) {
             session.setSsoId(ssoId);
             sso.addSession(this, session);
@@ -149,8 +149,15 @@ public class HASingleSignOn extends GlassFishSingleSignOn {
     }
 
     @Override
-    protected SingleSignOnEntry lookup(String ssoId) {
-        SingleSignOnEntry ssoEntry = super.lookup(ssoId);
+    protected SingleSignOnEntry lookup(String ssoId, long ssoVersion) {
+        SingleSignOnEntry ssoEntry = super.lookup(ssoId, ssoVersion);
+        if (ssoEntry != null && ssoVersion > ssoEntry.getVersion()) {
+            // clean the old cache
+            synchronized(cache) {
+                cache.remove(ssoId);
+            }
+            ssoEntry = null;
+        }
         if (ssoEntry == null) {
             // load from ha store
             try {
@@ -193,5 +200,10 @@ public class HASingleSignOn extends GlassFishSingleSignOn {
             } catch(BackingStoreException ex) {
             }
         }
+    }
+
+    @Override
+    public boolean isVersioningSupported() {
+        return true;
     }
 }

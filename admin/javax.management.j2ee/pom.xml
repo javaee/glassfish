@@ -60,12 +60,12 @@
 
     <developers>
         <developer>
-            <id>msreddy</id>
-            <name>Sreenivas Munnangi</name>
-            <url>http://blogs.sun.com/msreddy/</url>
+            <id>naman_mehta</id>
+            <name>Naman Mehta</name>
             <organization>Oracle, Inc.</organization>
             <roles>
                 <role>lead</role>
+                <role>developer</role>
             </roles>
         </developer>
     </developers>

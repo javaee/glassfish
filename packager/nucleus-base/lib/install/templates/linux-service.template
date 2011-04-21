@@ -2,7 +2,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -51,13 +51,13 @@ ASADMIN="%%%AS_ADMIN_PATH%%%"
 
 case "$1" in
 start)
-    %%%SERVICEUSER_START%%%$ASADMIN %%%START_COMMAND%%% %%%CREDENTIALS%%% %%%LOCATION_ARGS_START%%% %%%ENTITY_NAME%%% > /dev/null 2>&1 &%%%SERVICEUSER_STOP%%%
+    %%%SERVICEUSER_START%%%$ASADMIN %%%START_COMMAND%%% %%%CREDENTIALS%%% %%%LOCATION_ARGS_START%%% %%%ENTITY_NAME%%% &%%%SERVICEUSER_STOP%%%
     ;;
 stop)
-    %%%SERVICEUSER_START%%%$ASADMIN %%%STOP_COMMAND%%%  %%%LOCATION_ARGS_STOP%%% %%%ENTITY_NAME%%% > /dev/null 2>&1 &%%%SERVICEUSER_STOP%%%
+    %%%SERVICEUSER_START%%%$ASADMIN %%%STOP_COMMAND%%%  %%%LOCATION_ARGS_STOP%%% %%%ENTITY_NAME%%% &%%%SERVICEUSER_STOP%%%
     ;;
 restart)
-    %%%SERVICEUSER_START%%%$ASADMIN %%%RESTART_COMMAND%%%  %%%LOCATION_ARGS_RESTART%%% %%%ENTITY_NAME%%% > /dev/null 2>&1 &%%%SERVICEUSER_STOP%%%
+    %%%SERVICEUSER_START%%%$ASADMIN %%%RESTART_COMMAND%%%  %%%LOCATION_ARGS_RESTART%%% %%%ENTITY_NAME%%% &%%%SERVICEUSER_STOP%%%
     ;;
 *)
     echo "usage: $0 (start|stop|restart|help)"

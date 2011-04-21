@@ -98,12 +98,12 @@ public class MapperListener
     /**
      * Associated mapper.
      */
-    protected Mapper mapper = null;
+    protected transient Mapper mapper = null;
 
     /**
      * MBean server.
      */
-    protected MBeanServer mBeanServer = null;
+    protected transient MBeanServer mBeanServer = null;
 
 
     /**
@@ -415,62 +415,6 @@ public class MapperListener
 
     // ------------------------------------------------------ Protected Methods
 
-    private void registerEngine()
-        throws Exception
-    {
-        ObjectName engineName = new ObjectName
-            (domain + ":type=Engine");
-        if ( ! mBeanServer.isRegistered(engineName)) return;
-        // BEGIN S1AS 5000999
-        /*
-        String defaultHost =
-            (String) mBeanServer.getAttribute(engineName, "defaultHost");
-	*/
-        if (defaultHost == null) {
-            defaultHost = 
-                (String) mBeanServer.getAttribute(engineName, "defaultHost");
-        }
-        // END S1AS 5000999
-
-        ObjectName hostName = new ObjectName
-             (domain + ":type=Host," + "host=" + defaultHost);
-
-        if (!mBeanServer.isRegistered(hostName)) {
-
-            // Get the hosts' list
-            String onStr = domain + ":type=Host,*";
-            ObjectName objectName = new ObjectName(onStr);
-            Set set = mBeanServer.queryMBeans(objectName, null);
-            Iterator iterator = set.iterator();
-            String[] aliases;
-            boolean isRegisteredWithAlias = false;
-            
-            while (iterator.hasNext()) {
-
-                if (isRegisteredWithAlias) break;
-            
-                ObjectInstance oi = (ObjectInstance) iterator.next();
-                hostName = oi.getObjectName();
-                aliases = (String[])
-                    mBeanServer.invoke(hostName, "findAliases", null, null);
-
-                for (int i=0; i < aliases.length; i++){
-                    if (aliases[i].equalsIgnoreCase(defaultHost)){
-                        isRegisteredWithAlias = true;
-                        break;
-                    }
-                }
-            }
-            
-            if (!isRegisteredWithAlias)
-                log.warning("Unknown default host: " + defaultHost);
-        }
-
-        // This should probably be called later 
-        if( defaultHost != null ) {
-            mapper.setDefaultHostName(defaultHost);
-        }
-    }
 
     /**
      * Register host.
@@ -514,9 +458,8 @@ public class MapperListener
                 return;
             }
 
-            if (nlNames != null) {
-                virtualServerListenerNames.put(objectName, nlNames);
-            }
+            // nameMatch = true here, so nlNames != null
+            virtualServerListenerNames.put(objectName, nlNames);
             // END S1AS 5000999
 
             String[] aliases = host.findAliases();

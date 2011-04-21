@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -413,7 +413,7 @@ public class PluginHandlers {
 	parentId = (String) ComponentUtil.getInstance(ctx).resolveValue(ctx, null, root, parentId);
 	if (parentId == null) {
 	    // If not specified, just stick it @ the root
-	    parentId = root.getId();
+	    //parentId = root.getId();
 	    parent = root;
 	} else {
 	    parent = findComponentById(root, parentId);
@@ -502,7 +502,7 @@ public class PluginHandlers {
 	UIComponent comp = handlerCtx.getFacesContext().getViewRoot().findComponent(id);
 	String urlContents = "";
 	if (comp != null) {
-	    String url = url = (String) comp.getAttributes().get(NavigationNodeFactory.REAL_URL);
+	    String url = (String) comp.getAttributes().get(NavigationNodeFactory.REAL_URL);
 	    try {
 		// Read from the URL...
 		URL contentUrl = FileUtil.searchForFile(url, null);

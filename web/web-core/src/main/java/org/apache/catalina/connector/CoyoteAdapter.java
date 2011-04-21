@@ -143,6 +143,11 @@ public class CoyoteAdapter extends HttpHandler {
 
     static final CatalinaAfterServiceListener catalinaAfterServiceListener =
             new CatalinaAfterServiceListener();
+
+    // Make sure this value is always aligned with {@link ContainerMapper}
+    // (@see com.sun.enterprise.v3.service.impl.ContainerMapper)
+    private final static Note<DataChunk> DATA_CHUNK =
+            org.glassfish.grizzly.http.server.Request.<DataChunk>createNote("DataChunk");
     
     // ----------------------------------------------------------- Constructors
 
@@ -366,8 +371,8 @@ public class CoyoteAdapter extends HttpHandler {
      * header.
      */
 //    @Override
-//    public void afterService(org.glassfish.grizzly.http.server.Request req,
-//                             org.glassfish.grizzly.http.server.Response res)
+//    public void afterService(com.sun.grizzly.tcp.Request req,
+//                             com.sun.grizzly.tcp.Response res)
 //            throws Exception{
 //
 //        Request request = (Request) req.getNote(ADAPTER_NOTES);
@@ -380,9 +385,7 @@ public class CoyoteAdapter extends HttpHandler {
 //                response.finishResponse();
 //                req.action( ActionCode.ACTION_POST_REQUEST , null);
 //            } else {
-//                if (request != null) {
-//                    request.onAfterService();
-//                }
+//                request.onAfterService();
 //            }
 //        } catch (Throwable t) {
 //            log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), t);
@@ -501,7 +504,16 @@ public class CoyoteAdapter extends HttpHandler {
  
         if (compatWithTomcat || !v3Enabled) {
             /*mod_jk*/
-            connector.getMapper().map(req.getRequest().serverName(), decodedURI,
+            DataChunk localDecodedURI = decodedURI;
+            if (semicolon > 0) {
+                localDecodedURI = req.getNote(DATA_CHUNK);
+                if (localDecodedURI == null) {
+                    localDecodedURI = DataChunk.newInstance();
+                    req.setNote(DATA_CHUNK, localDecodedURI);
+                }
+                localDecodedURI.duplicate(decodedURI);
+            }
+            connector.getMapper().map(req.getRequest().serverName(), localDecodedURI,
                                   request.getMappingData());
             MappingData md = request.getMappingData();
             req.setNote(MAPPING_DATA, md);

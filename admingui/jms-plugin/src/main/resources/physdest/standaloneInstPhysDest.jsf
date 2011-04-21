@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -70,7 +70,7 @@
 #include "/cluster/standalone/standaloneInstanceTabs.inc"
 #include "/common/shared/alertMsg.inc"
         <sun:title id="propertyContentPage" title="$resource{i18njms.jmsPhysDestinations.pageTitle}" helpText="$resource{i18njms.jmsPhysDestinations.pageHelp}"/>
-        "<br /> <br />
+#include "/common/shared/nameSection.inc"
 #include "physDestTable.jsf
         <sun:hidden id="helpKey" value="$resource{helpjms.jmsPhysicalDestinations}" />
     </sun:form>

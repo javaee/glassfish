@@ -106,7 +106,7 @@ public class javaURLContextFactory
     /**
      * Initial context.
      */
-    protected static Context initialContext = null;
+    protected static volatile Context initialContext = null;
 
 
     // --------------------------------------------------------- Public Methods
@@ -139,14 +139,19 @@ public class javaURLContextFactory
             (ContextBindings.isClassLoaderBound())) {
             // Redirect the request to the bound initial context
             return new SelectorContext(castEnvironment(environment), true);
-        } else {
-            // If the thread is not bound, return a shared writable context
-            if (initialContext == null)
-                initialContext = new NamingContext(castEnvironment(environment), MAIN);
-            return initialContext;
         }
-    }
 
+        // If the thread is not bound, return a shared writable context
+        if (initialContext == null) {
+            synchronized(javaURLContextFactory.class) {
+                if (initialContext == null) {
+                    initialContext = new NamingContext(
+                            castEnvironment(environment), MAIN);
+                }
+            }
+        }
+        return initialContext;
+    }
 
     @SuppressWarnings("unchecked")
     private Hashtable<String, Object> castEnvironment(Hashtable<?,?> env) {

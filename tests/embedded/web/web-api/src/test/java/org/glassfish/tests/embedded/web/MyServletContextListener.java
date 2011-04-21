@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,31 +38,31 @@
  * holder.
  */
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+package org.glassfish.tests.embedded.web;
 
-package org.glassfish.flashlight.xml;
+import java.io.*;
+import java.util.*;
+import javax.servlet.*;
 
-public class ProbeParam {
-    String name = null;
-    String type = null;
+public class MyServletContextListener implements ServletContextListener {
 
-    public String getName() {
-        return name;
+    /**
+     * Receives notification that the web application initialization
+     * process is starting.
+     *
+     * @param sce The servlet context event
+     */
+    public void contextInitialized(ServletContextEvent sce) {
+        sce.getServletContext().addListener("org.glassfish.tests.embedded.web.NewServletRequestListener");
     }
 
-    public String getType() {
-        return type;
-    }
-    public ProbeParam(String name, String type) {
-        this.name = name;
-        this.type = type;
+    /**
+     * Receives notification that the servlet context is about to be shut down.
+     *
+     * @param sce The servlet context event
+     */
+    public void contextDestroyed(ServletContextEvent sce) {
+        // Do nothing
     }
 
-    @Override
-    public String toString() {
-        return " Name=" + name + " Type=" + type;
-    }
 }

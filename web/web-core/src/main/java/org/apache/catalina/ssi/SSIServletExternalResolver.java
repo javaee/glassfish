@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -397,6 +397,7 @@ public class SSIServletExternalResolver implements SSIExternalResolver {
     }
 
 
+    // the caller of the API expect a non-null String
     protected String getPathWithoutContext(final String contextPath,
             final String servletPath) {
         if (servletPath.startsWith(contextPath)) {
@@ -463,11 +464,6 @@ public class SSIServletExternalResolver implements SSIExternalResolver {
                 if (!isRootContext(normContext)) {
                     String noContext = getPathWithoutContext(
                             normContext.getContextPath(), normalized);
-                    if (noContext == null) {
-                        throw new IOException(
-                                "Couldn't remove context from path: "
-                                        + normalized);
-                    }
                     return new ServletContextAndPath(normContext, noContext);
                 } else {
                     return new ServletContextAndPath(normContext, normalized);
@@ -593,7 +589,7 @@ public class SSIServletExternalResolver implements SSIExternalResolver {
         }
     }
 
-    protected class ServletContextAndPath {
+    protected static class ServletContextAndPath {
         protected ServletContext servletContext;
         protected String path;
 

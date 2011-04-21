@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -161,11 +161,11 @@ public final class MethodMap extends HashMap {
         
         methodInfo_ = new MethodInfo[numBuckets_];
 
-        Set methods  = methodMap.keySet();
         Set occupied = new HashSet();
 
-        for(Iterator iter = methods.iterator(); iter.hasNext();) {
-            Object nextObj = iter.next();           
+        for(Iterator iter = methodMap.entrySet().iterator(); iter.hasNext();) {
+            Map.Entry entry = (Map.Entry)iter.next();
+            Object nextObj = entry.getKey();           
             Method next = null;
 
             if( nextObj == null ) {
@@ -180,11 +180,11 @@ public final class MethodMap extends HashMap {
 
             int bucket = getBucket(next);
             
-            if( !occupied.contains(new Integer(bucket)) ) {
+            if( !occupied.contains(bucket) ) {
 
                 MethodInfo methodInfo = new MethodInfo();
                 methodInfo.key = next;
-                methodInfo.value = methodMap.get(next);
+                methodInfo.value = entry.getValue();
 
                 // cache declaring class so we can avoid the method call
                 // during lookup operation.
@@ -192,7 +192,7 @@ public final class MethodMap extends HashMap {
 
                 methodInfo_[bucket] = methodInfo;
               
-                occupied.add(new Integer(bucket));
+                occupied.add(bucket);
 
             } else {                
                 // there's a clash for this bucket, so null it out and
@@ -244,7 +244,7 @@ public final class MethodMap extends HashMap {
     }   
 
 
-    private class MethodInfo {
+    private static class MethodInfo {
         public Class declaringClass;
         public Method key;
         public Object value;

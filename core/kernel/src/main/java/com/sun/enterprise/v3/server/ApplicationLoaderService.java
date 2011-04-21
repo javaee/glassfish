@@ -386,7 +386,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
             }
 
         } else {
-            logger.log(Level.SEVERE, "not.found.in.original.location" + new Object[] {source});
+            logger.log(Level.SEVERE, "not.found.in.original.location", new Object[] {source});
         }
     }
 

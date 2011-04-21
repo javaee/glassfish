@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -81,7 +81,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
     // Sting Manager for Localization
     private static StringManager sm = StringManager.getManager(JavaEETransactionImpl.class);
 
-    static JavaEETransactionManager javaEETM; 
+    JavaEETransactionManager javaEETM; 
 
     // Local Tx ids are just numbers: they dont need to be unique across
     // processes or across multiple activations of this server process.
@@ -101,7 +101,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
     // END 4662745
 
     // START: local transaction timeout
-    private boolean isTimedOut = false;
+    private boolean timedOut = false;
     private boolean isTimerTask = false;
     private int timeout = 0;
     // END: local transaction timeout
@@ -135,7 +135,8 @@ public final class JavaEETransactionImpl extends TimerTask implements
         isTimerInitialized = true;
     }
 
-    JavaEETransactionImpl() {
+    JavaEETransactionImpl(JavaEETransactionManager javaEETM) {
+        this.javaEETM = javaEETM;
         this.txId = getNewTxId();
         this.xid = new JavaEEXid(txId);
         this.resourceTable = new HashMap();
@@ -147,8 +148,8 @@ public final class JavaEETransactionImpl extends TimerTask implements
     }
 
     // START: local transaction timeout
-    JavaEETransactionImpl(int timeout) {
-        this();
+    JavaEETransactionImpl(int timeout, JavaEETransactionManager javaEETM) {
+        this(javaEETM);
         if (!isTimerInitialized)
             initializeTimer();
         timer.schedule(this,timeout * 1000L);
@@ -158,15 +159,16 @@ public final class JavaEETransactionImpl extends TimerTask implements
     }
     // END: local transaction timeout
 
-    JavaEETransactionImpl(TransactionInternal jtsTx) {
-        this();
+    JavaEETransactionImpl(TransactionInternal jtsTx, JavaEETransactionManager javaEETM) {
+        this(javaEETM);
         this.jtsTx = jtsTx;
+        imported = true;
     }
 
     // START: local transaction timeout
     // TimerTask run() method implementation
     public void run() {
-        isTimedOut = true;
+        timedOut = true;
         try {
             setRollbackOnly();
         } catch (Exception e) {
@@ -199,8 +201,8 @@ public final class JavaEETransactionImpl extends TimerTask implements
         return timeout;
     }
 
-    public boolean isTimedout() {
-        return isTimedOut;
+    public boolean isTimedOut() {
+        return timedOut;
     }
     // END: local transaction timeout
 
@@ -242,10 +244,6 @@ public final class JavaEETransactionImpl extends TimerTask implements
 
     public void setLAOResource(TransactionalResource h) {
         laoResource = h;
-    }
-
-    void setImportedTransaction() {
-        imported = true;
     }
 
     boolean isImportedTransaction() {
@@ -413,7 +411,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
         } else { // local tx
             Exception caughtException = null;
             try {
-                if ( isTimedOut ) {
+                if ( timedOut ) {
                     // rollback nonXA resource
                     if ( nonXAResource != null )
                         nonXAResource.getXAResource().rollback(xid);
@@ -746,12 +744,12 @@ public final class JavaEETransactionImpl extends TimerTask implements
         return (Set) resourceTable.keySet();
     }
 
-    // somehow javac wont allow this declaration within JavaEEXid
-    private static final byte[] bqual = new byte[]{0};
-
     // Assume that there is only one instance of this class per local tx.
-    private class JavaEEXid implements javax.transaction.xa.Xid {
+    private static class JavaEEXid implements javax.transaction.xa.Xid {
         private static final int formatId = 987654321;
+
+        private static final byte[] bqual = new byte[]{0};
+
         private byte[] gtrId;
     
         // START IASRI 4662745
@@ -834,7 +832,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
     public int getRemainingTimeout() {
         if (timeout == 0) {
             return timeout;
-        } else if (isTimedOut) {
+        } else if (timedOut) {
             return -1;
         } else {
             // compute how much time left before transaction times out

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -67,7 +67,7 @@ import org.glassfish.internal.api.Globals;
 
 
 /**
- * Parser for message-security-config in  sun-acc.xml
+ * Parser for message-security-config in  glassfish-acc.xml
  */
 public class ConfigXMLParser implements ConfigParser { 
     private static Logger _logger=null;
@@ -79,7 +79,7 @@ public class ConfigXMLParser implements ConfigParser {
     private Map configMap = new HashMap();
     private Set<String> layersWithDefault = new HashSet<String>();
     private List<MessageSecurityConfig> msgSecConfigs = null;
-    private static final String SUN_ACC_XML = "sun-acc.xml.url";
+    private static final String ACC_XML = "glassfish-acc.xml.url";
 
     public ConfigXMLParser() throws IOException {
     }
@@ -239,7 +239,7 @@ public class ConfigXMLParser implements ConfigParser {
     }
 
     public void initialize(Object config) throws IOException {
-        String sun_acc = System.getProperty(SUN_ACC_XML, "sun-acc.xml");
+        String sun_acc = System.getProperty(ACC_XML, "glassfish-acc.xml");
         List<MessageSecurityConfig> msgconfigs = null;
         if (Globals.getDefaultHabitat() == null && sun_acc != null) {
             try {

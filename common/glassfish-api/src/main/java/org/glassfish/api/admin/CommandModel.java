@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,6 +45,7 @@ import org.glassfish.api.I18n;
 
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -153,7 +154,7 @@ public abstract class CommandModel {
             }
         }
         if (param.password()) {
-            name = ASADMIN_CMD_PREFIX + name.toUpperCase();
+            name = ASADMIN_CMD_PREFIX + name.toUpperCase(Locale.ENGLISH);
         }
         return name;
     }

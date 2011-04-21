@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -115,8 +115,8 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
             String methodName = methods[i].getName();
             //Check for driver properties first since some jdbc properties
             //may be supported in form of driver properties
-            if (driverProperties.containsKey(methodName.toUpperCase())) {
-                Vector values = (Vector) driverProperties.get(methodName.toUpperCase());
+            if (driverProperties.containsKey(methodName.toUpperCase(Locale.getDefault()))) {
+                Vector values = (Vector) driverProperties.get(methodName.toUpperCase(Locale.getDefault()));
                 executor.runMethod(methods[i], dataSourceObject, values);
             } else if (methodName.equalsIgnoreCase("setUser")) {
                 executor.runJavaBeanMethod(spec.getDetail(DataSourceSpec.USERNAME), methods[i], dataSourceObject);
@@ -225,7 +225,7 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
                         //There is no value specified for this property.
                         //Store the name or it will be lost
                         if (returnUpperCase) {
-                            name = parsedValue.toUpperCase();
+                            name = parsedValue.toUpperCase(Locale.getDefault());
                         } else {
                             name = parsedValue;
                         }
@@ -240,7 +240,7 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
                     values = values.substring(2);
                 } else {
                     if (returnUpperCase) {
-                        name = parsedValue.toUpperCase();
+                        name = parsedValue.toUpperCase(Locale.getDefault());
                     } else {
                         name = parsedValue;
                     }

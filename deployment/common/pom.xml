@@ -57,7 +57,7 @@
 
     <developers>
       <developer>
-            <id>hzhang</id>
+            <id>hzhang_jn</id>
             <name>Hong Zhang</name>
             <url>http://blogs.sun.com/misty</url>
             <organization>Oracle, Inc.</organization>
@@ -133,6 +133,12 @@
             <groupId>org.glassfish.hk2.external</groupId>
             <artifactId>asm-all-repackaged</artifactId>
             <version>${hk2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.tests</groupId>
+            <artifactId>utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
    </dependencies>
 </project>

@@ -340,6 +340,8 @@ public class WebappClassLoader
     private ConcurrentLinkedQueue<String> overridablePackages;
     // END PE 4985680
 
+    private volatile boolean resourcesExtracted = false;
+
 
     // ----------------------------------------------------------- Constructors
 
@@ -399,7 +401,7 @@ public class WebappClassLoader
     }
 
 
-    protected final class PrivilegedGetClassLoader
+    protected static final class PrivilegedGetClassLoader
         implements PrivilegedAction<ClassLoader> {
 
         public Class<?> clazz;
@@ -1068,7 +1070,6 @@ public class WebappClassLoader
 
         Vector<URL> result = new Vector<URL>();
 
-        int jarFilesLength = jarFiles.length;
         int repositoriesLength = repositories.length;
 
         int i;
@@ -1828,7 +1829,7 @@ public class WebappClassLoader
                             }
                             if (Modifier.isStatic(mods)) {
                                 try {
-                                    field.setAccessible(true);
+                                    setAccessible(field);
                                     if (Modifier.isFinal(mods)) {
                                         if (!((field.getType().getName().startsWith("java."))
                                                 || (field.getType().getName().startsWith("javax.")))) {
@@ -1877,7 +1878,7 @@ public class WebappClassLoader
                 continue;
             }
             try {
-                field.setAccessible(true);
+                setAccessible(field);
                 if (Modifier.isStatic(mods) && Modifier.isFinal(mods)) {
                     // Doing something recursively is too risky
                     continue;
@@ -2242,60 +2243,10 @@ public class WebappClassLoader
 
                 // Extract resources contained in JAR to the workdir
                 if (!(path.endsWith(".class"))) {
-                    byte[] buf = new byte[1024];
                     File resourceFile = new File
                         (loaderDir, jarEntry.getName());
                     if (!resourceFile.exists()) {
-                        Enumeration<JarEntry> entries = jarFiles[i].entries();
-                        while (entries.hasMoreElements()) {
-                            JarEntry jarEntry2 = entries.nextElement();
-                            if (!(jarEntry2.isDirectory())
-                                && (!jarEntry2.getName().endsWith(".class"))) {
-                                resourceFile = new File
-                                    (loaderDir, jarEntry2.getName());
-                                try {
-                                    if (!resourceFile.getCanonicalPath().startsWith(
-                                            canonicalLoaderDir)) {
-                                        String msg = rb.getString("webappClassLoader.illegalJarPath");
-                                        msg = MessageFormat.format(msg, jarEntry2.getName());
-                                        throw new IllegalArgumentException(msg);
-                                    }
-                                } catch (IOException ioe) {
-                                    String msg = rb.getString("webappClassLoader.validationErrorJarPath");
-                                    msg = MessageFormat.format(msg, new Object[] {jarEntry2.getName(), ioe});
-                                    throw new IllegalArgumentException(msg);
-                                } 
-                                resourceFile.getParentFile().mkdirs();
-                                FileOutputStream os = null;
-                                InputStream is = null;
-                                try {
-                                    is = jarFiles[i].getInputStream(jarEntry2);
-                                    os = new FileOutputStream(resourceFile);
-                                    while (true) {
-                                        int n = is.read(buf);
-                                        if (n <= 0) {
-                                            break;
-                                        }
-                                        os.write(buf, 0, n);
-                                    }
-                                } catch (IOException e) {
-                                    // Ignore
-                                } finally {
-                                    try {
-                                        if (is != null) {
-                                            is.close();
-                                        }
-                                    } catch (IOException e) {
-                                    }
-                                    try {
-                                        if (os != null) {
-                                            os.close();
-                                        }
-                                    } catch (IOException e) {
-                                    }
-                                }
-                            }
-                        }
+                        extractResources();
                     }
                 }
             }
@@ -2306,6 +2257,78 @@ public class WebappClassLoader
         }
 
         return entry;
+    }
+
+    private synchronized void extractResources() {
+        if (resourcesExtracted) {
+            return;
+        }
+
+        for (int i = jarFiles.length - 1; i >= 0; i--) {
+            extractResource(jarFiles[i]);
+        }
+
+        resourcesExtracted = true;
+    }
+
+    private void extractResource(JarFile jarFile) {
+        byte[] buf = new byte[1024];
+        Enumeration<JarEntry> entries = jarFile.entries();
+        while (entries.hasMoreElements()) {
+            JarEntry jarEntry2 = entries.nextElement();
+            if (!(jarEntry2.isDirectory())
+                && (!jarEntry2.getName().endsWith(".class"))) {
+                File resourceFile = new File
+                    (loaderDir, jarEntry2.getName());
+                try {
+                    if (!resourceFile.getCanonicalPath().startsWith(
+                            canonicalLoaderDir)) {
+                        String msg = rb.getString("webappClassLoader.illegalJarPath");
+                        msg = MessageFormat.format(msg, jarEntry2.getName());
+                        throw new IllegalArgumentException(msg);
+                    }
+                } catch (IOException ioe) {
+                    String msg = rb.getString("webappClassLoader.validationErrorJarPath");
+                    msg = MessageFormat.format(msg, new Object[] {jarEntry2.getName(), ioe});
+                    throw new IllegalArgumentException(msg);
+                } 
+                resourceFile.getParentFile().mkdirs();
+                FileOutputStream os = null;
+                InputStream is = null;
+                try {
+                    is = jarFile.getInputStream(jarEntry2);
+                    os = new FileOutputStream(resourceFile);
+                    while (true) {
+                        int n = is.read(buf);
+                        if (n <= 0) {
+                            break;
+                        }
+                        os.write(buf, 0, n);
+                    }
+                } catch (IOException e) {
+                    // Ignore
+                } finally {
+                    try {
+                        if (is != null) {
+                            is.close();
+                        }
+                    } catch (IOException e) {
+                    }
+                    try {
+                        if (os != null) {
+                            os.close();
+                        }
+                    } catch (IOException e) {
+                    }
+                }
+            }
+        }
+    }
+
+    public File getExtractedResourcePath(String path) {
+        extractResources();
+        File extractedResource = new File(loaderDir, path);
+        return (extractedResource.exists() ? extractedResource : null);
     }
 
 
@@ -2602,17 +2625,7 @@ public class WebappClassLoader
      */
     private void purgeELBeanClasses(final Field fld) {
 
-	SecurityManager sm = System.getSecurityManager();
-	if (sm != null) {
-            AccessController.doPrivileged(new PrivilegedAction<Void>() {
-                    public Void run() {
-                        fld.setAccessible(true);
-                        return null;
-                    }
-            });
-        } else {
-            fld.setAccessible(true);
-        }
+        setAccessible(fld);
 
         Map<Class, ?> m = null;
         try {
@@ -2715,5 +2728,20 @@ public class WebappClassLoader
         return version;
     }
 
+    private void setAccessible(final Field field) {
+
+        SecurityManager sm = System.getSecurityManager();
+        if (sm != null) {
+            AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                    public Void run() {
+                        field.setAccessible(true);
+                        return null;
+                    }
+            });
+        } else {
+            field.setAccessible(true);
+        }
+
+    }
 }
 

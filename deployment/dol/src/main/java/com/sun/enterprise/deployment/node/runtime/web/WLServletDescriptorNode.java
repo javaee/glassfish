@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -68,9 +68,7 @@ public class WLServletDescriptorNode extends RuntimeDescriptorNode {
         String name = element.getQName();
         if (name.equals(RuntimeTagNames.SERVLET_NAME)) {
             Object parentDesc = ((WLWebBundleRuntimeNode)getParentNode()).getDescriptor();
-            if (parentDesc instanceof WebBundleDescriptor) {
-                descriptor = ((WebBundleDescriptor)parentDesc).getWebComponentByCanonicalName(value);
-            }
+            descriptor = ((WebBundleDescriptor)parentDesc).getWebComponentByCanonicalName(value);
         } else if (name.equals(RuntimeTagNames.RUN_AS_PRINCIPAL_NAME)) {
             if (descriptor != null && descriptor.getRunAsIdentity() != null) {
                 descriptor.getRunAsIdentity().setPrincipal(value);

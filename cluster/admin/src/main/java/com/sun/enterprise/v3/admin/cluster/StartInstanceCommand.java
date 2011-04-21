@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -114,6 +114,33 @@ public class StartInstanceCommand implements AdminCommand {
 
     private static final String NL = System.getProperty("line.separator");
 
+    /**
+     * restart-instance needs to try to start the instance from scratch if it is not
+     * running.  We need to do some housekeeping first.
+     * There is no clean way to do this through CommandRunner -- it is twisted together
+     * with Grizzly parameters and so on.  So we short-circuit this way!
+     * do NOT make this public!!
+     * @author Byron Nevins
+     */
+    StartInstanceCommand(Habitat habitat_, String iname_, boolean debug_, ServerEnvironment env_) {
+        instanceName = iname_;
+        debug = debug_;
+        habitat = habitat_;
+        nodes = habitat.getByType(Nodes.class);
+
+        // env:  neither getByType or getByContract works.  Not worth the effort
+        //to find the correct magic incantation for HK2!
+        env = env_;
+        servers = habitat.getByType(Servers.class);
+    }
+
+    /**
+     * we have to declare this since HK2 needs it and we have another ctor
+     * defined.
+     */
+    public StartInstanceCommand() {
+    }
+
     @Override
     public void execute(AdminCommandContext context) {
         logger = context.getLogger();
@@ -183,7 +210,6 @@ public class StartInstanceCommand implements AdminCommand {
             }
         }
     }
-
 
     private void startInstance() {
         NodeUtils nodeUtils = new NodeUtils(habitat, logger);

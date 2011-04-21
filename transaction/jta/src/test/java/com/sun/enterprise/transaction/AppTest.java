@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -742,8 +742,7 @@ public class AppTest extends TestCase {
     private UserTransaction createUtx() throws javax.naming.NamingException {
         UserTransaction utx = new UserTransactionImpl();
         InvocationManager im = new org.glassfish.api.invocation.InvocationManagerImpl();
-        ((JavaEETransactionManagerSimplified)t).invMgr = im;
-        ((UserTransactionImpl)utx).setForTesting(t, im);
+        ((UserTransactionImpl)utx).setForTesting((JavaEETransactionManager)t, im);
         return utx;
     }
 
