@@ -71,8 +71,8 @@ public interface MachineConfig extends ConfigBeanProxy {
     void setNetworkName(String networkName);
 
     @Element
-    String getIPAddress();
-    void setIPAddress(String ipAddress);
+    String getIpAddress();
+    void setIpAddress(String ipAddress);
 
     @Element
     String getMacAddress();
