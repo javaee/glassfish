@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,7 +43,6 @@ package org.glassfish.extras.osgicontainer;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
-import org.glassfish.api.deployment.OpsParams;
 import org.jvnet.hk2.annotations.Service;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -57,14 +56,15 @@ import java.io.File;
  * OSGi deployer, takes care of loading and cleaning modules from the OSGi runtime.
  *
  * @author Jerome Dochez
+ * @author Sanjeeb Sahoo
  */
 @Service
 public class OSGiDeployer implements Deployer<OSGiContainer, OSGiDeployedBundle> {
 
-    private Bundle bundle;
+    private static final String BUNDLE_ID = "bundle.id";
 
     public OSGiDeployedBundle load(OSGiContainer container, DeploymentContext context) {
-        return new OSGiDeployedBundle(bundle);
+        return new OSGiDeployedBundle(getApplicationBundle(context));
     }
 
     public void unload(OSGiDeployedBundle appContainer, DeploymentContext context) {
@@ -72,10 +72,10 @@ public class OSGiDeployer implements Deployer<OSGiContainer, OSGiDeployedBundle>
 
     public void clean(DeploymentContext context) {
         try {
+            Bundle bundle = getApplicationBundle(context);
             bundle.uninstall();
             getPA().refreshPackages(new Bundle[]{bundle});
             System.out.println("Uninstalled " + bundle);
-            bundle = null;
         } catch (BundleException e) {
             throw new RuntimeException(e);
         }
@@ -98,8 +98,10 @@ public class OSGiDeployer implements Deployer<OSGiContainer, OSGiDeployedBundle>
         File file = context.getSourceDir();
         try {
             assert(file.isDirectory());
-            bundle = getBundleContext().installBundle("reference:" + file.toURI().toString());
+            Bundle bundle = getBundleContext().installBundle(makeBundleLocation(file));
             System.out.println("Installed " + bundle + " from " + bundle.getLocation());
+            // We must store String values only, else config backend won't accept our values!!!
+            context.getAppProps().setProperty(BUNDLE_ID, "" + bundle.getBundleId());
         } catch (BundleException e) {
             throw new RuntimeException(e);
         }
@@ -109,4 +111,22 @@ public class OSGiDeployer implements Deployer<OSGiContainer, OSGiDeployedBundle>
     private BundleContext getBundleContext() {
         return BundleReference.class.cast(getClass().getClassLoader()).getBundle().getBundleContext();
     }
+
+    private Bundle getApplicationBundle(DeploymentContext context) {
+//        String location = makeBundleLocation(context.getSourceDir());
+//        for(Bundle b : getBundleContext().getBundles()) {
+//            if (location.equals(b.getLocation())) {
+//                return b;
+//            }
+//        }
+//        throw new RuntimeException("Unable to determine bundle corresponding to application location " + context.getSourceDir());
+        Long bundleId = Long.valueOf(context.getAppProps().getProperty(BUNDLE_ID));
+        assert(bundleId != null);
+        return getBundleContext().getBundle(bundleId);
+    }
+
+    private String makeBundleLocation(File file) {
+        return "reference:" + file.toURI();
+    }
+
 }
