@@ -900,7 +900,7 @@ public abstract class AuthenticatorBase
         
         request.setNote(Constants.REQ_SSOID_NOTE, value);
         if (sso.isVersioningSupported()) {
-            request.setNote(Constants.REQ_SSO_VERSION_NOTE, new Long(0));
+            request.setNote(Constants.REQ_SSO_VERSION_NOTE, Long.valueOf(0));
         }
         
     }
