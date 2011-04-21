@@ -129,12 +129,13 @@ public abstract class TemplateListOfResource {
                     String successMessage =
                         localStrings.getLocalString("rest.resource.create.message",
                         "\"{0}\" created successfully.", resourceToCreate);
-                    ActionReportResult arr = ResourceUtil.getActionReportResult(201, successMessage, requestHeaders, uriInfo);
+                    ActionReportResult arr = ResourceUtil.getActionReportResult(201, actionReport, successMessage, requestHeaders, uriInfo);
                     return Response.ok(arr).build();
                 }
 
                 String errorMessage = getErrorMessage(data, actionReport);
-                ActionReportResult arr = ResourceUtil.getActionReportResult(Response.Status.INTERNAL_SERVER_ERROR, errorMessage, requestHeaders, uriInfo);
+                ActionReportResult arr = ResourceUtil.getActionReportResult(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), 
+                        actionReport, errorMessage, requestHeaders, uriInfo);
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(arr).build();
             } else {
                 ActionReportResult arr = ResourceUtil.getActionReportResult(Response.Status.INTERNAL_SERVER_ERROR, "No CRUD Create possible.", requestHeaders, uriInfo);
@@ -300,11 +301,11 @@ public abstract class TemplateListOfResource {
                 if (exitCode != ActionReport.ExitCode.FAILURE) {
                     String successMessage = localStrings.getLocalString("rest.resource.create.message",
                             "\"{0}\" created successfully.", new Object[]{resourceToCreate});
-                    return Response.ok().entity(ResourceUtil.getActionReportResult(201, successMessage, requestHeaders, uriInfo)).build();
+                    return Response.ok().entity(ResourceUtil.getActionReportResult(201, actionReport, successMessage, requestHeaders, uriInfo)).build();
                 }
 
                 String errorMessage = getErrorMessage(data, actionReport);
-                return Response.status(400).entity(ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo)).build();
+                return Response.status(400).entity(ResourceUtil.getActionReportResult(400, actionReport, errorMessage, requestHeaders, uriInfo)).build();
             }
             String message = localStrings.getLocalString("rest.resource.post.forbidden",
                     "POST on \"{0}\" is forbidden.", new Object[]{resourceToCreate});
