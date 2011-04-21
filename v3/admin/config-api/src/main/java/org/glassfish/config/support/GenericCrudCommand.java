@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -259,7 +259,7 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                     }
                     final Class<? extends ConfigBeanProxy> itemType = Types.erasure(Types.getTypeArgument(
                             annotated instanceof Method?
-                            ((Method) annotated).getGenericReturnType():((Field) annotated).getGenericType(), 0));
+                            ((Method) annotated).getGenericReturnType():(Field.class.cast(annotated)).getGenericType(), 0));
                     if (logger.isLoggable(level)) {
                         logger.log(level, "Found that List<?> really is a List<" + itemType.toString() + ">");
                     }
@@ -326,7 +326,7 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                                 @Override
                                 public <V> V getValue(Object component, Inhabitant<?> onBehalfOf, AnnotatedElement annotated, Type genericType, Class<V> type) throws ComponentException {
                                     String name = annotated.getAnnotation(Attribute.class).value();
-                                    if (name==null || name.length()==0) {
+                                    if (name==null || name.length()==0 && annotated instanceof Method) {
 
                                         // maybe there is a better way to do this...
                                         name = ((Method) annotated).getName().substring(3);

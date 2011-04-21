@@ -112,7 +112,7 @@ public class EjbSniffer  extends GenericSniffer implements Sniffer {
                 if (containerHome != null) {
                     ejbLib = new File(containerHome);
                 }
-                if (!ejbLib.exists()) {
+                if (ejbLib==null || !ejbLib.exists()) {
                     // I am throwing the towel here
                     throw new IOException("EJB Container not installed");
                 }

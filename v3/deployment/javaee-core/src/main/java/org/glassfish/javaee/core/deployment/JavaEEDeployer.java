@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -265,9 +265,14 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
 
     protected void prepareScratchDirs(DeploymentContext context)
         throws IOException {
-        context.getScratchDir("ejb").mkdirs();
-        context.getScratchDir("xml").mkdirs();
-        context.getScratchDir("jsp").mkdirs();
+        prepareScratchDir(context.getScratchDir("ejb"));
+        prepareScratchDir(context.getScratchDir("xml"));
+        prepareScratchDir(context.getScratchDir("jsp"));
+    }
+
+    private void prepareScratchDir(File f) throws IOException {
+        if (!f.isDirectory() && !f.mkdirs())
+	        throw new IOException("Cannot create scratch directory : " + f.getAbsolutePath());
     }
 
     // get the object type from the application manifest file if

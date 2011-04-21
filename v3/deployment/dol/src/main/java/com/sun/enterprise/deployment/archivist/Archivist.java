@@ -1590,12 +1590,19 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
     protected static void addFileToArchive(WritableArchive archive, String filePath, String entryName)
             throws IOException {
 
-        FileInputStream is = new FileInputStream(new File(filePath));
-        OutputStream os = archive.putNextEntry(entryName);
+        FileInputStream is = null;
         try {
+            is =  new FileInputStream(new File(filePath));
+            OutputStream os = archive.putNextEntry(entryName);
             ArchivistUtils.copyWithoutClose(is, os);
         } finally {
-            is.close();
+            try {
+                if (is!=null)
+                    is.close();
+            } catch(IOException e) {
+                archive.closeEntry();
+                throw e;
+            }
             archive.closeEntry();
         }
     }

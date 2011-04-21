@@ -409,6 +409,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                     try {
                           moduleInfo = prepareModule(sortedEngineInfos, appName, context, tracker);
                     } catch(Throwable prepareException) {
+                        prepareException.printStackTrace();
                         report.failure(logger, "Exception while preparing the app", null);
                         report.setFailureCause(prepareException);
                         logger.log(Level.SEVERE, prepareException.getMessage(), prepareException);

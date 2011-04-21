@@ -249,11 +249,9 @@ public class CommandRunnerImpl implements CommandRunner {
         ActionReport report = context.getActionReport();
         report.setActionDescription(model.getCommandName() + " command");
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        try {
+        if (command instanceof GenericCrudCommand) {
             GenericCrudCommand c = GenericCrudCommand.class.cast(command);
             c.setInjectionResolver(injector);
-        } catch(ClassCastException e) {
-            // do nothing.
         }
 
         // inject

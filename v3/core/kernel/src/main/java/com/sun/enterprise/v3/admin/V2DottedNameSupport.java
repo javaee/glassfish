@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -94,8 +94,12 @@ public class V2DottedNameSupport {
 
             for (Dom child : parent.nodeElements(childName)) {
 
-                String newPrefix = (prefix==null?childName:prefix+"."+childName);
-
+                StringBuffer newPrefix = new StringBuffer();
+                if (prefix==null) {
+                    newPrefix.append(childName);
+                } else {
+                    newPrefix.append(prefix).append(".").append(childName);
+                }
 
                 if (collection) {
 
@@ -104,11 +108,13 @@ public class V2DottedNameSupport {
                         name = child.attribute("name");
                     }
 
-                    newPrefix = (name==null?newPrefix:newPrefix+"."+name);
+                    if (name!=null) {
+                        newPrefix.append(".").append(name);
+                    }
                     // now traverse the child
-                    getAllSubDottedNames(newPrefix, child, result);
+                    getAllSubDottedNames(newPrefix.toString(), child, result);
                 } else {
-                    getAllSubDottedNames(newPrefix, child, result);
+                    getAllSubDottedNames(newPrefix.toString(), child, result);
 
                 }
             }
@@ -127,10 +133,6 @@ public class V2DottedNameSupport {
             }
         }
         for (String leafName : node.model.getLeafElementNames()) {
-            ConfigModel.Property property = node.model.findIgnoreCase(leafName);
-            if (property==null) {
-                property = node.model.findIgnoreCase("*");
-            }
             List values = node.leafElements(leafName);
             Iterator i = values.iterator();
             StringBuffer value = new StringBuffer();

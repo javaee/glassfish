@@ -253,7 +253,7 @@ public class DynamicReloader implements Runnable {
      * Note that this class uses the fact that lastModified of a non-existing
      * file is 0.
      */
-    private final class AppReloadInfo {
+    private final static class AppReloadInfo {
         /** points to the .reload file, whether one exists for this app or not */
         private File reloadFile;
         

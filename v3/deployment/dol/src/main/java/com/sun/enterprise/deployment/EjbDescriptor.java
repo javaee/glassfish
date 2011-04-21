@@ -955,11 +955,10 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
      */
     public void setContainerTransactionFor(MethodDescriptor methodDescriptor, ContainerTransaction containerTransaction) {
         ContainerTransaction oldValue = this.getContainerTransactionFor(methodDescriptor);
-        if (oldValue == null || (oldValue != null && !(oldValue.equals(containerTransaction)))) {
+        if (oldValue == null || (!(oldValue.equals(containerTransaction)))) {
             String transactionType = this.getTransactionType();
             if (transactionType == null) {
                 setTransactionType(CONTAINER_TRANSACTION_TYPE);
-                transactionType = CONTAINER_TRANSACTION_TYPE;
             } else if (BEAN_TRANSACTION_TYPE.equals(transactionType)) {
                 throw new IllegalArgumentException(localStrings.getLocalString(
                         "enterprise.deployment.exceptiontxattrbtnotspecifiedinbeanwithtxtype",
@@ -970,19 +969,13 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         }
     }
 
-    private void removeContainerTransactionFor(MethodDescriptor methodDescriptor) {
-        getMethodContainerTransactions().remove(methodDescriptor);
-    }
-
     /**
      * Sets the container transactions for all the method descriptors of this ejb. The Hashtable is keyed
      * by method descriptor and the values are the corresponding container transaction objects..
      * Throws an Illegal argument if this ejb has transaction type BEAN_TRANSACTION_TYPE.
      */
     public void setMethodContainerTransactions(Hashtable methodContainerTransactions) {
-        if (methodContainerTransactions == null || methodContainerTransactions.isEmpty()) {
-            methodContainerTransactions = null;
-        } else {
+        if (methodContainerTransactions != null) {
             for (Enumeration e = methodContainerTransactions.keys(); e.hasMoreElements();) {
                 MethodDescriptor methodDescriptor = (MethodDescriptor) e.nextElement();
                 ContainerTransaction containerTransaction =
@@ -2368,7 +2361,6 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     protected Collection getTransactionMethods(ClassLoader classLoader) {
 
         try {
-            ClassLoader cl = getEjbBundleDescriptor().getClassLoader();
             BeanMethodCalculator bmc = Globals.getDefaultHabitat().getComponent(BeanMethodCalculator.class);
             if (bmc!=null) {
                 return bmc.getTransactionalMethodsFor(this, classLoader);
@@ -2419,7 +2411,6 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
      */
     public Vector getMethods(ClassLoader classLoader) {
         try {
-            ClassLoader cl = getEjbBundleDescriptor().getClassLoader();
             BeanMethodCalculator bmc = Globals.getDefaultHabitat().getComponent(BeanMethodCalculator.class);
             if (bmc!=null) {
                 return bmc.getMethodsFor(this, classLoader);

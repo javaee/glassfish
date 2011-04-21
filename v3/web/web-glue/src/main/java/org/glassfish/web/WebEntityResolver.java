@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -73,8 +73,6 @@ public class WebEntityResolver implements EntityResolver, PostConstruct {
     @Inject
     ServerContext serverContext;
 
-    private File schemaDir;
-
     private File dtdDir;
 
     /**
@@ -92,7 +90,6 @@ public class WebEntityResolver implements EntityResolver, PostConstruct {
     public void postConstruct() {
         File root = serverContext.getInstallRoot();
         File libRoot = new File(root, "lib");
-        schemaDir = new File(libRoot, "schemas");
         dtdDir = new File(libRoot, "dtds");
     }
 

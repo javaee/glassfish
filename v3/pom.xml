@@ -213,6 +213,7 @@
                 <module>extras/embedded/shell</module>
                 <module>packager</module>
                 <module>distributions</module>
+                <module>virtualization</module>
                 <module>security</module>
                 <module>registration</module>
                 <module>tests</module>
@@ -272,6 +273,7 @@
                 <module>connectors</module>
                 <module>load-balancer</module> 
                 <module>jdbc</module>
+                <module>virtualization</module>
                 <module>extras</module>
                 <module>distributions</module>
                 <module>security</module>
@@ -365,6 +367,7 @@
                 <module>osgi-platforms</module>
                 <module>flashlight</module>
                 <module>webservices</module>
+                <module>virtualization</module>
                 <module>orb</module>
                 <module>installer</module>
                 <module>sun-glassfish</module>
@@ -411,6 +414,7 @@
                 <module>admingui</module>
                 <module>extras/embedded/shell</module>
                 <module>packager</module>
+                <module>virtualization</module>
                 <module>distributions</module>
                 <module>security</module>
                 <module>registration</module>

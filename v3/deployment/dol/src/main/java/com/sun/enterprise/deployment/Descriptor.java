@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-201` Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -603,11 +603,11 @@ public class Descriptor extends DynamicAttributesDescriptor implements Serializa
      * @param localizedMap the localized Map
      */
     private void displayLocalizedMap(StringBuffer sb, Map<String, String> localizedMap) {
-        for (String lang : localizedMap.keySet()) {
+        for (Map.Entry<String, String> entry : localizedMap.entrySet()) {
             sb.append("\n   lang[");
-            sb.append(lang);
+            sb.append(entry.getKey());
             sb.append("]  = ");
-            sb.append(localizedMap.get(lang));
+            sb.append(localizedMap.get(entry.getValue()));
         }
     }
 

@@ -233,7 +233,7 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
                     if (contextRootInfo.getContainer() instanceof ApplicationContainer){
                         cl = ((ApplicationContainer)contextRootInfo.getContainer()).getClassLoader();
                     }
-                    hk2Dispatcher.dispath(adapter, cl, req, res);
+                    hk2Dispatcher.dispatch(adapter, cl, req, res);
                 }
             }
         } catch (Exception ex) {

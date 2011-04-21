@@ -153,7 +153,7 @@ public class ManagedFile {
         FileChannel fc;
         Timer timer;
 
-        public RandomAccessFile getLockedFile() {
+        public synchronized RandomAccessFile getLockedFile() {
             return raf;
         }
 

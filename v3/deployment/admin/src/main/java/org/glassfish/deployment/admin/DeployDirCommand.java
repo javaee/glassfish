@@ -64,7 +64,7 @@ import org.jvnet.hk2.annotations.Scoped;
 @I18n("deploydir.command")
 @ExecuteOn(value={RuntimeType.DAS})
 @TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
-public class DeployDirCommand extends DeployCommand implements AdminCommand {
+public class DeployDirCommand extends DeployCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployDirCommand.class);
     

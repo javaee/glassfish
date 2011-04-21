@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -142,7 +142,7 @@ public class DomainXmlPersistence implements ConfigurationPersistence, Configura
 
             // get a temporary file
             File f = File.createTempFile("domain", ".xml", destination.getParentFile());
-            if (f == null) {
+            if (!f.exists()) {
                 throw new IOException(localStrings.getLocalString("NoTmpFile",
                         "Cannot create temporary file when saving domain.xml"));
             }
@@ -185,25 +185,23 @@ public class DomainXmlPersistence implements ConfigurationPersistence, Configura
                 logger.severe(msg);
                 throw new IOException(msg);
             }
-            if (destination != null) {
-                if (destination.exists() && !FileUtils.renameFile(destination, backup)) {
-                    String msg = localStrings.getLocalString("TmpRenameFailed",
-                            "Could not rename {0} to {1}",  destination.getAbsolutePath() , backup.getAbsolutePath());
-                    logger.severe(msg);
-                    throw new IOException(msg);
+            if (destination.exists() && !FileUtils.renameFile(destination, backup)) {
+                String msg = localStrings.getLocalString("TmpRenameFailed",
+                        "Could not rename {0} to {1}",  destination.getAbsolutePath() , backup.getAbsolutePath());
+                logger.severe(msg);
+                throw new IOException(msg);
+            }
+            // save the temp file to domain.xml
+            if (!FileUtils.renameFile(f, destination)) {
+                String msg = localStrings.getLocalString("TmpRenameFailed",
+                        "Could not rename {0} to {1}",  f.getAbsolutePath() , destination.getAbsolutePath());
+                // try to rename backup to domain.xml (so that at least something is there)
+                if (!FileUtils.renameFile(backup, destination)) {
+                    msg += "\n" + localStrings.getLocalString("RenameFailed",
+                            "Could not rename backup to {0}", destination.getAbsolutePath());
                 }
-                // save the temp file to domain.xml
-                if (!FileUtils.renameFile(f, destination)) {
-                    String msg = localStrings.getLocalString("TmpRenameFailed",
-                            "Could not rename {0} to {1}",  f.getAbsolutePath() , destination.getAbsolutePath());
-                    // try to rename backup to domain.xml (so that at least something is there)
-                    if (!FileUtils.renameFile(backup, destination)) {
-                        msg += "\n" + localStrings.getLocalString("RenameFailed",
-                                "Could not rename backup to {0}", destination.getAbsolutePath());
-                    }
-                    logger.severe(msg);
-                    throw new IOException(msg);
-                }
+                logger.severe(msg);
+                throw new IOException(msg);
             }
         } catch(IOException e) {
             logger.log(Level.SEVERE, localStrings.getLocalString("ioexception",

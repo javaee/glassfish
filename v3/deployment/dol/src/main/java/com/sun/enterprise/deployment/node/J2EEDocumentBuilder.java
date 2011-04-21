@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,6 +54,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
 
@@ -128,11 +129,17 @@ public class J2EEDocumentBuilder {
                 new Object[] {descriptor, null});
             return;
         }
-        if (resultFile.getParent() != null)
-            (new File(resultFile.getParent())).mkdirs();
+        if (resultFile.getParent() != null) {
+            File f = new File(resultFile.getParent());
+            if (!f.isDirectory() && !f.mkdirs())
+                throw new IOException("Cannot create parent directory " + f.getAbsolutePath());
+        }
         FileOutputStream out = new FileOutputStream(resultFile);
-        write(descriptor, node, out);
-        out.close();
+        try {
+            write(descriptor, node, out);
+        } finally {
+            out.close();
+        }
     }
     
     public static void write (Descriptor descriptor, final RootXMLNode node,  final OutputStream os) throws Exception {

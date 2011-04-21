@@ -258,66 +258,69 @@ public class ServletContainerInitializerUtil {
              */
             if (types==null || Boolean.getBoolean("org.glassfish.web.parsing")) {
                 ClassDependencyBuilder classInfo = new ClassDependencyBuilder();
-                for(URL u : ((URLClassLoader)cl).getURLs()) {
-                    String path = u.getPath();
-                    try {
-                        if(path.endsWith(".jar")) {
-                            JarFile jf = new JarFile(path);
-                            try {
-                                Enumeration<JarEntry> entries = jf.entries();
-                                while(entries.hasMoreElements()) {
-                                    JarEntry anEntry = entries.nextElement();
-                                    if(anEntry.isDirectory())
-                                        continue;
-                                    if(!anEntry.getName().endsWith(".class"))
-                                        continue;
-                                    InputStream jarInputStream = null;
-                                    try {
-                                        jarInputStream = jf.getInputStream(anEntry);
-                                        int size = (int) anEntry.getSize();
-                                        byte[] classData = new byte[size];
-                                        for(int bytesRead = 0; bytesRead < size;) {
-                                            int r2 = jarInputStream.read(classData, bytesRead, size - bytesRead);
-                                            bytesRead += r2;
-                                        }
-                                        classInfo.loadClassData(classData);
-                                    } catch (Throwable t) {
-                                        if (log.isLoggable(Level.FINE)) {
-                                            log.log(Level.FINE,
-                                                "servletContainerInitializerUtil.classLoadingError",
-                                                new Object[] {
-                                                    anEntry.getName(),
-                                                    t.toString()});
-                                        }
-                                        continue;
-                                    } finally {
-                                        if(jarInputStream != null) {
-                                            jarInputStream.close();
+                if (cl instanceof URLClassLoader) {
+                    URLClassLoader ucl = (URLClassLoader) cl;
+                    for(URL u : ucl.getURLs()) {
+                        String path = u.getPath();
+                        try {
+                            if(path.endsWith(".jar")) {
+                                JarFile jf = new JarFile(path);
+                                try {
+                                    Enumeration<JarEntry> entries = jf.entries();
+                                    while(entries.hasMoreElements()) {
+                                        JarEntry anEntry = entries.nextElement();
+                                        if(anEntry.isDirectory())
+                                            continue;
+                                        if(!anEntry.getName().endsWith(".class"))
+                                            continue;
+                                        InputStream jarInputStream = null;
+                                        try {
+                                            jarInputStream = jf.getInputStream(anEntry);
+                                            int size = (int) anEntry.getSize();
+                                            byte[] classData = new byte[size];
+                                            for(int bytesRead = 0; bytesRead < size;) {
+                                                int r2 = jarInputStream.read(classData, bytesRead, size - bytesRead);
+                                                bytesRead += r2;
+                                            }
+                                            classInfo.loadClassData(classData);
+                                        } catch (Throwable t) {
+                                            if (log.isLoggable(Level.FINE)) {
+                                                log.log(Level.FINE,
+                                                    "servletContainerInitializerUtil.classLoadingError",
+                                                    new Object[] {
+                                                        anEntry.getName(),
+                                                        t.toString()});
+                                            }
+                                            continue;
+                                        } finally {
+                                            if(jarInputStream != null) {
+                                                jarInputStream.close();
+                                            }
                                         }
                                     }
+                                } finally {
+                                    jf.close();
                                 }
-                            } finally {
-                                jf.close();
-                            }
-                        } else {
-                            File file = new File(path);
-                            if (file.exists()) {
-                                if (file.isDirectory()) {
-                                    scanDirectory(file, classInfo);
-                                } else {
-                                    log.log(Level.WARNING,
-                                        "servletContainerInitializerUtil.invalidUrlClassLoaderPath",
-                                        path);
+                            } else {
+                                File file = new File(path);
+                                if (file.exists()) {
+                                    if (file.isDirectory()) {
+                                        scanDirectory(file, classInfo);
+                                    } else {
+                                        log.log(Level.WARNING,
+                                            "servletContainerInitializerUtil.invalidUrlClassLoaderPath",
+                                            path);
+                                    }
                                 }
                             }
+                        } catch(IOException ioex) {
+                            String msg = rb.getString(
+                                "servletContainerInitializerUtil.ioError");
+                            msg = MessageFormat.format(msg,
+                                new Object[] { path });
+                            log.log(Level.SEVERE, msg, ioex);
+                            return null;
                         }
-                    } catch(IOException ioex) {
-                        String msg = rb.getString(
-                            "servletContainerInitializerUtil.ioError");
-                        msg = MessageFormat.format(msg,
-                            new Object[] { path });
-                        log.log(Level.SEVERE, msg, ioex);
-                        return null;
                     }
                 }
 

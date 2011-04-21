@@ -57,6 +57,8 @@ import javax.xml.stream.XMLStreamReader;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 import java.util.jar.JarFile;
@@ -114,8 +116,13 @@ public class WarHandler extends AbstractArchiveHandler {
         return DeploymentUtils.isWebArchive(archive);
     }
 
-    public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context) {
-        WebappClassLoader cloader = new WebappClassLoader(parent);
+    public ClassLoader getClassLoader(final ClassLoader parent, DeploymentContext context) {
+        WebappClassLoader cloader = AccessController.doPrivileged(new PrivilegedAction<WebappClassLoader>() {
+            @Override
+            public WebappClassLoader run() {
+                return new WebappClassLoader(parent);
+            }
+        });
         try {
             FileDirContext r = new FileDirContext();
             File base = new File(context.getSource().getURI());

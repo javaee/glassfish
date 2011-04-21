@@ -62,7 +62,7 @@ public class BaseCache implements Cache {
     /**
      * The resource bundle containing the localized message strings.
      */
-    protected static ResourceBundle _rb = null;
+    protected static ResourceBundle _rb = LogDomains.getLogger(BaseCache.class,LogDomains.UTIL_LOGGER).getResourceBundle();;
 
     static final int MAX_ENTRIES = 1 << 30;
     static final float DEFAULT_LOAD_FACTOR = 0.75f;
@@ -139,9 +139,6 @@ public class BaseCache implements Cache {
      * @throws a generic Exception if the initialization failed
      */
     public void init(int maxEntries, float loadFactor, Properties props) {
-
-        // web container logger
-        _rb = LogDomains.getLogger(BaseCache.class,LogDomains.UTIL_LOGGER).getResourceBundle();
 
         if (maxEntries <= 0) {
             String msg = _rb.getString("cache.BaseCache.illegalMaxEntries");

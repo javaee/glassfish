@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -225,8 +225,19 @@ public class ContainerStarter {
                         FileChannel outChannel = fos.getChannel();
                         outChannel.transferFrom(inChannel, 0, entry.getSize());
                     } finally {
-                        if (is!=null)
-                            is.close();
+                        try {
+                            if (is!=null)
+                                is.close();
+                        } catch(IOException ex) {
+                            try {
+                                if (fos != null)
+                                    fos.close();
+                            } catch (IOException ex2) {
+                               // do nothing
+                            }
+                            // throw original exception
+                            throw ex;
+                        }
                         if (fos!=null)
                             fos.close();
                     }

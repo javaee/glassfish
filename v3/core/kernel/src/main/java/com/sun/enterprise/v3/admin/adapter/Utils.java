@@ -59,8 +59,9 @@ final class Utils {
      */
     static String packageResource2String(String name) throws IOException {
         String file = Utils.class.getPackage().getName().replace('.', '/') + "/" + name;
-        InputStream is = Utils.class.getClassLoader().getResourceAsStream(file);
+        InputStream is=null;
         try {
+            is = Utils.class.getClassLoader().getResourceAsStream(file);
             BufferedInputStream bis = new BufferedInputStream(is);
             byte[] bytes = new byte[1024];
             int read;
@@ -70,7 +71,8 @@ final class Utils {
             }
             return ( sb.toString());
         } finally {
-            is.close();
+            if (is!=null)
+                is.close();
         }
     }
 }

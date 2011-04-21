@@ -71,7 +71,7 @@ import static javax.xml.stream.XMLStreamConstants.*;
  * @author Jerome Dochez
  */
 @Service(name="DEFAULT")
-public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler {
+public class JarHandler extends AbstractArchiveHandler {
     private static XMLInputFactory xmlIf = null;
 
     static {

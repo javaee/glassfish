@@ -52,7 +52,7 @@ import java.util.HashSet;
 
 public class HK2Dispatcher {
 
-    Field threadLocalsField = null;
+/**    Field threadLocalsField = null;
     Field tableField = null;
     Field hashCode = null;
     Field value;
@@ -79,8 +79,8 @@ public class HK2Dispatcher {
         }
     }
 
-
-    public void dispath(Adapter adapter, ClassLoader cl, Request req, Response res) {
+*/
+    public void dispatch(Adapter adapter, ClassLoader cl, Request req, Response res) {
 
         // save the thread local entries.
         Thread thread = Thread.currentThread();
