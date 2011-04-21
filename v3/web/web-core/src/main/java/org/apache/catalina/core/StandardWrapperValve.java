@@ -245,10 +245,7 @@ final class StandardWrapperValve extends ValveBase {
             exception(request, response, e);
             servlet = null;
         }
-        MessageBytes requestPathMB = null;
-        if (hreq != null) {
-            requestPathMB = hrequest.getRequestPathMB();
-        }
+        MessageBytes requestPathMB = hrequest.getRequestPathMB();
         hreq.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR,
                           requestPathMB);
 
