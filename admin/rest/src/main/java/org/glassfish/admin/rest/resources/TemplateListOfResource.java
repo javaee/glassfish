@@ -157,24 +157,10 @@ public abstract class TemplateListOfResource {
                 }
 
                 String errorMessage = getErrorMessage(data, actionReport);
-                ActionReportResult arr = ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo);
-                return Response.status(400).entity(arr).build();
+                ActionReportResult arr = ResourceUtil.getActionReportResult(Response.Status.INTERNAL_SERVER_ERROR, errorMessage, requestHeaders, uriInfo);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(arr).build();
             } else {
-                // create it on the fly without a create CLI command.
-
-               /* Class<? extends ConfigBeanProxy> proxy = getElementTypeByName(parent, tagName);
-                data = ResourceUtil.translateCamelCasedNamesToXMLNames(data);
-                try {
-                    ConfigBean createdBean = ConfigSupport.createAndSet((ConfigBean) parent, proxy, data);
-                    String successMessage =
-                            localStrings.getLocalString("rest.resource.create.message",
-                            "\"{0}\" created successfully.", createdBean.getKey());
-                    return ResourceUtil.getActionReportResult(201, successMessage, requestHeaders, uriInfo);
-                } catch (TransactionFailure ex) {
-                    throw new CliFailureException(ex.getMessage(), ex);
-                }*/
-
-                ActionReportResult arr = ResourceUtil.getActionReportResult(400, "No CRUD Create possible.", requestHeaders, uriInfo);
+                ActionReportResult arr = ResourceUtil.getActionReportResult(Response.Status.INTERNAL_SERVER_ERROR, "No CRUD Create possible.", requestHeaders, uriInfo);
                 return Response.status(HttpURLConnection.HTTP_INTERNAL_ERROR).entity(arr).build();
 
 
