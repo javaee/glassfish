@@ -51,6 +51,7 @@ import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.process.ProcessStreamDrainer;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import com.sun.enterprise.util.OS;
+import com.sun.enterprise.util.Utility;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
@@ -784,8 +785,21 @@ private void setLogFilename(MiniXmlParser parser) throws GFLauncherException {
         if (!jarFile.isFile())
             throw new GFLauncherException("no_btrace_jar", jarPath);
 
-        return "javaagent:" + jarPath + "=unsafe=true,noServer=true";
-    }
+        String ret = "javaagent:" + jarPath + "=unsafe=true,noServer=true";
+
+        if(Boolean.parseBoolean(Utility.getEnvOrProp("AS_BTRACE_DEBUG"))) {
+            ret += ",debug=true";
+            // btrace will totally take over the log -- write this to stdout dirtectly!
+            System.out.println("*****************************************************************");
+            System.out.println("*****************************************************************");
+            System.out.println("******************  BTRACE set to DEBUG  ************************");
+            System.out.println("Based on AS_BTRACE_DEBUG=true system property or env. variable");
+            System.out.println("*****************************************************************");
+            System.out.println("*****************************************************************");
+        }
+
+        return ret;
+     }
 
     private List<String> getSpecialSystemProperties() throws GFLauncherException {
         Map<String, String> props = new HashMap<String, String>();
