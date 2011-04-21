@@ -135,6 +135,7 @@ public abstract class LocalMachine implements Machine, FileOperations {
         this.state = state;
     }
 
+    @Override
     public Machine.State getState() {
         return state;
     }
