@@ -42,38 +42,39 @@ package org.glassfish.vmcluster.runtime;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.grizzly.config.dom.NetworkListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.common.util.admin.AuthTokenManager;
-import org.glassfish.vmcluster.ShellExecutor;
-import org.glassfish.vmcluster.config.*;
+import org.glassfish.vmcluster.config.Emulator;
+import org.glassfish.vmcluster.config.MachineConfig;
+import org.glassfish.vmcluster.config.Template;
+import org.glassfish.vmcluster.config.VirtUser;
+import org.glassfish.vmcluster.config.Virtualizations;
 import org.glassfish.vmcluster.os.Disk;
 import org.glassfish.vmcluster.os.FileOperations;
-import org.glassfish.vmcluster.spi.*;
+import org.glassfish.vmcluster.spi.Machine;
+import org.glassfish.vmcluster.spi.PhysicalGroup;
+import org.glassfish.vmcluster.spi.StoragePool;
+import org.glassfish.vmcluster.spi.StorageVol;
+import org.glassfish.vmcluster.spi.VirtException;
 import org.glassfish.vmcluster.util.Host;
 import org.glassfish.vmcluster.util.RuntimeContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Injector;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.FactoryConfigurationError;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Result;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.logging.Level;
+
 
 /**
  * Local machine capabilities include creating a virtual machine
@@ -120,6 +121,7 @@ public abstract class LocalMachine implements Machine, FileOperations {
         return config;
     }
 
+    @Override
     public String getIpAddress() {
         return "";
     }
@@ -157,15 +159,18 @@ public abstract class LocalMachine implements Machine, FileOperations {
 
     }
 
+    @Override
     public void sleep() throws IOException, InterruptedException  {
         throw new IOException("Impossible to put myself to sleep");
     }
 
+    @Override
     public boolean isUp() {
         // we are up by definition of  having this code running
         return true;
     }
 
+    @Override
     public synchronized VirtUser getUser() {
         if (myself==null) {
             myself = LocalUser.myself(habitat);
@@ -324,15 +329,33 @@ public abstract class LocalMachine implements Machine, FileOperations {
         machineDisks = new File(machineDisks, getName());
         File custDir = new File(machineDisks, name + "cust");
         if (!custDir.exists()) {
-           if (!custDir.mkdirs()) {
-               throw new IOException("cannot create disk cache on local machine");
-           }
+            if (!custDir.mkdirs()) {
+                throw new IOException("cannot create disk cache on local machine");
+            }
         }
+        createCustomizationFile(custDir, cluster, name, template);
+        // copy the ssh public key
+        File home = new File(System.getProperty("user.home"));
+        File keyFile = new File(home, ".ssh/id_dsa.pub");
+        FileUtils.copy(keyFile, new File(custDir, keyFile.getName()));
+        keyFile = new File(home, ".ssh/id_rsa.pub");
+        if (keyFile.exists()) {
+            FileUtils.copy(keyFile, new File(custDir, keyFile.getName()));
+        }
+        return custDir;
 
-        // create the customized properties.
+    }
+    
+    /*
+     * create or update the "customization" file with correct tokens in the customizationDir directory
+     * return a File pointing to this entry.
+     */
+    
+    protected File createCustomizationFile (File customizationDir, VirtualCluster cluster, String name , Template template) throws IOException{
+         // create the customized properties.
         Properties customizedProperties = new Properties();
-        Config config = habitat.getComponent(Config.class, ServerEnvironment.DEFAULT_INSTANCE_NAME);
-        NetworkListener nl = config.getNetworkConfig().getNetworkListener("admin-listener");
+        Config configuration = habitat.getComponent(Config.class, ServerEnvironment.DEFAULT_INSTANCE_NAME);
+        NetworkListener nl = configuration.getNetworkConfig().getNetworkListener("admin-listener");
         // soon enough, I need to replace this with a token and keep this information from being stored in the
         // customization disk.
         customizedProperties.put("Group", group.getName());
@@ -352,25 +375,19 @@ public abstract class LocalMachine implements Machine, FileOperations {
         customizedProperties.put("GroupId", vmUser.getGroupId());
 
         AuthTokenManager tokenMgr = habitat.getComponent(AuthTokenManager.class);
-        customizedProperties.put("AuthToken", tokenMgr.createToken());
-        customizedProperties.put("StartToken", tokenMgr.createToken());
-
+        customizedProperties.put("AuthToken", tokenMgr.createToken(30L*60L*1000L));
+        customizedProperties.put("StartToken", tokenMgr.createToken(30L*60L*1000L));
+        File customization =new File(customizationDir, "customization");
         // write them out
         FileWriter fileWriter = null;
         try {
-            fileWriter = new FileWriter(new File(custDir, "customization"));
+            fileWriter = new FileWriter(customization);
             customizedProperties.store(fileWriter, "Customization properties for virtual machine" + name);
         } finally {
             if (fileWriter!=null)
                 fileWriter.close();
-        }
-
-        // copy the ssh public key
-        File home = new File(System.getProperty("user.home"));
-        File keyFile = new File(home,".ssh/id_dsa.pub");
-        FileUtils.copy(keyFile, new File(custDir, keyFile.getName()));
-        return custDir;
-
+            return customization;
+        }       
     }
 
     protected Disk prepareCustomization(File custDir, File custFile,  String name) throws IOException {
