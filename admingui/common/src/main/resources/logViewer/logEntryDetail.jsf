@@ -74,7 +74,7 @@
 		logRecords="#{requestScope.queryResult.data.records}"
 		truncate="false"
 		truncateLength="-1"
-		result="#{requestScope.results}"
+		result="#{pageSession.results}"
 		);
 	/>
     </event>
