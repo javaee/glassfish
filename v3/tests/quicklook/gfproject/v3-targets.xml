@@ -72,7 +72,8 @@
 
 <target name="restart-server" depends="setOSConditions,asenv-unix,asenv-windows">
     <exec executable="${ASADMIN}" outputproperty="message1">
-        <arg line="restart-domain"/>
+        <arg value="restart-domain"/>
+        <arg value="domain1"/>
     </exec>
     <echo message="${message1}"/>
 </target>
