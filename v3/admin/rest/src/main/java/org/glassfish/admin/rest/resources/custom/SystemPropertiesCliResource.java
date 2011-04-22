@@ -247,49 +247,6 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
         return null;
     }
 
-    protected void getSystemProperties(Map<String, Map<String, String>> properties, SystemPropertyBag spb, boolean getDefaults) {
-        try {
-            List<SystemProperty> sysProps = spb.getSystemProperty();
-            if (!sysProps.isEmpty()) {
-                for (SystemProperty prop : sysProps) {
-                    Map<String, String> currValue = properties.get(prop.getName());
-                    if (currValue == null) {
-                        currValue = new HashMap<String, String>();
-                        currValue.put("name", prop.getName());
-                        if (getDefaults) {
-                            currValue.put("defaultValue", prop.getValue());
-                        } else {
-                            currValue.put("value", prop.getValue());
-                        }
-                        if (prop.getDescription() != null) {
-                            currValue.put("description", prop.getDescription());
-                        }
-                        properties.put(prop.getName(), currValue);
-                    } else {
-                        // Only add a default value if there isn't one already
-                        if (currValue.get("defaultValue") == null) {
-                            currValue.put("defaultValue", prop.getValue());
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-        }
-
-        // Recurse back up the config inheritance tree
-        if (spb instanceof Server) {
-            Server server = (Server) spb;
-            if (server.getCluster() != null) {
-                getSystemProperties(properties, server.getCluster(), true);
-            } else {
-                getSystemProperties(properties, server.getConfig(), true);
-            }
-        } else if (spb instanceof Cluster) {
-            String configRef = ((Cluster) spb).getConfigRef();
-            getSystemProperties(properties, domain.getConfigNamed(configRef), true);
-        }
-    }
-
     protected String convertPropertyMapToString(HashMap<String, String> data) {
         StringBuilder options = new StringBuilder();
         String sep = "";
