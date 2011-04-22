@@ -1192,7 +1192,7 @@ public class Request
     @Override
     public Enumeration<String> getAttributeNames() {
         if (isSecure()) {
-            RequestUtils.populateSSLAttributes(coyoteRequest);
+            populateSSLAttributes();
         }
         return new Enumerator<String>(attributes.keySet(), true);
     }
