@@ -916,12 +916,14 @@ public class VirtualServer extends StandardHost
                             getName());
             }
 
-            if (propName.startsWith("valve_")) {
-                addValve(propValue);
-            } else if (propName.startsWith("listener_")) {
-                addListener(propValue);
-            } else if (propName.equals("securePagesWithPragma")){
-                setSecurePagesWithPragma(Boolean.valueOf(propValue));
+            if (propName != null) {
+                if (propName.startsWith("valve_")) {
+                    addValve(propValue);
+                } else if (propName.startsWith("listener_")) {
+                    addListener(propValue);
+                } else if (propName.equals("securePagesWithPragma")){
+                    setSecurePagesWithPragma(Boolean.valueOf(propValue));
+                }
             }
         }
     }
@@ -1963,7 +1965,9 @@ public class VirtualServer extends StandardHost
             }
 
             if (delete) {
-                file.delete();
+                boolean deleted = file.delete();
+                if (!deleted)
+                    throw new GlassFishException("File "+file+"could not be deleted");
             }
 
             WebModule wm = (WebModule) findChild(contextName);

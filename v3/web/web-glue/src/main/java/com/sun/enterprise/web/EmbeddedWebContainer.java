@@ -78,10 +78,10 @@ public final class EmbeddedWebContainer extends Embedded implements PostConstruc
     @Inject
     private ServerContext serverContext;
 
-    protected static final Logger _logger
+    private static final Logger _logger
         = LogDomains.getLogger(EmbeddedWebContainer.class, LogDomains.WEB_LOGGER);
 
-    protected static final ResourceBundle rb = _logger.getResourceBundle();
+    private static final ResourceBundle rb = _logger.getResourceBundle();
 
     private WebContainerFeatureFactory webContainerFeatureFactory;
 

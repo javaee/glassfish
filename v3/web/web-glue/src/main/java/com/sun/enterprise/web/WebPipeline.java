@@ -89,7 +89,7 @@ public class WebPipeline extends StandardPipeline {
         if (webModule != null &&
                 webModule.getAdHocServletName(hreq.getServletPath()) != null) {
             webModule.getAdHocPipeline().invoke(request, response);
-        } else {
+        } else if (webModule != null) {
             RealmAdapter realmAdapter = (RealmAdapter)webModule.getRealm();
             if (realmAdapter != null &&
                     realmAdapter.isSecurityExtensionEnabled()){

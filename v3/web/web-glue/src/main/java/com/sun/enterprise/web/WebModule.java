@@ -597,7 +597,9 @@ public class WebModule extends PwcWebModule {
     public void setParent(Container container) {
         super.setParent(container);
 
-        vsId = ((VirtualServer) container).getID();
+        if (container instanceof VirtualServer) {
+            vsId = ((VirtualServer) container).getID();
+        }
 
         // The following assumes that the realm has been set on this WebModule
         // before the WebModule is added as a child to the virtual server on
@@ -686,15 +688,15 @@ public class WebModule extends PwcWebModule {
         if (newPaths == null || newPaths.isEmpty()) {
             return;
         }
-        for(String adHocPath : newPaths.keySet()) {
-            AdHocServletInfo servletInfo = newPaths.get(adHocPath);
+        for (Map.Entry<String, AdHocServletInfo> entry : newPaths.entrySet()) {
+            AdHocServletInfo servletInfo = entry.getValue();
             Wrapper adHocWrapper = (Wrapper)
                 findChild(servletInfo.getServletName());
             if(adHocWrapper == null) {
                 adHocWrapper = createAdHocWrapper(servletInfo);
                 addChild(adHocWrapper);
             }
-            adHocPaths.put(adHocPath, servletInfo);
+            adHocPaths.put(entry.getKey(), servletInfo);
         }
 
         hasAdHocPaths = true;
@@ -712,14 +714,14 @@ public class WebModule extends PwcWebModule {
         if (newSubtrees == null || newSubtrees.isEmpty()) {
             return;
         }
-        for(String adHocSubtree : newSubtrees.keySet()) {
-            AdHocServletInfo servletInfo = newSubtrees.get(adHocSubtree);
+        for (Map.Entry<String, AdHocServletInfo> entry : newSubtrees.entrySet()) {
+            AdHocServletInfo servletInfo = entry.getValue();
             Wrapper adHocWrapper = (Wrapper)findChild(servletInfo.getServletName());
             if(adHocWrapper == null) {
                 adHocWrapper = createAdHocWrapper(servletInfo);
                 addChild(adHocWrapper);
             }
-            adHocSubtrees.put(adHocSubtree, servletInfo);
+            adHocSubtrees.put(entry.getKey(), servletInfo);
         }
 
         hasAdHocSubtrees = true;
@@ -911,8 +913,8 @@ public class WebModule extends PwcWebModule {
         adHocWrapper.setName(servletInfo.getServletName());
         Map<String,String> initParams = servletInfo.getServletInitParams();
         if (initParams != null && !initParams.isEmpty()) {
-            for(String paramName : initParams.keySet()) {
-                adHocWrapper.addInitParameter(paramName, initParams.get(paramName));
+            for(Map.Entry<String,String> entry : initParams.entrySet()) {
+                adHocWrapper.addInitParameter(entry.getKey(), entry.getValue());
             }
         }
 
