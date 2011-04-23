@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.admin.launcher;
 
+import com.sun.enterprise.util.Utility;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
@@ -784,7 +785,20 @@ public abstract class GFLauncher {
         if (!jarFile.isFile())
             throw new GFLauncherException("no_btrace_jar", jarPath);
 
-        return "javaagent:" + jarPath + "=unsafe=true,noServer=true";
+        String ret = "javaagent:" + jarPath + "=unsafe=true,noServer=true";
+
+        if(Boolean.parseBoolean(Utility.getEnvOrProp("AS_BTRACE_DEBUG"))) {
+            ret += ",debug=true";
+            // btrace will totally take over the log -- write this to stdout directly!
+            System.out.println("*****************************************************************");
+            System.out.println("*****************************************************************");
+            System.out.println("******************  BTRACE set to DEBUG  ************************");
+            System.out.println("Based on AS_BTRACE_DEBUG=true system property or env. variable");
+            System.out.println("*****************************************************************");
+            System.out.println("*****************************************************************");
+        }
+
+        return ret;
     }
 
     private List<String> getSpecialSystemProperties() throws GFLauncherException {
