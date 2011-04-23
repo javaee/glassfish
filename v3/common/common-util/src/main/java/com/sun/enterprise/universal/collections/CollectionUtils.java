@@ -95,13 +95,26 @@ public class CollectionUtils {
     /**
      * Convert a String[] into a space-delimited String
      * @param arr The String array to convert
-     * @return The pretty String 
+     * @return The pretty String
      */
     public static String toString(String[] arr) {
         StringBuilder sb = new StringBuilder();
         for(String s : arr) {
             sb.append(s);
             sb.append(' ');
+        }
+        return sb.toString();
+    }
+    /**
+     * Convert a String[] into a newline-delimited String
+     * @param arr The String array to convert
+     * @return The pretty String
+     */
+    public static String toStringLines(String[] arr) {
+        StringBuilder sb = new StringBuilder();
+        for(String s : arr) {
+            sb.append(s);
+            sb.append('\n');
         }
         return sb.toString();
     }
