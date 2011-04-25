@@ -390,7 +390,7 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         if (attrValue != null) {
             cb.put(attrValue.toString());
         } else {
-            cb.put("NULL-ATTRIBUTE-" + attributeName.toUpperCase());
+            cb.put("NULL-ATTRIBUTE-" + attributeName.toUpperCase(Locale.ENGLISH));
         }
         cb.put(QUOTE);
     }
@@ -417,7 +417,7 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
                 cb.put(attrValue.toString());
             } else {
                 cb.put("NULL-SESSION-ATTRIBUTE-" +
-                       attributeName.toUpperCase());
+                       attributeName.toUpperCase(Locale.ENGLISH));
             }
         } else {
             cb.put("NULL-SESSION");
@@ -635,7 +635,7 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(QUOTE);
         String value = hreq.getHeader(headerName);
         if (value == null) {
-            value = "NULL-HEADER-" + headerName.toUpperCase();
+            value = "NULL-HEADER-" + headerName.toUpperCase(Locale.ENGLISH);
         }
         cb.put(value);
         cb.put(QUOTE);
@@ -657,7 +657,7 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(QUOTE);
         String value = hres.getHeader(headerName);
         if (value == null) {
-            value = "NULL-RESPONSE-HEADER-" + headerName.toUpperCase();
+            value = "NULL-RESPONSE-HEADER-" + headerName.toUpperCase(Locale.ENGLISH);
         }
         cb.put(value);
         cb.put(QUOTE);
@@ -689,10 +689,10 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
                 cb.put(e.nextElement().toString());
             }
             if (first) {
-                cb.put("NULL-HEADERS-" + headerName.toUpperCase());
+                cb.put("NULL-HEADERS-" + headerName.toUpperCase(Locale.ENGLISH));
             }
         } else {
-            cb.put("NULL-HEADERS-" + headerName.toUpperCase());
+            cb.put("NULL-HEADERS-" + headerName.toUpperCase(Locale.ENGLISH));
         }
         cb.put(QUOTE);
     }
@@ -723,7 +723,7 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
             }
         }
         if (first) {
-            cb.put("NULL-RESPONSE-HEADERS-" + headerName.toUpperCase());
+            cb.put("NULL-RESPONSE-HEADERS-" + headerName.toUpperCase(Locale.ENGLISH));
         }
         cb.put(QUOTE);
     }
@@ -805,7 +805,7 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
             }
         }
         if (cookieValue == null) {
-            cookieValue = "NULL-COOKIE-" + cookieName.toUpperCase();
+            cookieValue = "NULL-COOKIE-" + cookieName.toUpperCase(Locale.ENGLISH);
         }
 
         cb.put(cookieValue);
@@ -839,7 +839,7 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
                 }
             }
         } else {
-            cb.put("NULL-COOKIES-" + cookieName.toUpperCase());
+            cb.put("NULL-COOKIES-" + cookieName.toUpperCase(Locale.ENGLISH));
         }
         cb.put(QUOTE);
     }

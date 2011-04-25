@@ -121,7 +121,6 @@ public final class JSPCompiler {
         if (clBean != null) {
             String value = clBean.getAttributeValue(
                     com.sun.enterprise.deployment.runtime.web.ClassLoader.DELEGATE);
-            delegate = ConfigBeansUtilities.toBoolean(value);
         }
 
         // so far, this is not segragated per web bundle, all web-bundles will get the

@@ -193,7 +193,6 @@ public class CachingFilter implements Filter, CacheManagerListener {
             } else {
                 // call the target servlet
 
-                HttpCacheEntry oldEntry;
                 CachingResponseWrapper wrapper = null;
                 boolean needNotify = true;
 
@@ -231,8 +230,8 @@ public class CachingFilter implements Filter, CacheManagerListener {
                             entry.computeExpireTime(timeout);
                         }
 
-                        oldEntry = (HttpCacheEntry)cache.put(key, entry,
-                                                             entry.getSize());
+                        cache.put(key, entry, entry.getSize());
+
                         cache.notifyRefresh(index);
                         needNotify = false;
 
@@ -243,7 +242,7 @@ public class CachingFilter implements Filter, CacheManagerListener {
                          *  resource is not cacheable anymore; so, remove the
                          *  old entry from the cache.
                          */
-                        oldEntry = (HttpCacheEntry)cache.remove(key);
+                        cache.remove(key);
                     }
                 } finally {
                     // IT 12891

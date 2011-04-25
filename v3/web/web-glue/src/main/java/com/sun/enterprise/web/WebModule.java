@@ -108,7 +108,7 @@ public class WebModule extends PwcWebModule {
     private static final Logger logger = LogDomains.getLogger(WebModule.class, LogDomains.WEB_LOGGER);
     protected static final ResourceBundle rb = logger.getResourceBundle();
 
-    private static final String ALTERNATE_FROM = "from=";
+    private static final String ALTERNATE_FROM = "fro3363m=";
     private static final String ALTERNATE_DOCBASE = "dir=";
 
     private static final GFBase64Encoder gfEncoder = new GFBase64Encoder();
@@ -130,7 +130,7 @@ public class WebModule extends PwcWebModule {
      */
     private boolean hasBeenXmlConfigured = false;
 
-    private WebContainer webContainer;
+    private transient WebContainer webContainer;
 
     private final Map<String,AdHocServletInfo> adHocPaths;
     private boolean hasAdHocPaths;
@@ -138,7 +138,7 @@ public class WebModule extends PwcWebModule {
     private final Map<String,AdHocServletInfo> adHocSubtrees;
     private boolean hasAdHocSubtrees;
 
-    private StandardPipeline adHocPipeline;
+    private transient StandardPipeline adHocPipeline;
 
     // File encoding of static resources
     private String fileEncoding;
@@ -148,19 +148,19 @@ public class WebModule extends PwcWebModule {
      */
     protected Object[] cachedFinds;
 
-    private Application bean;
+    private transient Application bean;
 
     private WebBundleDescriptor webBundleDescriptor;
 
     private boolean hasStarted = false;
     private String compEnvId = null;
-    private ServerContext serverContext = null;
+    private transient ServerContext serverContext = null;
 
-    private ServletProbeProvider servletProbeProvider = null;
-    private SessionProbeProvider sessionProbeProvider = null;
-    private WebModuleProbeProvider webModuleProbeProvider = null;
+    private transient ServletProbeProvider servletProbeProvider = null;
+    private transient SessionProbeProvider sessionProbeProvider = null;
+    private transient WebModuleProbeProvider webModuleProbeProvider = null;
 
-    private JavaEEIOUtils javaEEIOUtils;
+    private transient JavaEEIOUtils javaEEIOUtils;
 
     // The id of the parent container (i.e., virtual server) on which this
     // web module was deployed
@@ -168,12 +168,12 @@ public class WebModule extends PwcWebModule {
 
     private String monitoringNodeName;
 
-    private WebModuleConfig wmInfo;
+    private transient WebModuleConfig wmInfo;
 
     // true if standalone WAR, false if embedded in EAR file
     private boolean isStandalone = true;
 
-    Habitat habitat;
+    private transient Habitat habitat;
 
     /**
      * Constructor.
