@@ -71,11 +71,27 @@
 </target>
 
 <target name="restart-server" depends="setOSConditions,asenv-unix,asenv-windows">
+    <echo>+---------------------------------+</echo>
+    <echo>|                                 |</echo>
+    <echo>| R E S T A R T I N G   GLASSFISH |</echo>
+    <echo>|                                 |</echo>
+    <echo>+---------------------------------+</echo>
+
+    <antcall target="restart-server-unix"/>
+    <antcall target="restart-server-windows"/>
+</target>
+
+<target name="restart-server-unix" if="isUnix">
     <exec executable="${ASADMIN}" outputproperty="message1">
         <arg value="restart-domain"/>
         <arg value="domain1"/>
     </exec>
     <echo message="${message1}"/>
+</target>
+
+<target name="restart-server-windows" if="isWindows">
+    <antcall target="stop-server-windows"/>
+    <antcall target="start-server-windows"/>
 </target>
 
 <target name="create-jdbc-connection-pool" depends="setOSConditions,asenv-unix,asenv-windows">
