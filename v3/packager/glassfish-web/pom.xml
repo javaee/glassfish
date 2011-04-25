@@ -112,9 +112,8 @@
         </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.fighterfish</groupId>
             <artifactId>osgi-web-container</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <!-- Add the dependency here so that packager bundles this as well. 

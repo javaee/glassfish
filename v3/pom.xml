@@ -225,7 +225,6 @@
                 <module>verifier/verifier-impl</module>
                 <module>verifier/verifier-scripts</module>
                 <module>verifier/verifier-jdk-extension-bundle</module>
-                <module>osgi-javaee</module>
                 <module>ant-tasks</module>
             </modules>
             <build>
@@ -382,7 +381,6 @@
                 <module>extras/embedded/all</module>
                 <module>extras/embedded/web</module>
                 <module>extras/embedded/nucleus</module>
-                <module>osgi-javaee</module>
 		<module>ant-tasks</module>
             </modules>
        </profile>
@@ -438,7 +436,6 @@
                 <module>extras/embedded/all</module>
                 <module>extras/embedded/web</module>
                 <module>extras/embedded/nucleus</module>
-                <module>osgi-javaee</module>
                 <module>ant-tasks</module>
             </modules>
         </profile>
@@ -1449,6 +1446,56 @@
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgi-resource-locator</artifactId>
                 <version>1.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.fighterfish</groupId>
+                <artifactId>osgi-javaee-base</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.fighterfish</groupId>
+                <artifactId>osgi-web-container</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.fighterfish</groupId>
+                <artifactId>osgi-ejb-container</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.fighterfish</groupId>
+                <artifactId>osgi-jpa</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.fighterfish</groupId>
+                <artifactId>osgi-jpa-extension</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.fighterfish</groupId>
+                <artifactId>osgi-http</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.fighterfish</groupId>
+                <artifactId>osgi-cdi</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.fighterfish</groupId>
+                <artifactId>osgi-jta</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.fighterfish</groupId>
+                <artifactId>osgi-jdbc</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.fighterfish</groupId>
+                <artifactId>osgi-ee-resources</artifactId>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.ha</groupId>
