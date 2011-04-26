@@ -70,21 +70,21 @@
     <property name="APPCLIENT" value="${glassfish.home}\bin\appclient.bat"/>
 </target>
 
-<target name="restart-server" depends="setOSConditions,asenv-unix,asenv-windows">
+<!-- target name="restart-server" depends="setOSConditions,asenv-unix,asenv-windows">
     <exec executable="${ASADMIN}" outputproperty="message1">
         <arg value="restart-domain"/>
         <arg value="domain1"/>
     </exec>
     <echo message="${message1}"/>
-</target>
+</target -->
 
-<target name="restart-server-new" depends="setOSConditions,asenv-unix,asenv-windows">
+<target name="restart-server" depends="setOSConditions">
     <antcall target="restart-server-unix"/>
     <antcall target="restart-server-windows"/>
 </target>
 
 <target name="restart-server-unix" if="isUnix">
-    <exec executable="${ASADMIN}" outputproperty="message1">
+    <exec executable="${glassfish.home}/bin/asadmin" outputproperty="message1">
         <arg value="restart-domain"/>
         <arg value="domain1"/>
     </exec>
@@ -92,8 +92,15 @@
 </target>
 
 <target name="restart-server-windows" if="isWindows">
-    <antcall target="stop-server-windows"/>
-    <antcall target="start-server-windows"/>
+    <exec executable="cmd" outputproperty="message1">
+	<env key="GlassFish_Platform" value="Felix"/>
+        <arg value="/c"/>
+        <arg value="${glassfish.home}\bin\asadmin.bat"/>
+        <arg value="restart-domain"/>
+        <arg value="domain1"/>
+    </exec>
+    <sleep seconds="10"/>
+    <echo message="${message1}"/>
 </target>
 
 <target name="create-jdbc-connection-pool" depends="setOSConditions,asenv-unix,asenv-windows">
