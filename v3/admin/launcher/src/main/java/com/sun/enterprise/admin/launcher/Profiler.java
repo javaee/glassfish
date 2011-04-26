@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.launcher;
 
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
@@ -54,36 +53,36 @@ import java.util.*;
 public class Profiler {
     Map<String, String> config;
     List<String> jvmOptions;
-    
+
     Profiler(Map<String, String> config, List<String> jvmOptions, Map<String, String> sysProps) {
         this.config = config;
         enabled = Boolean.parseBoolean(this.config.get("enabled"));
-        this. jvmOptions = jvmOptions;
+        this.jvmOptions = jvmOptions;
         jvmOptions.addAll(getPropertiesAsJvmOptions(sysProps));
     }
-    
+
     List<String> getJvmOptions() {
-        if(!enabled) {
+        if (!enabled) {
             return Collections.emptyList();
         }
         return jvmOptions;
     }
-    
-    Map<String,String> getConfig() {
-        if(!enabled) {
+
+    Map<String, String> getConfig() {
+        if (!enabled) {
             return Collections.emptyMap();
         }
         return config;
     }
-            
+
     List<File> getClasspath() {
-        if(!enabled) {
+        if (!enabled) {
             return Collections.emptyList();
         }
-        
+
         String cp = config.get("classpath");
-        
-        if(GFLauncherUtils.ok(cp)) {
+
+        if (GFLauncherUtils.ok(cp)) {
             return GFLauncherUtils.stringToFiles(cp);
         }
         else {
@@ -92,13 +91,13 @@ public class Profiler {
     }
 
     List<File> getNativePath() {
-        if(!enabled) {
+        if (!enabled) {
             return Collections.emptyList();
         }
-            
+
         String cp = config.get("native-library-path");
-        
-        if(GFLauncherUtils.ok(cp)) {
+
+        if (GFLauncherUtils.ok(cp)) {
             return GFLauncherUtils.stringToFiles(cp);
         }
         else {
@@ -110,19 +109,18 @@ public class Profiler {
         return enabled;
     }
 
-   private List<String> getPropertiesAsJvmOptions(Map<String,String> props) {
+    private List<String> getPropertiesAsJvmOptions(Map<String, String> props) {
         List<String> list = new ArrayList<String>();
-        Set<String> keys = props.keySet();
-        
-        for(String name : keys) {
-            String value = props.get(name);
-            
-            if(value != null) {
+        Set<Map.Entry<String, String>> entries = props.entrySet();
+
+        for (Map.Entry<String, String> entry : entries) {
+            String name = entry.getKey();
+            String value = entry.getValue();
+
+            if (value != null)
                 list.add("-D" + name + "=" + value);
-            }
-            else {
+            else
                 list.add("-D" + name);
-            }
         }
         return list;
     }
