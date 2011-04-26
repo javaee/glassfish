@@ -266,10 +266,10 @@ public class VirtualServer extends StandardHost
 
     /**
      * @return true if this virtual server is active, false otherwise
-     */
+     *
     public boolean isActive() {
         return isActive;
-    }
+    }*/
 
     /**
      * Sets the state of this virtual server.
@@ -1967,7 +1967,7 @@ public class VirtualServer extends StandardHost
             if (delete) {
                 boolean deleted = file.delete();
                 if (!deleted)
-                    throw new GlassFishException("File "+file+"could not be deleted");
+                    throw new GlassFishException("Could not delete file "+file.getAbsolutePath());
             }
 
             WebModule wm = (WebModule) findChild(contextName);

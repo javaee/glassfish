@@ -162,14 +162,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     protected static final ResourceBundle rb = _logger.getResourceBundle();
 
     /**
-     * The current <code>WebContainer</code> instance used (single).
-     */
-    protected static WebContainer webContainer;
-
-    /**
      * Are we using Tomcat deployment backend or DOL?
      */
-    protected static boolean useDOLforDeployment = true;
+    static boolean useDOLforDeployment = true;
 
     // ----------------------------------------------------- Instance Variables
 
@@ -1163,7 +1158,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             HttpService httpService,
             SecurityService securityService) {
 
-        MimeMap mm = null;
         String vs_id = vsBean.getId();
 
         String docroot = vsBean.getPropertyValue("docroot");
@@ -1175,7 +1169,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 vs_id,
                 vsBean.getDefaultWebModule());
 
-        VirtualServer vs = createHost(vs_id, vsBean, docroot, mm
+        VirtualServer vs = createHost(vs_id, vsBean, docroot, null 
         );
 
         // cache control
