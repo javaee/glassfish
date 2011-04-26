@@ -39,82 +39,32 @@
  */
 package org.glassfish.hk2.classmodel.reflect.impl;
 
-import org.glassfish.hk2.classmodel.reflect.*;
+import static org.junit.Assert.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collections;
+
+import org.glassfish.hk2.classmodel.reflect.impl.TypeImpl;
+import org.junit.Test;
 
 /**
- * Implementation of the Type abstraction.
- *
- * @author Jerome Dochez
+ * Tests for {@link TypeImpl}.
+ * 
+ * @author Jeff Trent
  */
-public class TypeImpl extends AnnotatedElementImpl implements Type {
+public class TypeImplTest {
+  
+  /**
+   * Motivated by bug# 12376520 and http://java.net/jira/browse/GLASSFISH-16406
+   */
+  @Test
+  public void wasContainedIn() throws URISyntaxException {
+    TypeImpl ti = new TypeImpl(null ,null);
+    URI uri = new URI("file:/var/folders/IF/IFNvUBVCFPWlqMFXX-mK2++++TI/-Tmp-/gfembed5393798310343802143tmp/applications/ejb-ejb31-embedded-profile-ejb/");
+    ti.addDefiningURI(uri);
+    assertTrue("uri should be defined in: " + uri, ti.wasDefinedIn(Collections.singleton(uri)));
+  }
+  
 
-    final TypeProxy<Type> sink;
-    final List<MethodModel> methods = new ArrayList<MethodModel>();
-    final Set<URI> definingURIs= Collections.synchronizedSet(new HashSet<URI>());
-
-
-    public TypeImpl(String name, TypeProxy<Type> sink) {
-        super(name);
-        this.sink = sink;
-    }
-
-    @Override
-    public Collection<URI> getDefiningURIs() {
-        return Collections.unmodifiableSet(definingURIs);
-    }
-
-    void addDefiningURI(URI uri) {
-        definingURIs.add(uri);
-        try {
-            File file = new File(uri);
-//            assert(file.exists()) : file + " does not exist";
-            definingURIs.add(file.getCanonicalFile().toURI());
-        } catch (IOException e) {
-            // ignore, this is a safeguard for confused user's code that do not
-            // deal well with file path.
-        }
-    }
-
-    @Override
-    public boolean wasDefinedIn(Collection<URI> uris) {
-        for (URI uri : uris) {
-            if (definingURIs.contains(uri)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    void addMethod(MethodModelImpl m) {
-        methods.add(m);
-    }
-
-    @Override
-    public Collection<MethodModel> getMethods() {
-        return Collections.unmodifiableList(methods);
-    }
-
-    TypeProxy getProxy() {
-        return sink;
-    }
-
-    @Override
-    public Collection<Member> getReferences() {
-        return Collections.unmodifiableSet(sink.getRefs());
-    }
-
-    @Override
-    protected void print(StringBuffer sb) {
-        super.print(sb);    //To change body of overridden methods use File | Settings | File Templates.
-        sb.append(", subclasses=[");
-        for (AnnotatedElement cm : sink.getSubTypeRefs()) {
-            sb.append(" ").append(cm.getName());
-        }
-        sb.append("]");
-    }
 }
