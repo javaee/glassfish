@@ -47,7 +47,7 @@
     <artifactId>hk2-parent</artifactId>
     <packaging>pom</packaging>
 
-    <version>1.6.2-SNAPSHOT</version>
+    <version>1.6.2</version>
     <name>Modules Subsystem</name>
     <description>Generic Modules subsystem</description>
 
@@ -123,9 +123,9 @@
     </mailingLists>
 
     <scm>
-      <connection>scm:svn:https://svn.java.net/svn/hk2~svn/trunk/hk2</connection>
-      <developerConnection>scm:svn:https://svn.java.net/svn/hk2~svn/trunk/hk2</developerConnection>
-      <url>https://svn.java.net/svn/hk2~svn/trunk/hk2</url>
+      <connection>scm:svn:https://svn.java.net/svn/hk2~svn/tags/hk2-parent-1.6.2</connection>
+      <developerConnection>scm:svn:https://svn.java.net/svn/hk2~svn/tags/hk2-parent-1.6.2</developerConnection>
+      <url>https://svn.java.net/svn/hk2~svn/tags/hk2-parent-1.6.2</url>
     </scm>
     <distributionManagement>
         <site>
@@ -346,7 +346,7 @@
     <properties>
         <java.net.username>${user.name}</java.net.username>
         <asm.version>3.2</asm.version>
-        <findbugs.exclude></findbugs.exclude>
+        <findbugs.exclude />
         <findbugs.threshold>High</findbugs.threshold>
     </properties>
 
