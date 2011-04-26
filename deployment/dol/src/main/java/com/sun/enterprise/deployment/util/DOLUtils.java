@@ -118,6 +118,7 @@ public class DOLUtils {
        DeploymentContext context) {
        ExtendedDeploymentContext ctx = (ExtendedDeploymentContext)context;
        Application application = context.getModuleMetaData(Application.class);
+       if (application == null) return null; // this can happen for non-JavaEE type deployment. e.g., issue 15869
        if (ctx.getParentContext() == null) {
            if (application.isVirtual()) {
                // standalone module

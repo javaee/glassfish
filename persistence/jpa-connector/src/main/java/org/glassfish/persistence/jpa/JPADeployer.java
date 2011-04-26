@@ -476,11 +476,13 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
          */
         void iteratePUDs(DeploymentContext context) {
             RootDeploymentDescriptor currentBundle = DOLUtils.getCurrentBundleForContext(context);
-            Collection<PersistenceUnitsDescriptor> pusDescriptorForThisBundle = currentBundle.getExtensionsDescriptors(PersistenceUnitsDescriptor.class);
-            for (PersistenceUnitsDescriptor persistenceUnitsDescriptor : pusDescriptorForThisBundle) {
-                    for (PersistenceUnitDescriptor pud : persistenceUnitsDescriptor.getPersistenceUnitDescriptors()) {
-                        visitPUD(pud, context);
-                    }
+            if (currentBundle != null) { // it can be null for non-JavaEE type of application deployment. e.g., issue 15869
+                Collection<PersistenceUnitsDescriptor> pusDescriptorForThisBundle = currentBundle.getExtensionsDescriptors(PersistenceUnitsDescriptor.class);
+                for (PersistenceUnitsDescriptor persistenceUnitsDescriptor : pusDescriptorForThisBundle) {
+                        for (PersistenceUnitDescriptor pud : persistenceUnitsDescriptor.getPersistenceUnitDescriptors()) {
+                            visitPUD(pud, context);
+                        }
+                }
             }
 
         }
