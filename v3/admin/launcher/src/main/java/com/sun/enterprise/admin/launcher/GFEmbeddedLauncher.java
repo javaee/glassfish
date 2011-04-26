@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.admin.launcher;
 
+import com.sun.enterprise.util.io.FileUtils;
 import java.io.File;
 import java.util.*;
 import com.sun.enterprise.universal.io.SmartFile;
@@ -81,7 +82,7 @@ class GFEmbeddedLauncher extends GFLauncher {
     }
 
     @Override
-    public synchronized void setup() throws GFLauncherException, MiniXmlParserException {
+    public void setup() throws GFLauncherException, MiniXmlParserException {
         // remember -- this is designed exclusively for SQE usage
         // don't do it mmore than once -- that would be silly!
 
@@ -229,14 +230,10 @@ class GFEmbeddedLauncher extends GFLauncher {
         domainDir = getInfo().getDomainParentDir();
         domainDir = new File(domainDir, domainDirName);
 
-        if (!domainDir.isDirectory())
-            domainDir.mkdirs();
-
-        if (!domainDir.isDirectory())
+        if (!FileUtils.mkdirsMaybe(domainDir))
             throw new GFLauncherException("Can not create directory: " + domainDir);
 
         domainDir = SmartFile.sanitize(domainDir);
-        domainXml = SmartFile.sanitize(new File(domainDir, "config/domain.xml"));
     }
 
     private void setupJDK() throws GFLauncherException {
@@ -274,10 +271,7 @@ class GFEmbeddedLauncher extends GFLauncher {
 
         installDir = new File(installDirName);
 
-        if (!installDir.isDirectory())
-            installDir.mkdirs();
-
-        if (!installDir.isDirectory())
+        if(!FileUtils.mkdirsMaybe(installDir))
             throw new GFLauncherException(err);
 
         installDir = SmartFile.sanitize(installDir);
@@ -323,9 +317,6 @@ class GFEmbeddedLauncher extends GFLauncher {
         //  * install-dir/javadb/lib
         //  * install-dir/../javadb/lib
 
-        if(javaDbClassPath != null)
-            return;
-
         String relPath = "javadb/lib";
         File derbyLib = new File(installDir, relPath);
 
@@ -342,13 +333,8 @@ class GFEmbeddedLauncher extends GFLauncher {
         for(String fname : DERBY_FILES) {
             File f = new File(derbyLib, fname);
 
-            if(javaDbClassPath == null) {
-                javaDbClassPath = f.getPath();
-            }
-            else {
-                javaDbClassPath += File.pathSeparator;
-                javaDbClassPath += f.getPath();
-            }
+            javaDbClassPath += File.pathSeparator;
+            javaDbClassPath += f.getPath();
 
             if(!f.exists())
                 throw new GFLauncherException("Could not find the JavaDB jar: " + f);
@@ -363,7 +349,6 @@ class GFEmbeddedLauncher extends GFLauncher {
     private File installDir;
     private File javaExe;
     private File domainDir;
-    private File domainXml;
     private String javaDbClassPath, logFilename;
     private static final String GFE_RUNSERVER_JAR = "GFE_RUNSERVER_JAR";
     private static final String GFE_RUNSERVER_CLASS = "GFE_RUNSERVER_CLASS";
