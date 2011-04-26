@@ -172,9 +172,6 @@ public class LogFilterForInstance {
 
         Vector allInstanceLogFileName = getInstanceLogFileNames(habitat, targetServer, domain, logger, instanceName, instanceLogFileDirectory);
 
-        File logFileDirectoryOnServer = makingDirectory(tempDirectoryOnServer + File.separator + "logs"
-                + File.separator + instanceName);
-
         boolean noFileFound = true;
         String sourceDir = getLoggingDirectoryForNode(instanceLogFileDirectory, node, sNode, instanceName);
         SFTPClient sftpClient = sshL.getSFTPClient();
@@ -210,7 +207,7 @@ public class LogFilterForInstance {
         sftpClient.close();
 
         SCPClient scpClient = sshL.getSCPClient();                
-        scpClient.get(remoteFileNames, logFileDirectoryOnServer.getAbsolutePath());
+        scpClient.get(remoteFileNames, tempDirectoryOnServer);
     }
 
     public Vector getInstanceLogFileNames(Habitat habitat, Server targetServer, Domain domain, Logger logger,
