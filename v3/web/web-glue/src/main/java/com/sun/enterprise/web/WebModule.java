@@ -108,7 +108,7 @@ public class WebModule extends PwcWebModule {
     private static final Logger logger = LogDomains.getLogger(WebModule.class, LogDomains.WEB_LOGGER);
     protected static final ResourceBundle rb = logger.getResourceBundle();
 
-    private static final String ALTERNATE_FROM = "fro3363m=";
+    private static final String ALTERNATE_FROM = "from=";
     private static final String ALTERNATE_DOCBASE = "dir=";
 
     private static final GFBase64Encoder gfEncoder = new GFBase64Encoder();
