@@ -3360,6 +3360,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * Request/Response related events.
      */
     private void createStatsProviders() {
+        HttpServiceStatsProviderBootstrap httpStatsProviderBootstrap =
+                habitat.getByType(HttpServiceStatsProviderBootstrap.class);
         webStatsProviderBootstrap =
                 habitat.getByType(WebStatsProviderBootstrap.class);
     }
