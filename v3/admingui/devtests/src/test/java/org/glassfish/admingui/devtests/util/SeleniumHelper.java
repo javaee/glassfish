@@ -81,7 +81,7 @@ public class SeleniumHelper {
             String browser = getParameter("browser", "firefox");
 
             if ("firefox".equals(browser)) {
-                driver = new FirefoxDriver(new FirefoxProfile(new File("src/test/resources/firefoxProfile")));
+                driver = new FirefoxDriver();//new FirefoxProfile(new File("src/test/resources/firefoxProfile")));
             } else if ("chrome".equals(browser)) {
                 driver = new ChromeDriver();
             } else if ("ie".contains(browser)) {
