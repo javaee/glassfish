@@ -58,11 +58,10 @@ public class HttpCacheEntry {
     public static final int VALUE_NOT_SET = -1;
 
     int statusCode;
-    String statusMessage;
 
-    HashMap<String, ArrayList<String>> responseHeaders;
-    HashMap<String, ArrayList<Long>> dateHeaders;
-    ArrayList<Cookie> cookies;
+    HashMap<String, ArrayList<String>> responseHeaders = new HashMap<String, ArrayList<String>>();
+    HashMap<String, ArrayList<Long>> dateHeaders = new HashMap<String, ArrayList<Long>>();
+    ArrayList<Cookie> cookies = new ArrayList<Cookie>();
     String contentType;
     Locale locale;
 
@@ -71,7 +70,6 @@ public class HttpCacheEntry {
     // XXX: other cacheable response info 
     byte[] bytes; 
 
-    int timeout;
     volatile long expireTime = 0;
 
     /**
@@ -88,7 +86,6 @@ public class HttpCacheEntry {
      * @param timeout in seconds
      */
     public void computeExpireTime(int timeout) {
-        this.timeout = timeout;
 
         // timeout is relative to current time
         this.expireTime = (timeout == -1) ? timeout :

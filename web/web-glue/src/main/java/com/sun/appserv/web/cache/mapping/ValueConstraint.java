@@ -252,7 +252,7 @@ public class ValueConstraint {
      *  <code>false</code> otherwise. 
      */ 
     public boolean matches(Object value) {
-        boolean result = false;
+        boolean result;
         switch (matchExpr) {
             case Constants.MATCH_EQUALS:
                 result = matchValue.equals(value);
@@ -281,6 +281,9 @@ public class ValueConstraint {
                     result = (lval.floatValue() >= minValue && 
                                     lval.floatValue() <= maxValue);
                 }
+                break;
+            default:
+                result = false;
                 break;
         }
 

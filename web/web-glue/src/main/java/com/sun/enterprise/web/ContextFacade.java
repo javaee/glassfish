@@ -79,6 +79,8 @@ public class ContextFacade extends StandardContext implements Context {
         this.classLoader = classLoader;
     }
 
+    private transient SecurityConfig config = null;
+
     /**
      * Wrapped web module.
      */
@@ -88,7 +90,7 @@ public class ContextFacade extends StandardContext implements Context {
 
     private String contextRoot;
 
-    private ClassLoader classLoader;
+    private transient ClassLoader classLoader;
 
     private Map<String, String> filters = new HashMap<String, String>();
 
@@ -543,8 +545,6 @@ public class ContextFacade extends StandardContext implements Context {
     }
 
     // --------------------------------------------------------- embedded Methods
-
-    private SecurityConfig config = null;
 
     /**
      * Enables or disables directory listings on this <tt>Context</tt>.

@@ -145,8 +145,8 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
                 }
             }
         }
-
-        getSystemProperties(properties, spb, false);
+        
+        getSystemProperties(properties, getEntity(), false);
 
         actionReport.getExtraProperties().put("systemProperties", new ArrayList(properties.values()));
         if (properties.isEmpty()) {
@@ -187,48 +187,64 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
 
         return deleteProperty(grandParent, id);
     }
+    
+    protected void getSystemProperties(Map<String, Map<String, String>> properties, Dom dom, boolean getDefaults) {
+        List<Dom> sysprops = dom.nodeElements("system-property");
+        if ((sysprops != null) && (!sysprops.isEmpty())) {
+            for (Dom sysprop : sysprops) {
+                String name = sysprop.attribute("name");
+                Map<String, String> currValue = properties.get(name);
+                if (currValue == null) {
+                    currValue = new HashMap<String, String>();
+                    currValue.put("name", name);
+                    currValue.put(getDefaults ? "defaultValue" : "value", sysprop.attribute("value"));
 
-    protected void getSystemProperties(Map<String, Map<String, String>> properties, SystemPropertyBag spb, boolean getDefaults) {
-        try {
-            List<SystemProperty> sysProps = spb.getSystemProperty();
-            if (!sysProps.isEmpty()) {
-                for (SystemProperty prop : sysProps) {
-                    Map<String, String> currValue = properties.get(prop.getName());
-                    if (currValue == null) {
-                        currValue = new HashMap<String, String>();
-                        currValue.put("name", prop.getName());
-                        if (getDefaults) {
-                            currValue.put("defaultValue", prop.getValue());
-                        } else {
-                            currValue.put("value", prop.getValue());
-                        }
-                        if (prop.getDescription() != null) {
-                            currValue.put("description", prop.getDescription());
-                        }
-                        properties.put(prop.getName(), currValue);
-                    } else {
-                        // Only add a default value if there isn't one already
-                        if (currValue.get("defaultValue") == null) {
-                            currValue.put("defaultValue", prop.getValue());
-                        }
+                    if (sysprop.attribute("description") != null) {
+                        currValue.put("description", sysprop.attribute("description"));
+                    }
+                    properties.put(name, currValue);
+                } else {
+                    // Only add a default value if there isn't one already
+                    if (currValue.get("defaultValue") == null) {
+                        currValue.put("defaultValue", sysprop.attribute("value"));
                     }
                 }
             }
-        } catch (Exception e) {
         }
-
-        // Recurse back up the config inheritance tree
-        if (spb instanceof Server) {
-            Server server = (Server) spb;
-            if (server.getCluster() != null) {
-                getSystemProperties(properties, server.getCluster(), true);
+        
+        // Figure out how to recurse
+        if (dom.getProxyType().equals(Server.class)) {
+//            Server server = (Server) spb;
+            // Clustered instance
+            if (((Server)dom.createProxy()).getCluster() != null) {
+                getSystemProperties(properties, getCluster(dom.parent().parent(), ((Server)dom.createProxy()).getCluster().getName()), true);
             } else {
-                getSystemProperties(properties, server.getConfig(), true);
+                // Standalone instance or DAS
+                getSystemProperties(properties, getConfig(dom.parent().parent(), dom.attribute("config-ref")), true);
             }
-        } else if (spb instanceof Cluster) {
-            String configRef = ((Cluster) spb).getConfigRef();
-            getSystemProperties(properties, domain.getConfigNamed(configRef), true);
+        } else if (dom.getProxyType().equals(Cluster.class)) {
+            getSystemProperties(properties, getConfig(dom.parent().parent(), dom.attribute("config-ref")), true);
         }
+    }
+    
+    protected Dom getCluster(Dom domain, String clusterName) {
+        List<Dom> configs = domain.nodeElements("clusters").get(0).nodeElements("cluster");
+        for(Dom config : configs) {
+            if (config.attribute("name").equals(clusterName)) {
+                return config;
+            }
+        }
+        return null;
+    }
+    
+    protected Dom getConfig(Dom domain, String configName) {
+        List<Dom> configs = domain.nodeElements("configs").get(0).nodeElements("config");
+        for(Dom config : configs) {
+            if (config.attribute("name").equals(configName)) {
+                return config;
+            }
+        }
+        return null;
     }
 
     protected String convertPropertyMapToString(HashMap<String, String> data) {

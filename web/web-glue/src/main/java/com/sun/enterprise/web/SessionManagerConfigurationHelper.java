@@ -188,8 +188,8 @@ public class SessionManagerConfigurationHelper {
         String frequency = null;
         String scope = null;
         if ( persistence == PersistenceType.MEMORY 
-            | persistence == PersistenceType.FILE 
-            | persistence == PersistenceType.CUSTOM) {
+            || persistence == PersistenceType.FILE 
+            || persistence == PersistenceType.CUSTOM) {
             // Deliberately leaving frequency & scope null
         } else {
             frequency = persistenceFrequency;

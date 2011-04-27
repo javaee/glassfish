@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,9 +40,15 @@
 
 package org.glassfish.appclient.client.acc.agent;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
 import java.lang.instrument.Instrumentation;
 import java.util.logging.Logger;
 import org.glassfish.appclient.client.AppClientFacade;
+import org.glassfish.appclient.client.CLIBootstrap;
 import org.glassfish.appclient.client.acc.UserError;
 
 /**
@@ -69,11 +75,11 @@ public class AppClientContainerAgent {
     public static void premain(String agentArgsText, Instrumentation inst) {
         try {
             final long now = System.currentTimeMillis();
-
+            
             /*
              * The agent prepares the ACC but does not launch the client.
              */
-            AppClientFacade.prepareACC(agentArgsText,inst);
+            AppClientFacade.prepareACC(optionsValue(agentArgsText),inst);
     
             logger.fine("AppClientContainerAgent finished after " + (System.currentTimeMillis() - now) + " ms");
 
@@ -84,5 +90,24 @@ public class AppClientContainerAgent {
             System.exit(1);
         }
 
+    }
+    
+    private static String optionsValue(final String agentArgsText) throws FileNotFoundException, IOException {
+        if (agentArgsText == null) {
+            throw new IllegalArgumentException();
+        }
+        if (! agentArgsText.startsWith(CLIBootstrap.FILE_OPTIONS_INTRODUCER)) {
+            return agentArgsText;
+        }
+        final File argsFile = new File(agentArgsText.substring(CLIBootstrap.FILE_OPTIONS_INTRODUCER.length()));
+        final LineNumberReader reader = new LineNumberReader(new FileReader(argsFile));
+        final String result = reader.readLine();
+        reader.close();
+        if (Boolean.getBoolean("keep.argsfile")) {
+            System.err.println("Agent arguments file retained: " + argsFile.getAbsolutePath());
+        } else {
+            argsFile.delete();
+        }
+        return result;
     }
 }

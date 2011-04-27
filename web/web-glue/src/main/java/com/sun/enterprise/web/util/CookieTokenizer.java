@@ -97,6 +97,8 @@ public class CookieTokenizer
                 // Skip past quoted span
                 do index++; while (cookies.charAt(index) != '"');
                 break;
+            default:
+                break;
             }
 
             index++;
@@ -180,6 +182,8 @@ public class CookieTokenizer
             case '"':
                 // Skip past quoted span
                 do index++; while (cookies.charAt(index) != '"');
+                break;
+            default:
                 break;
             }
 

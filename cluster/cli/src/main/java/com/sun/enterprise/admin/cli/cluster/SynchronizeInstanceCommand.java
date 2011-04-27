@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -73,7 +73,7 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
         acceptableValues = "none, normal, full")
     protected String sync="normal";
 
-    private RemoteCommand syncCmd;
+    private RemoteCommand syncCmd = null;
 
     private static enum SyncLevel { TOP, FILES, DIRECTORY, RECURSIVE };
 
@@ -152,7 +152,9 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
 
         /*
          * Create the sync state file to indicate that
-         * we've started synchronization.
+         * we've started synchronization.  If the file
+         * already exists (e.g., from a previous failed
+         * synchronization attempt), that's fine.
          */
         try {
             syncState.createNewFile();
@@ -194,7 +196,9 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
              */
             if (domainXml.lastModified() == dtime) {
                 logger.fine(Strings.get("Sync.alreadySynced"));
-                syncState.delete();
+                if (!syncState.delete())
+                    logger.warning(
+                        Strings.get("Sync.cantDeleteSyncState", syncState));
                 /*
                  * Note that we earlier marked the token for reuse.  It's OK
                  * to return immediately here with the DAS still willing to
@@ -302,7 +306,9 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
             if (domainXml != null && domainXml.exists() &&
                     domainXml.lastModified() == dtime) {
                 // nothing changed
-                syncState.delete();
+                if (!syncState.delete())
+                    logger.warning(
+                        Strings.get("Sync.cantDeleteSyncState", syncState));
                 return false;
             }
             throw exc;
@@ -311,7 +317,8 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
         /*
          * Success!  Remove sync state file.
          */
-        syncState.delete();
+        if (!syncState.delete())
+            logger.warning(Strings.get("Sync.cantDeleteSyncState", syncState));
         return true;
     }
 
@@ -408,8 +415,11 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
                 Strings.get("Sync.dirFailed", sr.dir, cex.getMessage()), cex);
         } finally {
             // remove tempFile
-            if (tempFile != null)
-                tempFile.delete();
+            if (tempFile != null) {
+                if (!tempFile.delete())
+                    logger.warning(
+                        Strings.get("Sync.cantDeleteTempFile", tempFile));
+            }
         }
     }
 
@@ -428,7 +438,9 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
      * but it's good enough for now for some performance testing
      */
     private static void expand(File dir, File archive) throws Exception {
-        dir.mkdir();
+        if (!dir.mkdir())
+            logger.warning(
+                Strings.get("Sync.cantCreateDirectory", dir));
         long modtime = archive.lastModified();
         ZipFile zf = new ZipFile(archive);
         Enumeration<? extends ZipEntry> e = zf.entries();
@@ -436,12 +448,16 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
             ZipEntry ze = e.nextElement();
             File entry = new File(dir, ze.getName());
             if (ze.isDirectory()) {
-                entry.mkdir();
+                if (!entry.mkdir())
+                    logger.warning(
+                        Strings.get("Sync.cantCreateDirectory", dir));
             } else {
                 FileUtils.copy(zf.getInputStream(ze),
                                 new FileOutputStream(entry), 0);
             }
         }
-        dir.setLastModified(modtime);
+        if (!dir.setLastModified(modtime))
+            logger.warning(
+                Strings.get("Sync.cantSetModTime", dir));
     }
 }

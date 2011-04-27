@@ -80,9 +80,9 @@ import java.util.logging.Logger;
 public final class J2EEInstanceListener implements InstanceListener {
 
     // START OF IASRI 4660742
-    protected static final Logger _logger=LogDomains.getLogger(J2EEInstanceListener.class, LogDomains.WEB_LOGGER);
+    private static final Logger _logger=LogDomains.getLogger(J2EEInstanceListener.class, LogDomains.WEB_LOGGER);
     // END OF IASRI 4660742
-    protected static final ResourceBundle _rb = _logger.getResourceBundle();
+    private static final ResourceBundle _rb = _logger.getResourceBundle();
 
     private InvocationManager im;
     private JavaEETransactionManager tm;

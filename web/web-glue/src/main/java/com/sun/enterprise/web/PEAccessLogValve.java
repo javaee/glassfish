@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -82,7 +82,7 @@ import java.util.logging.Logger;
 
 public final class PEAccessLogValve
     extends ValveBase
-    implements Lifecycle, Runnable {
+    implements Runnable {
 
     private static final Logger _logger =
         LogDomains.getLogger(PEAccessLogValve.class, LogDomains.WEB_LOGGER);
@@ -622,11 +622,12 @@ public final class PEAccessLogValve
         if (rotatable){
 
             long systime = System.currentTimeMillis();
-            if (systime-lastAccessLogCreationTime > rotationInterval*1000) {
+            long rotationIntervalLong = rotationInterval*1000L;
+            if (systime-lastAccessLogCreationTime > rotationIntervalLong) {
                 synchronized (this) {
                     systime = System.currentTimeMillis();
                     if (systime-lastAccessLogCreationTime >
-                        rotationInterval*1000) {
+                        rotationIntervalLong) {
 
                         // Rotate only if the formatted datestamps are
                         // different
@@ -928,7 +929,9 @@ public final class PEAccessLogValve
         File dir = new File(directory);
         if (!dir.isAbsolute())
             dir = new File(System.getProperty("catalina.base"), directory);
-        dir.mkdirs();
+        if (!dir.mkdirs()) {
+            // Ignore for now
+        }
 
         // Open the current log file
         try {

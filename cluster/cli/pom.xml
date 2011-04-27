@@ -53,6 +53,11 @@
     <artifactId>cluster-cli</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Cluster Admin CLI</name>
+
+    <properties>
+        <findbugs.exclude>exclude.xml</findbugs.exclude>
+    </properties>
+
     <build>
         <plugins>
             <plugin>

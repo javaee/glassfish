@@ -63,4 +63,14 @@
         <Method name="setEjbIntfType"/>
         <Bug pattern="DB_DUPLICATE_BRANCHES"/>
     </Match>
+
+    <!--
+        Tasks wait for only one condition, and any task that's woken up can
+        handle the condition, so notifyAll is unnecessary.
+    -->
+    <Match>
+        <Class name="com.sun.ejb.containers.MessageBeanContainer$ASyncClientShutdownTask"/>
+        <Method name="run"/>
+        <Bug pattern="NO_NOTIFY_NOT_NOTIFYALL"/>
+    </Match>
 </FindBugsFilter>

@@ -201,6 +201,7 @@ public class AppclientCommandArgumentsTest {
     private File createTempPWFile(final Properties props) throws IOException {
         final File tempFile = File.createTempFile("accpw", ".txt");
         props.store(new FileWriter(tempFile), "temp file for acc unit test");
+        tempFile.deleteOnExit();
         return tempFile;
     }
 
