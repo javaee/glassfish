@@ -265,13 +265,6 @@ public class VirtualServer extends StandardHost
     }
 
     /**
-     * @return true if this virtual server is active, false otherwise
-     *
-    public boolean isActive() {
-        return isActive;
-    }*/
-
-    /**
      * Sets the state of this virtual server.
      *
      * @param isActive true if this virtual server is active, false otherwise

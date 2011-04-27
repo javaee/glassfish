@@ -930,7 +930,7 @@ public final class PEAccessLogValve
         if (!dir.isAbsolute())
             dir = new File(System.getProperty("catalina.base"), directory);
         if (!dir.mkdirs()) {
-            throw new IOException("Could not created directory "+dir.getAbsolutePath());
+            // Ignore for now
         }
 
         // Open the current log file
