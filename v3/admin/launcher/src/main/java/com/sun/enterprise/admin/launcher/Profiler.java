@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,7 +48,7 @@ import java.util.*;
  * Note that the V2 dtd says that there can be generic property elements in the
  * profiler element.  I don't know why anyone would use them -- but if they do I 
  * turn it into a "-D" System Property
- * @author bnevins
+ * @author Byron Nevins
  */
 public class Profiler {
     Map<String, String> config;
