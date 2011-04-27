@@ -145,7 +145,8 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
                 restURL = restURL.replace(TOKEN_ADMIN_LISTENER_PORT, adminListener.getPort());
             }
             
-            if (!"localhost".equals(adminListener.getAddress())) {
+	    String host = adminListener.getAddress();
+	    if (! ("localhost".equals(host) || "0.0.0.0".equals(host))){
                 restURL = restURL.replace("localhost", adminListener.getAddress());
             }
 
