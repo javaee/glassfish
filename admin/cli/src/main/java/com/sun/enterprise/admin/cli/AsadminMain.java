@@ -94,8 +94,6 @@ public class AsadminMain {
     private static final LocalStringsImpl strings =
                                 new LocalStringsImpl(AsadminMain.class);
 
-    private static final String LINE_SEP = System.getProperty("line.separator");
-    
     static {
         Map<String, String> systemProps = new ASenvPropertyReader().getProps();
         for (String prop : copyProps) {
@@ -111,8 +109,6 @@ public class AsadminMain {
      */
     private static class CLILoggerHandler extends ConsoleHandler {
         
-        private OutputStream currentOutputStream = System.err;
-        
         private CLILoggerHandler() {
             setFormatter(new CLILoggerFormatter());
         }
@@ -121,11 +117,8 @@ public class AsadminMain {
         public void publish(java.util.logging.LogRecord logRecord) {
             if (!isLoggable(logRecord))
                 return;
-            final OutputStream newOutputStream = logRecord.getLevel() == Level.SEVERE ? System.err : System.out;
-            if (! newOutputStream.equals(currentOutputStream)) {
-                setOutputStream(currentOutputStream = newOutputStream);
-            }
-            super.publish(logRecord);
+            final PrintStream ps = (logRecord.getLevel() == Level.SEVERE) ? System.err : System.out;
+            ps.println(getFormatter().format(logRecord));
         }
     }
     
@@ -133,7 +126,7 @@ public class AsadminMain {
 
         @Override
         public synchronized String format(LogRecord record) {
-            return formatMessage(record) + LINE_SEP;
+            return formatMessage(record);
         }
     }
 
