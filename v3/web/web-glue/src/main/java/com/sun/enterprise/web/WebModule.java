@@ -1740,18 +1740,14 @@ public class WebModule extends PwcWebModule {
                                          WebBundleDescriptor wbd,
                                          WebModuleConfig wmInfo) {
 
-        PersistenceType persistence = PersistenceType.MEMORY;
-        String frequency = null;
-        String scope = null;
-
         SessionManagerConfigurationHelper configHelper =
             new SessionManagerConfigurationHelper(
                 this, smBean, wbd, wmInfo,
                 webContainer.getServerConfigLookup());
 
-        persistence = configHelper.getPersistenceType();
-        frequency = configHelper.getPersistenceFrequency();
-        scope = configHelper.getPersistenceScope();
+        PersistenceType persistence = configHelper.getPersistenceType();
+        String frequency = configHelper.getPersistenceFrequency();
+        String scope = configHelper.getPersistenceScope();
 
         if (logger.isLoggable(Level.FINEST)) {
             logger.finest("IN WebContainer>>ConfigureSessionManager before builder factory");

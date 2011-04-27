@@ -59,9 +59,9 @@ public class HttpCacheEntry {
 
     int statusCode;
 
-    HashMap<String, ArrayList<String>> responseHeaders;
-    HashMap<String, ArrayList<Long>> dateHeaders;
-    ArrayList<Cookie> cookies;
+    HashMap<String, ArrayList<String>> responseHeaders = new HashMap<String, ArrayList<String>>();
+    HashMap<String, ArrayList<Long>> dateHeaders = new HashMap<String, ArrayList<Long>>();
+    ArrayList<Cookie> cookies = new ArrayList<Cookie>();
     String contentType;
     Locale locale;
 
