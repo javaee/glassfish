@@ -134,7 +134,7 @@
                                 <!-- Exclude unnecessary imports -->
                                 <Export-Package>*;version=${libpam4j.version}</Export-Package>
                                 <Private-Package>!*</Private-Package>
-                                <Import-Package>!*</Import-Package>
+                                <Import-Package>*;resolution:=optional</Import-Package>
                                 <!-- Make it an HK2 module, as GlassFish needs it to be HK2 module.
                                      This is needed because we don't want to change the packaging type to
                                      hk2-jar. -->
