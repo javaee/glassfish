@@ -10,7 +10,7 @@
     and Distribution License("CDDL") (collectively, the "License").  You
     may not use this file except in compliance with the License.  You can
     obtain a copy of the License at
-    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    https://old_glassfish.dev.java.net/public/CDDL+GPL_1_1.html
     or packager/legal/LICENSE.txt.  See the License for the specific
     language governing permissions and limitations under the License.
 
@@ -42,21 +42,41 @@
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>org.glassfish</groupId>
-        <artifactId>glassfish-parent</artifactId>
+        <groupId>org.glassfish.virtualization</groupId>
+        <artifactId>virtualization</artifactId>
         <version>3.2-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>        
+        <relativePath>../pom.xml</relativePath>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.virtualization</groupId>
-    <artifactId>virtualization</artifactId>
-    <packaging>pom</packaging>
-    <name>GlassFish Core modules</name>  
-    <modules>
-        <module>vmcluster</module>
-        <module>libvirt</module>
-        <module>libvirt-files</module>
-    </modules>
+    <artifactId>libvirt-files</artifactId>
+    <name>Glassfish Virtualization libvirt specific files</name>
+    <description>This pom describes how to assemble add the libvirt virtualization specific files to a Glassfish build</description>
+    <packaging>distribution-base-zip</packaging>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+                <artifactId>maven-antrun-extended-plugin</artifactId>
+                <configuration>
+                  <tasks>
+                    <ant dir="." antfile="build.xml" target="create.bundle" />
+                  </tasks>
+                </configuration>
+             </plugin>
+        </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>maven-glassfishbuild-extension</artifactId>
+                <version>${project.version}</version>
+            </extension>
+        </extensions>
+    </build>
+    <!-- Do not place any dependencies in this distribution, dependencies
+    should go into other packager modules -->
 </project>
+

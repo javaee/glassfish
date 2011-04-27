@@ -38,42 +38,59 @@
  *  holder.
  */
 
-package org.glassfish.vmcluster.spi;
+package org.glassfish.vmcluster.libvirt.jna;
 
-import java.util.concurrent.TimeUnit;
+import com.sun.jna.NativeLong;
+import com.sun.jna.Structure;
 
 /**
- * Returns the virtual machine information
- * @author Jerome Dochez
+ * JNA mapping for the virDomainInfo structure
  */
-public interface VirtualMachineInfo extends StaticVirtualMachineInfo {
+public class DomainInfo extends Structure {
 
     /**
-     * Returns the maximum memory allocated to this virtual machine.
+     * @author stoty
      *
-     * @return the virtual machine maximum memory.
      */
-    long maxMemory() throws VirtException;
+    public static enum DomainState {
+        /**
+         * no state
+         */
+        VIR_DOMAIN_NOSTATE,
+        /**
+         * the domain is running
+         */
+        VIR_DOMAIN_RUNNING,
+        /**
+         * the domain is blocked on resource
+         */
+        VIR_DOMAIN_BLOCKED,
+        /**
+         * the domain is paused by user
+         */
+        VIR_DOMAIN_PAUSED,
+        /**
+         * the domain is being shut down
+         */
+        VIR_DOMAIN_SHUTDOWN,
+        /**
+         * the domain is shut off
+         */
+        VIR_DOMAIN_SHUTOFF,
+        /**
+         * the domain is crashed
+         */
+        VIR_DOMAIN_CRASHED
+    }
 
-    /**
-     * Returns the machine's state
-     * @return the machine's state
-     *
-     * @throws VirtException if the machine's state cannot be obtained
-     */
-    Machine.State getState() throws VirtException;
 
-    /**
-     * Registers a memory changes listener
-     * @param ml the memory listener instance
-     * @param delay notification interval for memory changes polling.
-     * @param unit the time unit to express delay
-     */
-    void registerMemoryListener(MemoryListener ml, long delay, TimeUnit unit);
+    public int state;
+    public NativeLong maxMem;
+    public NativeLong memory;
+    public short nrVirtCpu;
+    public long cpuTime;
 
-    /**
-     * Un-registers a memory changes listener
-     * @param ml, the listener to un-register.
-     */
-    void unregisterMemoryListener(MemoryListener ml);
+    public DomainState getState() {
+        return DomainState.values()[state];
+    }
 }

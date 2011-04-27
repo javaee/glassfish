@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.glassfish.virtualization</groupId>
+        <artifactId>virtualization</artifactId>
+        <version>3.2-SNAPSHOT</version>
+    </parent>
+    <artifactId>libvirt</artifactId>
+    <packaging>hk2-jar</packaging>
+    <name>libvirt plugin</name>
+    <repositories>
+        <repository>
+            <id>libvirt</id>
+            <url>http://www.libvirt.org/maven2/</url>
+        </repository>
+    </repositories>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>net.java.dev.jna</groupId>
+                                    <artifactId>jna</artifactId>
+                                    <version>3.2.7</version>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+                <groupId>net.java.dev.jna</groupId>
+                <artifactId>jna</artifactId>
+                <version>3.2.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.virtualization</groupId>
+            <artifactId>vmcluster</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+</project>

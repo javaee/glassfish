@@ -1,16 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="iso-8859-1"?>
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
     and Distribution License("CDDL") (collectively, the "License").  You
     may not use this file except in compliance with the License.  You can
     obtain a copy of the License at
-    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    https://old_glassfish.dev.java.net/public/CDDL+GPL_1_1.html
     or packager/legal/LICENSE.txt.  See the License for the specific
     language governing permissions and limitations under the License.
 
@@ -41,22 +41,19 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.glassfish</groupId>
-        <artifactId>glassfish-parent</artifactId>
-        <version>3.2-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>        
-    </parent>
-    <groupId>org.glassfish.virtualization</groupId>
-    <artifactId>virtualization</artifactId>
-    <packaging>pom</packaging>
-    <name>GlassFish Core modules</name>  
-    <modules>
-        <module>vmcluster</module>
-        <module>libvirt</module>
-        <module>libvirt-files</module>
-    </modules>
+<project name="kvm-files bundle creation" basedir=".">
+    <target name="create.bundle">
+        <!-- force resource processing as version could change behind the scene without Ant ever noticing it -->
+	<delete dir="target/resources"/>
+        <mkdir dir="target/resources"/>
+
+
+        <zip file="target/libvirt-files.zip">
+            <zipfileset prefix="glassfish" dir=".">
+                <include name="config/**"/>
+		<include name="domains/**"/>
+            </zipfileset>
+        </zip>
+        <attachArtifact file="target/libvirt-files.zip"/>
+    </target>
 </project>

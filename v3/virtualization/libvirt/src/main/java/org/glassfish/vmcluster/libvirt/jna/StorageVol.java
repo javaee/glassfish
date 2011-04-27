@@ -38,42 +38,58 @@
  *  holder.
  */
 
-package org.glassfish.vmcluster.spi;
+package org.glassfish.vmcluster.libvirt.jna;
 
-import java.util.concurrent.TimeUnit;
+import org.glassfish.vmcluster.spi.VirtException;
 
 /**
- * Returns the virtual machine information
+ * Storage Volume JNA interface
  * @author Jerome Dochez
  */
-public interface VirtualMachineInfo extends StaticVirtualMachineInfo {
+public class StorageVol extends LibVirtObject {
+
+    private final StorageVolPointer handle;
+
+    public StorageVol(StorageVolPointer handle) {
+        this.handle = handle;
+    }
 
     /**
-     * Returns the maximum memory allocated to this virtual machine.
+     * Delete the storage volume from the pool
      *
-     * @return the virtual machine maximum memory.
+     * @param flags
+     *            future flags, use 0 for now
+     * @throws VirtException if an error occurs
      */
-    long maxMemory() throws VirtException;
+    public void delete(int flags) throws VirtException {
+        libvirt.virStorageVolDelete(handle, flags);
+        checkForError();
+    }
 
     /**
-     * Returns the machine's state
-     * @return the machine's state
+     * Fetch the storage volume name. This is unique within the scope of a pool
      *
-     * @throws VirtException if the machine's state cannot be obtained
+     * @return the name
+     * @throws VirtException if an error occurs
      */
-    Machine.State getState() throws VirtException;
+    public String getName() throws VirtException {
+        String returnValue = libvirt.virStorageVolGetName(handle);
+        checkForError();
+        return returnValue;
+    }
 
     /**
-     * Registers a memory changes listener
-     * @param ml the memory listener instance
-     * @param delay notification interval for memory changes polling.
-     * @param unit the time unit to express delay
+     * Fetch the storage volume path. Depending on the pool configuration this
+     * is either persistent across hosts, or dynamically assigned at pool
+     * startup. Consult pool documentation for information on getting the
+     * persistent naming
+     *
+     * @return the storage volume path
+     * @throws VirtException if an error occurs
      */
-    void registerMemoryListener(MemoryListener ml, long delay, TimeUnit unit);
-
-    /**
-     * Un-registers a memory changes listener
-     * @param ml, the listener to un-register.
-     */
-    void unregisterMemoryListener(MemoryListener ml);
+    public String getPath() throws VirtException {
+        String returnValue = libvirt.virStorageVolGetPath(handle);
+        checkForError();
+        return returnValue;
+    }
 }

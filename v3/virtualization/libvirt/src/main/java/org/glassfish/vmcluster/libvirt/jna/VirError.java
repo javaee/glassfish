@@ -38,42 +38,27 @@
  *  holder.
  */
 
-package org.glassfish.vmcluster.spi;
+package org.glassfish.vmcluster.libvirt.jna;
 
-import java.util.concurrent.TimeUnit;
+import com.sun.jna.Structure;
 
 /**
- * Returns the virtual machine information
+ * mapping to a virError structure as defined at http://libvirt.org/html/libvirt-virterror.html
  * @author Jerome Dochez
  */
-public interface VirtualMachineInfo extends StaticVirtualMachineInfo {
+public class VirError extends Structure {
 
-    /**
-     * Returns the maximum memory allocated to this virtual machine.
-     *
-     * @return the virtual machine maximum memory.
-     */
-    long maxMemory() throws VirtException;
-
-    /**
-     * Returns the machine's state
-     * @return the machine's state
-     *
-     * @throws VirtException if the machine's state cannot be obtained
-     */
-    Machine.State getState() throws VirtException;
-
-    /**
-     * Registers a memory changes listener
-     * @param ml the memory listener instance
-     * @param delay notification interval for memory changes polling.
-     * @param unit the time unit to express delay
-     */
-    void registerMemoryListener(MemoryListener ml, long delay, TimeUnit unit);
-
-    /**
-     * Un-registers a memory changes listener
-     * @param ml, the listener to un-register.
-     */
-    void unregisterMemoryListener(MemoryListener ml);
+    public int code;     // The error code, a virErrorNumber
+    public int domain;    // What part of the library raised this error
+    public String message;     // human-readable informative error message
+    public int level;     // how consequent is the error
+    public ConnectionPointer conn;     // connection if available, deprecated see note above
+    public DomainPointer dom; // domain if available, deprecated see note above
+    public String str1;     // extra string information
+    public String str2;     // extra string information
+    public String str3;     // extra string information
+    public int int1;     // extra number information
+    public int int2;     // extra number information
+    public NetworkPointer net; // network if available, deprecated see note above
 }
+

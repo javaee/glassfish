@@ -38,42 +38,20 @@
  *  holder.
  */
 
-package org.glassfish.vmcluster.spi;
+package org.glassfish.vmcluster.libvirt;
 
-import java.util.concurrent.TimeUnit;
+import org.glassfish.vmcluster.spi.VirtException;
 
 /**
- * Returns the virtual machine information
+ * Libvirt specific exception with handle to underlying failure cause.
  * @author Jerome Dochez
  */
-public interface VirtualMachineInfo extends StaticVirtualMachineInfo {
+public class LibVirtException extends VirtException {
 
-    /**
-     * Returns the maximum memory allocated to this virtual machine.
-     *
-     * @return the virtual machine maximum memory.
-     */
-    long maxMemory() throws VirtException;
+    final LibVirtError error;
 
-    /**
-     * Returns the machine's state
-     * @return the machine's state
-     *
-     * @throws VirtException if the machine's state cannot be obtained
-     */
-    Machine.State getState() throws VirtException;
-
-    /**
-     * Registers a memory changes listener
-     * @param ml the memory listener instance
-     * @param delay notification interval for memory changes polling.
-     * @param unit the time unit to express delay
-     */
-    void registerMemoryListener(MemoryListener ml, long delay, TimeUnit unit);
-
-    /**
-     * Un-registers a memory changes listener
-     * @param ml, the listener to un-register.
-     */
-    void unregisterMemoryListener(MemoryListener ml);
+    public LibVirtException(LibVirtError error) {
+        super(error.message);
+        this.error = error;
+    }
 }
