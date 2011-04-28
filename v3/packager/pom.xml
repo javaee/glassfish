@@ -107,6 +107,7 @@
 	<module>glassfish-jcdi</module>
 	<module>mq</module>
 	<module>glassfish-common</module>
+	<module>glassfish-virtualization</module>
 	<module>glassfish-web-incorporation</module>
 	<module>glassfish-full-incorporation</module>
 	<module>glassfish-web-profile</module>
