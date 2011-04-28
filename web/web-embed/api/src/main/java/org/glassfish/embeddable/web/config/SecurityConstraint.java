@@ -68,7 +68,7 @@ import java.util.Set;
 public class SecurityConstraint {
 
     private Set<WebResourceCollection> webResourceCollection;
-    private String[] roleNames = new String[0];
+    private String[] roleNames;
     private TransportGuarantee tg;
 
     /**

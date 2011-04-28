@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -78,10 +78,10 @@ public final class EmbeddedWebContainer extends Embedded implements PostConstruc
     @Inject
     private ServerContext serverContext;
 
-    private static final Logger _logger
+    protected static final Logger _logger
         = LogDomains.getLogger(EmbeddedWebContainer.class, LogDomains.WEB_LOGGER);
 
-    private static final ResourceBundle rb = _logger.getResourceBundle();
+    protected static final ResourceBundle rb = _logger.getResourceBundle();
 
     private WebContainerFeatureFactory webContainerFeatureFactory;
 
@@ -367,7 +367,7 @@ public final class EmbeddedWebContainer extends Embedded implements PostConstruc
 
     static class WebEngine extends StandardEngine {
 
-        private transient WebContainer webContainer;
+        private WebContainer webContainer;
 
         public WebEngine(WebContainer webContainer) {
             this.webContainer = webContainer;

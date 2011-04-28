@@ -73,7 +73,7 @@ public class GlassFishSingleSignOn
     implements Lifecycle, SessionListener, Runnable, SingleSignOnMBean {
     */
     // START CR 6411114
-    implements Runnable, SingleSignOnMBean {
+    implements SessionListener, Runnable, SingleSignOnMBean {
     // END CR 6411114
 
     // ----------------------------------------------------- Instance Variables

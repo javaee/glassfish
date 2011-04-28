@@ -120,23 +120,27 @@ public class CollectLogFiles implements AdminCommand {
 
         if (targetServer != null && targetServer.isDas()) {
 
-            // This loop if target instance is DAS
             String logFileDetails = "";
-            String zipFile = "";
-
             try {
                 // getting log file values from logging.propertie file.
                 logFileDetails = loggingConfig.getLoggingFileDetails();
             } catch (Exception ex) {
                 final String errorMsg = localStrings.getLocalString(
-                        "collectlogfiles.errGettingLogFiles", "Error while getting log file attribute for {0}.", target);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                report.setMessage(errorMsg);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
+                        "collectlogfiles.errInstanceDownloading", "Error while downloading log files from {0}.", target);
             }
 
-            File targetDir = makingDirectoryOnDas(targetServer.getName(), report);
+            // This loop if target instance is DAS
+            String zipFile = "";
+            File tempDirectory = makingDirectory(env.getInstanceRoot(), "collected-logs", report, localStrings.getLocalString(
+                    "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
+
+            String targetDirPath = tempDirectory.getAbsolutePath() + File.separator + "logs";
+            File targetDir = makingDirectory(targetDirPath, report, localStrings.getLocalString(
+                    "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
+
+            targetDirPath = targetDir.getAbsolutePath() + File.separator + targetServer.getName();
+            targetDir = makingDirectory(targetDirPath, report, localStrings.getLocalString(
+                    "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
 
             try {
 
@@ -151,15 +155,11 @@ public class CollectLogFiles implements AdminCommand {
             } catch (Exception ex) {
                 final String errorMsg = localStrings.getLocalString(
                         "collectlogfiles.errInstanceDownloading", "Error while downloading log files from {0}.", target);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                report.setMessage(errorMsg);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
             }
 
 
             try {
-                zipFile = loggingConfig.createZipFile(getZipFilePath().getAbsolutePath());
+                zipFile = loggingConfig.createZipFile(tempDirectory.getAbsolutePath());
                 if (zipFile == null || new File(zipFile) == null) {
                     // Failure during zip
                     final String errorMsg = localStrings.getLocalString(
@@ -181,7 +181,7 @@ public class CollectLogFiles implements AdminCommand {
             }
 
             if (this.retrieve) {
-                retrieveFile(zipFile, context, getZipFilePath(), props, report);
+                retrieveFile(zipFile, context, tempDirectory, props, report);
                 report.setMessage(localStrings.getLocalString(
                         "collectlogfiles.instance.success", "Created Zip file under {0}.", retrieveFilePath + File.separator + new File(zipFile).getName()));
             } else {
@@ -189,12 +189,17 @@ public class CollectLogFiles implements AdminCommand {
                         "collectlogfiles.instance.success", "Created Zip file under {0}.", zipFile));
             }
 
+            if (targetDir != null && targetDir.exists())
+                deleteDir(targetDir);
+
         } else if (targetServer != null && targetServer.isInstance()) {
 
             // This loop if target standalone instance
+
             String instanceName = targetServer.getName();
             String serverNode = targetServer.getNodeRef();
             Node node = domain.getNodes().getNode(serverNode);
+            File tempDirectory = null;
             String zipFile = "";
             File targetDir = null;
 
@@ -204,22 +209,37 @@ public class CollectLogFiles implements AdminCommand {
                 logFileDetails = getInstanceLogFileDirectory(targetServer);
             } catch (Exception ex) {
                 final String errorMsg = localStrings.getLocalString(
-                        "collectlogfiles.errGettingLogFiles", "Error while getting log file attribute for {0}.", target);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                report.setMessage(errorMsg);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
+                        "collectlogfiles.errInstanceDownloading", "Error while downloading log files from {0}.", target);
             }
 
-            targetDir = makingDirectoryOnDas(targetServer.getName(), report);
+            tempDirectory = makingDirectory(env.getInstanceRoot(), "collected-logs", report, localStrings.getLocalString(
+                    "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
 
             try {
                 if (node.isLocal()) {
-                    String sourceDir = getLogDirForLocalNode(logFileDetails, node, serverNode, instanceName);
+
+                    String sourceDir = "";
+                    if (logFileDetails.contains("${com.sun.aas.instanceRoot}/logs")) {
+                        sourceDir = env.getInstanceRoot().getAbsolutePath() + File.separator + ".." + File.separator + ".."
+                                + File.separator + "nodes" + File.separator + serverNode
+                                + File.separator + instanceName + File.separator + "logs";
+                    } else {
+                        sourceDir = logFileDetails.substring(0, logFileDetails.lastIndexOf(File.separator));
+                    }
+
+                    String targetDirPath = tempDirectory.getAbsolutePath() + File.separator + "logs";
+                    targetDir = makingDirectory(targetDirPath, report, localStrings.getLocalString(
+                            "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
+
+                    targetDirPath = targetDir.getAbsolutePath() + File.separator + targetServer.getName();
+                    targetDir = makingDirectory(targetDirPath, report, localStrings.getLocalString(
+                            "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
+
+
                     copyLogFilesForLocalhost(sourceDir, targetDir.getAbsolutePath(), report, instanceName);
                 } else {
                     new LogFilterForInstance().downloadAllInstanceLogFiles(habitat, targetServer,
-                            domain, logger, instanceName, targetDir.getAbsolutePath(), logFileDetails);
+                            domain, logger, instanceName, tempDirectory.getAbsolutePath(), logFileDetails);
                 }
             }
             catch (Exception ex) {
@@ -232,7 +252,7 @@ public class CollectLogFiles implements AdminCommand {
 
             try {
                 // Creating zip file and returning zip file absolute path.
-                zipFile = loggingConfig.createZipFile(getZipFilePath().getAbsolutePath());
+                zipFile = loggingConfig.createZipFile(tempDirectory.getAbsolutePath());
                 if (zipFile == null || new File(zipFile) == null) {
                     // Failure during zip
                     final String errorMsg = localStrings.getLocalString(
@@ -252,7 +272,7 @@ public class CollectLogFiles implements AdminCommand {
             }
 
             if (this.retrieve) {
-                retrieveFile(zipFile, context, getZipFilePath(), props, report);
+                retrieveFile(zipFile, context, tempDirectory, props, report);
                 report.setMessage(localStrings.getLocalString(
                         "collectlogfiles.instance.success", "Created Zip file under {0}.", retrieveFilePath + File.separator + new File(zipFile).getName()));
             } else {
@@ -260,12 +280,19 @@ public class CollectLogFiles implements AdminCommand {
                         "collectlogfiles.instance.success", "Created Zip file under {0}.", zipFile));
             }
 
+            if (targetDir != null && targetDir.exists())
+                deleteDir(targetDir);
+
         } else {
             // This loop if target is cluster
 
             String finalMessage = "";
+            File tempDirectory = null;
             String zipFile = "";
             File targetDir = null;
+
+            tempDirectory = makingDirectory(env.getInstanceRoot(), "collected-logs", report, localStrings.getLocalString(
+                    "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
 
 
             // code to download server.log file for DAS. Bug fix 16088
@@ -275,16 +302,20 @@ public class CollectLogFiles implements AdminCommand {
                 logFileDetails = loggingConfig.getLoggingFileDetails();
             } catch (Exception ex) {
                 final String errorMsg = localStrings.getLocalString(
-                        "collectlogfiles.errGettingLogFiles", "Error while getting log file attribute for {0}.", target);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                report.setMessage(errorMsg);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
+                        "collectlogfiles.errInstanceDownloading", "Error while downloading log files from {0}.", target);
             }
 
-            targetDir = makingDirectoryOnDas(SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME, report);
+            String targetDirPath = tempDirectory.getAbsolutePath() + File.separator + "logs";
+            targetDir = makingDirectory(targetDirPath, report, localStrings.getLocalString(
+                    "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
+
+            targetDirPath = targetDir.getAbsolutePath() + File.separator + SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+
+            targetDir = makingDirectory(targetDirPath, report, localStrings.getLocalString(
+                    "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
 
             try {
+
                 String sourceDir = "";
                 if (logFileDetails.contains("${com.sun.aas.instanceRoot}/logs")) {
                     sourceDir = env.getDomainRoot() + File.separator + "logs";
@@ -297,10 +328,6 @@ public class CollectLogFiles implements AdminCommand {
             } catch (Exception ex) {
                 final String errorMsg = localStrings.getLocalString(
                         "collectlogfiles.errInstanceDownloading", "Error while downloading log files from {0}.", target);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                report.setMessage(errorMsg);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
             }
             /******************************************************/
 
@@ -325,22 +352,30 @@ public class CollectLogFiles implements AdminCommand {
                     logFileDetails = getInstanceLogFileDirectory(domain.getServerNamed(instanceName));
                 } catch (Exception ex) {
                     final String errorMsg = localStrings.getLocalString(
-                            "collectlogfiles.errGettingLogFiles", "Error while getting log file attribute for {0}.", target);
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    report.setMessage(errorMsg);
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    return;
+                            "collectlogfiles.errInstanceDownloading", "Error while downloading log files from {0}.", target);
                 }
 
                 try {
-                    targetDir = makingDirectoryOnDas(instanceName, report);
 
                     if (node.isLocal()) {
-                        String sourceDir = getLogDirForLocalNode(logFileDetails, node, serverNode, instanceName);
+
+                        String sourceDir = "";
+                        if (logFileDetails.contains("${com.sun.aas.instanceRoot}/logs")) {
+                            sourceDir = env.getInstanceRoot().getAbsolutePath() + File.separator + ".." + File.separator
+                                    + ".." + File.separator + "nodes" + File.separator + serverNode
+                                    + File.separator + instanceName + File.separator + "logs";
+                        } else {
+                            sourceDir = logFileDetails.substring(0, logFileDetails.lastIndexOf(File.separator));
+                        }
+
+                        targetDirPath = tempDirectory.getAbsolutePath() + File.separator + "logs" + File.separator + instanceName;
+                        targetDir = makingDirectory(targetDirPath, report, localStrings.getLocalString(
+                                "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
+
                         copyLogFilesForLocalhost(sourceDir, targetDir.getAbsolutePath(), report, instanceName);
                     } else {
                         new LogFilterForInstance().downloadAllInstanceLogFiles(habitat, instance,
-                                domain, logger, instanceName, targetDir.getAbsolutePath(), logFileDetails);
+                                domain, logger, instanceName, tempDirectory.getAbsolutePath(), logFileDetails);
                     }
                 }
                 catch (Exception ex) {
@@ -361,7 +396,7 @@ public class CollectLogFiles implements AdminCommand {
             if (instanceCount != errorCount) {
                 try {
                     // Creating zip file and returning zip file absolute path.
-                    zipFile = loggingConfig.createZipFile(getZipFilePath().getAbsolutePath());
+                    zipFile = loggingConfig.createZipFile(tempDirectory.getAbsolutePath());
                     if (zipFile == null || new File(zipFile) == null) {
                         // Failure during zip
                         final String errorMsg = localStrings.getLocalString(
@@ -381,7 +416,7 @@ public class CollectLogFiles implements AdminCommand {
                 }
 
                 if (this.retrieve) {
-                    retrieveFile(zipFile, context, getZipFilePath(), props, report);
+                    retrieveFile(zipFile, context, tempDirectory, props, report);
                     report.setMessage(localStrings.getLocalString(
                             "collectlogfiles.cluster.success", "{0} Created Zip file under {1}.", finalMessage, retrieveFilePath + File.separator + new File(zipFile).getName()));
                 } else {
@@ -398,9 +433,9 @@ public class CollectLogFiles implements AdminCommand {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             }
 
+            if (targetDir != null && targetDir.exists())
+                deleteDir(targetDir);
         }
-
-        deleteDir(new File(env.getInstanceRoot() + File.separator + "collected-logs" + File.separator + "logs"));
     }
 
     private void copyLogFilesForLocalhost(String sourceDir, String targetDir, ActionReport report, String instanceName) throws IOException {
@@ -450,6 +485,7 @@ public class CollectLogFiles implements AdminCommand {
                     return;
                 }
             }
+
         }
     }
 
@@ -487,15 +523,17 @@ public class CollectLogFiles implements AdminCommand {
     }
 
     public boolean deleteDir(File dir) {
-        boolean ret = true;
-        for (File f : dir.listFiles()) {
-            if (f.isDirectory()) {
-                ret = ret && deleteDir(f);
-            } else {
-                ret = ret && f.delete();
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
             }
         }
-        return ret && dir.delete();
+        // The directory is now empty so delete it
+        return dir.delete();
     }
 
     /*
@@ -552,56 +590,5 @@ public class CollectLogFiles implements AdminCommand {
         } else {
             return targetDir;
         }
-    }
-
-    private String getLogDirForLocalNode(String instanceLogFileName, Node node, String serverNode, String instanceName) {
-        String loggingDir;
-        loggingDir = new LogFilterForInstance().getLoggingDirectoryForNode(instanceLogFileName, node, serverNode, instanceName);
-
-        File logsDir = new File(loggingDir);
-        File allLogFileNames[] = logsDir.listFiles();
-
-
-        boolean noFileFound = true;
-
-        if (allLogFileNames != null) { // This check for,  if directory doesn't present or missing on machine. It happens due to bug 16451
-            for (int i = 0; i < allLogFileNames.length; i++) {
-                File file = allLogFileNames[i];
-                String fileName = file.getName();
-                // code to remove . and .. file which is return
-                if (file.isFile() && !fileName.equals(".") && !fileName.equals("..") && fileName.contains(".log")
-                        && !fileName.contains(".log.")) {
-                    noFileFound = false;
-                    break;
-                }
-            }
-        }
-
-        if (noFileFound) {
-            // this loop is used when user has changed value for server.log but not restarted the server.
-            loggingDir = new LogFilterForInstance().getLoggingDirectoryForNodeWhenNoFilesFound(instanceLogFileName, node, serverNode, instanceName);
-
-        }
-
-        return loggingDir;
-    }
-
-    private File makingDirectoryOnDas(String serverName, ActionReport report) {
-        File tempDirectory = makingDirectory(env.getInstanceRoot(), "collected-logs", report, localStrings.getLocalString(
-                "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
-
-        String targetDirPath = tempDirectory.getAbsolutePath() + File.separator + "logs";
-        File targetDir = makingDirectory(targetDirPath, report, localStrings.getLocalString(
-                "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
-
-        targetDirPath = targetDir.getAbsolutePath() + File.separator + serverName;
-        targetDir = makingDirectory(targetDirPath, report, localStrings.getLocalString(
-                "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files."));
-
-        return targetDir;
-    }
-
-    private File getZipFilePath() {
-        return new File(env.getInstanceRoot() + File.separator + "collected-logs");
     }
 }

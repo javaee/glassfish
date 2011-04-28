@@ -70,7 +70,7 @@ public class MimeMap implements Serializable {
     /**
      * Gets the mime id of the mime element which this MimeMap represents.
      */
-    String getID() {
+    String getId() {
         return this.id;
     }
 

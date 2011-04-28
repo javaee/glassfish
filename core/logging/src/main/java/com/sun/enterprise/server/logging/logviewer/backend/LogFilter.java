@@ -304,40 +304,19 @@ public class LogFilter {
 
             if (node.isLocal()) {
 
-                loggingDir = new LogFilterForInstance().getLoggingDirectoryForNode(instanceLogFileName, node, serverNode, instanceName);
+                if (instanceLogFileName.contains("${com.sun.aas.instanceRoot}/logs")) {
+                    // this code is used if no changes made to log file name under logging.properties file
+                    loggingDir = env.getInstanceRoot().getAbsolutePath() + File.separator + ".." + File.separator
+                            + ".." + File.separator + "nodes" + File.separator + serverNode
+                            + File.separator + instanceName + File.separator + "logs";
+                    instanceLogFile = new File(loggingDir + File.separator + logFileName);
 
-                File logsDir = new File(loggingDir);
-                File allLogFileNames[] = logsDir.listFiles();
-
-
-                boolean noFileFound = true;
-
-                if (allLogFileNames != null) { // This check for,  if directory doesn't present or missing on machine. It happens due to bug 16451
-                    for (int i = 0; i < allLogFileNames.length; i++) {
-                        File file = allLogFileNames[i];
-                        String fileName = file.getName();
-                        // code to remove . and .. file which is return
-                        if (file.isFile() && !fileName.equals(".") && !fileName.equals("..") && fileName.contains(".log")
-                                && !fileName.contains(".log.")) {
-                            noFileFound = false;
-                            break;
-                        }
+                    // verifying loggingFile presents or not if not then changing logFileName value to server.log. It means wrong name is coming
+                    // from GUI to back end code.
+                    if (!instanceLogFile.exists()) {
+                        instanceLogFile = new File(loggingDir + File.separator + "server.log");
                     }
-                }
-
-                if (noFileFound) {
-                    // this loop is used when user has changed value for server.log but not restarted the server.
-                    loggingDir = new LogFilterForInstance().getLoggingDirectoryForNodeWhenNoFilesFound(instanceLogFileName, node, serverNode, instanceName);
-
-                }
-
-                instanceLogFile = new File(loggingDir + File.separator + logFileName);
-
-                // verifying loggingFile presents or not if not then changing logFileName value to server.log. It means wrong name is coming
-                // from GUI to back end code.
-                if (!instanceLogFile.exists()) {
-                    instanceLogFile = new File(loggingDir + File.separator + "server.log");
-                } else if (!instanceLogFile.exists()) {
+                } else {
                     // this code is used when user changes the attributes value(com.sun.enterprise.server.logging.GFFileHandler.file) in
                     // logging.properties file to something else.
                     loggingDir = instanceLogFileName.substring(0, instanceLogFileName.lastIndexOf(File.separator));

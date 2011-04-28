@@ -103,7 +103,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         // release DeploymentContext in memory
         wmInfo.setDeploymentContext(null);
 
-        if (results.isEmpty()) {
+        if (results == null) {
             logger.log(Level.SEVERE, "webApplication.unknownError");
             return false;
         }

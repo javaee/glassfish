@@ -213,8 +213,6 @@ public class SecurityTest extends BaseSeleniumTestClass {
             clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_PROVIDER_CONFIGURATION);
             assertTrue(isTextPresent(providerName));
             clickAndWait(getLinkIdByLinkText("propertyForm:configs", providerName), TRIGGER_EDIT_PROVIDER_CONFIGURATION);
-            // Case Added for Issue 15711
-            clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
             assertEquals(className, getFieldValue("propertyForm:propertySheet:providerConfSection:ClassNameProp:ClassName"));
             assertTableRowCount("propertyForm:basicTable", count);
         }

@@ -88,8 +88,9 @@
            <version>${project.version}</version>
         </dependency>
         <dependency>        
-           <groupId>org.glassfish.fighterfish</groupId>
+           <groupId>org.glassfish</groupId>
            <artifactId>osgi-jdbc</artifactId>
+           <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>

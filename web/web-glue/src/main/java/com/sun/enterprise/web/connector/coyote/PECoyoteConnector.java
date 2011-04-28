@@ -960,11 +960,10 @@ public class PECoyoteConnector extends Connector {
             configureKeysAndCerts();
         }
         
-        configureHttpListenerProperties(listener);
-
-        // Overrided by http-service property if defined.
         webContainer.configureHttpServiceProperties(httpService, this);      
 
+        // Override http-service property if defined.
+        configureHttpListenerProperties(listener);
     }
 
 

@@ -44,8 +44,6 @@ import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.OS;
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -89,8 +87,6 @@ import org.glassfish.appclient.client.acc.UserError;
  * @author Tim Quinn
  */
 public class CLIBootstrap {
-    
-    public final static String FILE_OPTIONS_INTRODUCER = "argsfile=";
 
     private final static String COMMA_IN_ARG_PLACEHOLDER = "+-+-+-+";
     private final static boolean isDebug = System.getenv("AS_DEBUG") != null;
@@ -1021,25 +1017,8 @@ public class CLIBootstrap {
      */
     private void addAgentOption() throws UserError {
         otherJVMOptions.processValue(new String[] {
-            "-javaagent:" + quote(gfInfo.agentJarPath())  + agentOptionsFromFile()},
+            "-javaagent:" + quote(gfInfo.agentJarPath())  + agentArgs.toString()},
             0);
-    }
-    
-    private String agentOptionsFromFile() {
-        try {
-            final File argsFile = fileContainingAgentArgs();
-            return '=' + FILE_OPTIONS_INTRODUCER + quote(argsFile.getAbsolutePath());
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-    
-    private File fileContainingAgentArgs() throws IOException {
-        final File argsFile = File.createTempFile("acc", ".dat");
-        final PrintStream ps = new PrintStream(argsFile);
-        ps.println(agentArgs.toString());
-        ps.close();
-        return argsFile;
     }
 
     /**

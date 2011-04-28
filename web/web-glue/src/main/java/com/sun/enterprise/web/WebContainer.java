@@ -163,9 +163,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     protected static final ResourceBundle rb = _logger.getResourceBundle();
 
     /**
+     * The current <code>WebContainer</code> instance used (single).
+     */
+    protected static WebContainer webContainer;
+
+    /**
      * Are we using Tomcat deployment backend or DOL?
      */
-    static boolean useDOLforDeployment = true;
+    protected static boolean useDOLforDeployment = true;
 
     // ----------------------------------------------------- Instance Variables
 
@@ -1159,6 +1164,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             HttpService httpService,
             SecurityService securityService) {
 
+        MimeMap mm = null;
         String vs_id = vsBean.getId();
 
         String docroot = vsBean.getPropertyValue("docroot");
@@ -1170,7 +1176,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 vs_id,
                 vsBean.getDefaultWebModule());
 
-        VirtualServer vs = createHost(vs_id, vsBean, docroot, null 
+        VirtualServer vs = createHost(vs_id, vsBean, docroot, mm
         );
 
         // cache control
@@ -2088,6 +2094,64 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     public File getModulesRoot() {
         return _modulesRoot;
     }
+
+
+    /**
+     * Get the persistence frequency for this web module
+     * (this is the value from sun-web.xml if defined
+     *
+     * @param smBean the session manager config bean
+     *               HERCULES:add
+     */
+    private String getPersistenceFrequency(SessionManager smBean) {
+        String persistenceFrequency = null;
+        ManagerProperties mgrBean = smBean.getManagerProperties();
+        if (mgrBean != null && mgrBean.sizeWebProperty() > 0) {
+            WebProperty[] props = mgrBean.getWebProperty();
+            for (WebProperty prop : props) {
+                String name = prop.getAttributeValue(WebProperty.NAME);
+                String value = prop.getAttributeValue(WebProperty.VALUE);
+                if (name == null || value == null) {
+                    throw new IllegalArgumentException(
+                            rb.getString("webcontainer.nullWebProperty"));
+                }
+                if (name.equalsIgnoreCase("persistenceFrequency")) {
+                    persistenceFrequency = value;
+                    break;
+                }
+            }
+        }
+        return persistenceFrequency;
+    }
+
+    /**
+     * Get the persistence scope for this web module
+     * (this is the value from sun-web.xml if defined
+     *
+     * @param smBean the session manager config bean
+     *               HERCULES:add
+     */
+    private String getPersistenceScope(SessionManager smBean) {
+        String persistenceScope = null;
+        StoreProperties storeBean = smBean.getStoreProperties();
+        if (storeBean != null && storeBean.sizeWebProperty() > 0) {
+            WebProperty[] props = storeBean.getWebProperty();
+            for (WebProperty prop : props) {
+                String name = prop.getAttributeValue(WebProperty.NAME);
+                String value = prop.getAttributeValue(WebProperty.VALUE);
+                if (name == null || value == null) {
+                    throw new IllegalArgumentException(
+                            rb.getString("webcontainer.nullWebProperty"));
+                }
+                if (name.equalsIgnoreCase("persistenceScope")) {
+                    persistenceScope = value;
+                    break;
+                }
+            }
+        }
+        return persistenceScope;
+    }
+
 
     /**
      * Undeploy a web application.

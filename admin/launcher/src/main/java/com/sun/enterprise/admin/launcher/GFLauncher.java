@@ -40,7 +40,6 @@
 
 package com.sun.enterprise.admin.launcher;
 
-import com.sun.enterprise.util.Utility;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
@@ -83,7 +82,7 @@ public abstract class GFLauncher {
      * 
      * @throws com.sun.enterprise.admin.launcher.GFLauncherException 
      */
-    public final void launch() throws GFLauncherException {
+    public final synchronized void launch() throws GFLauncherException {
         try {
             startTime = System.currentTimeMillis();
             if (!setupCalledByClients)
@@ -106,12 +105,12 @@ public abstract class GFLauncher {
      * Launches the server - but forces the setup() to go through again.
      * @throws com.sun.enterprise.admin.launcher.GFLauncherException
      */
-    public final void relaunch() throws GFLauncherException {
+    public final synchronized void relaunch() throws GFLauncherException {
         setupCalledByClients = false;
         launch();
     }
 
-    public final void launchJVM(List<String> cmdsIn) throws GFLauncherException {
+    public final synchronized void launchJVM(List<String> cmdsIn) throws GFLauncherException {
         try {
             setup();    // we only use one thing -- the java executable
             List<String> commands = new LinkedList<String>();
@@ -137,7 +136,7 @@ public abstract class GFLauncher {
         }
     }
 
-    public void setup() throws GFLauncherException, MiniXmlParserException {
+    public synchronized void setup() throws GFLauncherException, MiniXmlParserException {
         ASenvPropertyReader pr;
         if (isFakeLaunch()) {
             pr = new ASenvPropertyReader(info.getInstallDir());
@@ -233,7 +232,7 @@ public abstract class GFLauncher {
      * @return The full path of the logfile
      * @throws GFLauncherException if you call this method too early
      */
-    public String getLogFilename() throws GFLauncherException {
+    public synchronized String getLogFilename() throws GFLauncherException {
         if (!logFilenameWasFixed)
             throw new GFLauncherException(strings.get("internalError") + " call to getLogFilename() before it has been initialized");
 
@@ -264,7 +263,7 @@ public abstract class GFLauncher {
      *
      * @return true if the domain needs to be upgraded first
      */
-    public final boolean needsAutoUpgrade() {
+    public final synchronized boolean needsAutoUpgrade() {
         return needsAutoUpgrade;
     }
     
@@ -273,7 +272,7 @@ public abstract class GFLauncher {
      *
      * @return true if the domain needs to be upgraded first
      */
-    public final boolean needsManualUpgrade() {
+    public final synchronized boolean needsManualUpgrade() {
         return needsManualUpgrade;
     }
 
@@ -303,7 +302,7 @@ public abstract class GFLauncher {
                 }
                 if (attr.startsWith("suspend=")) {
                     try {
-                        debugSuspend = attr.substring(8).toLowerCase(Locale.getDefault()).equals("y");
+                        debugSuspend = attr.substring(8).toLowerCase().equals("y");
                     }
                     catch (Exception ex) {
                         debugSuspend = false;
@@ -382,7 +381,7 @@ public abstract class GFLauncher {
         this.info = info;
     }
 
-    final Map<String, String> getEnvProps() {
+    final synchronized Map<String, String> getEnvProps() {
         return asenvProps;
     }
 
@@ -390,7 +389,7 @@ public abstract class GFLauncher {
         return commandLine;
     }
 
-    final long getStartTime() {
+    final synchronized long getStartTime() {
         return startTime;
     }
 
@@ -546,7 +545,7 @@ public abstract class GFLauncher {
         }
     }
 
-    private void setShutdownHook(final Process p) {
+    private synchronized void setShutdownHook(final Process p) {
         // ON UNIX a ^C on the console will also kill DAS
         // On Windows a ^C on the console will not kill DAS
         // We want UNIX behavior on Windows
@@ -761,7 +760,7 @@ public abstract class GFLauncher {
             if (key.startsWith("javaagent:")) {
                 // complications -- of course!!  They may have mix&match forward and back slashes
                 key = key.replace('\\', '/');
-                if (key.indexOf(BTRACE_PATH) >= 0)
+                if (key.indexOf(BTRACE_PATH) > 0)
                     return; // Done!!!!
             }
         }
@@ -785,20 +784,7 @@ public abstract class GFLauncher {
         if (!jarFile.isFile())
             throw new GFLauncherException("no_btrace_jar", jarPath);
 
-        String ret = "javaagent:" + jarPath + "=unsafe=true,noServer=true";
-
-        if(Boolean.parseBoolean(Utility.getEnvOrProp("AS_BTRACE_DEBUG"))) {
-            ret += ",debug=true";
-            // btrace will totally take over the log -- write this to stdout directly!
-            System.out.println("*****************************************************************");
-            System.out.println("*****************************************************************");
-            System.out.println("******************  BTRACE set to DEBUG  ************************");
-            System.out.println("Based on AS_BTRACE_DEBUG=true system property or env. variable");
-            System.out.println("*****************************************************************");
-            System.out.println("*****************************************************************");
-        }
-
-        return ret;
+        return "javaagent:" + jarPath + "=unsafe=true,noServer=true";
     }
 
     private List<String> getSpecialSystemProperties() throws GFLauncherException {
@@ -830,11 +816,10 @@ public abstract class GFLauncher {
 
     private List<String> propsToJvmOptions(Map<String, String> map) {
         List<String> ss = new ArrayList<String>();
-        Set<Map.Entry<String, String>> entries = map.entrySet();
+        Set<String> set = map.keySet();
 
-        for (Map.Entry<String, String> entry : entries) {
-            String name = entry.getKey();
-            String value = entry.getValue();
+        for (String name : set) {
+            String value = map.get(name);
             String jvm = "-D" + name;
 
             if (value != null) {

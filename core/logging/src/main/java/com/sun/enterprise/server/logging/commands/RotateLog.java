@@ -40,12 +40,9 @@
 
 package com.sun.enterprise.server.logging.commands;
 
-import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.server.logging.GFFileHandler;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
@@ -66,13 +63,6 @@ public class RotateLog implements AdminCommand {
 
     @Inject
     GFFileHandler gf;
-
-    @Inject
-    Domain domain;
-
-    @Param(optional = true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
-
 
     public void execute(AdminCommandContext context) {
 

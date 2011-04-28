@@ -113,8 +113,9 @@
             <version>${project.version}</version>
         </dependency> 
         <dependency>
-            <groupId>org.glassfish.fighterfish</groupId>
+            <groupId>org.glassfish</groupId>
             <artifactId>osgi-cdi</artifactId>
+            <version>${project.version}</version>
         </dependency> 
     </dependencies>
 

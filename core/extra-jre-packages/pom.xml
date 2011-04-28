@@ -138,7 +138,6 @@
  sun.security.jgss.spi,
  sun.security.krb5,
  sun.security.krb5.internal.crypto,
- com.sun.security.jgss,
  sun.security.provider,
  sun.security.tools,
  sun.security.util,

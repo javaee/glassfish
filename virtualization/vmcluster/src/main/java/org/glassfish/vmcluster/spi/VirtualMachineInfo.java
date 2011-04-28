@@ -46,7 +46,21 @@ import java.util.concurrent.TimeUnit;
  * Returns the virtual machine information
  * @author Jerome Dochez
  */
-public interface VirtualMachineInfo extends StaticVirtualMachineInfo {
+public interface VirtualMachineInfo {
+
+    /**
+     * return the number of virtual CPUs allocated to the virtual machine
+     *
+     * @return number of virtual CPUs
+     */
+    int nbVirtCpu() throws VirtException;
+
+    /**
+     * returns the currently used memory
+     *
+     * @return the used memory
+     */
+    long memory() throws VirtException;
 
     /**
      * Returns the maximum memory allocated to this virtual machine.

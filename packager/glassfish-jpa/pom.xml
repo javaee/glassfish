@@ -93,12 +93,14 @@
 	   <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.fighterfish</groupId>
+            <groupId>org.glassfish</groupId>
             <artifactId>osgi-jpa</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.fighterfish</groupId>
+            <groupId>org.glassfish</groupId>
             <artifactId>osgi-jpa-extension</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
    <!-- now, listing package dependencies so that their content

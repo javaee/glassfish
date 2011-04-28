@@ -118,6 +118,11 @@ public final class JSPCompiler {
         boolean delegate = true;
         com.sun.enterprise.deployment.runtime.web.ClassLoader clBean =
                 wbd.getSunDescriptor().getClassLoader();
+        if (clBean != null) {
+            String value = clBean.getAttributeValue(
+                    com.sun.enterprise.deployment.runtime.web.ClassLoader.DELEGATE);
+            delegate = ConfigBeansUtilities.toBoolean(value);
+        }
 
         // so far, this is not segragated per web bundle, all web-bundles will get the
         // same sysClassPath
@@ -148,12 +153,8 @@ public final class JSPCompiler {
 			
 			String[] files = outWebDir.list();
 			
-
-            if(files == null || files.length <= 0) {
-                if (!outWebDir.delete()) {
-                    // Ignore
-                }
-            }
+			if(files == null || files.length <= 0)
+				outWebDir.delete();
 			
 			logger.info(finishMessage);
 		}
@@ -167,10 +168,8 @@ public final class JSPCompiler {
 			throw new DeploymentException("inWebDir is not a directory: " + inWebDir);
 		}
 	 
-        if (!FileUtils.safeIsDirectory(outWebDir)) {
-            if (!outWebDir.mkdirs()) {
-                // Ignore
-            }
+		if (!FileUtils.safeIsDirectory(outWebDir)) {
+			outWebDir.mkdirs();
 		
 			if (!FileUtils.safeIsDirectory(outWebDir)) {
 				throw new DeploymentException("outWebDir is not a directory, and it can't be created: " + outWebDir);

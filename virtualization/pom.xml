@@ -56,7 +56,5 @@
     <name>GlassFish Core modules</name>  
     <modules>
         <module>vmcluster</module>
-        <module>libvirt</module>
-        <module>libvirt-files</module>
     </modules>
 </project>

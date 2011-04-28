@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,6 @@
 
 package com.sun.enterprise.admin.launcher;
 
-import com.sun.enterprise.util.io.FileUtils;
 import java.io.File;
 import java.util.*;
 import com.sun.enterprise.universal.io.SmartFile;
@@ -50,7 +49,7 @@ import com.sun.enterprise.util.HostAndPort;
 
 /**
  *
- * @author Byron Nevins
+ * @author bnevins
  */
 class GFEmbeddedLauncher extends GFLauncher {
     public GFEmbeddedLauncher(GFLauncherInfo info) {
@@ -82,7 +81,7 @@ class GFEmbeddedLauncher extends GFLauncher {
     }
 
     @Override
-    public void setup() throws GFLauncherException, MiniXmlParserException {
+    public synchronized void setup() throws GFLauncherException, MiniXmlParserException {
         // remember -- this is designed exclusively for SQE usage
         // don't do it mmore than once -- that would be silly!
 
@@ -230,10 +229,14 @@ class GFEmbeddedLauncher extends GFLauncher {
         domainDir = getInfo().getDomainParentDir();
         domainDir = new File(domainDir, domainDirName);
 
-        if (!FileUtils.mkdirsMaybe(domainDir))
+        if (!domainDir.isDirectory())
+            domainDir.mkdirs();
+
+        if (!domainDir.isDirectory())
             throw new GFLauncherException("Can not create directory: " + domainDir);
 
         domainDir = SmartFile.sanitize(domainDir);
+        domainXml = SmartFile.sanitize(new File(domainDir, "config/domain.xml"));
     }
 
     private void setupJDK() throws GFLauncherException {
@@ -271,7 +274,10 @@ class GFEmbeddedLauncher extends GFLauncher {
 
         installDir = new File(installDirName);
 
-        if(!FileUtils.mkdirsMaybe(installDir))
+        if (!installDir.isDirectory())
+            installDir.mkdirs();
+
+        if (!installDir.isDirectory())
             throw new GFLauncherException(err);
 
         installDir = SmartFile.sanitize(installDir);
@@ -317,6 +323,9 @@ class GFEmbeddedLauncher extends GFLauncher {
         //  * install-dir/javadb/lib
         //  * install-dir/../javadb/lib
 
+        if(javaDbClassPath != null)
+            return;
+
         String relPath = "javadb/lib";
         File derbyLib = new File(installDir, relPath);
 
@@ -333,8 +342,13 @@ class GFEmbeddedLauncher extends GFLauncher {
         for(String fname : DERBY_FILES) {
             File f = new File(derbyLib, fname);
 
-            javaDbClassPath += File.pathSeparator;
-            javaDbClassPath += f.getPath();
+            if(javaDbClassPath == null) {
+                javaDbClassPath = f.getPath();
+            }
+            else {
+                javaDbClassPath += File.pathSeparator;
+                javaDbClassPath += f.getPath();
+            }
 
             if(!f.exists())
                 throw new GFLauncherException("Could not find the JavaDB jar: " + f);
@@ -349,6 +363,7 @@ class GFEmbeddedLauncher extends GFLauncher {
     private File installDir;
     private File javaExe;
     private File domainDir;
+    private File domainXml;
     private String javaDbClassPath, logFilename;
     private static final String GFE_RUNSERVER_JAR = "GFE_RUNSERVER_JAR";
     private static final String GFE_RUNSERVER_CLASS = "GFE_RUNSERVER_CLASS";

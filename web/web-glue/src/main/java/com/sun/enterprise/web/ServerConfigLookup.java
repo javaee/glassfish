@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -176,15 +176,16 @@ public class ServerConfigLookup {
             return false;
         }        
 
-        if (as.getAvailabilityEnabled() == null) {
+        Boolean bool = toBoolean(as.getAvailabilityEnabled());
+        if (bool == null) {
             return false;
         } else {
-            return toBoolean(as.getAvailabilityEnabled());
-        }
+            return bool;
+        }       
     }
 
     /**
-     * Geo the web-container-availability element from domain.xml.
+     * Get the web-container-availability element from domain.xml.
      * return null if not found
      */     
     private WebContainerAvailability  getWebContainerAvailability() {
@@ -246,12 +247,13 @@ public class ServerConfigLookup {
             }
             return globalAvailabilityEnabled;
         }
-
-        if (was.getAvailabilityEnabled() == null) {
+        
+        Boolean bool = toBoolean(was.getAvailabilityEnabled());
+        if (bool == null) {
             return globalAvailabilityEnabled;
         } else {
-            return toBoolean(was.getAvailabilityEnabled());
-        }
+            return bool;
+        }       
     } 
 
     /**
@@ -266,12 +268,13 @@ public class ServerConfigLookup {
             }
             return inheritedValue;
         }
-
-        if (was.getAvailabilityEnabled() == null) {
+        
+        Boolean bool = toBoolean(was.getAvailabilityEnabled());
+        if (bool == null) {
             return inheritedValue;
         } else {
-            return toBoolean(was.getAvailabilityEnabled());
-        }
+            return bool;
+        }       
     }    
 
     /**
@@ -282,11 +285,7 @@ public class ServerConfigLookup {
         if (webContainerAvailabilityBean == null) {
             return false;
         }
-        if (webContainerAvailabilityBean.getSsoFailoverEnabled() == null) {
-            return false;
-        } else {
-            return toBoolean(webContainerAvailabilityBean.getSsoFailoverEnabled());
-        }
+        return toBoolean(webContainerAvailabilityBean.getSsoFailoverEnabled());
     }
 
     /**
@@ -412,6 +411,8 @@ public class ServerConfigLookup {
      * if input value is null, return null
      */     
     protected Boolean toBoolean(String value) {
+        if (value == null) return null;
+        
         if (value.equalsIgnoreCase("true")
                 || value.equalsIgnoreCase("yes")
                 || value.equalsIgnoreCase("on")

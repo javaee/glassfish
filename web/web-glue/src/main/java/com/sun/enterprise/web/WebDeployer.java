@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -218,8 +218,14 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         try {
             final File outDir = dc.getScratchDir(env.kCompileJspDirName);
             final File inDir  = dc.getSourceDir();
+            boolean delegate = true;
             com.sun.enterprise.deployment.runtime.web.ClassLoader clBean =
                     wbd.getSunDescriptor().getClassLoader();
+            if (clBean != null) {
+                String value = clBean.getAttributeValue(
+                    com.sun.enterprise.deployment.runtime.web.ClassLoader.DELEGATE);
+                delegate = ConfigBeansUtilities.toBoolean(value);
+            }
 
             StringBuilder classpath = new StringBuilder(
                 super.getCommonClassPath());

@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -70,36 +70,10 @@
     <property name="APPCLIENT" value="${glassfish.home}\bin\appclient.bat"/>
 </target>
 
-<!-- target name="restart-server" depends="setOSConditions,asenv-unix,asenv-windows">
+<target name="restart-server" depends="setOSConditions,asenv-unix,asenv-windows">
     <exec executable="${ASADMIN}" outputproperty="message1">
-        <arg value="restart-domain"/>
-        <arg value="domain1"/>
+        <arg line="restart-domain"/>
     </exec>
-    <echo message="${message1}"/>
-</target -->
-
-<target name="restart-server" depends="setOSConditions">
-    <antcall target="restart-server-unix"/>
-    <antcall target="restart-server-windows"/>
-</target>
-
-<target name="restart-server-unix" if="isUnix">
-    <exec executable="${glassfish.home}/bin/asadmin" outputproperty="message1">
-        <arg value="restart-domain"/>
-        <arg value="domain1"/>
-    </exec>
-    <echo message="${message1}"/>
-</target>
-
-<target name="restart-server-windows" if="isWindows">
-    <exec executable="cmd" outputproperty="message1">
-	<env key="GlassFish_Platform" value="Felix"/>
-        <arg value="/c"/>
-        <arg value="${glassfish.home}\bin\asadmin.bat"/>
-        <arg value="restart-domain"/>
-        <arg value="domain1"/>
-    </exec>
-    <sleep seconds="10"/>
     <echo message="${message1}"/>
 </target>
 

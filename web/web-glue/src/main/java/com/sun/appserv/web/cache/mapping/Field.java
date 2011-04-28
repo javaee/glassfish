@@ -186,9 +186,6 @@ public class Field {
                         }
                     }
                     break;
-            default:
-                value = null;
-                break;
         }
         return value;
     }

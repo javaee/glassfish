@@ -39,11 +39,9 @@
  */
 package com.sun.enterprise.admin.cli;
 
-import com.sun.enterprise.util.OS;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.sun.enterprise.admin.launcher.GFLauncher;
 import com.sun.enterprise.admin.launcher.GFLauncherException;
@@ -342,58 +340,8 @@ public class StartServerHelper {
             }
 
             // The port may take some time to become free after the pipe breaks
-            while (adminPortInUse(addresses) != null)
-                ;
-                // TEMP TEMP TEMP TEMP TEMP
-                // TEMP TEMP TEMP TEMP TEMP
-                // TEMP TEMP TEMP TEMP TEMP
-                // TEMP TEMP TEMP TEMP TEMP
-                // TEMP TEMP TEMP TEMP TEMP
-                // TEMP TEMP TEMP TEMP TEMP
-                // TEMP TEMP TEMP TEMP TEMP
-                // TEMP TEMP TEMP TEMP TEMP
-                // TEMP TEMP TEMP TEMP TEMP
-                // TEMP TEMP TEMP TEMP TEMP
-                // TEMP TEMP TEMP TEMP TEMP
-                // TEMP TEMP TEMP TEMP TEMP
-                // TEMP TEMP TEMP TEMP TEMP
+            while (adminPortInUse(addresses) != null);
 
-            if (OS.isWindows()) {
-                try {
-                    //int msec = Integer.parseInt(System.getenv("AS_RESTART_WAIT"));
-                    int msec = 10000;
-                    Thread.sleep(msec);
-                }
-                catch (Exception ex) {
-                    // ignore
-                }
-            }
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
-            // TEMP TEMP TEMP TEMP TEMP
             success = true;
         }
 
