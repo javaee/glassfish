@@ -94,6 +94,7 @@ public class HTTPInputArchive extends AbstractReadableArchive {
     private Boolean exists;
 
 
+    @Override
     public InputStream getEntry(String name) throws IOException {
         try {
             return entryURL(name).openStream();
@@ -110,13 +111,15 @@ public class HTTPInputArchive extends AbstractReadableArchive {
         return new URL("jar:" + archiveURI.toASCIIString() + "!" + name);
     }
 
-    public boolean exists(String name) throws IOException {
+    @Override
+    public synchronized boolean exists(String name) throws IOException {
         if (cachedEntryNames != null) {
             return cachedEntryNames.contains(name);
         }
         return getEntry(name) != null;
     }
 
+    @Override
     public long getEntrySize(String name) {
         try {
             URLConnection cnx = entryURL(name).openConnection();
@@ -127,15 +130,18 @@ public class HTTPInputArchive extends AbstractReadableArchive {
         }
     }
 
+    @Override
     public void open(URI uri) throws IOException {
         archiveURI = uri;
         archiveURL = uri.toURL();
     }
 
+    @Override
     public ReadableArchive getSubArchive(String name) throws IOException {
         throw new UnsupportedOperationException("Nested archives not supported in ACC");
     }
 
+    @Override
     public boolean exists() {
         if (exists != null) {
             return exists.booleanValue();
@@ -143,12 +149,8 @@ public class HTTPInputArchive extends AbstractReadableArchive {
         InputStream is = null;
         try {
             is = archiveURL.openStream();
-            if (is != null) {
-                exists = Boolean.TRUE;
-                is.close();
-            } else {
-                exists = Boolean.FALSE;
-            }
+            exists = Boolean.TRUE;
+            is.close();
         } catch (Exception e) {
             exists = Boolean.FALSE;
         } finally {
@@ -156,19 +158,23 @@ public class HTTPInputArchive extends AbstractReadableArchive {
         }
     }
 
+    @Override
     public boolean delete() {
         throw new UnsupportedOperationException("delete not supported");
     }
 
+    @Override
     public boolean renameTo(String name) {
         throw new UnsupportedOperationException("renameTo supported");
     }
 
+    @Override
     public void close() throws IOException {
 //        archiveURI = null;
 //        archiveURL = null;
     }
 
+    @Override
     public Enumeration<String> entries() {
         /*
          * This case is easy - just wrap an Enumerator interface around
@@ -178,10 +184,12 @@ public class HTTPInputArchive extends AbstractReadableArchive {
             final Iterator<String> it = entryNames().iterator();
             return new Enumeration<String>() {
 
+                @Override
                 public boolean hasMoreElements() {
                     return it.hasNext();
                 }
 
+                @Override
                 public String nextElement() {
                     return it.next();
                 }
@@ -206,14 +214,18 @@ public class HTTPInputArchive extends AbstractReadableArchive {
             cachedEntryNames = new ArrayList<String>();
             final JarInputStream jis = new JarInputStream(archiveURL.openStream());
             JarEntry entry;
-            while ((entry = jis.getNextJarEntry()) != null) {
-                cachedEntryNames.add(entry.getName());
+            try {
+                while ((entry = jis.getNextJarEntry()) != null) {
+                    cachedEntryNames.add(entry.getName());
+                }
+            } finally {
+                jis.close();
             }
-            jis.close();
         }
         return cachedEntryNames;
     }
 
+    @Override
     public Enumeration<String> entries(final String prefix) {
         try {
             /*
@@ -226,11 +238,13 @@ public class HTTPInputArchive extends AbstractReadableArchive {
                 /** preloaded with the first match, if any. */
                 private String nextName = nextMatch();
 
+                @Override
                 public boolean hasMoreElements() {
 
                     return nextName != null;
                 }
 
+                @Override
                 public String nextElement() {
                     final String result = nextName;
                     nextName = nextMatch();
@@ -255,10 +269,12 @@ public class HTTPInputArchive extends AbstractReadableArchive {
         }
     }
 
+    @Override
     public Collection<String> getDirectories() throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public boolean isDirectory(String name) {
         JarInputStream jis = null;
         try {
@@ -278,6 +294,7 @@ public class HTTPInputArchive extends AbstractReadableArchive {
         }
     }
 
+    @Override
     public synchronized Manifest getManifest() throws IOException {
         if (cachedManifest != null) {
             return cachedManifest;
@@ -289,22 +306,25 @@ public class HTTPInputArchive extends AbstractReadableArchive {
         return (cachedManifest = new Manifest(manifestIS));
     }
 
+    @Override
     public URI getURI() {
         return archiveURI;
     }
 
+    @Override
     public long getArchiveSize() throws SecurityException {
         if (cachedArchiveSize != null) {
-            return cachedArchiveSize.intValue();
+            return Integer.valueOf(cachedArchiveSize);
         }
         try {
             URLConnection cnx = archiveURL.openConnection();
-            return (cachedArchiveSize = new Integer(cnx.getContentLength()));
+            return (cachedArchiveSize = cnx.getContentLength());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    @Override
     public String getName() {
         return archiveURI.getPath();
     }

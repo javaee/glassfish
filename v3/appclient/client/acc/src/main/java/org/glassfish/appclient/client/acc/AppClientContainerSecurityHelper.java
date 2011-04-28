@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,7 +59,7 @@ import javax.security.auth.callback.CallbackHandler;
 import org.glassfish.appclient.client.acc.config.ClientCredential;
 import org.glassfish.appclient.client.acc.config.MessageSecurityConfig;
 import org.glassfish.appclient.client.acc.config.TargetServer;
-import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
+//import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -83,8 +83,6 @@ public class AppClientContainerSecurityHelper {
 
     private ClassLoader classLoader;
 
-    private boolean isTextAuth;
-
     void init(
             final TargetServer[] targetServers,
             final List<MessageSecurityConfig> msgSecConfigs,
@@ -95,7 +93,6 @@ public class AppClientContainerSecurityHelper {
             final ApplicationClientDescriptor acDesc,
             final boolean isTextAuth) throws InstantiationException, IllegalAccessException, InjectionException, ClassNotFoundException, IOException {
 
-        this.isTextAuth = isTextAuth;
         this.classLoader = (classLoader == null) ? Thread.currentThread().getContextClassLoader() : classLoader;
 
         initLoginConfig();
@@ -326,7 +323,7 @@ public class AppClientContainerSecurityHelper {
      * while injecting the user's callback handler) or for the user's callback
      * handler (if the developer specified one).
      */
-    private class CallbackHandlerInvocationHandler implements InvocationHandler {
+    private static class CallbackHandlerInvocationHandler implements InvocationHandler {
 
         private CallbackHandler delegate;
 

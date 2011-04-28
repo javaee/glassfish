@@ -106,7 +106,7 @@ public class AppclientCommandArguments {
     private final static String[] unvaluedArgNames =
             new String[] {TEXTAUTH, NOAPPINVOKE, USAGE, HELP};
 
-    private static LocalStringManager localStrings = new LocalStringManagerImpl(AppClientCommand.class);;
+    private static LocalStringManager localStrings = new LocalStringManagerImpl(AppclientCommandArguments.class);;
 
     private Map<String,AtomicReference<String>> valuedArgs = initValuedArgs();
     private Map<String,AtomicBoolean> unvaluedArgs = initUnvaluedArgs();

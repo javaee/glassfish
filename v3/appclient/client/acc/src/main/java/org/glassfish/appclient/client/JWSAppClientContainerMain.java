@@ -242,13 +242,13 @@ public class JWSAppClientContainerMain {
         return jwsaccSettings.containsKey(JWSACCSetting.RUN_ON_SWING_THREAD);
     }
 
-    private static boolean forceError() {
-        return jwsaccSettings.containsKey(JWSACCSetting.FORCE_ERROR);
-    }
-
-    private static String testOutput() {
-        return jwsaccSettings.get(JWSACCSetting.TEST_OUTPUT);
-    }
+//    private static boolean forceError() {
+//        return jwsaccSettings.containsKey(JWSACCSetting.FORCE_ERROR);
+//    }
+//
+//    private static String testOutput() {
+//        return jwsaccSettings.get(JWSACCSetting.TEST_OUTPUT);
+//    }
 
     private enum JWSACCSetting {
         EXIT_AFTER_RETURN(JWSACC_EXIT_AFTER_RETURN),

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,6 +52,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
@@ -87,14 +89,21 @@ public class MainClassLaunchable implements Launchable {
         return mainClass;
     }
 
-    public ApplicationClientDescriptor getDescriptor(URLClassLoader loader) throws IOException, SAXParseException {
+    public ApplicationClientDescriptor getDescriptor(final URLClassLoader loader) throws IOException, SAXParseException {
         /*
          * There is no developer-provided descriptor possible so just
          * use a default one.
          */
         if (acDesc == null) {
             ReadableArchive tempArchive = null;
-            final ACCClassLoader tempLoader = new ACCClassLoader(loader.getURLs(), loader.getParent());
+            final ACCClassLoader tempLoader = AccessController.doPrivileged(
+                    new PrivilegedAction<ACCClassLoader>() {
+
+                        @Override
+                        public ACCClassLoader run() {
+                            return new ACCClassLoader(loader.getURLs(), loader.getParent());
+                        }
+                    });
             tempArchive = createArchive(tempLoader, mainClass);
             final AppClientArchivist acArchivist = getArchivist(tempArchive, tempLoader);
             archivist.setClassLoader(tempLoader);

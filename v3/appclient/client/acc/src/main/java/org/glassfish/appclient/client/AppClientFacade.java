@@ -280,10 +280,10 @@ public class AppClientFacade {
         acc = newACC;
     }
 
-    private static AppClientContainer prepareACC() {
-        // XXX Implement this to support java -jar launching.
-        return null;
-    }
+//    private static AppClientContainer prepareACC() {
+//        // XXX Implement this to support java -jar launching.
+//        return null;
+//    }
 
     private static void usage(final int exitStatus) {
         System.err.println(getUsage());
@@ -302,8 +302,8 @@ public class AppClientFacade {
                 System.err.println(line);
             }
         } finally {
-            if (is != null) {
-                is.close();
+            if (helpReader != null) {
+                helpReader.close();
             }
             System.exit(0);
         }
@@ -319,46 +319,6 @@ public class AppClientFacade {
             + localStrings.getLocalString(stringsAnchor,
                 "main.usage.1",
                 "  or  :\n\tappclient [ <valid JVM options and valid ACC options> ] [ <appClass-name> | -jar <appjar> ] [app args]");
-    }
-
-    private static List<String> skipJVMArgs(final List<String> options) {
-        List<String> result = new ArrayList<String>();
-        /*
-         * JVM args are those that appear before the first "-jar xxx" or the
-         * first "-client xxx" or the first stand-alone value (the main class).
-         */
-        int slot = 0;
-        boolean isClassSelected = false;
-
-        while (slot < options.size()) {
-            final String option = options.get(slot);
-            if (isClassSelected) {
-                result.add(option);
-            } else {
-                if (option.equals("-jar") ||
-                        option.equals("-client")) {
-                    /*
-                     * This is the class selector.
-                     */
-                    isClassSelected = true;
-                    if (slot >= options.size()) {
-                        throw new IllegalArgumentException(option);
-                    }
-                    slot++; // skip past the value
-                } else if (option.charAt(0) != '-') {
-                    isClassSelected = true;
-                } else if (option.equals("-classpath") ||
-                        option.equals("-cp")) {
-                    if (slot >= options.size()) {
-                        throw new IllegalArgumentException(option);
-                    }
-                    slot++;
-                } else {
-                    // Must be a JVM option - ignore it.
-                }
-            }
-        }
-        return result;
     }
 
     private static ACCClassLoader initClassLoader(
@@ -442,7 +402,7 @@ public class AppClientFacade {
          * launch.
          */
         ClientLaunchType launchType = launchInfo.getClientLaunchType();
-        AppClientContainer container = null;
+        AppClientContainer container;
 
         switch (launchType) {
             case JAR:
@@ -473,6 +433,9 @@ public class AppClientFacade {
             case CLASSFILE:
                 container = createContainerForClassFile(builder, launchInfo.getClientName());
                 break;
+                
+            default:
+                container = null;
         }
 
         if (container == null) {
@@ -550,69 +513,76 @@ public class AppClientFacade {
                 SAXException, URISyntaxException,
                 IOException {
         ClientContainer result = null;
-        Reader configReader;
-        /*
-         * During a Java Web Start launch, the config is passed as a property
-         * value.
-         */
-        String configInProperty = System.getProperty(ACC_CONFIG_CONTENT_PROPERTY_NAME);
-        if (configInProperty != null) {
+        Reader configReader = null;
+        try {
             /*
-             * Awkwardly, the glassfish-acc.xml content refers to a config file.
-             * We work around this for Java Web Start launch by capturing the
-             * content of that config file into a property setting in the
-             * generated JNLP document.  We need to write that content into
-             * a temporary file here on the client and then replace a
-             * placeholder in the glassfish-acc.xml content with the path to that
-             * temp file.
+             * During a Java Web Start launch, the config is passed as a property
+             * value.
              */
-            final File securityConfigTempFile = Util.writeTextToTempFile(
-                    configInProperty, "wss-client-config", ".xml", false);
-            final Properties p = new Properties();
-            p.setProperty("security.config.path", securityConfigTempFile.getAbsolutePath());
-            configInProperty = Util.replaceTokens(configInProperty, p);
-            configReader = new StringReader(configInProperty);
-        } else {
+            String configInProperty = System.getProperty(ACC_CONFIG_CONTENT_PROPERTY_NAME);
+            if (configInProperty != null) {
+                /*
+                 * Awkwardly, the glassfish-acc.xml content refers to a config file.
+                 * We work around this for Java Web Start launch by capturing the
+                 * content of that config file into a property setting in the
+                 * generated JNLP document.  We need to write that content into
+                 * a temporary file here on the client and then replace a
+                 * placeholder in the glassfish-acc.xml content with the path to that
+                 * temp file.
+                 */
+                final File securityConfigTempFile = Util.writeTextToTempFile(
+                        configInProperty, "wss-client-config", ".xml", false);
+                final Properties p = new Properties();
+                p.setProperty("security.config.path", securityConfigTempFile.getAbsolutePath());
+                configInProperty = Util.replaceTokens(configInProperty, p);
+                configReader = new StringReader(configInProperty);
+            } else {
+                /*
+                 * This is not a Java Web Start launch, so read the configuration
+                 * from a disk file.
+                 */
+                File configFile = checkXMLFile(configPath);
+                checkXMLFile(appClientCommandArgs.getConfigFilePath());
+                configReader = new FileReader(configFile);
+            }
+
             /*
-             * This is not a Java Web Start launch, so read the configuration
-             * from a disk file.
+             * Although JAXB makes it very simple to parse the XML into Java objects,
+             * we have to do several things explicitly to use our local copies of
+             * DTDs and XSDs.
              */
-            File configFile = checkXMLFile(configPath);
-            checkXMLFile(appClientCommandArgs.getConfigFilePath());
-            configReader = new FileReader(configFile);
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            spf.setValidating(true);
+            spf.setNamespaceAware(true);
+            SAXParser parser = spf.newSAXParser();
+            XMLReader reader = parser.getXMLReader();
+
+            /*
+             * Get the local entity resolver that knows about the
+             * bundled .dtd and .xsd files.
+             */
+            reader.setEntityResolver(new SaxParserHandlerBundled());
+
+            /*
+             * To support installation-directory independence the default glassfish-acc.xml
+             * refers to the wss-config file using ${com.sun.aas.installRoot}...  So
+             * preprocess the glassfish-acc.xml file to replace any tokens with the
+             * corresponding values, then submit that result to JAXB.
+             */
+            InputSource inputSource = replaceTokensForParsing(configReader);
+
+            SAXSource saxSource = new SAXSource(reader, inputSource);
+            JAXBContext jc = JAXBContext.newInstance(ClientContainer.class );
+
+            Unmarshaller u = jc.createUnmarshaller();
+            result = (ClientContainer) u.unmarshal(saxSource);
+
+            return result;
+        } finally {
+            if (configReader != null) {
+                configReader.close();
+            }
         }
-        /*
-         * Although JAXB makes it very simple to parse the XML into Java objects,
-         * we have to do several things explicitly to use our local copies of
-         * DTDs and XSDs.
-         */
-        SAXParserFactory spf = SAXParserFactory.newInstance();
-        spf.setValidating(true);
-        spf.setNamespaceAware(true);
-        SAXParser parser = spf.newSAXParser();
-        XMLReader reader = parser.getXMLReader();
-
-        /*
-         * Get the local entity resolver that knows about the
-         * bundled .dtd and .xsd files.
-         */
-        reader.setEntityResolver(new SaxParserHandlerBundled());
-
-        /*
-         * To support installation-directory independence the default glassfish-acc.xml
-         * refers to the wss-config file using ${com.sun.aas.installRoot}...  So
-         * preprocess the glassfish-acc.xml file to replace any tokens with the
-         * corresponding values, then submit that result to JAXB.
-         */
-        InputSource inputSource = replaceTokensForParsing(configReader);
-
-        SAXSource saxSource = new SAXSource(reader, inputSource);
-        JAXBContext jc = JAXBContext.newInstance(ClientContainer.class );
-
-        Unmarshaller u = jc.createUnmarshaller();
-        result = (ClientContainer) u.unmarshal(saxSource);
-
-        return result;
     }
 
     private static InputSource replaceTokensForParsing(final Reader reader) throws FileNotFoundException, IOException, URISyntaxException {

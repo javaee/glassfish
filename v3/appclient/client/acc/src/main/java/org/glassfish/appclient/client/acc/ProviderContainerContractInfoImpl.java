@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,16 +42,15 @@ package org.glassfish.appclient.client.acc;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
-import java.beans.PropertyChangeListener;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
 import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.ClassTransformer;
 import javax.validation.ValidatorFactory;
@@ -70,9 +69,6 @@ public class ProviderContainerContractInfoImpl extends ProviderContainerContract
     private final ACCClassLoader classLoader;
     private final Instrumentation inst;
     private final String applicationLocation;
-
-    private final List<PropertyChangeListener> transformerAdditionListeners =
-            new ArrayList<PropertyChangeListener>();
 
     private final Collection<EntityManagerFactory> emfs = new HashSet<EntityManagerFactory>();
     /**
@@ -100,7 +96,14 @@ public class ProviderContainerContractInfoImpl extends ProviderContainerContract
     }
 
     public ClassLoader getTempClassloader() {
-        return new URLClassLoader(classLoader.getURLs());
+        return AccessController.doPrivileged(new PrivilegedAction<URLClassLoader>() {
+
+                @Override
+                public URLClassLoader run() {
+                    return new URLClassLoader(classLoader.getURLs());
+                }
+
+            });
     }
 
     public void addTransformer(ClassTransformer transformer) {

@@ -579,9 +579,9 @@ public class AppClientContainer {
         BY_NAME,
         BY_CLASS;
 
-        static protected String clientMainClassName;
-        static protected Class clientMainClass;
-        static protected boolean isInjected = false;
+        static String clientMainClassName;
+        static volatile Class clientMainClass;
+        static boolean isInjected = false;
 
         static ClientMainClassSetting set(final String name) {
             clientMainClassName = name;
