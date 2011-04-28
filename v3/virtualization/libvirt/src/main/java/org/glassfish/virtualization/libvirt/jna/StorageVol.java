@@ -38,55 +38,58 @@
  *  holder.
  */
 
-package org.glassfish.vmcluster.libvirt;
+package org.glassfish.virtualization.libvirt.jna;
 
-import org.glassfish.config.support.TargetValidator;
-import org.glassfish.vmcluster.libvirt.DiskReference;
-import org.glassfish.vmcluster.spi.StorageVol;
 import org.glassfish.vmcluster.spi.VirtException;
-import org.jvnet.hk2.annotations.Service;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 3/1/11
- * Time: 8:52 PM
- * To change this template use File | Settings | File Templates.
+ * Storage Volume JNA interface
+ * @author Jerome Dochez
  */
-@Service(name="kvm")
-public class QemuDisk implements DiskReference {
-    @Override
-    public Node save(String path, Node parent, int position) throws VirtException {
-        char diskId='a';
-        for (int i=0;i<position;diskId++,i++) {
-            // do nothing
-        }
+public class StorageVol extends LibVirtObject {
 
-        Element diskNode = parent.getOwnerDocument().createElement("disk");
+    private final StorageVolPointer handle;
 
-        diskNode.setAttribute("type", "file");
-        diskNode.setAttribute("device","disk");
-        Element driverNode = parent.getOwnerDocument().createElement("driver");
-        driverNode.setAttribute("name", "qemu");
-        driverNode.setAttribute("type", "raw");
-        diskNode.appendChild(driverNode);
-        Element sourceNode = parent.getOwnerDocument().createElement("source");
-        sourceNode.setAttribute("file", path);
-        diskNode.appendChild(sourceNode);
-        Element targetNode = parent.getOwnerDocument().createElement("target");
-        targetNode.setAttribute("dev", "hd"+diskId);
-        targetNode.setAttribute("bus", "ide");
-        diskNode.appendChild(targetNode);
-        Element addressNode = parent.getOwnerDocument().createElement("address");
-        addressNode.setAttribute("type", "drive");
-        addressNode.setAttribute("controller", "0");
-        addressNode.setAttribute("bus", "0");
-        addressNode.setAttribute("unit", ""+position);
-        diskNode.appendChild(addressNode);
+    public StorageVol(StorageVolPointer handle) {
+        this.handle = handle;
+    }
 
-        return diskNode;
+    /**
+     * Delete the storage volume from the pool
+     *
+     * @param flags
+     *            future flags, use 0 for now
+     * @throws VirtException if an error occurs
+     */
+    public void delete(int flags) throws VirtException {
+        libvirt.virStorageVolDelete(handle, flags);
+        checkForError();
+    }
 
+    /**
+     * Fetch the storage volume name. This is unique within the scope of a pool
+     *
+     * @return the name
+     * @throws VirtException if an error occurs
+     */
+    public String getName() throws VirtException {
+        String returnValue = libvirt.virStorageVolGetName(handle);
+        checkForError();
+        return returnValue;
+    }
+
+    /**
+     * Fetch the storage volume path. Depending on the pool configuration this
+     * is either persistent across hosts, or dynamically assigned at pool
+     * startup. Consult pool documentation for information on getting the
+     * persistent naming
+     *
+     * @return the storage volume path
+     * @throws VirtException if an error occurs
+     */
+    public String getPath() throws VirtException {
+        String returnValue = libvirt.virStorageVolGetPath(handle);
+        checkForError();
+        return returnValue;
     }
 }

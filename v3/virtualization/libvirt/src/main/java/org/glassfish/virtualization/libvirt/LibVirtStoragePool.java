@@ -35,7 +35,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.vmcluster.libvirt;
+package org.glassfish.virtualization.libvirt;
 
 import org.glassfish.vmcluster.spi.Machine;
 import org.glassfish.vmcluster.spi.StoragePool;
@@ -54,10 +54,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 class LibVirtStoragePool implements StoragePool {
 
     private final Machine owner;
-    private final org.glassfish.vmcluster.libvirt.jna.StoragePool pool;
+    private final org.glassfish.virtualization.libvirt.jna.StoragePool pool;
     private final AtomicBoolean valid = new AtomicBoolean(true);
 
-    LibVirtStoragePool(Machine owner, org.glassfish.vmcluster.libvirt.jna.StoragePool pool) {
+    LibVirtStoragePool(Machine owner, org.glassfish.virtualization.libvirt.jna.StoragePool pool) {
         this.owner = owner;
         this.pool = pool;
     }

@@ -38,58 +38,13 @@
  *  holder.
  */
 
-package org.glassfish.vmcluster.libvirt.jna;
+package org.glassfish.virtualization.libvirt.jna;
 
-import org.glassfish.vmcluster.spi.VirtException;
+import com.sun.jna.PointerType;
 
 /**
- * Storage Volume JNA interface
- * @author Jerome Dochez
- */
-public class StorageVol extends LibVirtObject {
-
-    private final StorageVolPointer handle;
-
-    public StorageVol(StorageVolPointer handle) {
-        this.handle = handle;
-    }
-
-    /**
-     * Delete the storage volume from the pool
-     *
-     * @param flags
-     *            future flags, use 0 for now
-     * @throws VirtException if an error occurs
-     */
-    public void delete(int flags) throws VirtException {
-        libvirt.virStorageVolDelete(handle, flags);
-        checkForError();
-    }
-
-    /**
-     * Fetch the storage volume name. This is unique within the scope of a pool
-     *
-     * @return the name
-     * @throws VirtException if an error occurs
-     */
-    public String getName() throws VirtException {
-        String returnValue = libvirt.virStorageVolGetName(handle);
-        checkForError();
-        return returnValue;
-    }
-
-    /**
-     * Fetch the storage volume path. Depending on the pool configuration this
-     * is either persistent across hosts, or dynamically assigned at pool
-     * startup. Consult pool documentation for information on getting the
-     * persistent naming
-     *
-     * @return the storage volume path
-     * @throws VirtException if an error occurs
-     */
-    public String getPath() throws VirtException {
-        String returnValue = libvirt.virStorageVolGetPath(handle);
-        checkForError();
-        return returnValue;
-    }
+* Network pointer type definition
+* @author Jerome Dochez
+*/
+public class NetworkPointer extends PointerType {
 }

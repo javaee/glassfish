@@ -34,11 +34,11 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.vmcluster.libvirt;
+package org.glassfish.virtualization.libvirt;
 
 import org.glassfish.vmcluster.config.*;
-import org.glassfish.vmcluster.libvirt.jna.Connect;
-import org.glassfish.vmcluster.libvirt.jna.Domain;
+import org.glassfish.virtualization.libvirt.jna.Connect;
+import org.glassfish.virtualization.libvirt.jna.Domain;
 import org.glassfish.vmcluster.os.Disk;
 import org.glassfish.vmcluster.runtime.*;
 import org.glassfish.vmcluster.spi.*;

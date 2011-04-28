@@ -34,7 +34,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.vmcluster.libvirt;
+package org.glassfish.virtualization.libvirt;
 
 import org.glassfish.vmcluster.spi.StorageVol;
 import org.glassfish.vmcluster.spi.VirtException;
@@ -48,9 +48,9 @@ import org.w3c.dom.Node;
 class LibVirtStorageVol implements StorageVol {
 
     private final LibVirtStoragePool owner;
-    private final org.glassfish.vmcluster.libvirt.jna.StorageVol volume;
+    private final org.glassfish.virtualization.libvirt.jna.StorageVol volume;
 
-    public LibVirtStorageVol(LibVirtStoragePool owner, org.glassfish.vmcluster.libvirt.jna.StorageVol volume) {
+    public LibVirtStorageVol(LibVirtStoragePool owner, org.glassfish.virtualization.libvirt.jna.StorageVol volume) {
         this.owner = owner;
         this.volume = volume;
     }

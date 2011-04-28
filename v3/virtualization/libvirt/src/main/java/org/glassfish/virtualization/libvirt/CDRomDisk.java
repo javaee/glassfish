@@ -1,4 +1,4 @@
-package org.glassfish.vmcluster.libvirt;
+package org.glassfish.virtualization.libvirt;
 
 import org.glassfish.vmcluster.spi.VirtException;
 import org.jvnet.hk2.annotations.Service;

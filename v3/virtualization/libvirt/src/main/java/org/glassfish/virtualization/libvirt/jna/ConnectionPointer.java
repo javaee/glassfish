@@ -38,13 +38,13 @@
  *  holder.
  */
 
-package org.glassfish.vmcluster.libvirt.jna;
+package org.glassfish.virtualization.libvirt.jna;
 
 import com.sun.jna.PointerType;
 
 /**
-* Network pointer type definition
+* Pointer type for safer APIs. Represents a connection
 * @author Jerome Dochez
 */
-public class NetworkPointer extends PointerType {
+public class ConnectionPointer extends PointerType {
 }

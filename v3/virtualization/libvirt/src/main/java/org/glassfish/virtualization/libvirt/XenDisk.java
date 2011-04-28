@@ -38,13 +38,44 @@
  *  holder.
  */
 
-package org.glassfish.vmcluster.libvirt.jna;
+package org.glassfish.virtualization.libvirt;
 
-import com.sun.jna.PointerType;
+import org.glassfish.vmcluster.spi.VirtException;
+import org.jvnet.hk2.annotations.Service;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
-* Pointer type for safer APIs. Represents a connection
-* @author Jerome Dochez
-*/
-public class ConnectionPointer extends PointerType {
+ * Created by IntelliJ IDEA.
+ * User: dochez
+ * Date: 3/1/11
+ * Time: 9:27 PM
+ * To change this template use File | Settings | File Templates.
+ */
+@Service(name="xen")
+public class XenDisk implements DiskReference {
+
+    @Override
+    public Node save(String path, Node parent, int position) throws VirtException {
+        char diskId='a';
+        for (int i=0;i<position;diskId++,i++) {
+            // do nothing
+        }
+
+        Element diskNode = parent.getOwnerDocument().createElement("disk");
+
+        diskNode.setAttribute("type", "file");
+        diskNode.setAttribute("device","disk");
+        Element driverNode = parent.getOwnerDocument().createElement("driver");
+        driverNode.setAttribute("name", "file");
+        diskNode.appendChild(driverNode);
+        Element sourceNode = parent.getOwnerDocument().createElement("source");
+        sourceNode.setAttribute("file", path);
+        diskNode.appendChild(sourceNode);
+        Element targetNode = parent.getOwnerDocument().createElement("target");
+        targetNode.setAttribute("dev", "hd"+diskId);
+        targetNode.setAttribute("bus", "ide");
+        diskNode.appendChild(targetNode);
+        return diskNode;
+    }
 }

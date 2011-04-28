@@ -38,13 +38,19 @@
  *  holder.
  */
 
-package org.glassfish.vmcluster.libvirt.jna;
+package org.glassfish.virtualization.libvirt.jna;
 
-import com.sun.jna.PointerType;
+import org.glassfish.virtualization.libvirt.LibVirtError;
+import org.glassfish.vmcluster.spi.VirtException;
 
 /**
-* Virtual Machine Pointer
-* @author Jerome Dochez
-*/
-public class DomainPointer extends PointerType {
+ * Super class for all libvirt interfaces objects.
+ */
+public class LibVirtObject {
+
+    final static protected LibVirtLibrary libvirt = LibVirtLibrary.INSTANCE;
+
+    protected void checkForError() throws VirtException {
+        LibVirtError.processError(libvirt);
+    }
 }

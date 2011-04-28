@@ -38,20 +38,13 @@
  *  holder.
  */
 
-package org.glassfish.vmcluster.libvirt;
+package org.glassfish.virtualization.libvirt.jna;
 
-import org.glassfish.vmcluster.spi.VirtException;
+import com.sun.jna.PointerType;
 
 /**
- * Libvirt specific exception with handle to underlying failure cause.
- * @author Jerome Dochez
- */
-public class LibVirtException extends VirtException {
-
-    final LibVirtError error;
-
-    public LibVirtException(LibVirtError error) {
-        super(error.message);
-        this.error = error;
-    }
+* Virtual Machine Pointer
+* @author Jerome Dochez
+*/
+public class DomainPointer extends PointerType {
 }

@@ -34,13 +34,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.vmcluster.libvirt;
+package org.glassfish.virtualization.libvirt;
 
-import org.glassfish.vmcluster.libvirt.jna.Domain;
-import org.glassfish.vmcluster.libvirt.jna.DomainInfo;
+import org.glassfish.virtualization.libvirt.jna.Domain;
+import org.glassfish.virtualization.libvirt.jna.DomainInfo;
 import org.glassfish.vmcluster.spi.*;
 import org.glassfish.vmcluster.util.RuntimeContext;
-import org.jvnet.hk2.component.Injector;
 
 import java.util.*;
 import java.util.concurrent.*;

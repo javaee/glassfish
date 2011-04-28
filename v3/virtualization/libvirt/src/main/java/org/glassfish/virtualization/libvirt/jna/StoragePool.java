@@ -38,7 +38,7 @@
  *  holder.
  */
 
-package org.glassfish.vmcluster.libvirt.jna;
+package org.glassfish.virtualization.libvirt.jna;
 
 import org.glassfish.vmcluster.spi.VirtException;
 

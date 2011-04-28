@@ -38,59 +38,20 @@
  *  holder.
  */
 
-package org.glassfish.vmcluster.libvirt.jna;
+package org.glassfish.virtualization.libvirt;
 
-import com.sun.jna.NativeLong;
-import com.sun.jna.Structure;
+import org.glassfish.vmcluster.spi.VirtException;
 
 /**
- * JNA mapping for the virDomainInfo structure
+ * Libvirt specific exception with handle to underlying failure cause.
+ * @author Jerome Dochez
  */
-public class DomainInfo extends Structure {
+public class LibVirtException extends VirtException {
 
-    /**
-     * @author stoty
-     *
-     */
-    public static enum DomainState {
-        /**
-         * no state
-         */
-        VIR_DOMAIN_NOSTATE,
-        /**
-         * the domain is running
-         */
-        VIR_DOMAIN_RUNNING,
-        /**
-         * the domain is blocked on resource
-         */
-        VIR_DOMAIN_BLOCKED,
-        /**
-         * the domain is paused by user
-         */
-        VIR_DOMAIN_PAUSED,
-        /**
-         * the domain is being shut down
-         */
-        VIR_DOMAIN_SHUTDOWN,
-        /**
-         * the domain is shut off
-         */
-        VIR_DOMAIN_SHUTOFF,
-        /**
-         * the domain is crashed
-         */
-        VIR_DOMAIN_CRASHED
-    }
+    final LibVirtError error;
 
-
-    public int state;
-    public NativeLong maxMem;
-    public NativeLong memory;
-    public short nrVirtCpu;
-    public long cpuTime;
-
-    public DomainState getState() {
-        return DomainState.values()[state];
+    public LibVirtException(LibVirtError error) {
+        super(error.message);
+        this.error = error;
     }
 }

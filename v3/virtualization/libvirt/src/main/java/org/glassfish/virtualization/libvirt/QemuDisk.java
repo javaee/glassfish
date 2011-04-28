@@ -38,8 +38,9 @@
  *  holder.
  */
 
-package org.glassfish.vmcluster.libvirt;
+package org.glassfish.virtualization.libvirt;
 
+import org.glassfish.vmcluster.spi.StorageVol;
 import org.glassfish.vmcluster.spi.VirtException;
 import org.jvnet.hk2.annotations.Service;
 import org.w3c.dom.Element;
@@ -49,12 +50,11 @@ import org.w3c.dom.Node;
  * Created by IntelliJ IDEA.
  * User: dochez
  * Date: 3/1/11
- * Time: 9:27 PM
+ * Time: 8:52 PM
  * To change this template use File | Settings | File Templates.
  */
-@Service(name="xen")
-public class XenDisk implements DiskReference {
-
+@Service(name="kvm")
+public class QemuDisk implements DiskReference {
     @Override
     public Node save(String path, Node parent, int position) throws VirtException {
         char diskId='a';
@@ -67,7 +67,8 @@ public class XenDisk implements DiskReference {
         diskNode.setAttribute("type", "file");
         diskNode.setAttribute("device","disk");
         Element driverNode = parent.getOwnerDocument().createElement("driver");
-        driverNode.setAttribute("name", "file");
+        driverNode.setAttribute("name", "qemu");
+        driverNode.setAttribute("type", "raw");
         diskNode.appendChild(driverNode);
         Element sourceNode = parent.getOwnerDocument().createElement("source");
         sourceNode.setAttribute("file", path);
@@ -76,6 +77,14 @@ public class XenDisk implements DiskReference {
         targetNode.setAttribute("dev", "hd"+diskId);
         targetNode.setAttribute("bus", "ide");
         diskNode.appendChild(targetNode);
+        Element addressNode = parent.getOwnerDocument().createElement("address");
+        addressNode.setAttribute("type", "drive");
+        addressNode.setAttribute("controller", "0");
+        addressNode.setAttribute("bus", "0");
+        addressNode.setAttribute("unit", ""+position);
+        diskNode.appendChild(addressNode);
+
         return diskNode;
+
     }
 }

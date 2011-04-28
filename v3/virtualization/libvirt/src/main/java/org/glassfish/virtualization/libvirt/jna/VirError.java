@@ -38,19 +38,27 @@
  *  holder.
  */
 
-package org.glassfish.vmcluster.libvirt.jna;
+package org.glassfish.virtualization.libvirt.jna;
 
-import org.glassfish.vmcluster.libvirt.LibVirtError;
-import org.glassfish.vmcluster.spi.VirtException;
+import com.sun.jna.Structure;
 
 /**
- * Super class for all libvirt interfaces objects.
+ * mapping to a virError structure as defined at http://libvirt.org/html/libvirt-virterror.html
+ * @author Jerome Dochez
  */
-public class LibVirtObject {
+public class VirError extends Structure {
 
-    final static protected LibVirtLibrary libvirt = LibVirtLibrary.INSTANCE;
-
-    protected void checkForError() throws VirtException {
-        LibVirtError.processError(libvirt);
-    }
+    public int code;     // The error code, a virErrorNumber
+    public int domain;    // What part of the library raised this error
+    public String message;     // human-readable informative error message
+    public int level;     // how consequent is the error
+    public ConnectionPointer conn;     // connection if available, deprecated see note above
+    public DomainPointer dom; // domain if available, deprecated see note above
+    public String str1;     // extra string information
+    public String str2;     // extra string information
+    public String str3;     // extra string information
+    public int int1;     // extra number information
+    public int int2;     // extra number information
+    public NetworkPointer net; // network if available, deprecated see note above
 }
+

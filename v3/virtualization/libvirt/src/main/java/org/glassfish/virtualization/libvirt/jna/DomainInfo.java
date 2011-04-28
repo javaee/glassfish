@@ -38,13 +38,59 @@
  *  holder.
  */
 
-package org.glassfish.vmcluster.libvirt.jna;
+package org.glassfish.virtualization.libvirt.jna;
 
-import com.sun.jna.PointerType;
+import com.sun.jna.NativeLong;
+import com.sun.jna.Structure;
 
 /**
-* Storage Volume pointer type definition
-* @author Jerome Dochez
-*/
-public class StorageVolPointer extends PointerType {
+ * JNA mapping for the virDomainInfo structure
+ */
+public class DomainInfo extends Structure {
+
+    /**
+     * @author stoty
+     *
+     */
+    public static enum DomainState {
+        /**
+         * no state
+         */
+        VIR_DOMAIN_NOSTATE,
+        /**
+         * the domain is running
+         */
+        VIR_DOMAIN_RUNNING,
+        /**
+         * the domain is blocked on resource
+         */
+        VIR_DOMAIN_BLOCKED,
+        /**
+         * the domain is paused by user
+         */
+        VIR_DOMAIN_PAUSED,
+        /**
+         * the domain is being shut down
+         */
+        VIR_DOMAIN_SHUTDOWN,
+        /**
+         * the domain is shut off
+         */
+        VIR_DOMAIN_SHUTOFF,
+        /**
+         * the domain is crashed
+         */
+        VIR_DOMAIN_CRASHED
+    }
+
+
+    public int state;
+    public NativeLong maxMem;
+    public NativeLong memory;
+    public short nrVirtCpu;
+    public long cpuTime;
+
+    public DomainState getState() {
+        return DomainState.values()[state];
+    }
 }
