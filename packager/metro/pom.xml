@@ -199,6 +199,22 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>aix-jdk</id>
+            <activation>
+               <os>
+                    <name>AIX</name>
+               </os>
+            </activation>
+            <!-- this replaces webservices-osgi.jar -->
+            <dependencies>
+                <dependency>
+                   <groupId>org.glassfish.metro</groupId>
+                   <artifactId>webservices-osgi-aix</artifactId>
+                   <classifier>aix</classifier>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 
 </project>

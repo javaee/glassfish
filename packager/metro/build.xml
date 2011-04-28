@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -42,11 +42,14 @@
 -->
 
 <project name="metro package creation" default="create.package" basedir=".">
-       <import file="${basedir}/../common-targets.xml"/>
+    <import file="${basedir}/../common-targets.xml"/>
 
-	<target name="create.package">
-<property name="package.name" value="metro"/> 
+    <target name="create.package">
+        <property name="package.name" value="metro"/> 
 
+        <condition property="isAIX">  
+            <os name="AIX" />  
+        </condition>  
         
 	<graphDef id="all-modules" tolerateBrokenPOMs="true">
 		<scope level="compile,runtime">
@@ -67,6 +70,8 @@
 
         <move file="target/stage/${install.dir.name}/glassfish/modules/jaxb-api-osgi.jar" todir="target/stage/${install.dir.name}/glassfish/modules/endorsed" failonerror="false"/>
 
+        <antcall target="replace-webservices-osgi"/>
+
 	<chmod file="target/stage/${install.dir.name}/glassfish/bin/*" perm="ugo+rx"/>
 
         <if test="${compression}">
@@ -75,5 +80,11 @@
 
       <antcall target="create-zip-artifact"/>   	
    </target>
+   <target name="replace-webservices-osgi" if="isAIX">
+       <echo message="replace webservices-osgi.jar"/>
+       <delete file="target/stage/${install.dir.name}/glassfish/modules/webservices-osgi.jar"/>
+       <move file="target/stage/${install.dir.name}/glassfish/modules/webservices-osgi-aix-aix.jar" tofile="target/stage/${install.dir.name}/glassfish/modules/webservices-osgi.jar" failonerror="false"/>
+   </target>
+
 </project>
 
