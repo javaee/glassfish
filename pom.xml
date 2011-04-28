@@ -412,6 +412,7 @@
                 <module>admingui</module>
                 <module>extras/embedded/shell</module>
                 <module>packager</module>
+                <module>packager/external/aixporting</module>
                 <module>distributions</module>
                 <module>security</module>
                 <module>registration</module>
