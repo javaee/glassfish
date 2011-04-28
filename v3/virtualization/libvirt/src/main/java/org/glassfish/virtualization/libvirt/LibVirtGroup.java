@@ -36,11 +36,11 @@
  */
 package org.glassfish.virtualization.libvirt;
 
-import org.glassfish.vmcluster.config.*;
-import org.glassfish.vmcluster.runtime.VMTemplate;
-import org.glassfish.vmcluster.runtime.VirtualCluster;
-import org.glassfish.vmcluster.spi.*;
-import org.glassfish.vmcluster.util.RuntimeContext;
+import org.glassfish.virtualization.config.*;
+import org.glassfish.virtualization.runtime.VMTemplate;
+import org.glassfish.virtualization.runtime.VirtualCluster;
+import org.glassfish.virtualization.spi.*;
+import org.glassfish.virtualization.util.RuntimeContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;

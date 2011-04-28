@@ -40,13 +40,11 @@
 
 package org.glassfish.deployment.cloud;
 
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.module.bootstrap.Populator;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.admin.DeployCommand;
-import org.glassfish.vmcluster.util.RuntimeContext;
+import org.glassfish.virtualization.util.RuntimeContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -57,7 +55,6 @@ import org.jvnet.hk2.config.*;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 

@@ -42,7 +42,7 @@ package org.glassfish.virtualization.libvirt;
 
 import org.glassfish.virtualization.libvirt.jna.LibVirtLibrary;
 import org.glassfish.virtualization.libvirt.jna.VirError;
-import org.glassfish.vmcluster.spi.VirtException;
+import org.glassfish.virtualization.spi.VirtException;
 
 /**
  * LibVirt error Java Abstraction.

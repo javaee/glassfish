@@ -40,8 +40,7 @@
 
 package org.glassfish.virtualization.libvirt;
 
-import org.glassfish.vmcluster.spi.StorageVol;
-import org.glassfish.vmcluster.spi.VirtException;
+import org.glassfish.virtualization.spi.VirtException;
 import org.jvnet.hk2.annotations.Service;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

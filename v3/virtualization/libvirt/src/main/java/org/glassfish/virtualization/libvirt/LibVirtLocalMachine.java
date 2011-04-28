@@ -36,13 +36,13 @@
  */
 package org.glassfish.virtualization.libvirt;
 
-import org.glassfish.vmcluster.config.*;
+import org.glassfish.virtualization.config.*;
 import org.glassfish.virtualization.libvirt.jna.Connect;
 import org.glassfish.virtualization.libvirt.jna.Domain;
-import org.glassfish.vmcluster.os.Disk;
-import org.glassfish.vmcluster.runtime.*;
-import org.glassfish.vmcluster.spi.*;
-import org.glassfish.vmcluster.util.RuntimeContext;
+import org.glassfish.virtualization.os.Disk;
+import org.glassfish.virtualization.runtime.*;
+import org.glassfish.virtualization.spi.*;
+import org.glassfish.virtualization.util.RuntimeContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Injector;
@@ -186,7 +186,7 @@ public class LibVirtLocalMachine extends LocalMachine implements PostConstruct {
     }
 
     @Override
-    public Map<String, ? extends org.glassfish.vmcluster.spi.StoragePool> getStoragePools() throws VirtException {
+    public Map<String, ? extends org.glassfish.virtualization.spi.StoragePool> getStoragePools() throws VirtException {
         try {
             populate();
         } catch(VirtException e) {

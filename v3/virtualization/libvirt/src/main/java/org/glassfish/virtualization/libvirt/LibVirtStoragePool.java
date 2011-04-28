@@ -37,9 +37,9 @@
  */
 package org.glassfish.virtualization.libvirt;
 
-import org.glassfish.vmcluster.spi.Machine;
-import org.glassfish.vmcluster.spi.StoragePool;
-import org.glassfish.vmcluster.spi.VirtException;
+import org.glassfish.virtualization.spi.Machine;
+import org.glassfish.virtualization.spi.StoragePool;
+import org.glassfish.virtualization.spi.VirtException;
 
 
 import java.util.ArrayList;

@@ -40,7 +40,7 @@
 
 package org.glassfish.virtualization.libvirt.jna;
 
-import org.glassfish.vmcluster.spi.VirtException;
+import org.glassfish.virtualization.spi.VirtException;
 
 /**
  * Virtual Machine (Domain) interface

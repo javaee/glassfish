@@ -38,8 +38,8 @@ package org.glassfish.virtualization.libvirt;
 
 import org.glassfish.virtualization.libvirt.jna.Domain;
 import org.glassfish.virtualization.libvirt.jna.DomainInfo;
-import org.glassfish.vmcluster.spi.*;
-import org.glassfish.vmcluster.util.RuntimeContext;
+import org.glassfish.virtualization.spi.*;
+import org.glassfish.virtualization.util.RuntimeContext;
 
 import java.util.*;
 import java.util.concurrent.*;

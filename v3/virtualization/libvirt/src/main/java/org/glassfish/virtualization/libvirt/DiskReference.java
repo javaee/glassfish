@@ -1,6 +1,6 @@
 package org.glassfish.virtualization.libvirt;
 
-import org.glassfish.vmcluster.spi.VirtException;
+import org.glassfish.virtualization.spi.VirtException;
 import org.jvnet.hk2.annotations.Contract;
 import org.w3c.dom.Node;
 

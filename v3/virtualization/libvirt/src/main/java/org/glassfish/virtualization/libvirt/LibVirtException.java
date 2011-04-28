@@ -40,7 +40,7 @@
 
 package org.glassfish.virtualization.libvirt;
 
-import org.glassfish.vmcluster.spi.VirtException;
+import org.glassfish.virtualization.spi.VirtException;
 
 /**
  * Libvirt specific exception with handle to underlying failure cause.
