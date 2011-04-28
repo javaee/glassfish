@@ -48,7 +48,7 @@
         <artifactId>virtualization</artifactId>
         <version>3.2-SNAPSHOT</version>
     </parent>
-    <artifactId>vmcluster</artifactId>
+    <artifactId>virt-core</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Virtualization related features</name>
     <dependencies>
