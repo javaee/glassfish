@@ -45,16 +45,13 @@ import org.glassfish.embeddable.web.config.WebListenerConfig;
 /**
  * Representation of a network listener for web requests.
  *
- * <p>Instances of <tt>WebListener</tt> may be in one of two states:
- * <i>stopped</i> or <i>started</i>.
- *
  * <p/>See {@link WebContainer} for usage example.
  *
  * @author Rajiv Mordani
  * @author Amy Roh
  */
 
-public interface WebListener extends Lifecycle  {
+public interface WebListener  {
 
     /**
      * Sets the id for this <tt>WebListener</tt>.
@@ -103,7 +100,7 @@ public interface WebListener extends Lifecycle  {
      * configuration.
      *
      * <p>In order for the given configuration to take effect, this
-     * <tt>WebListener</tt> may be stopped and restarted.
+     * <tt>WebListener</tt> will be stopped and restarted.
      *
      * @param config the configuration to be applied
      *

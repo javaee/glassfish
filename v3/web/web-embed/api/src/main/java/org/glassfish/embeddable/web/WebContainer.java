@@ -58,7 +58,7 @@ import org.glassfish.embeddable.GlassFishException;
  * <p/> Usage example:
  *
  * <pre>
- *      // Create and start Glassfish
+ *      // Create and start GlassFish
  *      GlassFish glassfish = GlassFishRuntime.bootstrap().newGlassFish();
  *      glassfish.start();
  *
@@ -66,22 +66,25 @@ import org.glassfish.embeddable.GlassFishException;
  *      WebContainer container = glassfish.getService(WebContainer.class);
  *
  *      // Create and add {@link WebListener}
+ *      // By default, when GlassFish Embedded Server starts, no web listener is enabled
  *      WebListener listener = container.createWebListener("listener-1", HttpListener.class);
- *      listener.setPort(9090);
+ *      listener.setPort(8080);
  *      container.addWebListener(listener);
  *
  *      // Create and register web resources {@link Context}.
  *      File docroot = new File(path_to_web_resources);
- *      Context context = embedded.createContext(docroot);
- *      embedded.addContext(context, "contextroot_to_register");
+ *      Context context = container.createContext(docroot);
+ *      container.addContext(context, "contextroot_to_register");
  *
  *      // Create and add {@link VirtualServer}
+ *      // By default, when GlassFish Embedded Server starts,
+ *      // a virtual server named server starts automatically.
  *      VirtualServer virtualServer = (VirtualServer)
- *          embedded.createVirtualServer("embedded-server", new File(docroot_of_VirtualServer));
+ *          container.createVirtualServer("embedded-server", new File(docroot_of_VirtualServer));
  *      VirtualServerConfig config = new VirtualServerConfig();
  *      config.setHostNames("localhost");
  *      virtualServer.setConfig(config);
- *      embedded.addVirtualServer(virtualServer);
+ *      container.addVirtualServer(virtualServer);
  * </pre>
  */
 
@@ -89,7 +92,7 @@ public interface WebContainer {
 
     /**
      * Sets the embedded configuration for this embedded instance.
-     * Such configuration should always override any xml based
+     * Such configuration will always override any xml based
      * configuration.
      *
      * @param config the embedded instance configuration
@@ -105,7 +108,8 @@ public interface WebContainer {
      *
      * <p>In order to access the new <tt>Context</tt> or any of its
      * resources, the <tt>Context</tt> must be registered with a
-     * <tt>VirtualServer</tt> that has been started.
+     * <tt>VirtualServer</tt> that has been started using either
+     * WebContainer#addContext or VirtualServer#addContext method.
      *
      * @param docRoot the docroot of the <tt>Context</tt>
      *
@@ -125,9 +129,10 @@ public interface WebContainer {
      * If a <tt>null</tt> classloader is passed, the classloader of the
      * class on which this method is called will be used.
      *
-     * <p>In order to access the new <tt>Context</tt> or any of its 
+     * <p>In order to access the new <tt>Context</tt> or any of its
      * resources, the <tt>Context</tt> must be registered with a
-     * <tt>VirtualServer</tt> that has been started.
+     * <tt>VirtualServer</tt> that has been started using either
+     * WebContainer#addContext or VirtualServer#addContext method.
      *
      * @param docRoot the docroot of the <tt>Context</tt>
      * @param classLoader the classloader of the <tt>Context</tt>
