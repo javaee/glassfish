@@ -132,6 +132,9 @@ class ApplicationClientJarMaker implements ClientJarMaker {
         ArrayList<String> libraries = new ArrayList<String>();
         URI appURI = new File(source.getURI().getSchemeSpecificPart()).toURI();
         
+        if ( ! (descriptor instanceof Application)) {
+            throw new RuntimeException("descriptor.getClass() != Application");
+        }
         Application app = Application.class.cast(descriptor);
         for (ModuleDescriptor md : app.getModules()) {
             //ignore the war and rar modules, include both appclient and ejb

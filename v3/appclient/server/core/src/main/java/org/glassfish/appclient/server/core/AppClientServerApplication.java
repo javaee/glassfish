@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,15 +41,13 @@
 package org.glassfish.appclient.server.core;
 
 import com.sun.enterprise.deployment.Application;
-import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.logging.LogDomains;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.logging.Logger;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
@@ -120,6 +118,7 @@ public class AppClientServerApplication implements
         return deployedAppName;
     }
 
+    @Override
     public ApplicationClientDescriptor getDescriptor() {
         return acDesc;
     }
@@ -135,6 +134,7 @@ public class AppClientServerApplication implements
                      || acDesc.getModuleName().equals(moduleName + ".jar"))));
     }
 
+    @Override
     public boolean start(ApplicationContext startupContext) throws Exception {
         return start();
     }
@@ -153,11 +153,12 @@ public class AppClientServerApplication implements
     }
 
     private JavaWebStartInfo newJavaWebStartInfo() {
-        final JavaWebStartInfo jwsInfo = habitat.getComponent(JavaWebStartInfo.class);
-        jwsInfo.init(this);
-        return jwsInfo;
+        final JavaWebStartInfo info = habitat.getComponent(JavaWebStartInfo.class);
+        info.init(this);
+        return info;
     }
 
+    @Override
     public boolean stop(ApplicationContext stopContext) {
         return stop();
     }
@@ -170,6 +171,7 @@ public class AppClientServerApplication implements
         return true;
     }
 
+    @Override
     public boolean suspend() {
         if (jwsInfo != null) {
             jwsInfo.suspend();
@@ -177,6 +179,7 @@ public class AppClientServerApplication implements
         return true;
     }
 
+    @Override
     public boolean resume() throws Exception {
         if (jwsInfo != null) {
             jwsInfo.resume();
@@ -184,12 +187,20 @@ public class AppClientServerApplication implements
         return true;
     }
 
+    @Override
     public ClassLoader getClassLoader() {
         /*
          * This cannot be null or it prevents the framework from invoking unload
          * on the deployer for this app.
          */
-        return new URLClassLoader(new URL[0]);
+        return AccessController.doPrivileged(new PrivilegedAction<URLClassLoader>() {
+
+            @Override
+            public URLClassLoader run() {
+                return new URLClassLoader(new URL[0]);
+            }
+            
+        });
     }
 
     public DeploymentContext dc() {

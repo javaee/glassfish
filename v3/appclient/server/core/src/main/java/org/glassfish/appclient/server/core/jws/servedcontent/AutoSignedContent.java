@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,6 +43,8 @@ package org.glassfish.appclient.server.core.jws.servedcontent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
 
 /**
  * Represents otherwise fixed content that must be automatically signed
@@ -79,6 +81,7 @@ public class AutoSignedContent extends Content.Adapter implements StaticContent 
      * @return File for where the signed copy of the file will reside
      * @throws IOException
      */
+    @Override
     public File file() throws IOException {
         return signedFile;
     }
@@ -113,6 +116,13 @@ public class AutoSignedContent extends Content.Adapter implements StaticContent 
          * the signed file will reside.  It might not have wanted to create
          * the containing directory ahead of time.
          */
+        if ( ! signedFile.getParentFile().exists() && ! signedFile.getParentFile().mkdirs()) {
+            final ResourceBundle rb = ResourceBundle.getBundle(getClass().getPackage().getName() + ".LogStrings");
+            if (rb != null) {
+                throw new IOException(MessageFormat.format(rb.getString("enterprise.deployment.appclient.errormkdirs"),
+                        signedFile.getParentFile().getAbsolutePath()));
+            }
+        }
         signedFile.getParentFile().mkdirs();
         jarSigner.signJar(unsignedFile, signedFile, userProvidedAlias);
     }

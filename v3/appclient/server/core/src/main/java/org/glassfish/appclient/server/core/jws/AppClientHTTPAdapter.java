@@ -44,8 +44,6 @@ import com.sun.enterprise.config.serverbeans.IiopListener;
 import com.sun.enterprise.config.serverbeans.IiopService;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
-import com.sun.grizzly.util.http.MimeType;
-import com.sun.logging.LogDomains;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -57,7 +55,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import org.glassfish.appclient.server.core.jws.servedcontent.ACCConfigContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
@@ -82,9 +80,6 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
     private static final String DEFAULT_ORB_LISTENER_ID = "orb-listener-1";
 
     private final static String LINE_SEP = System.getProperty("line.separator");
-
-    private final static Logger logger = LogDomains.getLogger(AppClientHTTPAdapter.class,
-            LogDomains.ACC_LOGGER);
 
     private final Map<String,DynamicContent> dynamicContent;
     private final Properties tokens;
@@ -131,7 +126,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         this.loaderConfigContent = new LoaderConfigContent(installDir);
 
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine(dumpContent());
+            logger.fine(dumpContent(this.dynamicContent));
         }
     }
 
@@ -294,14 +289,6 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         return answer;
     }
 
-    private String propertyDef(final String indent, final String name, final String value) {
-        return indent + "<property name=\"" + name + "\" value=\"" + value + "\"/>" + LINE_SEP;
-    }
-
-    private String getPathInfo(final GrizzlyRequest gReq) {
-        return gReq.getRequestURI();
-    }
-
     /**
      * Returns the expression "-targetserver=host:port[,...]" representing the
      * currently-active ORBs to which the ACC could attempt to bootstrap.
@@ -393,26 +380,6 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
             res.getResponse().setErrorException(e);
             return;
         }
-    }
-
-    /**
-     * Stolen from Grizzly.
-     * 
-     * @param uri
-     * @return
-     */
-    private String mimeType(final String uri) {
-        final int dot=uri.lastIndexOf(".");
-        if( dot > 0 ) {
-            String ext=uri.substring(dot+1);
-            String ct= MimeType.get(ext);
-            if( ct!=null) {
-                return ct;
-            }
-        } else {
-            return MimeType.get("html");
-        }
-        return "";
     }
 
     private String commaIfNeeded(final int origLength) {
@@ -630,16 +597,15 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         }
     }
 
-    @Override
-    protected String dumpContent() {
-        if (dynamicContent == null) {
+    protected String dumpContent(final Map<String,DynamicContent> dc) {
+        if (dc == null) {
             return "   Dynamic content: not initialized";
         }
-        if (dynamicContent.isEmpty()) {
+        if (dc.isEmpty()) {
             return "  Dynamic content: empty" + LINE_SEP;
         }
         final StringBuilder sb = new StringBuilder("  Dynamic content:");
-        for (Map.Entry<String,DynamicContent> entry : dynamicContent.entrySet()) {
+        for (Map.Entry<String,DynamicContent> entry : dc.entrySet()) {
             sb.append("  ").
                append(entry.getKey());
             if (logger.isLoggable(Level.FINER)) {

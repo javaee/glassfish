@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -104,7 +104,7 @@ public abstract class AppClientDeployerHelper {
 
     private final Habitat habitat;
 
-    private Logger logger = logger = LogDomains.getLogger(AppClientDeployerHelper.class, LogDomains.ACC_LOGGER);
+    private static final Logger logger = LogDomains.getLogger(AppClientDeployerHelper.class, LogDomains.ACC_LOGGER);
 
     /**
      * Returns the correct concrete implementation of Helper.
@@ -467,7 +467,10 @@ public abstract class AppClientDeployerHelper {
          */
         final File facadeFile = new File(facadeServerURI(dc));
         if ( ! facadeFile.getParentFile().exists()) {
-            facadeFile.getParentFile().mkdirs();
+            if ( ! facadeFile.getParentFile().mkdirs()) {
+                final String msg = logger.getResourceBundle().getString("enterprise.deployment.appclient.errormkdirs");
+                throw new IOException(MessageFormat.format(msg, facadeFile.getAbsolutePath()));
+            }
         }
         facadeArchive.create(facadeServerURI(dc));
         ReadableArchive source = dc.getSource();
@@ -531,10 +534,6 @@ public abstract class AppClientDeployerHelper {
         }
     }
     
-
-    private void copyAgentMainClass(final WritableArchive facadeArchive) throws IOException {
-        copyClass(facadeArchive, AppClientDeployer.APPCLIENT_AGENT_MAIN_CLASS_FILE);
-    }
 
     private void copyMainClass(final WritableArchive facadeArchive) throws IOException {
         copyClass(facadeArchive, AppClientDeployer.APPCLIENT_FACADE_CLASS_FILE);

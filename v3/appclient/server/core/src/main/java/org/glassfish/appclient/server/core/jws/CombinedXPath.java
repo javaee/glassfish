@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,7 +56,6 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
@@ -127,15 +126,29 @@ abstract class CombinedXPath {
     private final XPathExpression parentExpr;
 
     private static enum Type {
-        OWNED(OWNED_PROPERTY_NAME),
-        DEFAULTED(DEFAULTED_PROPERTY_NAME),
-        MERGED(MERGED_PROPERTY_NAME);
+        OWNED(OWNED_PROPERTY_NAME) {
+            CombinedXPath combinedXPath(String pathA, String pathB) {
+                return new OwnedXPath(xPath, pathA, pathB);
+            }
+        },
+        DEFAULTED(DEFAULTED_PROPERTY_NAME) {
+            CombinedXPath combinedXPath(String pathA, String pathB) {
+                return new DefaultedXPath(xPath, pathA, pathB);
+            }
+        },
+        MERGED(MERGED_PROPERTY_NAME) {
+            CombinedXPath combinedXPath(String pathA, String pathB) {
+                return new MergedXPath(xPath, pathA, pathB);
+            }
+        };
         
         private String propertyName;
         
         Type(final String propName) {
             propertyName = propName;
         }
+        
+        abstract CombinedXPath combinedXPath(String pathA, String pathB);
         
     }
 
@@ -168,19 +181,7 @@ abstract class CombinedXPath {
                 if (paths.length != 2) {
                     throw new IllegalArgumentException(ref);
                 }
-                switch (type) {
-                    case OWNED:
-                        result.add(new OwnedXPath(xPath, paths[0], paths[1]));
-                        break;
-
-                    case MERGED:
-                        result.add(new MergedXPath(xPath, paths[0], paths[1]));
-                        break;
-
-                    case DEFAULTED:
-                        result.add(new DefaultedXPath(xPath, paths[0], paths[1]));
-                        break;
-                }
+                result.add(type.combinedXPath(paths[0], paths[1]));
             }
             return result;
         }
@@ -405,49 +406,6 @@ abstract class CombinedXPath {
             final Element parent = originalAttr.getOwnerElement();
             parent.removeAttribute(originalAttr.getName());
         }
-    }
-
-    /**
-     * Creates a new node that copies its info from the original node and
-     * has similarly created ancestors.
-     *
-     * @param original the Node for which ancestry will be computed
-     * @return
-     */
-    private static Node ancestry(Node original) {
-
-        Node nextAncestor;
-        Node displayAncestor;
-        Attr thisAttr = null;
-        if (original.getNodeType() == Node.ATTRIBUTE_NODE) {
-            thisAttr = (Attr) original;
-
-            nextAncestor = thisAttr.getOwnerElement();
-        } else {
-            nextAncestor = original.getParentNode();
-        }
-        displayAncestor = original.getOwnerDocument().createElement(nextAncestor.getNodeName());
-
-        if (thisAttr != null) {
-            ((Element) displayAncestor).setAttribute(thisAttr.getName(), thisAttr.getValue());
-        }
-
-        nextAncestor = nextAncestor.getParentNode();
-
-        while (nextAncestor != null && nextAncestor instanceof Element) {
-            Element newDisplayAncestor = original.getOwnerDocument().createElement(nextAncestor.getNodeName());
-            NamedNodeMap attrs = ((Node) nextAncestor).getAttributes();
-            for (int i = 0; i < attrs.getLength(); i++) {
-                newDisplayAncestor.setAttribute(attrs.item(i).getNodeName(), attrs.item(i).getNodeValue());
-            }
-
-            newDisplayAncestor.appendChild(displayAncestor);
-            displayAncestor = newDisplayAncestor;
-
-            nextAncestor = nextAncestor.getParentNode();
-
-        }
-        return displayAncestor;
     }
 
     private static String toXML(final Node node) {

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -64,16 +64,12 @@ import java.util.logging.Logger;
 import java.util.zip.ZipException;
 
 import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.Archivist;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.util.shared.ArchivistUtils;
 import com.sun.enterprise.util.zip.ZipItem;
-import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 
 /**
  * This class is responsible for creating an appclient jar file that
@@ -139,9 +135,7 @@ class ClientJarMakerUtils {
         try {
             parentURI = getParent(uri);
         } catch (URISyntaxException ex) {
-            IOException ioe = new IOException();
-            ioe.initCause(ex);
-            throw ioe;
+            throw new IOException(ex);
         }
         populateModuleJar(original, generated, target, libraries, parentURI, parentURI);
 
@@ -227,8 +221,6 @@ class ClientJarMakerUtils {
             Application app, ReadableArchive appSource)
             throws IOException {
 
-        boolean isFine = logger.isLoggable(Level.FINE);
-
         File appArchive = new File(appSource.getURI().getSchemeSpecificPart());
 
         Vector<String> libraries = new Vector();
@@ -250,8 +242,8 @@ class ClientJarMakerUtils {
 
         if (DOLUtils.getDefaultLogger().isLoggable(Level.FINEST)) {
             for (String lib : libraries) {
-                DOLUtils.getDefaultLogger().fine(
-                        "Adding to the appclient jar, library [" + lib + "]");
+                DOLUtils.getDefaultLogger().log(
+                        Level.FINE, "Adding to the appclient jar, library [{0}]", lib);
             }
         }
         return libraries;
@@ -310,8 +302,8 @@ class ClientJarMakerUtils {
             }
         }
         if (isFine) {
-            logger.fine("Adding these JARs from directory " +
-                    relativeDirURIPath + " to app client JAR classpath: [" + jarsAdded.toString() + "]");
+            logger.log(Level.FINE, "Adding these JARs from directory {0} to app client JAR classpath: [{1}]", 
+                    new Object[]{relativeDirURIPath, jarsAdded.toString()});
         }
     }
 
@@ -339,7 +331,8 @@ class ClientJarMakerUtils {
                  */
                 if (!jarFile.exists()) {
                     if (isFine) {
-                        logger.fine("Skipping manifest Class-Path processing for non-existent library " + jarFile.getAbsolutePath());
+                        logger.log(Level.FINE, "Skipping manifest Class-Path processing for non-existent library {0}", 
+                                jarFile.getAbsolutePath());
                     }
                     continue;
                 }
@@ -362,10 +355,10 @@ class ClientJarMakerUtils {
                     }
                     if (elementsAdded != null) {
                         if (elementsAdded.length() > 0) {
-                            logger.fine("Added following entries from " +
-                                    entry + " Class-Path to client JAR classpath: [ " + elementsAdded.toString() + "]");
+                            logger.log(Level.FINE, "Added following entries from {0} Class-Path to client JAR classpath: [ {1}]", 
+                                    new Object[]{entry, elementsAdded.toString()});
                         } else {
-                            logger.fine("No Class-Path entries to add to client JAR classpath from manifest of " + entry);
+                            logger.log(Level.FINE, "No Class-Path entries to add to client JAR classpath from manifest of {0}", entry);
                         }
                     }
                 } finally {

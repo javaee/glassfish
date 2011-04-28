@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -57,7 +57,6 @@ import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.logging.Logger;
 import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.internal.api.ServerContext;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.UndeployCommandParameters;
@@ -164,9 +163,6 @@ public class AppClientDeployer
 
     @Inject
     protected Domain domain;
-
-    @Inject
-    private ServerContext serverContext;
 
     @Inject
     private ModulesRegistry modulesRegistry;
@@ -297,7 +293,6 @@ public class AppClientDeployer
             final AppClientDeployerHelper helper = createAndSaveHelper(
                     dc, gfClientModuleClassLoader);
             helper.prepareJARs();
-            DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
             addArtifactsToDownloads(helper, dc);
             addArtifactsToGeneratedFiles(helper, dc);
             recordUserFriendlyContextRoot(helper, dc);
@@ -377,10 +372,6 @@ public class AppClientDeployer
     private String moduleURI(final DeploymentContext dc) {
         ApplicationClientDescriptor acd = dc.getModuleMetaData(ApplicationClientDescriptor.class);
         return acd.getModuleDescriptor().getArchiveUri();
-    }
-
-    private static String generatedEARFacadeName(final String earName) {
-        return earName + "Client.jar";
     }
 
     public void recordContextRoot(final String appName,

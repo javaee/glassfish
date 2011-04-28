@@ -183,7 +183,9 @@ class ClientJNLPConfigData {
     private void processConfigFile(final File configFile) {
         final Properties p = new Properties();
         try {
-            p.load(new BufferedInputStream(new FileInputStream(configFile)));
+            final InputStream is = new BufferedInputStream(new FileInputStream(configFile));
+            p.load(is);
+            is.close();
             final List<XPathToDeveloperProvidedContentRefs> newRefsToContent = prepareRefsToContent(p);
             final List<CombinedXPath> newCombinedXPaths = prepareCombinedXPaths(p);
             /*

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -254,19 +254,19 @@ public class ClientJarMakerThread extends Thread {
         //original implementation, for comparing behavior regression
         USE_ORIGINAL_MAKER {
         public Boolean useModuleClientJarMaker(boolean qualify) {
-            return null;}},
+            return Boolean.FALSE;}},
 
         //transitional default option. only turn on the generation of the
         //appclient module format
         USE_TRANSITION_MAKER {
         public Boolean useModuleClientJarMaker(boolean qualify) {
-            return qualify == true ? Boolean.TRUE : null;}},
+            return qualify == true ? Boolean.TRUE : Boolean.FALSE;}},
 
         //alternative default option. generate appclient module format
         //or the ear module format accordingly
         USE_COMBO_MAKER {
         public Boolean useModuleClientJarMaker(boolean qualify) {
-            return new Boolean(qualify);}},
+            return Boolean.valueOf(qualify);}},
 
         //current default. generate only the ear module format, i.e. no 
         //optimization on certain deployed ear

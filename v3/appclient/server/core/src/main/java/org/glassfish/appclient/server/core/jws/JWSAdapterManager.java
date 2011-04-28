@@ -111,9 +111,6 @@ public class JWSAdapterManager implements PostConstruct {
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Config config;
 
-    @Inject
-    private ExtensionFileManager extensionFileManager;
-
     @Inject AppClientDeployer appClientDeployer;
 
     @Inject
@@ -156,7 +153,7 @@ public class JWSAdapterManager implements PostConstruct {
     private File domainLevelSignedJARsRoot;
 
     @Override
-    public void postConstruct() {
+    public synchronized void postConstruct() {
         installRootURI = serverContext.getInstallRoot().toURI();
         logger = LogDomains.getLogger(AppClientDeployer.class, LogDomains.ACC_LOGGER);
         iiopService = config.getIiopService();

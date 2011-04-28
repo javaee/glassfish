@@ -44,7 +44,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.CharBuffer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.glassfish.appclient.server.core.jws.Util;
@@ -60,8 +59,6 @@ public class ACCConfigContent {
     private final SunACCPairedFiles sunACC;
     private final PairedFiles appClientLogin;
     
-    private File messageSecurityConfigFile;
-
     /* match the security.config property and capture the value */
     private final static Pattern SECURITY_CONFIG_VALUE_PATTERN = Pattern.compile(
             "<property name=\"security.config\"\\s*value=\"([^\"]*)\"\\s*/\\s*>");
@@ -141,12 +138,14 @@ public class ACCConfigContent {
             int charsRead;
 
             final char[] buffer = new char[1024];
-            while ( (charsRead = fr.read(buffer)) != -1) {
-                sb.append(buffer, 0, charsRead);
+            try {
+                while ( (charsRead = fr.read(buffer)) != -1) {
+                    sb.append(buffer, 0, charsRead);
+                }
+                return Util.replaceTokens(sb.toString(), System.getProperties());
+            } finally {
+                fr.close();
             }
-            fr.close();
-
-            return Util.replaceTokens(sb.toString(), System.getProperties());
         }
 
         String content() throws FileNotFoundException, IOException {

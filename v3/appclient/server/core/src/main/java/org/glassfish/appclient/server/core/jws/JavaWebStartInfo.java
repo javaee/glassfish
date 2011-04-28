@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,6 +50,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -122,7 +123,7 @@ public class JavaWebStartInfo implements ConfigListener {
 
     private TokenHelper tHelper;
 
-    private static Logger logger = LogDomains.getLogger(AppClientServerApplication.class,
+    private static final Logger logger = LogDomains.getLogger(AppClientServerApplication.class,
                 LogDomains.ACC_LOGGER);
 
     private VendorInfo vendorInfo;
@@ -365,7 +366,7 @@ public class JavaWebStartInfo implements ConfigListener {
     private File signedFileForDomainFile(final File unsignedFile) {
 
         final File rootForSignedFilesInDomain = jwsAdapterManager.rootForSignedFilesInDomain();
-        rootForSignedFilesInDomain.mkdirs();
+        mkdirs(rootForSignedFilesInDomain);
         final URI signedFileURI = rootForSignedFilesInDomain.toURI().resolve(relativeURIToDomainFile(unsignedFile));
         return new File(signedFileURI);
     }
@@ -377,7 +378,7 @@ public class JavaWebStartInfo implements ConfigListener {
     private String jarElementsForExtensions(final Set<Extension> exts) {
         final StringBuilder sb = new StringBuilder();
         for (Extension e : exts) {
-            sb.append("<jar href=\"" + JWSAdapterManager.publicExtensionHref(e) + "\"/>");
+            sb.append("<jar href=\"").append(JWSAdapterManager.publicExtensionHref(e)).append("\"/>");
         }
         return sb.toString();
     }
@@ -581,15 +582,6 @@ public class JavaWebStartInfo implements ConfigListener {
             final Map<String,StaticContent> content,
             final File unsignedFile,
             final File signedFile,
-            final URI uriForLookup
-            ) throws FileNotFoundException {
-        createAndAddSignedStaticContent(content, unsignedFile, signedFile, uriForLookup, null);
-    }
-
-    private void createAndAddSignedStaticContent(
-            final Map<String,StaticContent> content,
-            final File unsignedFile,
-            final File signedFile,
             final URI uriForLookup,
             final String tokenName
             ) throws FileNotFoundException {
@@ -601,7 +593,7 @@ public class JavaWebStartInfo implements ConfigListener {
     private StaticContent createSignedStaticContent(
             final File unsignedFile,
             final File signedFile) throws FileNotFoundException {
-        signedFile.getParentFile().mkdirs();
+        mkdirs(signedFile.getParentFile());
         final StaticContent signedJarContent = new AutoSignedContent(
                 unsignedFile,
                 signedFile,
@@ -626,8 +618,8 @@ public class JavaWebStartInfo implements ConfigListener {
             final StaticContent newContent,
             final String uriStringForLookup) {
         content.put(uriStringForLookup, newContent);
-        logger.fine("Recording static content: URI for lookup = " +
-                uriStringForLookup + "; content = " + newContent.toString());
+        logger.log(Level.FINE, "Recording static content: URI for lookup = {0}; content = {1}", 
+                new Object[]{uriStringForLookup, newContent.toString()});
     }
 
     public static URI relativeURIForProvidedOrGeneratedAppFile(
@@ -679,7 +671,7 @@ public class JavaWebStartInfo implements ConfigListener {
          * to generated/xml/(appName)/signed where the signed file should reside.
          */
         final File rootForSignedFilesInApp = helper.rootForSignedFilesInApp();
-        rootForSignedFilesInApp.mkdirs();
+        mkdirs(rootForSignedFilesInApp);
         final URI unsignedFileURIRelativeToXMLDir = dc.getScratchDir("xml").getParentFile().toURI().
                 relativize(unsignedFile.toURI());
         final URI signedFileURI = rootForSignedFilesInApp.toURI().resolve(unsignedFileURIRelativeToXMLDir);
@@ -702,7 +694,7 @@ public class JavaWebStartInfo implements ConfigListener {
          * 
          */
         final File rootForSignedFilesInApp = helper.rootForSignedFilesInApp();
-        rootForSignedFilesInApp.mkdirs();
+        mkdirs(rootForSignedFilesInApp);
         final URI signedFileURI = rootForSignedFilesInApp.toURI().resolve(relURI);
         
         return new File(signedFileURI);
@@ -766,8 +758,9 @@ public class JavaWebStartInfo implements ConfigListener {
                 templateText, tHelper.tokens());
         content.put(uriStringForContent, newDynamicContent(processedTemplate,
                 JNLP_MIME_TYPE));
-        logger.fine("Adding dyn content " + uriStringForContent + System.getProperty("line.separator") +
-                (logger.isLoggable(Level.FINER) ? processedTemplate : ""));
+        logger.log(Level.FINE, "Adding dyn content {0}{1}{2}", 
+                new Object[]{uriStringForContent, 
+                    System.getProperty("line.separator"), logger.isLoggable(Level.FINER) ? processedTemplate : ""});
     }
 
     private static DynamicContent newDynamicContent(final String template,
@@ -991,5 +984,13 @@ public class JavaWebStartInfo implements ConfigListener {
 
     }
 
+    private static void mkdirs(final File dir) {
+        if ( ! dir.exists()) {
+            if ( ! dir.mkdirs()) {
+                final String msg = logger.getResourceBundle().getString("enterprise.deployment.appclient.errormkdirs");
+                throw new RuntimeException(MessageFormat.format(msg, dir.getAbsolutePath()));
+            }
+        }
+    }
 
 }
