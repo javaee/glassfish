@@ -59,12 +59,23 @@ public class VMOrder {
         this.number = number;
         this.template = template;
     }
+
     /**
      *
      * @return the desired number of machines
      */
     public int number() {
         return number;
+    }
+
+    /**
+     * Returns the requested characteristics for the virtual machines
+     * @return a set of static virtual machine characteristics to use when
+     * allocating the new virtual machines or null if the template characteristics
+     * should apply.
+     */
+    public StaticVirtualMachineInfo getCharacteristics() {
+        return null;
     }
 
     /**

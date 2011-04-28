@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,13 +51,14 @@ import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
 /**
- *  This is a local command that creates a local instance.
+ * This is a local command that creates a node agent.
  */
 // XXX - make this command disappear until we actually implement it
 //@Service(name = "create-node-agent")
 @Scoped(PerLookup.class)
 public final class CreateNodeAgentCommand extends CLICommand {
 
+    /*
     @Param(name = "agentdir", optional = true)
     private String agentDir;
 
@@ -77,6 +78,7 @@ public final class CreateNodeAgentCommand extends CLICommand {
     private String nodeAgentName;
 
     private File agentsDir;             // the parent dir of all node agents
+    */
 
     /**
      */
@@ -84,6 +86,7 @@ public final class CreateNodeAgentCommand extends CLICommand {
     protected void validate()
             throws CommandException, CommandValidationException  {
 
+        /*
         if (ok(agentDir)) {
             agentsDir = new File(agentDir);
         } else {
@@ -97,6 +100,7 @@ public final class CreateNodeAgentCommand extends CLICommand {
                                 SystemPropertyConstants.INSTALL_ROOT_PROPERTY)),
                                 "nodes");
         }
+        */
 
         // XXX - validate lots more...
     }

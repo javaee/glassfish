@@ -54,6 +54,10 @@
     <packaging>hk2-jar</packaging>
     <name>admin-launcher</name>
     <description>Server Launching</description>
+
+    <properties>
+        <findbugs.exclude>exclude.xml</findbugs.exclude>
+    </properties>
     
     <build>
         <resources>

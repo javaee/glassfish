@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -11,20 +11,20 @@
  * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at packager/legal/LICENSE.txt.
- * 
+ *
  * GPL Classpath Exception:
  * Oracle designates this particular file as subject to the "Classpath"
  * exception as provided by Oracle in the GPL Version 2 section of the License
  * file that accompanied this code.
- * 
+ *
  * Modifications:
  * If applicable, add the following below the License Header, with the fields
  * enclosed by brackets [] replaced by your own identifying information:
  * "Portions Copyright [year] [name of copyright owner]"
- * 
+ *
  * Contributor(s):
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
@@ -40,12 +40,14 @@
 package org.glassfish.admingui.devtests.util;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.admingui.devtests.BaseSeleniumTestClass;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 
@@ -67,7 +69,7 @@ public class SeleniumHelper {
         if (instance == null) {
             instance = new SeleniumHelper();
         }
-        
+
         return instance;
     }
 
@@ -79,7 +81,7 @@ public class SeleniumHelper {
             String browser = getParameter("browser", "firefox");
 
             if ("firefox".equals(browser)) {
-                driver = new FirefoxDriver();
+                driver = new FirefoxDriver();//new FirefoxProfile(new File("src/test/resources/firefoxProfile")));
             } else if ("chrome".equals(browser)) {
                 driver = new ChromeDriver();
             } else if ("ie".contains(browser)) {
@@ -96,7 +98,7 @@ public class SeleniumHelper {
 
         return selenium;
     }
-    
+
     public void releaseSeleniumInstance() {
         if (selenium != null) {
             if (Boolean.parseBoolean(SeleniumHelper.getParameter("debug", "false"))) {
@@ -119,7 +121,7 @@ public class SeleniumHelper {
         return elementFinder;
     }
 
-    
+
     public static String getParameter(String paramName, String defaultValue) {
         String value = System.getProperty(paramName);
 

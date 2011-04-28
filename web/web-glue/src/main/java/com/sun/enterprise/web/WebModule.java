@@ -130,7 +130,7 @@ public class WebModule extends PwcWebModule {
      */
     private boolean hasBeenXmlConfigured = false;
 
-    private WebContainer webContainer;
+    private transient WebContainer webContainer;
 
     private final Map<String,AdHocServletInfo> adHocPaths;
     private boolean hasAdHocPaths;
@@ -138,7 +138,7 @@ public class WebModule extends PwcWebModule {
     private final Map<String,AdHocServletInfo> adHocSubtrees;
     private boolean hasAdHocSubtrees;
 
-    private StandardPipeline adHocPipeline;
+    private transient StandardPipeline adHocPipeline;
 
     // File encoding of static resources
     private String fileEncoding;
@@ -148,19 +148,19 @@ public class WebModule extends PwcWebModule {
      */
     protected Object[] cachedFinds;
 
-    private Application bean;
+    private transient Application bean;
 
     private WebBundleDescriptor webBundleDescriptor;
 
     private boolean hasStarted = false;
     private String compEnvId = null;
-    private ServerContext serverContext = null;
+    private transient ServerContext serverContext = null;
 
-    private ServletProbeProvider servletProbeProvider = null;
-    private SessionProbeProvider sessionProbeProvider = null;
-    private WebModuleProbeProvider webModuleProbeProvider = null;
+    private transient ServletProbeProvider servletProbeProvider = null;
+    private transient SessionProbeProvider sessionProbeProvider = null;
+    private transient WebModuleProbeProvider webModuleProbeProvider = null;
 
-    private JavaEEIOUtils javaEEIOUtils;
+    private transient JavaEEIOUtils javaEEIOUtils;
 
     // The id of the parent container (i.e., virtual server) on which this
     // web module was deployed
@@ -168,12 +168,12 @@ public class WebModule extends PwcWebModule {
 
     private String monitoringNodeName;
 
-    private WebModuleConfig wmInfo;
+    private transient WebModuleConfig wmInfo;
 
     // true if standalone WAR, false if embedded in EAR file
     private boolean isStandalone = true;
 
-    Habitat habitat;
+    private transient Habitat habitat;
 
     /**
      * Constructor.
@@ -597,7 +597,9 @@ public class WebModule extends PwcWebModule {
     public void setParent(Container container) {
         super.setParent(container);
 
-        vsId = ((VirtualServer) container).getID();
+        if (container instanceof VirtualServer) {
+            vsId = ((VirtualServer) container).getID();
+        }
 
         // The following assumes that the realm has been set on this WebModule
         // before the WebModule is added as a child to the virtual server on
@@ -686,15 +688,15 @@ public class WebModule extends PwcWebModule {
         if (newPaths == null || newPaths.isEmpty()) {
             return;
         }
-        for(String adHocPath : newPaths.keySet()) {
-            AdHocServletInfo servletInfo = newPaths.get(adHocPath);
+        for (Map.Entry<String, AdHocServletInfo> entry : newPaths.entrySet()) {
+            AdHocServletInfo servletInfo = entry.getValue();
             Wrapper adHocWrapper = (Wrapper)
                 findChild(servletInfo.getServletName());
             if(adHocWrapper == null) {
                 adHocWrapper = createAdHocWrapper(servletInfo);
                 addChild(adHocWrapper);
             }
-            adHocPaths.put(adHocPath, servletInfo);
+            adHocPaths.put(entry.getKey(), servletInfo);
         }
 
         hasAdHocPaths = true;
@@ -712,14 +714,14 @@ public class WebModule extends PwcWebModule {
         if (newSubtrees == null || newSubtrees.isEmpty()) {
             return;
         }
-        for(String adHocSubtree : newSubtrees.keySet()) {
-            AdHocServletInfo servletInfo = newSubtrees.get(adHocSubtree);
+        for (Map.Entry<String, AdHocServletInfo> entry : newSubtrees.entrySet()) {
+            AdHocServletInfo servletInfo = entry.getValue();
             Wrapper adHocWrapper = (Wrapper)findChild(servletInfo.getServletName());
             if(adHocWrapper == null) {
                 adHocWrapper = createAdHocWrapper(servletInfo);
                 addChild(adHocWrapper);
             }
-            adHocSubtrees.put(adHocSubtree, servletInfo);
+            adHocSubtrees.put(entry.getKey(), servletInfo);
         }
 
         hasAdHocSubtrees = true;
@@ -911,8 +913,8 @@ public class WebModule extends PwcWebModule {
         adHocWrapper.setName(servletInfo.getServletName());
         Map<String,String> initParams = servletInfo.getServletInitParams();
         if (initParams != null && !initParams.isEmpty()) {
-            for(String paramName : initParams.keySet()) {
-                adHocWrapper.addInitParameter(paramName, initParams.get(paramName));
+            for(Map.Entry<String,String> entry : initParams.entrySet()) {
+                adHocWrapper.addInitParameter(entry.getKey(), entry.getValue());
             }
         }
 
@@ -1738,18 +1740,14 @@ public class WebModule extends PwcWebModule {
                                          WebBundleDescriptor wbd,
                                          WebModuleConfig wmInfo) {
 
-        PersistenceType persistence = PersistenceType.MEMORY;
-        String frequency = null;
-        String scope = null;
-
         SessionManagerConfigurationHelper configHelper =
             new SessionManagerConfigurationHelper(
                 this, smBean, wbd, wmInfo,
                 webContainer.getServerConfigLookup());
 
-        persistence = configHelper.getPersistenceType();
-        frequency = configHelper.getPersistenceFrequency();
-        scope = configHelper.getPersistenceScope();
+        PersistenceType persistence = configHelper.getPersistenceType();
+        String frequency = configHelper.getPersistenceFrequency();
+        String scope = configHelper.getPersistenceScope();
 
         if (logger.isLoggable(Level.FINEST)) {
             logger.finest("IN WebContainer>>ConfigureSessionManager before builder factory");

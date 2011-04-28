@@ -77,9 +77,8 @@
           modules to be included in this bundle
         -->       
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.fighterfish</groupId>
             <artifactId>osgi-http</artifactId>
-            <version>${project.version}</version>
         </dependency>
     
 

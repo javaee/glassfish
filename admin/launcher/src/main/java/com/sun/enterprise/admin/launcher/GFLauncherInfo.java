@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,7 +48,7 @@ import com.sun.enterprise.util.HostAndPort;
 import org.glassfish.api.admin.RuntimeType;
 
 /**
- * @author bnevins
+ * @author Byron Nevins
  */
 public class GFLauncherInfo {
 
@@ -317,7 +317,7 @@ public class GFLauncherInfo {
 
         File f = null;
         String s = null;
-        Boolean b = null;
+        ThreeStateBoolean tsb = null;
 
         // pick out file props
         // annoying -- cli uses "domaindir" to represent the parent of the 
@@ -350,17 +350,29 @@ public class GFLauncherInfo {
         }
 
         // finally, do the booleans
-        if ((b = getBoolean("debug")) != null) {
-            debug = b;
-        }
+        // getting ugly.  Findbugs does not like using regular Boolean object
+        // a three-state boolean
+        // we do NOT want to disturb the existing values of these variables if the
+        // user has not explicitly overridden them.
 
-        if ((b = getBoolean("verbose")) != null) {
-            verbose = b;
-        }
+        tsb = getBoolean("debug");
 
-        if ((b = getBoolean("upgrade")) != null) {
-            upgrade = b;
-        }
+        if(tsb.isTrue())
+            debug = true;
+        else if(tsb.isFalse())
+            debug = false;
+
+        tsb = getBoolean("verbose");
+        if(tsb.isTrue())
+            debug = true;
+        else if(tsb.isFalse())
+            debug = false;
+
+        tsb = getBoolean("upgrade");
+        if(tsb.isTrue())
+            debug = true;
+        else if(tsb.isFalse())
+            debug = false;
     }
 
     private void finalSetup() throws GFLauncherException {
@@ -465,14 +477,14 @@ public class GFLauncherInfo {
         return files[0].getName();
     }
 
-    private Boolean getBoolean(String key) {
+    private ThreeStateBoolean getBoolean(String key) {
         // 3 return values -- true, false, null
         String s = getValueIgnoreCommandDelimiter(key);
 
-        if (s != null)
-            return Boolean.valueOf(s);
+        if (s != null) // guaranteed true or false
+            return new ThreeStateBoolean(Boolean.valueOf(s));
         else
-            return null;
+            return new ThreeStateBoolean(null);
     }
 
     private File getFile(String key) {
@@ -531,4 +543,23 @@ public class GFLauncherInfo {
     private final static String CONFIG_FILENAME = "domain.xml";
     //password tokens -- could be multiple -- launcher should *just* write them onto stdin of server
     final List<String> securityTokens = new ArrayList<String>(); // note: it's package private
+
+    final private static class ThreeStateBoolean {
+
+        ThreeStateBoolean(Boolean b) {
+            this.b = b;
+        }
+        boolean isNull() {
+            return b == null;
+        }
+        boolean isTrue() {
+            return !isNull() && b.booleanValue();
+        }
+        boolean isFalse() {
+            return !isNull() && !b.booleanValue();
+        }
+        
+        Boolean b;
+    }
+
 }

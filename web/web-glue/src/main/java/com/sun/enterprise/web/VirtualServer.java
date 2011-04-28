@@ -163,7 +163,7 @@ public class VirtualServer extends StandardHost
      * - state (disabled/off)
      * - redirects
      */
-    private VirtualServerPipeline vsPipeline;
+    private transient VirtualServerPipeline vsPipeline;
 
     /*
      * The original (standard) pipeline of this VirtualServer.
@@ -182,7 +182,7 @@ public class VirtualServer extends StandardHost
     /**
      * The logger to use for logging this virtual server
      */
-    protected volatile Logger _logger = DEFAULT_LOGGER;
+    protected transient volatile Logger _logger = DEFAULT_LOGGER;
 
     /**
      * The descriptive information about this implementation.
@@ -193,7 +193,7 @@ public class VirtualServer extends StandardHost
     /**
      * The config bean associated with this VirtualServer
      */
-    private com.sun.enterprise.config.serverbeans.VirtualServer vsBean;
+    private transient com.sun.enterprise.config.serverbeans.VirtualServer vsBean;
 
     /**
      * The mime mapping associated with this VirtualServer
@@ -210,11 +210,11 @@ public class VirtualServer extends StandardHost
 
     private String[] cacheControls;
 
-    private CommandRunner runner;
+    private transient CommandRunner runner;
 
-    private Domain domain;
+    private transient Domain domain;
 
-    private ServerEnvironment instance;
+    private transient ServerEnvironment instance;
 
     // Is this virtual server active?
     private boolean isActive;
@@ -238,12 +238,13 @@ public class VirtualServer extends StandardHost
 
     private String defaultContextPath = null;
 
-    private ServerContext serverContext;
+    private transient ServerContext serverContext;
 
     private boolean ssoFailoverEnabled = false;
 
-    private volatile FileLoggerHandler fileLoggerHandler = null;
-    private volatile FileLoggerHandlerFactory fileLoggerHandlerFactory = null;
+    private transient volatile FileLoggerHandler fileLoggerHandler = null;
+
+    private transient volatile FileLoggerHandlerFactory fileLoggerHandlerFactory = null;
 
     // ------------------------------------------------------------- Properties
 
@@ -261,13 +262,6 @@ public class VirtualServer extends StandardHost
      */
     public void setID(String id) {
         _id = id;
-    }
-
-    /**
-     * @return true if this virtual server is active, false otherwise
-     */
-    public boolean isActive() {
-        return isActive;
     }
 
     /**
@@ -708,7 +702,6 @@ public class VirtualServer extends StandardHost
 
         WebModuleConfig wmInfo = null;
 
-        int length = id.length();
         // Check for ':' separator
         int separatorIndex = id.indexOf(Constants.NAME_SEPARATOR);
         if (separatorIndex == -1) {
@@ -916,12 +909,14 @@ public class VirtualServer extends StandardHost
                             getName());
             }
 
-            if (propName.startsWith("valve_")) {
-                addValve(propValue);
-            } else if (propName.startsWith("listener_")) {
-                addListener(propValue);
-            } else if (propName.equals("securePagesWithPragma")){
-                setSecurePagesWithPragma(Boolean.valueOf(propValue));
+            if (propName != null) {
+                if (propName.startsWith("valve_")) {
+                    addValve(propValue);
+                } else if (propName.startsWith("listener_")) {
+                    addListener(propValue);
+                } else if (propName.equals("securePagesWithPragma")){
+                    setSecurePagesWithPragma(Boolean.valueOf(propValue));
+                }
             }
         }
     }
@@ -1963,7 +1958,9 @@ public class VirtualServer extends StandardHost
             }
 
             if (delete) {
-                file.delete();
+                boolean deleted = file.delete();
+                if (!deleted)
+                    throw new GlassFishException("Could not delete file "+file.getAbsolutePath());
             }
 
             WebModule wm = (WebModule) findChild(contextName);

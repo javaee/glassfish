@@ -698,14 +698,14 @@ public class SecurityHandler {
                         }
                     }
                     if (attrMap.get("defaultProvider") == null){
-                        if (providerMap.get("providerType").equals("client") && attrMap.get("defaultClientProvider").equals(providerName)) {
+                        if ( providerMap.get("providerType").equals("client") && providerName.equals(attrMap.get("defaultClientProvider"))) {
                             attrs.put("defaultClientProvider", "");
                         }
-                        else if (providerMap.get("providerType").equals("server") && attrMap.get("defaultProvider").equals(providerName)) {
+                        else if (providerMap.get("providerType").equals("server") && providerName.equals(attrMap.get("defaultProvider"))) {
                             attrs.put("defaultProvider", "");
                         }
                         else if (providerMap.get("providerType").equals("client-server")) {
-                            if (attrMap.get("defaultServerProvider").equals(providerName) && attrMap.get("defaultClientProvider").equals(providerName)) {
+                            if ( providerName.equals(attrMap.get("defaultServerProvider")) && providerName.equals(attrMap.get("defaultClientProvider"))) {
                                 attrs.put("defaultProvider", "");
                                 attrs.put("defaultClientProvider", "");
                             }
