@@ -54,7 +54,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.virtualization</groupId>
-            <artifactId>vmcluster</artifactId>
+            <artifactId>virt-core</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
