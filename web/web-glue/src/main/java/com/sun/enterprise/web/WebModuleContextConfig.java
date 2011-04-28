@@ -154,30 +154,6 @@ public class WebModuleContextConfig extends ContextConfig {
     }
     
     
-    /**
-     * Process the START event for an associated Context.
-     *
-     * @param event The lifecycle event that has occurred
-     */
-    public void lifecycleEvent(LifecycleEvent event)
-            throws LifecycleException {
-        
-        // Identify the context we are associated with
-        context = (Context) event.getLifecycle();
-
-        // Called from ContainerBase.addChild() -> StandardContext.start()
-        // Process the event that has occurred
-        if (event.getType().equals(Lifecycle.START_EVENT)) {
-            configureResource();
-            start();
-        } else if (event.getType().equals(Lifecycle.STOP_EVENT)) {
-            stop();
-        } else if (event.getType().equals(Lifecycle.INIT_EVENT)) {
-            super.init();
-        }
-    }
-    
-    
     protected synchronized void configureResource()
             throws LifecycleException {
         
@@ -245,7 +221,10 @@ public class WebModuleContextConfig extends ContextConfig {
     /**
      * Process a "start" event for this Context - in background
      */
+    @Override
     protected synchronized void start() throws LifecycleException {
+        configureResource();
+
         context.setConfigured(false);
 
         ComponentEnvManager namingMgr = habitat.getComponent(
@@ -295,6 +274,7 @@ public class WebModuleContextConfig extends ContextConfig {
     /**
      * Always sets up an Authenticator regardless of any security constraints.
      */
+    @Override
     protected synchronized void authenticatorConfig()
             throws LifecycleException {
         
@@ -431,6 +411,7 @@ public class WebModuleContextConfig extends ContextConfig {
      * The default config must be read with the container loader - so
      * container servlets can be loaded
      */
+    @Override
     protected void defaultConfig() {
         ;
     }
@@ -439,6 +420,7 @@ public class WebModuleContextConfig extends ContextConfig {
     /**
      * Process a "stop" event for this Context.
      */
+    @Override
     protected synchronized void stop() {
         
         super.stop();

@@ -1032,7 +1032,7 @@ public class RemoteAdminCommand {
             return;
         } catch (RemoteException rfe) {
             // XXX - gross
-            if (rfe.getRemoteCause().indexOf("CommandNotFoundException") > 0) {
+            if (rfe.getRemoteCause().indexOf("CommandNotFoundException") >= 0) {
                 // CommandNotFoundException from the server, then display
                 // the closest matching commands
                 throw new InvalidCommandException(rfe.getMessage());

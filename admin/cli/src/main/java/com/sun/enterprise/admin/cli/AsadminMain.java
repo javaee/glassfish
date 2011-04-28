@@ -251,16 +251,9 @@ public class AsadminMain {
             break;
 
         case ERROR:
-            logger.fine(
-                strings.get("CommandUnSuccessful", command));
-            break;
-
         case INVALID_COMMAND_ERROR:
-            logger.fine(
-                strings.get("CommandUnSuccessful", command));
-            break;
-
         case CONNECTION_ERROR:
+        default:
             logger.fine(
                 strings.get("CommandUnSuccessful", command));
             break;

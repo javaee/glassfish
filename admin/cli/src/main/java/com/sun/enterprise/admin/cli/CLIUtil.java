@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -295,7 +295,7 @@ public class CLIUtil {
             out.write(" asadmin ");
 
             if (args != null) {
-               for (int i = 0; args != null && i < args.length; ++i) {
+               for (int i = 0; i < args.length; ++i) {
                     out.write(args[i] + " ");
                }
             }
@@ -305,6 +305,10 @@ public class CLIUtil {
             if (out != null) {
                 try {
                     out.write("\n");
+                } catch (Exception e) {
+                    // ignore
+                }
+                try {
                     out.close();
                 } catch (Exception e) {
                     // ignore
@@ -324,15 +328,10 @@ public class CLIUtil {
 
         File f = new File(fname);
 
-        if (!f.exists()) {
-            try {
-                f.createNewFile();
-            } catch (IOException e) { /* ignore */ }
-        }
-
-        if (f.isFile() && f.canWrite())
-            return f;
-        else
-            return null;
+        try {
+            if ((f.exists() || f.createNewFile()) && f.isFile() && f.canWrite())
+                return f;
+        } catch (IOException e) { /* ignore */ }
+        return null;
     }
 }

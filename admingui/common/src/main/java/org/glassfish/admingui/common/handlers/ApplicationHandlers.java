@@ -404,15 +404,16 @@ public class ApplicationHandlers {
         String Enabled = (String) handlerCtx.getInputValue("Enabled");
         List<Map>  selectedRows = (List) handlerCtx.getInputValue("selectedRows");
         boolean forLB = (Boolean) handlerCtx.getInputValue("forLB");
+        String prefix = (String)GuiUtil.getSessionValue("REST_URL");
         for(Map oneRow : selectedRows){
             Map attrs = new HashMap();
             String endpoint = (String) oneRow.get("endpoint");
             if(forLB){
                 attrs.put("lbEnabled", Enabled);
-                RestUtil.restRequest(endpoint, attrs, "post", handlerCtx, false);
+                RestUtil.restRequest(prefix + endpoint, attrs, "post", handlerCtx, false);
             }else{
                 attrs.put("enabled", Enabled);
-                RestUtil.restRequest(endpoint, attrs, "post", handlerCtx, false);
+                RestUtil.restRequest(prefix + endpoint, attrs, "post", handlerCtx, false);
             }
         }
      }

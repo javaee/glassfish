@@ -318,13 +318,13 @@ public class Parser {
      */
     private void setOption(ParamModel opt, String value)
             throws CommandValidationException {
-        String name = opt.getName();
         // VERY basic validation
         if (opt == null)
             throw new NullPointerException("null option name");
         if (value != null)
             value = value.trim();
 
+        String name = opt.getName();
         if (opt.getType() == File.class) {
             File f = new File(value);
             // allow the pseudo-file name of "-" to mean stdin

@@ -242,13 +242,15 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
      * generally useful method.  Feel free to copy & paste!
      */
     private void debug(String s) {
+        PrintStream ps = null;
         try {
-            PrintStream ps = new PrintStream(
-                    new FileOutputStream("startdomain.txt", true));
+            ps = new PrintStream(new FileOutputStream("startdomain.txt", true));
             ps.println(new Date().toString() + ":  " + s);
-        }
-        catch (FileNotFoundException ex) {
+        } catch (FileNotFoundException ex) {
             //
+        } finally {
+            if (ps != null)
+                ps.close();
         }
     }
 

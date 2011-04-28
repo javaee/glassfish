@@ -117,7 +117,7 @@ public class CloudInterceptor implements DeployCommand.Interceptor {
 
             final XMLStreamReader reader;
             try {
-                reader = XMLInputFactory.newFactory().createXMLStreamReader(is);
+                reader = XMLInputFactory.newInstance().createXMLStreamReader(is);
             } catch (XMLStreamException e) {
                 e.printStackTrace();
                 return null;
