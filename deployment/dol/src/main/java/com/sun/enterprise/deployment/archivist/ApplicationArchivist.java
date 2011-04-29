@@ -491,8 +491,15 @@ public class ApplicationArchivist extends Archivist<Application>
 
     private static class ArchiveIntrospectionFilter implements FilenameFilter {
         private String libDir;
+        private final FileArchive.StaleFileManager sfm;
 
         ArchiveIntrospectionFilter(String root) {
+            try {
+                sfm = FileArchive.StaleFileManager.Util.getInstance(
+                    new File(root));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             libDir = root + File.separator + "lib" + File.separator;
         }
 
@@ -500,17 +507,17 @@ public class ApplicationArchivist extends Archivist<Application>
 
             File currentFile = new File(dir, name);
             if (currentFile.isDirectory()) {
-                return true;
+                return sfm.isEntryValid(currentFile, true);
             }
 
             //For ".war" and ".rar", check all files in the archive
             if (name.endsWith(".war") || name.endsWith(".rar")) {
-                return true;
+                return sfm.isEntryValid(currentFile, true);
             }
 
             String path = currentFile.getAbsolutePath();
             if (!path.startsWith(libDir) && path.endsWith(".jar")) {
-                return true;
+                return sfm.isEntryValid(currentFile, true);
             }
 
             return false;
