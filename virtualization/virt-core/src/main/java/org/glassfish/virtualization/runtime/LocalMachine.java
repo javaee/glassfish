@@ -41,7 +41,7 @@ package org.glassfish.virtualization.runtime;
 
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
