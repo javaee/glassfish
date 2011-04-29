@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+X-COMMENT: Main-Class will be added automatically by build
+Premain-Class: gftrace.Main
+Agent-Class: gftrace.Main
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true
+
