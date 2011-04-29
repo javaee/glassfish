@@ -438,6 +438,8 @@
                 <module>extras/embedded/nucleus</module>
                 <module>osgi-javaee</module>
                 <module>ant-tasks</module>
+                <module>build/glassfishbuild-repo-setup</module>
+                <module>sun-glassfish/build/oracle-glassfish-repo-setup</module>
             </modules>
         </profile>
 
