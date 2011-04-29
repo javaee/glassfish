@@ -32,6 +32,7 @@ public class ProbeServlet extends HttpServlet {
     @Resource
     private ProbeRegistry probeRegistry;
     private PrintWriter out;
+    private ProbeInterface probeInterface;
 
     @Probe(name = "myProbe")
     public void myProbe(String s) {
@@ -41,6 +42,8 @@ public class ProbeServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         myProbe("Hello #" + counter.incrementAndGet());
+        Random random = new Random();
+        probeInterface.myProbe2("random: " + random.nextDouble(), "random: " + random.nextInt());
         response.setContentType("text/html;charset=UTF-8");
         out = response.getWriter();
         try {
@@ -80,12 +83,15 @@ public class ProbeServlet extends HttpServlet {
         try {
             // need to get the probe provider registered before the listener!
             probeProviderFactory.getProbeProvider(getClass());
-            probeProviderFactory.getProbeProvider(ProbeInterface.class);
+            probeInterface = probeProviderFactory.getProbeProvider(ProbeInterface.class);
             listenerRegistrar.registerListener(new MyProbeListener());
         }
         catch (Exception e) {
             throw new ServletException("Error initializing", e);
         }
+
+        if (probeInterface == null)
+            throw new ServletException("ProbeInterface was not instantiated as expected.");
     }
 
     private void pr(String s) {

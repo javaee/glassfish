@@ -12,4 +12,9 @@ public class MyProbeListener {
     public void probe(String s) {
         System.out.println("PROBE LISTENER HERE.  Called with this arg: " + s);
     }
+
+    @ProbeListener("fooblog:samples:ProbeInterface:myProbe2")
+    public void probe2(String s1, String s2) {
+        System.out.println("PROBE INTERFACE LISTENER HERE.  Called with thes args: " + s1 + ", " + s2);
+    }
 }
