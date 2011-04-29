@@ -847,7 +847,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
              * @param archive the directory to contain the archive
              * @return StaleFileManager for the FileArchive to use
              */
-            static StaleFileManager getInstance(final File archive) throws IOException {
+            public static StaleFileManager getInstance(final File archive) throws IOException {
                 if (archive.exists()) {
                     return new StaleFileManagerImpl(archive);
                 } else {
