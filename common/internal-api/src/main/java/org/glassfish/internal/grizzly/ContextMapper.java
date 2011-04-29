@@ -113,7 +113,7 @@ public class ContextMapper extends Mapper {
         // clean all the previously added information, specially the
         // MappingData.wrapper info as this information cannot apply
         // to this Container.
-        if (adapter != null && "org.apache.catalina.connector.CoyoteHttpHandler".equals(adapter.getClass().getName())) {
+        if (adapter != null && "org.apache.catalina.connector.CoyoteAdapter".equals(adapter.getClass().getName())) {
             removeContext(hostName, path);
         }
         super.addContext(hostName, path, context, welcomeResources, resources);
