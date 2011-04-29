@@ -80,6 +80,7 @@ public class ProbeServlet extends HttpServlet {
         try {
             // need to get the probe provider registered before the listener!
             probeProviderFactory.getProbeProvider(getClass());
+            probeProviderFactory.getProbeProvider(ProbeInterface.class);
             listenerRegistrar.registerListener(new MyProbeListener());
         }
         catch (Exception e) {
