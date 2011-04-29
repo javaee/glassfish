@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -72,12 +72,14 @@ class LoaderConfigContent {
         int charsRead;
 
         final char[] buffer = new char[1024];
-        while ( (charsRead = fr.read(buffer)) != -1) {
-            sb.append(buffer, 0, charsRead);
+        try {
+            while ( (charsRead = fr.read(buffer)) != -1) {
+                sb.append(buffer, 0, charsRead);
+            }
+            return sb.toString();
+        } finally {
+            fr.close();
         }
-        fr.close();
-        
-        return sb.toString();
     }
     
     private URI configFileURI(final File installDir) {

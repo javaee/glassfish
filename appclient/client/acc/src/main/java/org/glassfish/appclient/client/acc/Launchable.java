@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,6 +51,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import javax.xml.stream.XMLStreamException;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.component.Habitat;
@@ -116,30 +118,22 @@ interface Launchable {
                         callerSuppliedMainClassName, callerSuppliedAppName,
                         Thread.currentThread().getContextClassLoader());
             }
-            if (result != null) {
-                if ( ! (result instanceof JWSFacadeLaunchable)) {
-                    URL clientOrFacadeURL = new URL("file:" + result.getURI().getSchemeSpecificPart());
-                    /*
-                     * For the embedded case especially there might not be an
-                     * ACCClassLoader instance yet.  Create one if needed
-                     * before proceeding.
-                     */
-                    ACCClassLoader cl = ACCClassLoader.instance();
-                    if (cl == null) {
-                        cl = ACCClassLoader.newInstance(Thread.currentThread().getContextClassLoader(), false);
-                    }
-                    cl.appendURL(clientOrFacadeURL);
+            if ( ! (result instanceof JWSFacadeLaunchable)) {
+                URL clientOrFacadeURL = new URL("file:" + result.getURI().getSchemeSpecificPart());
+                /*
+                 * For the embedded case especially there might not be an
+                 * ACCClassLoader instance yet.  Create one if needed
+                 * before proceeding.
+                 */
+                ACCClassLoader cl = ACCClassLoader.instance();
+                if (cl == null) {
+                    cl = ACCClassLoader.newInstance(Thread.currentThread().getContextClassLoader(), false);
                 }
-                return result;
+                cl.appendURL(clientOrFacadeURL);
             }
-            final String msg = localStrings.getLocalString(Launchable.class,
-                    "appclient.invalidArchive",
-                    "The location {0} could not be opened as an archive; an app client or an enterprise app was expected",
-                    new Object[] {uri});
-
-            throw new UserError(msg);
+            return result;
         }
-
+        
         static Launchable newLaunchable(final Habitat habitat, final Class mainClass) {
             return new MainClassLaunchable(habitat, mainClass);
         }
@@ -149,7 +143,15 @@ interface Launchable {
                 final ReadableArchive facadeRA,
                 final ReadableArchive clientRA) throws IOException, SAXParseException {
             archivist.setAnnotationProcessingRequested(true);
-            final ACCClassLoader tempLoader = new ACCClassLoader(loader.getURLs(), loader.getParent());
+            final ACCClassLoader tempLoader = AccessController.doPrivileged(
+                    new PrivilegedAction<ACCClassLoader>() {
+
+                        @Override
+                        public ACCClassLoader run() {
+                            return new ACCClassLoader(loader.getURLs(), loader.getParent());
+                        }
+                    }
+                );
             archivist.setClassLoader(tempLoader);
 
             final ApplicationClientDescriptor acDesc = archivist.open(facadeRA, clientRA);

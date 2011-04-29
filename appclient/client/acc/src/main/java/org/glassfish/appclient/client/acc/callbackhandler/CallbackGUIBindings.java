@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -144,8 +144,6 @@ public class CallbackGUIBindings {
         private JComponent component = null;
 
         protected C callback;
-
-        private MessageType messageType;
 
         protected JComponent createPromptedInputBox(String prompt, JComponent input) {
             Box box = new Box(BoxLayout.X_AXIS);
@@ -370,7 +368,6 @@ public class CallbackGUIBindings {
 
         @Override
         public JComponent createComponent() {
-            String s = callback.getMessage();
             textArea = new JTextArea(this.callback.getMessage());
             textArea.setEditable(false);
             textArea.setWrapStyleWord(true);

@@ -40,7 +40,6 @@
 
 package org.glassfish.appclient.client.acc;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -65,7 +64,6 @@ public class CommandLaunchInfo {
 
     /* agent argument names */
     private static final String CLIENT_AGENT_ARG_NAME = "client";
-    private static final String MODE_AGENT_ARG = "mode";
     private static final String APPCPATH = "appcpath";
 
     /* records the type of launch the user requested: jar, directory, class, or class file*/
@@ -74,18 +72,7 @@ public class CommandLaunchInfo {
     /* records the client JAR file path, directory path, class name, or class file path */
     private String clientName;
 
-    private String mode = null;
-
     private String appcPath = null;
-
-//    /*
-//     * main class as specified in the client=class=(class-name) or
-//     * client=classfile=(class-file-name) agent argument
-//     */
-//    private String clientMainClassName = null;
-
-    /* info about the appclient script options */
-    private AppclientCommandArguments appclientCommandLaunchInfo = null;
 
 //    /**
 //     * Creates and returns a new CommandLaunchInfo instance.
@@ -131,10 +118,6 @@ public class CommandLaunchInfo {
         return clientLaunchType;
     }
 
-    public AppclientCommandArguments getAppclientCommandArguments() {
-        return appclientCommandLaunchInfo;
-    }
-
     public String getAppcPath() {
         return appcPath;
     }
@@ -150,9 +133,6 @@ public class CommandLaunchInfo {
         if ((s = lastFromList(agentArgs.namedValues(CLIENT_AGENT_ARG_NAME))) != null) {
             result = processClientArg(s);
         }
-        if ((s = lastFromList(agentArgs.namedValues(MODE_AGENT_ARG))) != null) {
-            processMode(s);
-        }
         if ((s = lastFromList(agentArgs.namedValues(APPCPATH)))  != null) {
             processAppcPath(s);
         }
@@ -162,10 +142,6 @@ public class CommandLaunchInfo {
 
     private String lastFromList(final List<String> list) {
         return (list.isEmpty() ? null : list.get(list.size() - 1));
-    }
-
-    private void processMode(final String mode) {
-        this.mode = mode;
     }
 
     private ClientLaunchType processClientArg(final String clientSpec) {

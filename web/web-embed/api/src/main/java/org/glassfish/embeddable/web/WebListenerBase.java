@@ -119,29 +119,6 @@ public class WebListenerBase implements WebListener  {
         return protocol;
     }
 
-    /**
-     * Enables this component.
-     */
-    public void enable() throws GlassFishException {
-        /*
-        try {
-            start();
-        } catch (org.apache.catalina.LifecycleException e) {
-            throw new LifecycleException(e);
-        }*/
-    }
-
-    /**
-     * Disables this component.
-     */
-    public void disable() throws GlassFishException {
-        /*
-        try {
-            stop();
-        } catch (org.apache.catalina.LifecycleException e) {
-            throw new LifecycleException(e);
-        }*/
-    }
 
 }
 

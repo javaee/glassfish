@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -215,6 +215,7 @@ public class Util {
     public static String loadResource(Class contextClass, String resourcePath) throws IOException {
         String result = null;
         InputStream is = null;
+        BufferedReader reader = null;
         try {
             is = contextClass.getResourceAsStream(resourcePath);
             if (is == null) {
@@ -222,7 +223,7 @@ public class Util {
             }
 
             StringBuilder sb = new StringBuilder();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            reader = new BufferedReader(new InputStreamReader(is));
             int charsRead;
             char [] buffer = new char [BUFFER_SIZE];
             while ((charsRead = reader.read(buffer)) != -1) {
@@ -232,12 +233,10 @@ public class Util {
             result= sb.toString();
             return result;
         } catch (IOException ioe) {
-            IOException wrapperIOE = new IOException("Error loading resource " + resourcePath);
-            wrapperIOE.initCause(ioe);
-            throw wrapperIOE;
+            throw new IOException("Error loading resource " + resourcePath, ioe);
         } finally {
-            if (is != null) {
-                is.close();
+            if (reader != null) {
+                reader.close();
             }
         }
     }
@@ -266,11 +265,14 @@ public class Util {
             
             return result;
         } finally {
-            if (is != null) {
-                is.close();
-            }
-            if (os != null) {
-                os.close();
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } finally {
+                if (os != null) {
+                    os.close();
+                }
             }
         }
     }

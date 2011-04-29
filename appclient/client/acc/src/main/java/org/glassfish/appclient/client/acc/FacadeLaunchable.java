@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -55,6 +55,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -289,7 +291,16 @@ public class FacadeLaunchable implements Launchable {
              */
             archivist.setAnnotationProcessingRequested( ! isJWSLaunch);
 
-            final ACCClassLoader tempLoader = new ACCClassLoader(loader.getURLs(), loader.getParent());
+            final ACCClassLoader tempLoader = AccessController.doPrivileged(new PrivilegedAction<ACCClassLoader>() {
+
+                @Override
+                public ACCClassLoader run() {
+                    return new ACCClassLoader(loader.getURLs(), loader.getParent());
+                }
+                
+            });
+            
+            
             archivist.setClassLoader(tempLoader);
 
             acDesc = archivist.open(combinedRA, mainClassNameToLaunch);

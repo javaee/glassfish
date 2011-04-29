@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -62,7 +62,7 @@ public class BaseCache implements Cache {
     /**
      * The resource bundle containing the localized message strings.
      */
-    protected static ResourceBundle _rb = LogDomains.getLogger(BaseCache.class,LogDomains.UTIL_LOGGER).getResourceBundle();;
+    protected final static ResourceBundle _rb = LogDomains.getLogger(BaseCache.class,LogDomains.UTIL_LOGGER).getResourceBundle();;
 
     static final int MAX_ENTRIES = 1 << 30;
     static final float DEFAULT_LOAD_FACTOR = 0.75f;

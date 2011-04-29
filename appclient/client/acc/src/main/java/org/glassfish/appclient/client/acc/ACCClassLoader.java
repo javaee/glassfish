@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,6 +51,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -83,14 +85,18 @@ public class ACCClassLoader extends URLClassLoader {
             throw new IllegalStateException("already set");
         }
         final ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
-        ClassLoader parentForACCCL = currentCL;
         final boolean currentCLWasAgentCL = currentCL.getClass().getName().equals(
                     AGENT_LOADER_CLASS_NAME);
-        if (currentCLWasAgentCL) {
-            parentForACCCL = currentCL.getParent();
-        }
+        final ClassLoader parentForACCCL = currentCLWasAgentCL ? currentCL.getParent() : currentCL;
         
-        instance = new ACCClassLoader(userClassPath(), parentForACCCL, shouldTransform);
+        instance = AccessController.doPrivileged(new PrivilegedAction<ACCClassLoader>() {
+
+            @Override
+            public ACCClassLoader run() {
+                return new ACCClassLoader(userClassPath(), parentForACCCL, shouldTransform);
+            }
+            
+        });
         
         if (currentCLWasAgentCL) {
             try {
@@ -201,8 +207,15 @@ public class ACCClassLoader extends URLClassLoader {
 
     synchronized ACCClassLoader shadow() {
         if (shadow == null) {
-            shadow = new ACCClassLoader( getURLs(), getParent());
-            }
+            shadow = AccessController.doPrivileged(new PrivilegedAction<ACCClassLoader>() {
+
+                @Override
+                public ACCClassLoader run() {
+                    return new ACCClassLoader(getURLs(), getParent());
+                }
+                
+            });
+        }
         return shadow;
     }
 

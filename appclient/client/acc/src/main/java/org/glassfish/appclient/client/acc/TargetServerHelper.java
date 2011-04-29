@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -101,7 +101,7 @@ public class TargetServerHelper {
          * target-server elements.
          */
         boolean isGlobalSSL = false;
-        String endpointPropertySetting = null;
+//        String endpointPropertySetting = null;
 
         for (Property p : cc.getProperty()) {
             /*
@@ -124,13 +124,13 @@ public class TargetServerHelper {
          */
         endpoints.addAll(cc.getTargetServer());
 
-        /*
-         * Add a TargetServer for each host:port expression in the configuration's
-         * endpoints property, if present.
-         */
-        if (endpointPropertySetting != null) {
-            endpoints.addAll(endpointsFromListList(endpointPropertySetting));
-        }
+//        /*
+//         * Add a TargetServer for each host:port expression in the configuration's
+//         * endpoints property, if present.
+//         */
+//        if (endpointPropertySetting != null) {
+//            endpoints.addAll(endpointsFromListList(endpointPropertySetting));
+//        }
 
         /*
          * For all target servers assembled so far, if one does not have a

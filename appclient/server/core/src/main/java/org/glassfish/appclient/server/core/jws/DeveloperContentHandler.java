@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -93,7 +93,6 @@ public class DeveloperContentHandler {
     private Map<String,StaticContent> staticContent;
     private Map<String,DynamicContent> dynamicContent;
     private TokenHelper tHelper;
-    private File appRootDir;
     private URI appRootURI;
 
     private LSSerializer lsSerializer = null;
@@ -101,9 +100,6 @@ public class DeveloperContentHandler {
 
     private static DocumentBuilderFactory dbf = documentBuilderFactory();
     private static DocumentBuilder db = documentBuilder();
-
-    private Document developerDOM = null;
-    private boolean noDeveloperDOM = false;
 
     private AppClientDeployerHelper helper;
 
@@ -118,7 +114,6 @@ public class DeveloperContentHandler {
 
         this.loader = loader;
         this.tHelper = tHelper;
-        this.appRootDir = appRootDir;
         this.appRootURI = appRootDir.toURI();
         this.appClientArchive = appClientArchive;
         this.staticContent = staticContent;

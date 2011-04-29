@@ -45,7 +45,6 @@ import org.glassfish.internal.deployment.GenericSniffer;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
 
-import org.glassfish.api.container.Sniffer;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
@@ -57,7 +56,7 @@ import java.util.ArrayList;
 
 @Service(name = "AppClient")
 @Scoped(Singleton.class)
-public class AppClientSniffer extends GenericSniffer implements Sniffer {
+public class AppClientSniffer extends GenericSniffer {
     private static final String[] stigmas = {
         "META-INF/application-client.xml", "META-INF/sun-application-client.xml", "META-INF/glassfish-application-client.xml"
     };
@@ -72,6 +71,7 @@ public class AppClientSniffer extends GenericSniffer implements Sniffer {
         super(containerName, appStigma, urlPattern);
     }
 
+    @Override
     public String[] getContainersNames() {
         return containers;
     }
@@ -122,6 +122,7 @@ public class AppClientSniffer extends GenericSniffer implements Sniffer {
      * lists for a certain module
      *
      */
+    @Override
     public String[] getIncompatibleSnifferTypes() {
         return new String[] {};
     }

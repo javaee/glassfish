@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -86,7 +86,8 @@ public class ASJarSigner implements PostConstruct {
 
     private Logger logger;
 
-    public void postConstruct() {
+    @Override
+    public synchronized void postConstruct() {
         logger =
             LogDomains.getLogger(ASJarSigner.class,
             LogDomains.CORE_LOGGER);
@@ -117,7 +118,10 @@ public class ASJarSigner implements PostConstruct {
                  *In case of any problems, make sure there is no ill-formed signed
                  *jar file left behind.
                  */
-                signedJar.delete();
+                if ( signedJar.exists() && ! signedJar.delete()) {
+                    logger.log(Level.FINE, "Could not remove generated signed JAR {0} after JarSigner reported an error",
+                            signedJar.getAbsolutePath());
+                };
 
                 /*
                  *The jar signer will have written some information to System.out

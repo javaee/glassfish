@@ -1958,9 +1958,9 @@ public class VirtualServer extends StandardHost
             }
 
             if (delete) {
-                boolean deleted = file.delete();
-                if (!deleted)
-                    throw new GlassFishException("Could not delete file "+file.getAbsolutePath());
+                if (!file.delete()) {
+                    // ignore
+                }
             }
 
             WebModule wm = (WebModule) findChild(contextName);

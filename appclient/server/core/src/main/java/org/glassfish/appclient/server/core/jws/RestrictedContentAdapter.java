@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -65,7 +65,7 @@ public class RestrictedContentAdapter extends HttpHandler {
     protected final static String DATE_HEADER_NAME = "Date";
     protected final static String IF_MODIFIED_SINCE = "If-Modified-Since";
     private final static String LINE_SEP = System.getProperty("line.separator");
-    private final Logger logger = LogDomains.getLogger(
+    protected final Logger logger = LogDomains.getLogger(
             RestrictedContentAdapter.class, LogDomains.ACC_LOGGER);
 
     private enum State {
@@ -96,8 +96,7 @@ public class RestrictedContentAdapter extends HttpHandler {
 //        for (Map.Entry<String, StaticContent> sc : content.entrySet()) {
 //            cache.put(sc.getKey(), sc.getValue().file());
 //        }
-        logger.fine(logPrefix() + "Initial static content loaded "
-                + dumpContent());
+        logger.log(Level.FINE, "{0}Initial static content loaded {1}", new Object[]{logPrefix(), dumpContent()});
     }
 
     public RestrictedContentAdapter(final String contextRoot) {
@@ -236,6 +235,9 @@ public class RestrictedContentAdapter extends HttpHandler {
         try {
             final StaticContent sc = content.get(relativeURIString);
 
+            if (sc == null) {
+                throw new RuntimeException(relativeURIString + "-> null");
+            }
             /*
              * No need to actually send the file if the request contains a
              * If-Modified-Since date and the file is not more recent.

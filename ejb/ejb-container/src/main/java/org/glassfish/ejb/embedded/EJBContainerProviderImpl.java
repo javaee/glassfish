@@ -40,14 +40,9 @@
 
 package org.glassfish.ejb.embedded;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.io.*;
+import java.net.URI;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.jar.JarFile;
@@ -60,7 +55,8 @@ import javax.ejb.spi.EJBContainerProvider;
 
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.internal.embedded.*;
+
+import org.glassfish.embeddable.*;
 
 import org.glassfish.deployment.common.GenericAnnotationDetector;
 import org.glassfish.deployment.common.DeploymentUtils;
@@ -71,7 +67,6 @@ import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.security.EmbeddedSecurity;
-import org.glassfish.server.ServerEnvironmentImpl;
 
 import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.module.bootstrap.Which;
@@ -83,20 +78,26 @@ import com.sun.enterprise.module.bootstrap.Which;
  */
 public class EJBContainerProviderImpl implements EJBContainerProvider {
 
-    static final String KEEP_TEMPORARY_FILES = "org.glassfish.ejb.embedded.keep-temporary-files";
-    private static final String SKIP_CLIENT_MODULES = "org.glassfish.ejb.embedded.skip-client-modules";
-
     private static final String GF_PROVIDER_NAME = EJBContainerProviderImpl.class.getName();
-    private static final String GF_INSTALLATION_ROOT = "org.glassfish.ejb.embedded.glassfish.installation.root";
-    private static final String GF_INSTANCE_ROOT = "org.glassfish.ejb.embedded.glassfish.instance.root";
-    private static final String GF_DOMAIN_FILE = "org.glassfish.ejb.embedded.glassfish.configuration.file";
-    private static final String GF_INSTANCE_REUSE = "org.glassfish.ejb.embedded.glassfish.instance.reuse";
+
+    private static final String GF_EJB_EMBEDDED_PROPERTY_START = "org.glassfish.ejb.embedded.";
+
+    protected static final String KEEP_TEMPORARY_FILES = GF_EJB_EMBEDDED_PROPERTY_START + "keep-temporary-files";
+
+    private static final String SKIP_CLIENT_MODULES = GF_EJB_EMBEDDED_PROPERTY_START + "skip-client-modules";
+    private static final String GF_INSTALLATION_ROOT = GF_EJB_EMBEDDED_PROPERTY_START + "glassfish.installation.root";
+    private static final String GF_INSTANCE_ROOT = GF_EJB_EMBEDDED_PROPERTY_START + "glassfish.instance.root";
+    private static final String GF_DOMAIN_FILE = GF_EJB_EMBEDDED_PROPERTY_START + "glassfish.configuration.file";
+    private static final String GF_INSTANCE_REUSE = GF_EJB_EMBEDDED_PROPERTY_START + "glassfish.instance.reuse";
+    private static final String GF_WEB_HTTP_PORT = GF_EJB_EMBEDDED_PROPERTY_START + "glassfish.web.http.port";
+
+    private static final String WEAVING = "org.glassfish.persistence.embedded.weaving.enabled";
+
     private static final Attributes.Name ATTRIBUTE_NAME_SKIP = new Attributes.Name("Bundle-SymbolicName");
-    private static final String[] ATTRIBUTE_VALUES_SKIP = 
+    private static final String[] KNOWN_PACKAGES = 
             {"org.glassfish.", "com.sun.enterprise.", "org.eclipse."};
     private static final String[] ATTRIBUTE_VALUES_OK = {"sample", "test"};
 
-    static final String GF_WEB_HTTP_PORT = "org.glassfish.ejb.embedded.glassfish.web.http.port";
 
     // Use Bundle from another package
     private static final Logger _logger = 
@@ -107,7 +108,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
     private static final Object lock = new Object();
 
     private static EJBContainerImpl container;
-    private static Server server;
+    private static GlassFishRuntime runtime;
     private static Habitat habitat;
     private static ArchiveFactory archiveFactory;
     private static Class[] ejbAnnotations = null;
@@ -123,84 +124,104 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                         "ejb.embedded.exception_exists_container"));
             }
 
-            Locations l = init(properties);
+            boolean ok = false;
+            Locations l = getLocations(properties);
             try {
+                createContainer(properties, l);
                 Set<DeploymentElement> modules = addModules(properties, l);
                 if (!DeploymentElement.hasEJBModule(modules)) {
                     _logger.log(Level.SEVERE, "ejb.embedded.no_modules_found");
                 } else {
                     container.deploy(properties, modules);
                 }
+                ok = true;
                 return container;
+            } catch (EJBException e) {
+                throw e;
             } catch (Throwable t) {
-                // Can't throw an exception - only return null.
-                if (container != null) {
+                _logger.log(Level.SEVERE, "ejb.embedded.exception_instantiating", t);
+                throw new EJBException(t.getMessage());
+            } finally {
+                if (!ok && container != null) {
                     try {
                         _logger.info("[EJBContainerProviderImpl] Cleaning up on failure ...");
                         container.close();
                     } catch (Throwable t1) {
                         _logger.info("[EJBContainerProviderImpl] Error cleaning up..." + t1);
                     }
+                    container = null;
                 }
-                _logger.log(Level.SEVERE, "ejb.embedded.exception_instantiating", t);
             }
         }
 
-        return null;
+        return null; // not this provider
     }
 
-    private Locations init(Map<?, ?> properties) throws EJBException {
-        Locations l = null;
+    private Locations createContainer(Map<?, ?> properties, Locations l) throws EJBException {
         synchronized(lock) {
             // if (container == null || !container.isOpen()) {
-                Server.Builder builder = new Server.Builder("GFEJBContainerProviderImpl");
+            try {
+                if (runtime != null) {
+                    runtime.shutdown(); // dispose of the old one
+                }
 
-                l = getLocations(properties);
-                if (l == null) {
-                    server = builder.build();
-                    addWebContainerIfRequested(properties);
-                } else {
-                    EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
+                BootstrapProperties bootstrapProperties = new BootstrapProperties();
+
+                // Propagate non EJB embeddable container properties into GlassFishProperties
+                Properties newProps = new Properties();
+                if (properties != null) {
+                    copyUserProperties(properties, newProps);
+                }
+
+                // Disable weaving if it is not spesified
+                if (newProps.getProperty(WEAVING) == null) {
+                    newProps.setProperty(WEAVING, "false");
+                }
+
+                GlassFishProperties glassFishProperties = new GlassFishProperties(newProps);
+                if (l != null) {
                     if (l.reuse_instance_location) {
                         if (_logger.isLoggable(Level.FINE)) {
                             _logger.fine("[EJBContainerProviderImpl] Reusing instance location at: " + l.instance_root);
                         }
-                        efsb.instanceRoot(l.instance_root);
+                        glassFishProperties.setInstanceRoot(l.instance_root.getCanonicalPath());
                     } else {
-                        efsb.configurationFile(l.domain_file);
+                        glassFishProperties.setConfigFileURI(l.domain_file.toURI().toString());
                     }
-                    efsb.installRoot(l.installed_root, true);
-
-                    builder.embeddedFileSystem(efsb.build());
-                    server = builder.build();
-
+                    bootstrapProperties.setInstallRoot(l.installed_root.getCanonicalPath());
                 }
+                addWebContainerIfRequested(properties, glassFishProperties);
 
-                EjbBuilder ejb = server.createConfig(EjbBuilder.class);
-                server.addContainer(ejb);
-                server.addContainer(ContainerBuilder.Type.jpa);
+                runtime = GlassFishRuntime.bootstrap(bootstrapProperties);
+                GlassFish server = runtime.newGlassFish(glassFishProperties);
+                server.start();
 
-                habitat = ejb.habitat;
-                try {
-                     if (l != null && !l.reuse_instance_location) {
-                          // If we are running from an existing install, copy over security files to the temp instance
-                          EmbeddedSecurity es = habitat.getByContract(EmbeddedSecurity.class);
-                          if (es != null) {
-                              es.copyConfigFiles(habitat, l.instance_root, l.domain_file);
-                          }
+                habitat = server.getService(org.jvnet.hk2.component.Habitat.class);
+                server.stop();
+                if (l != null && !l.reuse_instance_location) {
+                     // If we are running from an existing install, copy over security files to the temp instance
+                     EmbeddedSecurity es = habitat.getByContract(EmbeddedSecurity.class);
+                     if (es != null) {
+                         es.copyConfigFiles(habitat, l.instance_root, l.domain_file);
                      }
-
-                    server.start();
-                } catch (Exception e) {
-                    throw new EJBException(e);
                 }
-                EmbeddedDeployer deployer = server.getDeployer();
 
                 Sniffer sniffer = habitat.getComponent(Sniffer.class, "Ejb");
                 ejbAnnotations = sniffer.getAnnotationTypes();
                 archiveFactory = habitat.getComponent(ArchiveFactory.class);
 
-                container = new EJBContainerImpl(habitat, server, deployer);
+                container = new EJBContainerImpl(habitat, server);
+            } catch (Exception e) {
+                try {
+                    if (container != null) {
+                        container.stop();
+                    }
+                } catch (Exception e0) {
+                    _logger.log(Level.SEVERE, e0.getMessage(), e0);
+                }
+                container = null;
+                throw new EJBException(e);
+            }
             // }
         }
 
@@ -413,10 +434,10 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                 java.util.jar.Attributes attributes = m.getMainAttributes();
                 String value = attributes.getValue(ATTRIBUTE_NAME_SKIP);
                 if (value != null) {
-                    for (String skipValue : ATTRIBUTE_VALUES_SKIP) {
+                    for (String skipValue : KNOWN_PACKAGES) {
                         if (value.startsWith(skipValue)) {
                             for (String okValue : ATTRIBUTE_VALUES_OK) {
-                                // value starts with one of the ATTRIBUTE_VALUES_SKIP but contains an okValue further down
+                                // value starts with one of the KNOWN_PACKAGES but contains an okValue further down
                                 if (value.indexOf(okValue) > 0) {
                                     // Still OK
                                     return false;
@@ -567,23 +588,41 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
         return dd;
     }
 
-    private void addWebContainerIfRequested(Map<?, ?> properties) throws EJBException {
+    private void addWebContainerIfRequested(Map<?, ?> properties, GlassFishProperties props) throws EJBException {
         String http_port = (properties == null)? null : (String)properties.get(GF_WEB_HTTP_PORT);
         if (http_port != null) {
+
             int port = 8080;
             try {
                 port = Integer.valueOf(http_port);
             } catch (NumberFormatException e) {
                 System.err.println("Using port 8080");
             }
+            props.setPort("http-listener", port);
+        }
+    }
 
-            try {
-                Port http = server.createPort(port);
-                ContainerBuilder<EmbeddedContainer> cb = server.createConfig(ContainerBuilder.Type.web);
-                EmbeddedContainer container = server.addContainer(cb);
-                container.bind(http, "http");
-            } catch (Exception e) {
-                throw new EJBException(e);
+    /**
+     * Copy user specified properties into a Proprties object that will be used
+     * to create GlassFishProperties.
+     */
+    private void copyUserProperties(Map<?, ?> properties, Properties props) {
+        for (Map.Entry<?, ?> entry : properties.entrySet()) {
+            Object key = entry.getKey();
+            if (key instanceof String) {
+                String sk = (String) key;
+                if (!sk.startsWith(GF_EJB_EMBEDDED_PROPERTY_START)) {
+                    for (String prefix : KNOWN_PACKAGES) {
+                        if (sk.startsWith(prefix)) {
+                            Object value = entry.getValue();
+                            if (value instanceof String) {
+                                props.setProperty(sk, (String)value);
+                            } else {
+                                props.setProperty(sk, value.toString());
+                            }
+                        }
+                    }
+                }
             }
         }
     }

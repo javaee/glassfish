@@ -162,6 +162,10 @@ public class LoggingHandlers {
         Map<String, Object> props = new HashMap();
         try{
             for(String key : attrNames){
+                if ((key.equals("com.sun.enterprise.server.logging.SyslogHandler.useSystemLogging") || key.equals("com.sun.enterprise.server.logging.GFFileHandler.logtoConsole"))
+                        && (attrs.get(key) == null)) {
+                    attrs.put(key, "false");
+                }
                 props.put("id", key + "='" + attrs.get(key) + "'");
                 props.put("target", config);
                 RestUtil.restRequest((String)GuiUtil.getSessionValue("REST_URL") + "/set-log-attributes.json",

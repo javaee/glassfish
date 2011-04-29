@@ -349,7 +349,7 @@ public class CLIBootstrap {
     /**
      * Manages the arguments which will be passed to the ACC Java agent.
      */
-    private class AgentArgs {
+    private static class AgentArgs {
         private final StringBuilder args = new StringBuilder("=mode=acscript");
         private char sep = ',';
 

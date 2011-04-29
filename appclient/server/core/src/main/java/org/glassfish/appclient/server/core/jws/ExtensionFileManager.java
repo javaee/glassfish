@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,7 +58,6 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -102,6 +101,7 @@ public class ExtensionFileManager implements PostConstruct {
     @Inject
     private ServerContext serverContext;
 
+    @Override
     public void postConstruct() {
         try {
             prepareExtensionInfo();
@@ -187,6 +187,7 @@ public class ExtensionFileManager implements PostConstruct {
       */
      private void addExtJarsFromDirectory(Map<ExtensionKey, Extension> map, int extensionDirNumber, File extDir) throws IOException {
         File [] extJars = extDir.listFiles(new FilenameFilter() {
+            @Override
             public boolean accept(File dir, String name) {
                 return name.endsWith(".jar");
             }
@@ -427,7 +428,7 @@ public class ExtensionFileManager implements PostConstruct {
      * needs to include both the extension name and the specification version.
      * Note that the spec version defaults to the empty string.
      */
-    public class ExtensionKey {
+    public static class ExtensionKey {
         private String extensionName = null;
         
         private String specificationVersion = null;

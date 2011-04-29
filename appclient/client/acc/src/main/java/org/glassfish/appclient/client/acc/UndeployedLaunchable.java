@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,6 +54,8 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -239,11 +241,18 @@ public class UndeployedLaunchable implements Launchable {
         return mf.getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);
     }
 
-    public ApplicationClientDescriptor getDescriptor(URLClassLoader loader) throws IOException, SAXParseException {
+    public ApplicationClientDescriptor getDescriptor(final URLClassLoader loader) throws IOException, SAXParseException {
         this.classLoader = loader;
         if (acDesc == null) {
             final AppClientArchivist _archivist = getArchivist(
-                    new ACCClassLoader(loader.getURLs(), loader.getParent()));
+                    AccessController.doPrivileged(new PrivilegedAction<ACCClassLoader>() {
+
+                        @Override
+                        public ACCClassLoader run() {
+                            return new ACCClassLoader(loader.getURLs(), loader.getParent());
+                        }
+                    }));
+                    
             _archivist.setAnnotationProcessingRequested(true);
             acDesc = _archivist.open(clientRA);
             Application.createApplication(habitat, null, acDesc.getModuleDescriptor());
