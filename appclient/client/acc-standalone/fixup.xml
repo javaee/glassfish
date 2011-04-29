@@ -53,7 +53,10 @@
     <property name="dm-jdbcra.classpath.additions" value="../lib/install/applications/__dm_jdbc_ra/__dm_jdbc_ra.jar"/>
     <property name="derby.jar.classpath.additions" value="../../javadb/lib/derby.jar ../../javadb/lib/derbyclient.jar ../../javadb/lib/derbynet.jar ../../javadb/lib/derbytools.jar ../../javadb/lib/derbyrun.jar"/>
     <property name="jaxr-ra.classpath.additions" value="../lib/install/applications/jaxr-ra/jaxr-ra.jar"/>
+    <property name="aix.additions" value="../modules/aixporting-repackaged.jar"/>
+    
     <property name="classpath.additions" value="${mq.classpath.additions} ${ds-jdbcra.classpath.additions} ${cp-jdbcra.classpath.additions} ${xa-jdbcra.classpath.additions} ${dm-jdbcra.classpath.additions} ${derby.jar.classpath.additions} ${jaxr-ra.classpath.additions}"/>
+    <property name="classpath.conditional.additions" value="${aix.additions}"/>
     <target name="fixup.library">
         <unzip src="${output.dir}/${output.file}" dest="${stage.dir}">
             <patternset>
@@ -89,7 +92,8 @@
         -->
         <sleep seconds="3"/>
         <manifest mode="update" file="${stage.dir}/META-INF/MANIFEST.MF">
-            <attribute name="Class-Path" value="${classpath} ${classpath.additions}"/>
+            <attribute name="Class-Path" value="${classpath} ${classpath.additions} ${classpath.conditional.additions}"/>
+            <attribute name="GlassFish-Conditional-Additions" value="${classpath.conditional.additions}"/>
         </manifest>
         <touch file="${stage.dir}/META-INF/MANIFEST.MF"/>
 
