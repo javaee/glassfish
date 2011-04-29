@@ -279,7 +279,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                 final PortUnification pu = puProtocol.createChild(PortUnification.class);
                 puProtocol.setPortUnification(pu);
                 createProtocolFinder(pu, listener.getProtocol(), listener.getProtocol(),
-                    "org.glassfish.grizzly.http.portunif.HttpProtocolFinder");
+                    "org.glassfish.grizzly.config.portunif.HttpProtocolFinder");
                 createProtocolFinder(pu, "soap-tcp", "soap-tcp-finder",
                     "org.glassfish.webservices.transport.tcp.WSTCPProtocolFinder");
                 final Protocol soap = createProtocol(protocols, "soap-tcp");
