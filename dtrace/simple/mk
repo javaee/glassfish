@@ -1,2 +1,0 @@
-javac ReadFile.java
-/java/devtools/sparc/SUNWspro/SS12/bin/cc -I/usr/java/include -I/usr/java/include/solaris -G nativelib.c -o libnativelib.so
