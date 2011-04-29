@@ -55,7 +55,7 @@ import java.util.logging.Level;
 
 import javax.ejb.EJBException;
 
-import org.glassfish.internal.embedded.ScatteredArchive;
+import org.glassfish.embeddable.archive.ScatteredArchive;
 import org.glassfish.deployment.common.ModuleExploder;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
@@ -167,32 +167,33 @@ public class DeploymentElement {
                 result = DeploymentElement.getWar(modules).getElement();
             } else {
                 // EJB molule with libraries - create ScatteredArchive
-                String aName = null;
-                List<URL> archives = new ArrayList<URL>();
+                ScatteredArchive sa = null;
                 for (DeploymentElement m : modules) {
-                    boolean isEJBModule = m.isEJBModule();
-                    File f = m.getElement();
-                    String name = f.getName();
-                    if (_logger.isLoggable(Level.INFO)) {
-                        _logger.info("[DeploymentElement] adding " + ((isEJBModule)? "EJB module" : "library") + " to ScatteredArchive " + name);
-                    }
-        
-                    if (isEJBModule) {
+                    if (m.isEJBModule()) {
+                        File f = m.getElement();
                         // Need to give archive some meaningful name
-                        aName = name;
-
-                        // workaround for bug 6975728: add the ejb module as the first element of
-                        // urls in ScatteredArchive.  In the current ScatteredArchvie.getURI() method,
-                        // if both topDir and resources are null, the first element in urls list is
-                        // returned as this archvie's URI.
-                        archives.add(0, f.toURI().toURL());
-                    } else {
-                        archives.add(f.toURI().toURL());
+                        sa = new ScatteredArchive(f.getName(), ScatteredArchive.Type.JAR);
+                        if (_logger.isLoggable(Level.INFO)) {
+                            _logger.info("[DeploymentElement] adding EJB module to ScatteredArchive " + f.getName());
+                        }
+                        sa.addClassPath(f);
+                        break;
                     }
                 }
-                ScatteredArchive.Builder saBuilder = new ScatteredArchive.Builder(aName,
-                        Collections.unmodifiableCollection(archives));
-                result = saBuilder.buildJar();
+
+                if (sa != null) {
+                    for (DeploymentElement m : modules) {
+                        if (!m.isEJBModule()) {
+                            File f = m.getElement();
+                            if (_logger.isLoggable(Level.INFO)) {
+                                _logger.info("[DeploymentElement] adding library to ScatteredArchive " + f.getName());
+                            }
+        
+                            sa.addClassPath(f);
+                        }
+                    }
+                    result = sa;
+                }
             }
         } else {
             // Create an ear if appName is set or if there is more than 1 EJB module

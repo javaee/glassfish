@@ -42,6 +42,7 @@ package org.glassfish.ejb.embedded;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -59,11 +60,10 @@ import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.util.io.FileUtils;
 
-import org.glassfish.internal.embedded.EmbeddedDeployer;
-import org.glassfish.internal.embedded.LifecycleException;
-import org.glassfish.internal.embedded.Server;
-import org.glassfish.internal.embedded.ScatteredArchive;
-import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.embeddable.Deployer;
+import org.glassfish.embeddable.GlassFish;
+import org.glassfish.embeddable.GlassFishException;
+import org.glassfish.embeddable.archive.ScatteredArchive;
 
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
@@ -79,9 +79,9 @@ public class EJBContainerImpl extends EJBContainer {
     private static final Logger _logger =
             LogDomains.getLogger(EjbContainerUtilImpl.class, LogDomains.EJB_LOGGER);
 
-    private final Server server;
+    private final GlassFish server;
     
-    private final EmbeddedDeployer deployer;
+    private final Deployer deployer;
 
     private String deployedAppName;
 
@@ -99,10 +99,11 @@ public class EJBContainerImpl extends EJBContainer {
     /**
      * Construct new EJBContainerImpl instance 
      */                                               
-    EJBContainerImpl(Habitat habitat, Server server, EmbeddedDeployer deployer) {
+    EJBContainerImpl(Habitat habitat, GlassFish server) throws GlassFishException {
         this.habitat = habitat;
         this.server = server;
-        this.deployer = deployer;
+        this.server.start();
+        deployer = server.getDeployer();
         state = RUNNING;
         cleanup = new Cleanup(this);
     }
@@ -123,17 +124,21 @@ public class EJBContainerImpl extends EJBContainer {
             if (_logger.isLoggable(Level.INFO)) {
                 _logger.info("[EJBContainerImpl] Deploying app: " + app);
             }
-            DeployCommandParameters dp = new DeployCommandParameters();
-            dp.name = appName;
-            if (app instanceof File) {
-                File f = (File)app;
-                dp.path = f;
-                deployedAppName = deployer.deploy(f, dp);
+
+            String[] params;
+            if (appName != null) {
+                params = new String[] {"--name", appName};
             } else {
-                deployedAppName = deployer.deploy((ScatteredArchive)app, dp);
+                params = new String[] {};
             }
 
-        } catch (IOException e) {
+            if (app instanceof ScatteredArchive) {
+                deployedAppName = deployer.deploy(((ScatteredArchive)app).toURI(), params);
+            } else {
+                deployedAppName = deployer.deploy((File)app, params);
+            }
+
+        } catch (Exception e) {
             throw new EJBException("Failed to deploy EJB modules", e);
         }
 
@@ -229,19 +234,27 @@ public class EJBContainerImpl extends EJBContainer {
     private void undeploy() {
         if (deployedAppName != null) {
             try {
-                deployer.undeploy(deployedAppName, null);
+                deployer.undeploy(deployedAppName);
             } catch (Exception e) {
                 _logger.warning("Cannot undeploy deployed modules: " + e.getMessage());
             }
         }
     }
 
-    private void stop() {
+    void stop() {
+        if (state == CLOSED) {
+            return;
+        }
         try {
             server.stop();
-        } catch (LifecycleException e) {
-            _logger.warning("Cannot stop embedded container " + e.getMessage());
+        } catch (GlassFishException e) {
+            _logger.log(Level.WARNING, "Cannot stop embedded server", e);
         } finally {
+            try {
+                server.dispose();
+            } catch (GlassFishException e) {
+                _logger.log(Level.WARNING, "Cannot dispose embedded server", e);
+            }
             state = CLOSED;
         }
     }
