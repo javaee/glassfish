@@ -524,7 +524,7 @@ public abstract class AppClientDeployerHelper {
     private void copyClass(final WritableArchive facadeArchive,
             final String classResourcePath) throws IOException {
         OutputStream os = facadeArchive.putNextEntry(classResourcePath);
-        InputStream is = openByteCodeStream("/" + classResourcePath);
+        InputStream is = openByteCodeStream(classResourcePath);
 
         copyStream(is, os);
         try {
