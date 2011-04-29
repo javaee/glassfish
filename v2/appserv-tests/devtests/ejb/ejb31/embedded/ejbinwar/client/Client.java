@@ -59,17 +59,25 @@ public class Client {
         stat.addDescription(appName);
         Client t = new Client();
         try {
-            t.test();
+            t.test(s);
         } catch (Exception e) {
             e.printStackTrace();
         }
         stat.printSummary(appName + "ID");
     }
 
-    private void test() {
+    private void test(String[] args) {
 
         boolean pass = true;
-        EJBContainer c = EJBContainer.createEJBContainer();
+        EJBContainer c = null;
+        if (args.length == 2 && args[1].equals("installed_instance")) {
+            Map p = new HashMap();
+            p.put("org.glassfish.ejb.embedded.glassfish.instance.reuse", "true");
+            p.put("org.glassfish.ejb.embedded.keep-temporary-files", "true");
+            c = EJBContainer.createEJBContainer(p);
+        } else {
+            c = EJBContainer.createEJBContainer();
+        }
         // ok now let's look up the EJB...
         Context ic = c.getContext();
         try {

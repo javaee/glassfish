@@ -74,6 +74,18 @@
         </java>
     </target>
 
+    <target name="run_war_installed_instance" depends="init-common">
+       <antcall  target="start-database"/>
+       <java  fork="on" 
+              failonerror="true"
+              classpath="${assemble.dir}/${appname}-web.war:${assemble.dir}/${appname}-pu.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classname="${se.client}">
+           <arg line="${jndiroot}"/>
+           <arg line="installed_instance"/>
+        </java>
+       <antcall  target="stop-database"/>
+    </target>
+
     <target name="run_dir" depends="init-common">
        <java  fork="on" 
               failonerror="true"
