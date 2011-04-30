@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.admin.launcher;
 
+import com.sun.enterprise.util.Utility;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
@@ -51,7 +52,6 @@ import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.process.ProcessStreamDrainer;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import com.sun.enterprise.util.OS;
-import com.sun.enterprise.util.Utility;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
@@ -83,7 +83,7 @@ public abstract class GFLauncher {
      * 
      * @throws com.sun.enterprise.admin.launcher.GFLauncherException 
      */
-    public final synchronized void launch() throws GFLauncherException {
+    public final void launch() throws GFLauncherException {
         try {
             startTime = System.currentTimeMillis();
             if (!setupCalledByClients)
@@ -106,12 +106,12 @@ public abstract class GFLauncher {
      * Launches the server - but forces the setup() to go through again.
      * @throws com.sun.enterprise.admin.launcher.GFLauncherException
      */
-    public final synchronized void relaunch() throws GFLauncherException {
+    public final void relaunch() throws GFLauncherException {
         setupCalledByClients = false;
         launch();
     }
 
-    public final synchronized void launchJVM(List<String> cmdsIn) throws GFLauncherException {
+    public final void launchJVM(List<String> cmdsIn) throws GFLauncherException {
         try {
             setup();    // we only use one thing -- the java executable
             List<String> commands = new LinkedList<String>();
@@ -137,7 +137,7 @@ public abstract class GFLauncher {
         }
     }
 
-    public synchronized void setup() throws GFLauncherException, MiniXmlParserException {
+    public void setup() throws GFLauncherException, MiniXmlParserException {
         ASenvPropertyReader pr;
         if (isFakeLaunch()) {
             pr = new ASenvPropertyReader(info.getInstallDir());
@@ -303,7 +303,7 @@ public abstract class GFLauncher {
                 }
                 if (attr.startsWith("suspend=")) {
                     try {
-                        debugSuspend = attr.substring(8).toLowerCase().equals("y");
+                        debugSuspend = attr.substring(8).toLowerCase(Locale.getDefault()).equals("y");
                     }
                     catch (Exception ex) {
                         debugSuspend = false;
@@ -312,7 +312,7 @@ public abstract class GFLauncher {
             }
         }
     }
-private void setLogFilename(MiniXmlParser parser) throws GFLauncherException {
+    private void setLogFilename(MiniXmlParser parser) throws GFLauncherException {
         logFilename = parser.getLogFilename();
 
         if (logFilename == null)
@@ -482,8 +482,8 @@ private void setLogFilename(MiniXmlParser parser) throws GFLauncherException {
         //returns null in case the process is NOT dead
         try {
             int ev = sp.exitValue();
-            ProcessStreamDrainer psd = getProcessStreamDrainer();
-            String output = psd.getOutErrString();
+            ProcessStreamDrainer psd1 = getProcessStreamDrainer();
+            String output = psd1.getOutErrString();
             String trace = strings.get("server_process_died", ev, output);
             return trace;
         }
@@ -546,7 +546,7 @@ private void setLogFilename(MiniXmlParser parser) throws GFLauncherException {
         }
     }
 
-    private synchronized void setShutdownHook(final Process p) {
+    private void setShutdownHook(final Process p) {
         // ON UNIX a ^C on the console will also kill DAS
         // On Windows a ^C on the console will not kill DAS
         // We want UNIX behavior on Windows
@@ -761,7 +761,7 @@ private void setLogFilename(MiniXmlParser parser) throws GFLauncherException {
             if (key.startsWith("javaagent:")) {
                 // complications -- of course!!  They may have mix&match forward and back slashes
                 key = key.replace('\\', '/');
-                if (key.indexOf(BTRACE_PATH) > 0)
+                if (key.indexOf(BTRACE_PATH) >= 0)
                     return; // Done!!!!
             }
         }
@@ -789,7 +789,7 @@ private void setLogFilename(MiniXmlParser parser) throws GFLauncherException {
 
         if(Boolean.parseBoolean(Utility.getEnvOrProp("AS_BTRACE_DEBUG"))) {
             ret += ",debug=true";
-            // btrace will totally take over the log -- write this to stdout dirtectly!
+            // btrace will totally take over the log -- write this to stdout directly!
             System.out.println("*****************************************************************");
             System.out.println("*****************************************************************");
             System.out.println("******************  BTRACE set to DEBUG  ************************");
@@ -799,7 +799,7 @@ private void setLogFilename(MiniXmlParser parser) throws GFLauncherException {
         }
 
         return ret;
-     }
+    }
 
     private List<String> getSpecialSystemProperties() throws GFLauncherException {
         Map<String, String> props = new HashMap<String, String>();
@@ -830,10 +830,11 @@ private void setLogFilename(MiniXmlParser parser) throws GFLauncherException {
 
     private List<String> propsToJvmOptions(Map<String, String> map) {
         List<String> ss = new ArrayList<String>();
-        Set<String> set = map.keySet();
+        Set<Map.Entry<String, String>> entries = map.entrySet();
 
-        for (String name : set) {
-            String value = map.get(name);
+        for (Map.Entry<String, String> entry : entries) {
+            String name = entry.getKey();
+            String value = entry.getValue();
             String jvm = "-D" + name;
 
             if (value != null) {
