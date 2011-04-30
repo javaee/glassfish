@@ -360,6 +360,10 @@ public class MonitoringReporter extends V2DottedNameSupport {
         // MONDOT, SLASH should be replaced with literals
         userarg = userarg.replace(MONDOT, ".").replace(SLASH, "/");
 
+        // double star makes no sense.  The loop gets rid of "***", "****", etc.
+        while(userarg.indexOf("**") >= 0)
+            userarg = userarg.replace("**", "*");
+
         // 1.  nothing
         // 2.  *
         // 3.  *.   --> which is a weird input but let's accept it anyway!
@@ -392,9 +396,10 @@ public class MonitoringReporter extends V2DottedNameSupport {
         }
 
         // 7.  See 14685 for an example -->  "*jsp*"
+        // 16313 for another example 
         if (userarg.startsWith("*")) {
             targets = allServers;
-            pattern = userarg.substring(1);
+            pattern = userarg;
             return true;
         }
 
