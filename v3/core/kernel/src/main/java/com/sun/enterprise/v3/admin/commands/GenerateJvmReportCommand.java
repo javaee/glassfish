@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,6 +54,7 @@ import org.jvnet.hk2.component.PerLookup;
 import javax.management.MBeanServer;
 import java.lang.management.ManagementFactory;
 import org.glassfish.api.admin.ExecuteOn;
+import org.glassfish.api.admin.FailurePolicy;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
@@ -68,7 +69,7 @@ import org.glassfish.config.support.TargetType;
 @CommandLock(CommandLock.LockType.NONE)
 @I18n("generate.jvm.report")
 @TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTERED_INSTANCE})
-@ExecuteOn(RuntimeType.INSTANCE)
+@ExecuteOn(value = {RuntimeType.INSTANCE}, ifNeverStarted=FailurePolicy.Error)
 public class GenerateJvmReportCommand implements AdminCommand {
     
     @Param(name="target", optional=true) 

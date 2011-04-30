@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -158,8 +158,8 @@ public class ListCommand extends V2DottedNameSupport implements AdminCommand {
             paramMap.set("MoniTor", "true");
             paramMap.set("DEFAULT", pattern);
             List<Server> targetList = targetService.getInstances(targetName);
-            ClusterOperationUtil.replicateCommand("list", FailurePolicy.Error, FailurePolicy.Warn, targetList, 
-                    context, paramMap, habitat);
+            ClusterOperationUtil.replicateCommand("list", FailurePolicy.Error, FailurePolicy.Warn, 
+                    FailurePolicy.Ignore, targetList, context, paramMap, habitat);
         } catch(Exception ex) {
             report.setActionExitCode(ExitCode.FAILURE);
             report.setMessage("Failure while trying get details from instance " + targetName);

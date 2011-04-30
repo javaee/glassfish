@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -506,7 +506,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
             ParameterMap params = new ParameterMap();
             params.set("DEFAULT", targetName + "=" + value);
             ActionReport.ExitCode ret = ClusterOperationUtil.replicateCommand("set", FailurePolicy.Error,
-                    FailurePolicy.Warn, replicationInstances, context, params, habitat);
+                    FailurePolicy.Warn, FailurePolicy.Ignore, replicationInstances, context, params, habitat);
             if (ret.equals(ActionReport.ExitCode.FAILURE))
                 return false;
         }

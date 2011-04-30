@@ -301,8 +301,8 @@ public class MonitoringReporter extends V2DottedNameSupport {
             ParameterMap paramMap = new ParameterMap();
             paramMap.set("monitor", "true");
             paramMap.set("DEFAULT", pattern);
-            ClusterOperationUtil.replicateCommand("get", FailurePolicy.Error, FailurePolicy.Warn, remoteServers,
-                    context, paramMap, habitat);
+            ClusterOperationUtil.replicateCommand("get", FailurePolicy.Error, FailurePolicy.Warn, 
+                    FailurePolicy.Ignore, remoteServers, context, paramMap, habitat);
         }
         catch (Exception ex) {
             setError(Strings.get("admin.get.monitoring.remote.error", getNames(remoteServers)));

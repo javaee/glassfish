@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -73,7 +73,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "migrate-timers")
 @Scoped(PerLookup.class)
 @I18n("migrate.timers")
-@org.glassfish.api.admin.ExecuteOn(value = {RuntimeType.INSTANCE})
+@org.glassfish.api.admin.ExecuteOn(value = {RuntimeType.INSTANCE}, ifNeverStarted = FailurePolicy.Error)
 @TargetType(value = {CommandTarget.DAS, CommandTarget.CLUSTERED_INSTANCE})
 public class MigrateTimers implements AdminCommand {
 
@@ -127,7 +127,7 @@ public class MigrateTimers implements AdminCommand {
                         target, params.toCommaSeparatedString()));
 
                 ClusterOperationUtil.replicateCommand("migrate-timers", 
-                        FailurePolicy.Error, FailurePolicy.Error, 
+                        FailurePolicy.Error, FailurePolicy.Error, FailurePolicy.Error,
                         Arrays.asList(new String[]{target}),
                         context, params, habitat);
                 return;
