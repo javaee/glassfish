@@ -62,14 +62,25 @@ public class Jira extends MonTest {
 
     }
 
-    private void test16313() { //Update this when 16313 is fixed
-        String prepend = "16313::";
-        AsadminReturn ar = asadminWithOutput("get", "-m", "*openconnections*");
-        report(checkForString(ar, "No monitoring data to report."), prepend + "check-getm-*openconnections*");
+    private void test16313() { 
+        final String yesDatum = "server.network.http-listener-1.connection-queue.countopenconnections-count";
+        final String noDatum = "No monitoring data to report.";
+        final String prepend = "16313::check-getm-";
+        final String pattern1 = "*openconnections*";
+        final String pattern2 = "*.*openconnections*";
+        final String pattern3 = "**********openconnections*****";
 
-        ar = asadminWithOutput("get", "-m", "*.*openconnections*");
-        report(checkForString(ar, "server.network.http-listener-1.connection-queue.countopenconnections-count"),
-                prepend + "check-getm-*.*openconnections*");
+        AsadminReturn ar = asadminWithOutput("get", "-m", pattern1);
+        report(!checkForString(ar, noDatum), prepend + pattern1);
+        report(checkForString(ar, yesDatum), prepend + pattern1);
+
+        ar = asadminWithOutput("get", "-m", pattern2);
+        report(!checkForString(ar, noDatum), prepend + pattern2);
+        report(checkForString(ar, yesDatum), prepend + pattern2);
+
+        ar = asadminWithOutput("get", "-m", pattern3);
+        report(!checkForString(ar, noDatum), prepend + pattern3);
+        report(checkForString(ar, yesDatum), prepend + pattern3);
     }
 
     private void test15397() {
