@@ -53,7 +53,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
 
 @I18n("start.cluster.command")
 @Service(name = "start-cluster")
-@ExecuteOn(value={RuntimeType.DAS}, ifFailure=FailurePolicy.Warn)
+@ExecuteOn(value={RuntimeType.DAS})
 @CommandLock(CommandLock.LockType.NONE) // don't prevent _synchronize-files
 @Scoped(PerLookup.class)
 public class StartClusterCommand implements AdminCommand {
