@@ -284,37 +284,6 @@ The configured OSGi Telnet port
 Error transferring service tags
 Process executing stclient command failed
 
-
-# Waiting to be fixed: 11627
-endpoint.determine.destinationtype
-
-
-# Waiting to be fixed: 11195
-FromWsdl
-
-
-# Waiting to be fixed: 12310
-!!!!! Cannot create Update Center Image for 
-
-
-# Waiting to be fixed: 12302
-Loading __admingui Application done is 
-
-
-# Waiting to be fixed: 12309
-Done with starting web container
-
-
-# Waiting to be fixed: 12304
-Security startup service called
-Realm admin-realm of classtype com.sun.enterprise.security.auth.realm.file.FileRealm successfully created.
-Realm file of classtype com.sun.enterprise.security.auth.realm.file.FileRealm successfully created.
-Realm certificate of classtype com.sun.enterprise.security.auth.realm.certificate.CertificateRealm successfully created.
-Security service\(s\) started successfully
-Realm file was successfully updated.
-Web login failed: Login failed: javax.security.auth.login.LoginException: Failed file login for j2ee.
-
-
 # Waiting to be fixed: 12251
 Portable JNDI names for EJB 
 A system exception occurred during an invocation on EJB 
@@ -323,27 +292,3 @@ javax.ejb.NoSuchObjectLocalException: The EJB does not exist. session-key:
 Glassfish-specific \(Non-portable\) JNDI names for EJB 
 StatefulContainerbuilder instantiated store
 StatefulContainerBuilder.buildStoreManager()
-
-# Waiting to be fixed: 12207
-issueAttributeChangeForXmlAttrName\(\): MBean attribute name not found for xml name, using xml name: name
-AttributeChangeNotification: 
-
-
-# Waiting to be fixed: 12305
-admin console: initSessionAttributes
-Error in getStandaloneInstances
-Error in getClusters
-restRequest: endpoint
-
-# Waiting to be fixed: 12307
-JMS Service Connection URL is
-
-# Waiting to be fixed: 12657
-SynchronizeFiles: logger
-
-# Waiting to be fixed: 13155
-PersistenceStrategyBuilderFactory>>createPersistenceStrategyBuilder
-
-# Waiting to be fixed: 11990
-Adding instance
-Deleting instance
