@@ -134,8 +134,10 @@ public class EmbeddedOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
     }
 
     private void configureBundles() {
-        // Set this, because some stupid downstream code may be relying on this property
-        System.setProperty(Constants.PLATFORM_PROPERTY_KEY, "GenericOSGi");
+        if (System.getProperty(Constants.PLATFORM_PROPERTY_KEY) == null) { // See GLASSFISH-16511 for null check
+            // Set this, because some stupid downstream code may be relying on this property
+            System.setProperty(Constants.PLATFORM_PROPERTY_KEY, "GenericOSGi");
+        }
     }
 
     /**
