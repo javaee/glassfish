@@ -1,0 +1,3 @@
+create-jdbc-connection-pool  --datasourceclassname  org.apache.derby.jdbc.ClientDataSource --property "user=APP:password=APP:portNumber=1527:dataBaseName=sun-appserv-samples:retrieveMessagesFromServerOnGetMessage=true:serverName=localhost:connectionAttributes=\;create\=true" jdbc-derby-pool
+create-jdbc-resource --connectionpoolid  jdbc-derby-pool jdo/pmf
+

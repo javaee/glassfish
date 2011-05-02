@@ -1,0 +1,2 @@
+delete-jdbc-resource jdo/pmf
+delete-jdbc-connection-pool jdbc-derby-pool
