@@ -1,3 +1,5 @@
+date
+
 java -version
 ant -version
 
@@ -17,7 +19,11 @@ wget http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuc
 
 #wget http://hudson.glassfish.org/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
 
+date
+
 unzip -q glassfish.zip
+
+date
 
 export S1AS_HOME=$PWD/glassfish3/glassfish
 popd
