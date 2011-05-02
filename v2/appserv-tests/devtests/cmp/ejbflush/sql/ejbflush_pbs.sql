@@ -1,0 +1,18 @@
+DROP TABLE FLUSHTEST1;
+DROP TABLE FLUSHTEST2;
+
+CREATE TABLE FLUSHTEST1
+(
+    id     VARCHAR2(3)          PRIMARY KEY,
+    name   VARCHAR2(5) NULL
+);
+
+CREATE TABLE FLUSHTEST2
+(
+    id     VARCHAR2(3)          PRIMARY KEY,
+    name   VARCHAR2(5) NULL
+);
+
+commit;
+
+quit;
