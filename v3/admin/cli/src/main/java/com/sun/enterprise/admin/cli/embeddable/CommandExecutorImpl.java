@@ -99,6 +99,7 @@ public class CommandExecutorImpl implements org.glassfish.embeddable.CommandRunn
         }
 
         // Filter out the global options.
+        // We are interested only in --passwordfile option. No other options are relevant when GlassFish is running in embedded mode.
         Parser parser = new Parser(args, 0, ProgramOptions.getValidOptions(), true);
         ParameterMap globalOptions = parser.getOptions();
         List<String> operands = parser.getOperands();
