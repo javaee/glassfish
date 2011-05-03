@@ -208,7 +208,7 @@ class WindowsSystemEnvironment extends SystemEnvironment {
     }
 
     private String getFullWmicResult(String alias, String verb, String property) {
-        String res = "";
+        StringBuilder res = new StringBuilder();
         BufferedReader in = null;
         try {
             ProcessBuilder pb = new ProcessBuilder("cmd", "/C", "WMIC", alias, verb, property);
@@ -233,7 +233,7 @@ class WindowsSystemEnvironment extends SystemEnvironment {
                     if (line.toLowerCase().indexOf(property.toLowerCase()) != -1) {
                         continue;
                     }
-                    res += line + "\n";
+                    res.append(line).append("\n");
                 }
             }
 
@@ -248,6 +248,6 @@ class WindowsSystemEnvironment extends SystemEnvironment {
                 }
             }
         }
-        return res;
+        return res.toString();
     }
 }
