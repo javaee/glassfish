@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -123,8 +123,9 @@ public final class WebServiceContextImpl implements WSWebServiceContext {
 
     public boolean isUserInRole(String role) {
         WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
+        ComponentInvocation.ComponentInvocationType EJBInvocationType = ComponentInvocation.ComponentInvocationType.EJB_INVOCATION;
         InvocationManager mgr = wscImpl.getInvocationManager();
-        if (ComponentInvocation.ComponentInvocationType.EJB_INVOCATION.equals(mgr.getCurrentInvocation().getInvocationType())) {
+        if ((mgr!=null) && (EJBInvocationType.equals(mgr.getCurrentInvocation().getInvocationType()))) {
            EJBInvocation inv = (EJBInvocation)mgr.getCurrentInvocation();
            boolean res = inv.isCallerInRole(role);
            return res;
@@ -133,12 +134,12 @@ public final class WebServiceContextImpl implements WSWebServiceContext {
         boolean ret = this.jaxwsContextDelegate.isUserInRole(role);
         //handling for webservice with WS-Security
         if (!ret && secServ != null) {
-            if (mgr != null && mgr.getCurrentInvocation() != null) {
-                if (mgr.getCurrentInvocation().getContainer() instanceof WebModule) {
-                    Principal p = getUserPrincipal();
-                    ret = secServ.isUserInRole((WebModule)mgr.getCurrentInvocation().getContainer(), p, servletName, role);
-                }
+
+            if (mgr.getCurrentInvocation().getContainer() instanceof WebModule) {
+                Principal p = getUserPrincipal();
+                ret = secServ.isUserInRole((WebModule)mgr.getCurrentInvocation().getContainer(), p, servletName, role);
             }
+
         }
         return ret;
     }

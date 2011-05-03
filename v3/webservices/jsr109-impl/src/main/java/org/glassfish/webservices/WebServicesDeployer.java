@@ -771,7 +771,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         }
 
 
-        return new WebServicesApplication(context, env, dispatcher, publishedFiles);
+        return new WebServicesApplication(context,  dispatcher, publishedFiles);
     }
 
     /**

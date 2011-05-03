@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,7 +60,7 @@ import com.sun.logging.LogDomains;
 public class ServletImplInvocationHandler implements InvocationHandler {
 
     private static Logger logger =
-            LogDomains.getLogger(ServletImplInvocationHandler.class, LogDomains.WEB_LOGGER);
+            LogDomains.getLogger(ServletImplInvocationHandler.class, LogDomains.WEBSERVICES_LOGGER);
     private Object servletImplDelegate;
     private Class servletImplClass;
     
@@ -116,10 +116,10 @@ public class ServletImplInvocationHandler implements InvocationHandler {
             case 'e' :
                 Object other = Proxy.isProxyClass(args[0].getClass()) ?
                     Proxy.getInvocationHandler(args[0]) : args[0];
-                returnValue = new Boolean(handler.equals(other));
+                returnValue = Boolean.valueOf(handler.equals(other));
                 break;
             case 'h' :
-                returnValue = new Integer(handler.hashCode());
+                returnValue = Integer.valueOf(handler.hashCode());
                 break;
             case 't' :
                 returnValue = handler.toString();
