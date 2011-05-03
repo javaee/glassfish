@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -113,7 +113,11 @@ public abstract class SimpleDeployer <T extends Container,
      */
     public void clean(DeploymentContext context) {
         try {
-            cleanArtifacts(context);
+            if (context.getCommandParameters(
+                OpsParams.class).origin.needsCleanArtifacts()) {
+                // only clean artifacts when needed
+                cleanArtifacts(context);
+            }
         } catch (Exception ex) {
             // re-throw all the exceptions as runtime exceptions
             RuntimeException re = new RuntimeException(ex.getMessage());

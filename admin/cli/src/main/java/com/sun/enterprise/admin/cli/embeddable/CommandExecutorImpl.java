@@ -40,7 +40,9 @@
 
 package com.sun.enterprise.admin.cli.embeddable;
 
+import com.sun.enterprise.admin.cli.CLIUtil;
 import com.sun.enterprise.admin.cli.Parser;
+import com.sun.enterprise.admin.cli.ProgramOptions;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandException;
 import org.glassfish.api.admin.CommandModel;
@@ -57,6 +59,7 @@ import org.jvnet.hk2.component.PerLookup;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -94,13 +97,39 @@ public class CommandExecutorImpl implements org.glassfish.embeddable.CommandRunn
         if (command == null) {
             throw new CommandException("No command called " + command);
         }
-        Parser parser = new Parser(args, 0, commandModel.getParameters(), false);
-        ParameterMap options = parser.getOptions();
+
+        // Filter out the global options.
+        // We are interested only in --passwordfile option. No other options are relevant when GlassFish is running in embedded mode.
+        Parser parser = new Parser(args, 0, ProgramOptions.getValidOptions(), true);
+        ParameterMap globalOptions = parser.getOptions();
         List<String> operands = parser.getOperands();
+        String argv[] = operands.toArray(new String[operands.size()]);
+
+        parser = new Parser(argv, 0, commandModel.getParameters(), false);
+        ParameterMap options = parser.getOptions();
+        operands = parser.getOperands();
         options.set("DEFAULT", operands);
         // if command has a "terse" option, set it in options
         if (commandModel.getModelFor("terse") != null)
             options.set("terse", Boolean.toString(terse));
+
+        // Read the passwords from the password file and set it in command options.
+        if (globalOptions.size() > 0) {
+            String pwfile = globalOptions.getOne(ProgramOptions.PASSWORDFILE);
+            if (pwfile != null && pwfile.length() > 0) {
+                Map<String, String> passwords = CLIUtil.readPasswordFileOptions(pwfile, true);
+                for (CommandModel.ParamModel opt : commandModel.getParameters()) {
+                    if (opt.getParam().password()) {
+                        String pwdname = opt.getName();
+                        String pwd = passwords.get(pwdname);
+                        if (pwd != null) {
+                            options.set(pwdname, pwd);
+                        }
+                    }
+                }
+            }
+        }
+        
         return options;
     }
 

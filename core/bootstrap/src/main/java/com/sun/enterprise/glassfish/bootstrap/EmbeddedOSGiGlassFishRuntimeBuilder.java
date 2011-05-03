@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -134,8 +134,10 @@ public class EmbeddedOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
     }
 
     private void configureBundles() {
-        // Set this, because some stupid downstream code may be relying on this property
-        System.setProperty(Constants.PLATFORM_PROPERTY_KEY, "GenericOSGi");
+        if (System.getProperty(Constants.PLATFORM_PROPERTY_KEY) == null) { // See GLASSFISH-16511 for null check
+            // Set this, because some stupid downstream code may be relying on this property
+            System.setProperty(Constants.PLATFORM_PROPERTY_KEY, "GenericOSGi");
+        }
     }
 
     /**

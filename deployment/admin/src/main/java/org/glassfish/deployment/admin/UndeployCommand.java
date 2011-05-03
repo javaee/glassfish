@@ -315,7 +315,8 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                         List<String> targets = domain.getAllReferencedTargetsForApplication(appName);
                         // replicate command to all referenced targets
                         parameters.remove("isUndeploy");
-                        ClusterOperationUtil.replicateCommand("undeploy", FailurePolicy.Error, FailurePolicy.Warn, targets, context, parameters, habitat);
+                        ClusterOperationUtil.replicateCommand("undeploy", FailurePolicy.Error, FailurePolicy.Warn, 
+                                FailurePolicy.Ignore, targets, context, parameters, habitat);
                     }
                 } catch (Exception e) {
                     report.failure(logger, e.getMessage());

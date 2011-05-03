@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.launcher;
 
 import com.sun.enterprise.util.Utility;
@@ -68,7 +67,6 @@ public abstract class GFLauncher {
     ///////////////////////////////////////////////////////////////////////////
     //////     PUBLIC api area starts here             ////////////////////////
     ///////////////////////////////////////////////////////////////////////////
-
     /**
      * 
      * @return The info object that contains startup info
@@ -249,6 +247,7 @@ public abstract class GFLauncher {
     public final int getDebugPort() {
         return debugPort;
     }
+
     /**
      * Return true if suspend=y AND debugging is on.  otherwise return false.
      *
@@ -258,7 +257,6 @@ public abstract class GFLauncher {
         return debugPort >= 0 && debugSuspend;
     }
 
-    
     /**
      * Does this domain need to be automatically upgraded before it can be started?
      *
@@ -267,7 +265,7 @@ public abstract class GFLauncher {
     public final boolean needsAutoUpgrade() {
         return needsAutoUpgrade;
     }
-    
+
     /**
      * Does this domain need to be manually upgraded before it can be started?
      *
@@ -312,6 +310,7 @@ public abstract class GFLauncher {
             }
         }
     }
+
     private void setLogFilename(MiniXmlParser parser) throws GFLauncherException {
         logFilename = parser.getLogFilename();
 
@@ -358,7 +357,6 @@ public abstract class GFLauncher {
 
     // unit tests will want 'fake' so that the process is not really started.
     enum LaunchType {
-
         normal, debug, trace, fake
     };
 
@@ -400,13 +398,14 @@ public abstract class GFLauncher {
         }
 
         List<String> cmds = null;
-        if ((OS.isDarwin()&&(!getInfo().isVerbose()))) {
+        if ((OS.isDarwin() && (!getInfo().isVerbose()))) {
             // On MacOS we need to start long running process with
             // StartupItemContext. See IT 12942
             cmds = new ArrayList<String>();
             cmds.add("/usr/libexec/StartupItemContext");
             cmds.addAll(getCommandLine());
-        } else {
+        }
+        else {
             cmds = getCommandLine();
         }
 
@@ -703,23 +702,24 @@ public abstract class GFLauncher {
         // If this is an upgrade and the security manager is on,
         // copy the current server.policy file to the domain
         // before the upgrade.
-        if (info.isUpgrade() &&
-            jvmOptions.sysProps.containsKey("java.security.manager")) {
+        if (info.isUpgrade()
+                && jvmOptions.sysProps.containsKey("java.security.manager")) {
 
             GFLauncherLogger.info(strings.get("copy_server_policy"));
 
             File source = new File(new File(new File(info.installDir, "lib"),
-                "templates"), "server.policy");
+                    "templates"), "server.policy");
             File target = new File(info.getConfigDir(), "server.policy");
 
             try {
                 FileUtils.copyFile(source, target);
-            } catch (IOException ioe) {
+            }
+            catch (IOException ioe) {
                 // the actual error is wrapped differently depending on
                 // whether the problem was with the source or target
                 Throwable cause = ioe.getCause() == null ? ioe : ioe.getCause();
                 throw new GFLauncherException(strings.get(
-                    "copy_server_policy_error", cause.getMessage()));
+                        "copy_server_policy_error", cause.getMessage()));
             }
         }
     }
@@ -734,13 +734,14 @@ public abstract class GFLauncher {
     private void renameOsgiCache() throws GFLauncherException {
         if (info.isUpgrade()) {
             File osgiCacheDir = new File(info.getDomainRootDir(),
-                "osgi-cache"); 
+                    "osgi-cache");
             File backupOsgiCacheDir = new File(info.getDomainRootDir(),
-                "osgi-cache-" + System.currentTimeMillis());
+                    "osgi-cache-" + System.currentTimeMillis());
             if (osgiCacheDir.exists() && !backupOsgiCacheDir.exists()) {
                 if (!FileUtils.renameFile(osgiCacheDir, backupOsgiCacheDir)) {
                     throw new GFLauncherException(strings.get("rename_osgi_cache_failed", osgiCacheDir, backupOsgiCacheDir));
-                } else {
+                }
+                else {
                     GFLauncherLogger.info("rename_osgi_cache_succeeded", osgiCacheDir, backupOsgiCacheDir);
                 }
             }
@@ -755,20 +756,20 @@ public abstract class GFLauncher {
             return;
 
         // if the user has a hard-coded "-javaagent" jvm-option that uses OUR jar
-        //then we do NOT want to add our own.
+        // then we do NOT want to add our own.
         Set<String> plainKeys = jvmOptions.plainProps.keySet();
         for (String key : plainKeys) {
             if (key.startsWith("javaagent:")) {
                 // complications -- of course!!  They may have mix&match forward and back slashes
                 key = key.replace('\\', '/');
-                if (key.indexOf(BTRACE_PATH) >= 0)
+                if (key.indexOf(BTRACE_PATH) >= 0 || key.indexOf(FLASHLIGHT_AGENT_PATH) >= 0)
                     return; // Done!!!!
             }
         }
 
         // It is not already specified AND monitoring is enabled.
         try {
-            jvmOptions.plainProps.put(getMonitoringJvmOptionString(), null);
+            jvmOptions.plainProps.put(getMonitoringAgentJvmOptionString(), null);
         }
         catch (GFLauncherException gfe) {
             // This has been defined as a non-fatal error.
@@ -776,29 +777,34 @@ public abstract class GFLauncher {
         }
     }
 
-    private String getMonitoringJvmOptionString() throws GFLauncherException {
+    private String getMonitoringAgentJvmOptionString() throws GFLauncherException {
         //-javaagent:${ASINSTALL_ROOT}/lib/monitor/btrace-agent.jar=unsafe=true
-        File jarFile = new File(getInfo().getInstallDir(), BTRACE_PATH);
-        String jarPath = SmartFile.sanitize(jarFile).getPath().replace('\\', '/');
+        //-javaagent:${ASINSTALL_ROOT}/modules/flashlight-agent.jar
 
-        // make sure it exists
-        if (!jarFile.isFile())
-            throw new GFLauncherException("no_btrace_jar", jarPath);
+        File btraceJarFile = new File(getInfo().getInstallDir(), BTRACE_PATH);
+        String btraceJarPath = SmartFile.sanitize(btraceJarFile).getPath().replace('\\', '/');
 
-        String ret = "javaagent:" + jarPath + "=unsafe=true,noServer=true";
+        File flashlightJarFile = new File(getInfo().getInstallDir(), FLASHLIGHT_AGENT_PATH);
+        String flashlightJarPath = SmartFile.sanitize(flashlightJarFile).getPath().replace('\\', '/');
 
-        if(Boolean.parseBoolean(Utility.getEnvOrProp("AS_BTRACE_DEBUG"))) {
-            ret += ",debug=true";
-            // btrace will totally take over the log -- write this to stdout directly!
-            System.out.println("*****************************************************************");
-            System.out.println("*****************************************************************");
-            System.out.println("******************  BTRACE set to DEBUG  ************************");
-            System.out.println("Based on AS_BTRACE_DEBUG=true system property or env. variable");
-            System.out.println("*****************************************************************");
-            System.out.println("*****************************************************************");
+        String jvmOption = null;
+
+        // if it exists -- use it
+        if (btraceJarFile.isFile())
+            jvmOption = "javaagent:" + btraceJarPath + "=unsafe=true,noServer=true";
+        // it would be weird for this to not exist...
+        else if (flashlightJarFile.isFile())
+            jvmOption = "javaagent:" + flashlightJarPath;
+        else {
+            String msg = strings.get("no_agent_jars", btraceJarPath, flashlightJarPath);
+            GFLauncherLogger.info(msg);
+            throw new GFLauncherException(msg);
         }
 
-        return ret;
+        if (Boolean.parseBoolean(Utility.getEnvOrProp("AS_AGENT_DEBUG")))
+            jvmOption += ",debug=true";
+
+        return jvmOption;
     }
 
     private List<String> getSpecialSystemProperties() throws GFLauncherException {
@@ -873,7 +879,7 @@ public abstract class GFLauncher {
         if (System.console() == null && OS.isWindows() && !info.isVerbose()) {
             String sname;
 
-            if(info.isDomain())
+            if (info.isDomain())
                 sname = info.getDomainName();
             else
                 sname = info.getInstanceName();
@@ -896,7 +902,6 @@ public abstract class GFLauncher {
             }
         }
     }
-
     private List<String> commandLine = new ArrayList<String>();
     private GFLauncherInfo info;
     private Map<String, String> asenvProps;
@@ -924,7 +929,6 @@ public abstract class GFLauncher {
 
     ///////////////////////////////////////////////////////////////////////////
     private static class ProcessWhacker implements Runnable {
-
         ProcessWhacker(Process p, String msg) {
             message = msg;
             process = p;

@@ -1001,6 +1001,13 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_DISABLED, info));
         }
 
+        try {
+            info.clean(context);
+        } catch(Exception e) {
+            report.failure(context.getLogger(), "Exception while cleaning", e);
+            return info;
+        }
+
         return info;
     }
 
@@ -1025,13 +1032,6 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             unload(info, context);
         }
 
-        try {
-            info.clean(context);
-        } catch(Exception e) {
-            report.failure(context.getLogger(), "Exception while cleaning application artifacts", e);
-            events.send(new Event(Deployment.UNDEPLOYMENT_FAILURE, context));
-            return;
-        }
         if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
             events.send(new Event(Deployment.UNDEPLOYMENT_SUCCESS, context));
             deploymentLifecycleProbeProvider.applicationUndeployedEvent(appName, getApplicationType(info));

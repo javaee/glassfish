@@ -60,6 +60,8 @@ package org.apache.tomcat.util.modeler;
 
 
 import org.apache.tomcat.util.modeler.modules.ModelerSource;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.internal.api.Globals;
 
 import javax.management.*;
 import javax.management.modelmbean.ModelMBean;
@@ -592,16 +594,21 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
         long t1=System.currentTimeMillis();
 
         if (server == null) {
-            if( MBeanServerFactory.findMBeanServer(null).size() > 0 ) {
-                server=(MBeanServer)MBeanServerFactory.findMBeanServer(null).get(0);
-                if (log.isLoggable(Level.FINE)) {
-                    log.fine("Using existing MBeanServer " + (System.currentTimeMillis() - t1 ));
-                }
-            } else {
+            // We can't use any existing MBeanServer, as it could be as well from a previous execution of GlassFish
+            // which is possible as demonstrated in GLASSFISH-16501. So, create a new one.
+            // To be able to create an MBeanServer, we need to ensure that we have set common-class-loader
+            // as the TCL so that GlassFish MBeanServerBuilder class can be loaded.
+            ClassLoader old = Thread.currentThread().getContextClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(
+                        Globals.get(ClassLoaderHierarchy.class).getCommonClassLoader());
                 server=MBeanServerFactory.createMBeanServer();
-                if (log.isLoggable(Level.FINE)) {
-                    log.fine("Creating MBeanServer"+ (System.currentTimeMillis() - t1 ));
-                }
+
+            } finally {
+                Thread.currentThread().setContextClassLoader(old);
+            }
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Creating MBeanServer"+ (System.currentTimeMillis() - t1 ));
             }
         }
         return (server);

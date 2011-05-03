@@ -301,8 +301,8 @@ public class MonitoringReporter extends V2DottedNameSupport {
             ParameterMap paramMap = new ParameterMap();
             paramMap.set("monitor", "true");
             paramMap.set("DEFAULT", pattern);
-            ClusterOperationUtil.replicateCommand("get", FailurePolicy.Error, FailurePolicy.Warn, remoteServers,
-                    context, paramMap, habitat);
+            ClusterOperationUtil.replicateCommand("get", FailurePolicy.Error, FailurePolicy.Warn, 
+                    FailurePolicy.Ignore, remoteServers, context, paramMap, habitat);
         }
         catch (Exception ex) {
             setError(Strings.get("admin.get.monitoring.remote.error", getNames(remoteServers)));
@@ -360,6 +360,10 @@ public class MonitoringReporter extends V2DottedNameSupport {
         // MONDOT, SLASH should be replaced with literals
         userarg = userarg.replace(MONDOT, ".").replace(SLASH, "/");
 
+        // double star makes no sense.  The loop gets rid of "***", "****", etc.
+        while(userarg.indexOf("**") >= 0)
+            userarg = userarg.replace("**", "*");
+
         // 1.  nothing
         // 2.  *
         // 3.  *.   --> which is a weird input but let's accept it anyway!
@@ -392,9 +396,10 @@ public class MonitoringReporter extends V2DottedNameSupport {
         }
 
         // 7.  See 14685 for an example -->  "*jsp*"
+        // 16313 for another example 
         if (userarg.startsWith("*")) {
             targets = allServers;
-            pattern = userarg.substring(1);
+            pattern = userarg;
             return true;
         }
 

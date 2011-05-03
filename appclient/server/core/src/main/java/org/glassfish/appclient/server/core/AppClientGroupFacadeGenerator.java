@@ -261,7 +261,7 @@ public class AppClientGroupFacadeGenerator {
         OutputStream os = facadeArchive.putNextEntry(mainClassResourceName);
 
         try {
-            InputStream is = openByteCodeStream("/" + mainClassResourceName);
+            InputStream is = openByteCodeStream(mainClassResourceName);
             AppClientDeployerHelper.copyStream(is, os);
             is.close();
         } catch (Exception e) {

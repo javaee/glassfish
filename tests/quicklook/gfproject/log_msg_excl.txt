@@ -181,6 +181,10 @@ MessageWindow thread for group
 SignalHandler task named
 SLF4J:
 MemberId: eein
+Method init defined on class
+Dgosh.args=--nointeractive
+Dorg.glassfish.additionalOSGiBundlesToStart
+Multiple JSF Applications found on same
 
 # From QL Test - No need to fix this
 In SingletonBean::init()
@@ -268,7 +272,10 @@ In StatefulBean::destroy()
 In StatelessBean::destroy()
 In HelloBean::destroy()
 Server restart initiated
-
+Config Listener notification got interrupted
+Failed to restart:
+Failed to call the method
+Failed to check connection
 
 # From LocalStrings.properties file - No need to fix this
 was successfully deployed in
@@ -283,37 +290,8 @@ Sun specific deployment descriptor
 The configured OSGi Telnet port
 Error transferring service tags
 Process executing stclient command failed
-
-
-# Waiting to be fixed: 11627
-endpoint.determine.destinationtype
-
-
-# Waiting to be fixed: 11195
-FromWsdl
-
-
-# Waiting to be fixed: 12310
-!!!!! Cannot create Update Center Image for 
-
-
-# Waiting to be fixed: 12302
-Loading __admingui Application done is 
-
-
-# Waiting to be fixed: 12309
-Done with starting web container
-
-
-# Waiting to be fixed: 12304
-Security startup service called
-Realm admin-realm of classtype com.sun.enterprise.security.auth.realm.file.FileRealm successfully created.
-Realm file of classtype com.sun.enterprise.security.auth.realm.file.FileRealm successfully created.
-Realm certificate of classtype com.sun.enterprise.security.auth.realm.certificate.CertificateRealm successfully created.
-Security service\(s\) started successfully
-Realm file was successfully updated.
-Web login failed: Login failed: javax.security.auth.login.LoginException: Failed file login for j2ee.
-
+The Admin Console is starting. Please wait
+Admin Console: Initializing Session Attributes...
 
 # Waiting to be fixed: 12251
 Portable JNDI names for EJB 
@@ -324,26 +302,29 @@ Glassfish-specific \(Non-portable\) JNDI names for EJB
 StatefulContainerbuilder instantiated store
 StatefulContainerBuilder.buildStoreManager()
 
-# Waiting to be fixed: 12207
-issueAttributeChangeForXmlAttrName\(\): MBean attribute name not found for xml name, using xml name: name
-AttributeChangeNotification: 
 
+# http://java.net/jira/browse/GLASSFISH-16535
+ADDRESSLIST in
+JMS Service Connection
+endpoint.determine.destinationtype=end point determine destionation name
 
-# Waiting to be fixed: 12305
-admin console: initSessionAttributes
-Error in getStandaloneInstances
-Error in getClusters
-restRequest: endpoint
+# http://java.net/jira/browse/GLASSFISH-16534
+config.getHttpService() null for
+MNTG0205:Gmbal registration
 
-# Waiting to be fixed: 12307
-JMS Service Connection URL is
+# http://java.net/jira/browse/GLASSFISH-16533
+Erorr stopping context
 
-# Waiting to be fixed: 12657
-SynchronizeFiles: logger
+# http://java.net/jira/browse/GLASSFISH-16532
+Initialized AMXStartupServiceNew
+In AMXConfigLoader : loader
+AMX config read, domain config
+J2EEDomain registered at
+AMXStartupServiceNew.AMXLoaderThread: loading:
+AMXStartupServiceNew._loadAMXMBeans:
+AMXStartupServiceNew: AMX ready for use
+Non-singleton ConfigBean
+Can't unregister MBean:
 
-# Waiting to be fixed: 13155
-PersistenceStrategyBuilderFactory>>createPersistenceStrategyBuilder
-
-# Waiting to be fixed: 11990
-Adding instance
-Deleting instance
+# http://java.net/jira/browse/GLASSFISH-16531
+JACC Policy Provider: Failed Permission Check

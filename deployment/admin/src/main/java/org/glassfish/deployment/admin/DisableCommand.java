@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -188,7 +188,8 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
                     ParameterMapExtractor extractor = new ParameterMapExtractor(this);
                     ParameterMap paramMap = extractor.extract(Collections.EMPTY_LIST);
                     paramMap.set("DEFAULT", appName);
-                    ClusterOperationUtil.replicateCommand("disable", FailurePolicy.Error, FailurePolicy.Warn, targets, context, paramMap, habitat);
+                    ClusterOperationUtil.replicateCommand("disable", FailurePolicy.Error, FailurePolicy.Warn, 
+                            FailurePolicy.Ignore, targets, context, paramMap, habitat);
                 } catch (Exception e) {
                     report.failure(logger, e.getMessage());
                     return;

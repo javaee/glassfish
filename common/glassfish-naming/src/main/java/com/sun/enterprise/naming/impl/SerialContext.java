@@ -1098,7 +1098,7 @@ public class SerialContext implements Context {
     }
 
     // Class for enumerating name/class pairs
-    class RepNames implements NamingEnumeration {
+    static class RepNames implements NamingEnumeration {
         Hashtable bindings;
 
         Enumeration names;
@@ -1142,7 +1142,7 @@ public class SerialContext implements Context {
     }
 
     // Class for enumerating bindings
-    class RepBindings implements NamingEnumeration {
+    static class RepBindings implements NamingEnumeration {
         Enumeration names;
 
         Hashtable bindings;

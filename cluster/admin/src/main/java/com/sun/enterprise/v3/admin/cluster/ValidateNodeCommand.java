@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -245,6 +245,35 @@ public class ValidateNodeCommand implements AdminCommand {
 
     private void validatePathSimple(String propname, String value, String configValue)
             throws CommandValidationException {
+
+        //16288 normalize paths to use '/'
+        if (value != null) {
+            value = FileUtils.makeForwardSlashes(value);
+        }
+        if (configValue != null) {
+           configValue = FileUtils.makeForwardSlashes(configValue);
+        }
+
+        //ignore trailing / (16131).  Avoid using File API since we don't
+        //know about remote node's filesystem
+        if (value != null && value.endsWith("/")) {
+            value = value.substring(0, value.length()-1);
+        }
+        if (configValue != null && configValue.endsWith("/")) {
+            configValue = configValue.substring(0, configValue.length()-1);
+        }
+
+        //Try to normalize if one of the path values is relative to the gf install dir (16206)
+        if (value != null && configValue != null) {
+            File valFile = new File(value);
+            File configValFile = new File(configValue);
+            if (valFile.isAbsolute() && !configValFile.isAbsolute() && value.endsWith(configValue)) {
+                value = configValue;
+            } else if (!valFile.isAbsolute() && configValFile.isAbsolute() && configValue.endsWith(value)) {
+                configValue = value;
+            }
+        }
+
         // Compares paths by just doing a string comparison. Some of the paths
         // we are comparing are valid on remote systems, so we can't do any
         // path processing

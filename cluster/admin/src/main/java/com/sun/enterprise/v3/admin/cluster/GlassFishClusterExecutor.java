@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,34 +41,21 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.admin.util.ClusterOperationUtil;
-import com.sun.enterprise.admin.util.InstanceCommandExecutor;
 import com.sun.enterprise.admin.util.InstanceStateService;
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.admin.remote.RemoteAdminCommand;
-import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.StringUtils;
-import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.internal.api.Target;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.common.util.admin.CommandModelImpl;
-import org.glassfish.config.support.GenericCrudCommand;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.config.types.Property;
 
-import java.lang.annotation.Annotation;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A ClusterExecutor is responsible for remotely executing commands.
@@ -116,6 +103,7 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
      * @return an array of @{link org.glassfish.api.ActionReport} for each remote
      * execution status. 
      */
+    @Override
     public ActionReport.ExitCode execute(String commandName, AdminCommand command, AdminCommandContext context, ParameterMap parameters) {
 
         CommandModel model;
@@ -127,19 +115,17 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
         }
         org.glassfish.api.admin.ExecuteOn clAnnotation = model.getClusteringAttributes();
         List<RuntimeType> runtimeTypes = new ArrayList<RuntimeType>();
+        @ExecuteOn final class DefaultExecuteOn {}
         if(clAnnotation == null) {
+            clAnnotation = DefaultExecuteOn.class.getAnnotation(ExecuteOn.class);
+        }
+        if (clAnnotation.value().length == 0) {
             runtimeTypes.add(RuntimeType.DAS);
             runtimeTypes.add(RuntimeType.INSTANCE);
         } else {
-            if(clAnnotation.value().length == 0) {
-                runtimeTypes.add(RuntimeType.DAS);
-                runtimeTypes.add(RuntimeType.INSTANCE);
-            } else {
-                for(RuntimeType t : clAnnotation.value()) {
-                    runtimeTypes.add(t);
-                }
-            }
+            runtimeTypes.addAll(Arrays.asList(clAnnotation.value()));
         }
+        
         String targetName = parameters.getOne("target");
         if(targetName == null)
                 targetName = "server";
@@ -192,7 +178,7 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
                 instancesForReplication = targetService.getInstances(targetName);
             }
 
-            if(instancesForReplication.size() == 0) {
+            if(instancesForReplication.isEmpty()) {
                 ActionReport aReport = context.getActionReport().addSubActionsReport();
                 aReport.setActionExitCode(ActionReport.ExitCode.SUCCESS);
                 aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.notargets",
@@ -200,8 +186,8 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
                 return ActionReport.ExitCode.SUCCESS;
             }
 
-            return(ClusterOperationUtil.replicateCommand(commandName, (clAnnotation == null) ? FailurePolicy.Error : clAnnotation.ifFailure(),
-                    (clAnnotation == null) ? FailurePolicy.Warn : clAnnotation.ifOffline(),
+            return(ClusterOperationUtil.replicateCommand(commandName, clAnnotation.ifFailure(),
+                    clAnnotation.ifOffline(), clAnnotation.ifNeverStarted(),
                     instancesForReplication, context, parameters, habitat));
         }
         return ActionReport.ExitCode.SUCCESS;

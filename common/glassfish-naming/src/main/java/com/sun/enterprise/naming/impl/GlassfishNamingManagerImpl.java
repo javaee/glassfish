@@ -232,7 +232,7 @@ public final class  GlassfishNamingManagerImpl
         // It is also used from bindObjects while populating ejb-refs in
         // the java:comp namespace.
         Object serialObj = new Reference("reference",
-                    new StringRefAddr("url", name.toString()),
+                    new StringRefAddr("url", name),
                     IIOPOBJECT_FACTORY, null);
 
         publishObject(name, serialObj, rebind);

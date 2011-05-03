@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -88,7 +88,17 @@ public @interface ExecuteOn {
     FailurePolicy ifOffline() default FailurePolicy.Warn;
 
     /**
-     * Identifies the expected behaviour from the framework if any of the clustered
+     * Identifies the expected behavior from the framework if any of the clustered
+     * invocation could not be invoked because the remote server has never been
+     * started.
+     *
+     * @return the action the framework should perform if any of the remote invocation
+     * of this command cannot be executed due to the server being offline.
+     */
+    FailurePolicy ifNeverStarted() default FailurePolicy.Ignore;
+
+    /**
+     * Identifies the expected behavior from the framework if any of the clustered
      * invocation failed.
      *
      * @return the action the framework should perform if any of the remote invocation

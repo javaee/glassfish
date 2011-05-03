@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,12 +42,12 @@ package com.sun.enterprise.admin.util;
 
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 
 import java.io.File;
 
 import com.sun.logging.LogDomains;
+import java.util.logging.Level;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
 import org.glassfish.internal.api.Target;
@@ -84,11 +84,12 @@ public class ClusterOperationUtil {
     public static ActionReport.ExitCode replicateCommand(String commandName,
                                                    FailurePolicy failPolicy,
                                                    FailurePolicy offlinePolicy,
+                                                   FailurePolicy neverStartedPolicy,
                                                    List<Server> instancesForReplication,
                                                    AdminCommandContext context,
                                                    ParameterMap parameters,
                                                    Habitat habitat) {
-        return replicateCommand(commandName, failPolicy, offlinePolicy, 
+        return replicateCommand(commandName, failPolicy, offlinePolicy, neverStartedPolicy,
                 instancesForReplication, context, parameters, habitat, null);
     }
 
@@ -114,6 +115,7 @@ public class ClusterOperationUtil {
     public static ActionReport.ExitCode replicateCommand(String commandName,
                                                    FailurePolicy failPolicy,
                                                    FailurePolicy offlinePolicy,
+                                                   FailurePolicy neverStartedPolicy,
                                                    List<Server> instancesForReplication,
                                                    AdminCommandContext context,
                                                    ParameterMap parameters,
@@ -129,8 +131,27 @@ public class ClusterOperationUtil {
             for(Server svr : instancesForReplication) {
                 if (instanceState.getState(svr.getName()) == InstanceState.StateType.NEVER_STARTED) {
                     // Do not replicate commands to instances that have never been started.
+                    // For certain commands, warn about the failure to replicate even if 
+                    // the instance has never been started.
+                    ActionReport.ExitCode finalResult = 
+                            FailurePolicy.applyFailurePolicy(neverStartedPolicy, ActionReport.ExitCode.FAILURE);
+                    if (!finalResult.equals(ActionReport.ExitCode.SUCCESS)) {
+                        ActionReport aReport = context.getActionReport().addSubActionsReport();
+                        if (finalResult.equals(ActionReport.ExitCode.FAILURE)) {
+                            aReport.setMessage(strings.getLocalString("clusterutil.failneverstarted",
+                                    "FAILURE: Instance {0} has never been started; command {1} was not replicated to that instance",
+                                    svr.getName(), commandName));
+                        } else {
+                            aReport.setMessage(strings.getLocalString("clusterutil.warnneverstarted",
+                                    "WARNING: Instance {0} has never been started; command {1} was not replicated to that instance",
+                                    svr.getName(), commandName));
+                        }
+                        aReport.setActionExitCode(finalResult);
+                        if (returnValue == ActionReport.ExitCode.SUCCESS)
+                            returnValue = finalResult;
+                    }
                     continue;
-                }
+                }               
                 String host = svr.getAdminHost();
                 int port = rich.getAdminPort(svr);
                 ActionReport aReport = context.getActionReport().addSubActionsReport();
@@ -162,7 +183,7 @@ public class ClusterOperationUtil {
             aReport.setActionExitCode(finalResult);
             aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.replicationfailed",
                     "Error during command replication : {0}", ex.getMessage()));
-            context.getLogger().severe("Error during command replication; Reason : " +  ex.getLocalizedMessage());
+            context.getLogger().log(Level.SEVERE, "Error during command replication; Reason : {0}", ex.getLocalizedMessage());
             if(returnValue ==ActionReport.ExitCode.SUCCESS)
                 returnValue = finalResult;
         }
@@ -199,7 +220,6 @@ public class ClusterOperationUtil {
                 }
             } catch (Exception ex) {
                 ActionReport aReport = context.getActionReport().addSubActionsReport();
-                finalResult = ActionReport.ExitCode.FAILURE;
                 finalResult = FailurePolicy.applyFailurePolicy(failPolicy, ActionReport.ExitCode.FAILURE);
                 if(finalResult == ActionReport.ExitCode.FAILURE) {
                     if(ex instanceof TimeoutException)
@@ -222,11 +242,12 @@ public class ClusterOperationUtil {
     public static ActionReport.ExitCode replicateCommand(String commandName,
                                                    FailurePolicy failPolicy,
                                                    FailurePolicy offlinePolicy,
+                                                   FailurePolicy neverStartedPolicy,
                                                    Collection<String> targetNames,
                                                    AdminCommandContext context,
                                                    ParameterMap parameters,
                                                    Habitat habitat) {
-        return replicateCommand(commandName, failPolicy, offlinePolicy,
+        return replicateCommand(commandName, failPolicy, offlinePolicy, neverStartedPolicy,
                 targetNames, context, parameters, habitat, null);
     }
 
@@ -252,6 +273,7 @@ public class ClusterOperationUtil {
     public static ActionReport.ExitCode replicateCommand(String commandName,
                                                    FailurePolicy failPolicy,
                                                    FailurePolicy offlinePolicy,
+                                                   FailurePolicy neverStartedPolicy,
                                                    Collection<String> targetNames,
                                                    AdminCommandContext context,
                                                    ParameterMap parameters,
@@ -284,7 +306,7 @@ public class ClusterOperationUtil {
             }
             parameters.set("target", t);
             ActionReport.ExitCode returnValue = ClusterOperationUtil.replicateCommand(commandName,
-                    failPolicy, offlinePolicy, targetService.getInstances(t), context, parameters, habitat,
+                    failPolicy, offlinePolicy, neverStartedPolicy, targetService.getInstances(t), context, parameters, habitat,
                     intermediateDownloadDir);
             if(!returnValue.equals(ActionReport.ExitCode.SUCCESS)) {
                 result = returnValue;

@@ -351,7 +351,7 @@ public class MapperListener
                     try {
                         registerHost(objectName);
                     } catch (Exception e) {
-                        log.log(Level.WARNING,
+                        throw new RuntimeException(
                                 "Error registering Host " + objectName, e);  
                     }
                 }
@@ -361,7 +361,7 @@ public class MapperListener
                         try {
                             registerContext(objectName);
                         } catch (Throwable t) {
-                            log.log(Level.WARNING,
+                            throw new RuntimeException(
                                     "Error registering Context " + objectName,
                                     t);
                         }
@@ -369,7 +369,7 @@ public class MapperListener
                         try {
                             registerWrapper(objectName);
                         } catch (Throwable t) {
-                            log.log(Level.WARNING,
+                            throw new RuntimeException(
                                     "Error registering Wrapper " + objectName,
                                     t);
                         }
@@ -382,7 +382,7 @@ public class MapperListener
                     try {
                         unregisterHost(objectName);
                     } catch (Exception e) {
-                        log.log(Level.WARNING,
+                        throw new RuntimeException(
                                 "Error unregistering Host " + objectName,
                                 e);  
                     }
@@ -393,7 +393,7 @@ public class MapperListener
                         try {
                             unregisterContext(objectName);
                         } catch (Throwable t) {
-                            log.log(Level.WARNING,
+                            throw new RuntimeException(
                                     "Error unregistering webapp " + objectName,
                                     t);
                         }
@@ -402,7 +402,7 @@ public class MapperListener
                         try {
                             unregisterOSGiWrapper(objectName);
                         } catch (Throwable t) {
-                            log.log(Level.WARNING,
+                            throw new RuntimeException(
                                     "Error unregistering osgi wrapper " + objectName,
                                     t);
                         }
