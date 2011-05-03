@@ -210,15 +210,13 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         File stubsDir = dc.getScratchDir("ejb");
         stubsDir.mkdirs();
 
-        String webinfLibDir = null;
+
         if (!XModuleType.WAR.equals(bundle.getModuleType()) &&
                 !XModuleType.EJB.equals(bundle.getModuleType())) {
             // unknown module type with @WebService, just ignore...
             return;
         }
-        if (XModuleType.WAR.equals(bundle.getModuleType())) {
-            webinfLibDir = moduleDir.getAbsolutePath() + File.separator + "WEB-INF"+File.separator+"lib";
-        }
+       
 
         wsdlDir = new File(wsdlDir, bundle.getWsdlDir().replaceAll("/", "\\"+File.separator));
 
@@ -592,7 +590,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         //do not do for ejb in war case
         if (webBundleDesc!= null && webBundleDesc.getExtensionsDescriptors(EjbBundleDescriptor.class).size()==0) {
             if (dc.getAppProps().get("context-root") != null &&
-                    app.isVirtual() && webBundleDesc != null) {
+                    app.isVirtual() ) {
 
                 String contextRoot = ((String)dc.getAppProps().get("context-root"));
                 webBundleDesc.setContextRoot(contextRoot);
@@ -803,7 +801,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
                 return publishedFiles;
             }
 
-            String moduleName = bundle.getApplication().getAppName();
+            
             File sourceDir = dc.getScratchDir("xml");
 
             File parent;
@@ -827,32 +825,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
             Enumeration entries = archive.entries(bundle.getWsdlDir());
 
-            // Strictly speaking, we only need to write the files needed by
-            // imports of this web service's wsdl file.  However, it's not
-            // worth actual parsing the whole chain just to figure this
-            // out.  In the worst case, some unnecessary files under
-            // META-INF/wsdl or WEB-INF/wsdl will be written to the publish
-            // directory.
-            ArrayList<Artifacts.FullAndPartURIs> alist = new ArrayList<Artifacts.FullAndPartURIs>();
-            /* Fix for CR 6960684: Don't rely on DownloadableArtifacts for wsdl publishing.
-            while(entries.hasMoreElements()) {
-                String name = (String) entries.nextElement();
-                String wsdlName = stripWsdlDir(name,bundle) ;
-                URI clientwsdl = new File(parent, wsdlName).toURI();
-                //Fix for issue 6945894
-                // The web services logic does not need a directory be included in the downloadable artifacts
-                // for the application.  The download mechanism deals with non-directory files
-                // (creating any required directories automatically) so only non-directory files need to be
-                // flagged for download.
 
-                File fulluriFile = new File(sourceDir,name);
-                if (! fulluriFile.isDirectory()) {
-                     alist.add(new Artifacts.FullAndPartURIs(fulluriFile.toURI(),clientwsdl));
-
-                }
-            }
-            DeploymentUtils.downloadableArtifacts(dc).addArtifacts(alist);
-            */
             while (entries.hasMoreElements()) {
                 String name = (String) entries.nextElement();
                 String wsdlName = stripWsdlDir(name, bundle);

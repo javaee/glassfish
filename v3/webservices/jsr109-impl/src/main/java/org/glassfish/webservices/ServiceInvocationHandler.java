@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -101,8 +101,7 @@ public class ServiceInvocationHandler implements InvocationHandler {
     private URL wsdlLocation;
 
     private boolean fullWsdl = false;
-    private boolean noWsdl = false;
-
+    
     private WsUtil wsUtil = new WsUtil();
     private org.glassfish.webservices.SecurityService  secServ;
 
@@ -140,9 +139,7 @@ public class ServiceInvocationHandler implements InvocationHandler {
         if( serviceRef.hasWsdlFile() ) {
             wsdlLocation = wsUtil.privilegedGetServiceRefWsdl(serviceRef);
             fullWsdl = true;
-        } else {
-            noWsdl = true;
-        }
+        } 
 
         getClientManagedPortMethod = javax.xml.rpc.Service.class.getMethod
                 ("getPort", new Class[] { QName.class, Class.class } );
@@ -332,25 +329,25 @@ public class ServiceInvocationHandler implements InvocationHandler {
             Method createCallNoArgs =
                     serviceClass.getDeclaredMethod(createCall, noParams);
             serviceMethodTypes.put(createCallNoArgs,
-                    new Integer(CREATE_CALL_NO_ARGS));
+                    Integer.valueOf(CREATE_CALL_NO_ARGS));
 
             Method createCallPort =
                     serviceClass.getDeclaredMethod(createCall,
                             new Class[] { QName.class });
             serviceMethodTypes.put(createCallPort,
-                    new Integer(CREATE_CALL_PORT));
+                     Integer.valueOf(CREATE_CALL_PORT));
 
             Method createCallOperationQName =
                     serviceClass.getDeclaredMethod
                             (createCall, new Class[] { QName.class, QName.class });
             serviceMethodTypes.put(createCallOperationQName,
-                    new Integer(CREATE_CALL_OPERATION_QNAME));
+                     Integer.valueOf(CREATE_CALL_OPERATION_QNAME));
 
             Method createCallOperationString =
                     serviceClass.getDeclaredMethod
                             (createCall, new Class[] { QName.class, String.class });
             serviceMethodTypes.put(createCallOperationString,
-                    new Integer(CREATE_CALL_OPERATION_STRING));
+                    Integer.valueOf(CREATE_CALL_OPERATION_STRING));
 
             Method getCalls = serviceClass.getDeclaredMethod
                     ("getCalls", new Class[] { QName.class });
@@ -359,17 +356,17 @@ public class ServiceInvocationHandler implements InvocationHandler {
             Method getHandlerRegistry = serviceClass.getDeclaredMethod
                     ("getHandlerRegistry", noParams);
             serviceMethodTypes.put(getHandlerRegistry,
-                    new Integer(GET_HANDLER_REGISTRY));
+                     Integer.valueOf(GET_HANDLER_REGISTRY));
 
             Method getPortContainerManaged = serviceClass.getDeclaredMethod
                     ("getPort", new Class[] { Class.class });
             serviceMethodTypes.put(getPortContainerManaged,
-                    new Integer(GET_PORT_CONTAINER_MANAGED));
+                    Integer.valueOf(GET_PORT_CONTAINER_MANAGED));
 
             Method getPortClientManaged = serviceClass.getDeclaredMethod
                     ("getPort", new Class[] { QName.class, Class.class });
             serviceMethodTypes.put(getPortClientManaged,
-                    new Integer(GET_PORT_CLIENT_MANAGED));
+                    Integer.valueOf(GET_PORT_CLIENT_MANAGED));
 
             Method getPorts = serviceClass.getDeclaredMethod
                     ("getPorts", noParams);
@@ -378,36 +375,36 @@ public class ServiceInvocationHandler implements InvocationHandler {
             Method getServiceName = serviceClass.getDeclaredMethod
                     ("getServiceName", noParams);
             serviceMethodTypes.put(getServiceName,
-                    new Integer(GET_SERVICE_NAME));
+                     Integer.valueOf(GET_SERVICE_NAME));
 
             Method getTypeMappingRegistry = serviceClass.getDeclaredMethod
                     ("getTypeMappingRegistry", noParams);
             serviceMethodTypes.put(getTypeMappingRegistry,
-                    new Integer(GET_TYPE_MAPPING_REGISTRY));
+                    Integer.valueOf(GET_TYPE_MAPPING_REGISTRY));
 
             Method getWsdlLocation = serviceClass.getDeclaredMethod
                     ("getWSDLDocumentLocation", noParams);
             serviceMethodTypes.put(getWsdlLocation,
-                    new Integer(GET_WSDL_LOCATION));
+                     Integer.valueOf(GET_WSDL_LOCATION));
         } catch(NoSuchMethodException nsme) {}
 
         // Implementation of table 4.2.2.7.  All "No WSDL" column cells
         // with value Unspecified throw UnsupportedOperationException
 
-        fullWsdlIllegalMethods.add(new Integer(GET_HANDLER_REGISTRY));
-        fullWsdlIllegalMethods.add(new Integer(GET_TYPE_MAPPING_REGISTRY));
+        fullWsdlIllegalMethods.add( GET_HANDLER_REGISTRY);
+        fullWsdlIllegalMethods.add(GET_TYPE_MAPPING_REGISTRY);
 
-        noWsdlIllegalMethods.add(new Integer(CREATE_CALL_PORT));
-        noWsdlIllegalMethods.add(new Integer(CREATE_CALL_OPERATION_QNAME));
-        noWsdlIllegalMethods.add(new Integer(CREATE_CALL_OPERATION_STRING));
-        noWsdlIllegalMethods.add(new Integer(GET_CALLS));
-        noWsdlIllegalMethods.add(new Integer(GET_HANDLER_REGISTRY));
-        noWsdlIllegalMethods.add(new Integer(GET_PORT_CONTAINER_MANAGED));
-        noWsdlIllegalMethods.add(new Integer(GET_PORT_CLIENT_MANAGED));
-        noWsdlIllegalMethods.add(new Integer(GET_PORTS));
-        noWsdlIllegalMethods.add(new Integer(GET_SERVICE_NAME));
-        noWsdlIllegalMethods.add(new Integer(GET_TYPE_MAPPING_REGISTRY));
-        noWsdlIllegalMethods.add(new Integer(GET_WSDL_LOCATION));
+        noWsdlIllegalMethods.add( CREATE_CALL_PORT);
+        noWsdlIllegalMethods.add( CREATE_CALL_OPERATION_QNAME);
+        noWsdlIllegalMethods.add(CREATE_CALL_OPERATION_STRING);
+        noWsdlIllegalMethods.add(GET_CALLS);
+        noWsdlIllegalMethods.add(GET_HANDLER_REGISTRY);
+        noWsdlIllegalMethods.add(GET_PORT_CONTAINER_MANAGED);
+        noWsdlIllegalMethods.add(GET_PORT_CLIENT_MANAGED);
+        noWsdlIllegalMethods.add(GET_PORTS);
+        noWsdlIllegalMethods.add(GET_SERVICE_NAME);
+        noWsdlIllegalMethods.add(GET_TYPE_MAPPING_REGISTRY);
+        noWsdlIllegalMethods.add(GET_WSDL_LOCATION);
 
         // This case shouldn't happen since if service-ref has generated
         // service and no WSDL it won't get past deployment, but it's here
@@ -480,12 +477,7 @@ public class ServiceInvocationHandler implements InvocationHandler {
             for(Iterator iter = properties.iterator(); iter.hasNext();) {
                 NameValuePairDescriptor next = (NameValuePairDescriptor)
                         iter.next();
-                if( next.getName().equals
-                        (WsUtil.CLIENT_TRANSPORT_LOG_PROPERTY) ) {
-                    // value is a URL
-                    wsUtil.setClientTransportLog(serviceRef, stub,
-                            next.getValue());
-                } else if(next.getName().equals(ServiceEngineUtil.JBI_ENABLED)){
+                if(next.getName().equals(ServiceEngineUtil.JBI_ENABLED)){
                     setJBIProperties(stub, portInfo);
                 } else {
                     stub._setProperty(next.getName(), next.getValue());
@@ -573,10 +565,10 @@ public class ServiceInvocationHandler implements InvocationHandler {
             case 'e' :
                 Object other = Proxy.isProxyClass(args[0].getClass()) ?
                         Proxy.getInvocationHandler(args[0]) : args[0];
-                returnValue = new Boolean(handler.equals(other));
+                returnValue = Boolean.valueOf(handler.equals(other));
                 break;
             case 'h' :
-                returnValue = new Integer(handler.hashCode());
+                returnValue = Integer.valueOf(handler.hashCode());
                 break;
             case 't' :
                 returnValue = handler.toString();
