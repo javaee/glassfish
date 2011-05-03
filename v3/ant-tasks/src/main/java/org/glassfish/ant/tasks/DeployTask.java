@@ -148,9 +148,7 @@ public class DeployTask extends AdminTask {
             log("File attributes or component must be specified", Project.MSG_WARN);
             return;
         }
-        if (components != null) {
-            processComponents();
-        }
+        processComponents();
         if (file != null) {
             addCommandOperand(file);
             super.execute(action + " " + getCommand());
