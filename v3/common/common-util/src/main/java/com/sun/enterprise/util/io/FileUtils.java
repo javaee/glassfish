@@ -1077,22 +1077,38 @@ public class FileUtils {
         File f = new File(dir, file);
         if (f.exists())
            return f;
+        InputStream is = null, bis = null;
+        OutputStream os = null;
+        try {
+            is = Thread.currentThread().getContextClassLoader().getResourceAsStream(file);
+            if (is == null)
+                return null;
+            bis = new BufferedInputStream(is);
 
-        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(file);
-        if (is == null)
-            return null;
-        InputStream bis = new BufferedInputStream(is);
+            f.getParentFile().mkdirs();
+            os = new BufferedOutputStream(FileUtils.openFileOutputStream(f));
+            byte buf[] = new byte[10240];
+            int len = 0;
+            while ((len =bis.read(buf)) > 0) {
+               os.write(buf, 0, len);
+            }
+            return f;
+        } finally {
+            if (os != null)
+                try {
+                    os.close();
+                } catch (IOException ex) {}
 
-        f.getParentFile().mkdirs();
-        OutputStream os = new BufferedOutputStream(FileUtils.openFileOutputStream(f));
-        byte buf[] = new byte[10240];
-        int len = 0;
-        while ((len =bis.read(buf)) > 0) {
-           os.write(buf, 0, len);
+            if (bis != null)
+                try {
+                    bis.close();
+                } catch (IOException ex) {}
+
+            if (is != null)
+                try {
+                    is.close();
+                } catch (IOException ex) {}
         }
-        os.close();
-        is.close();
-        return f;
     }
 
     /**
