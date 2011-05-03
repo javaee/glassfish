@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -427,6 +427,8 @@ public final class InstallationConfigurator implements Configurator, Notificatio
 
         
 	// for SDK cobundles with JDK - see if cobundled JDK exists and use that
+        // checks for both jdk7 and jdk directories since we are adding JDK 7 cobundles 
+       
         
         if (org.glassfish.installer.util.FileUtils.isFileExist(productRef.getInstallLocation() + File.separator + "jdk")){
 	   jdkHome = productRef.getInstallLocation() + File.separator + "jdk";
@@ -436,6 +438,17 @@ public final class InstallationConfigurator implements Configurator, Notificatio
               org.glassfish.installer.util.FileUtils.setAllFilesExecutable(productRef.getInstallLocation() + File.separator + "jdk" 
                   + File.separator + "bin");
               org.glassfish.installer.util.FileUtils.setAllFilesExecutable(productRef.getInstallLocation() + File.separator + "jdk" 
+                  + File.separator + "jre" + File.separator + "bin");
+           }
+         }
+         else if (org.glassfish.installer.util.FileUtils.isFileExist(productRef.getInstallLocation() + File.separator + "jdk7")){
+	   jdkHome = productRef.getInstallLocation() + File.separator + "jdk7";
+           
+           // on Unix, set executable permissions to jdk7/bin/* and jdk7/jre/bin/* 
+           if (!OSUtils.isWindows()) {
+              org.glassfish.installer.util.FileUtils.setAllFilesExecutable(productRef.getInstallLocation() + File.separator + "jdk7" 
+                  + File.separator + "bin");
+              org.glassfish.installer.util.FileUtils.setAllFilesExecutable(productRef.getInstallLocation() + File.separator + "jdk7" 
                   + File.separator + "jre" + File.separator + "bin");
            }
          }
