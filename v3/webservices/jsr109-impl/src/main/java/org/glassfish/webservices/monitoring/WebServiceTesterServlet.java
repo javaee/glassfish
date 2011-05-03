@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -179,7 +179,7 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
                             localStrings.getLocalString(
 		    	   "enterprise.webservice.monitoring.title",
                            "Web Service Tester") + "</H1>");
-        java.util.Enumeration<String> headers = req.getHeaderNames();
+
         
         // Microsoft Internet Explorer does not handle <BUTTON> properly
         boolean isInternetExplorer=false;
@@ -372,8 +372,8 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
 
     }    
     
-    private MessageTrace request = null;
-    private MessageTrace response = null;
+    private volatile MessageTrace request = null;
+    private volatile MessageTrace response = null;
     
     public void invocationProcessed(MessageTrace request, MessageTrace response) {
         this.request = request;
@@ -563,11 +563,11 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
             Object port = service.getPort(myEndpoint.getDescriptor().getWsdlPort(), portClass);
             if (port==null) {
                 throw new RuntimeException("Cannot find the correct port class.");
-            }            
-            if (port!=null) {
-                ports.put(requestURL, port);
-                gsiClasses.put(requestURL, portClass);
             }
+
+            ports.put(requestURL, port);
+            gsiClasses.put(requestURL, portClass);
+
         } catch(Exception e) {
             throw new ServletException(e);
         } finally {
