@@ -69,7 +69,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 /**
  *
  */
-class SvcTag implements Comparable<SvcTag> {
+class SvcTag {
     public static final String REGISTERED = "REGISTERED";
     public static final String UNREGISTERED = "UNREGISTERED";
     public static final String UNINSTALLED = "UNINSTALLED";
@@ -511,16 +511,6 @@ class SvcTag implements Comparable<SvcTag> {
         fmt.format("</service_tag>\n");
 
         return sb.toString();
-    }
-
-    /**
-     * Compare this SvcTag to another, per the of conventions of
-     * the Comparable interface.
-     *
-     * TODO: FIXME (only comparing product names)
-     */
-    public int compareTo(SvcTag svcTag) {
-        return this.getProductName().compareTo(svcTag.getProductName());
     }
 
     public String encode(String s) {
