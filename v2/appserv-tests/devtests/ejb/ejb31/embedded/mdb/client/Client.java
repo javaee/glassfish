@@ -29,7 +29,7 @@ public class Client {
             stat.addStatus("EJB embedded with MDB", stat.FAIL);
         }
         stat.printSummary(appName + "ID");
-        //System.exit(0);
+        System.exit(0);
 
     }
 
@@ -43,6 +43,13 @@ public class Client {
             System.out.println("Invoking EJB...");
             String result = ejb.saySomething();
             System.out.println("EJB said: " + result);
+
+            System.out.println("Waiting for ack...");
+            Thread.sleep(3000);
+            boolean ack = ejb.getAck();
+            System.out.println("Ack: " + ack);
+            if (!ack)
+                throw new EJBException("MDB wasn't called!!!");
 
         } finally {
             if (c!=null) c.close();

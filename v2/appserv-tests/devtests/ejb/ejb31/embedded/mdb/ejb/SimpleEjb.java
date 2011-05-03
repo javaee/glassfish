@@ -18,11 +18,20 @@ public class SimpleEjb {
     @Resource(mappedName="jms/ejb_mdb_Queue")
     Queue qInject;
 
+    boolean mdbCalled = false;
+
     public String saySomething() throws Exception {
         send();
         return "hello";
     }
 
+    public void ack() {
+        mdbCalled = true;
+    }
+
+    public boolean getAck() {
+        return mdbCalled;
+    }
 
     private void send() throws Exception {
         QueueConnection qConn = fInject.createQueueConnection();

@@ -43,6 +43,7 @@
     </target> 
     
     <target name="setup" depends="init-common">
+        <echo message="...Starting DAS to create JMS resources...."/>
         <antcall target="startDomain"/>
 
         <exec executable="${ASADMIN}" failonerror="false">
@@ -72,6 +73,7 @@
     </target> 
     
     <target name="unsetup" depends="init-common">
+        <echo message="...Starting DAS to delete JMS resources...."/>
         <antcall target="startDomain"/>
 
         <exec executable="${ASADMIN}" failonerror="false">
@@ -81,7 +83,9 @@
 
         <exec executable="${ASADMIN}" failonerror="false">
           <arg line="delete-jmsdest"/>
-          <arg line="ejb_mdb_Queue"/>
+          <arg line="--desttype"/>
+          <arg line="queue"/>
+          <arg line="ejb_mdb_QCF"/>
         </exec>
 
         <exec executable="${ASADMIN}" failonerror="false">
@@ -89,7 +93,8 @@
           <arg line="jms/ejb_mdb_Queue"/>
         </exec>
 
-        <antcall target="stopDomain"/>
+        <!-- Should domain be stopped? -->
+        <!-- antcall target="stopDomain"/ -->
     </target> 
     
     <target name="run" depends="init-common">
