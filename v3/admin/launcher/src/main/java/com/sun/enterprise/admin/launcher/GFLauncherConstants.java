@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.admin.launcher;
 
+import com.sun.enterprise.util.OS;
+
 /**
  *
  * @author bnevins
@@ -58,4 +60,5 @@ class GFLauncherConstants {
     static final String BTRACE_PATH                 = "lib/monitor/btrace-agent.jar";
     static final String FLASHLIGHT_AGENT_PATH       = "modules/flashlight-agent.jar";
     static final String DEFAULT_LOGFILE             = "logs/server.log";
+    static final boolean OS_SUPPORTS_BTRACE         = !OS.isAix();
 }

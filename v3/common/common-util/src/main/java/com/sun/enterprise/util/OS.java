@@ -55,6 +55,7 @@ import java.io.*;
  */
 public class OS
 {
+
     private OS()
     {
     }
@@ -199,6 +200,13 @@ public class OS
     {
         return isLinux() && new File("/etc/lsb-release").exists();
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    public static boolean isAix()
+    {
+        return isName("AIX");
+    }
     
     ///////////////////////////////////////////////////////////////////////////
     
@@ -284,5 +292,6 @@ public class OS
         System.out.println("isSunSparc() returned: "        + isSunSparc());
         System.out.println("isDarwin() returned: "          + isDarwin());
         System.out.println("isSolaris10() returned: "       + isSolaris10());
+        System.out.println("isAix() returned: "             + isAix());
     }
 }
