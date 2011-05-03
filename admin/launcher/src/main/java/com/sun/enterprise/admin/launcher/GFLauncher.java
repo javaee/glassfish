@@ -790,7 +790,7 @@ public abstract class GFLauncher {
         String jvmOption = null;
 
         // if it exists -- use it
-        if (btraceJarFile.isFile())
+        if (btraceJarFile.isFile() && GFLauncherConstants.OS_SUPPORTS_BTRACE)
             jvmOption = "javaagent:" + btraceJarPath + "=unsafe=true,noServer=true";
         // it would be weird for this to not exist...
         else if (flashlightJarFile.isFile())
