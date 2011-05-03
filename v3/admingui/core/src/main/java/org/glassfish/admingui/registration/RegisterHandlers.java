@@ -164,22 +164,28 @@ public class RegisterHandlers {
         File f = getDefaultRegistrationPage();
         if (!f.exists())
             return;
+        BufferedReader br = null;
         try {
             FileReader fr = new FileReader(f);
-            BufferedReader br = new BufferedReader(fr);
+            br = new BufferedReader(fr);
             String s;
             StringBuilder pageContent = new StringBuilder("");
 
             while((s = br.readLine()) != null) {
                 pageContent.append(s);
             }
-            br.close();
             handlerCtx.setOutputValue("registrationPage", pageContent.toString());
         } catch (Exception ex) {
             Logger logger = GuiUtil.getLogger();
             logger.fine(ex.getMessage());
         }
+        finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException ex) {
+                }
+            }
+        }
     }
-
-
 }
