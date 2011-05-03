@@ -65,8 +65,6 @@ public class RelayService {
 
     private RepositoryManager rm;
     private ResourceBundle bundle;
-    Pattern stringPattern = Pattern.compile(STRING_TOKEN);
-
 
     public RelayService(File repositoryFile) throws RegistrationException {
         rm = new RepositoryManager(repositoryFile);
@@ -89,11 +87,11 @@ public class RelayService {
             throw new RegistrationException("Template file [" + TEMPLATE_FILE + "] not found");
 
         List<ServiceTag> serviceTags = rm.getServiceTags();
-        String productName = "";
+        StringBuilder productName = new StringBuilder();
         for (ServiceTag tag : serviceTags) {
             if (productName.length() > 0)
-                productName = productName + " + ";
-            productName = productName + tag.getSource();
+                productName = productName.append(" + ");
+            productName = productName.append(tag.getSource());
         }
         
         String tags = getHtml(serviceTags);
@@ -108,12 +106,14 @@ public class RelayService {
             if (line.indexOf(TAG_TOKEN) >= 0)
                 line = line.replaceAll(TAG_TOKEN, tags);
             if (line.indexOf(PRODUCTNAME_TOKEN) >= 0)
-                line = line.replaceAll(PRODUCTNAME_TOKEN, productName);
+                line = line.replaceAll(PRODUCTNAME_TOKEN, productName.toString());
             line = replaceStringTokens(line);
             bw.write(line);
             bw.newLine();
         }
         bw.flush();
+        br.close();
+        bw.close();
     }
 
     private String replaceStringTokens(String line) {
