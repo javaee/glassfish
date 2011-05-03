@@ -113,7 +113,11 @@ public abstract class SimpleDeployer <T extends Container,
      */
     public void clean(DeploymentContext context) {
         try {
-            cleanArtifacts(context);
+            if (context.getCommandParameters(
+                OpsParams.class).origin.needsCleanArtifacts()) {
+                // only clean artifacts when needed
+                cleanArtifacts(context);
+            }
         } catch (Exception ex) {
             // re-throw all the exceptions as runtime exceptions
             RuntimeException re = new RuntimeException(ex.getMessage());

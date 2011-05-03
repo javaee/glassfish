@@ -95,6 +95,18 @@ public abstract class OpsParams implements CommandParameters {
             }
         }
 
+        // whether we need to clean the artifacts
+        // we need to do this for undeployment and deployment failure 
+        // clean up
+        public boolean needsCleanArtifacts() {
+            if (this == Origin.undeploy || this == Origin.deploy) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
         // whether it's undeploy
         public boolean isUndeploy() {
             if (this == Origin.undeploy) {
