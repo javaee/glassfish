@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,6 +56,7 @@ import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeRegistry;
+import org.glassfish.flashlight.transformer.ProbeProviderClassFileTransformer;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import com.sun.logging.LogDomains;
@@ -101,6 +102,8 @@ public class FlashlightProbeClientMediator
     private static AtomicBoolean agentInitialized =
             new AtomicBoolean(false);
 
+    private final static Object syncOnMe = new Object();
+
     private AtomicInteger clientIdGenerator =
             new AtomicInteger(0);
 
@@ -133,7 +136,7 @@ public class FlashlightProbeClientMediator
         if (agentInitialized.get()) {
             return btraceAgentAttached;
         }
-        synchronized (agentInitialized) {
+        synchronized (syncOnMe) {
             if (agentInitialized.get()) {
                 return btraceAgentAttached;
             }
@@ -228,12 +231,30 @@ public class FlashlightProbeClientMediator
     }
 
     public void transformProbes(Object listener, List<FlashlightProbe> probes) {
-        int clientID = clientIdGenerator.incrementAndGet();
-        clients.put(clientID, listener);
-
         if(probes.isEmpty())
             return;
 
+        int clientID = clientIdGenerator.incrementAndGet();
+        clients.put(clientID, listener);
+
+        HashMap<Class, ProbeProviderClassFileTransformer> transformers
+                = new HashMap<Class, ProbeProviderClassFileTransformer>();
+
+        for (FlashlightProbe probe : probes) {
+            Class clz = probe.getProviderClazz();
+            ProbeProviderClassFileTransformer transformer = transformers.get(clz);
+            if (transformer == null) {
+                transformer = new ProbeProviderClassFileTransformer(clz);
+                transformers.put(clz, transformer);
+            }
+
+            transformer.registerProbe(probe);
+        }
+
+        for (ProbeProviderClassFileTransformer t : transformers.values()) {
+            t.transform();
+        }
+/*
         byte [] bArr = BtraceClientGenerator.generateBtraceClientClassData(clientID, probes);
 
         if (bArr == null) {
@@ -244,7 +265,7 @@ public class FlashlightProbeClientMediator
 
         if(isAgentAttached()) {
             submit2BTrace(bArr);
-        }
+        }*/
     }
 
     /**

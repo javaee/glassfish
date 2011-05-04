@@ -96,6 +96,13 @@ public class FlashlightProbe
 
     }
 
+    public Method getProbeMethod() {
+        return probeMethod;
+    }
+
+    public void setProbeMethod(Method probeMethod) {
+        this.probeMethod = probeMethod;
+    }
 
     private boolean isMethodStatic() {
         try {
@@ -280,6 +287,7 @@ public class FlashlightProbe
         invokerList = invList;
     }
 
+    private Method probeMethod;
     public static final String SELF = "@SELF";
     private int id;
     private Class providerClazz;

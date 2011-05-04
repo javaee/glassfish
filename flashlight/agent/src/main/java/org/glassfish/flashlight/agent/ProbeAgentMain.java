@@ -50,13 +50,20 @@ public class ProbeAgentMain {
 
     private static Instrumentation _inst;
 
+    private static boolean agentMainCalled;
+
+    private static boolean premainCalled;
+
+
     public static void agentmain(String agentArgs, Instrumentation inst) {
-        //System.out.println("agentmain: " + inst);
+        System.out.println("ProbeAgentMain:agentmain: " + inst);
+        agentMainCalled = true;
         _inst = inst;
     }
     
     public static void premain(String agentArgs, Instrumentation inst) {
-        //System.out.println("premain: " + inst);
+        System.out.println("ProbeAgentMain:premain: " + inst);
+        premainCalled = true;
         _inst = inst;
     }
 
@@ -64,4 +71,7 @@ public class ProbeAgentMain {
         return _inst;
     }
 
+    public static String getInitStatus() {
+        return "agentMainCalled: " + agentMainCalled + "; premaincalled: " + premainCalled;
+    }
 }

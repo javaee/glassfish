@@ -52,12 +52,31 @@
     </parent>
     <groupId>org.glassfish.flashlight</groupId>
     <artifactId>flashlight-agent</artifactId>
-    <packaging>hk2-jar</packaging>
+    <packaging>jar</packaging>
     <name>GlassFish Flashlight Agent</name>
-        <dependencies>
-            <dependency>
-	            <groupId>org.glassfish.external</groupId>
-	            <artifactId>management-api</artifactId>
-	        </dependency>
-        </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Premain-Class>org.glassfish.flashlight.agent.ProbeAgentMain</Premain-Class>
+                            <!--<Agent-Class>org.glassfish.flashlight.agent.ProbeAgentMain</Agent-Class>-->
+                            <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                            <Can-Retransform-Classes>true</Can-Retransform-Classes>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>management-api</artifactId>
+        </dependency>
+    </dependencies>
 </project>
