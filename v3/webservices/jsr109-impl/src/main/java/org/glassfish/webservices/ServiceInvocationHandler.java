@@ -477,11 +477,9 @@ public class ServiceInvocationHandler implements InvocationHandler {
             for(Iterator iter = properties.iterator(); iter.hasNext();) {
                 NameValuePairDescriptor next = (NameValuePairDescriptor)
                         iter.next();
-                if(next.getName().equals(ServiceEngineUtil.JBI_ENABLED)){
-                    setJBIProperties(stub, portInfo);
-                } else {
-                    stub._setProperty(next.getName(), next.getValue());
-                }
+
+                stub._setProperty(next.getName(), next.getValue());
+
             }
 
             // If this port has a resolved target endpoint address due to a
@@ -581,6 +579,7 @@ public class ServiceInvocationHandler implements InvocationHandler {
         return returnValue;
     }
 
+    /* TODO remove me if none of the cts use this
     private void setJBIProperties(Object stubOrCall, ServiceRefPortInfo portInfo) {
         // Check if the target service is a JBI service, and get its QName
         QName svcQName = serviceRef.getServiceName();
@@ -594,9 +593,9 @@ public class ServiceInvocationHandler implements InvocationHandler {
             try {
                 // This statement is getting executed only
                 //because jbi-enabled property on the stub is set to true
-                /**TODO BM fix this later
+                //TODO BM fix this later
                  ServiceEngineUtil.setJBITransportFactory(portInfo, stub, true);
-                 */
+
             } catch(Throwable e) {
                 // Do nothing
                 //logger.severe("Exception raised while setting transport " +
@@ -604,5 +603,5 @@ public class ServiceInvocationHandler implements InvocationHandler {
             }
             return;
         }
-    }
+    }*/
 }

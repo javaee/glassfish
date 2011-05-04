@@ -65,7 +65,7 @@ import org.glassfish.ejb.api.EJBInvocation;
 public class EjbContainerPostHandler extends GenericHandler {
 
     private static Logger logger = 
-        LogDomains.getLogger(EjbContainerPostHandler.class, LogDomains.EJB_LOGGER);
+        LogDomains.getLogger(EjbContainerPostHandler.class, LogDomains.WEBSERVICES_LOGGER);
     private WsUtil wsUtil = new WsUtil();
 
     public EjbContainerPostHandler() {}
