@@ -82,7 +82,7 @@ public class BeanMethodCalculatorImpl implements BeanMethodCalculator {
                 if( nextName.startsWith("get") &&
                     nextName.length() > 3 ) {
                     String field = 
-                        nextName.substring(3,4).toLowerCase() + 
+                        nextName.substring(3,4).toLowerCase(Locale.ENGLISH) +
                         nextName.substring(4);
                     fieldDescriptors.add(new FieldDescriptor(field));
                 }

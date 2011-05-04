@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -382,7 +382,7 @@ public class HomeGenerator extends Generator {
 		String name = factoryMethod.getName();
 		p.p("\t");
 		// for a home method foo, call ejbHomeFoo.
-		String upperCasedName = name.substring(0,1).toUpperCase()
+		String upperCasedName = name.substring(0,1).toUpperCase(Locale.ENGLISH)
 		    + name.substring(1);
 		p.p("\tjava.lang.reflect.Method __method__home = ");
 		p.p("i.ejb.getClass().getMethod(\""+"ejbHome"+upperCasedName+"\", i.method.getParameterTypes());\n");

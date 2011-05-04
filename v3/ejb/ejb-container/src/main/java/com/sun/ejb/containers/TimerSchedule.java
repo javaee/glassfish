@@ -47,11 +47,10 @@ import java.util.BitSet;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
-import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Locale;
 import java.util.regex.Pattern;
 import java.io.Serializable;
 
@@ -784,7 +783,7 @@ public class TimerSchedule implements Serializable {
 
          } else {
              // Otherwise just remember - we'll process it later
-             daysOfWeekOrRangesOfDaysInMonth.add(s.toLowerCase());
+             daysOfWeekOrRangesOfDaysInMonth.add(s.toLowerCase(Locale.ENGLISH));
          } 
      }
 
@@ -902,7 +901,7 @@ public class TimerSchedule implements Serializable {
                 throw new IllegalArgumentException("Invalid " + field + " value: " + s);
             }
         } else {
-            Integer val = conversionTable.get(s.toLowerCase());
+            Integer val = conversionTable.get(s.toLowerCase(Locale.ENGLISH));
             assertValid(val, s, field);
             i = val.intValue();
         }
@@ -922,7 +921,7 @@ public class TimerSchedule implements Serializable {
      * or a case insensitive abbreviated name.
      */
     private void processDayOfMonth(String s) {
-        String s0 = s.toLowerCase();
+        String s0 = s.toLowerCase(Locale.ENGLISH);
 
         if (positivePattern.matcher(s0).matches()) {
             int i = parseInt(s0, DAY_OF_MONTH);
