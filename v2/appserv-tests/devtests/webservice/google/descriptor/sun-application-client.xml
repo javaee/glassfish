@@ -5,10 +5,6 @@
     <service-ref-name>service/GoogleSearch</service-ref-name>
     <port-info>
       <service-endpoint-interface>google.GoogleSearchPort</service-endpoint-interface>
-      <stub-property>
-        <name>com.sun.enterprise.webservice.client.transport.log</name>
-        <value>file:jaxrpc.log</value>
-      </stub-property>
     </port-info>
     <service-qname>
       <namespaceURI>urn:GoogleSearch</namespaceURI>

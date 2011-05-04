@@ -5,10 +5,6 @@
     <service-ref-name>service/xsdany</service-ref-name>
     <port-info>
       <service-endpoint-interface>xsdany.Test</service-endpoint-interface>
-      <stub-property>
-        <name>com.sun.enterprise.webservice.client.transport.log</name>
-        <value>file:jaxrpc.log</value>
-      </stub-property>
     </port-info>
     <service-qname>
       <namespaceURI>urn:TestService</namespaceURI>
