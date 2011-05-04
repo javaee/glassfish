@@ -40,7 +40,9 @@
 
 package org.glassfish.flashlight.cli;
 
+import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.*;
+import com.sun.enterprise.util.OS;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -176,34 +178,22 @@ public class EnableMonitoring implements AdminCommand {
 
     private void attachAgent(ActionReport report) {
         ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-        if (options == null) {
-            options = "unsafe=true,noServer=true";
-        } else {
-            options = "unsafe=true,noServer=true"+","+options;
-        }
         try {
             VirtualMachine vm = VirtualMachine.attach(pid);
-            String ir = System.getProperty(INSTALL_ROOT_PROPERTY);
-            File dir = new File(ir, "lib" + File.separator + "monitor");
-            if (dir.isDirectory()) {
-                File agentJar = new File(dir, "btrace-agent.jar");
-                if (agentJar.isFile()) {
-                    if (options == null) {
-                        vm.loadAgent(agentJar.getPath());
-                    } else {
-                        vm.loadAgent(agentJar.getPath(), options);
-                    }
-                    part.setMessage(localStrings.getLocalString("attach.agent.suucess",
-                        "btrace agent attached"));
-                    report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+            File installDir = new File(System.getProperty(INSTALL_ROOT_PROPERTY));
+            File agentJar = getAgentJar(installDir);
+            if (agentJar.isFile()) {
+                if (options == null) {
+                    vm.loadAgent(agentJar.getPath());
                 } else {
-                    part.setMessage(localStrings.getLocalString("attach.agent.exception",
-                        "btrace-agent.jar does not exist under {0}", dir));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    vm.loadAgent(agentJar.getPath(), options);
                 }
+                part.setMessage(localStrings.getLocalString("attach.agent.suucess",
+                    "btrace agent attached"));
+                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
             } else {
                 part.setMessage(localStrings.getLocalString("attach.agent.exception",
-                    "btrace-agent.jar directory {0} does not exist", dir));
+                    "btrace-agent.jar does not exist under {0}", agentJar));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             }
         } catch (Exception e) {
@@ -238,4 +228,24 @@ public class EnableMonitoring implements AdminCommand {
     private boolean isValidLevel(String level) {
         return ((level.equals("OFF")) || (level.equals("HIGH")) || (level.equals("LOW")));
     }
+
+    // Old code re-arranged.  Please redo later!!
+    private File getAgentJar(File installDir) {
+        File btraceJarFile = new File(installDir, BTRACE_PATH);
+        File flashlightJarFile = new File(installDir, FLASHLIGHT_AGENT_PATH);
+
+        if (btraceJarFile.isFile() && OS_SUPPORTS_BTRACE) {
+            if (options == null)
+                options = "unsafe=true,noServer=true";
+            else
+                options = "unsafe=true,noServer=true" + "," + options;
+            return btraceJarFile;
+        }
+        else
+            return flashlightJarFile;
+    }
+
+    static final String BTRACE_PATH                 = "lib/monitor/btrace-agent.jar";
+    static final String FLASHLIGHT_AGENT_PATH       = "modules/flashlight-agent.jar";
+    static final boolean OS_SUPPORTS_BTRACE         = !OS.isAix();
 }
