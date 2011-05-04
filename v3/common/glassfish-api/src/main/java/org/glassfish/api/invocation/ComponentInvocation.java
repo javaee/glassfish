@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -86,18 +86,25 @@ public class ComponentInvocation
     private Object resourceTableKey;
 
     private ResourceHandler resourceHandler;
+    
+    protected String appName;
+    
+    protected String moduleName;
 
     public ComponentInvocation() {
         
     }
-
     
     public ComponentInvocation(String componentId,
             ComponentInvocationType invocationType,
-            Object container) {
+            Object container,
+            String appName,
+            String moduleName) {
         this.componentId = componentId;
         this.invocationType = invocationType;
         this.container = container;
+        this.appName = appName;
+        this.moduleName = moduleName;
     }
 
 
@@ -200,6 +207,25 @@ public class ComponentInvocation
 
     public void setAuth(boolean value) {
         auth = value;
+    }
+    
+    /**
+     * Returns the appName for the current invocation, equivalent to the value
+     * bound to java:app/AppName, without the cost of lookup.  For standalone
+     * modules, returns the same value as getModuleName().  For invocations that
+     * are not on Java EE components, returns null.
+     */
+    public String getAppName() {
+        return appName;
+    }
+    
+    /**
+     * Returns the moduleName for the current invocation, equivalent to the value 
+     * bound to java:module/ModuleName, without the cost of lookup.  For invocations
+     * that are not on Java EE components, returns null.
+     */
+    public String getModuleName() {
+        return moduleName;
     }
 
     public ComponentInvocation clone() {

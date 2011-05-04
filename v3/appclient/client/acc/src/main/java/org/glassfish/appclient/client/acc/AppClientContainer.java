@@ -614,7 +614,10 @@ public class AppClientContainer {
             ComponentInvocation ci = new ComponentInvocation(
                     componentId,
                     ComponentInvocation.ComponentInvocationType.APP_CLIENT_INVOCATION,
-                    container);
+                    container,
+                    acDesc.getApplication().getAppName(),
+                    acDesc.getModuleName());
+            
             invocationManager.preInvoke(ci);
             InjectionException injExc = null;
             if ( ! isInjected) {

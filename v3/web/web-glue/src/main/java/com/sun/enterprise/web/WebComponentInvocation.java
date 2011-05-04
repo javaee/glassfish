@@ -68,6 +68,9 @@ public class WebComponentInvocation extends ComponentInvocation {
         container = wm;
         this.instance = instance;
         setResourceTableKey(_getResourceTableKey());
+        
+        moduleName = wm.getModuleName();
+        appName = wm.getWebBundleDescriptor().getApplication().getAppName();
     }
 
     private Object _getResourceTableKey() {

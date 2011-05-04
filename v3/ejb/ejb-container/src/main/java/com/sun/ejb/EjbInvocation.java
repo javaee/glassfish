@@ -68,6 +68,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import com.sun.ejb.containers.interceptors.InterceptorManager;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
 
 /**
  * The EjbInvocation object contains state associated with an invocation
@@ -90,6 +91,10 @@ public class EjbInvocation
         super.componentId = compEnvId;
         super.container = container;
         super.setComponentInvocationType(ComponentInvocation.ComponentInvocationType.EJB_INVOCATION);
+        
+        EjbBundleDescriptor ejbBundleDesc = container.getEjbDescriptor().getEjbBundleDescriptor();
+        moduleName = ejbBundleDesc.getModuleName();
+        appName = ejbBundleDesc.getApplication().getAppName();
     }
 
     /**
