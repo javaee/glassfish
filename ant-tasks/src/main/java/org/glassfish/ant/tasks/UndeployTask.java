@@ -86,9 +86,7 @@ public class UndeployTask extends AdminTask {
             log("name attribute or component must be specified", Project.MSG_WARN);
             return;
         }
-        if (components != null) {
-            processComponents();
-        }
+        processComponents();
         if (name != null) {
             addCommandOperand(name);
             super.execute();

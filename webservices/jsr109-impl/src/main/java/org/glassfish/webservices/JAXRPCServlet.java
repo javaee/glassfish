@@ -56,8 +56,8 @@ import org.apache.catalina.Loader;
  */
 public class JAXRPCServlet extends HttpServlet {
 
-    private ServletDelegate delegate_;
-    private ServletWebServiceDelegate myDelegate_=null;
+    private volatile ServletDelegate delegate_;
+    private volatile ServletWebServiceDelegate myDelegate_=null;
 
     public void init(ServletConfig servletConfig) throws ServletException {
         try {

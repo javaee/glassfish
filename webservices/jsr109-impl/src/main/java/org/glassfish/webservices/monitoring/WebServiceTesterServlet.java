@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -179,7 +179,7 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
                             localStrings.getLocalString(
 		    	   "enterprise.webservice.monitoring.title",
                            "Web Service Tester") + "</H1>");
-        java.util.Enumeration<String> headers = req.getHeaderNames();
+
         
         // Microsoft Internet Explorer does not handle <BUTTON> properly
         boolean isInternetExplorer=false;
@@ -372,8 +372,8 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
 
     }    
     
-    private MessageTrace request = null;
-    private MessageTrace response = null;
+    private volatile MessageTrace request = null;
+    private volatile MessageTrace response = null;
     
     public void invocationProcessed(MessageTrace request, MessageTrace response) {
         this.request = request;
@@ -392,32 +392,32 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
             try {
                 if (int.class.equals(targetParamType) || 
                         Integer.class.equals(targetParamType)) {
-                    convertedValue = new Integer(webValue);
+                    convertedValue = Integer.valueOf(webValue);
                 }
                 if (boolean.class.equals(targetParamType) ||
                         Boolean.class.equals(targetParamType)) {
-                    convertedValue = new Boolean(webValue);
+                    convertedValue =  Boolean.valueOf(webValue);
                 }
                 if (char.class.equals(targetParamType) || 
                         (Character.class.equals(targetParamType))) {
-                    convertedValue = new Character(webValue.charAt(0));
+                    convertedValue = webValue.charAt(0);
                 }                
                 
                 if (long.class.equals(targetParamType) || 
                         (Long.class.equals(targetParamType))) {
-                    convertedValue = new Long(webValue);
+                    convertedValue =  Long.valueOf(webValue);
                 }
                 if (float.class.equals(targetParamType) || 
                         (Float.class.equals(targetParamType))) {
-                    convertedValue = new Float(webValue);
+                    convertedValue = Float.valueOf(webValue);
                 }  
                 if (double.class.equals(targetParamType) || 
                         (Double.class.equals(targetParamType))) {
-                    convertedValue = new Double(webValue);
+                    convertedValue =  Double.valueOf(webValue);
                 }  
                 if (byte.class.equals(targetParamType) || 
                         (Byte.class.equals(targetParamType))) {
-                    convertedValue = new Byte(webValue);
+                    convertedValue = Byte.valueOf(webValue);
                 }   
                 if (short.class.equals(targetParamType) || 
                         (Short.class.equals(targetParamType))) {
@@ -563,11 +563,11 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
             Object port = service.getPort(myEndpoint.getDescriptor().getWsdlPort(), portClass);
             if (port==null) {
                 throw new RuntimeException("Cannot find the correct port class.");
-            }            
-            if (port!=null) {
-                ports.put(requestURL, port);
-                gsiClasses.put(requestURL, portClass);
             }
+
+            ports.put(requestURL, port);
+            gsiClasses.put(requestURL, portClass);
+
         } catch(Exception e) {
             throw new ServletException(e);
         } finally {
@@ -596,14 +596,18 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
         ModulesRegistry modulesRegistry = wscImpl.getModulesRegistry();
         Collection<Module> modules1 = modulesRegistry.getModules();
         Iterator it= modules1.iterator();
-        String classpath1 = classesDir.getAbsolutePath();
+        StringBuffer buf = new StringBuffer();
+        buf.append(classesDir.getAbsolutePath());
+        String classpath1 = null;
         while(it.hasNext()){
             Module m = (Module) it.next();
             String name = m.getName();
             if (name.equals("com.sun.xml.ws") || name.equals("com.sun.xml.bind") ){
                 ModuleDefinition modDef= m.getModuleDefinition();
                 java.net.URI[] location = modDef.getLocations();
-                classpath1+=(File.pathSeparator + new File(location[0]).getAbsolutePath())  ;
+
+                buf.append(File.pathSeparator).append (new File(location[0]).getAbsolutePath());
+                classpath1= buf.toString()  ;
 
             }
         }
@@ -648,7 +652,8 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
         if (!classesDir.exists()) {
             return null;            
         }
-        File[] classes = getListOfFiles(classesDir).toArray(new File[0]);
+        List<File> mycoll = getListOfFiles(classesDir);
+        File[] classes = mycoll.toArray(new File[mycoll.size()]);
         String resolvedServiceClass = null;
         String svcClass = null;
         for (File f : classes) {            

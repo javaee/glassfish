@@ -1,7 +1,6 @@
-#
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -36,7 +35,6 @@
 # and therefore, elected the GPL Version 2 license, then the option applies
 # only if the new code is made subject to such option by the copyright
 # holder.
-#
 
 # not for logging to server log
 audit.denied
@@ -48,9 +46,6 @@ audit.session
 acc.secmgron
 acc.secmgroff
 
-# raised issue 11993
-main.jmac_default_factory
-
 # logged with level FINE in persistence module
 database.DBVendorTypeHelper.inputVendorName
 database.DBVendorTypeHelper.detectedVendorType
@@ -59,11 +54,6 @@ database.DBVendorTypeHelper.regExprDbType
 database.DBVendorTypeHelper.patternSyntaxException
 database.DBVendorTypeHelper.traceVendorNameToTypeProperty
 database.DBVendorTypeHelper.errorParsingVendorNameToTypeProperty
-
-# raised issue 11992
-general.free_port
-general.port_derivation_failed
-general.port_occupied
 
 # logged with level FINE in jdbc module
 jdbc.invalid_connection
@@ -79,51 +69,28 @@ connection_sharing_end
 connection_sharing_reset_association
 pool.get_validation_table_names_mc_destroy
 
-# raised issue 11845
-gmsservice.postconstruct
-gmsexception.occurred
-gmsservice.started
-gmsservice.processNotification
-
 # logged with level FINE in appclient module
 enterprise.deployment.appclient.jws.clientJNLPConfigLoad
 enterprise.deployment.appclient.jws.clientJNLPConfigChangeFile
 
-# raised issue 11989
-Java2DBProcessorHelper.cannotConnect
-Java2DBProcessorHelper.ioexception
-Java2DBProcessorHelper.createfilename
-Java2DBProcessorHelper.dropfilename
-Java2DBProcessorHelper.tablewarning
-Java2DBProcessorHelper.executestatement
-Java2DBProcessorHelper.cannotcreatetables
-Java2DBProcessorHelper.cannotdroptables
-JPAJava2DBProcessor.nondefaultprovider
-Java2DBProcessorHelper.generatedlocation
-Java2DBProcessorHelper.sqlexception
+# other picked up by script - dont know the exact reason.
+SEC9050.diag.cause
+SEC9050.diag.check
+SEC9051.diag.cause
+SEC9051.diag.check
+WEB9102.diag.cause
+WEB9102.diag.check
 
-# raised issue 11988
-GlassFishDocument.IOException
-GlassFishDocument.XMLException
-GenericCrudCommand.invalid_type
-GenericCrudCommand.invocation_failure
-GenericCrudCommand.nongeneric_type
-GenericCrudCommand.wrong_type
-GenericCrudCommand.introspection_failure
-GenericCrudCommand.too_many_indexes
-GenericCrudCommand.unamed_service
-GenericCrudCommand.transactionException
-GenericCrudCommand.method_invocation_exception
-GenericCreateCommand.configbean_not_found
-GenericCreateCommand.command_model_exception
-GenericCreateCommand.target_object_not_found
-GenericCreateCommand.decorator_not_found
-GenericCreateCommand.deletion_decorator_not_found
-GenericCreateCommand.transaction_exception
-GenericCreateCommand.already_existing_instance
-GenericDeleteCommand.transaction_exception
-GenericDeleteCommand.target_object_not_found
-TypeAndNameResolver.target_object_not_found
-TypeResolver.target_object_not_found
-TypeResolver.no_element_of_that_type
-GenericListCommand.element_has_no_key
+# http://java.net/jira/browse/GLASSFISH-16541
+console.adapter.missingDeployDir
+console.adapter.cannotBackup
+console.adapter.NoUpdateCenterInfo
+console.adapter.CannotCreateUC
+console.adapter.cannotUndeploy
+console.adapter.errorStopping
+
+# http://java.net/jira/browse/GLASSFISH-16535
+ajra.config_not_created_yet
+
+# http://java.net/jira/browse/GLASSFISH-16542
+JPAJava2DBProcessor.nondefaultprovider

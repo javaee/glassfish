@@ -98,6 +98,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletOutputStream;
 
 import org.glassfish.web.util.HtmlEntityEncoder;
 import org.jvnet.hk2.component.Habitat;
@@ -260,7 +261,7 @@ public class WsUtil {
                 if (wsdlUrl.toURI().equals(webService.getWsdlFileUrl().toURI())) {
                     // get the application module ID
                     try {
-                        String moduleID = endpoint.getBundleDescriptor().getApplication().getRegistrationName();
+                        
                         WebServerInfo wsi = getWebServerInfoForDAS();
                         URL url = webService.getWsdlFileUrl();
                         File originalWsdlFile = new File(url.getPath()+"__orig");
@@ -353,42 +354,7 @@ public class WsUtil {
         return isWar ? "WEB-INF/wsdl" : "META-INF/wsdl";
     }
 
-    /**
-     * Set up a stub for request/response SOAP message logging.
-     */
-    public void setClientTransportLog(ServiceReferenceDescriptor serviceRef,
-                                      Stub stub, String transportLogUrlStr) {
-        try {
-            
-            final String logUrlString  = transportLogUrlStr;
-
-            OutputStream os = (OutputStream)
-                java.security.AccessController.doPrivileged
-                (new java.security.PrivilegedExceptionAction() {
-                    public java.lang.Object run() throws Exception {
-                        URL transportLogUrl = new URL(logUrlString);
-                        File transportFile =new File(transportLogUrl.getFile());
-                        return new FileOutputStream(transportFile, true);
-                    }
-                });
-
-          /*  ClientTransportFactory transportFactory =
-                rpcFactory.createClientTransportFactory(
-                        ClientTransportFactoryTypes.HTTP, os);
-
-            if( stub instanceof StubBase ) {
-                ((StubBase)stub)._setTransportFactory(transportFactory);
-                logger.info("Logging client transport for service-ref " +
-                            serviceRef.getName() + " to file " + 
-                            transportLogUrlStr);
-            }*/
-
-        } catch(PrivilegedActionException pae) {
-            logger.log(Level.INFO, "", pae.getCause());
-        } catch(Throwable t) {
-            logger.log(Level.INFO, "", t);
-        }
-    }
+    
 
     /**
      * Collect all relative imports from a web service's main wsdl document.
@@ -454,7 +420,7 @@ public class WsUtil {
                 givenLocation = n.getNodeValue();
             }
             if((givenLocation == null) ||
-                ((givenLocation != null) && givenLocation.startsWith("http"))) {
+                (givenLocation.startsWith("http"))) {
                 continue;
             }
             Import imp = new Import();
@@ -1355,7 +1321,7 @@ public class WsUtil {
     public static void raiseException(HttpServletResponse resp, String binding, String faultString) {
         
         resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        
+
         if (HTTPBinding.HTTP_BINDING.equals(binding)) {
             resp.setContentType("text/xml");
             try {
@@ -2138,7 +2104,7 @@ public class WsUtil {
         List<Handler> handlerChain = new ArrayList<Handler>();
         for(WebServiceHandler h : handlersList) {
             Handler handler = null;
-            Map<String, Object> params = new HashMap<String, Object>();
+
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             // Get Handler Class instance
             Class handlerClass;
@@ -2321,98 +2287,7 @@ public class WsUtil {
         return false;
     }
     
-   /* // Used by the message layer security subsystem to get an efficient
-    // representation of the contained message from the SOAPMessageContext. 
-    // when called by jaxrpc Hander or SystemHandlerDelegate
-    public static SOAPMessage getMessage
-    (javax.xml.rpc.handler.soap.SOAPMessageContext c) {
-	// TODO
-	return c.getMessage();
-    }
-
-    private static boolean readProperty = true;
-    private static ExpressMessageFactoryImpl soapMsgFactory = null;
-    private static final String EXPRESS_MSG_FACTORY = 
-        "com.sun.enterprise.webservice.expressMsgFactory";
-
-    // when called by jaxws Hander or SystemHandlerDelegate
-    // 2nd parameter should be true if you don't need to   
-    // peek into the message for operationName
-    private static synchronized SOAPMessage getMessage
-    (javax.xml.ws.handler.soap.SOAPMessageContext c, boolean nameKnown) {
-
-	SOAPMessage message = null;
-	
-	// handle else case, and try to avoid returning null message
-	if (message == null) {
-	    message = c.getMessage();
-	}
-	
-	return message;
-    }
-    
-    // when called by jaxws Hander or SystemHandlerDelegate
-    public static synchronized SOAPMessage getMessage
-    (javax.xml.ws.handler.soap.SOAPMessageContext c) {
-	return getMessage(c,true);
-    }
-
-    // when called by jaxws Hander or SystemHandlerDelegate and when
-    // the operation name must be available from the message
-    public static synchronized SOAPMessage getMessageWithName
-    (javax.xml.ws.handler.soap.SOAPMessageContext c) {
-	return getMessage(c,false);
-    }
-    
-    *//**
-         * Checks to see whether WS-Security is enabled or not.
-         *
-         * @param policyMap policy map for {@link this} assembler
-         * @param wsdlPort wsdl:port
-         * @return true if Security is enabled, false otherwise
-         *//*
-    //TODO - this code has been copied from PipelineAssemblerFactoryImpl.java and needs
-    //to be maintained in both places.  In the future, code needs to be moved somewhere
-    //where it can be invoked from both places.
-    public static  boolean isSecurityEnabled(PolicyMap policyMap, WSDLPort wsdlPort) {
-        if (policyMap == null || wsdlPort == null)
-            return false;
-
-        try {
-            PolicyMapKey endpointKey = policyMap.createWsdlEndpointScopeKey(wsdlPort.getOwner().getName(),
-                    wsdlPort.getName());
-            Policy policy = policyMap.getEndpointEffectivePolicy(endpointKey);
-
-            if ((policy != null) && policy.contains(SECURITY_POLICY_NAMESPACE_URI)) {
-                return true;
-            }
-
-            for (WSDLBoundOperation wbo : wsdlPort.getBinding().getBindingOperations()) {
-                PolicyMapKey operationKey = policyMap.createWsdlOperationScopeKey(wsdlPort.getOwner().getName(),
-                        wsdlPort.getName(),
-                        wbo.getName());
-                policy = policyMap.getOperationEffectivePolicy(operationKey);
-                if ((policy != null) && policy.contains(SECURITY_POLICY_NAMESPACE_URI))
-                    return true;
-
-                policy = policyMap.getInputMessageEffectivePolicy(operationKey);
-                if ((policy != null) && policy.contains(SECURITY_POLICY_NAMESPACE_URI))
-                    return true;
-
-                policy = policyMap.getOutputMessageEffectivePolicy(operationKey);
-                if ((policy != null) && policy.contains(SECURITY_POLICY_NAMESPACE_URI))
-                    return true;
-
-                policy = policyMap.getFaultMessageEffectivePolicy(operationKey);
-                if ((policy != null) && policy.contains(SECURITY_POLICY_NAMESPACE_URI))
-                    return true;
-            }
-        } catch (PolicyException e) {
-            return false;
-        }
-
-        return false;
-    }*/
+   
 
 }
 

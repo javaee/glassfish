@@ -109,8 +109,9 @@ public class RegistrationUtil {
             // It is possible that we are embedded inside other product check for a link to registration file
             File serviceTagLink = new File(getRegistrationHome(), SERVICE_TAG_REGISTRY_LINK_NAME);
             if (serviceTagLink.exists()) {
+                BufferedReader in = null;
                 try {
-                    BufferedReader in = new BufferedReader(new FileReader(serviceTagLink));
+                    in = new BufferedReader(new FileReader(serviceTagLink));
                     //The first line in the link file is expected to contain fully qualified path to actual service tag repository
                     String indirectedServiceTagRegistryName = in.readLine();
                     File indirectedServiceTagRegisitryFile = new File(indirectedServiceTagRegistryName);
@@ -118,10 +119,17 @@ public class RegistrationUtil {
                         //Return indirectedServiceTagRegisitryFile as the serviceTagRegistry only if it exists
                         serviceTagRegistry = indirectedServiceTagRegisitryFile;
                     }
-                    in.close();
                 } catch (IOException e) {
                     //I/O error occured. There is not much we can do to recover. Assumer that service tags are not present
                     //TODO: Check with Kedar, if a logger can be used here to log a debug message
+                }
+                finally {
+                    if (in != null)
+                        try {
+                            in.close();
+                        } catch (IOException ex) {
+                        }
+
                 }
             } else {
                 //the link also does not exist. Fall through and return serviceTagRegistry as the

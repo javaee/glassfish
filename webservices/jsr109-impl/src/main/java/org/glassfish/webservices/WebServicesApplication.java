@@ -79,8 +79,6 @@ public class WebServicesApplication implements ApplicationContainer {
 
     private final RequestDispatcher dispatcher;
 
-    private final ServerEnvironment serverEnvironment;
-
     private DeploymentContext deploymentCtx;
 
     protected Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
@@ -91,10 +89,9 @@ public class WebServicesApplication implements ApplicationContainer {
     private Application app;
     private Set<String> publishedFiles;
 
-    public WebServicesApplication(DeploymentContext context, ServerEnvironment env, RequestDispatcher dispatcherString, Set<String> publishedFiles){
+    public WebServicesApplication(DeploymentContext context,  RequestDispatcher dispatcherString, Set<String> publishedFiles){
         this.deploymentCtx = context;
         this.dispatcher = dispatcherString;
-        this.serverEnvironment = env;
         this.ejbendpoints = getEjbEndpoints();
         this.httpHandler = new EjbWSAdapter();
         this.publishedFiles = publishedFiles;

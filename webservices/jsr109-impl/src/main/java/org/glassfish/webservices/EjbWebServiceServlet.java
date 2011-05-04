@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -73,11 +73,9 @@ import org.glassfish.ejb.spi.WSEjbEndpointRegistry;
  */
 public class EjbWebServiceServlet extends HttpServlet {
 
-    private Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
+    private  Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
 
-    private ResourceBundle rb = logger.getResourceBundle()   ;
-    private static final Base64 base64Helper = new Base64();
-    private static final String AUTHORIZATION_HEADER = "authorization";
+
     private SecurityService secServ;
 
     public EjbWebServiceServlet() {

@@ -44,22 +44,22 @@ import org.w3c.dom.Element;
 import java.util.Formatter;
 
 public class EnvironmentInformation {
-    private String hostname;
-    private String hostId;
-    private String osName;
-    private String osVersion;
-    private String osArchitecture;
-    private String systemModel;
-    private String systemManufacturer;
-    private String cpuManufacturer;
-    private String serialNumber;
+    private String hostname = null;
+    private String hostId = null;
+    private String osName = null;
+    private String osVersion = null;
+    private String osArchitecture = null;
+    private String systemModel = null;
+    private String systemManufacturer = null;
+    private String cpuManufacturer = null;
+    private String serialNumber = null;
 
-    private String physmem;
-    private String sockets;
-    private String cores;
-    private String virtcpus;
-    private String cpuname;
-    private String clockrate;
+    private String physmem = null;
+    private String sockets = null;
+    private String cores = null;
+    private String virtcpus = null;
+    private String cpuname = null;
+    private String clockrate = null;
 
     public static void main(String args[]) {
         EnvironmentInformation ei = new EnvironmentInformation();
@@ -436,91 +436,49 @@ public class EnvironmentInformation {
             String cpuManufacturer, String serialNumber, String physmem, String sockets,
             String cores, String virtcpus, String cpuname, String clockrate) {
 
-        if (hostname != null) {
+        if (hostname != null) 
             this.hostname = hostname.trim();
-        } else {
-            this.hostname = hostname;
-        }
 
         setHostId(hostId);
 
-        if (osName != null) {
+        if (osName != null) 
             this.osName = osName.trim();
-        } else {
-            this.osName = osName;
-        }
 
-        if (osVersion != null) {
+        if (osVersion != null) 
             this.osVersion = osVersion.trim();
-        } else {
-            this.osVersion = osVersion;
-        }
 
-        if (osArchitecture != null) {
+        if (osArchitecture != null) 
             this.osArchitecture = osArchitecture.trim();
-        } else {
-            this.osArchitecture = osArchitecture;
-        }
 
-        if (systemModel != null) {
+        if (systemModel != null) 
             this.systemModel = systemModel.trim();
-        } else {
-            this.systemModel = systemModel;
-        }
 
-        if (systemManufacturer != null) {
+        if (systemManufacturer != null) 
             this.systemManufacturer = systemManufacturer.trim();
-        } else {
-            this.systemManufacturer = systemManufacturer;
-        }
 
-        if (cpuManufacturer != null) {
+        if (cpuManufacturer != null) 
             this.cpuManufacturer = cpuManufacturer.trim();
-        } else {
-            this.cpuManufacturer = cpuManufacturer;
-        }
 
-        if (serialNumber != null) {
+        if (serialNumber != null) 
             this.serialNumber = serialNumber.trim();
-        } else {
-            this.serialNumber = serialNumber;
-        }
 
-        if (physmem != null) {
+        if (physmem != null) 
             this.physmem = physmem.trim();
-        } else {
-            this.physmem = physmem;
-        }
 
-        if (sockets != null) {
+        if (sockets != null)
             this.sockets = sockets.trim();
-        } else {
-            this.sockets = sockets;
-        }
 
-        if (cores != null) {
+        if (cores != null) 
             this.cores = cores.trim();
-        } else {
-            this.cores = cores;
-        }
 
-        if (virtcpus != null) {
+        if (virtcpus != null) 
             this.virtcpus = virtcpus.trim();
-        } else {
-            this.virtcpus = virtcpus;
-        }
 
-        if (cpuname != null) {
+        if (cpuname != null) 
             this.cpuname = cpuname.trim();
-        } else {
-            this.cpuname = cpuname;
-        }
 
-        if (clockrate != null) {
+        if (clockrate != null) 
             this.clockrate = clockrate.trim();
-        } else {
-            this.clockrate = clockrate;
-        }
 
         if (!captureFromLocal) {
             return;
