@@ -91,6 +91,8 @@ public class Client extends AdminBaseDevTest {
             asadmin("create-jms-resource", "--target", CLUSTER_NAME, "--restype", "javax.jms.Queue", "--property", "imqDestinationName=ejb_mdb_Queue", "jms/ejb_mdb_Queue");
             System.out.println("Finished creating JMS resources");
 
+            asadmin("set-log-levels", "ShoalLogger=FINER");
+            asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger=FINER");
             asadmin("start-cluster", CLUSTER_NAME);
             asadmin("create-resource-ref", "--target", CLUSTER_NAME, XA_RESOURCE);
             asadmin("create-resource-ref", "--target", CLUSTER_NAME, "jms/ejb_mdb_QCF");
@@ -141,6 +143,7 @@ public class Client extends AdminBaseDevTest {
             asadmin("delete-local-instance", INSTANCE1_NAME);
             asadmin("delete-local-instance", INSTANCE2_NAME);
             asadmin("delete-cluster", CLUSTER_NAME);
+            asadmin("set-log-levels", "ShoalLogger=CONFIG");
             System.out.println("Removed cluster");
         } catch (Exception e) {
             e.printStackTrace();

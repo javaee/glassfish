@@ -67,6 +67,8 @@ public class Client extends AdminBaseDevTest {
             (new Client()).clean(args[1]);
         } else if ("insert_xa_data".equals(args[0])) {
             (new Client()).insert_xa_data(args[1], args[2]);
+        } else if ("recover".equals(args[0])) {
+            (new Client()).recover(args[1]);
         } else if ("verify_xa".equals(args[0])) {
             (new Client()).verify_xa(args[1], args[2], args[3]);
         } else {
@@ -84,8 +86,11 @@ public class Client extends AdminBaseDevTest {
             asadmin("create-cluster", CLUSTER_NAME);
             asadmin("create-system-properties", "--target", CLUSTER_NAME, "-Dcom.sun.appserv.transaction.nofdsync");
             asadmin("set", "configs.config." + CLUSTER_NAME + "-config.transaction-service.property.db-logging-resource=" + NONTX_RESOURCE);
+            asadmin("set", "configs.config." + CLUSTER_NAME + "-config.transaction-service.automatic-recovery=false");
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE1_NAME);
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE2_NAME);
+            asadmin("set-log-levels", "ShoalLogger=FINER");
+            asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger=FINER");
             asadmin("start-cluster", CLUSTER_NAME);
             System.out.println("Started cluster. Setting up resources.");
 
@@ -124,6 +129,7 @@ public class Client extends AdminBaseDevTest {
             asadmin("delete-local-instance", INSTANCE1_NAME);
             asadmin("delete-local-instance", INSTANCE2_NAME);
             asadmin("delete-cluster", CLUSTER_NAME);
+            asadmin("set-log-levels", "ShoalLogger=CONFIG");
             System.out.println("Removed cluster");
         } catch (Exception e) {
             e.printStackTrace();
@@ -165,6 +171,27 @@ public class Client extends AdminBaseDevTest {
           }
 
           return result;
+    }
+
+    public void recover(String location) {
+        System.out.println("Executing recover CLI");
+        try {
+            AsadminReturn result = null;
+            String txLog = new StringBuffer(location).append(File.separator)
+                    .append("nodes").append(File.separator).append("localhost-domain1")
+                    .append(File.separator).append(INSTANCE1_NAME).append(File.separator)
+                    .append("logs").append(File.separator).append(INSTANCE1_NAME)
+                    .append(File.separator).append("tx").toString();
+            result = asadminWithOutput("recover-transactions", "--target", INSTANCE2_NAME,
+                    "--transactionlogdir", txLog, INSTANCE1_NAME);
+            System.out.println("Executed command: " + result.out);
+            if (!result.returnValue) {
+                System.out.println("CLI FAILED: " + result.err);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("Finished recover CLI");
     }
 
 }

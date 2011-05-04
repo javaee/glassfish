@@ -85,6 +85,8 @@ public class Client extends AdminBaseDevTest {
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE1_NAME);
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE2_NAME);
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE3_NAME);
+            asadmin("set-log-levels", "ShoalLogger=FINER");
+            asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger=FINER");
             asadmin("start-cluster", CLUSTER_NAME);
             System.out.println("Started cluster. Setting up resources.");
 
@@ -126,6 +128,7 @@ public class Client extends AdminBaseDevTest {
             asadmin("delete-local-instance", INSTANCE2_NAME);
             asadmin("delete-local-instance", INSTANCE3_NAME);
             asadmin("delete-cluster", CLUSTER_NAME);
+            asadmin("set-log-levels", "ShoalLogger=CONFIG");
             System.out.println("Removed cluster");
         } catch (Exception e) {
             e.printStackTrace();
