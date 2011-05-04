@@ -40,6 +40,9 @@
 
 package org.glassfish.deployment.cloud;
 
+import com.sun.enterprise.config.serverbeans.Cluster;
+import com.sun.enterprise.config.serverbeans.Domain;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -61,8 +64,16 @@ public class UndeploySupplemental implements AdminCommand {
     @Inject
     RuntimeContext rtContext;
 
+    @Inject
+    Domain domain;
+
     @Override
     public void execute(AdminCommandContext context) {
-        rtContext.executeAdminCommand(context.getActionReport(), "delete-virtual-cluster", name);
+        Cluster cluster = domain.getClusterNamed(name);
+        if (cluster!=null) {
+            rtContext.executeAdminCommand(context.getActionReport(), "delete-virtual-cluster", name);
+        } else {
+            context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        }
     }
 }

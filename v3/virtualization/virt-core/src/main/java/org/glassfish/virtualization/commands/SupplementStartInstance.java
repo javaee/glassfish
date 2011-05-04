@@ -84,10 +84,7 @@ public class SupplementStartInstance implements AdminCommand {
     @Inject
     VirtualMachineLifecycle vmLifecycle;
 
-    @Inject
-    RuntimeContext rtContext;
-
-    @Inject
+    @Inject(optional = true)
     Virtualizations virtualizations;
 
     @Inject
@@ -99,6 +96,10 @@ public class SupplementStartInstance implements AdminCommand {
     @Override
     public void execute(AdminCommandContext context) {
 
+        if (virtualizations==null || instanceName.indexOf("_")==-1) {
+            context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);
+            return;
+        }
         String groupName = instanceName.substring(0, instanceName.indexOf("_"));
         String machineName = instanceName.substring(instanceName.indexOf("_")+1, instanceName.lastIndexOf("_"));
         String vmName = instanceName.substring(instanceName.lastIndexOf("_")+1, instanceName.length()-"Instance".length());

@@ -69,12 +69,12 @@ public class SupplementalStopInstance implements AdminCommand {
     @Param(name="_vmShutdown", optional=true, defaultValue = "true")
     private String vmShutdown;
 
-    @Inject
-    GroupManagement groups;
+    @Inject(optional=true)
+    GroupManagement groups=null;
 
     @Override
     public void execute(AdminCommandContext context) {
-        if (!Boolean.valueOf(vmShutdown)) {
+        if (!Boolean.valueOf(vmShutdown) || instanceName.indexOf("_")==-1 || groups==null) {
                 context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);
                 return;
         }

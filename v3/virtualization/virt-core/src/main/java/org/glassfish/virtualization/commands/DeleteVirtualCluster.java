@@ -76,15 +76,13 @@ public class DeleteVirtualCluster implements AdminCommand {
     RuntimeContext rtContext;
 
     @Inject
-    GroupManagement groupManagement;
-
-    @Inject
     DeleteVirtualMachine vmDeleter;
 
     @Inject
     ExecutorService executorService;
 
     @Override
+
     public void execute(final AdminCommandContext context) {
 
         // I don't like this much we should delegate this work to sub objects
