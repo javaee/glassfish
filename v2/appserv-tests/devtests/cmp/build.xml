@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../config/common.xml">
+<!ENTITY reporting   SYSTEM "report.xml">
+]>
+
+<project name="cmp" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+	<!--- currently use SE client . switch back to appclient -->
+        <antcall target="blob"/>
+        <antcall target="cascadeDelete"/>
+        <antcall target="collegeapp"/>
+        <antcall target="copySemantics"/>
+        <antcall target="createExceptionsTest"/> 
+        <antcall target="ejbflush"/> 
+        <antcall target="fieldtest"/> 
+        <antcall target="inheritedpk"/> 
+        <antcall target="j2eeguide_product"/> 
+        <antcall target="orderapp"/> 
+        <antcall target="partSupplier"/> 
+        <antcall target="robeans"/> 
+        <antcall target="roster2Teams"/> 
+        <antcall target="rosterGenDBSchema"/> 
+        <antcall target="rosterJava2DB"/> 
+        <antcall target="rosterVC"/> 
+        <antcall target="rosterext"/> 
+        <antcall target="sampleapp"/> 
+        <antcall target="unknownpk"/> 
+        <antcall target="unknownpkVC"/> 
+
+    </target>
+
+    <target name="blob">
+        <record name="blob.output" action="start" />
+            <ant dir="blob" target="all"/>
+        <record name="blob.output" action="stop" />
+    </target>
+
+    <target name="cascadeDelete">
+        <record name="cascadeDelete.output" action="start" />
+            <ant dir="cascadeDelete" target="all"/>
+        <record name="cascadeDelete.output" action="stop" />
+    </target>
+
+    <target name="collegeapp">
+        <record name="collegeapp.output" action="start" />
+            <ant dir="collegeapp" target="all"/>
+        <record name="collegeapp.output" action="stop" />
+    </target>
+
+    <target name="copySemantics">
+        <record name="copySemantics.output" action="start" />
+            <ant dir="copySemantics" target="all"/>
+        <record name="copySemantics.output" action="stop" />
+    </target>
+
+    <target name="createExceptionsTest">
+        <record name="createExceptionsTest.output" action="start" />
+            <ant dir="createExceptionsTest" target="all"/>
+        <record name="createExceptionsTest.output" action="stop" />
+    </target>
+
+     <target name="ejbflush">
+        <record name="ejbflush.output" action="start" />
+            <ant dir="ejbflush" target="all"/>
+        <record name="ejbflush.output" action="stop" />
+    </target>
+
+     <target name="fieldtest">
+        <record name="fieldtest.output" action="start" />
+            <ant dir="fieldtest" target="all"/>
+        <record name="fieldtest.output" action="stop" />
+    </target>
+
+      <target name="inheritedpk">
+        <record name="inheritedpk.output" action="start" />
+            <ant dir="inheritedpk" target="all"/>
+        <record name="inheritedpk.output" action="stop" />
+    </target>
+
+     <target name="j2eeguide_product">
+        <record name="j2eeguide_product.output" action="start" />
+            <ant dir="j2eeguide_product" target="all"/>
+        <record name="j2eeguide_product.output" action="stop" />
+    </target>
+
+     <target name="orderapp">
+        <record name="orderapp.output" action="start" />
+            <ant dir="orderapp" target="all"/>
+        <record name="orderapp.output" action="stop" />
+    </target>
+
+      <target name="partSupplier">
+        <record name="partSupplier.output" action="start" />
+            <ant dir="partSupplier" target="all"/>
+        <record name="partSupplier.output" action="stop" />
+    </target>
+
+     <target name="robeans">
+        <record name="robeans.output" action="start" />
+            <ant dir="robeans" target="all"/>
+        <record name="robeans.output" action="stop" />
+    </target>
+
+       <target name="roster2Teams">
+        <record name="roster2Teams.output" action="start" />
+            <ant dir="roster2Teams" target="all"/>
+        <record name="roster2Teams.output" action="stop" />
+    </target>
+
+     <target name="rosterGenDBSchema">
+        <record name="rosterGenDBSchema.output" action="start" />
+            <ant dir="rosterGenDBSchema" target="all"/>
+        <record name="rosterGenDBSchema.output" action="stop" />
+    </target>
+
+     <target name="rosterJava2DB">
+        <record name="rosterJava2DB.output" action="start" />
+            <ant dir="rosterJava2DB" target="all"/>
+        <record name="rosterJava2DB.output" action="stop" />
+    </target>
+
+     <target name="rosterVC">
+        <record name="rosterVC.output" action="start" />
+            <ant dir="rosterVC" target="all"/>
+        <record name="rosterVC.output" action="stop" />
+    </target>
+
+     <target name="rosterext">
+        <record name="rosterext.output" action="start" />
+            <ant dir="rosterext" target="all"/>
+        <record name="rosterext.output" action="stop" />
+    </target>
+
+     <target name="sampleapp">
+        <record name="sampleapp.output" action="start" />
+            <ant dir="sampleapp" target="all"/>
+        <record name="sampleapp.output" action="stop" />
+    </target>
+
+      <target name="unknownpk">
+        <record name="unknownpk.output" action="start" />
+            <ant dir="unknownpk" target="all"/>
+        <record name="unknownpk.output" action="stop" />
+    </target>
+
+      <target name="unknownpkVC">
+        <record name="unknownpkVC.output" action="start" />
+            <ant dir="unknownpkVC" target="all"/>
+        <record name="unknownpkVC.output" action="stop" />
+    </target>
+
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the ejb-ejb30 tests)
+	</echo>
+    </target>
+</project>
