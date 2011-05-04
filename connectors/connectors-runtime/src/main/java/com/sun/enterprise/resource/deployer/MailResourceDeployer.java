@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -173,15 +173,20 @@ public class MailResourceDeployer extends GlobalResourceDeployer
 
     private void deleteResource(com.sun.enterprise.config.serverbeans.MailResource mailRes, ResourceInfo resourceInfo)
             throws NamingException {
-        //JavaEEResource javaEEResource = toMailJavaEEResource(mailRes, resourceInfo);
-        // removes the resource from jndi naming
-        namingService.unpublishObject(resourceInfo, mailRes.getJndiName());
+        if (ResourcesUtil.createInstance().isEnabled(mailRes, resourceInfo)){
+            //JavaEEResource javaEEResource = toMailJavaEEResource(mailRes, resourceInfo);
+            // removes the resource from jndi naming
+            namingService.unpublishObject(resourceInfo, mailRes.getJndiName());
 
-        /* TODO Not needed any more ?
-            ManagementObjectManager mgr =
-                    getAppServerSwitchObject().getManagementObjectManager();
-            mgr.unregisterJavaMailResource(mailRes.getJndiName());
-        */
+            /* TODO Not needed any more ?
+                ManagementObjectManager mgr =
+                        getAppServerSwitchObject().getManagementObjectManager();
+                mgr.unregisterJavaMailResource(mailRes.getJndiName());
+            */
+        }else{
+            _logger.log(Level.FINEST, "core.resource_disabled", new Object[] {mailRes.getJndiName(),
+                    ConnectorConstants.RES_TYPE_MAIL});
+        }
     }
 
     /**

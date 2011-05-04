@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -155,12 +155,17 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
         deleteResource(jndiRes, resourceInfo);
     }
 
-    private void deleteResource(com.sun.enterprise.config.serverbeans.ExternalJndiResource jndiRes,
+    private void deleteResource(com.sun.enterprise.config.serverbeans.ExternalJndiResource jndiResource,
                                 ResourceInfo resourceInfo) {
-        // converts the config data to j2ee resource
-        JavaEEResource j2eeResource = toExternalJndiJavaEEResource(jndiRes, resourceInfo);
-        // un-installs the resource
-        uninstallExternalJndiResource(j2eeResource, resourceInfo);
+        if (ResourcesUtil.createInstance().isEnabled(jndiResource, resourceInfo)){
+            // converts the config data to j2ee resource
+            JavaEEResource j2eeResource = toExternalJndiJavaEEResource(jndiResource, resourceInfo);
+            // un-installs the resource
+            uninstallExternalJndiResource(j2eeResource, resourceInfo);
+        }else{
+            _logger.log(Level.FINEST, "core.resource_disabled", new Object[] {jndiResource.getJndiName(),
+                    ConnectorConstants.RES_TYPE_EXTERNAL_JNDI});
+        }
     }
 
     /**

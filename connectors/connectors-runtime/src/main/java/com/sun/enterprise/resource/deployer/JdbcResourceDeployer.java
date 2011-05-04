@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -146,21 +146,29 @@ public class JdbcResourceDeployer implements ResourceDeployer {
         deleteResource(jdbcRes, resourceInfo);
     }
 
-    private void deleteResource(JdbcResource jdbcRes, ResourceInfo resourceInfo) throws Exception {
-        runtime.deleteConnectorResource(resourceInfo);
-        ConnectorRegistry.getInstance().removeResourceFactories(resourceInfo);
-        //In-case the resource is explicitly created with a suffix (__nontx or __PM), no need to delete one
-        if(ConnectorsUtil.getValidSuffix(resourceInfo.getName()) == null){
-            String pmJndiName = ConnectorsUtil.getPMJndiName( resourceInfo.getName()) ;
-            ResourceInfo pmResourceInfo = new ResourceInfo(pmJndiName, resourceInfo.getApplicationName(), resourceInfo.getModuleName());
-            runtime.deleteConnectorResource(pmResourceInfo);
-            ConnectorRegistry.getInstance().removeResourceFactories(pmResourceInfo);
-        }
+    private void deleteResource(JdbcResource jdbcResource, ResourceInfo resourceInfo) throws Exception {
 
-        //Since 8.1 PE/SE/EE - if no more resource-ref to the pool
-        //of this resource in this server instance, remove pool from connector
-        //runtime
-        checkAndDeletePool(jdbcRes);
+        if (ResourcesUtil.createInstance().isEnabled(jdbcResource, resourceInfo)) {
+
+            runtime.deleteConnectorResource(resourceInfo);
+            ConnectorRegistry.getInstance().removeResourceFactories(resourceInfo);
+            //In-case the resource is explicitly created with a suffix (__nontx or __PM), no need to delete one
+            if (ConnectorsUtil.getValidSuffix(resourceInfo.getName()) == null) {
+                String pmJndiName = ConnectorsUtil.getPMJndiName(resourceInfo.getName());
+                ResourceInfo pmResourceInfo = new ResourceInfo(pmJndiName, resourceInfo.getApplicationName(),
+                        resourceInfo.getModuleName());
+                runtime.deleteConnectorResource(pmResourceInfo);
+                ConnectorRegistry.getInstance().removeResourceFactories(pmResourceInfo);
+            }
+
+            //Since 8.1 PE/SE/EE - if no more resource-ref to the pool
+            //of this resource in this server instance, remove pool from connector
+            //runtime
+            checkAndDeletePool(jdbcResource);
+        } else {
+            _logger.log(Level.FINEST, "core.resource_disabled", new Object[]{jdbcResource.getJndiName(),
+                    ConnectorConstants.RES_TYPE_JDBC});
+        }
     }
 
     /**

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -140,10 +140,10 @@ public class CustomResourceDeployer implements ResourceDeployer {
      * {@inheritDoc}
      */
     public void undeployResource(Object resource, String applicationName, String moduleName) throws Exception{
-        com.sun.enterprise.config.serverbeans.CustomResource customRes =
+        com.sun.enterprise.config.serverbeans.CustomResource customResource =
             (com.sun.enterprise.config.serverbeans.CustomResource) resource;
-        ResourceInfo resourceInfo = new ResourceInfo(customRes.getJndiName(), applicationName, moduleName);
-        deleteResource(resourceInfo);
+        ResourceInfo resourceInfo = new ResourceInfo(customResource.getJndiName(), applicationName, moduleName);
+        deleteResource(customResource, resourceInfo);
     }
     /**
      * {@inheritDoc}
@@ -151,17 +151,23 @@ public class CustomResourceDeployer implements ResourceDeployer {
 	public synchronized void undeployResource(Object resource)
             throws Exception {
 
-        com.sun.enterprise.config.serverbeans.CustomResource customRes =
+        com.sun.enterprise.config.serverbeans.CustomResource customResource =
             (com.sun.enterprise.config.serverbeans.CustomResource) resource;
-        ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(customRes);
-        deleteResource(resourceInfo);
+        ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(customResource);
+        deleteResource(customResource, resourceInfo);
     }
 
-    private void deleteResource(ResourceInfo resourceInfo) throws NamingException {
-        // converts the config data to j2ee resource
-        //JavaEEResource j2eeResource = toCustomJavaEEResource(customRes, resourceInfo);
-        // removes the resource from jndi naming
-        cns.unpublishObject(resourceInfo, resourceInfo.getName());
+    private void deleteResource(com.sun.enterprise.config.serverbeans.CustomResource customResource,
+                                ResourceInfo resourceInfo) throws NamingException {
+        if (ResourcesUtil.createInstance().isEnabled(customResource, resourceInfo)){
+            // converts the config data to j2ee resource
+            //JavaEEResource j2eeResource = toCustomJavaEEResource(customRes, resourceInfo);
+            // removes the resource from jndi naming
+            cns.unpublishObject(resourceInfo, resourceInfo.getName());
+        }else{
+            _logger.log(Level.FINEST, "core.resource_disabled", new Object[] {customResource.getJndiName(),
+                    ConnectorConstants.RES_TYPE_CUSTOM});
+        }
     }
 
     /**
