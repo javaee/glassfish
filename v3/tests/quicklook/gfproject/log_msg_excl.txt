@@ -119,7 +119,8 @@ true[^\w]
 INFO: Successfully launched in 
 Running GlassFish Version
 This message was emitted before the logging service started:
-
+-Djava.security.manager
+/net/bat-sca.us.oracle.com/repine/export2/hudson
 
 # No need to log following log level messages
 \|CONFIG\|
@@ -185,6 +186,8 @@ Method init defined on class
 Dgosh.args=--nointeractive
 Dorg.glassfish.additionalOSGiBundlesToStart
 Multiple JSF Applications found on same
+Method destroy defined on
+|stopping|
 
 # From QL Test - No need to fix this
 In SingletonBean::init()
@@ -293,7 +296,7 @@ Process executing stclient command failed
 The Admin Console is starting. Please wait
 Admin Console: Initializing Session Attributes...
 
-# Waiting to be fixed: 12251
+# http://java.net/jira/browse/GLASSFISH-12251
 Portable JNDI names for EJB 
 A system exception occurred during an invocation on EJB 
 javax.ejb.NoSuchObjectLocalException: The EJB does not exist. session-key: 
@@ -306,10 +309,10 @@ StatefulContainerBuilder.buildStoreManager()
 # http://java.net/jira/browse/GLASSFISH-16535
 ADDRESSLIST in
 JMS Service Connection
-endpoint.determine.destinationtype=end point determine destionation name
+end point determine destionation name
 
 # http://java.net/jira/browse/GLASSFISH-16534
-config.getHttpService() null for
+null for config
 MNTG0205:Gmbal registration
 
 # http://java.net/jira/browse/GLASSFISH-16533
