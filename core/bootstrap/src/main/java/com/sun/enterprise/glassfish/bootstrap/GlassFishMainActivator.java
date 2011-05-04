@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-11 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -65,14 +65,15 @@ import java.util.Properties;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class GlassFishMainActivator implements BundleActivator {
-    private GlassFishRuntime gfr;
+    private static volatile GlassFishRuntime gfr;
     private GlassFish gf;
 
     public void start(BundleContext context) throws Exception {
         Properties properties = prepareStartupContext(context);
-
-        // Should we do the following in a separate thread?
-        gfr = GlassFishRuntime.bootstrap(new BootstrapProperties(properties), getClass().getClassLoader());
+        if (gfr == null) {
+            // Should we do the following in a separate thread?
+            gfr = GlassFishRuntime.bootstrap(new BootstrapProperties(properties), getClass().getClassLoader());
+        }
         gf = gfr.newGlassFish(new GlassFishProperties(properties));
         gf.start();
     }
@@ -131,5 +132,7 @@ public class GlassFishMainActivator implements BundleActivator {
 
     public void stop(BundleContext context) throws Exception {
         gf.stop();
+        gf.dispose();
+        gf = null;
     }
 }
