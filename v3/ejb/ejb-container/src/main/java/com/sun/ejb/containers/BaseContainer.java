@@ -3259,7 +3259,7 @@ public abstract class BaseContainer
                 // HOME method
 
                 String upperCasedName = 
-                    methodName.substring(0,1).toUpperCase(Locale.ENGLISH) +
+                    methodName.substring(0,1).toUpperCase() +
                     methodName.substring(1);
                 invInfo.targetMethod1 = ejbClass.getMethod
                     ("ejbHome" + upperCasedName, paramTypes);

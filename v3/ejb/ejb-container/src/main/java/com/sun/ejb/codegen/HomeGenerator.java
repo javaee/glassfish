@@ -382,7 +382,7 @@ public class HomeGenerator extends Generator {
 		String name = factoryMethod.getName();
 		p.p("\t");
 		// for a home method foo, call ejbHomeFoo.
-		String upperCasedName = name.substring(0,1).toUpperCase(Locale.ENGLISH)
+		String upperCasedName = name.substring(0,1).toUpperCase()
 		    + name.substring(1);
 		p.p("\tjava.lang.reflect.Method __method__home = ");
 		p.p("i.ejb.getClass().getMethod(\""+"ejbHome"+upperCasedName+"\", i.method.getParameterTypes());\n");
