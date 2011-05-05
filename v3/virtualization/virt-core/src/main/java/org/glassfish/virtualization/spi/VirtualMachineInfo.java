@@ -56,6 +56,19 @@ public interface VirtualMachineInfo extends StaticVirtualMachineInfo {
     long maxMemory() throws VirtException;
 
     /**
+     * Returns the current memory used by this virtual machine
+     * @return the virtual machine current memory usage
+     */
+    long memory() throws VirtException;
+
+    /**
+     * Returns the CPU used by this virtual machine
+     * @return the CPU time used by this VM.
+     * @throws VirtException
+     */
+    long cpuTime() throws VirtException;
+
+    /**
      * Returns the machine's state
      * @return the machine's state
      *

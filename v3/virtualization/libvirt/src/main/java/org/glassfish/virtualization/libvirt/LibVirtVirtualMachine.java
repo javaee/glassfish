@@ -134,29 +134,22 @@ public class LibVirtVirtualMachine implements VirtualMachine {
 
             @Override
             public int nbVirtCpu() throws VirtException {
-                try {
-                    return domain.getInfo().nrVirtCpu;
-                } catch (VirtException e) {
-                    throw new VirtException(e);
-                }
+                return domain.getInfo().nrVirtCpu;
             }
 
             @Override
             public long memory() throws VirtException {
-                try {
-                    return domain.getInfo().memory.longValue();
-                } catch (VirtException e) {
-                    throw new VirtException(e);
-                }
+                return domain.getInfo().memory.longValue();
+            }
+
+            @Override
+            public long cpuTime() throws VirtException {
+                return domain.getInfo().cpuTime;
             }
 
             @Override
             public long maxMemory() throws VirtException {
-                try {
-                    return domain.getInfo().maxMem.longValue();
-                } catch (VirtException e) {
-                    throw new VirtException(e);
-                }
+                return domain.getInfo().maxMem.longValue();
             }
 
             @Override
@@ -192,7 +185,7 @@ public class LibVirtVirtualMachine implements VirtualMachine {
                             @Override
                             public void run() {
                                 try {
-                                    ml.notified(owner, memory());
+                                    ml.notified(owner, memory(), cpuTime());
                                 } catch (VirtException e) {
                                     RuntimeContext.logger.log(Level.FINE, "Exception while notifying of vm load ", e);
                                 }

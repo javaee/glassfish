@@ -49,5 +49,5 @@ package org.glassfish.virtualization.spi;
  */
 public interface MemoryListener {
 
-    public void notified(VirtualMachine vm, long memory);
+    public void notified(VirtualMachine vm, long memory, long cpuTime);
 }
