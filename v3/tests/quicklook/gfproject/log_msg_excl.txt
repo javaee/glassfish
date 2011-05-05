@@ -318,16 +318,5 @@ MNTG0205:Gmbal registration
 # http://java.net/jira/browse/GLASSFISH-16533
 Erorr stopping context
 
-# http://java.net/jira/browse/GLASSFISH-16532
-Initialized AMXStartupServiceNew
-In AMXConfigLoader : loader
-AMX config read, domain config
-J2EEDomain registered at
-AMXStartupServiceNew.AMXLoaderThread: loading:
-AMXStartupServiceNew._loadAMXMBeans:
-AMXStartupServiceNew: AMX ready for use
-Non-singleton ConfigBean
-Can't unregister MBean:
-
 # http://java.net/jira/browse/GLASSFISH-16531
 JACC Policy Provider: Failed Permission Check

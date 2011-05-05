@@ -73,14 +73,6 @@ pool.get_validation_table_names_mc_destroy
 enterprise.deployment.appclient.jws.clientJNLPConfigLoad
 enterprise.deployment.appclient.jws.clientJNLPConfigChangeFile
 
-# other picked up by script - dont know the exact reason.
-SEC9050.diag.cause
-SEC9050.diag.check
-SEC9051.diag.cause
-SEC9051.diag.check
-WEB9102.diag.cause
-WEB9102.diag.check
-
 # http://java.net/jira/browse/GLASSFISH-16541
 console.adapter.missingDeployDir
 console.adapter.cannotBackup
