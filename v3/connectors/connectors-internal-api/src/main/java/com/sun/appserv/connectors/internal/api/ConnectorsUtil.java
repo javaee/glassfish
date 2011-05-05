@@ -730,38 +730,42 @@ public class ConnectorsUtil {
         return applicationName;
     }
 
-    public static List<URI> getInstalledLibrariesFromManifest(String moduleDirectory, ServerEnvironment env) 
+    public static List<URI> getInstalledLibrariesFromManifest(String moduleDirectory, ServerEnvironment env)
             throws ConnectorRuntimeException {
 
         // this method will be called during system-rar creation.
         // Though there are code paths that will call this method for creation of rars during recovery / via
         // API exposed for GUI, they will not call this method as non-system rars are always started during server startup
-        // system-rars can specify only EXTENSTION_LIST in MANIFEST.MF and do not have a way to use --libararies option.
+        // system-rars can specify only EXTENSTION_LIST in MANIFEST.MF and do not have a way to use --libraries option.
         // So, satisfying system-rars alone as of now.
-        
+
         List<URI> libURIs = new ArrayList<URI>();
-        try{
-            File module = new File(moduleDirectory);
+        if(moduleDirectory != null){
+            try {
+                File module = new File(moduleDirectory);
+                if (module.exists()) {
 
-            FileArchive fileArchive = new FileArchive();
-            fileArchive.open(module.toURI());  // directory where rar is exploded
-            Set<String> extensionList = InstalledLibrariesResolver.getInstalledLibraries(fileArchive);
+                    FileArchive fileArchive = new FileArchive();
+                    fileArchive.open(module.toURI());  // directory where rar is exploded
+                    Set<String> extensionList = InstalledLibrariesResolver.getInstalledLibraries(fileArchive);
 
-            URL[] extensionListLibraries = ASClassLoaderUtil.getLibrariesAsURLs(extensionList, env);
-            for (URL url : extensionListLibraries) {
-                libURIs.add(url.toURI());
-                if(_logger.isLoggable(Level.FINEST)) {
-                    _logger.log(Level.FINEST, "adding URL [ "+url+" ] to installedLibraries");
+                    URL[] extensionListLibraries = ASClassLoaderUtil.getLibrariesAsURLs(extensionList, env);
+                    for (URL url : extensionListLibraries) {
+                        libURIs.add(url.toURI());
+                        if (_logger.isLoggable(Level.FINEST)) {
+                            _logger.log(Level.FINEST, "adding URL [ " + url + " ] to installedLibraries");
+                        }
+                    }
                 }
+            } catch (IOException ioe) {
+                ConnectorRuntimeException cre = new ConnectorRuntimeException(ioe.getMessage());
+                cre.initCause(ioe);
+                throw cre;
+            } catch (URISyntaxException e) {
+                ConnectorRuntimeException cre = new ConnectorRuntimeException(e.getMessage());
+                cre.initCause(e);
+                throw cre;
             }
-        }catch(IOException ioe){
-            ConnectorRuntimeException cre = new ConnectorRuntimeException(ioe.getMessage());
-            cre.initCause(ioe);
-            throw cre;
-        } catch (URISyntaxException e) {
-            ConnectorRuntimeException cre = new ConnectorRuntimeException(e.getMessage());
-            cre.initCause(e);
-            throw cre;
         }
 
         return libURIs;
