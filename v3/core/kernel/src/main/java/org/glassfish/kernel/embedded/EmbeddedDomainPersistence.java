@@ -50,6 +50,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
 
 /**
  * Configuration file persistence handler for embedded
@@ -107,6 +108,6 @@ public class EmbeddedDomainPersistence extends DomainXmlPersistence {
 
     @Override
     protected void saved(File destination) {
-        logger.info("Configuration saved at " + destination);
+        logger.log(Level.INFO, "Configuration saved at {0}", destination);
     }
 }

@@ -58,32 +58,57 @@
 
 package org.apache.catalina.core;
 
-import com.sun.grizzly.util.IntrospectionUtils;
-import org.apache.catalina.*;
-import org.apache.catalina.connector.RequestFacade;
-import org.apache.catalina.security.SecurityUtil;
-import org.apache.catalina.util.Enumerator;
-import org.apache.catalina.util.InstanceSupport;
-import org.apache.tomcat.util.modeler.Registry;
-import org.glassfish.web.valve.GlassFishValve;
-
-import javax.management.Notification;
-import javax.management.NotificationBroadcasterSupport;
-import javax.management.ObjectName;
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.Principal;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
+import javax.management.Notification;
+import javax.management.NotificationBroadcasterSupport;
+import javax.management.ObjectName;
+import javax.servlet.Servlet;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.SingleThreadModel;
+import javax.servlet.UnavailableException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import static org.apache.catalina.InstanceEvent.EventType.*;
+import org.apache.catalina.Container;
+import org.apache.catalina.ContainerServlet;
+import org.apache.catalina.Context;
+import static org.apache.catalina.InstanceEvent.EventType.AFTER_DESTROY_EVENT;
+import static org.apache.catalina.InstanceEvent.EventType.AFTER_INIT_EVENT;
+import static org.apache.catalina.InstanceEvent.EventType.AFTER_SERVICE_EVENT;
+import static org.apache.catalina.InstanceEvent.EventType.BEFORE_DESTROY_EVENT;
+import static org.apache.catalina.InstanceEvent.EventType.BEFORE_INIT_EVENT;
+import static org.apache.catalina.InstanceEvent.EventType.BEFORE_SERVICE_EVENT;
+import org.apache.catalina.InstanceListener;
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.Loader;
+import org.apache.catalina.Wrapper;
+import org.apache.catalina.connector.RequestFacade;
+import org.apache.catalina.security.SecurityUtil;
+import org.apache.catalina.util.Enumerator;
+import org.apache.catalina.util.InstanceSupport;
+import org.apache.tomcat.util.modeler.Registry;
+import org.glassfish.grizzly.http.server.util.IntrospectionUtils;
+import org.glassfish.web.valve.GlassFishValve;
 // END GlassFish 1343
 
 /**
@@ -640,7 +665,7 @@ public class StandardWrapper
     /**
      * Sets the class object from which this servlet will be instantiated.
      *
-     * @param servletClass The class object from which this servlet will
+     * @param clazz The class object from which this servlet will
      * be instantiated
      */
     public void setServletClass(Class <? extends Servlet> clazz) {
@@ -874,8 +899,7 @@ public class StandardWrapper
         // Extra aggressive rootCause finding
         do {
             try {
-                rootCauseCheck = (Throwable)IntrospectionUtils.getProperty
-                                            (rootCause, "rootCause");
+                rootCauseCheck = (Throwable) IntrospectionUtils.getProperty( rootCause, "rootCause");
                 if (rootCauseCheck!=null)
                     rootCause = rootCauseCheck;
 

@@ -42,7 +42,6 @@ package com.sun.enterprise.security;
 
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.grizzly.config.dom.Ssl;
 import com.sun.logging.LogDomains;
 import java.beans.PropertyVetoException;
 import java.io.File;
@@ -51,6 +50,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
+import org.glassfish.grizzly.config.dom.Ssl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;

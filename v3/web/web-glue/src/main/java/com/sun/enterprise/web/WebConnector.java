@@ -74,7 +74,7 @@ public class WebConnector extends PECoyoteConnector {
         }
         
         super.initialize();
-        ((V3Mapper) mapper).setAdapter(getAdapter());
+        ((V3Mapper) mapper).setHttpHandler(getHandler());
     }
     
 }

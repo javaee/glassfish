@@ -65,8 +65,8 @@ import org.apache.jk.core.JkHandler;
 import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
 import org.apache.jk.core.JkChannel;
+import org.glassfish.grizzly.http.HttpRequestPacket;
 
-import com.sun.grizzly.tcp.Request;
 /** Pass messages using jni 
  *
  * @author Costin Manolache
@@ -159,7 +159,7 @@ public class ChannelJni extends JniHandler implements JkChannel {
         return true;
     }
 
-    public void registerRequest(Request req, MsgContext ep, int count) {
+    public void registerRequest(HttpRequestPacket req, MsgContext ep, int count) {
         // Not supported.
     }
 

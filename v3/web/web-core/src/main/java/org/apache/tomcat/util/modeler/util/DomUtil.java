@@ -58,7 +58,7 @@
 
 package org.apache.tomcat.util.modeler.util;
 
-import com.sun.grizzly.util.IntrospectionUtils;
+import org.glassfish.grizzly.http.server.util.IntrospectionUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;

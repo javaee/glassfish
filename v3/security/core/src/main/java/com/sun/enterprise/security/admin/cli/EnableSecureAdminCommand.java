@@ -85,8 +85,8 @@ import org.jvnet.hk2.component.PerLookup;
 	asadmin create-http-redirect --secure-redirect true admin-http-redirect
 	#asadmin create-http-redirect --secure-redirect true --redirect-port 4849 admin-http-redirect
 	asadmin create-protocol --securityenabled=false pu-protocol
-	asadmin create-protocol-finder --protocol pu-protocol --targetprotocol sec-admin-listener --classname com.sun.grizzly.config.HttpProtocolFinder http-finder
-	asadmin create-protocol-finder --protocol pu-protocol --targetprotocol admin-http-redirect --classname com.sun.grizzly.config.HttpProtocolFinder admin-http-redirect
+	asadmin create-protocol-finder --protocol pu-protocol --targetprotocol sec-admin-listener --classname org.glassfish.grizzly.config.portunif.HttpProtocolFinder http-finder
+	asadmin create-protocol-finder --protocol pu-protocol --targetprotocol admin-http-redirect --classname org.glassfish.grizzly.config.portunif.HttpProtocolFinder admin-http-redirect
 
 	###
 	### update the admin listener

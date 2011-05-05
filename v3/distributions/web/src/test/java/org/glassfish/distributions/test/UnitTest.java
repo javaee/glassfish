@@ -84,7 +84,7 @@ public class UnitTest {
             EJBContainer c0 = EJBContainer.createEJBContainer();
             if (c0 != null)
                 throw new RuntimeException("Create another container");
-        } catch (EJBException e) { 
+        } catch (EJBException e) {
             System.out.println("Caught expected: " + e.getMessage());
         }
 

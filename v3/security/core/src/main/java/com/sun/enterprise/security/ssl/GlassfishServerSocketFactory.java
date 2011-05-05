@@ -40,12 +40,13 @@
 
 package com.sun.enterprise.security.ssl;
 
-import com.sun.grizzly.util.net.jsse.JSSE14SocketFactory;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.util.logging.Level;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.X509KeyManager;
+
+import org.glassfish.grizzly.config.ssl.JSSE14SocketFactory;
 import org.glassfish.internal.api.Globals;
 
 /**

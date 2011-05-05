@@ -40,12 +40,12 @@
 
 package com.sun.enterprise.security.ssl;
 
-import com.sun.grizzly.util.net.SSLImplementation;
-import com.sun.grizzly.util.net.SSLSupport;
-import com.sun.grizzly.util.net.ServerSocketFactory;
 import java.net.Socket;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLSocket;
+import org.glassfish.grizzly.config.ssl.SSLImplementation;
+import org.glassfish.grizzly.config.ssl.ServerSocketFactory;
+import org.glassfish.grizzly.ssl.SSLSupport;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Service;
 

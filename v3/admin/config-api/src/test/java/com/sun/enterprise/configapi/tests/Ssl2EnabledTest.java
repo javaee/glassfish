@@ -40,10 +40,10 @@
 
 package com.sun.enterprise.configapi.tests;
 
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.Ssl;
-import com.sun.grizzly.config.GrizzlyConfig;
+import org.glassfish.grizzly.config.dom.NetworkConfig;
+import org.glassfish.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.Ssl;
+import org.glassfish.grizzly.config.GrizzlyConfig;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;

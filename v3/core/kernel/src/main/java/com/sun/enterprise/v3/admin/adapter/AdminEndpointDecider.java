@@ -44,8 +44,8 @@ import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.v3.admin.AdminAdapter;
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.ThreadPool;
+import org.glassfish.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.ThreadPool;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.server.ServerEnvironmentImpl;
 

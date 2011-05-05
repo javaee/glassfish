@@ -40,8 +40,8 @@
 
 package org.glassfish.admin.rest.resources.custom;
 
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.Protocol;
+import org.glassfish.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.Protocol;
 import com.sun.jersey.api.core.ResourceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;

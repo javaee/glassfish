@@ -59,18 +59,41 @@
 package org.apache.catalina.core;
 
 
-import com.sun.grizzly.util.buf.MessageBytes;
-import org.apache.catalina.*;
-
-import javax.servlet.*;
-import javax.servlet.http.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.security.Principal;
-import java.util.*;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
+import javax.servlet.AsyncContext;
+import javax.servlet.AsyncListener;
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterChain;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
+
+import org.apache.catalina.Connector;
+import org.apache.catalina.Context;
+import org.apache.catalina.Host;
+import org.apache.catalina.HttpRequest;
+import org.apache.catalina.Response;
+import org.apache.catalina.Session;
+import org.apache.catalina.Wrapper;
+import org.glassfish.grizzly.http.util.DataChunk;
 
 /**
  * Dummy request object, used for request dispatcher mapping, as well as
@@ -82,12 +105,12 @@ import java.util.*;
 
 public class DummyRequest implements HttpRequest, HttpServletRequest {
 
-    protected String queryString = null;
-    protected String pathInfo = null;
-    protected String servletPath = null;
-    protected Wrapper wrapper = null;
+    protected String queryString;
+    protected String pathInfo;
+    protected String servletPath;
+    protected Wrapper wrapper;
 
-    protected FilterChain filterChain = null;
+    protected FilterChain filterChain;
 
     // START CR 6415120
     /**
@@ -150,7 +173,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
         pathInfo = path;
     }
 
-    public MessageBytes getRequestPathMB() {
+    public DataChunk getRequestPathMB() {
         return null;
     }
 
@@ -163,7 +186,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     }
 
     public Wrapper getWrapper() {
-        return (this.wrapper);
+        return wrapper;
     }
 
     public void setWrapper(Wrapper wrapper) {
@@ -176,7 +199,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     }
 
     public String getMethod() {
-        return this.method;
+        return method;
     }
     // END PWC 4707989
 
@@ -318,7 +341,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
      * needs to be checked.
      */
     public void setCheckRestrictedResources(boolean check) {
-        this.checkRestrictedResources = check;
+        checkRestrictedResources = check;
     }
 
     /**
@@ -326,7 +349,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
      * needs to be checked.
      */
     public boolean getCheckRestrictedResources() {
-        return this.checkRestrictedResources;
+        return checkRestrictedResources;
     }
     // END CR 6415120
 

@@ -61,24 +61,23 @@ package org.apache.jk.common;
 import java.io.IOException;
 import java.util.logging.*;
 
-import com.sun.grizzly.tcp.OutputBuffer;
-import com.sun.grizzly.tcp.InputBuffer;
-import com.sun.grizzly.tcp.Request;
-import com.sun.grizzly.tcp.Response;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
 
 import org.apache.catalina.connector.Constants;
 import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
+import org.glassfish.grizzly.http.server.io.InputBuffer;
+import org.glassfish.grizzly.http.server.io.OutputBuffer;
+import org.glassfish.grizzly.http.util.ByteChunk;
+import org.glassfish.grizzly.http.util.C2BConverter;
+import org.glassfish.grizzly.http.util.MessageBytes;
 
-import com.sun.grizzly.util.buf.ByteChunk;
-import com.sun.grizzly.util.buf.MessageBytes;
-import com.sun.grizzly.util.buf.C2BConverter;
-import com.sun.grizzly.util.http.HttpMessages;
-import com.sun.grizzly.util.http.MimeHeaders;
 
 /** Generic input stream impl on top of ajp
  */
-public class JkInputStream implements InputBuffer, OutputBuffer {
+public class JkInputStream {
+//        implements InputBuffer, OutputBuffer {
     
     private static Logger log=
         Logger.getLogger( JkInputStream.class.getName() );
@@ -101,7 +100,7 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
     static {
         // Make certain HttpMessages is loaded for SecurityManager
         try {
-            Class.forName("com.sun.grizzly.util.http.HttpMessages");
+            Class.forName("org.glassfish.grizzly.util.http.HttpMessages");
         } catch(Exception ex) {
             // ignore
         }
@@ -178,33 +177,33 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
         
     public int doWrite(ByteChunk chunk, Response res) 
         throws IOException    {
-        if (!res.isCommitted()) {
-            // Send the connector a request for commit. The connector should
-            // then validate the headers, send them (using sendHeader) and 
-            // set the filters accordingly.
-            res.sendHeaders();
-        }
-
-        int len=chunk.getLength();
-        byte buf[]=outputMsg.getBuffer();
-        // 4 - hardcoded, byte[] marshalling overhead 
-        int chunkSize=buf.length - outputMsg.getHeaderLength() - 4;
-        int off=0;
-        while( len > 0 ) {
-            int thisTime=len;
-            if( thisTime > chunkSize ) {
-                thisTime=chunkSize;
-            }
-            len-=thisTime;
-            
-            outputMsg.reset();
-            outputMsg.appendByte( AjpConstants.JK_AJP13_SEND_BODY_CHUNK);
-            if( log.isLoggable(Level.FINEST) ) 
-                log.finest("doWrite " + off + " " + thisTime + " " + len );
-            outputMsg.appendBytes( chunk.getBytes(), chunk.getOffset() + off, thisTime );
-            off+=thisTime;
-            mc.getSource().send( outputMsg, mc );
-        }
+//        if (!res.isCommitted()) {
+//            // Send the connector a request for commit. The connector should
+//            // then validate the headers, send them (using sendHeader) and
+//            // set the filters accordingly.
+//            res.sendHeaders();
+//        }
+//
+//        int len=chunk.getLength();
+//        byte buf[]=outputMsg.getBuffer();
+//        // 4 - hardcoded, byte[] marshalling overhead
+//        int chunkSize=buf.length - outputMsg.getHeaderLength() - 4;
+//        int off=0;
+//        while( len > 0 ) {
+//            int thisTime=len;
+//            if( thisTime > chunkSize ) {
+//                thisTime=chunkSize;
+//            }
+//            len-=thisTime;
+//
+//            outputMsg.reset();
+//            outputMsg.appendByte( AjpConstants.JK_AJP13_SEND_BODY_CHUNK);
+//            if( log.isLoggable(Level.FINEST) )
+//                log.log(Level.FINEST, "doWrite {0} {1} {2}", new Object[]{off, thisTime, len});
+//            outputMsg.appendBytes( chunk.getBytes(), chunk.getOffset() + off, thisTime );
+//            off+=thisTime;
+//            mc.getSource().send( outputMsg, mc );
+//        }
         return 0;
     }
 
@@ -212,8 +211,8 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
         throws IOException {
 
         if( log.isLoggable(Level.FINEST))
-            log.finest( "doRead "  + end_of_stream+
-                       " " + responseChunk.getOffset()+ " " + responseChunk.getLength());
+            log.log( Level.FINEST, "doRead {0} {1} {2}",
+                    new Object[]{end_of_stream, responseChunk.getOffset(), responseChunk.getLength()});
         if( end_of_stream ) {
             return -1;
         }
@@ -243,7 +242,8 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
         bodyMsg.reset();
         int err = mc.getSource().receive(bodyMsg, mc);
         if( log.isLoggable(Level.FINEST) )
-            log.info( "Receiving: getting request body chunk " + err + " " + bodyMsg.getLen() );
+            log.log( Level.INFO, "Receiving: getting request body chunk {0} {1}",
+                    new Object[]{err, bodyMsg.getLen()});
         
         if(err < 0) {
             throw new IOException();
@@ -314,57 +314,57 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
     }
 
     public void appendHead(Response res) throws IOException {
-        if( log.isLoggable(Level.FINEST) )
-            log.finest("COMMIT sending headers " + res + " " + res.getMimeHeaders() );
-        
-        C2BConverter c2b=mc.getConverter();
-        
-        outputMsg.reset();
-        outputMsg.appendByte(AjpConstants.JK_AJP13_SEND_HEADERS);
-        outputMsg.appendInt( res.getStatus() );
-        
-        String message = null;
-        if (res.isAllowCustomReasonPhrase()) {
-            message = res.getMessage();
-        } 
-        if( message==null ){
-            message= HttpMessages.getMessage(res.getStatus());
-        } else {
-            message = message.replace('\n', ' ').replace('\r', ' ');
-        }
-        tempMB.setString( message );
-        c2b.convert( tempMB );
-        outputMsg.appendBytes(tempMB);
-
-        // XXX add headers
-        
-        MimeHeaders headers=res.getMimeHeaders();
-        String contentType = res.getContentType();
-        if( contentType != null ) {
-            headers.setValue("Content-Type").setString(contentType);
-        }
-        String contentLanguage = res.getContentLanguage();
-        if( contentLanguage != null ) {
-            headers.setValue("Content-Language").setString(contentLanguage);
-        }
-        long contentLength = res.getContentLengthLong();
-        if( contentLength >= 0 ) {
-            headers.setValue("Content-Length").setLong(contentLength);
-        }
-        int numHeaders = headers.size();
-        outputMsg.appendInt(numHeaders);
-        for( int i=0; i<numHeaders; i++ ) {
-            MessageBytes hN=headers.getName(i);
-            // no header to sc conversion - there's little benefit
-            // on this direction
-            c2b.convert ( hN );
-            outputMsg.appendBytes( hN );
-                        
-            MessageBytes hV=headers.getValue(i);
-            c2b.convert( hV );
-            outputMsg.appendBytes( hV );
-        }
-        mc.getSource().send( outputMsg, mc );
+//        if( log.isLoggable(Level.FINEST) )
+//            log.log(Level.FINEST, "COMMIT sending headers {0} {1}", new Object[]{res, res.getMimeHeaders()});
+//
+//        C2BConverter c2b=mc.getConverter();
+//
+//        outputMsg.reset();
+//        outputMsg.appendByte(AjpConstants.JK_AJP13_SEND_HEADERS);
+//        outputMsg.appendInt( res.getStatus() );
+//
+//        String message = null;
+//        if (res.isAllowCustomReasonPhrase()) {
+//            message = res.getMessage();
+//        }
+//        if( message==null ){
+//            message= HttpMessages.getMessage(res.getStatus());
+//        } else {
+//            message = message.replace('\n', ' ').replace('\r', ' ');
+//        }
+//        tempMB.setString( message );
+//        c2b.convert( tempMB );
+//        outputMsg.appendBytes(tempMB);
+//
+//        // XXX add headers
+//
+//        MimeHeaders headers=res.getMimeHeaders();
+//        String contentType = res.getContentType();
+//        if( contentType != null ) {
+//            headers.setValue("Content-Type").setString(contentType);
+//        }
+//        String contentLanguage = res.getContentLanguage();
+//        if( contentLanguage != null ) {
+//            headers.setValue("Content-Language").setString(contentLanguage);
+//        }
+//        long contentLength = res.getContentLengthLong();
+//        if( contentLength >= 0 ) {
+//            headers.setValue("Content-Length").setLong(contentLength);
+//        }
+//        int numHeaders = headers.size();
+//        outputMsg.appendInt(numHeaders);
+//        for( int i=0; i<numHeaders; i++ ) {
+//            MessageBytes hN=headers.getName(i);
+//            // no header to sc conversion - there's little benefit
+//            // on this direction
+//            c2b.convert ( hN );
+//            outputMsg.appendBytes( hN );
+//
+//            MessageBytes hV=headers.getValue(i);
+//            c2b.convert( hV );
+//            outputMsg.appendBytes( hV );
+//        }
+//        mc.getSource().send( outputMsg, mc );
     }
 
     /**

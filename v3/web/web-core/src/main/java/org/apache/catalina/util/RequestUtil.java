@@ -58,11 +58,16 @@
 
 package org.apache.catalina.util;
 
-import com.sun.grizzly.util.buf.ByteChunk;
-import org.apache.naming.Util;
-import javax.servlet.http.Cookie;
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.StringTokenizer;
+import javax.servlet.http.Cookie;
+
+import org.apache.naming.Util;
+import org.glassfish.grizzly.http.util.ByteChunk;
 
 /**
  * General purpose request parsing and encoding utility methods.
@@ -412,8 +417,6 @@ public final class RequestUtil {
 
     /**
      * Put name value pair in map.
-     *
-     * @param b the character value byte
      *
      * Put name and value pair in map.  When name already exist, add value
      * to array of values.

@@ -48,9 +48,9 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.Transport;
-import com.sun.grizzly.config.dom.Transports;
+import org.glassfish.grizzly.config.dom.NetworkConfig;
+import org.glassfish.grizzly.config.dom.Transport;
+import org.glassfish.grizzly.config.dom.Transports;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -96,7 +96,7 @@ public class CreateTransport implements AdminCommand {
     @Param(name = "bytebuffertype", alias="byteBufferType", optional = true, defaultValue = "HEAP")
     String byteBufferType;
     @Param(name = "classname", optional = true,
-        defaultValue = "com.sun.grizzly.TCPSelectorHandler")
+        defaultValue = "org.glassfish.grizzly.TCPSelectorHandler")
     String className;
     @Param(name = "displayconfiguration", alias="displayConfiguration", optional = true, defaultValue = "false")
     Boolean displayConfiguration;

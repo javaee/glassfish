@@ -61,6 +61,7 @@ public class KeepAliveStatsProviderGlobal extends KeepAliveStatsProvider {
     }
 
     @ProbeListener("glassfish:kernel:connections-keep-alive:setMaxCountRequestsEvent")
+    @Override
     public void setMaxCountRequestsEvent(
             @ProbeParam("listenerName") String listenerName,
             @ProbeParam("maxRequests") int max) {
@@ -68,6 +69,7 @@ public class KeepAliveStatsProviderGlobal extends KeepAliveStatsProvider {
     }
 
     @ProbeListener("glassfish:kernel:connections-keep-alive:setTimeoutInSecondsEvent")
+    @Override
     public void setTimeoutInSecondsEvent(
             @ProbeParam("listenerName") String listenerName,
             @ProbeParam("timeoutInSeconds") int timeoutInSeconds) {
@@ -75,31 +77,38 @@ public class KeepAliveStatsProviderGlobal extends KeepAliveStatsProvider {
     }
 
     @ProbeListener("glassfish:kernel:connections-keep-alive:incrementCountConnectionsEvent")
+    @Override
     public void incrementCountConnectionsEvent(@ProbeParam("listenerName") String listenerName) {
         keepAliveConnectionsCount.increment();
+        totalKeepAliveConnectionsCount.increment();
     }
 
     @ProbeListener("glassfish:kernel:connections-keep-alive:decrementCountConnectionsEvent")
+    @Override
     public void decrementCountConnectionsEvent(@ProbeParam("listenerName") String listenerName) {
         keepAliveConnectionsCount.decrement();
     }
 
     @ProbeListener("glassfish:kernel:connections-keep-alive:incrementCountFlushesEvent")
+    @Override
     public void incrementCountFlushesEvent(@ProbeParam("listenerName") String listenerName) {
-        flushesCount.increment();
+//        flushesCount.increment();
     }
 
     @ProbeListener("glassfish:kernel:connections-keep-alive:incrementCountHitsEvent")
+    @Override
     public void incrementCountHitsEvent(@ProbeParam("listenerName") String listenerName) {
         hitsCount.increment();
     }
 
     @ProbeListener("glassfish:kernel:connections-keep-alive:incrementCountRefusalsEvent")
+    @Override
     public void incrementCountRefusalsEvent(@ProbeParam("listenerName") String listenerName) {
         refusalsCount.increment();
     }
 
     @ProbeListener("glassfish:kernel:connections-keep-alive:incrementCountTimeoutsEvent")
+    @Override
     public void incrementCountTimeoutsEvent(@ProbeParam("listenerName") String listenerName) {
         timeoutsCount.increment();
     }

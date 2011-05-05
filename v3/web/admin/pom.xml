@@ -159,7 +159,7 @@
             <artifactId>hk2</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.grizzly</groupId>
+            <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-config</artifactId>
         </dependency>
         <dependency>

@@ -50,7 +50,7 @@ import java.io.File;
 import java.util.Collection;
 
 import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 
 /**
  * @author Jerome Dochez

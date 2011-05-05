@@ -59,7 +59,6 @@
 package org.apache.catalina.ssi;
 
 
-import com.sun.grizzly.tcp.Constants;
 import org.apache.catalina.util.RequestUtil;
 
 import javax.servlet.RequestDispatcher;
@@ -76,6 +75,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Locale;
+import org.glassfish.grizzly.http.server.Constants;
 
 /**
  * An implementation of SSIExternalResolver that is used with servlets.
@@ -579,7 +579,7 @@ public class SSIServletExternalResolver implements SSIExternalResolver {
             // if a truly empty file
             //were included, but not sure how else to tell.
             if (retVal.equals("") && !req.getMethod().equalsIgnoreCase(
-                    com.sun.grizzly.tcp.http11.Constants.HEAD)) {
+                    Constants.HEAD)) {
                 throw new IOException("Couldn't find file: " + path);
             }
             return retVal;

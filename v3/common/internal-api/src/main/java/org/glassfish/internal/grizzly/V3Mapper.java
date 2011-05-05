@@ -40,11 +40,11 @@
 
 package org.glassfish.internal.grizzly;
 
-import com.sun.grizzly.tcp.Adapter;
-import com.sun.grizzly.util.http.mapper.Mapper;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.glassfish.grizzly.http.server.util.Mapper;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Service;
 
@@ -63,7 +63,6 @@ public class V3Mapper extends ContextMapper {
 
 
     public V3Mapper() {
-        super();
     }   
     
     
@@ -90,13 +89,12 @@ public class V3Mapper extends ContextMapper {
      * {@inheritDoc}
      */
     @Override
-    public synchronized void addHost(String name, String[] aliases,
-            Object host) {
+    public synchronized void addHost(String name, String[] aliases, Object host) {
 
         // Prevent any admin related artifacts from being registered on a
         // non-admin listener, and vice versa
-        if ((ADMIN_LISTENER.equals(id) && !ADMIN_VS.equals(name)) ||
-                (!ADMIN_LISTENER.equals(id) && ADMIN_VS.equals(name))) {
+        if (ADMIN_LISTENER.equals(getId()) && !ADMIN_VS.equals(name) ||
+            !ADMIN_LISTENER.equals(getId()) && ADMIN_VS.equals(name)) {
             return;
         }
 
@@ -118,8 +116,8 @@ public class V3Mapper extends ContextMapper {
         
         // Prevent any admin related artifacts from being registered on a
         // non-admin listener, and vice versa
-        if ((ADMIN_LISTENER.equals(id) && !ADMIN_VS.equals(hostName)) ||
-                (!ADMIN_LISTENER.equals(id) && ADMIN_VS.equals(hostName))) {
+        if (ADMIN_LISTENER.equals(getId()) && !ADMIN_VS.equals(hostName) ||
+            !ADMIN_LISTENER.equals(getId()) && ADMIN_VS.equals(hostName)) {
             return;
         }
         
@@ -127,9 +125,8 @@ public class V3Mapper extends ContextMapper {
         // clean all the previously added information, specially the 
         // MappingData.wrapper info as this information cannot apply
         // to this Container.
-        if (adapter != null && adapter.getClass().getName()
-                .equals("org.apache.catalina.connector.CoyoteAdapter")) {
-            super.removeContext(hostName, path);
+        if (adapter != null && "org.apache.catalina.connector.CoyoteAdapter".equals(adapter.getClass().getName())) {
+            removeContext(hostName, path);
         }
         
         super.addContext(hostName, path, context, welcomeResources, resources);

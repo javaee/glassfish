@@ -40,8 +40,9 @@
 
 package com.sun.enterprise.security.ssl;
 
-import com.sun.grizzly.util.net.SSLSupport;
 import com.sun.logging.LogDomains;
+import org.glassfish.grizzly.ssl.SSLSupport;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.cert.CertificateFactory;
@@ -118,14 +119,13 @@ public class GlassfishSSLSupport implements SSLSupport {
         if (keySize == null) {
             int size = 0;
             String cipherSuite = session.getCipherSuite();
-
-            for (int i = 0; i < ciphers.length; i++) {
-                if (cipherSuite.indexOf(ciphers[i].phrase) >= 0) {
-                    size = ciphers[i].keySize;
+            for (CipherData cipher : ciphers) {
+                if (cipherSuite.contains(cipher.phrase)) {
+                    size = cipher.keySize;
                     break;
                 }
             }
-            keySize = Integer.valueOf(size);
+            keySize = size;
             session.putValue(KEY_SIZE_KEY, keySize);
         }
         return keySize;

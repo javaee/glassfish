@@ -82,7 +82,7 @@ public class GrizzlyModuleDescriptor {
 
     private void parse(Document document) {
         Element element = document.getDocumentElement();
-        NodeList adapters = element.getElementsByTagName("adapter");
+        NodeList adapters = element.getElementsByTagName("service");
         for (int i=0;i<adapters.getLength();i++) {
             Node adapter = adapters.item(i);
             NamedNodeMap attrs = adapter.getAttributes();

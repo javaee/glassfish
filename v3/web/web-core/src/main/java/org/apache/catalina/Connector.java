@@ -58,11 +58,11 @@
 
 package org.apache.catalina;
 
-import com.sun.appserv.ProxyHandler;
-import com.sun.grizzly.tcp.Adapter;
-import org.apache.catalina.net.ServerSocketFactory;
-
 import java.security.cert.X509Certificate;
+
+import com.sun.appserv.ProxyHandler;
+import org.apache.catalina.net.ServerSocketFactory;
+import org.glassfish.grizzly.http.server.HttpHandler;
 
 // END SJSAS 6363251
 
@@ -128,7 +128,7 @@ public interface Connector {
      * Return the Container used for processing requests received by this
      * Connector.
      */
-    public Container getContainer();
+    Container getContainer();
 
 
     /**
@@ -137,13 +137,13 @@ public interface Connector {
      *
      * @param container The new Container to use
      */
-    public void setContainer(Container container);
+    void setContainer(Container container);
 
 
     /**
      * Return the "enable DNS lookups" flag.
      */
-    public boolean getEnableLookups();
+    boolean getEnableLookups();
 
 
     /**
@@ -151,13 +151,13 @@ public interface Connector {
      *
      * @param enableLookups The new "enable DNS lookups" flag value
      */
-    public void setEnableLookups(boolean enableLookups);
+    void setEnableLookups(boolean enableLookups);
 
 
     /**
      * Return the server socket factory used by this Container.
      */
-    public ServerSocketFactory getFactory();
+    ServerSocketFactory getFactory();
 
 
     /**
@@ -165,13 +165,13 @@ public interface Connector {
      *
      * @param factory The new server socket factory
      */
-    public void setFactory(ServerSocketFactory factory);
+    void setFactory(ServerSocketFactory factory);
 
 
     /**
      * Return descriptive information about this Connector implementation.
      */
-    public String getInfo();
+    String getInfo();
 
 
     /**
@@ -179,7 +179,7 @@ public interface Connector {
      * it comes in on a non-SSL port and is subject to a security constraint
      * with a transport guarantee that requires SSL.
      */
-    public int getRedirectPort();
+    int getRedirectPort();
 
 
     /**
@@ -187,14 +187,14 @@ public interface Connector {
      *
      * @param redirectPort The redirect port number (non-SSL to SSL)
      */
-    public void setRedirectPort(int redirectPort);
+    void setRedirectPort(int redirectPort);
 
 
     /**
      * Return the scheme that will be assigned to requests received
      * through this connector.  Default value is "http".
      */
-    public String getScheme();
+    String getScheme();
 
 
     /**
@@ -203,14 +203,14 @@ public interface Connector {
      *
      * @param scheme The new scheme
      */
-    public void setScheme(String scheme);
+    void setScheme(String scheme);
 
 
     /**
      * Return the secure connection flag that will be assigned to requests
      * received through this connector.  Default value is "false".
      */
-    public boolean getSecure();
+    boolean getSecure();
 
 
     /**
@@ -219,13 +219,13 @@ public interface Connector {
      *
      * @param secure The new secure connection flag
      */
-    public void setSecure(boolean secure);
+    void setSecure(boolean secure);
 
 
     /**
      * Return the <code>Service</code> with which we are associated (if any).
      */
-    public Service getService();
+    Service getService();
 
 
     /**
@@ -233,7 +233,7 @@ public interface Connector {
      *
      * @param service The service that owns this Engine
      */
-    public void setService(Service service);
+    void setService(Service service);
 
 
     // BEGIN S1AS 5000999
@@ -242,14 +242,14 @@ public interface Connector {
      *
      * @param defaultHost The default host for this Connector
      */
-    public void setDefaultHost(String defaultHost);
+    void setDefaultHost(String defaultHost);
 
     /**
      * Gets the default host of this Connector.
      *
      * @return The default host of this Connector
      */
-    public String getDefaultHost();
+    String getDefaultHost();
     // END S1AS 5000999
 
 
@@ -260,7 +260,7 @@ public interface Connector {
      * @return true if this connector is receiving its requests from
      * a trusted intermediate server, false otherwise
      */
-    public boolean getAuthPassthroughEnabled();
+    boolean getAuthPassthroughEnabled();
 
     /**
      * Sets the value of this connector's authPassthroughEnabled flag.
@@ -268,7 +268,7 @@ public interface Connector {
      * @param authPassthroughEnabled true if this connector is receiving its
      * requests from a trusted intermediate server, false otherwise
      */
-    public void setAuthPassthroughEnabled(boolean authPassthroughEnabled);
+    void setAuthPassthroughEnabled(boolean authPassthroughEnabled);
 
     /**
      * Gets the ProxyHandler instance associated with this CoyoteConnector.
@@ -276,20 +276,20 @@ public interface Connector {
      * @return ProxyHandler instance associated with this CoyoteConnector,
      * or null
      */
-    public ProxyHandler getProxyHandler();
+    ProxyHandler getProxyHandler();
 
     /**
      * Sets the ProxyHandler implementation for this CoyoteConnector to use.
      * 
      * @param proxyHandler ProxyHandler instance to use
      */
-    public void setProxyHandler(ProxyHandler proxyHandler);
+    void setProxyHandler(ProxyHandler proxyHandler);
     // END S1AS 6188932
     
     /**
      * Gets the name of this Connector.
      */
-    public String getName();
+    String getName();
 
     // --------------------------------------------------------- Public Methods
 
@@ -298,14 +298,14 @@ public interface Connector {
      * Create (or allocate) and return a Request object suitable for
      * specifying the contents of a Request to the responsible Container.
      */
-    public Request createRequest();
+    Request createRequest();
 
 
     /**
      * Create (or allocate) and return a Response object suitable for
      * receiving the contents of a Response from the responsible Container.
      */
-    public Response createResponse();
+    Response createResponse();
 
     /**
      * Invoke a pre-startup initialization. This is used to allow connectors
@@ -313,14 +313,14 @@ public interface Connector {
      *
      * @exception LifecycleException If this server was already initialized.
      */
-    public void initialize()
+    void initialize()
     throws LifecycleException;
 
     // START OF SJSAS 8.1 PE 6191830
     /**
       * Get the underlying WebContainer certificate for the request     
       */
-    public X509Certificate[] getCertificates(Request request);
+    X509Certificate[] getCertificates(Request request);
     // END OF SJSAS 8.1 PE 6191830
 
     // START CR 6309511
@@ -328,13 +328,13 @@ public interface Connector {
      * Get the encoding to be used for byte<-->char conversion for
      * data sent/received via this Connector
      */
-    public String getURIEncoding();
+    String getURIEncoding();
 
     /**
      * Set the encoding to be used for byte<-->char conversion for
      * data sent/received via this Connector
      */
-    public void setURIEncoding(String encoding);
+    void setURIEncoding(String encoding);
     // END CR 6309511
 
     
@@ -342,12 +342,12 @@ public interface Connector {
     /**
      * Set the <code>Adapter</code> used by this connector.
      */
-    public void setAdapter(Adapter adapter);
+    void setHandler(HttpHandler adapter);
     
     
     /**
-     * Get the <code>Adapter</code> used by this connector.
-     */    
-    public Adapter getAdapter();
+     * Get the <code>HttpHandler</code> used by this connector.
+     */
+    HttpHandler getHandler();
     // END SJSAS 6363251
 }

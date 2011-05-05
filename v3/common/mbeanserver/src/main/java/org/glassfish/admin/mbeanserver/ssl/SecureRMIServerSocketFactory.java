@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,11 +37,8 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.mbeanserver.ssl;
 
-import com.sun.grizzly.config.SSLConfigHolder;
-import com.sun.grizzly.config.dom.Ssl;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -53,185 +50,184 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLServerSocket;
 import javax.rmi.ssl.SslRMIServerSocketFactory;
+
 import org.glassfish.admin.mbeanserver.JMXSslConfigHolder;
 import org.glassfish.admin.mbeanserver.Util;
+import org.glassfish.grizzly.config.SSLConfigurator;
+import org.glassfish.grizzly.config.dom.Ssl;
 import org.jvnet.hk2.component.Habitat;
 
 /**
+ * Inner class for SSL support for JMX connection using RMI.
  *
  * @author prasad
  */
-    /**
-     * Inner class for SSL support for JMX connection using RMI.
-     */
-    public class SecureRMIServerSocketFactory
-            extends SslRMIServerSocketFactory {
+public class SecureRMIServerSocketFactory
+        extends SslRMIServerSocketFactory {
 
-        private final InetAddress mAddress;
-        private final Ssl ssl;
-        // The list of cipher suite
-        private volatile String[] enabledCipherSuites = null;
-        //the list of protocols
-        private volatile String[] enabledProtocols = null;
-        private final Object cipherSuitesSync = new Object();
-        private final Object protocolsSync = new Object();
-        private final Habitat habitat;
-        private Map socketMap = new HashMap<Integer, Socket>();
+    private final InetAddress mAddress;
+    private final Habitat habitat;
+    private final Ssl ssl;
+    // The list of cipher suite
+    private volatile String[] enabledCipherSuites = null;
+    //the list of protocols
+    private volatile String[] enabledProtocols = null;
+    private final Object cipherSuitesSync = new Object();
+    private final Object protocolsSync = new Object();
+    private Map socketMap = new HashMap<Integer, Socket>();
 
-        public SecureRMIServerSocketFactory(final Ssl sslConfig,
-                                            final Habitat habitat,
-                                            final InetAddress addr) {
-            mAddress = addr;
-            ssl = sslConfig;
-            this.habitat = habitat;
-            Util.getLogger().info("Creating a SecureRMIServerSocketFactory @ " +
-                    addr.getHostAddress() + "with ssl config = " + ssl.toString());
+    public SecureRMIServerSocketFactory(final Habitat habitat,
+            final Ssl sslConfig,
+            final InetAddress addr) {
+        mAddress = addr;
+        this.habitat = habitat;
+        ssl = sslConfig;
+        Util.getLogger().info("Creating a SecureRMIServerSocketFactory @ " +
+            addr.getHostAddress() + "with ssl config = " + ssl.toString());
 
-        }
+    }
 
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj instanceof SecureRMIServerSocketFactory) {
-                 return(this.hashCode()==obj.hashCode());
-            } else  {
-                return false;
-            }
-        }
-
-        @Override
-        public int hashCode() {
-            return ssl.hashCode() + mAddress.hashCode();
-        }
-
-        @Override
-        public ServerSocket createServerSocket(int port) throws IOException {
-            //debug( "MyRMIServerSocketFactory.createServerSocket(): " + mAddress + " : " + port );
-            if(socketMap.containsKey(new Integer(port))) {
-                return (ServerSocket)socketMap.get(new Integer(port));
-            }
-
-            final int backlog = 5;  // plenty
-            // we use a custom class here. The reason is mentioned in the class.
-            final JMXSslConfigHolder sslConfigHolder;
-            try {
-                sslConfigHolder = new JMXSslConfigHolder(ssl, habitat);
-            } catch (SSLException ssle) {
-                throw new IllegalStateException(ssle);
-            }
-
-            sslConfigHolder.configureSSL();
-            final SSLContext context = sslConfigHolder.getSSLContext();
-            SSLServerSocket sslSocket =
-                    (SSLServerSocket) context.getServerSocketFactory().
-                    createServerSocket(port, backlog, mAddress);
-            configureSSLSocket(sslSocket, sslConfigHolder);
-            Util.getLogger().info("SSLServerSocket " +
-                    sslSocket.getLocalSocketAddress() + "and "+ sslSocket.toString()+" created");
-
-            //sslSocket.startHandshake();
-            //debug( "MyRMIServerSocketFactory.createServerSocket(): " + mAddress + " : " + port );
-            socketMap.put(new Integer(port), sslSocket);
-            return sslSocket;
-        }
-
-        private void configureSSLSocket(SSLServerSocket sslSocket,
-                SSLConfigHolder sslConfigHolder) {
-            if (sslConfigHolder.getEnabledCipherSuites() != null) {
-                if (enabledCipherSuites == null) {
-                    synchronized (cipherSuitesSync) {
-                        if (enabledCipherSuites == null) {
-                            enabledCipherSuites = configureEnabledCiphers(sslSocket,
-                                    sslConfigHolder.getEnabledCipherSuites());
-                        }
-                    }
-                }
-
-                sslSocket.setEnabledCipherSuites(enabledCipherSuites);
-            }
-
-            if (sslConfigHolder.getEnabledProtocols() != null) {
-                if (enabledProtocols == null) {
-                    synchronized (protocolsSync) {
-                        if (enabledProtocols == null) {
-                            enabledProtocols = configureEnabledProtocols(sslSocket,
-                                    sslConfigHolder.getEnabledProtocols());
-                        }
-                    }
-                }
-                sslSocket.setEnabledProtocols(enabledProtocols);
-            }
-
-            sslSocket.setUseClientMode(sslConfigHolder.isClientMode());
-        }
-
-        /**
-         * Return the list of allowed protocol.
-         * @return String[] an array of supported protocols.
-         */
-        private final static String[] configureEnabledProtocols(
-                SSLServerSocket socket, String[] requestedProtocols) {
-
-            String[] supportedProtocols = socket.getSupportedProtocols();
-            String[] protocols = null;
-            ArrayList<String> list = null;
-            for (String supportedProtocol : supportedProtocols) {
-                /*
-                 * Check to see if the requested protocol is among the
-                 * supported protocols, i.e., may be enabled
-                 */
-                for (String protocol : requestedProtocols) {
-                    protocol = protocol.trim();
-                    if (supportedProtocol.equals(protocol)) {
-                        if (list == null) {
-                            list = new ArrayList<String>();
-                        }
-                        list.add(protocol);
-                        break;
-                    }
-                }
-            }
-
-            if (list != null) {
-                protocols = list.toArray(new String[list.size()]);
-            }
-
-            return protocols;
-        }
-
-        /**
-         * Determines the SSL cipher suites to be enabled.
-         *
-         * @return Array of SSL cipher suites to be enabled, or null if none of the
-         * requested ciphers are supported
-         */
-        private final static String[] configureEnabledCiphers(SSLServerSocket socket,
-                String[] requestedCiphers) {
-
-            String[] supportedCiphers = socket.getSupportedCipherSuites();
-            String[] ciphers = null;
-            ArrayList<String> list = null;
-            for (String supportedCipher : supportedCiphers) {
-                /*
-                 * Check to see if the requested protocol is among the
-                 * supported protocols, i.e., may be enabled
-                 */
-                for (String cipher : requestedCiphers) {
-                    cipher = cipher.trim();
-                    if (supportedCipher.equals(cipher)) {
-                        if (list == null) {
-                            list = new ArrayList<String>();
-                        }
-                        list.add(cipher);
-                        break;
-                    }
-                }
-            }
-
-            if (list != null) {
-                ciphers = list.toArray(new String[list.size()]);
-            }
-
-            return ciphers;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof SecureRMIServerSocketFactory) {
+            return (this.hashCode() == obj.hashCode());
+        } else {
+            return false;
         }
     }
+
+    @Override
+    public int hashCode() {
+        return ssl.hashCode() + mAddress.hashCode();
+    }
+
+    @Override
+    public ServerSocket createServerSocket(int port) throws IOException {
+        //debug( "MyRMIServerSocketFactory.createServerSocket(): " + mAddress + " : " + port );
+        if (socketMap.containsKey(port)) {
+            return (ServerSocket) socketMap.get(port);
+        }
+
+        final int backlog = 5;  // plenty
+        // we use a custom class here. The reason is mentioned in the class.
+        final JMXSslConfigHolder sslConfigHolder;
+        try {
+            sslConfigHolder = new JMXSslConfigHolder(habitat, ssl);
+        } catch (SSLException ssle) {
+            throw new IllegalStateException(ssle);
+        }
+
+        final SSLContext context = sslConfigHolder.getSslContext();
+        SSLServerSocket sslSocket =
+                (SSLServerSocket) context.getServerSocketFactory().
+                createServerSocket(port, backlog, mAddress);
+        configureSSLSocket(sslSocket, sslConfigHolder);
+        Util.getLogger().info("SSLServerSocket " +
+            sslSocket.getLocalSocketAddress() + "and " + sslSocket.toString() + " created");
+        //sslSocket.startHandshake();
+        //debug( "MyRMIServerSocketFactory.createServerSocket(): " + mAddress + " : " + port );
+        socketMap.put(port, sslSocket);
+        return sslSocket;
+    }
+
+    private void configureSSLSocket(SSLServerSocket sslSocket,
+            SSLConfigurator sslConfigHolder) {
+        if (sslConfigHolder.getEnabledCipherSuites() != null) {
+            if (enabledCipherSuites == null) {
+                synchronized (cipherSuitesSync) {
+                    if (enabledCipherSuites == null) {
+                        enabledCipherSuites = configureEnabledCiphers(sslSocket,
+                                sslConfigHolder.getEnabledCipherSuites());
+                    }
+                }
+            }
+
+            sslSocket.setEnabledCipherSuites(enabledCipherSuites);
+        }
+
+        if (sslConfigHolder.getEnabledProtocols() != null) {
+            if (enabledProtocols == null) {
+                synchronized (protocolsSync) {
+                    if (enabledProtocols == null) {
+                        enabledProtocols = configureEnabledProtocols(sslSocket,
+                                sslConfigHolder.getEnabledProtocols());
+                    }
+                }
+            }
+            sslSocket.setEnabledProtocols(enabledProtocols);
+        }
+
+        sslSocket.setUseClientMode(sslConfigHolder.isClientMode());
+    }
+
+    /**
+     * Return the list of allowed protocol.
+     *
+     * @return String[] an array of supported protocols.
+     */
+    private final static String[] configureEnabledProtocols(
+            SSLServerSocket socket, String[] requestedProtocols) {
+
+        String[] supportedProtocols = socket.getSupportedProtocols();
+        String[] protocols = null;
+        ArrayList<String> list = null;
+        for (String supportedProtocol : supportedProtocols) {
+            /*
+             * Check to see if the requested protocol is among the
+             * supported protocols, i.e., may be enabled
+             */
+            for (String protocol : requestedProtocols) {
+                protocol = protocol.trim();
+                if (supportedProtocol.equals(protocol)) {
+                    if (list == null) {
+                        list = new ArrayList<String>();
+                    }
+                    list.add(protocol);
+                    break;
+                }
+            }
+        }
+
+        if (list != null) {
+            protocols = list.toArray(new String[list.size()]);
+        }
+
+        return protocols;
+    }
+
+    /**
+     * Determines the SSL cipher suites to be enabled.
+     *
+     * @return Array of SSL cipher suites to be enabled, or null if none of the
+     * requested ciphers are supported
+     */
+    private final static String[] configureEnabledCiphers(SSLServerSocket socket,
+            String[] requestedCiphers) {
+
+        String[] supportedCiphers = socket.getSupportedCipherSuites();
+        String[] ciphers = null;
+        ArrayList<String> list = null;
+        for (String supportedCipher : supportedCiphers) {
+            /*
+             * Check to see if the requested protocol is among the
+             * supported protocols, i.e., may be enabled
+             */
+            for (String cipher : requestedCiphers) {
+                cipher = cipher.trim();
+                if (supportedCipher.equals(cipher)) {
+                    if (list == null) {
+                        list = new ArrayList<String>();
+                    }
+                    list.add(cipher);
+                    break;
+                }
+            }
+        }
+
+        if (list != null) {
+            ciphers = list.toArray(new String[list.size()]);
+        }
+
+        return ciphers;
+    }
+}

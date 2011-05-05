@@ -55,7 +55,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-import com.sun.grizzly.config.dom.*;
+import org.glassfish.grizzly.config.dom.*;
 import com.sun.enterprise.config.serverbeans.BackendPrincipal;
 
 /**

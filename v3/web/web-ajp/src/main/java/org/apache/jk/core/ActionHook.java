@@ -36,39 +36,53 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
+ *
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ * Copyright 2004 The Apache Software Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-package com.sun.enterprise.v3.services.impl.monitor;
+package org.apache.jk.core;
 
-import com.sun.grizzly.http.FileCache;
-import com.sun.grizzly.http.FileCache.FileCacheEntry;
-import com.sun.grizzly.ssl.SSLFileCacheFactory;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * Monitoring aware {@link SSLFileCacheFactory} implementation.
+ * Action hook. Actions represent the callback mechanism used by
+ * coyote servlet containers to request operations on the coyote connectors.
+ * Some standard actions are defined in ActionCode, however custom
+ * actions are permitted.
  *
- * @author Alexey Stashok
+ * The param object can be used to pass and return information related to the
+ * action.
+ *
+ * This interface is typically implemented by ProtocolHandlers, and the param
+ * is usually a Request or Response object.
+ *
+ * @author Remy Maucherat
  */
-public class MonitorableSSLFileCacheFactory extends SSLFileCacheFactory {
-    // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
-    private final GrizzlyMonitoring grizzlyMonitoring;
-    private final String monitoringId;
+public interface ActionHook {
 
-    public MonitorableSSLFileCacheFactory(GrizzlyMonitoring grizzlyMonitoring,
-            String monitoringId) {
-        this.grizzlyMonitoring = grizzlyMonitoring;
-        this.monitoringId = monitoringId;
-        cacheManager = new ConcurrentLinkedQueue<FileCacheEntry>();
-        isMonitoringEnabled = true;
-    }
-    
-    @Override
-    protected FileCache createFileCache() {
-        return new MonitorableSSLFileCache(grizzlyMonitoring, monitoringId);
-    }
 
-    @Override
-    public void setIsMonitoringEnabled(boolean isMonitoringEnabled) {
-    }
+    /**
+     * Send an action to the connector.
+     * 
+     * @param actionCode Type of the action
+     * @param param Action parameter
+     */
+    public void action(ActionCode actionCode, Object param);
+
+
 }

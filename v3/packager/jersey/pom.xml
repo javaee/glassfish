@@ -95,7 +95,7 @@
 
     <dependencies>
        <dependency>	  
-	    <groupId>com.sun.jersey.glassfish.v3</groupId>
+	    <groupId>com.sun.jersey.glassfish.v32</groupId>
 	    <artifactId>jersey-gfv3-core</artifactId>
             <version>${jersey.version}</version>
             <type>zip</type>
@@ -135,6 +135,13 @@
 	    </build>
         </profile>
    </profiles>        
+    <repositories>  
+        <repository>
+            <id>m2-repository</id>
+            <name>Java.net Repository for Glassfish</name>
+            <url>http://download.java.net/maven/2</url>
+        </repository>    
+    </repositories>
 
 </project>
 

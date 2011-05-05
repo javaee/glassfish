@@ -60,6 +60,9 @@ package org.apache.jk.core;
 
 import java.util.Hashtable;
 import javax.management.ObjectName;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.Note;
+import org.glassfish.grizzly.http.util.MessageBytes;
 
 /**
  * The controller object. It manages all other jk objects, acting as the root of
@@ -78,7 +81,10 @@ public class WorkerEnv {
 
     public static final int ENDPOINT_NOTE=0;
     public static final int REQUEST_NOTE=1;
-    public static final int SSL_CERT_NOTE=16;
+
+    public static final Note<MessageBytes> SSL_CERT_NOTE =
+            Request.<MessageBytes>createNote("AJP_SSL_CERT_NOTE");
+
     int noteId[]=new int[4];
     String noteName[][]=new String[4][];
     private Object notes[]=new Object[32];

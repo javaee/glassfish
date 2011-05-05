@@ -61,7 +61,7 @@
 package org.apache.tomcat.util.digester;
 
 
-import com.sun.grizzly.util.IntrospectionUtils;
+import org.glassfish.grizzly.http.server.util.IntrospectionUtils;
 import org.xml.sax.*;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.DefaultHandler;

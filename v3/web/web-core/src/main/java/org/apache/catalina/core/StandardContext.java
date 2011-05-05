@@ -58,11 +58,9 @@
 
 package org.apache.catalina.core;
 
-import com.sun.grizzly.util.buf.CharChunk;
-import com.sun.grizzly.util.buf.MessageBytes;
-import com.sun.grizzly.util.http.mapper.AlternateDocBase;
-import com.sun.grizzly.util.http.mapper.Mapper;
-import com.sun.grizzly.util.http.mapper.MappingData;
+import org.glassfish.grizzly.http.server.util.AlternateDocBase;
+import org.glassfish.grizzly.http.server.util.Mapper;
+import org.glassfish.grizzly.http.server.util.MappingData;
 import org.apache.catalina.*;
 import org.apache.catalina.deploy.*;
 import org.apache.catalina.loader.WebappLoader;
@@ -106,6 +104,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.grizzly.http.util.CharChunk;
+import org.glassfish.grizzly.http.util.MessageBytes;
 
 /**
  * Standard implementation of the <b>Context</b> interface.  Each
@@ -171,7 +171,7 @@ public class StandardContext
             mySecurityManager = AccessController.doPrivileged(
                     new PrivilegedCreateSecurityManager());
         }
-        
+
         //START PWC 6403328
         this.logPrefix = sm.getString("standardContext.logPrefix", logName());
         //END PWC 6403328
@@ -188,7 +188,7 @@ public class StandardContext
      * Associated host name.
      */
     private String hostName;
-    
+
     /**
      * The list of instantiated application event listeners
      */
@@ -260,7 +260,7 @@ public class StandardContext
     // END RIMOD 4894300
 
     /**
-     *  Is the context initialized. 
+     *  Is the context initialized.
      */
     private boolean isContextInitializedCalled = false;
 
@@ -307,13 +307,13 @@ public class StandardContext
      * The distributable flag for this web application.
      */
     private boolean distributable = false;
-    
+
     /**
      * Thread local data used during request dispatch.
      */
     private transient ThreadLocal<DispatchData> dispatchData =
         new ThreadLocal<DispatchData>();
-        
+
     /**
      * The document root for this web application.
      */
@@ -367,14 +367,14 @@ public class StandardContext
      * The login configuration descriptor for this web application.
      */
     private LoginConfig loginConfig = null;
-    
+
     // START PWC 6403328
     /**
      * Log prefix string
      */
     private String logPrefix = null;
     // END PWC 6403328
-    
+
     /**
      * The mapper associated with this context.
      */
@@ -432,7 +432,7 @@ public class StandardContext
      * The DefaultContext override flag for this web application.
      */
     private boolean override = false;
-       
+
     /**
      * The original document root for this web application.
      */
@@ -894,11 +894,11 @@ public class StandardContext
     public List<EventListener> getApplicationEventListeners() {
         return eventListeners;
     }
-    
+
     public List<HttpSessionListener> getSessionListeners() {
         return sessionListeners;
     }
-    
+
     /**
      * Return the application available flag for this Context.
      */
@@ -1461,7 +1461,7 @@ public class StandardContext
     public String getOriginalDocBase() {
         return (this.originalDocBase);
     }
-    
+
     /**
      * Set the original document root for this Context, which can be an
      * absolute pathname, a relative pathname, or a URL.
@@ -1471,7 +1471,7 @@ public class StandardContext
     public void setOriginalDocBase(String docBase) {
         this.originalDocBase = docBase;
     }
-    
+
     /**
      * Return the privileged flag for this web application.
      */
@@ -1974,7 +1974,7 @@ public class StandardContext
     public void addApplicationParameter(ApplicationParameter parameter) {
         String newName = parameter.getName();
         Iterator<ApplicationParameter> i =
-            applicationParameters.iterator(); 
+            applicationParameters.iterator();
         while (i.hasNext()) {
             ApplicationParameter applicationParameter = i.next();
             if (newName.equals(applicationParameter.getName())) {
@@ -2496,7 +2496,7 @@ public class StandardContext
         }
 
         /*
-         * Make sure the given Filter name and instance are unique within 
+         * Make sure the given Filter name and instance are unique within
          * this context
          */
         synchronized (filterDefs) {
@@ -2651,10 +2651,10 @@ public class StandardContext
     public String getSessionParameterName() {
         if (sessionCookieNameInitialized) {
             if (sessionCookieName != null && (!sessionCookieName.isEmpty())) {
-               return sessionCookieName; 
+               return sessionCookieName;
             }
         }
-        
+
         return Globals.SESSION_PARAMETER_NAME;
     }
 
@@ -2740,7 +2740,7 @@ public class StandardContext
             addListener(loadListener(getClassLoader(), className),
                         isProgrammatic);
         } catch (Throwable t) {
-            throw new IllegalArgumentException(t); 
+            throw new IllegalArgumentException(t);
         }
     }
 
@@ -2771,7 +2771,7 @@ public class StandardContext
 
         if ((t instanceof ServletContextListener) && isProgrammatic &&
                 !isProgrammaticServletContextListenerRegistrationAllowed) {
-            throw new IllegalArgumentException("Not allowed to register " + 
+            throw new IllegalArgumentException("Not allowed to register " +
                 "ServletContextListener programmatically");
         }
 
@@ -2826,7 +2826,7 @@ public class StandardContext
         try {
             addListener(createListenerInstance(listenerClass));
         } catch (Throwable t) {
-            throw new IllegalArgumentException(t); 
+            throw new IllegalArgumentException(t);
         }
     }
 
@@ -2907,7 +2907,7 @@ public class StandardContext
     public void setEffectiveMinorVersion(int effectiveMinorVersion) {
         this.effectiveMinorVersion = effectiveMinorVersion;
     }
-    
+
     public int getEffectiveMinorVersion() {
         return effectiveMinorVersion;
     }
@@ -3120,7 +3120,7 @@ public class StandardContext
     /**
      * Adds the given servlet mappings to this Context.
      *
-     * <p>If any of the specified URL patterns are already mapped to a 
+     * <p>If any of the specified URL patterns are already mapped to a
      * different Servlet, no updates will be performed.
      *
      * @param servletMap the Servlet mappings containing the Servlet name
@@ -3140,7 +3140,7 @@ public class StandardContext
     /**
      * Adds the given servlet mappings to this Context.
      *
-     * <p>If any of the specified URL patterns are already mapped to a 
+     * <p>If any of the specified URL patterns are already mapped to a
      * different Servlet, no updates will be performed.
      *
      * @param name the Servlet name
@@ -3165,7 +3165,7 @@ public class StandardContext
                 }
 
                 // Ignore any conflicts with the container provided
-                // Default- and JspServlet 
+                // Default- and JspServlet
                 String existing = servletMappings.get(pattern);
                 if (existing != null &&
                         !existing.equals(Constants.DEFAULT_SERVLET_NAME) &&
@@ -3185,7 +3185,7 @@ public class StandardContext
                 }
                 return Collections.emptySet();
             } else {
-                return conflicts;   
+                return conflicts;
             }
         }
     }
@@ -3232,7 +3232,7 @@ public class StandardContext
         }
 
         /*
-         * Add this mapping to our registered set. Make sure that it is 
+         * Add this mapping to our registered set. Make sure that it is
          * possible to override the mappings of the container provided
          * Default- and JspServlet, and that these servlets are prevented
          * from overriding any user-defined mappings (depending on the order
@@ -3376,7 +3376,7 @@ public class StandardContext
      *
      * @param servletName the servlet name
      * @param instance the servlet instance
-     * @param initParams Map containing the initialization parameters for 
+     * @param initParams Map containing the initialization parameters for
      * the servlet
      *
      * @throws ServletException if the servlet fails to be initialized
@@ -3392,7 +3392,7 @@ public class StandardContext
      *
      * @param servletName the servlet name
      * @param servlet the servlet instance
-     * @param initParams Map containing the initialization parameters for 
+     * @param initParams Map containing the initialization parameters for
      * the servlet
      * @param urlPatterns the URL patterns that will be mapped to the servlet
      *
@@ -3434,9 +3434,9 @@ public class StandardContext
                 }
             }
         }
-      
+
         /*
-         * Make sure the given Servlet name and instance are unique within 
+         * Make sure the given Servlet name and instance are unique within
          * this context
          */
         synchronized (children) {
@@ -3457,7 +3457,7 @@ public class StandardContext
                 // Complete preliminary servlet registration
                 wrapper = regis.getWrapper();
             }
-                         
+
             wrapper.setName(servletName);
             wrapper.setServlet(servlet);
             if (initParams != null) {
@@ -3641,7 +3641,7 @@ public class StandardContext
             }
         }
 
-        i = wrapperListeners.iterator(); 
+        i = wrapperListeners.iterator();
         while (i.hasNext()) {
             String wrapperListener = i.next();
             try {
@@ -4017,7 +4017,7 @@ public class StandardContext
     public void removeSecurityRoles() {
         // Inform interested listeners
         if (notifyContainerListeners) {
-            Iterator<String> i = securityRoles.iterator(); 
+            Iterator<String> i = securityRoles.iterator();
             while (i.hasNext()) {
                 fireContainerEvent("removeSecurityRole", i.next());
             }
@@ -4199,7 +4199,7 @@ public class StandardContext
     public void removeApplicationParameter(String name) {
         ApplicationParameter match = null;
         Iterator<ApplicationParameter> i =
-            applicationParameters.iterator(); 
+            applicationParameters.iterator();
         while (i.hasNext()) {
             ApplicationParameter applicationParameter = i.next();
             // Make sure this parameter is currently present
@@ -4241,7 +4241,7 @@ public class StandardContext
     public void removeConstraints() {
         // Inform interested listeners
         if (notifyContainerListeners) {
-            Iterator<SecurityConstraint> i = constraints.iterator(); 
+            Iterator<SecurityConstraint> i = constraints.iterator();
             while (i.hasNext()) {
                 fireContainerEvent("removeConstraint", i.next());
             }
@@ -4330,7 +4330,7 @@ public class StandardContext
     public void removeFilterMaps() {
         // Inform interested listeners
         if (notifyContainerListeners) {
-            Iterator<FilterMap> i = filterMaps.iterator(); 
+            Iterator<FilterMap> i = filterMaps.iterator();
             while (i.hasNext()) {
                 fireContainerEvent("removeFilterMap", i.next());
             }
@@ -4545,7 +4545,7 @@ public class StandardContext
         synchronized (watchedResources) {
             // Inform interested listeners
             if (notifyContainerListeners) {
-                Iterator<String> i = watchedResources.iterator(); 
+                Iterator<String> i = watchedResources.iterator();
                 while (i.hasNext()) {
                     fireContainerEvent("removeWatchedResource", i.next());
                 }
@@ -4553,7 +4553,7 @@ public class StandardContext
             watchedResources.clear();
         }
     }
-         
+
     @Override
     public void removeWelcomeFiles() {
         if (notifyContainerListeners) {
@@ -4568,7 +4568,7 @@ public class StandardContext
     public void removeWrapperLifecycles() {
         // Inform interested listeners
         if (notifyContainerListeners) {
-            Iterator<String> i = wrapperLifecycles.iterator(); 
+            Iterator<String> i = wrapperLifecycles.iterator();
             while (i.hasNext()) {
                 fireContainerEvent("removeWrapperLifecycle", i.next());
             }
@@ -4580,7 +4580,7 @@ public class StandardContext
     public void removeWrapperListeners() {
         // Inform interested listeners
         if (notifyContainerListeners) {
-            Iterator<String> i = wrapperListeners.iterator(); 
+            Iterator<String> i = wrapperListeners.iterator();
             while (i.hasNext()) {
                 fireContainerEvent("removeWrapperListener", i.next());
             }
@@ -4779,7 +4779,7 @@ public class StandardContext
                         regis.getName()));
             }
         }
-        
+
         isContextInitializedCalled = true;
     }
 
@@ -4826,7 +4826,7 @@ public class StandardContext
             getServletContext());
         int len = contextListeners.size();
         for (int i = 0; i < len; i++) {
-            // Invoke in reverse order of declaration 
+            // Invoke in reverse order of declaration
             ServletContextListener listener =
                 contextListeners.get((len - 1) - i);
             if (listener instanceof RestrictedServletContextListener) {
@@ -4871,7 +4871,7 @@ public class StandardContext
             return true;
         }
 
-        Iterator<EventListener> iter = eventListeners.iterator(); 
+        Iterator<EventListener> iter = eventListeners.iterator();
         while (iter.hasNext()) {
             EventListener listener = iter.next();
             // ServletContextListeners and HttpSessionListeners
@@ -4882,7 +4882,7 @@ public class StandardContext
             }
             fireContainerEvent(ContainerEvent.PRE_DESTROY, listener);
         }
-        
+
         eventListeners.clear();
 
         return true;
@@ -5629,7 +5629,7 @@ public class StandardContext
         } catch(Throwable t) {
             // started was "true" when it first enters the try block.
             // Note that it is set to false after STOP_EVENT is fired.
-            // One need to fire STOP_EVENT to clean up naming information 
+            // One need to fire STOP_EVENT to clean up naming information
             // if START_EVENT is processed successfully.
             if (started) {
                 lifecycle.fireLifecycleEvent(STOP_EVENT, null);
@@ -6395,7 +6395,7 @@ public class StandardContext
         return new ObjectName(getDomain() + ":" + onameStr);
     }
 
-    public void updateObjectName() { 
+    public void updateObjectName() {
         try {
             StandardHost host = (StandardHost) getParent();
             oname = createObjectName(host.getDomain(), host.getJmxName());
@@ -6592,9 +6592,9 @@ public class StandardContext
     public void create() throws Exception{
         init();
     }
-    
+
     // ------------------------------------------------- ServletContext Methods
-            
+
     /**
      * Return the value of the specified context attribute, if any;
      * otherwise return <code>null</code>.
@@ -6602,15 +6602,15 @@ public class StandardContext
     public Object getAttribute(String name) {
         return context.getAttribute(name);
     }
-    
+
     /**
      * Return an enumeration of the names of the context attributes
      * associated with this context.
      */
     public Enumeration<String> getAttributeNames() {
         return context.getAttributeNames();
-    }      
-        
+    }
+
     /**
      * Returns the context path of the web application.
      */
@@ -6620,10 +6620,10 @@ public class StandardContext
 
     /**
      * Return a <code>ServletContext</code> object that corresponds to a
-     * specified URI on the server.  
+     * specified URI on the server.
      */
-    public ServletContext getContext(String uri) {       
-        
+    public ServletContext getContext(String uri) {
+
         // Validate the format of the specified argument
         if ((uri == null) || (!uri.startsWith("/"))) {
             return (null);
@@ -6661,7 +6661,7 @@ public class StandardContext
             return (null);
         }
     }
-    
+
     /**
      * Return the value of the specified initialization parameter, or
      * <code>null</code> if this parameter does not exist.
@@ -6677,7 +6677,7 @@ public class StandardContext
     public Enumeration<String> getInitParameterNames() {
         return context.getInitParameterNames();
     }
-    
+
     /**
      * @return true if the context initialization parameter with the given
      * name and value was set successfully on this ServletContext, and false
@@ -6691,8 +6691,8 @@ public class StandardContext
                              "setInitParameter", getName()));
         }
         return context.setInitParameter(name, value);
-    }    
-        
+    }
+
     /**
      * Return the major version of the Java Servlet API that we implement.
      */
@@ -6706,13 +6706,13 @@ public class StandardContext
     public int getMinorVersion() {
         return context.getMinorVersion();
     }
-        
+
     /**
      * Return the MIME type of the specified file, or <code>null</code> if
      * the MIME type cannot be determined.
      */
     public String getMimeType(String file) {
-        
+
         if (file == null)
             return (null);
         int period = file.lastIndexOf(".");
@@ -6722,15 +6722,15 @@ public class StandardContext
         if (extension.length() < 1)
             return (null);
         return (findMimeMapping(extension));
-        
+
     }
-        
+
     /**
      * Return a <code>RequestDispatcher</code> object that acts as a
      * wrapper for the named servlet.
      */
     public RequestDispatcher getNamedDispatcher(String name) {
-        
+
         // Validate the name argument
         if (name == null)
             return (null);
@@ -6739,25 +6739,25 @@ public class StandardContext
         Wrapper wrapper = (Wrapper) findChild(name);
         if (wrapper == null)
             return (null);
-        
+
         return new ApplicationDispatcher(wrapper, null, null, null, null, name);
-        
+
     }
-    
+
     /**
      * Return the display name of this web application.
      */
     public String getServletContextName() {
         return getDisplayName();
     }
-        
+
     /**
      * Remove the context attribute with the specified name, if any.
      */
     public void removeAttribute(String name) {
         context.removeAttribute(name);
     }
-            
+
     /**
      * Bind the specified value with the specified context attribute name,
      * replacing any existing value for that name.
@@ -6765,14 +6765,14 @@ public class StandardContext
     public void setAttribute(String name, Object value) {
         context.setAttribute(name, value);
     }
-        
+
     /**
      * Return the name and version of the servlet container.
      */
     public String getServerInfo() {
         return context.getServerInfo();
     }
-        
+
     /**
      * Return the real path corresponding to the given virtual path, or
      * <code>null</code> if the container was unable to perform the
@@ -6813,8 +6813,8 @@ public class StandardContext
         } else {
             return file.getAbsolutePath();
         }
-    }    
-    
+    }
+
     /**
      * Writes the specified message to a servlet log file.
      */
@@ -6829,16 +6829,16 @@ public class StandardContext
             //END PWC 6403328
         }
     }
-    
+
     /**
      * Writes the specified exception and message to a servlet log file.
      */
-    public void log(Exception exception, String message) {     
+    public void log(Exception exception, String message) {
         org.apache.catalina.Logger logger = getLogger();
         if (logger != null)
             logger.log(exception, logName() + message);
-    }       
-        
+    }
+
     /**
      * Writes the specified message and exception to a servlet log file.
      */
@@ -6847,19 +6847,19 @@ public class StandardContext
         if (logger != null)
             logger.log(logName() + message, throwable);
     }
-        
+
     public Servlet getServlet(String name) {
         return context.getServlet(name);
     }
-    
+
     public Enumeration<String> getServletNames() {
         return context.getServletNames();
-    }            
-        
+    }
+
     public Enumeration<Servlet> getServlets() {
         return context.getServlets();
     }
-        
+
     /**
      * Return the requested resource as an <code>InputStream</code>.  The
      * path must be specified according to the rules described under
@@ -6909,7 +6909,7 @@ public class StandardContext
         }
         return (null);
     }
-        
+
     /**
      * Return the URL to the resource that is mapped to a specified path.
      * The path must begin with a "/" and is interpreted as relative to the
@@ -6923,7 +6923,7 @@ public class StandardContext
                 sm.getString("applicationContext.resourcePaths.iae",
                              path));
         }
-        
+
         path = RequestUtil.normalize(path);
         if (path == null)
             return (null);
@@ -6986,7 +6986,7 @@ public class StandardContext
 
         return (null);
     }
-        
+
     /**
      * Return a Set containing the resource paths of resources member of the
      * specified collection. Each path will be a String starting with
@@ -7027,8 +7027,8 @@ public class StandardContext
         }
 
         return (null);
-    }    
-    
+    }
+
     /**
      * Internal implementation of getResourcesPath() logic.
      *
@@ -7067,14 +7067,14 @@ public class StandardContext
         }
         return Collections.unmodifiableSet(set);
     }
-         
+
     /**
      * Return a <code>RequestDispatcher</code> instance that acts as a
      * wrapper for the resource at the given path.  The path must begin
      * with a "/" and is interpreted as relative to the current context root.
      */
     public RequestDispatcher getRequestDispatcher(String path) {
-        
+
         // Validate the path argument
         if (path == null) {
             return null;
@@ -7149,14 +7149,14 @@ public class StandardContext
         String pathInfo = mappingData.pathInfo.toString();
 
         mappingData.recycle();
-        
+
         // Construct a RequestDispatcher to process this request
         return new ApplicationDispatcher
-            (wrapper, uriCC.toString(), wrapperPath, pathInfo, 
+            (wrapper, uriCC.toString(), wrapperPath, pathInfo,
              queryString, null);
     }
-    
-        
+
+
     // ------------------------------------------------------------- Attributes
 
 
@@ -7250,8 +7250,8 @@ public class StandardContext
      */
     public void setTldNamespaceAware(boolean tldNamespaceAware){
         this.tldNamespaceAware= tldNamespaceAware;
-    }    
-    
+    }
+
     /**
      * Sets the list of ordered libs, which will be used as the value of the
      * ServletContext attribute with name javax.servlet.context.orderedLibs
@@ -7271,9 +7271,9 @@ public class StandardContext
             return 1; // RUNNING
         }
         if( initialized ) {
-            return 0; // starting ? 
+            return 0; // starting ?
         }
-        if( ! available ) { 
+        if( ! available ) {
             return 4; //FAILED
         }
         // 2 - STOPPING
@@ -7322,23 +7322,23 @@ public class StandardContext
      */
     public ObjectOutputStream createObjectOutputStream(OutputStream os)
             throws IOException {
-        return new ObjectOutputStream(os); 
+        return new ObjectOutputStream(os);
     }
 
     /**
      * Gets the time this context was started.
      *
      * @return Time (in milliseconds since January 1, 1970, 00:00:00) when this
-     * context was started 
+     * context was started
      */
     public long getStartTimeMillis() {
         return startTimeMillis;
     }
-    
+
     public boolean isEventProvider() {
         return false;
     }
-    
+
     public boolean isStatisticsProvider() {
         return false;
     }
@@ -7385,7 +7385,7 @@ public class StandardContext
     public void sessionPassivatedEndEvent(HttpSession session) {
         // Deliberate noop
     }
-    
+
     public static class RestrictedServletContextListener
             implements ServletContextListener {
 
@@ -7401,7 +7401,7 @@ public class StandardContext
                 ServletContextListener delegate) {
             this.delegate = delegate;
         }
-        
+
         public void contextInitialized(ServletContextEvent sce) {
             delegate.contextInitialized(sce);
         }
@@ -7468,8 +7468,8 @@ public class StandardContext
         }
 
         /*
-         * Checks whether access to the webapp class loader associated 
-         * with this Context should be granted to the caller of 
+         * Checks whether access to the webapp class loader associated
+         * with this Context should be granted to the caller of
          * ServletContext#getClassLoader.
          *
          * If no security manager exists, this method returns immediately.
@@ -7509,7 +7509,7 @@ public class StandardContext
              * CHANGES, E.G., DUE TO CODE BEING REORGANIZED
              */
             ClassLoader ccl = classContext[5].getClassLoader();
-            if (ccl != null && ccl != webappLoader && 
+            if (ccl != null && ccl != webappLoader &&
                     !isAncestor(webappLoader, ccl)) {
                 sm.checkPermission(GET_CLASSLOADER_PERMISSION);
             }
@@ -7547,7 +7547,7 @@ public class StandardContext
             set.add(childPath.toString());
         }
     }
-    
+
     /**
      * Get full path, based on the host name and the context path.
      */
@@ -7557,7 +7557,7 @@ public class StandardContext
         else
             return "/" + hostName + path;
     }
-    
+
     /**
      * Internal class used as thread-local storage when doing path
      * mapping during dispatch.

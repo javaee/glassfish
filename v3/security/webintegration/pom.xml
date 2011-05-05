@@ -157,10 +157,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-utils</artifactId>
-        </dependency>
-        <dependency>
 	    <groupId>org.glassfish.external</groupId>
 	    <artifactId>management-api</artifactId>
 	</dependency>

@@ -69,9 +69,9 @@ import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
 import org.apache.jk.core.JkChannel;
 import org.apache.tomcat.util.modeler.Registry;
-import com.sun.grizzly.util.buf.ByteChunk;
-import com.sun.grizzly.util.buf.C2BConverter;
-import com.sun.grizzly.util.buf.MessageBytes;
+import org.glassfish.grizzly.http.util.ByteChunk;
+import org.glassfish.grizzly.http.util.C2BConverter;
+import org.glassfish.grizzly.http.util.MessageBytes;
 
 
 /**

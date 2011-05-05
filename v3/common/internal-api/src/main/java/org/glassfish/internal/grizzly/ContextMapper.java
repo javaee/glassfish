@@ -44,8 +44,8 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.sun.grizzly.tcp.Adapter;
-import com.sun.grizzly.util.http.mapper.Mapper;
+import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.server.util.Mapper;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Service;
 
@@ -58,9 +58,9 @@ import org.jvnet.hk2.annotations.Service;
 @ContractProvided(Mapper.class)
 public class ContextMapper extends Mapper {
     protected final Logger logger;
-    protected Adapter adapter;
+    protected HttpHandler adapter;
     // The id of the associated network-listener
-    protected String id;
+    private String id;
 
     public ContextMapper() {
         this(Logger.getAnonymousLogger());
@@ -124,17 +124,17 @@ public class ContextMapper extends Mapper {
      */
     @Override
     public synchronized void removeHost(final String name) {
-        // Do let the WebContainer deconfigire us.
+        // Do let the WebContainer unconfigure us.
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Faking removal of host: " + name);
         }
     }
 
-    public void setAdapter(final Adapter adapter) {
+    public void setHttpHandler(final HttpHandler adapter) {
         this.adapter = adapter;
     }
 
-    public Adapter getAdapter() {
+    public HttpHandler getHttpHandler() {
         return adapter;
     }
 

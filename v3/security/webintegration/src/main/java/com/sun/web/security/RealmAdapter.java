@@ -40,8 +40,6 @@
 
 package com.sun.web.security;
 
-import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.security.auth.digest.impl.HttpAlgorithmParameterImpl;
 import com.sun.enterprise.security.web.integration.WebSecurityManager;
@@ -121,12 +119,12 @@ import org.jvnet.hk2.component.Habitat;
 import static com.sun.enterprise.security.auth.digest.api.Constants.A1;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
 import com.sun.enterprise.util.net.NetUtils;
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.NetworkListeners;
 import java.net.InetAddress;
 import java.net.URLEncoder;
 import javax.security.jacc.PolicyContext;
+import org.glassfish.grizzly.config.dom.NetworkConfig;
+import org.glassfish.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListeners;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.PostConstruct;
 

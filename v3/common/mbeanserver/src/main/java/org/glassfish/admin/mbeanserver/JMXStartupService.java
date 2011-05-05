@@ -66,7 +66,7 @@ import com.sun.enterprise.config.serverbeans.JmxConnector;
 import com.sun.enterprise.config.serverbeans.AmxPref;
 import com.sun.enterprise.config.serverbeans.Domain;
 
-import com.sun.grizzly.config.dom.Ssl;
+import org.glassfish.grizzly.config.dom.Ssl;
 import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXServiceURL;
 

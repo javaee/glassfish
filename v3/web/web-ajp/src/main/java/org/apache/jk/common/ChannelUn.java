@@ -70,13 +70,11 @@ import org.apache.jk.core.JkHandler;
 import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
 import org.apache.jk.core.JkChannel;
-import org.apache.jk.core.WorkerEnv;
-import com.sun.grizzly.tcp.Request;
-import com.sun.grizzly.tcp.RequestGroupInfo;
-import com.sun.grizzly.tcp.RequestInfo;
-import org.apache.tomcat.util.modeler.Registry;
+//import org.glassfish.grizzly.http.server.RequestGroupInfo;
+//import org.glassfish.grizzly.http.server.RequestInfo;
 import org.apache.tomcat.util.threads.ThreadPool;
 import org.apache.tomcat.util.threads.ThreadPoolRunnable;
+import org.glassfish.grizzly.http.HttpRequestPacket;
 
 
 /** Pass messages using unix domain sockets.
@@ -183,24 +181,24 @@ public class ChannelUn extends JniHandler implements JkChannel {
         }
 
         super.initJkComponent();
-        JMXRequestNote =wEnv.getNoteId( WorkerEnv.ENDPOINT_NOTE, "requestNote");        
-        // Run a thread that will accept connections.
-        if( this.domain != null ) {
-            try {
-                tpOName=new ObjectName(domain + ":type=ThreadPool,name=" + 
-				       getChannelName());
-
-                Registry.getRegistry(null, null)
-		    .registerComponent(tp, tpOName, null);
-
-		rgOName = new ObjectName
-		    (domain+":type=GlobalRequestProcessor,name=" + getChannelName());
-		Registry.getRegistry(null, null)
-		    .registerComponent(global, rgOName, null);
-            } catch (Exception e) {
-                log.severe("Can't register threadpool" );
-            }
-        }
+//        JMXRequestNote =wEnv.getNoteId( WorkerEnv.ENDPOINT_NOTE, "requestNote");
+//        // Run a thread that will accept connections.
+//        if( this.domain != null ) {
+//            try {
+//                tpOName=new ObjectName(domain + ":type=ThreadPool,name=" +
+//				       getChannelName());
+//
+//                Registry.getRegistry(null, null)
+//		    .registerComponent(tp, tpOName, null);
+//
+//		rgOName = new ObjectName
+//		    (domain+":type=GlobalRequestProcessor,name=" + getChannelName());
+//		Registry.getRegistry(null, null)
+//		    .registerComponent(global, rgOName, null);
+//            } catch (Exception e) {
+//                log.severe("Can't register threadpool" );
+//            }
+//        }
         tp.start();
         AprAcceptor acceptAjp=new AprAcceptor(  this );
         tp.runIt( acceptAjp);
@@ -208,11 +206,11 @@ public class ChannelUn extends JniHandler implements JkChannel {
         
     }
 
-    ObjectName tpOName;
-    ObjectName rgOName;
-    RequestGroupInfo global=new RequestGroupInfo();
+//    ObjectName tpOName;
+//    ObjectName rgOName;
+//    RequestGroupInfo global=new RequestGroupInfo();
     int count = 0;
-    int JMXRequestNote;
+//    int JMXRequestNote;
 
     public void start() throws IOException {
     }
@@ -226,33 +224,33 @@ public class ChannelUn extends JniHandler implements JkChannel {
             //apr.unSocketClose( unixListenSocket,3);
             super.destroyJkComponent();
 
-            if(tpOName != null) {
-		Registry.getRegistry(null, null).unregisterComponent(tpOName);
-	    }
-	    if(rgOName != null) {
-		Registry.getRegistry(null, null).unregisterComponent(rgOName);
-	    }
+//            if(tpOName != null) {
+//		Registry.getRegistry(null, null).unregisterComponent(tpOName);
+//	    }
+//	    if(rgOName != null) {
+//		Registry.getRegistry(null, null).unregisterComponent(rgOName);
+//	    }
         } catch(Exception e) {
             log.log(Level.SEVERE, "Error in destroy",e);
         }
     }
 
-    public void registerRequest(Request req, MsgContext ep, int count) {
-	if(this.domain != null) {
-	    try {
-
-		RequestInfo rp=req.getRequestProcessor();
-		rp.setGlobalProcessor(global);
-		ObjectName roname = new ObjectName
-		    (getDomain() + ":type=RequestProcessor,worker="+
-		     getChannelName()+",name=JkRequest" +count);
-		ep.setNote(JMXRequestNote, roname);
-                        
-		Registry.getRegistry(null, null).registerComponent( rp, roname, null);
-	    } catch( Exception ex ) {
-		log.warning("Error registering request");
-	    }
-	}
+    public void registerRequest(HttpRequestPacket req, MsgContext ep, int count) {
+//	if(this.domain != null) {
+//	    try {
+//
+//		RequestInfo rp=req.getRequestProcessor();
+//		rp.setGlobalProcessor(global);
+//		ObjectName roname = new ObjectName
+//		    (getDomain() + ":type=RequestProcessor,worker="+
+//		     getChannelName()+",name=JkRequest" +count);
+//		ep.setNote(JMXRequestNote, roname);
+//
+//		Registry.getRegistry(null, null).registerComponent( rp, roname, null);
+//	    } catch( Exception ex ) {
+//		log.warning("Error registering request");
+//	    }
+//	}
     }
 
 
@@ -353,18 +351,18 @@ public class ChannelUn extends JniHandler implements JkChannel {
             }
             if( log.isLoggable(Level.FINEST) )
                 log.finest( "Closing un channel");
-            try{
-                Request req = (Request)ep.getRequest();
-                if( req != null ) {
-                    ObjectName roname = (ObjectName)ep.getNote(JMXRequestNote);
-                    if( roname != null ) {
-                        Registry.getRegistry(null, null).unregisterComponent(roname);
-                    }
-                    req.getRequestProcessor().setGlobalProcessor(null);
-                }
-            } catch( Exception ee) {
-                log.log(Level.SEVERE, "Error, releasing connection",ee);
-            }
+//            try{
+//                Request req = (Request)ep.getRequest();
+//                if( req != null ) {
+//                    ObjectName roname = (ObjectName)ep.getNote(JMXRequestNote);
+//                    if( roname != null ) {
+//                        Registry.getRegistry(null, null).unregisterComponent(roname);
+//                    }
+//                    req.getRequestProcessor().setGlobalProcessor(null);
+//                }
+//            } catch( Exception ee) {
+//                log.log(Level.SEVERE, "Error, releasing connection",ee);
+//            }
             this.close( ep );
         } catch( Exception ex ) {
             ex.printStackTrace();

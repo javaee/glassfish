@@ -58,13 +58,6 @@
 
 package org.apache.catalina.connector;
 
-import com.sun.grizzly.tcp.Request;
-import com.sun.grizzly.util.buf.B2CConverter;
-import com.sun.grizzly.util.buf.ByteChunk;
-import com.sun.grizzly.util.buf.CharChunk;
-import org.apache.catalina.security.SecurityUtil;
-import org.apache.catalina.util.StringManager;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.security.AccessController;
@@ -74,6 +67,13 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.catalina.security.SecurityUtil;
+import org.apache.catalina.util.StringManager;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.util.B2CConverter;
+import org.glassfish.grizzly.http.util.ByteChunk;
+import org.glassfish.grizzly.http.util.ByteChunk.ByteInputChannel;
+import org.glassfish.grizzly.http.util.CharChunk;
 
 /**
  * The buffer used by Tomcat request. This is a derivative of the Tomcat 3.3
@@ -84,10 +84,10 @@ import java.util.logging.Logger;
  * @author Remy Maucherat
  */
 public class InputBuffer extends Reader
-    implements ByteChunk.ByteInputChannel, CharChunk.CharInputChannel,
+    implements ByteInputChannel, CharChunk.CharInputChannel,
                CharChunk.CharOutputChannel {
 
-    private static Logger log = Logger.getLogger(InputBuffer.class.getName());
+    private static final Logger log = Logger.getLogger(InputBuffer.class.getName());
 
     /**
      * The string manager for this package.
@@ -100,7 +100,7 @@ public class InputBuffer extends Reader
 
 
     public static final String DEFAULT_ENCODING = 
-        com.sun.grizzly.tcp.Constants.DEFAULT_CHARACTER_ENCODING;
+        org.glassfish.grizzly.http.server.Constants.DEFAULT_CHARACTER_ENCODING;
     public static final int DEFAULT_BUFFER_SIZE = 8*1024;
     static final int debug = 0;
 
@@ -332,11 +332,15 @@ public class InputBuffer extends Reader
             return -1;
 
         state = BYTE_STATE;
+//        bb.setBytes(cbuf, off, len);
 
-        int result = coyoteRequest.doRead(bb);
+        final int readBytes = coyoteRequest.getInputStream(true).read(cbuf, off, len);
 
-        return result;
+        if (readBytes >= 0) {
+            bb.setBytes(cbuf, off, readBytes);
+        }
 
+        return readBytes;
     }
 
 
@@ -388,7 +392,7 @@ public class InputBuffer extends Reader
         initChar();
         // END OF SJSAS 6231069
         if (log.isLoggable(Level.FINE))
-            log.fine("realRead() " + cb.getOffset() + " " + len);
+            log.fine("realRead() " + cb.getStart() + " " + len);
 
         if (!gotEnc)
             setConverter();
@@ -404,7 +408,7 @@ public class InputBuffer extends Reader
         }
 
         if (markPos == -1) {
-            cb.setOffset(0);
+            cb.setStart(0);
             cb.setEnd(0);
         }
         int limit = bb.getLength()+cb.getStart();
@@ -474,13 +478,13 @@ public class InputBuffer extends Reader
         long nRead = 0;
         while (nRead < n) {
             if (cb.getLength() >= n) {
-                cb.setOffset(cb.getStart() + (int) n);
+                cb.setStart(cb.getStart() + (int) n);
                 nRead = n;
             } else {
                 nRead += cb.getLength();
-                cb.setOffset(cb.getEnd());
+                cb.setStart(cb.getEnd());
                 int toRead = 0;
-                if (cb.getChars().length < (n - nRead)) {
+                if (cb.getChars().length < n - nRead) {
                     toRead = cb.getChars().length;
                 } else {
                     toRead = (int) (n - nRead);
@@ -505,7 +509,7 @@ public class InputBuffer extends Reader
         // START OF SJSAS 6231069
         initChar();
         // END OF SJSAS 6231069
-        return (cb.getLength() > 0);
+        return cb.getLength() > 0;
     }
 
 
@@ -520,15 +524,15 @@ public class InputBuffer extends Reader
         initChar();
         // END OF SJSAS 6231069
         if (cb.getLength() <= 0) {
-            cb.setOffset(0);
+            cb.setStart(0);
             cb.setEnd(0);
         } else {
-            if ((cb.getBuffer().length > (2 * size)) 
-                && (cb.getLength()) < (cb.getStart())) {
-                System.arraycopy(cb.getBuffer(), cb.getStart(), 
+            if (cb.getBuffer().length > 2 * size
+                && cb.getLength() < cb.getStart()) {
+                System.arraycopy(cb.getBuffer(), cb.getStart(),
                                  cb.getBuffer(), 0, cb.getLength());
                 cb.setEnd(cb.getLength());
-                cb.setOffset(0);
+                cb.setStart(0);
             }
         }
         cb.setLimit(cb.getStart() + readAheadLimit + size);
@@ -548,7 +552,7 @@ public class InputBuffer extends Reader
                 markPos = -1;
                 throw new IOException();
             } else {
-                cb.setOffset(markPos);
+                cb.setStart(markPos);
             }
         } else {
             bb.recycle();

@@ -59,8 +59,7 @@
 package org.apache.jk.core;
 
 import java.io.IOException;
-
-import com.sun.grizzly.tcp.Request;
+import org.glassfish.grizzly.http.HttpRequestPacket;
 
 /**
  * A Channel represents a connection point to the outside world.
@@ -108,7 +107,7 @@ public interface JkChannel {
     /**
      * Register a new Request in the Request pool.
      */
-    public void registerRequest(Request req, MsgContext ep, int count);
+    public void registerRequest(HttpRequestPacket req, MsgContext ep, int count);
 
     /**
      * Create a new request endpoint.

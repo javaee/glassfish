@@ -44,7 +44,7 @@
 
 
 # Loggers of excluded third-party libraries
-com.sun.grizzly.
+org.glassfish.grizzly.
 org.eclipse.persistence
 org.hibernate.validator
 org.jboss.weld

@@ -42,6 +42,8 @@ package org.glassfish.api.container;
 
 import java.net.InetAddress;
 import java.util.List;
+import org.glassfish.grizzly.http.server.HttpHandler;
+
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -53,41 +55,48 @@ import org.jvnet.hk2.annotations.Contract;
  *
  */
 @Contract
-public interface Adapter extends com.sun.grizzly.tcp.Adapter {
+public interface Adapter {
+
+    /**
+     * Get the underlying Grizzly HttpService.
+     * 
+     * @return the underlying Grizzly HttpService.
+     */
+    public abstract HttpHandler getHttpService();
 
     /**
      * Returns the context root for this adapter
      * @return context root
      */
-    public String getContextRoot();
+    public abstract String getContextRoot();
 
     /**
      * Returns the listener port for this adapter
      * @return listener port
      */
-    public int getListenPort();
+    public abstract int getListenPort();
 
 
     /**
      * @return the {@link InetAddress} on which this adapter is listening
      */
-    public InetAddress getListenAddress();
+    public abstract InetAddress getListenAddress();
 
     /**
      * Returns the virtual servers supported by this adapter
      * @return List&lt;String&gt; the virtual server list supported by the adapter
      */
-    public List<String> getVirtualServers();
+    public abstract List<String> getVirtualServers();
 
     /**
      * Checks whether this adapter has been registered as a network endpoint.
      */
-    public boolean isRegistered();
+    public abstract boolean isRegistered();
 
 
     /**
      * Marks this adapter as having been registered or unregistered as a
      * network endpoint
      */
-    public void setRegistered(boolean isRegistered);
+    public abstract void setRegistered(boolean isRegistered);
 }

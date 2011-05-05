@@ -65,7 +65,7 @@ import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.v3.admin.adapter.AdminEndpointDecider;
-import com.sun.grizzly.config.dom.ThreadPool;
+import org.glassfish.grizzly.config.dom.ThreadPool;
 
 
 /*

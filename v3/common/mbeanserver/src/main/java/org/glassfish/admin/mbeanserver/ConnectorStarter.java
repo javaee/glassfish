@@ -39,7 +39,7 @@
  */
 package org.glassfish.admin.mbeanserver;
 
-import com.sun.grizzly.config.dom.Ssl;
+import org.glassfish.grizzly.config.dom.Ssl;
 import org.jvnet.hk2.component.Habitat;
 
 import javax.management.MBeanServer;

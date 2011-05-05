@@ -39,26 +39,26 @@
  */
 package com.sun.enterprise.v3.services.impl;
 
-import com.sun.logging.LogDomains;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.PerLookup;
-import org.glassfish.api.container.Sniffer;
-import org.glassfish.internal.data.ContainerRegistry;
-import org.glassfish.internal.data.EngineInfo;
-import com.sun.grizzly.tcp.Adapter;
-import com.sun.grizzly.tcp.Request;
-import com.sun.grizzly.tcp.Response;
-import com.sun.grizzly.util.http.mapper.MappingData;
-import com.sun.grizzly.util.buf.MessageBytes;
-import com.sun.enterprise.v3.server.ContainerStarter;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.Module;
-
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.v3.server.ContainerStarter;
+import com.sun.logging.LogDomains;
+import org.glassfish.api.container.Sniffer;
+import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
+import org.glassfish.grizzly.http.server.util.MappingData;
+import org.glassfish.grizzly.http.util.DataChunk;
+import org.glassfish.internal.data.ContainerRegistry;
+import org.glassfish.internal.data.EngineInfo;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
  * These adapters are temporarily registered to the mapper to handle static
@@ -71,7 +71,7 @@ import java.util.logging.Logger;
  */
 @Service
 @Scoped(PerLookup.class)
-public class SnifferAdapter implements Adapter {
+public class SnifferAdapter extends HttpHandler {
 
     @Inject
     ContainerRegistry containerRegistry;
@@ -82,11 +82,11 @@ public class SnifferAdapter implements Adapter {
     @Inject
     ModulesRegistry modulesRegistry;
 
-    private Logger logger = LogDomains.getLogger(SnifferAdapter.class, LogDomains.CORE_LOGGER);
+    private static final Logger LOGGER = LogDomains.getLogger(SnifferAdapter.class, LogDomains.CORE_LOGGER);
     
     private Sniffer sniffer;
     private ContainerMapper mapper;
-    private Adapter adapter = null;
+    private HttpHandler adapter;
 
     public void initialize(Sniffer sniffer, ContainerMapper mapper) {
         this.sniffer = sniffer;
@@ -120,45 +120,44 @@ public class SnifferAdapter implements Adapter {
             }
 
             if (containerRegistry.getContainer(sniffer.getContainersNames()[0]) != null) {
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.fine("Container is claimed to be started...");
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.fine("Container is claimed to be started...");
                 }
                 containerRegistry.getContainer(sniffer.getContainersNames()[0]).getContainer();
             } else {
                 final long startTime = System.currentTimeMillis();
-                logger.log(Level.INFO, "core.snifferadapter.starting.container", sniffer.getModuleType());
+                LOGGER.log(Level.INFO, "core.snifferadapter.starting.container", sniffer.getModuleType());
                 Module snifferModule = modulesRegistry.find(sniffer.getClass());
                 try {
                     Collection<EngineInfo> containersInfo = containerStarter.startContainer(sniffer, snifferModule);
-                    if (containersInfo != null && containersInfo.size() > 0) {
+                    if (containersInfo != null && !containersInfo.isEmpty()) {
                         // force the start on each container
                         for (EngineInfo info : containersInfo) {
-                            if (logger.isLoggable(Level.FINE)) {
-                                logger.log(Level.FINE, "Got container, deployer is {0}", info.getDeployer());
+                            if (LOGGER.isLoggable(Level.FINE)) {
+                                LOGGER.log(Level.FINE, "Got container, deployer is {0}", info.getDeployer());
                             }
                             info.getContainer();
-                            logger.log(Level.INFO, "core.snifferadapter.container.started",
+                            LOGGER.log(Level.INFO, "core.snifferadapter.container.started",
                                     new Object[]{sniffer.getModuleType(), System.currentTimeMillis() - startTime});
                         }
                     } else {
-                        logger.severe("core.snifferadapter.no.container.available");
+                        LOGGER.severe("core.snifferadapter.no.container.available");
                     }
                 } catch (Exception e) {
-                    logger.log(Level.SEVERE,
+                    LOGGER.log(Level.SEVERE,
                                "core.snifferadapter.exception.starting.container",
                                new Object[] { sniffer.getContainersNames()[0] });
-                    logger.log(Level.SEVERE, e.toString(), e);
+                    LOGGER.log(Level.SEVERE, e.toString(), e);
                 }
             }
 
             // at this point the post construct should have been called.
             // seems like there is some possibility that the container is not synchronously started
             // preventing the calls below to succeed...
-            MessageBytes decodedURI = req.decodedURI();
+            DataChunk decodedURI = req.getRequest().getRequestURIRef().getDecodedRequestURIBC();
             try {
                 // Clear the previous mapped information.
-                MappingData mappingData =
-                        (MappingData) req.getNote(ContainerMapper.MAPPING_DATA);
+                MappingData mappingData = (MappingData) req.getNote(ContainerMapper.MAPPING_DATA);
                 mappingData.recycle();
 
                 adapter = mapper.mapUriWithSemicolon(req, decodedURI, 0, null);
@@ -169,7 +168,7 @@ public class SnifferAdapter implements Adapter {
                     throw new RuntimeException("SnifferAdapter cannot map themself.");
                 }
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "core.snifferadapter.exception.mapping.request", e);
+                LOGGER.log(Level.SEVERE, "core.snifferadapter.exception.mapping.request", e);
                 throw e;
             }
 
@@ -179,13 +178,6 @@ public class SnifferAdapter implements Adapter {
             } else {
                 throw new RuntimeException("No Adapter found.");
             }
-        }
-    }
-
-    @Override
-    public void afterService(Request request, Response response) throws Exception {
-        if (adapter != null) {
-            adapter.afterService(request, response);
         }
     }
 }

@@ -56,7 +56,7 @@ import java.io.InputStreamReader;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.EarlyLogger;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.grizzly.config.dom.*;
+import org.glassfish.grizzly.config.dom.*;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;

@@ -59,7 +59,6 @@
 package org.apache.catalina.core;
 
 
-import com.sun.grizzly.util.buf.MessageBytes;
 import org.apache.catalina.*;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ValveBase;
@@ -68,11 +67,10 @@ import org.glassfish.web.valve.GlassFishValve;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.EventListener;
-import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.grizzly.http.util.DataChunk;
+import org.glassfish.grizzly.http.util.MessageBytes;
 // END GlassFish 1343
 
 /**
@@ -296,11 +294,11 @@ final class StandardContextValve
         // START CR 6415120
         if (request.getCheckRestrictedResources()) {
         // END CR 6415120
-            MessageBytes requestPathMB = hreq.getRequestPathMB();
-            if ((requestPathMB.startsWithIgnoreCase("/META-INF/", 0))
-                    || (requestPathMB.equalsIgnoreCase("/META-INF"))
-                    || (requestPathMB.startsWithIgnoreCase("/WEB-INF/", 0))
-                    || (requestPathMB.equalsIgnoreCase("/WEB-INF"))) {
+            DataChunk requestPathDC = hreq.getRequestPathMB();
+            if ((requestPathDC.startsWithIgnoreCase("/META-INF/", 0))
+                    || (requestPathDC.equalsIgnoreCase("/META-INF"))
+                    || (requestPathDC.startsWithIgnoreCase("/WEB-INF/", 0))
+                    || (requestPathDC.equalsIgnoreCase("/WEB-INF"))) {
                 notFound((HttpServletResponse) response.getResponse());
                 return null;
             }

@@ -68,7 +68,7 @@ import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.security.SecurityServicesUtil;
-import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.admingui.common.util.RestUtil;
 
 /**

@@ -199,7 +199,7 @@ public class ErrorReportValve
              * locale (see 6412710)
              */
             if (responseCharEnc != null && !responseCharEnc.equals(
-                    com.sun.grizzly.tcp.Constants.DEFAULT_CHARACTER_ENCODING)) {
+                    org.glassfish.grizzly.http.server.Constants.DEFAULT_CHARACTER_ENCODING)) {
                 sresp.setCharacterEncoding(responseCharEnc);
             }
             // END PWC 6254469

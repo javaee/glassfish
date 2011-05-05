@@ -40,13 +40,12 @@
 
 package org.glassfish.admin.rest;
 
-import com.sun.grizzly.tcp.http11.GrizzlyRequest;
-
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.glassfish.grizzly.http.server.Request;
 
 /**
  * Manages Rest Sessions. 
@@ -64,7 +63,7 @@ public class SessionManager {
     private Map<String, SessionData> activeSessions = new ConcurrentHashMap<String, SessionData>(); //To guard against parallel mutation corrupting the map
 
     //TODO createSession is public. this package should not be exported
-    public String createSession(GrizzlyRequest req) {
+    public String createSession(Request req) {
         String sessionId;
         do {
             sessionId = new BigInteger(130, randomGenerator).toString(16);
@@ -74,7 +73,7 @@ public class SessionManager {
         return sessionId;
     }
 
-    public boolean authenticate(String sessionId, GrizzlyRequest req) {
+    public boolean authenticate(String sessionId, Request req) {
         boolean authenticated = false;
 
         if(sessionId != null) {
@@ -106,7 +105,7 @@ public class SessionManager {
         return sessionDeleted;
     }
 
-    private void saveSession(String sessionId, GrizzlyRequest req) {
+    private void saveSession(String sessionId, Request req) {
         purgeInactiveSessions();
         activeSessions.put(sessionId, new SessionData(sessionId, req) );
     }
@@ -133,7 +132,7 @@ public class SessionManager {
         private long lassAccessedTime = creationTime;
         private long inactiveSessionLifeTime = INACTIVE_SESSION_DEFAULT_LIFETIME_IN_MILIS;
 
-        public SessionData(String sessionId, GrizzlyRequest req) {
+        public SessionData(String sessionId, Request req) {
             this.sessionId = sessionId;
             this.clientAddress = req.getRemoteAddr();
         }
@@ -159,7 +158,7 @@ public class SessionManager {
          * @return true if session is still active and the request is from same remote address as the one session was
          * initiated from
          */
-        public boolean authenticate(GrizzlyRequest req) {
+        public boolean authenticate(Request req) {
             return isSessionActive() && (clientAddress.equals(req.getRemoteAddr()) || disableRemoteAddressValidation );
         }
     }

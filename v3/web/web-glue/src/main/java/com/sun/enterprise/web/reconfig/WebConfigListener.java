@@ -48,10 +48,7 @@ import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.config.serverbeans.WebContainerAvailability;
 import com.sun.enterprise.v3.services.impl.MapperUpdateListener;
 import com.sun.enterprise.web.WebContainer;
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.NetworkListeners;
-import com.sun.grizzly.util.http.mapper.Mapper;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.apache.catalina.LifecycleException;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.config.*;
@@ -61,6 +58,9 @@ import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.grizzly.config.dom.NetworkConfig;
+import org.glassfish.grizzly.config.dom.NetworkListeners;
+import org.glassfish.grizzly.http.server.util.Mapper;
 
 
 /**

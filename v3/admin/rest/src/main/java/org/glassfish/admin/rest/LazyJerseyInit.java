@@ -41,13 +41,14 @@ package org.glassfish.admin.rest;
 
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.jersey.api.container.ContainerFactory;
 import com.sun.jersey.api.core.ResourceConfig;
+import org.glassfish.admin.rest.resources.StatusGenerator;
+import org.glassfish.admin.rest.resources.custom.ManagementProxyResource;
+import org.glassfish.admin.rest.results.ActionReportResult;
+import org.glassfish.admin.rest.utils.xml.RestActionReporter;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.EndpointRegistrationException;
-import com.sun.grizzly.tcp.Adapter;
-import com.sun.grizzly.tcp.http11.GrizzlyRequest;
-import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.container.filter.LoggingFilter;
 import com.sun.jersey.api.core.DefaultResourceConfig;
@@ -68,11 +69,9 @@ import org.glassfish.admin.rest.provider.ActionReportResultXmlProvider;
 import org.glassfish.admin.rest.provider.BaseProvider;
 import org.glassfish.admin.rest.resources.GeneratorResource;
 import org.glassfish.admin.rest.resources.ReloadResource;
-import org.glassfish.admin.rest.resources.StatusGenerator;
-import org.glassfish.admin.rest.resources.custom.ManagementProxyResource;
-import org.glassfish.admin.rest.results.ActionReportResult;
-import org.glassfish.admin.rest.utils.xml.RestActionReporter;
-import org.glassfish.api.ActionReport;
+import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigModel;
@@ -100,11 +99,10 @@ public class LazyJerseyInit implements LazyJerseyInterface {
      * @throws EndpointRegistrationException
      */
     @Override
-    public GrizzlyAdapter exposeContext(Set classes, ServerContext sc, Habitat habitat)
+    public HttpHandler exposeContext(Set classes, ServerContext sc, Habitat habitat)
             throws EndpointRegistrationException {
 
-
-        Adapter adapter = null;
+        HttpHandler httpHandler = null;
         Reloader r = new Reloader();
         ResourceConfig rc = new DefaultResourceConfig(classes);
         rc.getMediaTypeMappings().put("xml", MediaType.APPLICATION_XML_TYPE);
@@ -142,13 +140,13 @@ public class LazyJerseyInit implements LazyJerseyInterface {
         try {
             ClassLoader apiClassLoader = sc.getCommonClassLoader();
             Thread.currentThread().setContextClassLoader(apiClassLoader);
-            adapter = ContainerFactory.createContainer(com.sun.grizzly.tcp.Adapter.class, rc);
+            httpHandler = ContainerFactory.createContainer(HttpHandler.class, rc);
         } finally {
             Thread.currentThread().setContextClassLoader(originalContextClassLoader);
         }
         //add a rest config listener for possible reload of Jersey
         new RestConfigChangeListener(habitat, r, rc, sc);
-        return (GrizzlyAdapter) adapter;
+        return httpHandler;
     }
 
     @Override
@@ -169,7 +167,7 @@ public class LazyJerseyInit implements LazyJerseyInterface {
     }
 
     @Override
-    public void reportError(GrizzlyRequest req, GrizzlyResponse res, int statusCode, String msg) {
+    public void reportError(Request req, Response res, int statusCode, String msg) {
         try {
             // TODO: There's a lot of arm waving and flailing here.  I'd like this to be cleaner, but I don't
             // have time at the moment.  jdlee 8/11/10
@@ -192,13 +190,13 @@ public class LazyJerseyInit implements LazyJerseyInterface {
             res.setStatus(statusCode);
             res.getOutputStream().write(provider.getContent(new ActionReportResult(report)).getBytes());
             res.getOutputStream().flush();
-            res.finishResponse();
+            res.finish();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static String getAcceptedMimeType(GrizzlyRequest req) {
+    private static String getAcceptedMimeType(Request req) {
         String type = null;
         String requestURI = req.getRequestURI();
         Set<String> acceptableTypes = new HashSet<String>() {

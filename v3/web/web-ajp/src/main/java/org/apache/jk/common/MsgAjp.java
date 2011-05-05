@@ -62,8 +62,8 @@ import java.io.IOException;
 import java.util.logging.*;
 
 import org.apache.jk.core.Msg;
-import com.sun.grizzly.util.buf.ByteChunk;
-import com.sun.grizzly.util.buf.MessageBytes;
+import org.glassfish.grizzly.http.util.ByteChunk;
+import org.glassfish.grizzly.http.util.MessageBytes;
 
 /**
  * A single packet for communication between the web server and the

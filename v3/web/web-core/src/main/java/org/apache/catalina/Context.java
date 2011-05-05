@@ -58,7 +58,6 @@
 
 package org.apache.catalina;
 
-import com.sun.grizzly.util.http.mapper.Mapper;
 import org.apache.catalina.deploy.*;
 import org.apache.catalina.util.CharsetMapper;
 
@@ -66,6 +65,7 @@ import javax.servlet.*;
 import java.util.EventListener;
 import java.util.List;
 import java.util.Map;
+import org.glassfish.grizzly.http.server.util.Mapper;
 
 
 /**
@@ -195,7 +195,7 @@ public interface Context extends Container {
      * <tt>ServletContext</tt>.
      */
     public SessionCookieConfig getSessionCookieConfig();
- 
+
 
     /**
      * @return the name that will be assigned to any session tracking
@@ -231,19 +231,19 @@ public interface Context extends Container {
     boolean getCrossContext();
 
 
-    
+
     /**
      * Return the alternate Deployment Descriptor name.
      */
     String getAltDDName();
-    
-    
+
+
     /**
      * Set an alternate Deployment Descriptor name.
      */
     void setAltDDName(String altDDName) ;
-    
-    
+
+
     /**
      * Set the "allow crossing servlet contexts" flag.
      *
@@ -532,7 +532,7 @@ public interface Context extends Container {
      * property group, we only care about the URL pattern here.  The
      * JSP container will parse the rest.
      *
-     * @param pattern URL pattern to be mapped 
+     * @param pattern URL pattern to be mapped
      */
     void addJspMapping(String pattern);
 
@@ -629,7 +629,7 @@ public interface Context extends Container {
     /**
      * Add a resource which will be watched for reloading by the host auto
      * deployer. Note: this will not be used in embedded mode.
-     * 
+     *
      * @param name Path to the resource, relative to docBase
      */
     void addWatchedResource(String name);
@@ -681,7 +681,7 @@ public interface Context extends Container {
      *
      * @param servletName the servlet name
      * @param instance the servlet instance
-     * @param initParams Map containing the initialization parameters for 
+     * @param initParams Map containing the initialization parameters for
      * the servlet
      *
      * @return the ServletRegistration through which the servlet may be
@@ -700,7 +700,7 @@ public interface Context extends Container {
      *
      * @param servletName the servlet name
      * @param instance the servlet instance
-     * @param initParams Map containing the initialization parameters for 
+     * @param initParams Map containing the initialization parameters for
      * the servlet
      * @param urlPatterns the URL patterns that will be mapped to the servlet
      *
@@ -1170,7 +1170,7 @@ public interface Context extends Container {
      */
     public void removeWatchedResources();
 
-    
+
     /**
      * Removes any Wrapper lifecycle listeners from this Context
      */
@@ -1200,7 +1200,7 @@ public interface Context extends Container {
     void setReuseSessionID(boolean reuse);
     // END S1AS8PE 4817642
 
-    
+
     // START RIMOD 4642650
     /**
      * Return whether this context allows sendRedirect() to redirect
@@ -1210,7 +1210,7 @@ public interface Context extends Container {
      */
     boolean getAllowRelativeRedirect();
 
-    
+
     /**
      * Set whether this context allows sendRedirect() to redirect
      * to a relative URL.
@@ -1256,11 +1256,11 @@ public interface Context extends Container {
      * Get the server.xml <context> attribute's xmlValidation.
      * @return true if validation is enabled.
      */
-     
+
 
     /**
      * Set the validation feature of the XML parser used when
-     * parsing tlds files. 
+     * parsing tlds files.
      * @param tldValidation true to enable xml instance validation
      */
     void setTldValidation(boolean tldValidation);
@@ -1289,7 +1289,7 @@ public interface Context extends Container {
     void setTldNamespaceAware(boolean tldNamespaceAware);
 
 
-    // START SJSAS 8.1 5049111    
+    // START SJSAS 8.1 5049111
     /**
      * Return <code>true</code> if this context contains the JSF servlet.
      */
@@ -1301,7 +1301,7 @@ public interface Context extends Container {
     /**
      * Indicates whether this web module contains any ad-hoc paths.
      *
-     * An ad-hoc path is a servlet path that is mapped to a servlet 
+     * An ad-hoc path is a servlet path that is mapped to a servlet
      * not declared in the web module's deployment descriptor.
      *
      * A web module all of whose mappings are for ad-hoc paths is called an

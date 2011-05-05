@@ -111,7 +111,7 @@ public class EmbeddedTest {
             System.out.println("Registered Sniffer " + sniffer.getModuleType());
         }
         */
-    }    
+    }
 
     @Test
     public void testEjb() throws GlassFishException {

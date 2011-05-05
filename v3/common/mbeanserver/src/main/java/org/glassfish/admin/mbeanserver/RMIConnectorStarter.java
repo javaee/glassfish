@@ -39,12 +39,8 @@
  */
 package org.glassfish.admin.mbeanserver;
 
-import com.sun.grizzly.config.dom.Ssl;
 import org.glassfish.admin.mbeanserver.ssl.JMXMasterPasswordImpl;
-import org.glassfish.admin.mbeanserver.ssl.SSLClientConfigurator;
-import org.glassfish.admin.mbeanserver.ssl.SSLParams;
-import org.glassfish.admin.mbeanserver.ssl.SecureRMIServerSocketFactory;
-import org.jvnet.hk2.component.Habitat;
+import org.glassfish.grizzly.config.dom.Ssl;
 
 import javax.management.MBeanServer;
 import javax.management.remote.JMXAuthenticator;
@@ -59,19 +55,39 @@ import javax.rmi.ssl.SslRMIClientSocketFactory;
 import javax.security.auth.Subject;
 import java.io.File;
 import java.io.IOException;
-import java.net.*;
+import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.logging.Level;
+import javax.management.MBeanServer;
+
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+
+
+import java.util.Map;
+import java.util.HashMap;
+
+import javax.management.remote.*;
+import javax.management.remote.rmi.RMIJRMPServerImpl;
+import javax.management.remote.rmi.RMIConnection;
+import javax.management.remote.rmi.RMIConnectorServer;
 import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.RMISocketFactory;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.Security;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
+import javax.net.ssl.SSLContext;
+import javax.rmi.ssl.SslRMIClientSocketFactory;
+import org.glassfish.admin.mbeanserver.ssl.SSLClientConfigurator;
+import org.glassfish.admin.mbeanserver.ssl.SSLParams;
+import org.glassfish.admin.mbeanserver.ssl.SecureRMIServerSocketFactory;
+import org.jvnet.hk2.component.*;
 
 /**
  * This class configures and starts the JMX RMI connector server using rmi_jrmp protocol.
@@ -130,7 +146,8 @@ final class RMIConnectorStarter extends ConnectorStarter {
         if (mBindToSingleIP) {
             if (isSecurityEnabled()) {
                 Util.getLogger().info("Security enabled");
-                sslServerSocketFactory = new SecureRMIServerSocketFactory(sslConfig, habitat, inetAddr);
+                sslServerSocketFactory = new SecureRMIServerSocketFactory(
+                        habitat, sslConfig, inetAddr);
                 sslCsf = getClientSocketFactory(sslConfig);
                 mServerSocketFactory = null;
             } else {
@@ -141,7 +158,8 @@ final class RMIConnectorStarter extends ConnectorStarter {
         } else {
             mServerSocketFactory = null;
             if (isSecurityEnabled()) {
-                sslServerSocketFactory = new SecureRMIServerSocketFactory(sslConfig, habitat, getAddress(address));
+                sslServerSocketFactory = new SecureRMIServerSocketFactory(
+                        habitat, sslConfig, getAddress(address));
                 sslCsf = getClientSocketFactory(sslConfig);
             } else {
                 sslServerSocketFactory = null;

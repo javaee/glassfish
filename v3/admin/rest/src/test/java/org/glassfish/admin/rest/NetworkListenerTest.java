@@ -78,23 +78,23 @@ public class NetworkListenerTest extends RestTestBase {
             response = post(URL_PROTOCOL, new HashMap<String, String>() {{ put ("securityenabled", "false"); put("id", portUniProtocolName); }});
             checkStatusForSuccess(response);
 
-//        asadmin create-protocol-filter --protocol http-redirect --classname com.sun.grizzly.config.HttpRedirectFilter redirect-filter
+//        asadmin create-protocol-filter --protocol http-redirect --classname org.glassfish.grizzly.config.portunif.HttpRedirectFilter redirect-filter
             response = post (URL_PROTOCOL + "/" + redirectProtocolName + "/create-protocol-filter",
                 new HashMap<String, String>() {{
                     put ("id", redirectFilterName);
                     put ("protocol", redirectProtocolName);
-                    put ("classname", "com.sun.grizzly.config.HttpRedirectFilter");
+                    put ("classname", "org.glassfish.grizzly.config.portunif.HttpRedirectFilter");
                 }});
             checkStatusForSuccess(response);
 
-//        asadmin create-protocol-finder --protocol pu-protocol --targetprotocol http-listener-2 --classname com.sun.grizzly.config.HttpProtocolFinder http-finder
-//        asadmin create-protocol-finder --protocol pu-protocol --targetprotocol http-redirect   --classname com.sun.grizzly.config.HttpProtocolFinder http-redirect
+//        asadmin create-protocol-finder --protocol pu-protocol --targetprotocol http-listener-2 --classname org.glassfish.grizzly.config.portunif.HttpProtocolFinder http-finder
+//        asadmin create-protocol-finder --protocol pu-protocol --targetprotocol http-redirect   --classname org.glassfish.grizzly.config.portunif.HttpProtocolFinder http-redirect
             response = post (URL_PROTOCOL + "/" + portUniProtocolName + "/create-protocol-finder",
                 new HashMap<String, String>() {{
                     put ("id", finderName1);
                     put ("protocol", portUniProtocolName);
                     put ("targetprotocol", "http-listener-2");
-                    put ("classname", "com.sun.grizzly.config.HttpProtocolFinder");
+                    put ("classname", "org.glassfish.grizzly.config.portunif.HttpProtocolFinder");
                 }});
             checkStatusForSuccess(response);
             response = post (URL_PROTOCOL + "/" + portUniProtocolName + "/create-protocol-finder",
@@ -102,7 +102,7 @@ public class NetworkListenerTest extends RestTestBase {
                     put ("id", finderName2);
                     put ("protocol", portUniProtocolName);
                     put ("targetprotocol", redirectProtocolName);
-                    put ("classname", "com.sun.grizzly.config.HttpProtocolFinder");
+                    put ("classname", "org.glassfish.grizzly.config.portunif.HttpProtocolFinder");
                 }});
             checkStatusForSuccess(response);
 

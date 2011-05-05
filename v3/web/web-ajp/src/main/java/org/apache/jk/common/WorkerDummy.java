@@ -64,7 +64,7 @@ import org.apache.jk.core.JkHandler;
 import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
 import org.apache.jk.core.WorkerEnv;
-import com.sun.grizzly.util.buf.MessageBytes;
+import org.glassfish.grizzly.http.util.MessageBytes;
 
 
 /** A dummy worker, will just send back a dummy response.

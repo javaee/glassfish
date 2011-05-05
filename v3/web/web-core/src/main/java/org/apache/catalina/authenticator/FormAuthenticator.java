@@ -58,8 +58,6 @@
 
 package org.apache.catalina.authenticator;
 
-import com.sun.grizzly.util.buf.CharChunk;
-import com.sun.grizzly.util.buf.MessageBytes;
 import org.apache.catalina.HttpRequest;
 import org.apache.catalina.HttpResponse;
 import org.apache.catalina.Realm;
@@ -80,6 +78,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.grizzly.http.util.CharChunk;
+import org.glassfish.grizzly.http.util.MessageBytes;
 
 /**
  * An <b>Authenticator</b> and <b>Valve</b> implementation of FORM BASED

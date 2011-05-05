@@ -96,8 +96,8 @@
             <version>${project.version}</version>
         </dependency> 
         <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-utils</artifactId>
+            <groupId>org.glassfish.grizzly</groupId>
+            <artifactId>grizzly-http-server</artifactId>
         </dependency>
     </dependencies>
 </project>

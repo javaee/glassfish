@@ -47,16 +47,16 @@ import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
 import com.sun.enterprise.config.serverbeans.ProviderConfig;
 import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.config.serverbeans.SecurityService;
-import com.sun.grizzly.config.dom.FileCache;
-import com.sun.grizzly.config.dom.Http;
-import com.sun.grizzly.config.dom.HttpRedirect;
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.PortUnification;
-import com.sun.grizzly.config.dom.Protocol;
-import com.sun.grizzly.config.dom.ProtocolFinder;
-import com.sun.grizzly.config.dom.Protocols;
-import com.sun.grizzly.config.dom.Ssl;
+import org.glassfish.grizzly.config.dom.FileCache;
+import org.glassfish.grizzly.config.dom.Http;
+import org.glassfish.grizzly.config.dom.HttpRedirect;
+import org.glassfish.grizzly.config.dom.NetworkConfig;
+import org.glassfish.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.PortUnification;
+import org.glassfish.grizzly.config.dom.Protocol;
+import org.glassfish.grizzly.config.dom.ProtocolFinder;
+import org.glassfish.grizzly.config.dom.Protocols;
+import org.glassfish.grizzly.config.dom.Ssl;
 import com.sun.logging.LogDomains;
 import java.beans.PropertyVetoException;
 import java.util.HashMap;
@@ -535,7 +535,7 @@ public abstract class SecureAdminCommand implements AdminCommand {
 
         private final String name;
         private final String protocolName;
-        private final String classname = "com.sun.grizzly.config.HttpProtocolFinder";
+        private final String classname = "org.glassfish.grizzly.config.portunif.HttpProtocolFinder";
 
         private ProtocolFinderInfo(final String name, final String protocolName) {
             this.name = name;
@@ -552,7 +552,7 @@ public abstract class SecureAdminCommand implements AdminCommand {
         private final static String HTTP_FINDER_PROTOCOL_FINDER_NAME = "http-finder";
         private final static String ADMIN_HTTP_REDIRECT_FINDER_NAME = "admin-http-redirect";
 
-        private final static String PROTOCOL_FINDER_CLASSNAME = "com.sun.grizzly.confing.HttpProtocolFinder";
+        private final static String PROTOCOL_FINDER_CLASSNAME = "org.glassfish.grizzly.config.portunif.HttpProtocolFinder";
 
 
         private HttpRedirect writeableHttpRedirect(

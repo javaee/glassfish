@@ -40,24 +40,27 @@
 
 package com.sun.enterprise.v3.admin;
 
-import com.sun.enterprise.config.serverbeans.Config;
+import java.security.Principal;
+import java.util.Set;
+
 import com.sun.enterprise.config.serverbeans.AdminService;
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.grizzly.tcp.Request;
 import com.sun.logging.LogDomains;
-import java.security.Principal;
 import org.glassfish.admin.payload.PayloadImpl;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.*;
-import org.glassfish.api.event.Events;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.Payload;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.container.Adapter;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
 
 import java.net.InetAddress;
@@ -68,14 +71,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import org.glassfish.server.ServerEnvironmentImpl;
 
 import java.net.HttpURLConnection;
 import com.sun.enterprise.universal.GFBase64Decoder;
 import com.sun.enterprise.v3.admin.adapter.AdminEndpointDecider;
-import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
-import com.sun.grizzly.tcp.http11.GrizzlyRequest;
-import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 
 import java.io.*;
 import java.util.HashMap;
@@ -84,15 +83,24 @@ import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
 import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
 import org.glassfish.api.event.RestrictTo;
-import org.glassfish.internal.api.*;
+import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
+import org.glassfish.grizzly.http.server.StaticHttpHandler;
+import org.glassfish.internal.api.AdminAccessController;
+import org.glassfish.internal.api.Privacy;
+import org.glassfish.internal.api.ServerContext;
+import org.glassfish.server.ServerEnvironmentImpl;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 
 /**
  * Listen to admin commands...
  * @author dochez
  */
-public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstruct, EventListener {
+public abstract class AdminAdapter extends StaticHttpHandler implements Adapter, PostConstruct, EventListener {
 
     public final static String VS_NAME="__asadmin";
     public final static String PREFIX_URI = "/" + VS_NAME;
@@ -154,7 +162,13 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
     CountDownLatch latch = new CountDownLatch(1);
 
     protected AdminAdapter(Class<? extends Privacy> privacyClass) {
+        super((Set) null);
         this.privacyClass = privacyClass;
+    }
+
+    @Override
+    public final HttpHandler getHttpService() {
+        return this;
     }
 
     @Override
@@ -162,8 +176,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         events.register(this);
         
         epd = new AdminEndpointDecider(config, aalogger);
-        this.setHandleStaticResources(true);
-        this.addRootFolder(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/asadmindocroot/");
+        addDocRoot(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/asadmindocroot/");
         secureAdmin = habitat.getComponent(SecureAdmin.class);
     }
 
@@ -183,7 +196,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
      *  runtime exceptions )
      */
     @Override
-    public void service(GrizzlyRequest req, GrizzlyResponse res) {
+    public void onMissingResource(Request req, Response res) {
 
         LogHelper.getDefaultLogger().log(Level.FINER, "Received something on {0}", req.getRequestURI());
         LogHelper.getDefaultLogger().log(Level.FINER, "QueryString = {0}", req.getQueryString());
@@ -203,7 +216,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
 
         try {
             if (!latch.await(20L, TimeUnit.SECONDS)) {
-                report = this.getClientActionReport(req.getRequestURI(), req);
+                report = getClientActionReport(req.getRequestURI(), req);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage("V3 cannot process this command at this time, please wait");            
             } else {
@@ -241,16 +254,14 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
             res.setContentType(outboundPayload.getContentType());
             outboundPayload.writeTo(res.getOutputStream());
             res.getOutputStream().flush();
-            res.finishResponse();
+            res.finish();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public AdminAccessController.Access authenticate(GrizzlyRequest req)
-            throws Exception {
-        final Request r = req.getRequest();
-        String[] up = getUserPassword(r);
+    public AdminAccessController.Access authenticate(Request req) throws Exception {
+        String[] up = getUserPassword(req);
         String user = up[0];
         String password = up.length > 1 ? up[1] : "";
         AdminAccessController authenticator = habitat.getByContract(AdminAccessController.class);
@@ -272,7 +283,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         return AdminAccessController.Access.FULL;   //if the authenticator is not available, allow all access - per Jerome
     }
     
-    private Map<String,String> authRelatedHeaders(final GrizzlyRequest gr) {
+    private Map<String,String> authRelatedHeaders(final Request gr) {
         final Map<String,String> result = new HashMap<String,String>();
         for (String authRelatedHeaderName : authRelatedHeaderNames) {
             final String value = gr.getHeader(authRelatedHeaderName);
@@ -305,7 +316,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         return new String[] { dec.substring(0, i), dec.substring(i + 1) };
     }
 
-    private boolean authenticate(GrizzlyRequest req, ActionReport report, GrizzlyResponse res)
+    private boolean authenticate(Request req, ActionReport report, Response res)
             throws Exception {
         
         AdminAccessController.Access access = authenticate(req);
@@ -349,7 +360,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         return access == AdminAccessController.Access.FULL;
     }
 
-    private void reportAuthFailure(final GrizzlyResponse res,
+    private void reportAuthFailure(final Response res,
             final ActionReport report,
             final String msgKey,
             final String msg,
@@ -357,7 +368,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         reportAuthFailure(res, report, msgKey, msg, httpStatus, null, null);
     }
 
-    private void reportAuthFailure(final GrizzlyResponse res,
+    private void reportAuthFailure(final Response res,
             final ActionReport report,
             final String msgKey,
             final String msg,
@@ -374,10 +385,10 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         res.setContentType(report.getContentType());
         report.writeReport(res.getOutputStream());
         res.getOutputStream().flush();
-        res.finishResponse();
+        res.finish();
     }
 
-    private ActionReport getClientActionReport(String requestURI, GrizzlyRequest req) {
+    private ActionReport getClientActionReport(String requestURI, Request req) {
 
 
         ActionReport report=null;
@@ -410,7 +421,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
 
     protected abstract boolean validatePrivacy(AdminCommand command);
 
-    private ActionReport doCommand(String requestURI, GrizzlyRequest req, ActionReport report,
+    private ActionReport doCommand(String requestURI, Request req, ActionReport report,
             Payload.Outbound outboundPayload) {
 
         if (!requestURI.startsWith(getContextRoot())) {
@@ -429,8 +440,8 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
 
         final ParameterMap parameters = extractParameters(req.getQueryString());
         try {
-            Payload.Inbound inboundPayload = PayloadImpl.Inbound.newInstance(
-                    req.getContentType(), req.getInputStream());
+            Payload.Inbound inboundPayload = PayloadImpl.Inbound
+                .newInstance(req.getContentType(), req.getInputStream(true));
             if (aalogger.isLoggable(Level.FINE)) {
                 aalogger.log(Level.FINE, "***** AdminAdapter {0}  *****", req.getMethod());
             }
@@ -486,9 +497,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
      * Finish the response and recycle the request/response tokens. Base on
      * the connection header, the underlying socket transport will be closed
      */
-    @Override
-    public void afterService(GrizzlyRequest req, GrizzlyResponse res) throws Exception {
-
+    public void afterService(Request req, Response res) throws Exception {
     }
 
     /**
@@ -500,7 +509,6 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
      * @param data Event data
      */
     public void fireAdapterEvent(String type, Object data) {
-
     }
      
      

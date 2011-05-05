@@ -109,7 +109,7 @@
         <jsf-ext.version>0.2</jsf-ext.version>
         <woodstock.version>4.0.2.6</woodstock.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
-        <grizzly.version>1.9.31</grizzly.version>
+        <grizzly.version>2.1</grizzly.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
         <saaj-api.version>1.3</saaj-api.version>
         <hk2.version>1.6.2</hk2.version>
@@ -162,7 +162,7 @@
         <v3-docs.version>3.2-b01</v3-docs.version>
         <l10n.version>3.1-b41</l10n.version>
         <asm.version>3.1</asm.version>
-        <shoal.version>1.5.30</shoal.version>
+        <shoal.version>1.6.01</shoal.version>
         <ha-api.version>3.1.8</ha-api.version>
     </properties>
 
@@ -830,61 +830,72 @@
             </dependency>
 
             <dependency>
-                <groupId>com.sun.grizzly</groupId>
-                <artifactId>grizzly-utils</artifactId>
-                <version>${grizzly.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.sun.grizzly</groupId>
+                <groupId>org.glassfish.grizzly</groupId>
                 <artifactId>grizzly-framework</artifactId>
                 <version>${grizzly.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.sun.grizzly</groupId>
-                <artifactId>grizzly-portunif</artifactId>
-                <version>${grizzly.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.sun.grizzly</groupId>
+                <groupId>org.glassfish.grizzly</groupId>
                 <artifactId>grizzly-http</artifactId>
                 <version>${grizzly.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.sun.grizzly</groupId>
+                <groupId>org.glassfish.grizzly</groupId>
+                <artifactId>grizzly-http-server</artifactId>
+                <version>${grizzly.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.glassfish.grizzly</groupId>
+                <artifactId>grizzly-http-servlet</artifactId>
+                <version>${grizzly.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.glassfish.grizzly</groupId>
                 <artifactId>grizzly-rcm</artifactId>
                 <version>${grizzly.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.sun.grizzly</groupId>
-                <artifactId>grizzly-compat</artifactId>
+                <groupId>org.glassfish.grizzly</groupId>
+                <artifactId>grizzly-portunif</artifactId>
                 <version>${grizzly.version}</version>
             </dependency>
 
+<!--            <dependency>
+                <groupId>org.glassfish.grizzly</groupId>
+                <artifactId>grizzly-compat</artifactId>
+                <version>${grizzly.version}</version>
+            </dependency>-->
+
             <dependency>
-                <groupId>com.sun.grizzly</groupId>
+                <groupId>org.glassfish.grizzly</groupId>
                 <artifactId>grizzly-comet</artifactId>
                 <version>${grizzly.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.sun.grizzly</groupId>
+                <groupId>org.glassfish.grizzly</groupId>
                 <artifactId>grizzly-websockets</artifactId>
                 <version>${grizzly.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.sun.grizzly</groupId>
-                <artifactId>grizzly-messagesbus</artifactId>
+                <groupId>org.glassfish.grizzly</groupId>
+                <artifactId>grizzly-http-ajp</artifactId>
                 <version>${grizzly.version}</version>
             </dependency>
+<!--            <dependency>
+                <groupId>org.glassfish.grizzly</groupId>
+                <artifactId>grizzly-messagesbus</artifactId>
+                <version>${grizzly.version}</version>
+            </dependency>-->
 
             <dependency>
-                <groupId>com.sun.grizzly</groupId>
+                <groupId>org.glassfish.grizzly</groupId>
                 <artifactId>grizzly-config</artifactId>
                 <version>${grizzly.version}</version>
             </dependency>
@@ -979,11 +990,6 @@
                 <version>${jaxb-api.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.grizzly</groupId>
-                <artifactId>grizzly-http-servlet</artifactId>
-                <version>${grizzly.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>javax.jbi</groupId>
                 <artifactId>jbi</artifactId>
                 <version>${jbi.version}</version>
@@ -1076,6 +1082,11 @@
             <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-server</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.jersey</groupId>
+                <artifactId>jersey-grizzly2</artifactId>
                 <version>${jersey.version}</version>
             </dependency>
             <dependency>
@@ -1445,7 +1456,7 @@
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgi-resource-locator</artifactId>
-                <version>1.0.1</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
@@ -1455,7 +1466,7 @@
             <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
                 <artifactId>osgi-web-container</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
@@ -1475,7 +1486,7 @@
             <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
                 <artifactId>osgi-http</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>

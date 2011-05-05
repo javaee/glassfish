@@ -58,7 +58,7 @@ import com.sun.enterprise.config.serverbeans.Orb;
 import com.sun.enterprise.config.serverbeans.IiopService;
 import com.sun.enterprise.config.serverbeans.SslClientConfig;
 
-import com.sun.grizzly.config.dom.Ssl;
+import org.glassfish.grizzly.config.dom.Ssl;
 import java.util.Arrays;
 
 import org.glassfish.api.admin.ProcessEnvironment;

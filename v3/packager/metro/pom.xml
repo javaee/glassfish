@@ -138,7 +138,7 @@
             <type>distribution-fragment</type>
         </dependency>
         <dependency>
-            <groupId>com.sun.grizzly</groupId>
+            <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-http-servlet</artifactId>
         <!--
             'jersey' exclusions added to workaround an issue integrating

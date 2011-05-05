@@ -78,7 +78,7 @@ public class ExistingDomainTest {
 
         Habitat habitat = server.getHabitat();
         System.out.println("Process type is " + habitat.getComponent(ProcessEnvironment.class).getProcessType());
-        Collection<Inhabitant<?>> listeners = habitat.getInhabitantsByType("com.sun.grizzly.config.dom.NetworkListener");
+        Collection<Inhabitant<?>> listeners = habitat.getInhabitantsByType("org.glassfish.grizzly.config.dom.NetworkListener");
         Assert.assertTrue(listeners.size()>1);
         for (Inhabitant<?> s : listeners) {
             Object networkListener = s.get();

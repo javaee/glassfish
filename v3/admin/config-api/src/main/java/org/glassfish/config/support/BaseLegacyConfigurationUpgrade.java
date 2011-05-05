@@ -45,16 +45,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.sun.grizzly.util.IntrospectionUtils.setProperty;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.config.LegacyConfigurationUpgrade;
+import static org.glassfish.config.support.IntrospectionUtils.*;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.config.types.PropertyBag;
 import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 
 public abstract class BaseLegacyConfigurationUpgrade implements LegacyConfigurationUpgrade {
     protected void report(AdminCommandContext context, final String message) {
@@ -114,4 +114,6 @@ public abstract class BaseLegacyConfigurationUpgrade implements LegacyConfigurat
         }
         return null;
     }
+
+
 }

@@ -42,7 +42,7 @@ package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.module.bootstrap.EarlyLogHandler;
-import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;

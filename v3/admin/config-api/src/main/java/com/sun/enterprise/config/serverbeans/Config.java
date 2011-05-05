@@ -46,18 +46,20 @@ import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
-import com.sun.enterprise.config.serverbeans.customvalidators.NotTargetKeyword;
-import com.sun.enterprise.config.serverbeans.customvalidators.NotDuplicateTargetName;
 import com.sun.common.util.logging.LoggingConfigImpl;
+import com.sun.enterprise.config.serverbeans.customvalidators.NotDuplicateTargetName;
+import com.sun.enterprise.config.serverbeans.customvalidators.NotTargetKeyword;
 import com.sun.enterprise.config.util.ServerHelper;
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.admin.config.*;
 import static org.glassfish.config.support.Constants.NAME_SERVER_REGEX;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.config.support.datatypes.Port;
+import org.glassfish.grizzly.config.dom.NetworkConfig;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.quality.ToDo;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.component.Injectable;
@@ -69,9 +71,6 @@ import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
 import javax.validation.Payload;
-
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 /**
  * The configuration defines the configuration of a server instance that can be

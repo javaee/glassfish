@@ -58,9 +58,6 @@
 
 package org.apache.catalina.connector;
 
-import com.sun.grizzly.util.buf.MessageBytes;
-import com.sun.grizzly.util.http.mapper.Mapper;
-import com.sun.grizzly.util.http.mapper.MappingData;
 import org.apache.catalina.Host;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
@@ -75,6 +72,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.grizzly.http.server.util.Mapper;
+import org.glassfish.grizzly.http.server.util.MappingData;
+import org.glassfish.grizzly.http.util.DataChunk;
+import org.glassfish.grizzly.http.util.MessageBytes;
 
 /**
  * Mapper listener.
@@ -580,12 +581,12 @@ public class MapperListener
         }
 
         // Don't un-map a context that is paused
-        MessageBytes hostMB = MessageBytes.newInstance();
-        hostMB.setString(hostName);
-        MessageBytes contextMB = MessageBytes.newInstance();
-        contextMB.setString(contextName);
+        DataChunk hostDC = DataChunk.newInstance();
+        hostDC.setString(hostName);
+        DataChunk contextDC = DataChunk.newInstance();
+        contextDC.setString(contextName);
         MappingData mappingData = new MappingData();
-        mapper.map(hostMB, contextMB, mappingData);
+        mapper.map(hostDC, contextDC, mappingData);
         if (mappingData.context instanceof StandardContext &&
                 ((StandardContext)mappingData.context).getPaused()) {
             return;

@@ -66,8 +66,8 @@ import org.apache.jk.apr.AprImpl;
 import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
 import org.apache.jk.core.WorkerEnv;
-import com.sun.grizzly.util.IntrospectionUtils;
-import com.sun.grizzly.util.buf.C2BConverter;
+import org.glassfish.grizzly.http.server.util.IntrospectionUtils;
+import org.glassfish.grizzly.http.util.C2BConverter;
 
 /* The code is a bit confusing at this moment - the class is used as
    a Bean, or ant Task, or CLI - i.e. you set properties and call execute.

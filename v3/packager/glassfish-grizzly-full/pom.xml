@@ -81,16 +81,20 @@
           modules to be included in this bundle
         -->
         <dependency>
-            <groupId>com.sun.grizzly</groupId>
+            <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-comet</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.grizzly</groupId>
+            <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-websockets</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.grizzly</groupId>
+            <groupId>org.glassfish.grizzly</groupId>
 	    <artifactId>grizzly-http-servlet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.grizzly</groupId>
+	    <artifactId>grizzly-http-ajp</artifactId>
         </dependency>
         <!-- previous package - required for dependency graph calculation -->
         <dependency>

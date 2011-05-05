@@ -68,13 +68,10 @@ import com.sun.enterprise.web.logger.FileLoggerHandlerFactory;
 import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.web.reconfig.WebConfigListener;
-import com.sun.grizzly.config.ContextRootInfo;
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.NetworkListeners;
-import com.sun.grizzly.util.buf.MessageBytes;
-import com.sun.grizzly.util.http.mapper.Mapper;
-import com.sun.grizzly.util.http.mapper.MappingData;
+import org.glassfish.grizzly.config.ContextRootInfo;
+import org.glassfish.grizzly.config.dom.NetworkConfig;
+import org.glassfish.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListeners;
 import com.sun.hk2.component.ConstructorWomb;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.*;
@@ -126,6 +123,10 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.grizzly.http.server.util.Mapper;
+import org.glassfish.grizzly.http.server.util.MappingData;
+import org.glassfish.grizzly.http.util.DataChunk;
+import org.glassfish.grizzly.http.util.MessageBytes;
 
 /**
  * Web container service
@@ -813,11 +814,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         if (!defaultVS.equals(org.glassfish.api.web.Constants.ADMIN_VS)) {
             // Before we start a WebConnector, let's makes sure there is
             // not another Container already listening on that port
-            MessageBytes host = MessageBytes.newInstance();
+            DataChunk host = DataChunk.newInstance();
             char[] c = defaultVS.toCharArray();
             host.setChars(c, 0, c.length);
 
-            MessageBytes mb = MessageBytes.newInstance();
+            DataChunk mb = DataChunk.newInstance();
             mb.setChars(new char[]{'/'}, 0, 1);
 
             MappingData md = new MappingData();
@@ -831,9 +832,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
             if (md.context != null && md.context instanceof ContextRootInfo) {
                 ContextRootInfo r = (ContextRootInfo) md.context;
-                if (!(r.getAdapter() instanceof ContainerMapper)) {
+                if (!(r.getHttpHandler() instanceof ContainerMapper)){
                     new BindException("Port " + port + " is already used by Container: "
-                            + r.getAdapter() +
+                            + r.getHttpHandler() +
                             " and will not get started.").printStackTrace();
                     return null;
                 }

@@ -40,8 +40,8 @@
 
 package com.sun.enterprise.configapi.tests;
 
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.NetworkListeners;
+import org.glassfish.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListeners;
 import com.sun.hk2.component.ConstructorWomb;
 import org.glassfish.tests.utils.Utils;
 import static org.junit.Assert.assertTrue;

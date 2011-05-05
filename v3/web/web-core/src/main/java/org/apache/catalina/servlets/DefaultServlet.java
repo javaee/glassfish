@@ -58,8 +58,52 @@
 
 package org.apache.catalina.servlets;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.RandomAccessFile;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentHashMap;
+import javax.naming.InitialContext;
+import javax.naming.NameClassPair;
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.UnavailableException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
-import com.sun.grizzly.util.http.mapper.AlternateDocBase;
 import org.apache.catalina.Globals;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.ServerInfo;
@@ -70,27 +114,9 @@ import org.apache.naming.resources.FileDirContext;
 import org.apache.naming.resources.ProxyDirContext;
 import org.apache.naming.resources.Resource;
 import org.apache.naming.resources.ResourceAttributes;
+import org.glassfish.grizzly.http.server.util.AlternateDocBase;
 import org.glassfish.web.loader.ResourceEntry;
 import org.glassfish.web.loader.WebappClassLoader;
-
-import javax.naming.InitialContext;
-import javax.naming.NameClassPair;
-import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
-import javax.servlet.*;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import java.io.*;
-import java.net.URL;
-import java.net.URI;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The default resource-serving servlet for most web applications,

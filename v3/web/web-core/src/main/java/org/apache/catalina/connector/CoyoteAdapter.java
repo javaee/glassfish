@@ -58,27 +58,35 @@
 
 package org.apache.catalina.connector;
 
-import com.sun.appserv.ProxyHandler;
-import com.sun.grizzly.config.ContextRootInfo;
-import com.sun.grizzly.tcp.ActionCode;
-import com.sun.grizzly.tcp.Adapter;
-import com.sun.grizzly.util.buf.ByteChunk;
-import com.sun.grizzly.util.buf.CharChunk;
-import com.sun.grizzly.util.buf.MessageBytes;
-import com.sun.grizzly.util.http.mapper.MappingData;
-import org.apache.catalina.*;
-import org.apache.catalina.core.ContainerBase;
-import org.apache.catalina.util.ServerInfo;
-import org.apache.catalina.util.StringManager;
-import org.glassfish.web.valve.GlassFishValve;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.sun.appserv.ProxyHandler;
+import org.apache.catalina.Container;
+import org.apache.catalina.Context;
+import org.apache.catalina.Globals;
+import org.apache.catalina.Host;
+import org.apache.catalina.Wrapper;
+import org.apache.catalina.core.ContainerBase;
+import org.apache.catalina.util.ServerInfo;
+import org.apache.catalina.util.StringManager;
+import org.glassfish.grizzly.config.ContextRootInfo;
+import org.glassfish.grizzly.http.Method;
+import org.glassfish.grizzly.http.server.AfterServiceListener;
+import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.Note;
+import org.glassfish.grizzly.http.server.util.MappingData;
+import org.glassfish.grizzly.http.util.ByteChunk;
+import org.glassfish.grizzly.http.util.CharChunk;
+import org.glassfish.grizzly.http.util.DataChunk;
+import org.glassfish.grizzly.http.util.MessageBytes;
+import org.glassfish.web.valve.GlassFishValve;
 
 /**
  * Implementation of a request processor which delegates the processing to a
@@ -89,33 +97,30 @@ import java.util.logging.Logger;
  * @version $Revision: 1.34 $ $Date: 2007/08/24 18:38:28 $
  */
 
-public class CoyoteAdapter
-    implements Adapter 
- {
+public class CoyoteAdapter extends HttpHandler {
     private static final Logger log = Logger.getLogger(CoyoteAdapter.class.getName());
 
     // -------------------------------------------------------------- Constants
-
     private static final String POWERED_BY = "Servlet/3.0 JSP/2.2 " +
             "(" + ServerInfo.getServerInfo() + " Java/" +
             System.getProperty("java.vm.vendor") + "/" +
             System.getProperty("java.specification.version") + ")";
 
 
-    protected boolean v3Enabled = 
-        Boolean.valueOf(System.getProperty("v3.grizzly.useMapper", "true")).booleanValue();
+//    protected boolean v3Enabled =
+//        Boolean.valueOf(System.getProperty("v3.grizzly.useMapper", "true"));
     
     
-    public static final int ADAPTER_NOTES = 1;
+//    public static final int ADAPTER_NOTES = 1;
 
     static final String JVM_ROUTE = System.getProperty("jvmRoute");
 
-    protected static final boolean ALLOW_BACKSLASH = 
-        Boolean.valueOf(System.getProperty("com.sun.grizzly.tcp.tomcat5.CoyoteAdapter.ALLOW_BACKSLASH", "false")).booleanValue();
+    protected static final boolean ALLOW_BACKSLASH =
+        Boolean.valueOf(System.getProperty("org.glassfish.grizzly.tcp.tomcat5.CoyoteAdapter.ALLOW_BACKSLASH", "false"));
 
     private static final boolean COLLAPSE_ADJACENT_SLASHES =
         Boolean.valueOf(System.getProperty(
-            "com.sun.enterprise.web.collapseAdjacentSlashes", "true")).booleanValue();
+            "com.sun.enterprise.web.collapseAdjacentSlashes", "true"));
 
     /**
      * When mod_jk is used, the adapter must be invoked the same way 
@@ -128,11 +133,21 @@ public class CoyoteAdapter
     
     // Make sure this value is always aligned with {@link ContainerMapper}
     // (@see com.sun.enterprise.v3.service.impl.ContainerMapper)
-    private final static int MAPPING_DATA = 12;
+    protected final static Note<MappingData> MAPPING_DATA =
+            org.glassfish.grizzly.http.server.Request.<MappingData>createNote("MappingData");
+
+    static final Note<Request> CATALINA_REQUEST_NOTE =
+            org.glassfish.grizzly.http.server.Request.createNote(Request.class.getName());
+    static final Note<Response> CATALINA_RESPONSE_NOTE =
+            org.glassfish.grizzly.http.server.Request.createNote(Response.class.getName());
+
+    static final CatalinaAfterServiceListener catalinaAfterServiceListener =
+            new CatalinaAfterServiceListener();
 
     // Make sure this value is always aligned with {@link ContainerMapper}
     // (@see com.sun.enterprise.v3.service.impl.ContainerMapper)
-    private final static int MESSAGE_BYTES = 17;
+    private final static Note<DataChunk> DATA_CHUNK =
+            org.glassfish.grizzly.http.server.Request.<DataChunk>createNote("DataChunk");
     
     // ----------------------------------------------------------- Constructors
 
@@ -178,57 +193,56 @@ public class CoyoteAdapter
      * Service method.
      */
     @Override
-    public void service(com.sun.grizzly.tcp.Request req,
-                        com.sun.grizzly.tcp.Response res)
+    public void service(org.glassfish.grizzly.http.server.Request req,
+                        org.glassfish.grizzly.http.server.Response res)
             throws Exception {
 
-        res.setAllowCustomReasonPhrase(Constants.USE_CUSTOM_STATUS_MSG_IN_HEADER);
+        res.getResponse().setAllowCustomReasonPhrase(Constants.USE_CUSTOM_STATUS_MSG_IN_HEADER);
 
-        Request request = (Request) req.getNote(ADAPTER_NOTES);
-        Response response = (Response) res.getNote(ADAPTER_NOTES);
+        Request request = req.getNote(CATALINA_REQUEST_NOTE);
+        Response response = req.getNote(CATALINA_RESPONSE_NOTE);
         
         // Grizzly already parsed, decoded, and mapped the request.
         // Let's re-use this info here, before firing the
         // requestStartEvent probe, so that the mapping data will be
         // available to any probe event listener via standard
         // ServletRequest APIs (such as getContextPath())
-        MappingData md = (MappingData)req.getNote(MAPPING_DATA);
-        if (md == null){
-            v3Enabled = false;
-        } else {
-            v3Enabled = true;
-        }
-            
+        MappingData md = req.getNote(MAPPING_DATA);
+        final boolean v3Enabled = md != null;
         if (request == null) {
 
             // Create objects
             request = (Request) connector.createRequest();
-            request.setCoyoteRequest(req);
             response = (Response) connector.createResponse();
-            response.setCoyoteResponse(res);
 
             // Link objects
             request.setResponse(response);
             response.setRequest(request);
 
             // Set as notes
-            req.setNote(ADAPTER_NOTES, request);
-            res.setNote(ADAPTER_NOTES, response);
+            req.setNote(CATALINA_REQUEST_NOTE, request);
+            req.setNote(CATALINA_RESPONSE_NOTE, response);
+//            res.setNote(ADAPTER_NOTES, response);
 
             // Set query string encoding
-            req.getParameters().setQueryStringEncoding
-                (connector.getURIEncoding());
+            req.getRequest().getRequestURIRef().setDefaultURIEncoding(Charset.forName(connector.getURIEncoding()));
         }
+
+        request.setCoyoteRequest(req);
+        response.setCoyoteResponse(res);
 
         if (v3Enabled && !compatWithTomcat) {
-            if (md != null) {
-                request.setMappingData(md);
-                request.updatePaths(md);
-            }
+            request.setMappingData(md);
+            request.updatePaths(md);
         }
 
+        req.addAfterServiceListener(catalinaAfterServiceListener);
+        
         try {
-            doService(req, request, res, response);
+            doService(req, request, res, response, v3Enabled);
+
+            // Request may want to initialize async processing
+            request.onAfterService();
         } catch (IOException e) {
             // Recycle the wrapper request and response
             request.recycle();
@@ -242,10 +256,11 @@ public class CoyoteAdapter
     }
 
 
-    private void doService(com.sun.grizzly.tcp.Request req,
-                           Request request,
-                           com.sun.grizzly.tcp.Response res,
-                           Response response)
+    private void doService(final org.glassfish.grizzly.http.server.Request req,
+                           final Request request,
+                           final org.glassfish.grizzly.http.server.Response res,
+                           final Response response,
+                           final boolean v3Enabled)
             throws Exception {
         
         // START SJSAS 6331392
@@ -268,7 +283,7 @@ public class CoyoteAdapter
 
         // Parse and set Catalina and configuration specific 
         // request parameters
-        if ( postParseRequest(req, request, res, response) ) {
+        if ( postParseRequest(req, request, res, response, v3Enabled) ) {
 
             // START S1AS 6188932
             boolean authPassthroughEnabled = 
@@ -344,9 +359,9 @@ public class CoyoteAdapter
         req.action( ActionCode.ACTION_POST_REQUEST , null);
          */
         // START GlassFish Issue 798
-        if (compatWithTomcat) {
-            afterService(req, res);
-        }
+//        if (compatWithTomcat) {
+//            afterService(req, res);
+//        }
         // END GlassFish Issue 798    
     }
 
@@ -355,33 +370,33 @@ public class CoyoteAdapter
      * Finish the response and close the connection based on the connection
      * header.
      */
-    @Override
-    public void afterService(com.sun.grizzly.tcp.Request req,
-                             com.sun.grizzly.tcp.Response res)
-            throws Exception{
-
-        Request request = (Request) req.getNote(ADAPTER_NOTES);
-        Response response = (Response) res.getNote(ADAPTER_NOTES);
-        
-        if ( request == null || response == null) return;
-        
-        try{
-            if (!res.isSuspended()){
-                response.finishResponse();
-                req.action( ActionCode.ACTION_POST_REQUEST , null);
-            } else {
-                request.onAfterService();
-            }
-        } catch (Throwable t) {
-            log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), t);
-        } finally {
-            if (!res.isSuspended()){
-                // Recycle the wrapper request and response
-                request.recycle();
-                response.recycle();
-            }
-        }
-    }
+//    @Override
+//    public void afterService(com.sun.grizzly.tcp.Request req,
+//                             com.sun.grizzly.tcp.Response res)
+//            throws Exception{
+//
+//        Request request = (Request) req.getNote(ADAPTER_NOTES);
+//        Response response = (Response) res.getNote(ADAPTER_NOTES);
+//
+//        if ( request == null || response == null) return;
+//
+//        try{
+//            if (!res.isSuspended()){
+//                response.finishResponse();
+//                req.action( ActionCode.ACTION_POST_REQUEST , null);
+//            } else {
+//                request.onAfterService();
+//            }
+//        } catch (Throwable t) {
+//            log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), t);
+//        } finally {
+//            if (!res.isSuspended()){
+//                // Recycle the wrapper request and response
+//                request.recycle();
+//                response.recycle();
+//            }
+//        }
+//    }
     // END GlassFish Issue 798
     // ------------------------------------------------------ Protected Methods
 
@@ -389,23 +404,16 @@ public class CoyoteAdapter
     /**
      * Parse additional request parameters.
      */
-    protected boolean postParseRequest(com.sun.grizzly.tcp.Request req,
-                                       Request request,
-                                       com.sun.grizzly.tcp.Response res,
-                                       Response response)
+    protected boolean postParseRequest(final org.glassfish.grizzly.http.server.Request req,
+                                       final Request request,
+                                       final org.glassfish.grizzly.http.server.Response res,
+                                       final Response response,
+                                       final boolean v3Enabled)
         throws Exception {
         // XXX the processor may have set a correct scheme and port prior to this point, 
         // in ajp13 protocols dont make sense to get the port from the connector...
         // otherwise, use connector configuration
-        if (! req.scheme().isNull()) {
-            // use processor specified scheme to determine secure state
-            request.setSecure(req.scheme().equals("https"));
-        } else {
-            // use connector scheme and secure configuration, (defaults to
-            // "http" and false respectively)
-            req.scheme().setString(connector.getScheme());
-            request.setSecure(connector.getSecure());
-        }
+        request.setSecure(req.isSecure());
 
         // FIXME: the code below doesnt belongs to here, 
         // this is only have sense 
@@ -418,20 +426,20 @@ public class CoyoteAdapter
             req.setServerPort(proxyPort);
         }
         if (proxyName != null) {
-            req.serverName().setString(proxyName);
+            req.setServerName(proxyName);
         }
 
         // URI decoding
-        MessageBytes decodedURI = req.decodedURI();
-        if (compatWithTomcat || !v3Enabled) {           
-            decodedURI.duplicate(req.requestURI());
-            try {
-              req.getURLDecoder().convert(decodedURI, false);
-            } catch (IOException ioe) {
-              res.setStatus(400);
-              res.setMessage("Invalid URI: " + ioe.getMessage());
-              return false;
-            }
+        DataChunk decodedURI = req.getRequest().getRequestURIRef().getDecodedRequestURIBC();
+        if (compatWithTomcat || !v3Enabled) {
+//            decodedURI.duplicate(req.requestURI());
+//            try {
+//              req.getURLDecoder().convert(decodedURI, false);
+//            } catch (IOException ioe) {
+//              res.setStatus(400);
+//              res.setMessage("Invalid URI: " + ioe.getMessage());
+//              return false;
+//            }
 
             /* GlassFish Issue 2339
             // Normalize decoded URI
@@ -443,13 +451,13 @@ public class CoyoteAdapter
             */
 
             // Set the remote principal
-            String principal = req.getRemoteUser().toString();
+            String principal = req.getRemoteUser();
             if (principal != null) {
                 request.setUserPrincipal(new CoyotePrincipal(principal));
             }
 
             // Set the authorization type
-            String authtype = req.getAuthType().toString();
+            String authtype = req.getAuthType();
             if (authtype != null) {
                 request.setAuthType(authtype);
             }
@@ -462,16 +470,16 @@ public class CoyoteAdapter
             parseSessionId(req, request);
              */
             // START CR 6309511
-            // URI character decoding
-            request.convertURI(decodedURI);
+//             URI character decoding
+//            request.convertURI(decodedURI);
 
             // START GlassFish Issue 2339
             // Normalize decoded URI
-            if (!normalize(decodedURI)) {
-                res.setStatus(400);
-                res.setMessage("Invalid URI");
-                return false;
-            }
+//            if (!normalize(decodedURI)) {
+//                res.setStatus(400);
+//                res.setMessage("Invalid URI");
+//                return false;
+//            }
             // END GlassFish Issue 2339
         }
         // END CR 6309511
@@ -483,28 +491,29 @@ public class CoyoteAdapter
          * context, which may use a custom session parameter name, has been
          * identified
          */
-        CharChunk uriParamsCC = request.getURIParams();
-        CharChunk uriCC = decodedURI.getCharChunk();
-        int semicolon = uriCC.indexOf(';');
+        final CharChunk uriParamsCC = request.getURIParams();
+        final CharChunk uriCC = decodedURI.getCharChunk();
+        final int semicolon = uriCC.indexOf(';');
         if (semicolon > 0) {
-            uriParamsCC.setChars(uriCC.getBuffer(), semicolon,
-                uriCC.getEnd() - semicolon);
+            final int absSemicolon = uriCC.getStart() + semicolon;
+            uriParamsCC.setChars(uriCC.getBuffer(), absSemicolon,
+                uriCC.getEnd() - absSemicolon);
             decodedURI.setChars(uriCC.getBuffer(), uriCC.getStart(),
-                semicolon);
+                absSemicolon - uriCC.getStart());
         }
  
         if (compatWithTomcat || !v3Enabled) {
             /*mod_jk*/
-            MessageBytes localDecodedURI = decodedURI;
+            DataChunk localDecodedURI = decodedURI;
             if (semicolon > 0) {
-                localDecodedURI = (MessageBytes)req.getNote(MESSAGE_BYTES);
+                localDecodedURI = req.getNote(DATA_CHUNK);
                 if (localDecodedURI == null) {
-                    localDecodedURI = MessageBytes.newInstance();
-                    req.setNote(MESSAGE_BYTES, localDecodedURI);
+                    localDecodedURI = DataChunk.newInstance();
+                    req.setNote(DATA_CHUNK, localDecodedURI);
                 }
                 localDecodedURI.duplicate(decodedURI);
             }
-            connector.getMapper().map(req.serverName(), localDecodedURI, 
+            connector.getMapper().map(req.getRequest().serverName(), localDecodedURI,
                                   request.getMappingData());
             MappingData md = request.getMappingData();
             req.setNote(MAPPING_DATA, md);
@@ -515,13 +524,13 @@ public class CoyoteAdapter
         if (context instanceof ContextRootInfo) {
             // this block of code will be invoked when an AJP request is intended
             // for an Adapter other than the CoyoteAdapter
-            final Adapter toInvoke = ((ContextRootInfo) context).getAdapter();
+            final HttpHandler toInvoke = ((ContextRootInfo) context).getHttpHandler();
             // Ensure the Adapter isn't the ContainerMapper.  It could be there
             // is only one container/adapter currently active.  If this is the
             // case, it could cause recursion and blow the stack.
             if (!"com.sun.enterprise.v3.services.impl.ContainerMapper".equals(toInvoke.getClass().getName())) {
                 toInvoke.service(req, res);
-                toInvoke.afterService(req, res);
+//                toInvoke.afterService(req, res);
                 return false;
             }
         }
@@ -529,8 +538,14 @@ public class CoyoteAdapter
         Context ctx = (Context) context;
 
         // Parse session id
-        if (ctx != null && !uriParamsCC.isNull()) {
-            request.parseSessionId(ctx.getSessionParameterName(), uriParamsCC);
+        if (ctx != null) {
+            if (req.isRequestedSessionIdFromURL() &&
+                    Globals.SESSION_PARAMETER_NAME.equals(ctx.getSessionParameterName())) {
+                request.obtainSessionId();
+            } else if (!uriParamsCC.isNull()) {
+//            String sessionParam = ";" + ctx.getSessionParameterName() + "=";
+                request.parseSessionId(ctx.getSessionParameterName(), uriParamsCC);
+            }
         }
 
         // START GlassFish 1024
@@ -555,34 +570,32 @@ public class CoyoteAdapter
         request.setWrapper((Wrapper) request.getMappingData().wrapper);
 
         // Filter trace method
-        if (!connector.getAllowTrace() 
-                && req.method().equalsIgnoreCase("TRACE")) {
+        if (!connector.getAllowTrace() && Method.TRACE.equals(req.getMethod())) {
             Wrapper wrapper = request.getWrapper();
             String header = null;
             if (wrapper != null) {
                 String[] methods = wrapper.getServletMethods();
                 if (methods != null) {
-                    for (int i=0; i<methods.length; i++) {
+                    for (String method : methods) {
                         // Exclude TRACE from methods returned in Allow header
-                        if ("TRACE".equals(methods[i])) {
+                        if ("TRACE".equals(method)) {
                             continue;
                         }
                         if (header == null) {
-                            header = methods[i];
+                            header = method;
                         } else {
-                            header += ", " + methods[i];
+                            header += ", " + method;
                         }
                     }
                 }
             }                               
-            res.setStatus(405);
+            res.setStatus(405, "TRACE method is not allowed");
             res.addHeader("Allow", header);
-            res.setMessage("TRACE method is not allowed");
             return false;
         }
 
         // Possible redirect
-        MessageBytes redirectPathMB = request.getMappingData().redirectPath;
+        DataChunk redirectPathMB = request.getMappingData().redirectPath;
         // START SJSAS 6253524
         // if (!redirectPathMB.isNull()) {
         // END SJSAS 6253524
@@ -1002,5 +1015,29 @@ public class CoyoteAdapter
      */
     public int getPort() {
         return connector.getPort();
-    }       
+    }
+
+    /**
+     * AfterServiceListener, which is responsible for recycle catalina request and response
+     * objects.
+     */
+    static final class CatalinaAfterServiceListener implements AfterServiceListener {
+
+        @Override
+        public void onAfterService(final org.glassfish.grizzly.http.server.Request request) {
+            final Request servletRequest = request.getNote(CATALINA_REQUEST_NOTE);
+            final Response servletResponse = request.getNote(CATALINA_RESPONSE_NOTE);
+
+            if (servletRequest != null) {
+                try {
+                    servletResponse.finishResponse();
+                } catch (Exception e) {
+                    log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), e);
+                } finally {
+                    servletRequest.recycle();
+                    servletResponse.recycle();
+                }
+            }
+        }
+    }
 }

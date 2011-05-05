@@ -40,7 +40,6 @@
 
 package com.sun.enterprise.v3.services.impl.monitor.stats;
 
-import com.sun.grizzly.util.ExtendedThreadPool;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -53,6 +52,8 @@ import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
+import org.glassfish.grizzly.threadpool.SyncThreadPool;
+import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
 
 /**
  * Connection Queue statistics
@@ -88,7 +89,7 @@ public class ConnectionQueueStatsProvider implements StatsProvider {
     protected long averageLastShift;
     protected int averageMinuteCounter;
 
-    protected volatile ExtendedThreadPool threadPool;
+    protected volatile ThreadPoolConfig threadPoolConfig;
 
     public ConnectionQueueStatsProvider(String name) {
         this.name = name;
@@ -96,15 +97,15 @@ public class ConnectionQueueStatsProvider implements StatsProvider {
 
     @Override
     public Object getStatsObject() {
-        return threadPool;
+        return threadPoolConfig;
     }
 
     @Override
     public void setStatsObject(Object object) {
-        if (object instanceof ExtendedThreadPool) {
-            threadPool = (ExtendedThreadPool) object;
+        if (object instanceof ThreadPoolConfig) {
+            threadPoolConfig = (ThreadPoolConfig) object;
         } else {
-            threadPool = null;
+            threadPoolConfig = null;
         }
     }
 
@@ -333,10 +334,8 @@ public class ConnectionQueueStatsProvider implements StatsProvider {
         countQueued.setCount(0);
 
         countTotalQueued.setCount(0);
-
-        final ExtendedThreadPool threadPoolObject = threadPool;
-        if (threadPoolObject != null) {
-            maxQueued.setCount(threadPoolObject.getMaxQueuedTasksCount());
+        if (threadPoolConfig != null) {
+            maxQueued.setCount(threadPoolConfig.getQueueLimit());
         }
 
         peakQueuedAtomic.set(0);

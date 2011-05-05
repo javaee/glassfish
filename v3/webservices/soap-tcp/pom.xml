@@ -91,15 +91,11 @@
             <artifactId>webservices-api-osgi</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-utils</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
+            <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-framework</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.grizzly</groupId>
+            <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-portunif</artifactId>
         </dependency>
     </dependencies>

@@ -41,20 +41,21 @@
 package com.sun.enterprise.v3.services.impl.monitor;
 
 import com.sun.enterprise.v3.services.impl.monitor.stats.KeepAliveStatsProvider;
-import com.sun.grizzly.http.KeepAliveStats;
+import java.io.IOException;
+import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.http.KeepAlive;
+import org.glassfish.grizzly.http.KeepAliveProbe;
 
 /**
- * Monitoring aware {@link KeepAliveStats} implementation.
  *
- * @author Alexey Stashok
+ * @author oleksiys
  */
-public class MonitorableKeepAliveStats extends KeepAliveStats {
-    // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
-
+public class KeepAliveMonitor implements KeepAliveProbe {
     private final GrizzlyMonitoring grizzlyMonitoring;
     private final String monitoringId;
 
-    public MonitorableKeepAliveStats(GrizzlyMonitoring grizzlyMonitoring, String monitoringId) {
+    public KeepAliveMonitor(GrizzlyMonitoring grizzlyMonitoring,
+            String monitoringId, KeepAlive config) {
         this.grizzlyMonitoring = grizzlyMonitoring;
         this.monitoringId = monitoringId;
 
@@ -62,67 +63,38 @@ public class MonitorableKeepAliveStats extends KeepAliveStats {
             final KeepAliveStatsProvider statsProvider =
                     grizzlyMonitoring.getKeepAliveStatsProvider(monitoringId);
             if (statsProvider != null) {
-                statsProvider.setStatsObject(this);
+                statsProvider.setStatsObject(config);
             }
-
-            // Set initial monitoring values
-            setMaxKeepAliveRequests(getMaxKeepAliveRequests());
-            setKeepAliveTimeoutInSeconds(getKeepAliveTimeoutInSeconds());
+            
+            statsProvider.reset();
         }
     }
 
     @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-    @Override
-    public void setMaxKeepAliveRequests(int maxKeepAliveRequests) {
-        super.setMaxKeepAliveRequests(maxKeepAliveRequests);
-        grizzlyMonitoring.getKeepAliveProbeProvider().setMaxCountRequestsEvent(monitoringId, maxKeepAliveRequests);
-    }
-
-    @Override
-    public void setKeepAliveTimeoutInSeconds(int timeout) {
-        super.setKeepAliveTimeoutInSeconds(timeout);
-        grizzlyMonitoring.getKeepAliveProbeProvider().setTimeoutInSecondsEvent(monitoringId, timeout);
-    }
-
-    @Override
-    public void incrementCountConnections() {
-//        super.incrementCountConnections();
+    public void onConnectionAcceptEvent(final Connection connection) {
         grizzlyMonitoring.getKeepAliveProbeProvider().incrementCountConnectionsEvent(monitoringId);
+        connection.addCloseListener(new Connection.CloseListener() {
+
+            @Override
+            public void onClosed(final Connection connection) throws IOException {
+                grizzlyMonitoring.getKeepAliveProbeProvider().decrementCountConnectionsEvent(monitoringId);
+            }
+        });
     }
 
     @Override
-    protected void decrementCountConnections() {
-//        super.decrementCountConnections();
-        grizzlyMonitoring.getKeepAliveProbeProvider().decrementCountConnectionsEvent(monitoringId);
-    }
-
-
-
-    @Override
-    public void incrementCountFlushes() {
-//        super.incrementCountFlushes();
-        grizzlyMonitoring.getKeepAliveProbeProvider().incrementCountFlushesEvent(monitoringId);
-    }
-
-    @Override
-    public void incrementCountHits() {
-//        super.incrementCountHits();
+    public void onHitEvent(Connection connection, int requestNumber) {
         grizzlyMonitoring.getKeepAliveProbeProvider().incrementCountHitsEvent(monitoringId);
     }
 
     @Override
-    public void incrementCountRefusals() {
-//        super.incrementCountRefusals();
+    public void onRefuseEvent(Connection connection) {
         grizzlyMonitoring.getKeepAliveProbeProvider().incrementCountRefusalsEvent(monitoringId);
     }
 
     @Override
-    public void incrementCountTimeouts() {
-//        super.incrementCountTimeouts();
+    public void onTimeoutEvent(Connection connection) {
         grizzlyMonitoring.getKeepAliveProbeProvider().incrementCountTimeoutsEvent(monitoringId);
     }
+
 }

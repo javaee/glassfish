@@ -67,22 +67,22 @@ import java.util.Properties;
 import java.util.logging.*;
 
 import org.apache.catalina.util.HexUtils;
-import com.sun.grizzly.tcp.Request;
-import com.sun.grizzly.tcp.RequestInfo;
-import com.sun.grizzly.tcp.Response;
-import com.sun.grizzly.tcp.Constants;
+//import org.glassfish.grizzly.http.server.RequestInfo;
+import org.glassfish.grizzly.http.util.Constants;
 import org.apache.jk.core.JkHandler;
 import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
 import org.apache.jk.core.WorkerEnv;
 import org.apache.jk.core.JkChannel;
 
-import com.sun.grizzly.util.buf.ByteChunk;
-import com.sun.grizzly.util.buf.CharChunk;
-import com.sun.grizzly.util.buf.MessageBytes;
-import com.sun.grizzly.util.http.MimeHeaders;
-import com.sun.grizzly.util.net.SSLSupport;
 import org.apache.tomcat.util.threads.ThreadWithAttributes;
+import org.glassfish.grizzly.http.HttpRequestPacket;
+import org.glassfish.grizzly.http.HttpResponsePacket;
+import org.glassfish.grizzly.http.util.ByteChunk;
+import org.glassfish.grizzly.http.util.CharChunk;
+import org.glassfish.grizzly.http.util.MessageBytes;
+import org.glassfish.grizzly.http.util.MimeHeaders;
+import org.glassfish.grizzly.ssl.SSLSupport;
 
 /**
  * Handle messages related with basic request information.
@@ -157,8 +157,8 @@ public class HandlerRequest extends JkHandler
         if( next==null )
             next=wEnv.getHandler( "container" );
         if( log.isLoggable(Level.FINEST) )
-            log.finest( "Container handler " + next + " " + next.getName() +
-                       " " + next.getClass().getName());
+            log.log( Level.FINEST, "Container handler {0} {1} {2}",
+                    new Object[]{next, next.getName(), next.getClass().getName()});
 
         // should happen on start()
         generateAjp13Id();
@@ -247,7 +247,7 @@ public class HandlerRequest extends JkHandler
         File sf=new File( f2, "ajp13.id");
         
         if( log.isLoggable(Level.FINEST))
-            log.finest( "Using stop file: "+sf);
+            log.log( Level.FINEST, "Using stop file: {0}", sf);
 
         try {
             Properties props=new Properties();
@@ -282,129 +282,129 @@ public class HandlerRequest extends JkHandler
     @Override
     public int invoke(Msg msg, MsgContext ep ) 
         throws IOException    {
-        int type=msg.getByte();
-        ThreadWithAttributes twa = null;
-        if (Thread.currentThread() instanceof ThreadWithAttributes) {
-            twa = (ThreadWithAttributes) Thread.currentThread();
-        }
-        Object control=ep.getControl();
-        MessageBytes tmpMB=(MessageBytes)ep.getNote( tmpBufNote );
-        if( tmpMB==null ) {
-            tmpMB= MessageBytes.newInstance();
-            ep.setNote( tmpBufNote, tmpMB);
-        }
-
-        if( log.isLoggable(Level.FINEST) )
-            log.finest( "Handling " + type );
-        
-        switch( type ) {
-        case AjpConstants.JK_AJP13_FORWARD_REQUEST:
-            try {
-                if (twa != null) {
-                    twa.setCurrentStage(control, "JkDecode");
-                }
-                decodeRequest( msg, ep, tmpMB );
-                if (twa != null) {
-                    twa.setCurrentStage(control, "JkService");
-                    twa.setParam(control,
-                                 ((Request)ep.getRequest()).unparsedURI());
-                }
-            } catch( Exception ex ) {
-                /* If we are here it is because we have a bad header or something like that */
-                log.log(Level.SEVERE, "Error decoding request ", ex );
-                msg.dump( "Incomming message");
-                Response res=ep.getRequest().getResponse();
-                if ( res==null ) {
-                    res=new Response();
-                    ep.getRequest().setResponse(res);
-                }
-                res.setMessage("Bad Request");
-                res.setStatus(400);
-                return ERROR;
-
-            }
-
-            if( requiredSecret != null ) {
-                String epSecret=(String)ep.getNote( secretNote );
-                if( epSecret==null || ! requiredSecret.equals( epSecret ) )
-                    return ERROR;
-            }
-            /* XXX it should be computed from request, by workerEnv */
-            if(log.isLoggable(Level.FINEST) )
-                log.finest("Calling next " + next.getName() + " " +
-                  next.getClass().getName());
-
-            int err= next.invoke( msg, ep );
-            if (twa != null) {
-                twa.setCurrentStage(control, "JkDone");
-            }
-
-            if( log.isLoggable(Level.FINEST) )
-                log.finest( "Invoke returned " + err );
-            return err;
-        case AjpConstants.JK_AJP13_SHUTDOWN:
-            String epSecret=null;
-            if( msg.getLen() > 3 ) {
-                // we have a secret
-                msg.getBytes( tmpMB );
-                epSecret=tmpMB.toString();
-            }
-            
-            if( requiredSecret != null &&
-                requiredSecret.equals( epSecret ) ) {
-                if( log.isLoggable(Level.FINEST) )
-                    log.finest("Received wrong secret, no shutdown ");
-                return ERROR;
-            }
-
-            // XXX add isSameAddress check
-            JkChannel ch=ep.getSource();
-            if( !ch.isSameAddress(ep) ) {
-                log.severe("Shutdown request not from 'same address' ");
-                return ERROR;
-            }
-
-            if( !shutdownEnabled ) {
-                log.warning("Ignoring shutdown request: shutdown not enabled");
-                return ERROR;
-            }
-            // forward to the default handler - it'll do the shutdown
-            checkRequest(ep);
-            next.invoke( msg, ep );
-
-            if(log.isLoggable(Level.INFO))
-                log.info("Exiting");
-            System.exit(0);
-            
-            return OK;
-
-            // We got a PING REQUEST, quickly respond with a PONG
-        case AjpConstants.JK_AJP13_CPING_REQUEST:
-            msg.reset();
-            msg.appendByte(AjpConstants.JK_AJP13_CPONG_REPLY);
-            ep.getSource().send( msg, ep );
-            ep.getSource().flush( msg, ep ); // Server needs to get it
-            return OK;
-
-        case HANDLE_THREAD_END:
-            return OK;
-
-        default:
-            if(log.isLoggable(Level.INFO))
-                log.info("Unknown message " + type);
-        }
+//        int type=msg.getByte();
+//        ThreadWithAttributes twa = null;
+//        if (Thread.currentThread() instanceof ThreadWithAttributes) {
+//            twa = (ThreadWithAttributes) Thread.currentThread();
+//        }
+//        Object control=ep.getControl();
+//        MessageBytes tmpMB=(MessageBytes)ep.getNote( tmpBufNote );
+//        if( tmpMB==null ) {
+//            tmpMB= MessageBytes.newInstance();
+//            ep.setNote( tmpBufNote, tmpMB);
+//        }
+//
+//        if( log.isLoggable(Level.FINEST) )
+//            log.log( Level.FINEST, "Handling {0}", type);
+//
+//        switch( type ) {
+//        case AjpConstants.JK_AJP13_FORWARD_REQUEST:
+//            try {
+//                if (twa != null) {
+//                    twa.setCurrentStage(control, "JkDecode");
+//                }
+//                decodeRequest( msg, ep, tmpMB );
+//                if (twa != null) {
+//                    twa.setCurrentStage(control, "JkService");
+//                    twa.setParam(control,
+//                                 ep.getRequest().unparsedURI());
+//                }
+//            } catch( Exception ex ) {
+//                /* If we are here it is because we have a bad header or something like that */
+//                log.log(Level.SEVERE, "Error decoding request ", ex );
+//                msg.dump( "Incomming message");
+//                HttpResponsePacket res=ep.getRequest().getResponse();
+//                if ( res==null ) {
+//                    res=HttpResponsePacket.builder(ep.getRequest()).build();
+////                    ep.getRequest().setResponse(res);
+//                }
+//                res.setReasonPhrase("Bad Request");
+//                res.setStatus(400);
+//                return ERROR;
+//
+//            }
+//
+//            if( requiredSecret != null ) {
+//                String epSecret=(String)ep.getNote( secretNote );
+//                if( epSecret==null || ! requiredSecret.equals( epSecret ) )
+//                    return ERROR;
+//            }
+//            /* XXX it should be computed from request, by workerEnv */
+//            if(log.isLoggable(Level.FINEST) )
+//                log.log(Level.FINEST, "Calling next {0} {1}",
+//                        new Object[]{next.getName(), next.getClass().getName()});
+//
+//            int err= next.invoke( msg, ep );
+//            if (twa != null) {
+//                twa.setCurrentStage(control, "JkDone");
+//            }
+//
+//            if( log.isLoggable(Level.FINEST) )
+//                log.finest( "Invoke returned " + err );
+//            return err;
+//        case AjpConstants.JK_AJP13_SHUTDOWN:
+//            String epSecret=null;
+//            if( msg.getLen() > 3 ) {
+//                // we have a secret
+//                msg.getBytes( tmpMB );
+//                epSecret=tmpMB.toString();
+//            }
+//
+//            if( requiredSecret != null &&
+//                requiredSecret.equals( epSecret ) ) {
+//                if( log.isLoggable(Level.FINEST) )
+//                    log.finest("Received wrong secret, no shutdown ");
+//                return ERROR;
+//            }
+//
+//            // XXX add isSameAddress check
+//            JkChannel ch=ep.getSource();
+//            if( !ch.isSameAddress(ep) ) {
+//                log.severe("Shutdown request not from 'same address' ");
+//                return ERROR;
+//            }
+//
+//            if( !shutdownEnabled ) {
+//                log.warning("Ignoring shutdown request: shutdown not enabled");
+//                return ERROR;
+//            }
+//            // forward to the default handler - it'll do the shutdown
+//            checkRequest(ep);
+//            next.invoke( msg, ep );
+//
+//            if(log.isLoggable(Level.INFO))
+//                log.info("Exiting");
+//            System.exit(0);
+//
+//            return OK;
+//
+//            // We got a PING REQUEST, quickly respond with a PONG
+//        case AjpConstants.JK_AJP13_CPING_REQUEST:
+//            msg.reset();
+//            msg.appendByte(AjpConstants.JK_AJP13_CPONG_REPLY);
+//            ep.getSource().send( msg, ep );
+//            ep.getSource().flush( msg, ep ); // Server needs to get it
+//            return OK;
+//
+//        case HANDLE_THREAD_END:
+//            return OK;
+//
+//        default:
+//            if(log.isLoggable(Level.INFO))
+//                log.info("Unknown message " + type);
+//        }
 
         return OK;
     }
 
     static int count = 0;
 
-    private Request checkRequest(MsgContext ep) {
-        Request req=ep.getRequest();
+    private HttpRequestPacket checkRequest(MsgContext ep) {
+        HttpRequestPacket req = ep.getRequest();
         if( req==null ) {
-            req=new Request();
-            Response res=new Response();
-            req.setResponse(res);
+            req=HttpRequestPacket.builder().build();
+            HttpResponsePacket res = HttpResponsePacket.builder(req).build();
+//            req.setResponse(res);
             ep.setRequest( req );
             if( registerRequests ) {
                 synchronized(lock) {
@@ -418,305 +418,305 @@ public class HandlerRequest extends JkHandler
     private int decodeRequest( Msg msg, MsgContext ep, MessageBytes tmpMB )
         throws IOException    {
         // FORWARD_REQUEST handler
-        Request req = checkRequest(ep);
-
-        RequestInfo rp = req.getRequestProcessor();
-        rp.setStage(Constants.STAGE_PARSE);
-        MessageBytes tmpMB2 = (MessageBytes)req.getNote(WorkerEnv.SSL_CERT_NOTE);
-        if(tmpMB2 != null) {
-            tmpMB2.recycle();
-        }
-        req.setStartTime(System.currentTimeMillis());
-        
-        // Translate the HTTP method code to a String.
-        byte methodCode = msg.getByte();
-        if (methodCode != AjpConstants.SC_M_JK_STORED) {
-            String mName=AjpConstants.methodTransArray[(int)methodCode - 1];
-            req.method().setString(mName);
-        }
-
-        msg.getBytes(req.protocol()); 
-        msg.getBytes(req.requestURI());
-
-        msg.getBytes(req.remoteAddr());
-        msg.getBytes(req.remoteHost());
-        msg.getBytes(req.localName());
-        req.setLocalPort(msg.getInt());
-
-        boolean isSSL = msg.getByte() != 0;
-        if( isSSL ) {
-            // XXX req.setSecure( true );
-            req.scheme().setString("https");
-        }
-
-        decodeHeaders( ep, msg, req, tmpMB );
-
-        decodeAttributes( ep, msg, req, tmpMB );
-
-        rp.setStage(Constants.STAGE_PREPARE);
-        MessageBytes valueMB = req.getMimeHeaders().getValue("host");
-        parseHost(valueMB, req);
-        // set cookies on request now that we have all headers
-        req.getCookies().setHeaders(req.getMimeHeaders());
-
-        // Check to see if there should be a body packet coming along
-        // immediately after
-        long cl=req.getContentLengthLong();
-        if(cl > 0) {
-            JkInputStream jkIS = ep.getInputStream();
-            jkIS.setIsReadRequired(true);
-            if(!delayInitialRead) {
-                jkIS.receive();
-            }
-        }
-    
-        if (log.isLoggable(Level.FINEST)) {
-            log.finest(req.toString());
-         }
+//        HttpRequestPacket req = checkRequest(ep);
+//
+////        RequestInfo rp = req.getRequestProcessor();
+////        rp.setStage(Constants.STAGE_PARSE);
+//        MessageBytes tmpMB2 = req.getNote(WorkerEnv.SSL_CERT_NOTE);
+//        if(tmpMB2 != null) {
+//            tmpMB2.recycle();
+//        }
+////        req.setStartTime(System.currentTimeMillis());
+//
+//        // Translate the HTTP method code to a String.
+//        byte methodCode = msg.getByte();
+//        if (methodCode != AjpConstants.SC_M_JK_STORED) {
+//            String mName=AjpConstants.methodTransArray[(int)methodCode - 1];
+//            req.method().setString(mName);
+//        }
+//
+//        msg.getBytes(req.protocol());
+//        msg.getBytes(req.requestURI());
+//
+//        msg.getBytes(req.remoteAddr());
+//        msg.getBytes(req.remoteHost());
+//        msg.getBytes(req.localName());
+//        req.setLocalPort(msg.getInt());
+//
+//        boolean isSSL = msg.getByte() != 0;
+//        if( isSSL ) {
+//            // XXX req.setSecure( true );
+//            req.scheme().setString("https");
+//        }
+//
+//        decodeHeaders( ep, msg, req, tmpMB );
+//
+//        decodeAttributes( ep, msg, req, tmpMB );
+//
+//        rp.setStage(Constants.STAGE_PREPARE);
+//        MessageBytes valueMB = req.getMimeHeaders().getValue("host");
+//        parseHost(valueMB, req);
+//        // set cookies on request now that we have all headers
+//        req.getCookies().setHeaders(req.getMimeHeaders());
+//
+//        // Check to see if there should be a body packet coming along
+//        // immediately after
+//        long cl=req.getContentLengthLong();
+//        if(cl > 0) {
+//            JkInputStream jkIS = ep.getInputStream();
+//            jkIS.setIsReadRequired(true);
+//            if(!delayInitialRead) {
+//                jkIS.receive();
+//            }
+//        }
+//
+//        if (log.isLoggable(Level.FINEST)) {
+//            log.finest(req.toString());
+//         }
 
         return OK;
     }
         
-    private int decodeAttributes( MsgContext ep, Msg msg, Request req,
+    private int decodeAttributes( MsgContext ep, Msg msg, HttpRequestPacket req,
                                   MessageBytes tmpMB) {
-        boolean moreAttr=true;
-
-        while( moreAttr ) {
-            byte attributeCode=msg.getByte();
-            if( attributeCode == AjpConstants.SC_A_ARE_DONE )
-                return 200;
-
-            /* Special case ( XXX in future API make it separate type !)
-             */
-            if( attributeCode == AjpConstants.SC_A_SSL_KEY_SIZE ) {
-                // Bug 1326: it's an Integer.
-                req.setAttribute(SSLSupport.KEY_SIZE_KEY,
-                                 new Integer( msg.getInt()));
-               //Integer.toString(msg.getInt()));
-            }
-
-            if( attributeCode == AjpConstants.SC_A_REQ_ATTRIBUTE ) {
-                // 2 strings ???...
-                msg.getBytes( tmpMB );
-                String n=tmpMB.toString();
-                msg.getBytes( tmpMB );
-                String v=tmpMB.toString();
-                req.setAttribute(n, v );
-                if(log.isLoggable(Level.FINEST))
-                    log.finest("jk Attribute set " + n + "=" + v);
-            }
-
-
-            // 1 string attributes
-            switch(attributeCode) {
-            case AjpConstants.SC_A_CONTEXT      :
-                msg.getBytes( tmpMB );
-                // nothing
-                break;
-                
-            case AjpConstants.SC_A_SERVLET_PATH :
-                msg.getBytes( tmpMB );
-                // nothing 
-                break;
-                
-            case AjpConstants.SC_A_REMOTE_USER  :
-                if( tomcatAuthentication ) {
-                    // ignore server
-                    msg.getBytes( tmpMB );
-                } else {
-                    msg.getBytes(req.getRemoteUser());
-                }
-                break;
-                
-            case AjpConstants.SC_A_AUTH_TYPE    :
-                if( tomcatAuthentication ) {
-                    // ignore server
-                    msg.getBytes( tmpMB );
-                } else {
-                    msg.getBytes(req.getAuthType());
-                }
-                break;
-                
-            case AjpConstants.SC_A_QUERY_STRING :
-                msg.getBytes(req.queryString());
-                break;
-                
-            case AjpConstants.SC_A_JVM_ROUTE    :
-                msg.getBytes(req.instanceId());
-                break;
-                
-            case AjpConstants.SC_A_SSL_CERT     :
-                req.scheme().setString( "https" );
-                // Transform the string into certificate.
-                MessageBytes tmpMB2 = (MessageBytes)req.getNote(WorkerEnv.SSL_CERT_NOTE);
-                if(tmpMB2 == null) {
-                    tmpMB2 = MessageBytes.newInstance();
-                    req.setNote(WorkerEnv.SSL_CERT_NOTE, tmpMB2);
-                }
-                // SSL certificate extraction is costy, moved to JkCoyoteHandler
-                msg.getBytes(tmpMB2);
-                break;
-                
-            case AjpConstants.SC_A_SSL_CIPHER   :
-                req.scheme().setString( "https" );
-                msg.getBytes(tmpMB);
-                req.setAttribute(SSLSupport.CIPHER_SUITE_KEY,
-                                 tmpMB.toString());
-                break;
-                
-            case AjpConstants.SC_A_SSL_SESSION  :
-                req.scheme().setString( "https" );
-                msg.getBytes(tmpMB);
-                req.setAttribute(SSLSupport.SESSION_ID_KEY, 
-                                  tmpMB.toString());
-                break;
-                
-            case AjpConstants.SC_A_SECRET  :
-                msg.getBytes(tmpMB);
-                String secret=tmpMB.toString();
-                if(log.isLoggable(Level.FINEST))
-                    log.finest("Secret: " + secret );
-                // endpoint note
-                ep.setNote( secretNote, secret );
-                break;
-                
-            case AjpConstants.SC_A_STORED_METHOD:
-                msg.getBytes(req.method()); 
-                break;
-                
-            default:
-                break; // ignore, we don't know about it - backward compat
-            }
-        }
+//        boolean moreAttr=true;
+//
+//        while( moreAttr ) {
+//            byte attributeCode=msg.getByte();
+//            if( attributeCode == AjpConstants.SC_A_ARE_DONE )
+//                return 200;
+//
+//            /* Special case ( XXX in future API make it separate type !)
+//             */
+//            if( attributeCode == AjpConstants.SC_A_SSL_KEY_SIZE ) {
+//                // Bug 1326: it's an Integer.
+//                req.setAttribute(SSLSupport.KEY_SIZE_KEY,
+//                                 new Integer( msg.getInt()));
+//               //Integer.toString(msg.getInt()));
+//            }
+//
+//            if( attributeCode == AjpConstants.SC_A_REQ_ATTRIBUTE ) {
+//                // 2 strings ???...
+//                msg.getBytes( tmpMB );
+//                String n=tmpMB.toString();
+//                msg.getBytes( tmpMB );
+//                String v=tmpMB.toString();
+//                req.setAttribute(n, v );
+//                if(log.isLoggable(Level.FINEST))
+//                    log.finest("jk Attribute set " + n + "=" + v);
+//            }
+//
+//
+//            // 1 string attributes
+//            switch(attributeCode) {
+//            case AjpConstants.SC_A_CONTEXT      :
+//                msg.getBytes( tmpMB );
+//                // nothing
+//                break;
+//
+//            case AjpConstants.SC_A_SERVLET_PATH :
+//                msg.getBytes( tmpMB );
+//                // nothing
+//                break;
+//
+//            case AjpConstants.SC_A_REMOTE_USER  :
+//                if( tomcatAuthentication ) {
+//                    // ignore server
+//                    msg.getBytes( tmpMB );
+//                } else {
+//                    msg.getBytes(req.getRemoteUser());
+//                }
+//                break;
+//
+//            case AjpConstants.SC_A_AUTH_TYPE    :
+//                if( tomcatAuthentication ) {
+//                    // ignore server
+//                    msg.getBytes( tmpMB );
+//                } else {
+//                    msg.getBytes(req.getAuthType());
+//                }
+//                break;
+//
+//            case AjpConstants.SC_A_QUERY_STRING :
+//                msg.getBytes(req.queryString());
+//                break;
+//
+//            case AjpConstants.SC_A_JVM_ROUTE    :
+//                msg.getBytes(req.instanceId());
+//                break;
+//
+//            case AjpConstants.SC_A_SSL_CERT     :
+//                req.scheme().setString( "https" );
+//                // Transform the string into certificate.
+//                MessageBytes tmpMB2 = req.getNote(WorkerEnv.SSL_CERT_NOTE);
+//                if(tmpMB2 == null) {
+//                    tmpMB2 = MessageBytes.newInstance();
+//                    req.setNote(WorkerEnv.SSL_CERT_NOTE, tmpMB2);
+//                }
+//                // SSL certificate extraction is costy, moved to JkCoyoteHandler
+//                msg.getBytes(tmpMB2);
+//                break;
+//
+//            case AjpConstants.SC_A_SSL_CIPHER   :
+//                req.scheme().setString( "https" );
+//                msg.getBytes(tmpMB);
+//                req.setAttribute(SSLSupport.CIPHER_SUITE_KEY,
+//                                 tmpMB.toString());
+//                break;
+//
+//            case AjpConstants.SC_A_SSL_SESSION  :
+//                req.scheme().setString( "https" );
+//                msg.getBytes(tmpMB);
+//                req.setAttribute(SSLSupport.SESSION_ID_KEY,
+//                                  tmpMB.toString());
+//                break;
+//
+//            case AjpConstants.SC_A_SECRET  :
+//                msg.getBytes(tmpMB);
+//                String secret=tmpMB.toString();
+//                if(log.isLoggable(Level.FINEST))
+//                    log.finest("Secret: " + secret );
+//                // endpoint note
+//                ep.setNote( secretNote, secret );
+//                break;
+//
+//            case AjpConstants.SC_A_STORED_METHOD:
+//                msg.getBytes(req.method());
+//                break;
+//
+//            default:
+//                break; // ignore, we don't know about it - backward compat
+//            }
+//        }
         return 200;
     }
     
-    private void decodeHeaders( MsgContext ep, Msg msg, Request req,
+    private void decodeHeaders( MsgContext ep, Msg msg, HttpRequestPacket req,
                                 MessageBytes tmpMB ) {
         // Decode headers
-        MimeHeaders headers = req.getMimeHeaders();
-
-        int hCount = msg.getInt();
-        for(int i = 0 ; i < hCount ; i++) {
-            String hName = null;
-
-            // Header names are encoded as either an integer code starting
-            // with 0xA0, or as a normal string (in which case the first
-            // two bytes are the length).
-            int isc = msg.peekInt();
-            int hId = isc & 0xFF;
-
-            MessageBytes vMB=null;
-            isc &= 0xFF00;
-            if(0xA000 == isc) {
-                msg.getInt(); // To advance the read position
-                hName = AjpConstants.headerTransArray[hId - 1];
-                vMB=headers.addValue( hName );
-            } else {
-                // reset hId -- if the header currently being read
-                // happens to be 7 or 8 bytes long, the code below
-                // will think it's the content-type header or the
-                // content-length header - SC_REQ_CONTENT_TYPE=7,
-                // SC_REQ_CONTENT_LENGTH=8 - leading to unexpected
-                // behaviour.  see bug 5861 for more information.
-                hId = -1;
-                msg.getBytes( tmpMB );
-                ByteChunk bc=tmpMB.getByteChunk();
-                vMB=headers.addValue( bc.getBuffer(),
-                                      bc.getStart(), bc.getLength() );
-            }
-
-            msg.getBytes(vMB);
-
-            if (hId == AjpConstants.SC_REQ_CONTENT_LENGTH ||
-                (hId == -1 && tmpMB.equalsIgnoreCase("Content-Length"))) {
-                // just read the content-length header, so set it
-                long cl = vMB.getLong();
-                if(cl < Integer.MAX_VALUE)
-                    req.setContentLength( (int)cl );
-            } else if (hId == AjpConstants.SC_REQ_CONTENT_TYPE ||
-                (hId == -1 && tmpMB.equalsIgnoreCase("Content-Type"))) {
-                // just read the content-type header, so set it
-                ByteChunk bchunk = vMB.getByteChunk();
-                req.contentType().setBytes(bchunk.getBytes(),
-                                           bchunk.getOffset(),
-                                           bchunk.getLength());
-            }
-        }
+//        MimeHeaders headers = req.getMimeHeaders();
+//
+//        int hCount = msg.getInt();
+//        for(int i = 0 ; i < hCount ; i++) {
+//            String hName = null;
+//
+//            // Header names are encoded as either an integer code starting
+//            // with 0xA0, or as a normal string (in which case the first
+//            // two bytes are the length).
+//            int isc = msg.peekInt();
+//            int hId = isc & 0xFF;
+//
+//            MessageBytes vMB=null;
+//            isc &= 0xFF00;
+//            if(0xA000 == isc) {
+//                msg.getInt(); // To advance the read position
+//                hName = AjpConstants.headerTransArray[hId - 1];
+//                vMB=headers.addValue( hName );
+//            } else {
+//                // reset hId -- if the header currently being read
+//                // happens to be 7 or 8 bytes long, the code below
+//                // will think it's the content-type header or the
+//                // content-length header - SC_REQ_CONTENT_TYPE=7,
+//                // SC_REQ_CONTENT_LENGTH=8 - leading to unexpected
+//                // behaviour.  see bug 5861 for more information.
+//                hId = -1;
+//                msg.getBytes( tmpMB );
+//                ByteChunk bc=tmpMB.getByteChunk();
+//                vMB=headers.addValue( bc.getBuffer(),
+//                                      bc.getStart(), bc.getLength() );
+//            }
+//
+//            msg.getBytes(vMB);
+//
+//            if (hId == AjpConstants.SC_REQ_CONTENT_LENGTH ||
+//                (hId == -1 && tmpMB.equalsIgnoreCase("Content-Length"))) {
+//                // just read the content-length header, so set it
+//                long cl = vMB.getLong();
+//                if(cl < Integer.MAX_VALUE)
+//                    req.setContentLength( (int)cl );
+//            } else if (hId == AjpConstants.SC_REQ_CONTENT_TYPE ||
+//                (hId == -1 && tmpMB.equalsIgnoreCase("Content-Type"))) {
+//                // just read the content-type header, so set it
+//                ByteChunk bchunk = vMB.getByteChunk();
+//                req.contentType().setBytes(bchunk.getBytes(),
+//                                           bchunk.getOffset(),
+//                                           bchunk.getLength());
+//            }
+//        }
     }
 
     /**
      * Parse host.
      */
-    private void parseHost(MessageBytes valueMB, Request request) 
+    private void parseHost(MessageBytes valueMB, HttpRequestPacket request)
         throws IOException {
 
-        if (valueMB == null || valueMB.isNull()) {
-            // HTTP/1.0
-            // Default is what the socket tells us. Overriden if a host is 
-            // found/parsed
-            request.setServerPort(request.getLocalPort());
-            request.serverName().duplicate(request.localName());
-            return;
-        }
-
-        ByteChunk valueBC = valueMB.getByteChunk();
-        byte[] valueB = valueBC.getBytes();
-        int valueL = valueBC.getLength();
-        int valueS = valueBC.getStart();
-        int colonPos = -1;
-        CharChunk hostNameC = (CharChunk)request.getNote(HOSTBUFFER);
-        if(hostNameC == null) {
-            hostNameC = new CharChunk(valueL);
-            request.setNote(HOSTBUFFER, hostNameC);
-        }
-        hostNameC.recycle();
-
-        boolean ipv6 = (valueB[valueS] == '[');
-        boolean bracketClosed = false;
-        for (int i = 0; i < valueL; i++) {
-            char b = (char) valueB[i + valueS];
-            hostNameC.append(b);
-            if (b == ']') {
-                bracketClosed = true;
-            } else if (b == ':') {
-                if (!ipv6 || bracketClosed) {
-                    colonPos = i;
-                    break;
-                }
-            }
-        }
-
-        if (colonPos < 0) {
-            if (request.scheme().equalsIgnoreCase("https")) {
-                // 80 - Default HTTTP port
-                request.setServerPort(443);
-            } else {
-                // 443 - Default HTTPS port
-                request.setServerPort(80);
-            }
-            request.serverName().setChars(hostNameC.getChars(), 
-                                          hostNameC.getStart(), 
-                                          hostNameC.getLength());
-        } else {
-
-            request.serverName().setChars(hostNameC.getChars(), 
-                                          hostNameC.getStart(), colonPos);
-
-            int port = 0;
-            int mult = 1;
-            for (int i = valueL - 1; i > colonPos; i--) {
-                int charValue = HexUtils.DEC[(int) valueB[i + valueS]];
-                if (charValue == -1) {
-                    // Invalid character
-                    throw new CharConversionException("Invalid char in port: " + valueB[i + valueS]); 
-                }
-                port = port + (charValue * mult);
-                mult = 10 * mult;
-            }
-            request.setServerPort(port);
-
-        }
+//        if (valueMB == null || valueMB.isNull()) {
+//            // HTTP/1.0
+//            // Default is what the socket tells us. Overriden if a host is
+//            // found/parsed
+//            request.setServerPort(request.getLocalPort());
+//            request.serverName().duplicate(request.localName());
+//            return;
+//        }
+//
+//        ByteChunk valueBC = valueMB.getByteChunk();
+//        byte[] valueB = valueBC.getBytes();
+//        int valueL = valueBC.getLength();
+//        int valueS = valueBC.getStart();
+//        int colonPos = -1;
+//        CharChunk hostNameC = (CharChunk)request.getNote(HOSTBUFFER);
+//        if(hostNameC == null) {
+//            hostNameC = new CharChunk(valueL);
+//            request.setNote(HOSTBUFFER, hostNameC);
+//        }
+//        hostNameC.recycle();
+//
+//        boolean ipv6 = (valueB[valueS] == '[');
+//        boolean bracketClosed = false;
+//        for (int i = 0; i < valueL; i++) {
+//            char b = (char) valueB[i + valueS];
+//            hostNameC.append(b);
+//            if (b == ']') {
+//                bracketClosed = true;
+//            } else if (b == ':') {
+//                if (!ipv6 || bracketClosed) {
+//                    colonPos = i;
+//                    break;
+//                }
+//            }
+//        }
+//
+//        if (colonPos < 0) {
+//            if (request.scheme().equalsIgnoreCase("https")) {
+//                // 80 - Default HTTTP port
+//                request.setServerPort(443);
+//            } else {
+//                // 443 - Default HTTPS port
+//                request.setServerPort(80);
+//            }
+//            request.serverName().setChars(hostNameC.getChars(),
+//                                          hostNameC.getStart(),
+//                                          hostNameC.getLength());
+//        } else {
+//
+//            request.serverName().setChars(hostNameC.getChars(),
+//                                          hostNameC.getStart(), colonPos);
+//
+//            int port = 0;
+//            int mult = 1;
+//            for (int i = valueL - 1; i > colonPos; i--) {
+//                int charValue = HexUtils.DEC[(int) valueB[i + valueS]];
+//                if (charValue == -1) {
+//                    // Invalid character
+//                    throw new CharConversionException("Invalid char in port: " + valueB[i + valueS]);
+//                }
+//                port = port + (charValue * mult);
+//                mult = 10 * mult;
+//            }
+//            request.setServerPort(port);
+//
+//        }
 
     }
 

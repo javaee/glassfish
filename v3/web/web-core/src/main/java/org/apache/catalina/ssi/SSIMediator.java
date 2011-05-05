@@ -59,7 +59,6 @@
 package org.apache.catalina.ssi;
 
 
-import com.sun.grizzly.util.http.HttpMessages;
 import org.apache.catalina.util.Strftime;
 import org.apache.catalina.util.URLEncoder;
 
@@ -71,6 +70,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
+import org.glassfish.grizzly.http.util.HttpStatus;
 
 /**
  * Allows the different SSICommand implementations to share data/talk to each
@@ -346,7 +346,7 @@ public class SSIMediator {
             retVal = value;
         } else if (encoding.equalsIgnoreCase("entity")) {
             //Not sure how this is really different than none
-            retVal = HttpMessages.filter(value);
+            retVal = HttpStatus.filter(value);
         } else {
             //This shouldn't be possible
             throw new IllegalArgumentException("Unknown encoding: " + encoding);

@@ -43,11 +43,7 @@ package com.sun.enterprise.v3.admin.adapter;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.v3.admin.AdminConsoleConfigUpgrade;
 import com.sun.appserv.server.util.Version;
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
-import com.sun.grizzly.tcp.http11.GrizzlyOutputBuffer;
-import com.sun.grizzly.tcp.http11.GrizzlyRequest;
-import com.sun.grizzly.tcp.http11.GrizzlyResponse;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.Adapter;
@@ -55,6 +51,10 @@ import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.RestrictTo;
+import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
+import org.glassfish.grizzly.http.server.io.OutputBuffer;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
@@ -85,6 +85,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.grizzly.http.Method;
 
 /**
  * An HK-2 Service that provides the functionality so that admin console access is handled properly.
@@ -116,7 +117,7 @@ import java.util.logging.Logger;
  * @since GlassFish V3 (March 2008)
  */
 @Service
-public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter, PostConstruct, EventListener {
+public final class AdminConsoleAdapter extends HttpHandler implements Adapter, PostConstruct, EventListener {
 
     @Inject
     ServerEnvironmentImpl env;
@@ -192,31 +193,23 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         return epd.getGuiContextRoot(); //default is /admin
     }
 
-    /**
-     *
-     */
     @Override
-    public void afterService(GrizzlyRequest req, GrizzlyResponse res) throws Exception {
-    }
-
-    /**
-     *
-     */
-    public void fireAdapterEvent(String type, Object data) {
+    public final HttpHandler getHttpService() {
+        return this;
     }
 
     /**
      *
      */
     @Override
-    public void service(GrizzlyRequest req, GrizzlyResponse res) {
+    public void service(Request req, Response res) {
     
         bundle = getResourceBundle(req.getLocale());
 
-        HttpMethod method = HttpMethod.getHttpMethod(req.getMethod());
+        Method method = req.getMethod();
         if (!checkHttpMethodAllowed(method)) {
             res.setStatus(java.net.HttpURLConnection.HTTP_BAD_METHOD,
-                    method.toString() + " " + bundle.getString("http.bad.method"));
+                    method.getMethodString() + " " + bundle.getString("http.bad.method"));
             res.setHeader("Allow", getAllowedHttpMethodsAsString());
             return;
         }
@@ -287,7 +280,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             }
             status +="\n"+serverVersion;
             try {
-                GrizzlyOutputBuffer ob = getOutputBuffer(res);
+                OutputBuffer ob = getOutputBuffer(res);
 
                 byte[] bytes = (":::" + status).getBytes("UTF-8");
                 res.setContentLength(bytes.length);
@@ -347,11 +340,11 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     }
 
     /**
-     * @param req the GrizzlyRequest
+     * @param req the Request
      * @return <code>true</code> if the request is for a resource with a known content
      *  type otherwise <code>false</code>.
      */
-    private boolean isResourceRequest(GrizzlyRequest req) {
+    private boolean isResourceRequest(Request req) {
         return (getContentType(req.getRequestURI()) != null);
     }
 
@@ -360,7 +353,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      * of some sort.  Here, we don't care about the response, so we make the request
      * then close the stream and move on.
      */
-    private void forceRestModuleLoad(final GrizzlyRequest req) {
+    private void forceRestModuleLoad(final Request req) {
         if (isRestBeingStarted==true){
             return;
         }
@@ -419,7 +412,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
     }
 
-    private void handleResourceRequest(GrizzlyRequest req, GrizzlyResponse res)
+    private void handleResourceRequest(Request req, Response res)
     throws IOException {
 
         String resourcePath = RESOURCE_PACKAGE + req.getRequestURI();
@@ -602,14 +595,12 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     /**
      *
      */
-    private void logRequest(GrizzlyRequest req) {
+    private void logRequest(Request req) {
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "AdminConsoleAdapter''s STATE IS: {0}", getStateMsg());
             logger.log(Level.FINE, "Current Thread: {0}", Thread.currentThread().getName());
-            Enumeration names = req.getParameterNames();
-            while (names.hasMoreElements()) {
-                String name = (String) names.nextElement();
-                String values = Arrays.toString(req.getParameterValues(name));
+            for (final String name : req.getParameterNames()) {
+                final String values = Arrays.toString(req.getParameterValues(name));
                 logger.log(Level.FINE, "Parameter name: {0} values: {1}", new Object[]{name, values});
             }
         }
@@ -679,28 +670,27 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      *
      */
 
-    private GrizzlyOutputBuffer getOutputBuffer(GrizzlyResponse res) {
-        GrizzlyOutputBuffer ob = res.getOutputBuffer();
+    private OutputBuffer getOutputBuffer(Response res) {
         res.setStatus(202);
         res.setContentType("text/html");
-        ob.setEncoding("UTF-8");
-        return ob;
+        res.setCharacterEncoding("UTF-8");
+        return res.getOutputBuffer();
     }
 
     /**
      *
      */
-    private synchronized void sendConsentPage(GrizzlyRequest req, GrizzlyResponse res) { //should have only one caller
+    private synchronized void sendConsentPage(Request req, Response res) { //should have only one caller
         setStateMsg(AdapterState.PERMISSION_NEEDED);
         byte[] bytes;
         try {
-            GrizzlyOutputBuffer ob = getOutputBuffer(res);
+            OutputBuffer ob = getOutputBuffer(res);
             try {
                 // Replace locale specific Strings
                 String localHtml = replaceTokens(initHtml, bundle);
 
                 // Replace path token
-                String hp = (contextRoot.endsWith("/")) ? contextRoot : contextRoot + "/";
+                String hp = contextRoot.endsWith("/") ? contextRoot : contextRoot + "/";
                 bytes = localHtml.replace(MYURL_TOKEN, hp).getBytes("UTF-8");
             } catch (Exception ex) {
                 bytes = ("Catastrophe:" + ex.getMessage()).getBytes("UTF-8");
@@ -716,10 +706,10 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     /**
      *
      */
-    private void sendStatusPage(GrizzlyRequest req, GrizzlyResponse res) {
+    private void sendStatusPage(Request req, Response res) {
         byte[] bytes;
         try {
-            GrizzlyOutputBuffer ob = getOutputBuffer(res);
+            OutputBuffer ob = getOutputBuffer(res);
             // Replace locale specific Strings
             String localHtml = replaceTokens(statusHtml, bundle);
 
@@ -748,11 +738,11 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     /**
      *
      */
-    private void sendStatusNotDAS(GrizzlyRequest req, GrizzlyResponse res) {
+    private void sendStatusNotDAS(Request req, Response res) {
         byte[] bytes;
         try {
             String html = Utils.packageResource2String("statusNotDAS.html");
-            GrizzlyOutputBuffer ob = getOutputBuffer(res);
+            OutputBuffer ob = getOutputBuffer(res);
             // Replace locale specific Strings
             String localHtml = replaceTokens(html, bundle);
 
@@ -790,7 +780,6 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      */
     private String replaceTokens(String text, ResourceBundle bundle) {
         int start = 0, end = 0;
-        String key = null;
         String newString = null;
         StringBuilder buf = new StringBuilder("");
         Enumeration<String> keys = bundle.getKeys();
@@ -885,41 +874,41 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         return epd.getGuiHosts();
     }
 
-    enum HttpMethod {
-        OPTIONS ("OPTIONS"),
-        GET ("GET"),
-        HEAD ("HEAD"),
-        POST ("POST"),
-        PUT ("PUT"),
-        DELETE ("DELETE"),
-        TRACE ("TRACE"),
-        CONNECT ("CONNECT");
+//    enum HttpMethod {
+//        OPTIONS ("OPTIONS"),
+//        GET ("GET"),
+//        HEAD ("HEAD"),
+//        POST ("POST"),
+//        PUT ("PUT"),
+//        DELETE ("DELETE"),
+//        TRACE ("TRACE"),
+//        CONNECT ("CONNECT");
+//
+//        private String method;
+//
+//        HttpMethod(String method) {
+//            this.method = method;
+//        }
+//
+//        static HttpMethod getHttpMethod(String httpMethod) {
+//            for (HttpMethod hh: HttpMethod.values()) {
+//                if (hh.method.equalsIgnoreCase(httpMethod)) {
+//                    return hh;
+//                }
+//            }
+//            return null;
+//        }
+//
+//        String method() {
+//            return method;
+//        }
+//    }
 
-        private String method;
+    private Method[] allowedHttpMethods = {Method.GET, Method.POST, Method.HEAD,
+            Method.DELETE, Method.PUT};
 
-        HttpMethod(String method) {
-            this.method = method;
-        }
-
-        static HttpMethod getHttpMethod(String httpMethod) {
-            for (HttpMethod hh: HttpMethod.values()) {
-                if (hh.method.equalsIgnoreCase(httpMethod)) {
-                    return hh;
-                }
-            }
-            return null;
-        }
-
-        String method() {
-            return method;
-        }
-    }
-
-    private HttpMethod[] allowedHttpMethods = {HttpMethod.GET, HttpMethod.POST, HttpMethod.HEAD,
-            HttpMethod.DELETE, HttpMethod.PUT};
-
-    private boolean checkHttpMethodAllowed(HttpMethod method) {
-        for (HttpMethod hh: allowedHttpMethods) {
+    private boolean checkHttpMethodAllowed(Method method) {
+        for (Method hh: allowedHttpMethods) {
             if (hh.equals(method)) {
                 return true;
             }
@@ -928,9 +917,9 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     }
 
     private String getAllowedHttpMethodsAsString() {
-        StringBuilder sb = new StringBuilder(allowedHttpMethods[0].method());
+        StringBuilder sb = new StringBuilder(allowedHttpMethods[0].getMethodString());
         for (int i = 1; i < allowedHttpMethods.length; i++) {
-            sb.append(", ").append(allowedHttpMethods[i].method());
+            sb.append(", ").append(allowedHttpMethods[i].getMethodString());
         }
         return sb.toString();
     }

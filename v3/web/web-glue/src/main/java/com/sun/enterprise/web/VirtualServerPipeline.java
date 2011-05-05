@@ -40,7 +40,6 @@
 
 package com.sun.enterprise.web;
 
-import com.sun.grizzly.util.buf.CharChunk;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
@@ -58,6 +57,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.grizzly.http.util.CharChunk;
 
 /**
  * Pipeline associated with a virtual server.

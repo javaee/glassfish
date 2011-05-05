@@ -40,8 +40,7 @@
 
 package org.glassfish.admin.mbeanserver;
 
-import com.sun.grizzly.config.SSLConfigHolder;
-import com.sun.grizzly.config.dom.Ssl;
+import org.glassfish.grizzly.config.dom.Ssl;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -51,6 +50,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509KeyManager;
+import org.glassfish.grizzly.config.SSLConfigurator;
 import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.component.Habitat;
 
@@ -63,11 +63,11 @@ import org.jvnet.hk2.component.Habitat;
  * @author prasad
  */
 
-public class JMXSslConfigHolder extends SSLConfigHolder {
+public class JMXSslConfigHolder extends SSLConfigurator {
 
     private static final String DEFAULT_SSL_PROTOCOL = "TLS";
 
-    public JMXSslConfigHolder(Ssl ssl, Habitat habitat) throws SSLException {
+    public JMXSslConfigHolder(final Habitat habitat, final Ssl ssl) throws SSLException {
                 super(habitat, ssl);
     }
 

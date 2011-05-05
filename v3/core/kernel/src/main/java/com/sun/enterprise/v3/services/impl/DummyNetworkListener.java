@@ -40,11 +40,11 @@
 
 package com.sun.enterprise.v3.services.impl;
 
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.NetworkListeners;
-import com.sun.grizzly.config.dom.Protocol;
-import com.sun.grizzly.config.dom.ThreadPool;
-import com.sun.grizzly.config.dom.Transport;
+import org.glassfish.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListeners;
+import org.glassfish.grizzly.config.dom.Protocol;
+import org.glassfish.grizzly.config.dom.ThreadPool;
+import org.glassfish.grizzly.config.dom.Transport;
 import java.util.ArrayList;
 import java.util.List;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -169,12 +169,12 @@ public class DummyNetworkListener implements NetworkListener {
 
     @Override
     public ThreadPool findThreadPool() {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override
     public Transport findTransport() {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override

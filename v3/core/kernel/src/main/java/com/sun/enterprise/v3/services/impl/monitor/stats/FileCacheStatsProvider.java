@@ -40,7 +40,6 @@
 
 package com.sun.enterprise.v3.services.impl.monitor.stats;
 
-import com.sun.grizzly.http.FileCache;
 import java.util.concurrent.atomic.AtomicLong;
 import org.glassfish.external.probe.provider.annotations.ProbeListener;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
@@ -50,6 +49,7 @@ import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
+import org.glassfish.grizzly.http.server.filecache.FileCache;
 
 /**
  * File cache statistics
@@ -238,7 +238,7 @@ public class FileCacheStatsProvider implements StatsProvider {
             @ProbeParam("size") long size) {
         if (name.equals(fileCacheName)) {
             final long newSize = heapSize.addAndGet(size);
-            for(;;) {
+            while (true) {
                 final long maxSize = maxHeapSize.get();
                 if (newSize > maxSize) {
                     if (maxHeapSize.compareAndSet(maxSize, newSize)) {
@@ -265,7 +265,7 @@ public class FileCacheStatsProvider implements StatsProvider {
             @ProbeParam("size") long size) {
         if (name.equals(fileCacheName)) {
             final long newSize = mappedMemorySize.addAndGet(size);
-            for(;;) {
+            while (true) {
                 final long maxMemSize = maxMappedMemorySize.get();
                 if (newSize > maxMemSize) {
                     if (maxMappedMemorySize.compareAndSet(maxMemSize, newSize)) {

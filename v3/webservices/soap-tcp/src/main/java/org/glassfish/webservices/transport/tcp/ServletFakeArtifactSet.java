@@ -127,11 +127,11 @@ public final class ServletFakeArtifactSet extends DistributedPropertySet {
             return null;
         }
 
-        public Enumeration getHeaders(final String string) {
+        public Enumeration<String> getHeaders(final String string) {
             return null;
         }
 
-        public Enumeration getHeaderNames() {
+        public Enumeration<String> getHeaderNames() {
             return null;
         }
 

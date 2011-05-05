@@ -40,25 +40,10 @@
 
 package com.sun.enterprise.v3.services.impl;
 
-import com.sun.enterprise.util.Result;
-import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
-import org.jvnet.hk2.config.types.Property;
-import com.sun.grizzly.Controller;
-import com.sun.grizzly.ControllerStateListener;
-import com.sun.grizzly.config.GrizzlyEmbeddedHttp;
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.Protocol;
-import com.sun.grizzly.http.SelectorThread;
-import com.sun.grizzly.tcp.Adapter;
-import com.sun.grizzly.tcp.StaticResourcesAdapter;
-import com.sun.grizzly.util.http.mapper.Mapper;
-import com.sun.grizzly.util.Grizzly;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.deployment.ApplicationContainer;
-import org.glassfish.internal.grizzly.V3Mapper;
-import org.jvnet.hk2.component.Inhabitant;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -66,29 +51,35 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import com.sun.enterprise.util.Result;
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.config.GrizzlyListener;
+import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.impl.FutureImpl;
+import org.glassfish.grizzly.impl.UnsafeFutureImpl;
+import org.jvnet.hk2.component.Habitat;
 
 /**
- * This clas is responsible for configuring Grizzly {@link SelectorThread}.
+ * This class is responsible for configuring Grizzly.
  *
  * @author Jerome Dochez
  * @author Jeanfrancois Arcand
  */
 public class GrizzlyProxy implements NetworkProxy {
-    protected GrizzlyListener grizzlyListener;
     final Logger logger;
     final NetworkListener networkListener;
+
+    protected GrizzlyListener grizzlyListener;
     private int portNumber;
 
     public final static String LEADER_FOLLOWER
-            = "com.sun.grizzly.useLeaderFollower";
+            = "org.glassfish.grizzly.useLeaderFollower";
 
     public final static String AUTO_CONFIGURE
-            = "com.sun.grizzly.autoConfigure";
+            = "org.glassfish.grizzly.autoConfigure";
 
     // <http-listener> 'address' attribute
     private InetAddress address;
@@ -102,6 +93,13 @@ public class GrizzlyProxy implements NetworkProxy {
         grizzlyService = service;       
         logger = service.getLogger();
         networkListener = listener;
+    }
+
+    /**
+     * Create a <code>GrizzlyServiceListener</code> based on a NetworkListener
+     * configuration object.
+     */
+    public void initialize() throws IOException {
         String port = networkListener.getPort();
         portNumber = 8080;
         if (port == null) {
@@ -111,108 +109,33 @@ public class GrizzlyProxy implements NetworkProxy {
         try {
             portNumber = Integer.parseInt(port);
         } catch (NumberFormatException e) {
-            logger.severe("Cannot parse port value : " + port + ", using port 8080");
+            logger.log(Level.SEVERE, "Cannot parse port value : {0}, using port 8080", port);
         }
         try {
             address = InetAddress.getByName(networkListener.getAddress());
         } catch (UnknownHostException ex) {
             logger.log(Level.SEVERE, "Unknown address " + address, ex);
         }
-        configureGrizzly();
+
+        createGrizzlyListener(networkListener);
+
+        grizzlyListener.configure(grizzlyService.getHabitat(), networkListener);
     }
 
-    /**
-     * Create a <code>GrizzlyServiceListener</code> based on a NetworkListener
-     * configuration object.
-     */
-    private void configureGrizzly() {
-        if(!("light-weight-listener".equals(networkListener.getProtocol()))) {
-            registerMonitoringStatsProviders();
+    protected void createGrizzlyListener(final NetworkListener networkListener) {
+        if("light-weight-listener".equals(networkListener.getProtocol())) {
+            createServiceInitializerListener();
+        } else {
+            createGlassfishListener();
         }
+    }
 
-        grizzlyListener = new GrizzlyListener(grizzlyService.getMonitoring(), new Controller(){
-            public void logVersion(){}   
-        }, networkListener.getName());
-        grizzlyListener.configure(networkListener, grizzlyService.habitat);
+    protected void createGlassfishListener() {
+        grizzlyListener = new GlassfishNetworkListener(grizzlyService, logger);
+    }
 
-        if(!grizzlyListener.isGenericListener()) {
-            final GrizzlyEmbeddedHttp embeddedHttp = grizzlyListener.getEmbeddedHttp();
-            final Protocol httpProtocol = networkListener.findHttpProtocol();
-
-            if (httpProtocol != null) {
-                final V3Mapper mapper = new V3Mapper(logger);
-                mapper.setPort(portNumber);
-                mapper.setId(networkListener.getName());
-
-                final ContainerMapper adapter = new ContainerMapper(grizzlyService, embeddedHttp);
-                adapter.setMapper(mapper);
-                adapter.setDefaultHost(grizzlyListener.getDefaultVirtualServer());
-                adapter.configureMapper();
-                embeddedHttp.setAdapter(adapter);
-
-                String ct = httpProtocol.getHttp().getDefaultResponseType();
-                adapter.setDefaultContentType(ct);
-                final Collection<VirtualServer> list = grizzlyService.getHabitat().getAllByContract(VirtualServer.class);
-                final String vsName = httpProtocol.getHttp().getDefaultVirtualServer();
-                for (VirtualServer virtualServer : list) {
-                    if (virtualServer.getId().equals(vsName)) {
-                        vs = virtualServer;
-                        embeddedHttp.setWebAppRootPath(vs.getDocroot());
-
-                        if (!grizzlyService.hasMapperUpdateListener() &&
-                                vs.getProperty() != null && !vs.getProperty().isEmpty()) {
-                            for (Property p: vs.getProperty()){
-                                String name = p.getName();
-                                if (name.startsWith("alternatedocroot")){
-                                    String value = p.getValue();
-                                    String[] mapping = value.split(" ");
-
-                                    if (mapping.length != 2){
-                                        logger.log(Level.WARNING, "Invalid alternate_docroot " + value);
-                                        continue;
-                                    }
-
-                                    String docBase = mapping[1].substring("dir=".length());
-                                    String urlPattern = mapping[0].substring("from=".length());
-                                    try {
-                                        StaticResourcesAdapter a = new StaticResourcesAdapter();
-                                        a.addRootFolder(docBase);
-                                        ArrayList<String> al = toArray(vs.getHosts(),";");
-                                        al.add(grizzlyListener.getDefaultVirtualServer());
-                                        registerEndpoint(urlPattern,al , a, null);
-                                    } catch (EndpointRegistrationException ex) {
-                                        logger.log(Level.SEVERE, "Unable to set alternate_docroot", ex);
-                                    }
-
-                                }
-                            }
-                        }
-                        break;
-                    }
-                }
-
-                adapter.addRootFolder(embeddedHttp.getWebAppRootPath());
-                
-                Inhabitant<Mapper> onePortMapper = new ExistingSingletonInhabitant<Mapper>(mapper);
-                grizzlyService.getHabitat().addIndex(onePortMapper,
-                        Mapper.class.getName(), (networkListener.getAddress() + networkListener.getPort()));
-                grizzlyService.notifyMapperUpdateListeners(networkListener, mapper);
-            }
-            
-            boolean autoConfigure = false;
-            // Avoid overriding the default with false
-            if (System.getProperty(AUTO_CONFIGURE) != null){
-                autoConfigure = true;
-            }
-            embeddedHttp.getController().setAutoConfigure(autoConfigure);
-
-            boolean leaderFollower = false;
-            // Avoid overriding the default with false
-            if (System.getProperty(LEADER_FOLLOWER) != null){
-                leaderFollower = true;
-            }
-            embeddedHttp.getController().useLeaderFollowerStrategy(leaderFollower);
-        }
+    protected void createServiceInitializerListener() {
+        grizzlyListener = new ServiceInitializerListener(grizzlyService, logger);
     }
 
     static ArrayList<String> toArray(String list, String token){
@@ -223,17 +146,13 @@ public class GrizzlyProxy implements NetworkProxy {
      * Stops the Grizzly service.
      */
     @Override
-    public void stop() {
+    public void stop() throws IOException {
         grizzlyListener.stop();
     }
 
     @Override
     public void destroy() {
-        if(!grizzlyListener.isGenericListener()) {
-            grizzlyService.getHabitat().removeIndex(Mapper.class.getName(),
-                        (networkListener.getAddress() + networkListener.getPort()));
-            unregisterMonitoringStatsProviders();
-        }
+        grizzlyListener.destroy();
     }
 
     @Override
@@ -254,90 +173,52 @@ public class GrizzlyProxy implements NetworkProxy {
     * @param endpointAdapter servicing requests.
     */
     @Override
-    public void registerEndpoint(String contextRoot, Collection<String> vsServers, Adapter endpointAdapter,
-        ApplicationContainer container) throws EndpointRegistrationException {
+    public void registerEndpoint(String contextRoot, Collection<String> vsServers,
+            HttpHandler endpointService,
+            ApplicationContainer container) throws EndpointRegistrationException {
         
-        if(grizzlyListener.isGenericListener()) {
-            return;
-        }
-
         // e.g., there is no admin service in an instance
         if (contextRoot == null) {
             return;
         }
 
-        if (endpointAdapter == null) {
+        if (endpointService == null) {
             throw new EndpointRegistrationException(
                 "The endpoint adapter is null");
         }
-        ((ContainerMapper)grizzlyListener.getEmbeddedHttp().getAdapter())
-            .register(contextRoot, vsServers, endpointAdapter, container);
+
+        final HttpAdapter httpAdapter = grizzlyListener.getAdapter(HttpAdapter.class);
+        if (httpAdapter != null) {
+            httpAdapter.getMapper().register(contextRoot, vsServers, endpointService, container);
+        }
     }
 
     /**
-     * Removes the contex-root from our list of endpoints.
+     * Removes the context-root from our list of endpoints.
      */
     @Override
     public void unregisterEndpoint(String contextRoot, ApplicationContainer app) throws EndpointRegistrationException {
-        if(grizzlyListener.isGenericListener()) {
-            return;
+        final HttpAdapter httpAdapter = grizzlyListener.getAdapter(HttpAdapter.class);
+        if (httpAdapter != null) {
+            httpAdapter.getMapper().unregister(contextRoot);
         }
-        ((ContainerMapper) grizzlyListener.getEmbeddedHttp().getAdapter())
-            .unregister(contextRoot);
     }
 
     @Override
-    public Future<Result<Thread>> start() {
-        final GrizzlyFuture future = new GrizzlyFuture();
+    public Future<Result<Thread>> start() throws IOException {
+        final FutureImpl<Result<Thread>> future = UnsafeFutureImpl.<Result<Thread>>create();
         final long t1 = System.currentTimeMillis();
-        final Thread thread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    final Thread t = Thread.currentThread();                    
-                    grizzlyListener.initEndpoint();
-                    grizzlyListener.getController().addStateListener(new ControllerStateListener() {
-                        @Override
-                        public void onStarted() {
-                        }
 
-                        @Override
-                        public void onReady() {
-                            if (logger.isLoggable(Level.INFO)){
-                                logger.info("Grizzly Framework " + Grizzly.getRawVersion() + " started in: "
-                                        + (System.currentTimeMillis() - t1)
-                                        + "ms - bound to [" 
-                                        + grizzlyListener.getListener().getAddress()
-                                        + ':' + grizzlyListener.getPort() + ']');
-                            }
+        grizzlyListener.start();
 
-                            future.setResult(new Result<Thread>(t));
-                        }
+        if (logger.isLoggable(Level.INFO)) {
+            logger.log(Level.INFO, "Grizzly Framework {0} started in: {1}ms - bound to [{2}{3}{4}{5}",
+                    new Object[]{Grizzly.getDotedVersion(),
+                    System.currentTimeMillis() - t1,
+                    grizzlyListener.getAddress(), ':', grizzlyListener.getPort(), ']'});
+        }
 
-                        @Override
-                        public void onStopped() {
-                        }
-
-                        @Override
-                        public void onException(Throwable throwable) {
-                            future.setResult(new Result<Thread>(throwable));
-                        }
-                    });
-
-                    grizzlyListener.startEndpoint();
-                } catch (InstantiationException e) {
-                    logger.log(Level.SEVERE, "Cannot start grizzly listener", e);
-                } catch (IOException e) {
-                    logger.log(Level.SEVERE, "Cannot start grizzly listener", e);
-                } catch (RuntimeException e) {
-                    logger.log(Level.INFO, "Exception in grizzly thread", e);
-                } catch (Throwable e) {
-                    logger.log(Level.INFO, e.getMessage(), e);
-                }
-            }
-        };
-        thread.setPriority(Thread.MAX_PRIORITY);
-        thread.start();
+        future.result(new Result<Thread>(Thread.currentThread()));
         return future;
     }
 
@@ -353,63 +234,5 @@ public class GrizzlyProxy implements NetworkProxy {
 
     public GrizzlyListener getUnderlyingListener() {
         return grizzlyListener;
-    }
-
-    protected void registerMonitoringStatsProviders() {
-        final String name = networkListener.getName();
-        final GrizzlyMonitoring monitoring = grizzlyService.getMonitoring();
-
-        monitoring.registerThreadPoolStatsProvider(name);
-        monitoring.registerKeepAliveStatsProvider(name);
-        monitoring.registerFileCacheStatsProvider(name);
-        monitoring.registerConnectionQueueStatsProvider(name);
-    }
-
-    protected void unregisterMonitoringStatsProviders() {
-        final String name = networkListener.getName();
-        final GrizzlyMonitoring monitoring = grizzlyService.getMonitoring();
-
-        monitoring.unregisterThreadPoolStatsProvider(name);
-        monitoring.unregisterKeepAliveStatsProvider(name);
-        monitoring.unregisterFileCacheStatsProvider(name);
-        monitoring.unregisterConnectionQueueStatsProvider(name);
-    }
-    
-
-    public static final class GrizzlyFuture implements Future<Result<Thread>> {
-        Result<Thread> result;
-        CountDownLatch latch = new CountDownLatch(1);
-
-        public void setResult(Result<Thread> result) {
-            this.result = result;
-            latch.countDown();
-        }
-
-        @Override
-        public boolean cancel(boolean mayInterruptIfRunning) {
-            return false;
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return false;
-        }
-
-        @Override
-        public boolean isDone() {
-            return latch.getCount() == 0;
-        }
-
-        @Override
-        public Result<Thread> get() throws InterruptedException {
-            latch.await();
-            return result;
-        }
-
-        @Override
-        public Result<Thread> get(long timeout, TimeUnit unit) throws InterruptedException {
-            latch.await(timeout, unit);
-            return result;
-        }
     }
 }

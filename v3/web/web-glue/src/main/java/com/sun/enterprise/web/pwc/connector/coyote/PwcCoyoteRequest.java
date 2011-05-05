@@ -43,7 +43,6 @@ package com.sun.enterprise.web.pwc.connector.coyote;
 import com.sun.enterprise.web.pwc.PwcWebModule;
 import com.sun.enterprise.web.session.WebSessionCookieConfig;
 import com.sun.enterprise.web.session.WebSessionCookieConfig.CookieSecureType;
-import com.sun.grizzly.util.http.ServerCookie;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
@@ -347,7 +346,7 @@ public class PwcCoyoteRequest extends Request {
 
     // START GlassFish 898
     @Override
-    protected Cookie makeCookie(ServerCookie scookie) {
+    protected Cookie makeCookie(org.glassfish.grizzly.http.Cookie scookie) {
 
         PwcWebModule wm = (PwcWebModule) getContext();
         boolean encodeCookies = false;

@@ -40,59 +40,77 @@
 
 package com.sun.enterprise.v3.services.impl.monitor;
 
-import com.sun.grizzly.TCPSelectorHandler;
-import com.sun.grizzly.config.GrizzlyEmbeddedHttp;
-import com.sun.grizzly.config.GrizzlyServiceListener;
-import com.sun.grizzly.http.FileCacheFactory;
-import com.sun.grizzly.http.KeepAliveStats;
-import com.sun.grizzly.http.SelectorThreadKeyHandler;
-import com.sun.grizzly.util.ExtendedThreadPool;
-import java.util.concurrent.TimeUnit;
+import org.glassfish.grizzly.Buffer;
+import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.ConnectionProbe;
+import org.glassfish.grizzly.IOEvent;
+import org.glassfish.grizzly.Transport;
 
 /**
- * Monitoring aware {@link GrizzlyEmbeddedHttp} implementation.
- * 
- * @author Alexey Stashok
+ *
+ * @author oleksiys
  */
-public class MonitorableEmbeddedHttp extends GrizzlyEmbeddedHttp {
-    // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
-    private final GrizzlyMonitoring monitoring;
+public class ConnectionMonitor implements ConnectionProbe {
+    private final GrizzlyMonitoring grizzlyMonitoring;
     private final String monitoringId;
 
-    public MonitorableEmbeddedHttp(
-            GrizzlyMonitoring monitoring,
-            String monitoringId) {
-        this.monitoring = monitoring;
+    public ConnectionMonitor(GrizzlyMonitoring grizzlyMonitoring,
+            String monitoringId, Transport transport) {
+        this.grizzlyMonitoring = grizzlyMonitoring;
         this.monitoringId = monitoringId;
-        
-        keepAliveStats = createKeepAliveStats();
+    }
+    
+    @Override
+    public void onAcceptEvent(final Connection connection) {
+        final Object peerAddress = connection.getPeerAddress();
+
+        if (peerAddress != null) { // if peerAddress is null - it's a server connection. we should skip.
+            grizzlyMonitoring.getConnectionQueueProbeProvider().connectionAcceptedEvent(
+                    monitoringId, connection.hashCode(),
+                    peerAddress.toString());
+
+        }
     }
 
     @Override
-    protected ExtendedThreadPool newThreadPool(String name, int minThreads,
-            int maxThreads, int maxQueueSize, long keepAlive, TimeUnit timeunit) {
-
-        return new MonitorableThreadPool(monitoring, monitoringId, name,
-                minThreads, maxThreads, maxQueueSize, keepAlive, timeunit);
+    public void onConnectEvent(final Connection connection) {
+        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionConnectedEvent(
+                monitoringId, connection.hashCode(),
+                connection.getPeerAddress().toString());
     }
 
     @Override
-    protected TCPSelectorHandler createSelectorHandler() {
-        return new MonitorableSelectorHandler(monitoring, monitoringId, this);
+    public void onCloseEvent(Connection connection) {
+        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionClosedEvent(
+                monitoringId, connection.hashCode());
     }
 
     @Override
-    protected SelectorThreadKeyHandler createSelectionKeyHandler() {
-        return new MonitorableSelectionKeyHandler(monitoring, monitoringId, this);
+    public void onBindEvent(Connection connection) {
     }
 
     @Override
-    protected FileCacheFactory createFileCacheFactory() {
-        return new MonitorableFileCacheFactory(monitoring, monitoringId);
+    public void onReadEvent(Connection connection, Buffer data, int size) {
     }
 
     @Override
-    protected KeepAliveStats createKeepAliveStats() {
-        return new MonitorableKeepAliveStats(monitoring, monitoringId);
+    public void onWriteEvent(Connection connection, Buffer data, int size) {
     }
+
+    @Override
+    public void onErrorEvent(Connection connection, Throwable error) {
+    }
+
+    @Override
+    public void onIOEventReadyEvent(Connection connection, IOEvent ioEvent) {
+    }
+
+    @Override
+    public void onIOEventEnableEvent(Connection connection, IOEvent ioEvent) {
+    }
+
+    @Override
+    public void onIOEventDisableEvent(Connection connection, IOEvent ioEvent) {
+    }
+
 }

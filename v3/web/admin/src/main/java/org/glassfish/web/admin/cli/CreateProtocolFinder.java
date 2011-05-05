@@ -49,11 +49,11 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.grizzly.config.dom.PortUnification;
-import com.sun.grizzly.config.dom.Protocol;
-import com.sun.grizzly.config.dom.ProtocolFilter;
-import com.sun.grizzly.config.dom.ProtocolFinder;
-import com.sun.grizzly.config.dom.Protocols;
+import org.glassfish.grizzly.config.dom.PortUnification;
+import org.glassfish.grizzly.config.dom.Protocol;
+import org.glassfish.grizzly.config.dom.ProtocolFilter;
+import org.glassfish.grizzly.config.dom.ProtocolFinder;
+import org.glassfish.grizzly.config.dom.Protocols;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -113,7 +113,7 @@ public class CreateProtocolFinder implements AdminCommand {
             validate(target, "create.http.fail.protocolnotfound",
                 "The specified protocol {0} is not yet configured", targetName);
             final Class<?> finderClass = Thread.currentThread().getContextClassLoader().loadClass(classname);
-            if(!com.sun.grizzly.portunif.ProtocolFinder.class.isAssignableFrom(finderClass)) {
+            if(!org.glassfish.grizzly.portunif.ProtocolFinder.class.isAssignableFrom(finderClass)) {
                 report.setMessage(localStrings.getLocalString("create.portunif.fail.notfinder",
                     "{0} create failed.  Given class is not a ProtocolFinder: {1}", name, classname));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);

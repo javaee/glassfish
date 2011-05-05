@@ -39,11 +39,11 @@
  */
 package org.glassfish.admin.rest;
 
-import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
-import com.sun.grizzly.tcp.http11.GrizzlyRequest;
-import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import java.util.Set;
 import org.glassfish.api.container.EndpointRegistrationException;
+import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.component.Habitat;
 
@@ -60,12 +60,12 @@ public interface LazyJerseyInterface {
      * @return the correct GrizzlyAdapter
      * @throws EndpointRegistrationException
      */
-    GrizzlyAdapter exposeContext(Set classes, ServerContext sc, Habitat habitat)
+    HttpHandler exposeContext(Set classes, ServerContext sc, Habitat habitat)
             throws EndpointRegistrationException;
 
     RestConfig getRestConfig(Habitat habitat);
 
-    void reportError(GrizzlyRequest req, GrizzlyResponse res, int statusCode, String msg);
+    void reportError(Request req, Response res, int statusCode, String msg);
 
     Set<Class<?>> getResourcesConfigForMonitoring(Habitat habitat);
 

@@ -77,7 +77,7 @@ import javax.management.ObjectName;
 import org.apache.jk.core.JkHandler;
 import org.apache.jk.core.WorkerEnv;
 import org.apache.tomcat.util.modeler.Registry;
-import com.sun.grizzly.util.IntrospectionUtils;
+import org.glassfish.grizzly.http.server.util.IntrospectionUtils;
 
 /** Main class used to startup and configure jk. It manages the conf/jk2.properties file
  *  and is the target of JMX proxy.

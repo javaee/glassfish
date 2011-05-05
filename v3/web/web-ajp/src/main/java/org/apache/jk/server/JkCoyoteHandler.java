@@ -55,206 +55,211 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.jk.server;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.logging.*;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import org.apache.tomcat.util.modeler.Registry;
-import com.sun.grizzly.tcp.Adapter;
-import com.sun.grizzly.tcp.ProtocolHandler;
-import com.sun.grizzly.tcp.Request;
-import com.sun.grizzly.tcp.Response;
-import com.sun.grizzly.tcp.RequestInfo;
-import com.sun.grizzly.tcp.Constants;
+import org.apache.catalina.connector.ProtocolHandler;
 import org.apache.jk.core.JkHandler;
 import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
+import org.apache.tomcat.util.modeler.Registry;
+import org.glassfish.grizzly.http.HttpRequestPacket;
+import org.glassfish.grizzly.http.HttpResponsePacket;
+import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.server.Request;
+//import org.glassfish.grizzly.http.server.RequestInfo;
+import org.glassfish.grizzly.http.Note;
+import org.glassfish.grizzly.http.server.Response;
 
-/** Plugs Jk into Coyote. Must be named "type=JkHandler,name=container"
- *
- * jmx:notification-handler name="org.apache.jk.SEND_PACKET
- * jmx:notification-handler name="com.sun.grizzly.tcp.ACTION_COMMIT
+/**
+ * Plugs Jk into Coyote. Must be named "type=JkHandler,name=container"
+ * <p/>
+ * jmx:notification-handler name="org.apache.jk.SEND_PACKET jmx:notification-handler
+ * name="org.glassfish.grizzly.tcp.ACTION_COMMIT
  */
 public class JkCoyoteHandler extends JkHandler implements ProtocolHandler {
-    protected static final Logger log 
+    protected static final Logger log
         = Logger.getLogger(JkCoyoteHandler.class.getName());
     // Set debug on this logger to see the container request time
-
     // ----------------------------------------------------------- DoPrivileged
     private boolean paused = false;
-    int epNote;
-    Adapter adapter;
-    protected JkMain jkMain=null;
+//    int epNote;
+    HttpHandler handler;
+    protected JkMain jkMain = null;
 
-    /** Set a property. Name is a "component.property". JMX should
-     * be used instead.
+    private final Note<MsgContext> epNote = Request.<MsgContext>createNote("epNote");
+
+    /**
+     * Set a property. Name is a "component.property". JMX should be used instead.
      */
-    public void setProperty( String name, String value ) {
-        if( log.isLoggable(Level.FINEST))
-            log.finest("setProperty " + name + " " + value );
-        getJkMain().setProperty( name, value );
-        properties.put( name, value );
+    public void setProperty(String name, String value) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("setProperty " + name + " " + value);
+        }
+        getJkMain().setProperty(name, value);
+        properties.put(name, value);
     }
 
-    public String getProperty( String name ) {
-        return properties.getProperty(name) ;
+    public String getProperty(String name) {
+        return properties.getProperty(name);
     }
 
     public Iterator getAttributeNames() {
-       return properties.keySet().iterator();
-    }
-
-    /** Pass config info
-     */
-    public void setAttribute( String name, Object value ) {
-        if( log.isLoggable(Level.FINEST))
-            log.finest("setAttribute " + name + " " + value );
-        if( value instanceof String )
-            this.setProperty( name, (String)value );
+        return properties.keySet().iterator();
     }
 
     /**
-     * Retrieve config info.
-     * Primarily for use with the admin webapp.
-     */   
-    public Object getAttribute( String name ) {
+     * Pass config info
+     */
+    public void setAttribute(String name, Object value) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.log(Level.FINEST, "setAttribute {0} {1}", new Object[]{name, value});
+        }
+        if (value instanceof String) {
+            this.setProperty(name, (String) value);
+        }
+    }
+
+    /**
+     * Retrieve config info. Primarily for use with the admin webapp.
+     */
+    public Object getAttribute(String name) {
         return getJkMain().getProperty(name);
     }
 
-    /** The adapter, used to call the connector 
+    /**
+     * The adapter, used to call the connector
      */
-    public void setAdapter(Adapter adapter) {
-        this.adapter=adapter;
+    @Override
+    public void setHandler(HttpHandler handler) {
+        this.handler = handler;
     }
 
-    public Adapter getAdapter() {
-        return adapter;
+    @Override
+    public HttpHandler getHandler() {
+        return handler;
     }
 
     public JkMain getJkMain() {
-        if( jkMain == null ) {
-            jkMain=new JkMain();
+        if (jkMain == null) {
+            jkMain = new JkMain();
             jkMain.setWorkerEnv(wEnv);
-            
+
         }
         return jkMain;
     }
-    
-    boolean started=false;
-    
-    /** Start the protocol
+
+    boolean started = false;
+
+    /**
+     * Start the protocol
      */
     public void init() {
-        if( started ) return;
-
-        started=true;
-        
-        if( wEnv==null ) {
-            // we are probably not registered - not very good.
-            wEnv=getJkMain().getWorkerEnv();
-            wEnv.addHandler("container", this );
+        if (started) {
+            return;
         }
-
+        started = true;
+        if (wEnv == null) {
+            // we are probably not registered - not very good.
+            wEnv = getJkMain().getWorkerEnv();
+            wEnv.addHandler("container", this);
+        }
         try {
             // jkMain.setJkHome() XXX;
-            
             getJkMain().init();
 
-        } catch( Exception ex ) {
-            log.log(Level.SEVERE, "Error during init",ex);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "Error during init", ex);
         }
     }
 
     public void start() {
         try {
-            if( oname != null && getJkMain().getDomain() == null) {
+            if (oname != null && getJkMain().getDomain() == null) {
                 try {
-                    ObjectName jkmainOname = 
+                    ObjectName jkmainOname =
                         new ObjectName(oname.getDomain() + ":type=JkMain");
                     Registry.getRegistry(null, null)
                         .registerComponent(getJkMain(), jkmainOname, "JkMain");
                 } catch (Exception e) {
-                    log.severe( "Error registering jkmain " + e );
+                    log.log(Level.SEVERE, "Error registering jkmain {0}", e);
                 }
             }
             getJkMain().start();
-        } catch( Exception ex ) {
-            log.log(Level.SEVERE, "Error during startup",ex);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "Error during startup", ex);
         }
     }
 
     public void pause() throws Exception {
-        if(!paused) {
+        if (!paused) {
             paused = true;
             getJkMain().pause();
         }
     }
 
     public void resume() throws Exception {
-        if(paused) {
+        if (paused) {
             paused = false;
             getJkMain().resume();
         }
     }
 
     public void destroy() {
-        if( !started ) return;
-
+        if (!started) {
+            return;
+        }
         started = false;
         getJkMain().stop();
     }
 
-    
     // -------------------- Jk handler implementation --------------------
     // Jk Handler mehod
-    public int invoke( Msg msg, MsgContext ep ) 
+    public int invoke(Msg msg, MsgContext ep)
         throws IOException {
-        if( ep.isLogTimeEnabled() ) 
-            ep.setLong( MsgContext.TIMER_PRE_REQUEST, System.currentTimeMillis());
-        
-        Request req=ep.getRequest();
-        Response res=req.getResponse();
-
-        if( log.isLoggable(Level.FINEST) )
-            log.finest( "Invoke " + req + " " + res + " " + req.requestURI().toString());
-        
-        res.setNote( epNote, ep );
-        ep.setStatus( MsgContext.JK_STATUS_HEAD );
-        RequestInfo rp = req.getRequestProcessor();
-        rp.setStage(Constants.STAGE_SERVICE);
-        try {
-            adapter.service( req, res );
-        } catch( Exception ex ) {
-            log.log(Level.INFO, "Error servicing request " + req,ex);
-        }
-        if(ep.getStatus() != MsgContext.JK_STATUS_CLOSED) {
-            res.finish();
-        }
-
-        req.recycle();
-        req.updateCounters();
-        res.recycle();
-        ep.recycle();
-        if( ep.getStatus() == MsgContext.JK_STATUS_ERROR ) {
-            return ERROR;
-        }
-        ep.setStatus( MsgContext.JK_STATUS_NEW );
-        rp.setStage(Constants.STAGE_KEEPALIVE);
+//        if (ep.isLogTimeEnabled()) {
+//            ep.setLong(MsgContext.TIMER_PRE_REQUEST, System.currentTimeMillis());
+//        }
+//        HttpRequestPacket req = ep.getRequest();
+//        HttpResponsePacket res = req.getResponse();
+//        if (log.isLoggable(Level.FINEST)) {
+//            log.log(Level.FINEST, "Invoke {0} {1} {2}",
+//                    new Object[]{req, res, req.getRequestURI()});
+//        }
+//
+//        //@TODO create Request/Response on base of HttpRequestPacket/HttpResponsePacket
+//        req.setNote(epNote, ep);
+////        res.setNote(epNote, ep);
+//        ep.setStatus(MsgContext.JK_STATUS_HEAD);
+////        RequestInfo rp = req.getRequestProcessor();
+////        rp.setStage(Constants.STAGE_SERVICE);
+//        try {
+//            handler.service(req, res);
+//        } catch (Exception ex) {
+//            log.log(Level.INFO, "Error servicing request " + req, ex);
+//        }
+//        if (ep.getStatus() != MsgContext.JK_STATUS_CLOSED) {
+//            res.finish();
+//        }
+//        ep.recycle();
+//        if (ep.getStatus() == MsgContext.JK_STATUS_ERROR) {
+//            return ERROR;
+//        }
+//        ep.setStatus(MsgContext.JK_STATUS_NEW);
+//        rp.setStage(Constants.STAGE_KEEPALIVE);
         return OK;
     }
 
-
     public ObjectName preRegister(MBeanServer server,
-                                  ObjectName oname) throws Exception
-    {
+        ObjectName oname) throws Exception {
         // override - we must be registered as "container"
-        this.name="container";        
+        this.name = "container";
         return super.preRegister(server, oname);
     }
 }

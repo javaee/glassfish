@@ -40,8 +40,9 @@
 
 package com.sun.enterprise.v3.services.impl;
 
-import com.sun.grizzly.util.buf.Ascii;
 import java.nio.ByteBuffer;
+
+import org.glassfish.grizzly.http.util.Ascii;
 
 /**
  * Utility class for parsing ByteBuffer

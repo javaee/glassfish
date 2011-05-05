@@ -58,19 +58,29 @@
 
 package org.apache.catalina.core;
 
-import com.sun.grizzly.util.buf.MessageBytes;
-import org.apache.catalina.*;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.UnavailableException;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.catalina.Context;
+import org.apache.catalina.Globals;
+import org.apache.catalina.HttpRequest;
+import org.apache.catalina.Request;
+import org.apache.catalina.Response;
 import org.apache.catalina.connector.ClientAbortException;
 import org.apache.catalina.connector.RequestFacade;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ValveBase;
-
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-import javax.servlet.*;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.logging.Level;
+import org.glassfish.grizzly.http.util.DataChunk;
 
 /**
  * Valve that implements the default basic behavior for the
@@ -82,9 +92,7 @@ import java.util.logging.Level;
 
 final class StandardWrapperValve extends ValveBase {
 
-    private static final java.util.logging.Logger log =
-        java.util.logging.Logger.getLogger(
-            StandardWrapperValve.class.getName());
+    private static final Logger log = Logger.getLogger(StandardWrapperValve.class.getName());
 
     /**
      * The string manager for this package.
@@ -245,7 +253,7 @@ final class StandardWrapperValve extends ValveBase {
             exception(request, response, e);
             servlet = null;
         }
-        MessageBytes requestPathMB = hrequest.getRequestPathMB();
+        DataChunk requestPathMB = hrequest.getRequestPathMB();
         hreq.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR,
                           requestPathMB);
 

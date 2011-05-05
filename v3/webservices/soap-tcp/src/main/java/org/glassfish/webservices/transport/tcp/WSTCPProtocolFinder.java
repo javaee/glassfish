@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,16 +40,15 @@
 
 package org.glassfish.webservices.transport.tcp;
 
-import com.sun.grizzly.Context;
-import com.sun.grizzly.portunif.PUProtocolRequest;
-import com.sun.grizzly.portunif.ProtocolFinder;
 import com.sun.logging.LogDomains;
 import com.sun.xml.ws.transport.tcp.util.TCPConstants;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.grizzly.Buffer;
+import org.glassfish.grizzly.filterchain.FilterChainContext;
+import org.glassfish.grizzly.portunif.PUContext;
+import org.glassfish.grizzly.portunif.ProtocolFinder;
 
 /**
  *
@@ -57,7 +56,7 @@ import java.util.logging.Logger;
  */
 public class WSTCPProtocolFinder implements ProtocolFinder {
 
-    private static Logger logger = LogDomains.getLogger(WSTCPProtocolFinder.class, LogDomains.WEBSERVICES_LOGGER);
+    private static final Logger LOGGER = LogDomains.getLogger(WSTCPProtocolFinder.class, LogDomains.WEBSERVICES_LOGGER);
     private final static byte[] PROTOCOL_SCHEMA_BYTES;
 
     static {
@@ -65,38 +64,29 @@ public class WSTCPProtocolFinder implements ProtocolFinder {
         try {
             bytes = TCPConstants.PROTOCOL_SCHEMA.getBytes("US-ASCII");
         } catch (UnsupportedEncodingException e) {
-            logger.log(Level.WARNING, "Can not convert SOAP/TCP protocol id to byte array", e);
+            LOGGER.log(Level.WARNING, "Can not convert SOAP/TCP protocol id to byte array", e);
             bytes = TCPConstants.PROTOCOL_SCHEMA.getBytes();
         }
 
         PROTOCOL_SCHEMA_BYTES = bytes;
     }
 
-    public String find(Context context, PUProtocolRequest puRequest)
-            throws IOException {
+    @Override
+    public Result find(final PUContext puContext,
+            final FilterChainContext filterChainContext) {
 
-        ByteBuffer buffer = puRequest.getByteBuffer();
-        int position = buffer.position();
-        int limit = buffer.limit();
-        try {
-            buffer.flip();
-
-
-            if (buffer.remaining() < PROTOCOL_SCHEMA_BYTES.length) {
-                return null;
-            }
-
-            for (int i = 0; i < PROTOCOL_SCHEMA_BYTES.length; i++) {
-                if (buffer.get(i) != PROTOCOL_SCHEMA_BYTES[i]) {
-                    return null;
-                }
-            }
-
-            puRequest.setMapSelectionKey(true);
-            return TCPConstants.PROTOCOL_SCHEMA;
-        } finally {
-            buffer.limit(limit);
-            buffer.position(position);
+        final Buffer buffer = filterChainContext.getMessage();
+        if (buffer.remaining() < PROTOCOL_SCHEMA_BYTES.length) {
+            return Result.NEED_MORE_DATA;
         }
+
+        final int pos = buffer.position();
+        for (int i = 0; i < PROTOCOL_SCHEMA_BYTES.length; i++) {
+            if (buffer.get(pos + i) != PROTOCOL_SCHEMA_BYTES[i]) {
+                return Result.NOT_FOUND;
+            }
+        }
+
+        return Result.FOUND;
     }
 }

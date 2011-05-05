@@ -49,11 +49,11 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.grizzly.config.dom.Protocol;
-import com.sun.grizzly.config.dom.ProtocolChain;
-import com.sun.grizzly.config.dom.ProtocolChainInstanceHandler;
-import com.sun.grizzly.config.dom.ProtocolFilter;
-import com.sun.grizzly.config.dom.Protocols;
+import org.glassfish.grizzly.config.dom.Protocol;
+import org.glassfish.grizzly.config.dom.ProtocolChain;
+import org.glassfish.grizzly.config.dom.ProtocolChainInstanceHandler;
+import org.glassfish.grizzly.config.dom.ProtocolFilter;
+import org.glassfish.grizzly.config.dom.Protocols;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -108,7 +108,7 @@ public class CreateProtocolFilter implements AdminCommand {
             validate(protocol, "create.http.fail.protocolnotfound",
                 "The specified protocol {0} is not yet configured", protocolName);
             final Class<?> filterClass = Thread.currentThread().getContextClassLoader().loadClass(classname);
-            if (!com.sun.grizzly.ProtocolFilter.class.isAssignableFrom(filterClass)) {
+            if (!org.glassfish.grizzly.filterchain.Filter.class.isAssignableFrom(filterClass)) {
                 report.setMessage(localStrings.getLocalString("create.portunif.fail.notfilter",
                     "{0} create failed.  Given class is not a ProtocolFilter: {1}", name, classname));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);

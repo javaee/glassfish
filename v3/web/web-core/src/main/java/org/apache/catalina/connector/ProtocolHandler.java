@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,52 +36,66 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
+ *
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ * Copyright 2004 The Apache Software Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+package org.apache.catalina.connector;
 
-package com.sun.enterprise.v3.services.impl.monitor;
-
-import com.sun.grizzly.http.SelectorThread;
-import com.sun.grizzly.http.SelectorThreadKeyHandler;
-import com.sun.grizzly.util.Copyable;
-import java.nio.channels.SelectionKey;
+import org.glassfish.grizzly.http.server.HttpHandler;
 
 /**
- * Monitoring aware {@link SelectorThreadKeyHandler} implementation.
+ * Abstract the protocol implementation, including threading, etc.
+ * Processor is single threaded and specific to stream-based protocols,
+ * will not fit Jk protocols like JNI.
+ * <p/>
+ * This is the main interface to be implemented by a coyote connector.
+ * (In contrast, Adapter is the main interface to be implemented by a
+ * coyote servlet container.)
  *
- * @author Alexey Stashok
+ * @author Remy Maucherat
+ * @author Costin Manolache
+ * @see HttpHandler
  */
-public class MonitorableSelectionKeyHandler extends SelectorThreadKeyHandler {
-    // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
-    private GrizzlyMonitoring grizzlyMonitoring;
-    private String monitoringId;
+public interface ProtocolHandler {
+    /**
+     * Pass config info.
+     */
+    void setAttribute(String name, Object value);
 
-    public MonitorableSelectionKeyHandler(GrizzlyMonitoring grizzlyMonitoring,
-            String monitoringId) {
-        this(grizzlyMonitoring, monitoringId, null);
-    }
+    Object getAttribute(String name);
 
-    public MonitorableSelectionKeyHandler(GrizzlyMonitoring grizzlyMonitoring,
-            String monitoringId, SelectorThread selectorThread) {
-        super(selectorThread);
-        this.grizzlyMonitoring = grizzlyMonitoring;
-        this.monitoringId = monitoringId;
-    }
+    /**
+     * The adapter, used to call the connector.
+     */
+    void setHandler(HttpHandler handler);
 
-    @Override
-    public void copyTo(Copyable copy) {
-        super.copyTo(copy);
+    HttpHandler getHandler();
 
-        MonitorableSelectionKeyHandler copyHandler = (MonitorableSelectionKeyHandler) copy;
-        copyHandler.grizzlyMonitoring = grizzlyMonitoring;
-        copyHandler.monitoringId = monitoringId;
-    }
+    /**
+     * Init the protocol.
+     */
+    void init() throws Exception;
 
-    @Override
-    public void cancel(SelectionKey key) {
-        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionClosedEvent(
-                monitoringId, key.channel().hashCode());
+    /**
+     * Start the protocol.
+     */
+    void start() throws Exception;
 
-        super.cancel(key);
-    }
-
+    void destroy() throws Exception;
 }

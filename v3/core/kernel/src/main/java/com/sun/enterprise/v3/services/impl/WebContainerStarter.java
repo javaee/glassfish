@@ -44,7 +44,7 @@ import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.v3.server.ContainerStarter;
-import com.sun.grizzly.config.dom.*;
+import org.glassfish.grizzly.config.dom.*;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
 import org.glassfish.api.admin.ServerEnvironment;

@@ -58,8 +58,13 @@
 
 package org.apache.catalina.util;
 
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 
 /**
@@ -110,8 +115,6 @@ public final class Enumerator<T> implements Enumeration<T> {
      * @param iterator Iterator to be wrapped
      */
     public Enumerator(Iterator<T> iterator) {
-
-        super();
         this.iterator = iterator;
 
     }
@@ -125,8 +128,6 @@ public final class Enumerator<T> implements Enumeration<T> {
      * @param clone true to clone iterator
      */
     public Enumerator(Iterator<T> iterator, boolean clone) {
-
-        super();
         if (!clone) {
             this.iterator = iterator;
         } else {
@@ -172,7 +173,7 @@ public final class Enumerator<T> implements Enumeration<T> {
      * The <code>Iterator</code> over which the <code>Enumeration</code>
      * represented by this class actually operates.
      */
-    private Iterator<T> iterator = null;
+    private Iterator<T> iterator;
 
 
     // --------------------------------------------------------- Public Methods
@@ -185,9 +186,10 @@ public final class Enumerator<T> implements Enumeration<T> {
      *  contains at least one more element to provide, <code>false</code>
      *  otherwise
      */
+    @Override
     public boolean hasMoreElements() {
 
-        return (iterator.hasNext());
+        return iterator.hasNext();
 
     }
 
@@ -200,9 +202,10 @@ public final class Enumerator<T> implements Enumeration<T> {
      *
      * @exception NoSuchElementException if no more elements exist
      */
+    @Override
     public T nextElement() throws NoSuchElementException {
 
-        return (iterator.next());
+        return iterator.next();
 
     }
 

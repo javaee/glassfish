@@ -40,7 +40,7 @@
 
 package org.glassfish.tests.weball;
 
-import com.sun.grizzly.config.dom.NetworkConfig;
+import org.glassfish.grizzly.config.dom.NetworkConfig;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.internal.embedded.*;
 import org.glassfish.api.embedded.web.*;

@@ -42,7 +42,6 @@ package org.glassfish.admin.rest.resources;
 
 
 
-import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import org.glassfish.admin.rest.SessionManager;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
@@ -55,6 +54,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
+import org.glassfish.grizzly.http.server.Request;
 
 /**
  * Represents sessions with GlassFish Rest service
@@ -71,7 +71,7 @@ public class SessionsResource {
     protected UriInfo uriInfo;
 
     @Context
-    private ThreadLocal<GrizzlyRequest> request;
+    private ThreadLocal<Request> request;
 
 
     /**
@@ -84,7 +84,7 @@ public class SessionsResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
     public ActionReportResult create() {
         RestActionReporter ar = new RestActionReporter();
-        GrizzlyRequest grizzlyRequest = request.get();
+        Request grizzlyRequest = request.get();
 
 	// Check to see if the username has been set (anonymous user case)
 	String username = (String) grizzlyRequest.getAttribute("restUser");

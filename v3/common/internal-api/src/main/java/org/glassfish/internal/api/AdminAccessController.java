@@ -47,19 +47,19 @@ import javax.security.auth.login.LoginException;
 
 /** Determines the behavior of administrative access to GlassFish v3. It should be enhanced to take into account
  *  Role-based Access Control. As of GlassFish v3, this takes care of authentication alone.
- * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net) 
+ * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  */
 @Contract
 public interface AdminAccessController {
 
     /**
-     * Represents the possible types of access granted as the result of 
+     * Represents the possible types of access granted as the result of
      * logging in as an admin user.
      * <p>
      * <ul>
      * <li>FULL - the connection should be permitted full admin access, including
      * the ability to change the configuration
-     * <li>MONITORING - the connection should be permitted to monitor the 
+     * <li>MONITORING - the connection should be permitted to monitor the
      * server but not to change any configuration
      * <li>NONE - no access permitted
      * </ul>
@@ -97,7 +97,7 @@ public interface AdminAccessController {
      *  <p>
      *  This variant also logs the requester in as an admin if the specified Principal
      *  matches the Principal from the certificate in the truststore associated with
-     *  the alias configured in the domain configuration.  
+     *  the alias configured in the domain configuration.
      *
      *  Typically, methods invoking
      *  this variant should pass the Principal associated with the request as

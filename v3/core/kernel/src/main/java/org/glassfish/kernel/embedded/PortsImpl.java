@@ -49,8 +49,8 @@ import org.glassfish.internal.embedded.Ports;
 import java.io.IOException;
 import java.util.*;
 
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkConfig;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 
 /**
  * @author Jerome Dochez

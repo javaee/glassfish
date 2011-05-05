@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,37 +38,19 @@
  * holder.
  */
 
-package com.sun.enterprise.v3.services.impl.monitor;
+package org.glassfish.javaee.services;
 
-import com.sun.grizzly.http.FileCache;
-import com.sun.grizzly.http.FileCache.FileCacheEntry;
-import com.sun.grizzly.http.FileCacheFactory;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import org.glassfish.grizzly.comet.CometAddOn;
+import org.glassfish.grizzly.http.server.AddOn;
+import org.jvnet.hk2.annotations.ContractProvided;
+import org.jvnet.hk2.annotations.Service;
 
 /**
- * Monitoring aware {@link FileCacheFactory} implementation.
+ * Comet service.
  *
  * @author Alexey Stashok
  */
-public class MonitorableFileCacheFactory extends FileCacheFactory {
-    // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
-    private final GrizzlyMonitoring grizzlyMonitoring;
-    private final String monitoringId;
-
-    public MonitorableFileCacheFactory(GrizzlyMonitoring grizzlyMonitoring,
-            String monitoringId) {
-        this.grizzlyMonitoring = grizzlyMonitoring;
-        this.monitoringId = monitoringId;
-        cacheManager = new ConcurrentLinkedQueue<FileCacheEntry>();
-        isMonitoringEnabled = true;
-    }
-    
-    @Override
-    protected FileCache createFileCache() {
-        return new MonitorableFileCache(grizzlyMonitoring, monitoringId);
-    }
-
-    @Override
-    public void setIsMonitoringEnabled(boolean isMonitoringEnabled) {
-    }
+@Service(name="comet")
+@ContractProvided(AddOn.class)
+public class CometAddOnProvider extends CometAddOn {
 }
