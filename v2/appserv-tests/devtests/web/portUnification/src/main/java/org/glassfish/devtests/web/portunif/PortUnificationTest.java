@@ -51,7 +51,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import com.sun.appserv.test.BaseDevTest;
-import com.sun.grizzly.http.portunif.HttpProtocolFinder;
+import org.glassfish.grizzly.config.portunif.HttpProtocolFinder;
 
 /*
  * Unit test for port unification

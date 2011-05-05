@@ -40,39 +40,30 @@
 
 package org.glassfish.devtests.web.portunif;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
+import org.glassfish.grizzly.Buffer;
+import org.glassfish.grizzly.filterchain.FilterChainContext;
+import org.glassfish.grizzly.portunif.PUContext;
+import org.glassfish.grizzly.portunif.ProtocolFinder;
 
-import com.sun.grizzly.Context;
-import com.sun.grizzly.portunif.PUProtocolRequest;
-import com.sun.grizzly.portunif.ProtocolFinder;
 
 public class DummyProtocolFinder implements ProtocolFinder {
     private final static String name = "dummy-protocol";
     private byte[] signature = name.getBytes();
 
-    public String find(Context context, PUProtocolRequest protocolRequest)
-            throws IOException {
-        ByteBuffer buffer = protocolRequest.getByteBuffer();
-        int position = buffer.position();
-        int limit = buffer.limit();
-        try {
-            buffer.flip();
-            if (buffer.remaining() >= signature.length) {
-                for(int i=0; i<signature.length; i++) {
-                    if (buffer.get(i) != signature[i]) {
-                        return null;
-                    }
-                }
+    public Result find(PUContext puc, FilterChainContext fcc) {
+        final Buffer buffer = fcc.getMessage();
+        if (buffer.remaining() >= signature.length) {
+            final int start = buffer.position();
 
-                return name;
+            for (int i = 0; i < signature.length; i++) {
+                if (buffer.get(start + i) != signature[i]) {
+                    return Result.NOT_FOUND;
+                }
             }
-        } finally {
-            buffer.limit(limit);
-            buffer.position(position);
+
+            return Result.FOUND;
         }
 
-        return null;
+        return Result.NEED_MORE_DATA;
     }
-
 }

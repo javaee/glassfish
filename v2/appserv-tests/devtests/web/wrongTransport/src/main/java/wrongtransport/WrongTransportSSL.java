@@ -56,7 +56,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 import com.sun.appserv.test.BaseDevTest;
-import com.sun.grizzly.config.HttpProtocolFinder;
+import org.glassfish.grizzly.config.portunif.HttpProtocolFinder;
 
 public class WrongTransportSSL extends BaseDevTest {
     private static final String TEST_NAME = "wrongTransportSSL";
@@ -100,7 +100,7 @@ public class WrongTransportSSL extends BaseDevTest {
             "https-redirect"));
         report("create-protocol-filter-redirect", asadmin("create-protocol-filter",
             "--protocol", "https-redirect",
-            "--classname", "com.sun.grizzly.config.HttpRedirectFilter",
+            "--classname", "org.glassfish.grizzly.config.portunif.HttpRedirectFilter",
             "redirect-filter"));
         report("create-https-redirect-ssl", asadmin("create-ssl",
             "--certname", "s1as",

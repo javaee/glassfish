@@ -47,16 +47,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.sun.grizzly.comet.CometContext;
-import com.sun.grizzly.comet.CometEngine;
-import com.sun.grizzly.comet.CometEvent;
-import com.sun.grizzly.comet.CometHandler;
-
+import org.glassfish.grizzly.comet.CometContext;
+import org.glassfish.grizzly.comet.CometEngine;
+import org.glassfish.grizzly.comet.CometEvent;
+import org.glassfish.grizzly.comet.CometHandler;
+import org.glassfish.grizzly.comet.DefaultCometHandler;
 
 public class CometEchoServlet extends HttpServlet {
     private String contextPath;
 
-    public class ChatListnerHandler implements CometHandler<PrintWriter> {
+    public class ChatListnerHandler extends DefaultCometHandler<PrintWriter> {
 
         private PrintWriter writer;
 
@@ -65,7 +65,7 @@ public class CometEchoServlet extends HttpServlet {
         }
 
         public void onEvent(CometEvent event) throws IOException {
-            if (event.getType() == CometEvent.NOTIFY) {
+            if (event.getType() == CometEvent.Type.NOTIFY) {
                 String output = (String) event.attachment();
 
                 writer.println(output);

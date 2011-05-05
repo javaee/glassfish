@@ -41,23 +41,41 @@
 package org.glassfish.devtests.web.portunif;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.SelectableChannel;
 
-import com.sun.grizzly.Context;
-import com.sun.grizzly.ProtocolFilter;
-import com.sun.grizzly.util.OutputWriter;
+import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.EmptyCompletionHandler;
+import org.glassfish.grizzly.WriteResult;
+import org.glassfish.grizzly.filterchain.BaseFilter;
+import org.glassfish.grizzly.filterchain.FilterChainContext;
+import org.glassfish.grizzly.filterchain.NextAction;
+import org.glassfish.grizzly.memory.Buffers;
+import org.glassfish.grizzly.memory.MemoryManager;
 
-public class DummyProtocolFilter implements ProtocolFilter {
-    public boolean execute(Context ctx) throws IOException {
-        SelectableChannel channel = ctx.getSelectionKey().channel();
-        OutputWriter.flushChannel(channel, ByteBuffer.wrap("Dummy-Protocol-Response".getBytes()));
-        ctx.getSelectorHandler().closeChannel(channel);
-        return false;
+public class DummyProtocolFilter extends BaseFilter {
+
+    @Override
+    public NextAction handleRead(final FilterChainContext ctx) throws IOException {
+        final Connection connection = ctx.getConnection();
+        ctx.write(Buffers.wrap(MemoryManager.DEFAULT_MEMORY_MANAGER,
+                "Dummy-Protocol-Response"),
+                new EmptyCompletionHandler<WriteResult>() {
+            @Override
+            public void completed(WriteResult result) {
+                try {
+                    connection.close();
+                } catch (IOException ex) {
+                }
+            }
+
+            @Override
+            public void failed(Throwable throwable) {
+                try {
+                    connection.close();
+                } catch (IOException ex) {
+                }
+            }
+
+        });
+        return ctx.getInvokeAction();
     }
-
-    public boolean postExecute(Context ctx) throws IOException {
-        return true;
-    }
-
 }

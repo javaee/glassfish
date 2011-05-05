@@ -51,9 +51,8 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import com.sun.appserv.test.BaseDevTest;
-import com.sun.grizzly.http.portunif.HttpProtocolFinder;
-import com.sun.grizzly.http.DefaultProtocolFilter;
-
+import org.glassfish.grizzly.config.portunif.HttpProtocolFinder;
+import org.glassfish.grizzly.http.HttpServerFilter;
 
 /*
  * Unit test for port unification
@@ -193,7 +192,7 @@ public class PortUnificationTest extends BaseDevTest {
         report("create-protocol-filter-http", asadmin("create-protocol-filter",
             "--target", clusterName,
             "--protocol", httpName,
-            "--classname", DefaultProtocolFilter.class.getName(),
+            "--classname", HttpServerFilter.class.getName(),
             "http-filter"));
     }
 
@@ -202,10 +201,10 @@ public class PortUnificationTest extends BaseDevTest {
             "--target", clusterName,
             "--protocol", puName,
             "http-finder"));
-        report("delete-protocol-filter-http", asadmin("delete-protocol-filter",
-            "--target", clusterName,
-            "--protocol", httpName,
-            "http-filter"));
+//        report("delete-protocol-filter-http", asadmin("delete-protocol-filter",
+//            "--target", clusterName,
+//            "--protocol", httpName,
+//            "http-filter"));
         report("delete-http-protocol", asadmin("delete-protocol", "--target", clusterName,
             httpName));
         /*report("delete-protocol-finder-dummy", asadmin("delete-protocol-finder",
