@@ -60,9 +60,6 @@ public class ASMResourcesGenerator extends ResourcesGeneratorBase {
 
     @Override
     public String endGeneration() {
-
-
         return  "Code Generation done at  ";
-
     }
 }

@@ -261,7 +261,7 @@ public class TemplateRestResource {
     }
 
     public void setParentAndTagName(Dom parent, String tagName) {
-        
+
         if (parent==null){ //prevent https://glassfish.dev.java.net/issues/show_bug.cgi?id=14125
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
@@ -387,7 +387,7 @@ public class TemplateRestResource {
 
         ResourceUtil.addMethodMetaData(ar, mmd);
         if (entity != null) {
-            ar.getExtraProperties().put("childResources", ResourceUtil.getResourceLinks(entity, uriInfo, 
+            ar.getExtraProperties().put("childResources", ResourceUtil.getResourceLinks(entity, uriInfo,
                     ResourceUtil.canShowDeprecatedItems(habitat)));
         }
         ar.getExtraProperties().put("commands", ResourceUtil.getCommandLinks(getCommandResourcesPaths()));

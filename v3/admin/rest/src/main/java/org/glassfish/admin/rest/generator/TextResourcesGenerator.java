@@ -92,6 +92,5 @@ public class TextResourcesGenerator extends ResourcesGeneratorBase {
         }
 
         return  "Code Generation done at : " + generationDir;
-
     }
 }

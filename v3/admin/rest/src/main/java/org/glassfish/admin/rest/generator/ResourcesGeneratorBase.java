@@ -39,24 +39,24 @@
  */
 package org.glassfish.admin.rest.generator;
 
-import org.glassfish.admin.rest.Constants;
+import java.util.HashMap;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.api.admin.RestRedirect;
-import org.glassfish.api.admin.RestRedirects;
-import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.config.DomDocument;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.api.admin.CommandModel;
 import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.RestRedirects;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 /**
  * @author Mitesh Meswani
@@ -70,7 +70,6 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
     public ResourcesGeneratorBase(Habitat habitat) {
         this.habitat = habitat;
     }
-
     @Override
     /**
      * Generate REST resource for a single config model.
@@ -171,6 +170,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         generateSingle(model, domDocument);
 
     }
+
     /* empty method to be overwritten to get a callback when a model is visited.
      */
 
@@ -191,14 +191,14 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         if (metaData != null) {
             if (metaData.postCommandName != null) {
                 if (commandIsPresent(metaData.postCommandName)) {//and the command exits
-                    classWriter.createGetPostCommandForCollectionLeafResource(metaData.postCommandName);
-                }
+                classWriter.createGetPostCommandForCollectionLeafResource(metaData.postCommandName);
+            }
             }
 
             if (metaData.deleteCommandName != null) {
                 if (commandIsPresent(metaData.deleteCommandName)) {//and the command exits
-                    classWriter.createGetDeleteCommandForCollectionLeafResource(metaData.deleteCommandName);
-                }
+                classWriter.createGetDeleteCommandForCollectionLeafResource(metaData.deleteCommandName);
+            }
             }
 
             //display name method
@@ -267,9 +267,9 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         String commandName = configBeanToDELETECommand.get(beanName);
         if (commandName != null) {
             if (commandIsPresent(commandName)) {//and the command exits
-                classWriter.createGetDeleteCommand(commandName);
-            }
+            classWriter.createGetDeleteCommand(commandName);
         }
+    }
     }
 
     private void generateCustomResourceMapping(String beanName, ClassWriter classWriter) {
@@ -297,8 +297,8 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         if (commandMetaData.size() > 0) {
             for (CommandResourceMetaData metaData : commandMetaData) {
                 if (commandIsPresent(metaData.command)) { //only if the command really exits
-                    String commandResourceName = parentBeanName + getBeanName(metaData.resourcePath);
-                    String commandResourceClassName = getClassName(commandResourceName);
+                String commandResourceName = parentBeanName + getBeanName(metaData.resourcePath);
+                String commandResourceClassName = getClassName(commandResourceName);
 
                     //Generate command resource class
                     generateCommandResourceClass(parentBeanName, metaData);
@@ -308,15 +308,15 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
                 }
 
             }
-            //Generate GetCommandResourcePaths() method in parent 
+            //Generate GetCommandResourcePaths() method in parent
             parentWriter.createGetCommandResourcePaths(commandMetaData);
         }
     }
 
-    private boolean commandIsPresent(String commandName) {
+    private boolean commandIsPresent(String commandName){
         CommandRunner cr = habitat.getComponent(CommandRunner.class);
         CommandModel cm = cr.getModel(commandName, RestService.logger);
-        return (cm != null);
+        return (cm!=null);
 
     }
 
@@ -479,16 +479,16 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         delete-jndi-resource
         delete-lifecycle-module
         delete-message-security-provider
-        delete-connector-security-map           
-        delete-connector-work-security-map      
+        delete-connector-security-map
+        delete-connector-work-security-map
         delete-node-config
         delete-node-ssh
-        delete-file-user                        
-        delete-password-alias                      
-        delete-http-health-checker                          
-        delete-http-lb-ref                                         
-        delete-http-redirect                    
-        delete-instance                    
+        delete-file-user
+        delete-password-alias
+        delete-http-health-checker
+        delete-http-lb-ref
+        delete-http-redirect
+        delete-instance
      */
     private static final Map<String, String> configBeanToDELETECommand = new HashMap<String, String>() {
 
