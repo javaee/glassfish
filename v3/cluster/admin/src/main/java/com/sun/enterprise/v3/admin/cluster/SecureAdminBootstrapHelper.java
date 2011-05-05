@@ -360,7 +360,7 @@ public abstract class SecureAdminBootstrapHelper {
         @Override
         protected void mkdirs(String dir) {
             final File newDir = new File(newInstanceDirURI.resolve(dir));
-            if ( ! newDir.mkdirs()) {
+            if ( ! newDir.exists() && ! newDir.mkdirs()) {
                 throw new RuntimeException(Strings.get("secure.admin.boot.errCreDir", newDir.getAbsolutePath()));
             }
         }
