@@ -96,24 +96,40 @@ public class RelayService {
         
         String tags = getHtml(serviceTags);
         String env = getEnvironmentInformation();
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile));
 
-        String line;
-        while ((line = br.readLine())!= null) {
-            if (line.indexOf(ENV_TOKEN) >= 0)
-                line = line.replaceAll(ENV_TOKEN, env);
-            if (line.indexOf(TAG_TOKEN) >= 0)
-                line = line.replaceAll(TAG_TOKEN, tags);
-            if (line.indexOf(PRODUCTNAME_TOKEN) >= 0)
-                line = line.replaceAll(PRODUCTNAME_TOKEN, productName.toString());
-            line = replaceStringTokens(line);
-            bw.write(line);
-            bw.newLine();
+        BufferedReader br = null;
+        BufferedWriter bw = null;
+        try {
+            br = new BufferedReader(new InputStreamReader(is));
+            bw = new BufferedWriter(new FileWriter(outputFile));
+
+            String line;
+            while ((line = br.readLine())!= null) {
+                if (line.indexOf(ENV_TOKEN) >= 0)
+                    line = line.replaceAll(ENV_TOKEN, env);
+                if (line.indexOf(TAG_TOKEN) >= 0)
+                    line = line.replaceAll(TAG_TOKEN, tags);
+                if (line.indexOf(PRODUCTNAME_TOKEN) >= 0)
+                    line = line.replaceAll(PRODUCTNAME_TOKEN, productName.toString());
+                line = replaceStringTokens(line);
+                bw.write(line);
+                bw.newLine();
+            }
+            bw.flush();
+        } 
+        finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException ioex) {}
+            }
+
+            if (bw != null) {
+                try {
+                    bw.close();
+                } catch (IOException ioex) {}
+            }
         }
-        bw.flush();
-        br.close();
-        bw.close();
     }
 
     private String replaceStringTokens(String line) {
