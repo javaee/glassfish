@@ -354,6 +354,12 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
                         HttpURLConnection.HTTP_FORBIDDEN);
                 }
                 break;
+                
+            default:
+                final String msg = adminStrings.getLocalString("admin.adapter.unkAuth", 
+                        "Unknown admin access {0} returned; expected one of {1}",
+                        access.name(), AdminAccessController.Access.values());
+                throw new IllegalStateException(msg);
 
         }
 

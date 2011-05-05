@@ -1451,7 +1451,11 @@ public class CommandRunnerImpl implements CommandRunner {
              * might not be present already.  Create it if needed.
              */
             if(!appRoot.isDirectory())
-                appRoot.mkdirs();
+                if ( ! appRoot.exists() && ! appRoot.mkdirs()) {
+                    throw new IOException(adminStrings.getLocalString("commandrunner.errCreDir",
+                            "Could not create the directory {0}; no further information is available.",
+                            appRoot.getAbsolutePath()));
+                }
 
             return appRoot;
         }
