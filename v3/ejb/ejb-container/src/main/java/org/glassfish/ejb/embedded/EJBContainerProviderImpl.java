@@ -109,7 +109,6 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
 
     private static EJBContainerImpl container;
     private static GlassFishRuntime runtime;
-    private static Habitat habitat;
     private static ArchiveFactory archiveFactory;
     private static Class[] ejbAnnotations = null;
 
@@ -193,24 +192,40 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                 addWebContainerIfRequested(properties, glassFishProperties);
 
                 runtime = GlassFishRuntime.bootstrap(bootstrapProperties);
-                GlassFish server = runtime.newGlassFish(glassFishProperties);
-                server.start();
-
-                habitat = server.getService(org.jvnet.hk2.component.Habitat.class);
-                server.stop();
                 if (l != null && !l.reuse_instance_location) {
-                     // If we are running from an existing install, copy over security files to the temp instance
-                     EmbeddedSecurity es = habitat.getByContract(EmbeddedSecurity.class);
-                     if (es != null) {
-                         es.copyConfigFiles(habitat, l.instance_root, l.domain_file);
-                     }
+                    GlassFish temp_server = null;
+                    try {
+                        temp_server = runtime.newGlassFish(glassFishProperties);
+                        temp_server.start();
+
+                        Habitat habitat = temp_server.getService(Habitat.class);
+                        // If we are running from an existing install, copy over security files to the temp instance
+                        EmbeddedSecurity es = temp_server.getService(EmbeddedSecurity.class);
+                        if (es != null) {
+                           es.copyConfigFiles(habitat, l.instance_root, l.domain_file);
+                        }
+                   } finally {
+                        if (temp_server != null) {
+                            try {
+                                Thread.sleep(1000);
+                                temp_server.stop();
+                                temp_server.dispose();
+                             } catch (Exception e0) {
+                                 _logger.log(Level.SEVERE, e0.getMessage(), e0);
+                             }
+                        }
+                    }
                 }
 
-                Sniffer sniffer = habitat.getComponent(Sniffer.class, "Ejb");
-                ejbAnnotations = sniffer.getAnnotationTypes();
-                archiveFactory = habitat.getComponent(ArchiveFactory.class);
 
-                container = new EJBContainerImpl(habitat, server);
+                GlassFish server = runtime.newGlassFish(glassFishProperties);
+                // server is started in EJBContainerImpl constructor
+                container = new EJBContainerImpl(server);
+
+                archiveFactory = server.getService(ArchiveFactory.class);
+
+                Sniffer sniffer = server.getService(Sniffer.class, "Ejb");
+                ejbAnnotations = sniffer.getAnnotationTypes();
             } catch (Exception e) {
                 try {
                     if (container != null) {

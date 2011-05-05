@@ -99,10 +99,11 @@ public class EJBContainerImpl extends EJBContainer {
     /**
      * Construct new EJBContainerImpl instance 
      */                                               
-    EJBContainerImpl(Habitat habitat, GlassFish server) throws GlassFishException {
-        this.habitat = habitat;
+    EJBContainerImpl(GlassFish server) throws GlassFishException {
         this.server = server;
         this.server.start();
+
+        this.habitat = server.getService(Habitat.class);
         deployer = server.getDeployer();
         state = RUNNING;
         cleanup = new Cleanup(this);
