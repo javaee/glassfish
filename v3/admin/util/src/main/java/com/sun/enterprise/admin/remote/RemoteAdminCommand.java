@@ -618,14 +618,14 @@ public class RemoteAdminCommand {
                 logger.finer("URI: " + uriString);
                 logger.finer("URL: " + url.toString());
                 logger.finer("URL: " +
-                        url.toURL(uriString.toString()).toString());
+                        url.toURL(uriString).toString());
                 logger.finer("Using auth info: User: " + user +
                     ", Password: " + (ok(password) ? "<non-null>" : "<null>"));
                 if (user != null || password != null)
                     url.setAuthenticationInfo(
                         new AuthenticationInfo(user, password));
                 urlConnection = (HttpURLConnection)
-                        url.openConnection(uriString.toString());
+                        url.openConnection(uriString);
                 urlConnection.setRequestProperty("User-Agent", responseFormatType);
 
                 if (shouldSendCredentials) {

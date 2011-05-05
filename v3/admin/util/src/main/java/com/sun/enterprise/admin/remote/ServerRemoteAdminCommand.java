@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -76,7 +76,7 @@ public class ServerRemoteAdminCommand extends RemoteAdminCommand {
         completeInit(habitat);
     }
 
-    private void completeInit(final Habitat habitat) {
+    private synchronized void completeInit(final Habitat habitat) {
         this.habitat = habitat;
         secureAdmin = habitat.getComponent(SecureAdmin.class);
         serverEnv = habitat.getComponent(ServerEnvironment.class);
@@ -114,7 +114,7 @@ public class ServerRemoteAdminCommand extends RemoteAdminCommand {
         }
     }
 
-    private String getCertAlias() {
+    private synchronized String getCertAlias() {
         return (serverEnv.isDas() ? SecureAdmin.Util.DASAlias(secureAdmin) :
             SecureAdmin.Util.instanceAlias(secureAdmin));
     }

@@ -328,7 +328,11 @@ public class ClusterOperationUtil {
             return;
         }
         if ( ! dir.exists()) {
-            dir.mkdirs();
+            if ( ! dir.mkdirs()) {
+                throw new RuntimeException(strings.getLocalString("clusterutil.errCreDir",
+                        "Could not create directory {0}; no further information available", 
+                        dir.getAbsolutePath()));
+            }
         } else {
             if (! dir.isDirectory() || ! dir.canWrite()) {
                 throw new IllegalArgumentException(dir.getAbsolutePath());

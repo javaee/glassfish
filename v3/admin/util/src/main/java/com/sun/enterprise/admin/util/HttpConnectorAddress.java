@@ -239,7 +239,7 @@ public final class HttpConnectorAddress {
                 path == null ? "" : path);
     }
 
-    public SSLSocketFactory getSSLSocketFactory() {
+    public synchronized SSLSocketFactory getSSLSocketFactory() {
         return sslSocketFactory;
     }
   
