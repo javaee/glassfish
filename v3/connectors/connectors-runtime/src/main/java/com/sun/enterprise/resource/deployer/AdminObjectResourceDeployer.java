@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -134,7 +134,7 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
     public void undeployResource(Object resource, String applicationName, String moduleName) throws Exception{
         final AdminObjectResource aor = (AdminObjectResource) resource;
         ResourceInfo resourceInfo = new ResourceInfo(aor.getJndiName(), applicationName, moduleName);
-        deleteAdminObjectResource(resourceInfo);
+        deleteAdminObjectResource(aor, resourceInfo);
     }
     /**
      * {@inheritDoc}
@@ -143,24 +143,31 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
             throws Exception {
         final AdminObjectResource aor = (AdminObjectResource) resource;
         ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(aor);
-        deleteAdminObjectResource(resourceInfo);
+        deleteAdminObjectResource(aor, resourceInfo);
     }
 
-    private void deleteAdminObjectResource(ResourceInfo resourceInfo) throws ConnectorRuntimeException {
-        if(_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.FINE, "Calling backend to delete adminObject", resourceInfo);
-        }
-        runtime.deleteAdminObject(resourceInfo);
-        if(_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.FINE, "Deleted adminObject in backend", resourceInfo);
-        }
+    private void deleteAdminObjectResource(AdminObjectResource adminObject, ResourceInfo resourceInfo)
+            throws ConnectorRuntimeException {
 
-        //unregister the managed object
-    /* TODO Not needed any more ?
-        final ManagementObjectManager mgr =
-                getAppServerSwitchObject().getManagementObjectManager();
-        mgr.unregisterAdminObjectResource(aor.getJndiName(), aor.getResType());
-    */
+        if (ResourcesUtil.createInstance().isEnabled(adminObject, resourceInfo)) {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Calling backend to delete adminObject", resourceInfo);
+            }
+            runtime.deleteAdminObject(resourceInfo);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Deleted adminObject in backend", resourceInfo);
+            }
+
+            //unregister the managed object
+            /* TODO Not needed any more ?
+                final ManagementObjectManager mgr =
+                        getAppServerSwitchObject().getManagementObjectManager();
+                mgr.unregisterAdminObjectResource(aor.getJndiName(), aor.getResType());
+            */
+        } else {
+            _logger.log(Level.FINEST, "core.resource_disabled", new Object[]{adminObject.getJndiName(),
+                    ConnectorConstants.RES_TYPE_AOR});
+        }
     }
 
     /**

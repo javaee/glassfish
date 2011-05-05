@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -134,13 +134,20 @@ public class ConnectorResourceDeployer implements ResourceDeployer {
         deleteConnectorResource(domainResource, resourceInfo);
     }
 
-    private void deleteConnectorResource(ConnectorResource domainResource, ResourceInfo resourceInfo) throws Exception {
-        runtime.deleteConnectorResource(resourceInfo);
+    private void deleteConnectorResource(ConnectorResource connectorResource, ResourceInfo resourceInfo)
+            throws Exception {
 
-        //Since 8.1 PE/SE/EE - if no more resource-ref to the pool
-        //of this resource in this server instance, remove pool from connector
-        //runtime
-        checkAndDeletePool(domainResource);
+        if (ResourcesUtil.createInstance().isEnabled(connectorResource, resourceInfo)) {
+            runtime.deleteConnectorResource(resourceInfo);
+
+            //Since 8.1 PE/SE/EE - if no more resource-ref to the pool
+            //of this resource in this server instance, remove pool from connector
+            //runtime
+            checkAndDeletePool(connectorResource);
+        } else {
+            _logger.log(Level.FINEST, "core.resource_disabled", new Object[]{connectorResource.getJndiName(),
+                    ConnectorConstants.RES_TYPE_CR});
+        }
     }
 
     /**
