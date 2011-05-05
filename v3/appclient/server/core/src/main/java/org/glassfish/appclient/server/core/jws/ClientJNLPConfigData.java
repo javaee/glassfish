@@ -42,30 +42,16 @@ package org.glassfish.appclient.server.core.jws;
 
 import com.sun.logging.LogDomains;
 import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLConnection;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
-import org.glassfish.appclient.server.core.jws.servedcontent.Content;
-import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
-import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
-import org.glassfish.appclient.server.core.jws.servedcontent.SimpleDynamicContentImpl;
-import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 
 /**
  * Encapsulates the logic related to choosing which of the two possible
@@ -182,10 +168,10 @@ class ClientJNLPConfigData {
 
     private void processConfigFile(final File configFile) {
         final Properties p = new Properties();
+        InputStream is = null;
         try {
-            final InputStream is = new BufferedInputStream(new FileInputStream(configFile));
+            is = new BufferedInputStream(new FileInputStream(configFile));
             p.load(is);
-            is.close();
             final List<XPathToDeveloperProvidedContentRefs> newRefsToContent = prepareRefsToContent(p);
             final List<CombinedXPath> newCombinedXPaths = prepareCombinedXPaths(p);
             /*
@@ -201,6 +187,14 @@ class ClientJNLPConfigData {
             final String fmt = logger.getResourceBundle().getString("enterprise.deployment.appclient.jws.clientJNLPConfigProcError");
             final String msg = MessageFormat.format(fmt, configFile.getAbsolutePath());
             logger.log(Level.SEVERE, msg, e);
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
         }
     }
 

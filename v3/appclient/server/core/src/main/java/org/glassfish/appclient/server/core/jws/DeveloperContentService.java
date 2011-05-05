@@ -89,7 +89,7 @@ public class DeveloperContentService implements PostConstruct {
     private ServerEnvironment serverEnv;
 
     /** the always-current data reflecting what is in the on-disk file */
-    private ClientJNLPConfigData configData;
+    private ClientJNLPConfigData configData = null;
 
     public void postConstruct() {
         configData = new ClientJNLPConfigData(installConfigDir(), domainConfigDir());

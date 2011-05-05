@@ -147,10 +147,10 @@ public class JWSAdapterManager implements PostConstruct {
     private final ConcurrentHashMap<String,AppClientHTTPAdapter> httpAdapters = new
             ConcurrentHashMap<String, AppClientHTTPAdapter>();
 
-    private URI umbrellaRootURI;
-    private File umbrellaRoot;
-    private File systemLevelSignedJARsRoot;
-    private File domainLevelSignedJARsRoot;
+    private URI umbrellaRootURI = null;
+    private File umbrellaRoot = null;
+    private File systemLevelSignedJARsRoot = null;
+    private File domainLevelSignedJARsRoot = null;
 
     @Override
     public synchronized void postConstruct() {
@@ -167,7 +167,7 @@ public class JWSAdapterManager implements PostConstruct {
         return chooseAlias(dc);
     }
 
-    File rootForSignedFilesInDomain() {
+    synchronized File rootForSignedFilesInDomain() {
         return domainLevelSignedJARsRoot;
     }
     
@@ -190,7 +190,7 @@ public class JWSAdapterManager implements PostConstruct {
         return dc.getAppProps().getProperty(SIGNING_ALIAS_PROPERTY_NAME);
     }
 
-    private AppClientHTTPAdapter startSystemContentAdapter() {
+    private synchronized AppClientHTTPAdapter startSystemContentAdapter() {
 
 
         try {
@@ -298,11 +298,11 @@ public class JWSAdapterManager implements PostConstruct {
             "gf-client-module.jar");
     }
 
-    private File modulesDir() {
+    private synchronized File modulesDir() {
         return new File(new File(installRootURI), "modules");
     }
 
-    private File libDir() {
+    private synchronized File libDir() {
         return new File(new File(installRootURI), "lib");
     }
 
@@ -359,7 +359,7 @@ public class JWSAdapterManager implements PostConstruct {
                 signingAlias + "/" + relativeSystemPath(systemFileURI);
     }
     
-    private String relativeSystemPath(final URI systemFileURI) {
+    private synchronized String relativeSystemPath(final URI systemFileURI) {
         return umbrellaRootURI.relativize(systemFileURI).getPath();
     }
 
@@ -429,7 +429,7 @@ public class JWSAdapterManager implements PostConstruct {
         addContributorToAppLevelAdapter(appName, contributor);
     }
 
-    private AppClientHTTPAdapter createAndRegisterAdapter(
+    private synchronized AppClientHTTPAdapter createAndRegisterAdapter(
             final String contextRoot,
             final Map<String,StaticContent> staticContent,
             final Map<String,DynamicContent> dynamicContent,
@@ -556,7 +556,7 @@ public class JWSAdapterManager implements PostConstruct {
         return alias + "/" + relativePathToSystemJar;
     }
 
-    File signedSystemContentAliasDir(final String alias) {
+    synchronized File signedSystemContentAliasDir(final String alias) {
         return new File(systemLevelSignedJARsRoot, alias);
     }
 

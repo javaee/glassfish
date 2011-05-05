@@ -123,7 +123,6 @@ public class AutoSignedContent extends Content.Adapter implements StaticContent 
                         signedFile.getParentFile().getAbsolutePath()));
             }
         }
-        signedFile.getParentFile().mkdirs();
         jarSigner.signJar(unsignedFile, signedFile, userProvidedAlias);
     }
 

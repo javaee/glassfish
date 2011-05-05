@@ -161,7 +161,7 @@ public class ACCConfigContent {
 
         private String configFilePath = null;
         
-        private File securityConfigFile;
+        private File securityConfigFile = null;
 
         private String securityConfigContent = null;
 
