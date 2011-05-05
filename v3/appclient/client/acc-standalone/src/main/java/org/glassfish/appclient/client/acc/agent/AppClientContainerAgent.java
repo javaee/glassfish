@@ -46,6 +46,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.lang.instrument.Instrumentation;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.appclient.client.AppClientFacade;
 import org.glassfish.appclient.client.CLIBootstrap;
@@ -101,12 +102,18 @@ public class AppClientContainerAgent {
         }
         final File argsFile = new File(agentArgsText.substring(CLIBootstrap.FILE_OPTIONS_INTRODUCER.length()));
         final LineNumberReader reader = new LineNumberReader(new FileReader(argsFile));
-        final String result = reader.readLine();
-        reader.close();
+        final String result;
+        try {
+            result = reader.readLine();
+        } finally {
+            reader.close();
+        }
         if (Boolean.getBoolean("keep.argsfile")) {
             System.err.println("Agent arguments file retained: " + argsFile.getAbsolutePath());
         } else {
-            argsFile.delete();
+            if ( ! argsFile.delete()) {
+                logger.log(Level.FINE, "Unable to delete temporary args file {0}; continuing", argsFile.getAbsolutePath());
+            }
         }
         return result;
     }
