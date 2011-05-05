@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -191,8 +191,6 @@ public abstract class SecureAdminBootstrapHelper {
         private final String remoteNodeDir;
         private final String remoteInstanceDir;
 
-        private final long domainXMLTimestamp;
-
         private final SFTPClient ftpClient;
 
         private RemoteHelper(
@@ -208,7 +206,6 @@ public abstract class SecureAdminBootstrapHelper {
 
             this.remoteNodeDir = remoteNodeDirUnixStyle(node, remoteNodeDir);
             remoteInstanceDir = remoteInstanceDir(this.remoteNodeDir);
-            domainXMLTimestamp = dasDomainXMLTimestamp(dasInstanceDir);
             launcher = habitat.getComponent(SSHLauncher.class);
             launcher.init(node, logger);
             try {
@@ -218,9 +215,9 @@ public abstract class SecureAdminBootstrapHelper {
             }
         }
 
-        private long dasDomainXMLTimestamp(final File dasInstanceDir) {
-            return new File(dasInstanceDir.toURI().resolve(DOMAIN_XML_PATH)).lastModified();
-        }
+//        private long dasDomainXMLTimestamp(final File dasInstanceDir) {
+//            return new File(dasInstanceDir.toURI().resolve(DOMAIN_XML_PATH)).lastModified();
+//        }
 
         private String ensureTrailingSlash(final String path) {
             if ( ! path.endsWith("/")) {
@@ -318,10 +315,13 @@ public abstract class SecureAdminBootstrapHelper {
             final OutputStream os = new BufferedOutputStream(ftpClient.writeToFile(path));
             int bytesRead;
             final byte[] buffer = new byte[1024];
-            while ((bytesRead = content.read(buffer)) != -1) {
-                os.write(buffer, 0, bytesRead);
+            try {
+                while ((bytesRead = content.read(buffer)) != -1) {
+                    os.write(buffer, 0, bytesRead);
+                }
+            } finally {
+                os.close();
             }
-            os.close();
         }
 
         private void setLastModified(final String path, final long when) throws IOException {
@@ -340,7 +340,7 @@ public abstract class SecureAdminBootstrapHelper {
          * @return
          */
         private Integer secondsSince_01_Jan_1970(final long milliseconds) {
-            return new Integer((int)(milliseconds) / 1000);
+            return Integer.valueOf((int)(milliseconds) / 1000);
         }
     }
 
@@ -359,7 +359,10 @@ public abstract class SecureAdminBootstrapHelper {
 
         @Override
         protected void mkdirs(String dir) {
-            new File(newInstanceDirURI.resolve(dir)).mkdirs();
+            final File newDir = new File(newInstanceDirURI.resolve(dir));
+            if ( ! newDir.mkdirs()) {
+                throw new RuntimeException(Strings.get("secure.admin.boot.errCreDir", newDir.getAbsolutePath()));
+            }
         }
 
 
@@ -375,12 +378,14 @@ public abstract class SecureAdminBootstrapHelper {
         @Override
         protected void backdateInstanceDomainXML() throws BootstrapException {
             final File newDomainXMLFile = new File(newInstanceDirURI.resolve(DOMAIN_XML_PATH));
-            newDomainXMLFile.setLastModified(0);
+            if ( ! newDomainXMLFile.setLastModified(0)) {
+                throw new RuntimeException(Strings.get("secure.admin.boot.errSetLastMod", newDomainXMLFile.getAbsolutePath()));
+            }
         }
     }
 
     public static class BootstrapException extends Exception {
-        private final SSHLauncher launcher;
+        private transient final SSHLauncher launcher;
 
         public BootstrapException(final SSHLauncher launcher, final Exception ex) {
             super(ex);
