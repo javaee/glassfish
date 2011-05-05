@@ -138,7 +138,8 @@ public class TextClassWriter implements ClassWriter {
 
 
     @Override
-    public void createCommandResourceConstructor(String commandResourceClassName, String commandName, String httpMethod, boolean linkedToParent, CommandResourceMetaData.ParameterMetaData[] commandParams, String commandDisplayName, String commandAction) {
+    public void createCommandResourceConstructor(String commandResourceClassName, String commandName, String httpMethod, boolean linkedToParent, 
+        CommandResourceMetaData.ParameterMetaData[] commandParams, String commandDisplayName, String commandAction) {
         try {
             writer.write("   public " + commandResourceClassName + "() {\n");
             writer.write("       super(\n");
