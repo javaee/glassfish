@@ -57,11 +57,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: Sep 14, 2010
- * Time: 2:18:35 PM
- * To change this template use File | Settings | File Templates.
+ * Abstraction to external command execution
+ * @author Jerome Dochez
  */
 @Service
 public class ShellExecutor {
@@ -71,8 +68,8 @@ public class ShellExecutor {
     @Inject
     CommandRunner commandRunner;
 
-    @Inject
-    Virtualizations virtualizations;
+    @Inject(optional=true)
+    Virtualizations virtualizations=null;
 
     @Inject
     ServerEnvironment env;
@@ -122,6 +119,7 @@ public class ShellExecutor {
 
     public void executionActions(ActionReport report, String provider, Action.Timing timing, ParameterResolver resolver) {
 
+        if (virtualizations==null) return;
         // now we configure it with all cluster creation commands
         // cluster is now created, let's run the cluster creation related actions...
         for (Virtualization virtualization : virtualizations.getVirtualizations()) {
