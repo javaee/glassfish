@@ -40,24 +40,27 @@
 
 package com.sun.grizzly.samples.websockets;
 
-import com.sun.grizzly.tcp.Request;
-import com.sun.grizzly.websockets.DataFrame;
-import com.sun.grizzly.websockets.NetworkHandler;
-import com.sun.grizzly.websockets.WebSocket;
-import com.sun.grizzly.websockets.WebSocketApplication;
-import com.sun.grizzly.websockets.WebSocketListener;
+import java.util.logging.Level;
+
+import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.http.HttpRequestPacket;;
+import org.glassfish.grizzly.websockets.DataFrame;
+import org.glassfish.grizzly.websockets.NetworkHandler;
+import org.glassfish.grizzly.websockets.WebSocket;
+import org.glassfish.grizzly.websockets.WebSocketApplication;
+import org.glassfish.grizzly.websockets.WebSocketListener;
 
 import java.io.IOException;
 
 public class ChatApplication extends WebSocketApplication {
     @Override
-    public boolean isApplicationRequest(Request request) {
-        return request.requestURI().equals("/chat");
+    public boolean isApplicationRequest(HttpRequestPacket request) {
+        return "/chat".equals(request.getRequestURI());
     }
 
     @Override
-    public WebSocket createSocket(WebSocketListener... listeners) throws IOException {
-        return new ChatWebSocket();
+    public WebSocket createSocket(final Connection connection, WebSocketListener... listeners) {
+        return new ChatWebSocket(listeners);
     }
 
     public void onMessage(WebSocket socket, DataFrame frame) throws IOException {
@@ -65,19 +68,27 @@ public class ChatApplication extends WebSocketApplication {
         if (data.startsWith("login:")) {
             login((ChatWebSocket) socket, frame);
         } else {
-            broadcast(((ChatWebSocket) socket).getUser() + " : " + data);
+            broadcast(((ChatWebSocket) socket).getUser(), data);
         }
     }
 
-    private void broadcast(String text) throws IOException {
-        WebSocketsServlet.logger.info("Broadcasting : " + text);
-        for (WebSocket webSocket : getWebSockets()) {
-            try {
-                webSocket.send(text);
-            } catch (IOException e) {
-                e.printStackTrace();
-                WebSocketsServlet.logger.info("Removing chat client: " + e.getMessage());
-                webSocket.close();
+    @Override
+    public void onClose(WebSocket websocket) {
+        broadcast("system", ((ChatWebSocket)websocket).getUser() + " left the chat");
+    }
+
+    /**
+     * Broadcasts the text message from the user.
+     *
+     * @param user the user name
+     * @param text the text message
+     */
+    private void broadcast(String user, String text) {
+        WebSocketsServlet.logger.log(Level.INFO, "Broadcasting: {0} from: {1}", new Object[]{text, user});
+        for (WebSocket websocket : getWebSockets()) {
+            final ChatWebSocket chat = (ChatWebSocket) websocket;
+            if (chat.getUser() != null) {  // it may happen some websocket is on the list, but not logged in to the chat
+                chat.sendJson(user, text);
             }
         }
 
@@ -87,7 +98,7 @@ public class ChatApplication extends WebSocketApplication {
         if (socket.getUser() == null) {
             WebSocketsServlet.logger.info("ChatApplication.login");
             socket.setUser(frame.getTextPayload().split(":")[1].trim());
-            broadcast(socket.getUser() + " has joined the chat.");
+            broadcast(socket.getUser(), " has joined the chat.");
         }
     }
 }

@@ -40,7 +40,7 @@
 
 package com.sun.grizzly.samples.websockets;
 
-import com.sun.grizzly.websockets.WebSocketEngine;
+import org.glassfish.grizzly.websockets.WebSocketEngine;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

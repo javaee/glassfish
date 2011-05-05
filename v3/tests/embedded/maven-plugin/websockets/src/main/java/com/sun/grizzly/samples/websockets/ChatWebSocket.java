@@ -40,14 +40,16 @@
 
 package com.sun.grizzly.samples.websockets;
 
-import com.sun.grizzly.websockets.BaseServerWebSocket;
-import com.sun.grizzly.websockets.NetworkHandler;
-import com.sun.grizzly.websockets.WebSocketListener;
+import org.glassfish.grizzly.websockets.BaseWebSocket;
+import org.glassfish.grizzly.websockets.NetworkHandler;
+import org.glassfish.grizzly.websockets.WebSocketListener;
+import org.glassfish.grizzly.websockets.WebSocketException;
 
+import java.util.logging.Level;
 import java.io.IOException;
 
-public class ChatWebSocket extends BaseServerWebSocket {
-    private String user;
+public class ChatWebSocket extends BaseWebSocket {
+    private volatile String user;
 
     public ChatWebSocket(WebSocketListener... listeners) {
         super(listeners);
@@ -61,13 +63,25 @@ public class ChatWebSocket extends BaseServerWebSocket {
         this.user = user;
     }
 
-    @Override
-    public void send(String data) throws IOException {
-        super.send( toJsonp(getUser(), data) );
+    /**
+     * Send the message in JSON encoding acceptable by browser's javascript.
+     *
+     * @param user the user name
+     * @param text the text message
+     */
+    public void sendJson(String user, String text) {
+        try {
+            final String msg = toJsonp(user, text);
+            send(msg);
+        } catch (WebSocketException e) {
+            WebSocketsServlet.logger.log(Level.SEVERE, "Removing chat client: " + e.getMessage(), e);
+            close(PROTOCOL_ERROR, e.getMessage());
+        }
     }
 
     private String toJsonp(String name, String message) {
-        return "window.parent.app.update({ name: \"" + escape(name) + "\", message: \"" + escape(message) + "\" });\n";
+        return "window.parent.app.update({ name: \"" + escape(name) +
+                "\", message: \"" + escape(message) + "\" });\n";
     }
 
     private String escape(String orig) {
