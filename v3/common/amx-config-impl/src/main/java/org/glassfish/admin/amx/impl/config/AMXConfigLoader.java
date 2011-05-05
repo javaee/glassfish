@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,16 +39,27 @@
  */
 package org.glassfish.admin.amx.impl.config;
 
+import com.sun.logging.LogDomains;
+import org.glassfish.admin.amx.base.DomainRoot;
+import org.glassfish.admin.amx.config.AMXConfigConstants;
+import org.glassfish.admin.amx.core.Util;
+import org.glassfish.admin.amx.core.proxy.ProxyFactory;
+import org.glassfish.admin.amx.impl.mbean.MBeanImplBase;
+import org.glassfish.admin.amx.impl.util.ImplUtil;
+import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
+import org.glassfish.admin.amx.impl.util.SingletonEnforcer;
+import org.glassfish.admin.amx.intf.config.ConfigTools;
+import org.glassfish.admin.amx.util.ExceptionUtil;
+import org.glassfish.admin.amx.util.FeatureAvailability;
+import org.glassfish.admin.amx.util.MapUtil;
+import org.glassfish.admin.amx.util.TypeCast;
+import org.glassfish.admin.amx.util.jmx.JMXUtil;
+import org.glassfish.admin.mbeanserver.PendingConfigBeanJob;
+import org.glassfish.admin.mbeanserver.PendingConfigBeans;
 import org.glassfish.external.amx.AMX;
 import org.glassfish.external.amx.AMXGlassfish;
-
-import org.glassfish.admin.amx.util.jmx.JMXUtil;
-import org.glassfish.admin.amx.util.ExceptionUtil;
-
-import org.glassfish.admin.amx.impl.mbean.MBeanImplBase;
-import org.glassfish.admin.amx.util.FeatureAvailability;
-import org.glassfish.admin.amx.util.TypeCast;
-import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 import org.jvnet.hk2.config.*;
 
 import javax.management.*;
@@ -58,22 +69,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Logger;
 import java.util.logging.Level;
-
-import org.glassfish.external.arc.Stability;
-import org.glassfish.external.arc.Taxonomy;
-import org.glassfish.admin.amx.base.DomainRoot;
-import org.glassfish.admin.amx.config.AMXConfigConstants;
-import org.glassfish.admin.amx.core.Util;
-import org.glassfish.admin.amx.core.proxy.ProxyFactory;
-import org.glassfish.admin.amx.impl.util.ImplUtil;
-import org.glassfish.admin.amx.impl.util.SingletonEnforcer;
-import org.glassfish.admin.amx.intf.config.ConfigTools;
-import org.glassfish.admin.amx.util.MapUtil;
-import org.glassfish.admin.mbeanserver.PendingConfigBeans;
-import org.glassfish.admin.mbeanserver.PendingConfigBeanJob;
-import org.glassfish.api.amx.AMXLoader;
+import java.util.logging.Logger;
 
 /**
 Responsible for loading AMXConfigProxy MBeans
@@ -88,7 +85,7 @@ public final class AMXConfigLoader extends MBeanImplBase
     }
     private volatile AMXConfigLoaderThread mLoaderThread;
     private final Transactions mTransactions;
-    private final Logger mLogger = ImplUtil.getLogger();
+    private final Logger mLogger = LogDomains.getLogger(AMXConfigLoader.class, LogDomains.AMX_LOGGER);
     private final PendingConfigBeans mPendingConfigBeans;
     private final ConfigBeanRegistry mRegistry = ConfigBeanRegistry.getInstance();
 
@@ -309,7 +306,7 @@ public final class AMXConfigLoader extends MBeanImplBase
 
             // a job could come back null for a bogus ConfigBean
             if (job == null) {
-                mLogger.log(Level.INFO, "ConfigBean not processed, something wrong with it: " + cb.getProxyType().getName());
+                mLogger.log(Level.INFO, "amx.ConfigBean.not.processed",cb.getProxyType().getName());
                 processed = false;
             } else if (waitDone) {
                 try {
@@ -372,7 +369,7 @@ public final class AMXConfigLoader extends MBeanImplBase
     Enable registration of MBeans, queued until now.
      */
     public synchronized ObjectName start() {
-        ImplUtil.getLogger().info( "In AMXConfigLoader : loader == " +mLoaderThread );
+        mLogger.log(Level.INFO,"amx.In.AMXConfigLoader",mLoaderThread );
         if (mLoaderThread == null) {
             FeatureAvailability.getInstance().waitForFeature(FeatureAvailability.AMX_CORE_READY_FEATURE, "AMXConfigLoader.start");
 
@@ -407,7 +404,7 @@ public final class AMXConfigLoader extends MBeanImplBase
             // Now the Config subsystem is ready: after the first queue of ConfigBeans are registered as MBeans
             // and after the above MBeans are registered.
             final ObjectName domainConfig = getDomainRootProxy().getDomain().objectName();
-            mLogger.info("AMX config read, domain config registered as " + domainConfig);
+            mLogger.log(Level.INFO,"amx.domain.config.registered",domainConfig);
             FeatureAvailability.getInstance().registerFeature(AMXConfigConstants.AMX_CONFIG_READY_FEATURE, domainConfig);
         }
         return null;
@@ -636,7 +633,7 @@ public final class AMXConfigLoader extends MBeanImplBase
         final ConfigBeanJMXSupport spt = ConfigBeanJMXSupportRegistry.getInstance(cb);
         if ((!spt.isSingleton()) && (name == null || name.length() == 0)) {
             name = "MISSING_NAME-" + sCounter.getAndIncrement();
-            ImplUtil.getLogger().log(Level.WARNING, "Non-singleton ConfigBean " + cb.getProxyType().getName() + " has empty key value (name), supplying " + name);
+            mLogger.log(Level.WARNING, "amx.nonsingleton.configbean",new Object[] {cb.getProxyType().getName() ,name});
         }
 
         //debug( "Type/name for " + cb.getProxyType().getName() + " = " + type + " = " + name );

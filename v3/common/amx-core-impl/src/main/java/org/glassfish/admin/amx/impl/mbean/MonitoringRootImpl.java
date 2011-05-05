@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,22 +39,20 @@
  */
 package org.glassfish.admin.amx.impl.mbean;
 
-import java.util.Map;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import org.glassfish.external.amx.AMXGlassfish;
+import com.sun.logging.LogDomains;
 import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.monitoring.MonitoringRoot;
 import org.glassfish.admin.amx.monitoring.ServerMon;
-import org.glassfish.admin.amx.core.Util;
-import org.glassfish.api.admin.ServerEnvironment;
-import com.sun.enterprise.config.serverbeans.Server;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Habitat;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MonitoringRootImpl extends AMXImplBase // implements MonitoringRoot
 {
+    private final Logger mLogger = LogDomains.getLogger(MonitoringRootImpl.class, LogDomains.AMX_LOGGER);
+
     public MonitoringRootImpl(final ObjectName parent) {
         super(parent, MonitoringRoot.class);
     }
@@ -69,7 +67,7 @@ public class MonitoringRootImpl extends AMXImplBase // implements MonitoringRoot
 
         ObjectName childObjectName = null;
         Object mbean = null;
-        System.out.println(" In the registerChildren of MonitoringRootImpl instance Name = " + System.getProperty("com.sun.aas.instanceName"));
+        mLogger.log(Level.INFO,"amx.registerChild",System.getProperty("com.sun.aas.instanceName"));
         // when clustering comes along, some other party will need to register MBeans
         // for each non-DAS instance
         // childObjectName = objectNames.buildChildObjectName(ServerMon.class, AMXGlassfish.DEFAULT.dasName());

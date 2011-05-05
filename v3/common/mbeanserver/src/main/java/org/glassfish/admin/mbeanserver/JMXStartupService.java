@@ -43,6 +43,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
+
+import com.sun.logging.LogDomains;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.management.MBeanServer;
@@ -103,6 +105,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
     volatile static Habitat habitat;
     private volatile BootAMX mBootAMX;
     private volatile JMXConnectorsStarterThread mConnectorsStarterThread;
+    private final Logger mLogger = LogDomains.getLogger(JMXStartupService.class, LogDomains.JMX_LOGGER);
 
     public JMXStartupService() {
         mMBeanServer = ManagementFactory.getPlatformMBeanServer();
@@ -138,7 +141,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
     }
 
     private synchronized void shutdown() {
-        Util.getLogger().fine("JMXStartupService: shutting down AMX and JMX");
+        mLogger.fine("JMXStartupService: shutting down AMX and JMX");
 
         if(mBootAMX != null) mBootAMX.shutdown();
         mBootAMX = null;
@@ -147,7 +150,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
         mConnectorsStarterThread = null;
 
         // we can't block here waiting, we have to assume that the rest of the AMX modules do the right thing
-        Util.getLogger().log(java.util.logging.Level.INFO, "JMXStartupService and JMXConnectors have been shut down.");
+        mLogger.log(java.util.logging.Level.INFO, "jmx.startupService.shutdown");
     }
 
     private static final class BootAMXThread extends Thread {
@@ -174,6 +177,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
         private final boolean mNeedBootListeners;
         ConnectorStarter starter;
         ObjectName connObjectName;
+        private final Logger mLogger = LogDomains.getLogger(JMXConnectorsStarterThread.class, LogDomains.JMX_LOGGER);
 
         public JMXConnectorsStarterThread(
                 final MBeanServer mbs,
@@ -196,15 +200,15 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
                     connObjectName = null;
                 }
             } catch (MBeanRegistrationException ex) {
-                Util.getLogger().log(Level.SEVERE, null, ex);
+                mLogger.log(Level.SEVERE, "jmx.MBeanRegistrationException", ex);
             } catch (InstanceNotFoundException ex) {
-                Util.getLogger().log(Level.SEVERE, null, ex);
+                mLogger.log(Level.SEVERE, "jmx.InstanceNotFoundException", ex);
             } 
             for (final JMXConnectorServer connector : mConnectorServers) {
                 try {
                     final JMXServiceURL address = connector.getAddress();
                     connector.stop();
-                    Util.getLogger().info("JMXStartupService: Stopped JMXConnectorServer: " + address);
+                    mLogger.log(Level.INFO,"jmx.startupService.stopped.jmxconnector",address);
                 } catch (final Exception e) {
                     e.printStackTrace();
                 }
@@ -225,7 +229,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
 
         private JMXConnectorServer startConnector(final JmxConnector connConfig)
                 throws IOException {
-            Util.getLogger().fine("Starting JMXConnector: " + toString(connConfig));
+            mLogger.fine("Starting JMXConnector: " + toString(connConfig));
 
             final String protocol = connConfig.getProtocol();
             final String address = connConfig.getAddress();
@@ -251,7 +255,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
             }
 
             final JMXServiceURL url = server.getAddress();
-            Util.getLogger().info("JMXStartupService: Started JMXConnector, JMXService URL = " + url);
+            mLogger.log(Level.INFO,"jmx.startedservice",url);
 
             try {
                 connObjectName = new ObjectName(JMX_CONNECTOR_SERVER_PREFIX + ",protocol=" + protocol + ",name=" + connConfig.getName());
@@ -275,7 +279,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
         public void run() {
             for (final JmxConnector c : mConfiguredConnectors) {
                 if (!Boolean.parseBoolean(c.getEnabled())) {
-                    Util.getLogger().info("JMXStartupService: JMXConnector " + c.getName() + " is disabled, skipping.");
+                    mLogger.log(Level.INFO,"jmx.startedservice.disabled",c.getName());
                     continue;
                 }
 
@@ -283,7 +287,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
                     final JMXConnectorServer server = startConnector(c);
                     mConnectorServers.add(server);
                 } catch (final Throwable t) {
-                    Util.getLogger().warning("Cannot start JMX connector: " + toString(c) + ": " + t);
+                    mLogger.log(Level.WARNING,"jmx.cannotstart.jmxconnector", new Object[] {toString(c),t});
                     t.printStackTrace();
                 }
             }

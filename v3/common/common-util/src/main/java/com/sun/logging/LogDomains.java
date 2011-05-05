@@ -263,7 +263,12 @@ public class LogDomains {
     /**
      * AMX Logger
      */
-    public static final String AMX_LOGGER = DOMAIN_ROOT + "enterprise.system.AMX";
+    public static final String AMX_LOGGER = DOMAIN_ROOT + "enterprise.system.amx";
+
+    /**
+     * JMX Logger
+     */
+    public static final String JMX_LOGGER = DOMAIN_ROOT + "enterprise.system.jmx";
 
     /**
      * core/kernel Logger

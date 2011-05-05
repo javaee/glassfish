@@ -40,70 +40,34 @@
 
 package org.glassfish.admin.amx.impl.config;
 
-import java.beans.PropertyChangeEvent;
-import java.lang.reflect.Proxy;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Collection;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.AbstractQueue;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.Collections;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.atomic.AtomicLong;
-
-import javax.management.*;
-
-import org.glassfish.external.arc.Stability;
-import org.glassfish.external.arc.Taxonomy;
-import static org.glassfish.external.amx.AMX.*;
-import org.glassfish.admin.amx.core.AMXProxy;
-import static org.glassfish.admin.amx.config.AMXConfigConstants.*;
-
-import org.glassfish.admin.amx.impl.util.ImplUtil;
-import java.util.logging.Level;
-
-import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
-import org.glassfish.admin.amx.impl.util.Issues;
-import org.glassfish.admin.amx.impl.util.MBeanInfoSupport;
-import org.glassfish.admin.amx.impl.util.SingletonEnforcer;
-import org.glassfish.admin.amx.impl.util.UnregistrationListener;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.config.AttributeResolver;
+import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Util;
-import org.glassfish.admin.amx.util.CollectionUtil;
-import org.glassfish.admin.amx.util.ExceptionUtil;
-import org.glassfish.admin.amx.util.ListUtil;
-import org.glassfish.admin.amx.util.MapUtil;
-import org.glassfish.admin.amx.util.StringUtil;
-import org.glassfish.admin.amx.util.TypeCast;
+import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
+import org.glassfish.admin.amx.impl.util.*;
+import org.glassfish.admin.amx.util.*;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
+import org.jvnet.hk2.config.*;
 
-import static org.glassfish.admin.amx.intf.config.AnonymousElementList.*;
-
-
-import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.ConfigModel;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.ConfigCode;
+import javax.management.Attribute;
+import javax.management.*;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Level;
 
-
-import org.jvnet.hk2.config.Dom;
-import org.jvnet.hk2.config.RetryableException;
-import org.jvnet.hk2.config.Transaction;
-import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.config.TransactionListener;
-import org.jvnet.hk2.config.Transactions;
-import org.jvnet.hk2.config.UnprocessedChangeEvents;
-import org.jvnet.hk2.config.WriteableView;
+import static org.glassfish.admin.amx.config.AMXConfigConstants.*;
+import static org.glassfish.admin.amx.intf.config.AnonymousElementList.*;
+import static org.glassfish.external.amx.AMX.*;
 
 /**
 Base class from which all AMX Config MBeans should derive (but not "must").
@@ -579,13 +543,21 @@ public class AMXConfigImpl extends AMXImplBase
         final Map<String,Object> attrs )
     {
         final List<CreateParams> children = ListUtil.newList();
-        for( final String type : childrenMaps.keySet() )
-        {
-            for( final Map<String,Object> m : childrenMaps.get(type) )
-            {
-                children.add( new CreateParams(type, m) );
+
+        for(Map.Entry<String,Map<String,Object>[]> entry : childrenMaps.entrySet()) {
+            for(final Map<String,Object> m : entry.getValue()) {
+                children.add( new CreateParams(entry.getKey(),m) );
             }
         }
+
+        /* Find bug error
+             for( final String type : childrenMaps.keySet() )
+             {
+                for( final Map<String,Object> m : childrenMaps.get(type) )
+                {
+                    children.add( new CreateParams(type, m) );
+                }
+             } */
         
         return createChildren( children, attrs);
     }
@@ -699,7 +671,7 @@ public class AMXConfigImpl extends AMXImplBase
     public static String convertAttributeName(final String s )
     {
         // do not alter any name that is already all lower-case or that contains a "-" */
-        if ( s.equals( s.toLowerCase() ) || s.indexOf("-") >= 0 )
+        if ( s.equals( s.toLowerCase(Locale.getDefault()) ) || s.indexOf("-") >= 0 )
         {
             return(s);
         }
@@ -1036,13 +1008,10 @@ public class AMXConfigImpl extends AMXImplBase
             String[] types)
             throws MBeanException, ReflectionException, NoSuchMethodException, AttributeNotFoundException
     {
-        final int numArgs = args == null ? 0 : args.length;
-
         Object result = null;
         debugMethod(operationName, args);
 
         ConfigBeanJMXSupport.DuckTypedInfo duckTypedInfo = null;
-        final ConfigBeanJMXSupport spt = getConfigBeanJMXSupport();
         if ((duckTypedInfo = getConfigBeanJMXSupport().findDuckTyped(operationName, types)) != null)
         {
             result = invokeDuckMethod(duckTypedInfo, args);
@@ -1185,7 +1154,7 @@ public class AMXConfigImpl extends AMXImplBase
                     }
                 }
             }
-            else if (attrInfo.getType() == String[].class.getName())
+            else if (attrInfo.getType().equals(String[].class.getName()))
             {
                 //final String elementClass = (String)d.getFieldValue( DESC_ELEMENT_CLASS );
 
@@ -1251,26 +1220,6 @@ public class AMXConfigImpl extends AMXImplBase
         }
 
     };
-
-    /**
-    Make a Map keyed by the property name of the PropertyChangeEvent, verifying that each
-    name is non-null.
-     */
-    private Map<String, PropertyChangeEvent> makePropertyChangeEventMap(final List<PropertyChangeEvent> changeEvents)
-    {
-        final Map<String, PropertyChangeEvent> m = new HashMap<String, PropertyChangeEvent>();
-
-        for (final PropertyChangeEvent changeEvent : changeEvents)
-        {
-            if (changeEvent.getPropertyName() == null)
-            {
-                throw new IllegalArgumentException("PropertyChangeEvent property names must be specified");
-            }
-
-            m.put(changeEvent.getPropertyName(), changeEvent);
-        }
-        return m;
-    }
 
     private void joinTransaction(final Transaction t, final WriteableView writeable)
             throws TransactionFailure

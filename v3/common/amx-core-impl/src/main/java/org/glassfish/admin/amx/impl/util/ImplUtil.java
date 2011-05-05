@@ -55,7 +55,7 @@ public final class ImplUtil {
     }
 
     public static Logger getLogger() {
-        return LogDomains.getLogger(ImplUtil.class, LogDomains.ADMIN_LOGGER);
+        return LogDomains.getLogger(ImplUtil.class, LogDomains.AMX_LOGGER);
     }
 
     /**
