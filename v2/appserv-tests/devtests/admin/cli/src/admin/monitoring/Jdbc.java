@@ -125,7 +125,7 @@ public class Jdbc extends MonTest {
                 "jdbc-check-getm-numconncreated-count");
         report(checkForString(
                 asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.numconnfree-current"),
-                "server.resources.jdbc-onlygetconnectionservlet-pool.numconnfree-current = 5"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.numconnfree-current = 6"),
                 "jdbc-check-getm-numconnfree-count");
         report(checkForString(
                 asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.numconnacquired-count"),
