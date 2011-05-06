@@ -192,33 +192,23 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                 addWebContainerIfRequested(properties, glassFishProperties);
 
                 runtime = GlassFishRuntime.bootstrap(bootstrapProperties);
+                GlassFish server = runtime.newGlassFish(glassFishProperties);
                 if (l != null && !l.reuse_instance_location) {
-                    GlassFish temp_server = null;
-                    try {
-                        temp_server = runtime.newGlassFish(glassFishProperties);
-                        temp_server.start();
+                    // XXX Start the server to get the services
+                    server.start();
+                    EmbeddedSecurity es = server.getService(EmbeddedSecurity.class);
+                    Habitat habitat = server.getService(Habitat.class);
 
-                        Habitat habitat = temp_server.getService(Habitat.class);
-                        // If we are running from an existing install, copy over security files to the temp instance
-                        EmbeddedSecurity es = temp_server.getService(EmbeddedSecurity.class);
-                        if (es != null) {
-                           es.copyConfigFiles(habitat, l.instance_root, l.domain_file);
-                        }
-                   } finally {
-                        if (temp_server != null) {
-                            try {
-                                Thread.sleep(1000);
-                                temp_server.stop();
-                                temp_server.dispose();
-                             } catch (Exception e0) {
-                                 _logger.log(Level.SEVERE, e0.getMessage(), e0);
-                             }
-                        }
+                    // XXX Wait a little before stopping to avoid a deadlock
+                    Thread.sleep(1000);
+                    server.stop();
+
+                    // If we are running from an existing install, copy over security files to the temp instance
+                    if (es != null) {
+                        es.copyConfigFiles(habitat, l.instance_root, l.domain_file);
                     }
                 }
 
-
-                GlassFish server = runtime.newGlassFish(glassFishProperties);
                 // server is started in EJBContainerImpl constructor
                 container = new EJBContainerImpl(server);
 
