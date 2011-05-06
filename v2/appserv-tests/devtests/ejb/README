@@ -39,8 +39,14 @@ cat `which ant` :
 ( <total> is equal to the TOTAL value in the result_count.sh file.  We keep this total count up to date based on the total number of test framework PASS assertions in the set of tests run by the ant all target )
 
   
+5. To start the server and Derby database, and to cleanup resultset, do 
 
+   % ant setup
 
+6. To stop the server and Derby database, and to report the result, do 
 
+   % ant unsetup
+
+Note: partial result will show <total>-<tests-executed> as a DID NOT RUN number
 
 

@@ -17,6 +17,12 @@
 
     <target name="all">
 
+	<antcall target="setup"/>
+	<antcall target="test"/>
+	<antcall target="unsetup"/>
+    </target>
+
+    <target name="setup">
 
 	<antcall target="start-database"/>
 
@@ -30,6 +36,9 @@
         </delete>
         <record name="ejb.output" action="start" />
 
+    </target>
+
+    <target name="test">
 
         <ant dir="stubs" target="all"/>
         <ant dir="txprop" target="all"/>
@@ -51,6 +60,9 @@
         <ant dir="util" target="all"/>
 -->
 
+    </target>
+
+    <target name="unsetup">
         <echo message="Stopping app server instance"/>
         <ant target="stopDomain"/>
 
