@@ -78,20 +78,29 @@ public class SupplementalStopInstance implements AdminCommand {
                 context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);
                 return;
         }
-        String groupName = instanceName.substring(0, instanceName.indexOf("_"));
-        String vmName = instanceName.substring(instanceName.lastIndexOf("_")+1, instanceName.length()-"Instance".length());
+        // to do, encode better the instance name.
+        if (instanceName.endsWith("Instance")) {
+            try {
+                String groupName = instanceName.substring(0, instanceName.indexOf("_"));
+                String vmName = instanceName.substring(instanceName.lastIndexOf("_")+1, instanceName.length()-"Instance".length());
 
-        Group group = groups.byName(groupName);
-        try {
-            VirtualMachine vm = group.vmByName(vmName);
-            VirtualMachineInfo vmInfo = vm.getInfo();
-            if (Machine.State.SUSPENDED.equals(vmInfo.getState())) {
+                Group group = groups.byName(groupName);
+                try {
+                    VirtualMachine vm = group.vmByName(vmName);
+                    VirtualMachineInfo vmInfo = vm.getInfo();
+                    if (Machine.State.SUSPENDED.equals(vmInfo.getState())) {
+                        context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);
+                        return;
+                    }
+                    vm.stop();
+                } catch (VirtException e) {
+                    RuntimeContext.logger.warning(e.getMessage());
+                }
+            } catch(StringIndexOutOfBoundsException e) {
+                // not on of our instances
                 context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);
                 return;
             }
-            vm.stop();
-        } catch (VirtException e) {
-            RuntimeContext.logger.warning(e.getMessage());
         }
     }
 }
