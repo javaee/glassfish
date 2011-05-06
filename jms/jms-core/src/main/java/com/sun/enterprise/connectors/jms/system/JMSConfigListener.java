@@ -107,7 +107,12 @@ public class JMSConfigListener implements ConfigListener{
             Object oldValue = event.getOldValue();
             Object newValue = event.getNewValue();
 
-         if(event.getSource().toString().indexOf("config.serverbeans.JmsHost") != -1)   {
+	   if(event.getSource().toString().indexOf("config.serverbeans.JmsService") != -1)   {
+             UnprocessedChangeEvent uchangeEvent = new UnprocessedChangeEvent(event, "restart required");
+             unprocessedEvents.add(uchangeEvent);
+         }
+
+          else if(event.getSource().toString().indexOf("config.serverbeans.JmsHost") != -1)   {
              UnprocessedChangeEvent uchangeEvent = new UnprocessedChangeEvent(event, "restart required");
              unprocessedEvents.add(uchangeEvent);
          }
