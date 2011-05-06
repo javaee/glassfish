@@ -580,6 +580,11 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                         thisInstance.flush();
                         thisInstance.close();
                         try {
+                            if(!absoluteFile.exists()) {
+                                File creatingDeletedLogFile = new File(absoluteFile.getAbsolutePath());
+                                creatingDeletedLogFile.createNewFile();
+                                absoluteFile = creatingDeletedLogFile;
+                            }
                             File oldFile = absoluteFile;
                             StringBuffer renamedFileName = new StringBuffer(absoluteFile + "_");
                             logRotateDateFormatter.format(
@@ -625,7 +630,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
     }
 
 
-    /**
+    /**                                                                                                   5005
      * Retrieves the LogRecord from our Queue and store them in the file
      */
     public void log() {
