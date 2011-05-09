@@ -41,6 +41,7 @@ package org.glassfish.admin.rest.resources;
 
 import com.sun.enterprise.config.serverbeans.Domain;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -159,14 +160,21 @@ public class StatusGenerator {
             status.append(ss + "      :::      " + resourcesToDeleteCommands.get(ss) + "\n");
         }     
         
-        FileOutputStream f;
+        FileOutputStream f=null;
         try {
             f = new FileOutputStream(System.getProperty("user.home")+"/GlassFishI18NData.properties");
             propsI18N.store(f, "");
-            f.close();
 
         } catch (Exception ex) {
             Logger.getLogger(StatusGenerator.class.getName()).log(Level.SEVERE, null, ex);
+        } finally{
+            if (f!=null){
+                try {
+                    f.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(StatusGenerator.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
         return status.toString();
     }
