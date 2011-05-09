@@ -48,6 +48,7 @@ import java.util.Properties;
 import org.glassfish.internal.api.Globals;
 import static com.sun.enterprise.util.StringUtils.ok;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.util.OS;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import java.util.logging.Level;
@@ -106,26 +107,27 @@ public class RuntimeInfo implements AdminCommand {
 
         // getTotalPhysicalMemorySize is from com.sun.management.OperatingSystemMXBean and cannot easily access it via OSGi
         // also if we are not on a sun jdk, we will not return this attribute.
-        try {
-            final Method jm = osBean.getClass().getMethod("getTotalPhysicalMemorySize");
-            AccessController.doPrivileged(
-                    new PrivilegedExceptionAction() {
-                        public Object run() throws Exception {
-                            if (!jm.isAccessible()) {
-                                jm.setAccessible(true);
+        if ( !OS.isAix()) {
+            try {
+                final Method jm = osBean.getClass().getMethod("getTotalPhysicalMemorySize");
+                AccessController.doPrivileged(
+                        new PrivilegedExceptionAction() {
+                            public Object run() throws Exception {
+                                if (!jm.isAccessible()) {
+                                    jm.setAccessible(true);
+                                }
+                                return null;
                             }
-                            return null;
-                        }
-                    });
+                        });
 
-            top.addProperty("totalPhysicalMemorySize", "" + jm.invoke(osBean));
+                top.addProperty("totalPhysicalMemorySize", "" + jm.invoke(osBean));
+
+            }
+            catch (Exception ex) {
+                logger.log(Level.SEVERE, null, ex);
+            }
 
         }
-        catch (Exception ex) {
-            logger.log(Level.SEVERE, null, ex);
-        }
-
-
         RuntimeMXBean rmxb = ManagementFactory.getRuntimeMXBean();
         top.addProperty("startTimeMillis", "" + rmxb.getStartTime());
         top.addProperty("pid", "" + rmxb.getName());
