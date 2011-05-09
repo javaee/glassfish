@@ -658,7 +658,8 @@ public class AMXImplBase extends MBeanImplBase
             final AttributeChangeNotification n =
                     builder.buildAttributeChange(msg, name, attrType, when, oldValue, newValue);
 
-            System.out.println("AttributeChangeNotification: " + AttributeChangeNotificationStringifier.DEFAULT.stringify(n));
+            //System.out.println("AttributeChangeNotification: " + AttributeChangeNotificationStringifier.DEFAULT.stringify(n));
+            logger.log(Level.INFO,"amx.AttributeChangeNotification", AttributeChangeNotificationStringifier.DEFAULT.stringify(n));
             sendNotification(n);
         }
     }

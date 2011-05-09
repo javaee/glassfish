@@ -40,6 +40,7 @@
 
 package org.glassfish.admin.amx.impl.config;
 
+import com.sun.logging.LogDomains;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.config.AttributeResolver;
 import org.glassfish.admin.amx.core.AMXProxy;
@@ -64,6 +65,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.glassfish.admin.amx.config.AMXConfigConstants.*;
 import static org.glassfish.admin.amx.intf.config.AnonymousElementList.*;
@@ -77,6 +79,9 @@ Base class from which all AMX Config MBeans should derive (but not "must").
 public class AMXConfigImpl extends AMXImplBase
 {
     private final ConfigBean mConfigBean;
+
+    private static final Logger logger =
+            LogDomains.getLogger(AMXConfigImpl.class, LogDomains.AMX_LOGGER);
 
     /** MBeanInfo derived from the AMXConfigProxy interface, always the same */
     private static MBeanInfo configMBeanInfo;
@@ -302,7 +307,8 @@ public class AMXConfigImpl extends AMXImplBase
         }
         catch (final AttributeNotFoundException e)
         {
-            System.out.println("resolveAttribute: Attribute not found: " + attrName + " on " + getObjectName());
+            //System.out.println("resolveAttribute: Attribute not found: " + attrName + " on " + getObjectName());
+            logger.log(Level.SEVERE,"amx.attribute.notfound",new Object[]{attrName,getObjectName()});
             return null;
         }
     }
@@ -836,7 +842,8 @@ public class AMXConfigImpl extends AMXImplBase
         final ObjectName child = child(type);
         if (child == null)
         {
-        System.out.println( "Can't find child of type: " + type );
+            //System.out.println( "Can't find child of type: " + type );
+            logger.log(Level.SEVERE,"amx.child.notfound",type);
             return null;
         }
 
@@ -1245,7 +1252,7 @@ public class AMXConfigImpl extends AMXImplBase
         }
         catch (final TransactionFailure e)
         {
-            cdebug("failure, not retryable...");
+            //cdebug("failure, not retryable...");
             t.rollback();
             throw e;
         }
@@ -1528,6 +1535,7 @@ public class AMXConfigImpl extends AMXImplBase
         if (notMatched.keySet().size() != 0)
         {
             cdebug("setAttributes: failed to map these AMX attributes: {" + CollectionUtil.toString(notMatched.keySet(), ", ") + "}");
+
         }
         
         //System.out.println( "setAttributesInConfigBean: " + amxAttrs);
@@ -1589,7 +1597,8 @@ public class AMXConfigImpl extends AMXImplBase
         final String attributeName = m.containsKey(xmlAttrName) ?  m.get(xmlAttrName) : xmlAttrName;
         if ( attributeName.equals(xmlAttrName) )    // will *always* be different due to camel case
         {
-            cdebug( "issueAttributeChangeForXmlAttrName(): MBean attribute name not found for xml name, using xml name: " + xmlAttrName );
+            //cdebug( "issueAttributeChangeForXmlAttrName(): MBean attribute name not found for xml name, using xml name: " + xmlAttrName );
+            logger.log(Level.SEVERE,"amx.mbeanAttribute.notfound",xmlAttrName);
         }
         
         final String attributeType = String.class.getName();

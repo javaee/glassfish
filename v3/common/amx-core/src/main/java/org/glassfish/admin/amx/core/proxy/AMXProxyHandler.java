@@ -974,7 +974,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
         final AMXProxy proxy = proxyFactory().getProxy(mParentObjectName);
         if ( proxy == null )
         {
-            System.out.println( "AMXProxyHandler: cannot obtain parent proxy for " + objectName() + " , parent = " + mParentObjectName );
+            //System.out.println( "AMXProxyHandler: cannot obtain parent proxy for " + objectName() + " , parent = " + mParentObjectName );
         }
         return proxy;
     }
