@@ -39,59 +39,34 @@
  */
 package org.glassfish.admin.amx.impl.mbean;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
-import javax.management.AttributeChangeNotification;
-import javax.management.AttributeList;
-import javax.management.Attribute;
-import javax.management.AttributeNotFoundException;
-import javax.management.DynamicMBean;
-import javax.management.InvalidAttributeValueException;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanException;
-import javax.management.MBeanInfo;
-import javax.management.MBeanNotificationInfo;
-import javax.management.MBeanRegistration;
-import javax.management.MBeanServer;
-import javax.management.NotificationEmitter;
-import javax.management.ObjectName;
-import javax.management.ReflectionException;
-
+import com.sun.logging.LogDomains;
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.base.MBeanTrackerMBean;
 import org.glassfish.admin.amx.base.Utility;
-
-import org.glassfish.external.amx.AMX;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.AMX_SPI;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
-
 import org.glassfish.admin.amx.impl.AMXStartupService;
+import org.glassfish.admin.amx.impl.util.ImplUtil;
 import org.glassfish.admin.amx.impl.util.MBeanInfoSupport;
 import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
-import org.glassfish.admin.amx.util.ClassUtil;
-import org.glassfish.admin.amx.util.SetUtil;
-import org.glassfish.admin.amx.util.CollectionUtil;
-import org.glassfish.admin.amx.util.ExceptionUtil;
-import org.glassfish.admin.amx.util.MapUtil;
-import org.glassfish.admin.amx.util.StringUtil;
-import org.glassfish.admin.amx.util.ThrowableMapper;
+import org.glassfish.admin.amx.util.*;
 import org.glassfish.admin.amx.util.jmx.AttributeChangeNotificationBuilder;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.jmx.stringifier.AttributeChangeNotificationStringifier;
-import org.glassfish.admin.amx.util.jmx.stringifier.MBeanInfoStringifier;
 import org.glassfish.admin.amx.util.stringifier.SmartStringifier;
+import org.glassfish.external.amx.AMX;
 
-import org.glassfish.admin.amx.impl.util.ImplUtil;
+import javax.management.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
 Base class from which all AMX MBeans should derive (but not "must").
@@ -130,6 +105,9 @@ public class AMXImplBase extends MBeanImplBase
     protected volatile MBeanInfo mMBeanInfo;
     /** Whether AttributeChangeNotifications aree mitted. */
     private final boolean mEmitAttributeChangeNotifications = true;
+
+    private static final Logger logger =
+            LogDomains.getLogger(AMXImplBase.class, LogDomains.AMX_LOGGER);
 
 
     public AMXImplBase(
@@ -996,7 +974,7 @@ public class AMXImplBase extends MBeanImplBase
                 getMBeanServer().unregisterMBean(child);
             } catch (final Throwable t) {
                 // note it, and move on, we must unregister remaining ones
-                ImplUtil.getLogger().log(Level.INFO, "Unable to unregister MBean " + child, t);
+                logger.log(Level.INFO, "amx.unregisterMbean", new Object[] { child, t});
             }
         }
     }
