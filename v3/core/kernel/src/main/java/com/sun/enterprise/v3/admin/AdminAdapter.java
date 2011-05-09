@@ -68,6 +68,7 @@ import java.net.URLDecoder;
 import java.util.StringTokenizer;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -481,7 +482,7 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
                 report.failure( aalogger,
                                 adminStrings.getLocalString("adapter.wrongprivacy",
                                     "Command {0} does not have {1} visibility",
-                                    command, privacyClass.getSimpleName().toLowerCase()),
+                                    command, privacyClass.getSimpleName().toLowerCase(Locale.ENGLISH)),
                                 null);
                 return report;
 
