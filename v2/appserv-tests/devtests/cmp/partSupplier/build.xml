@@ -6,15 +6,13 @@
 <!ENTITY testproperties SYSTEM "build.properties">
 ]>
 
-<project name="blob" default="usage" basedir=".">
+<project name="partSupplier" default="usage" basedir=".">
 
     &commonSetup;
     &commonBuild;
     &testproperties;
 
-    <target name="all" depends="test1-all"/>
-
-    <target name="test1-all" depends="clean,build,create-resources,deploy,run,undeploy,delete-resources,clean"/>
+    <target name="all" depends="clean,build,create-resources,deploy,run,undeploy,delete-resources"/>
 
     <target name="clean" depends="init-common">
       <antcall  target="clean-common"/>
@@ -27,21 +25,40 @@
         <antcall target="compile-common">
             <param name="src" value="client"/>
         </antcall>
-    </target>
+	<antcall target="compile-common">
+            <param name="src" value="servlet"/>
+	</antcall>
+
+	 </target>
 
     <target name="build" depends="compile">
+
         <antcall target="build-ear-common">
+	    <param name="war.classes"
+	      value="**/Servlet.class" />
             <param name="ejbjar.classes" 
-              value="**/*Blob*.class" />
+              value="**/**.class,SP.dbschema" />
             <param name="appclientjar.classes" 
-              value="**/BlobTestHome.class,**/BlobTest.class,**/*Client*.class" />
+              value="**/LocalPartsHome.class,**/LocalParts.class,**/LocalSuppliersHome.class,**/LocalSuppliers.class,**/SPSessionHome.class,**/SPSession.class,**/SuppliersKey.class,**/*Client*.class" />
         </antcall>
+
+      <property name="TEMPDIR" value="${assemble.dir}/TEMPDIR" />
+
+        <echo message="Preparing ear file with proper xml files" />
+        <unjar src="${assemble.dir}/${appname}App.ear" dest="${TEMPDIR}" overwrite="true" />
+    	<echo message="Copying xml file to the ear" />
+	<copy file="${partsupplier.xml}" todir="${TEMPDIR}" failonerror="false"/>
+	<copy file="${ps.xml}" todir="${TEMPDIR}" failonerror="false"/>
+       <jar jarfile="${assemble.dir}/${appname}App.ear">
+          <fileset dir="${TEMPDIR}" />
+       </jar>
+
     </target> 
     
     <target name="deploy" 
             depends="init-common">
         <antcall target="execute-ejb-sql-common">
-            <param name="sql.file" value="sql/blob_derby.sql"/>
+            <param name="sql.file" value="sql/partSupplier_derby.sql"/>
         </antcall>
         <antcall target="deploy-common"/>
     </target>
@@ -66,7 +83,7 @@
     <target name="undeploy" depends="init-common">
         <antcall target="undeploy-common"/>
            <antcall target="execute-ejb-sql-common">
-            <param name="sql.file" value="sql/drop_blob_derby.sql"/>
+            <param name="sql.file" value="sql/drop_partSupplier_derby.sql"/>
         </antcall>
     </target>   
 
