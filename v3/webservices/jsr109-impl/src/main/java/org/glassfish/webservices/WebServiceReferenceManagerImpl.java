@@ -162,7 +162,7 @@ public class WebServiceReferenceManagerImpl implements WebServiceReferenceManage
                                     String fName = target.getFieldName();
                                     Class targetClass = cl.loadClass(target.getClassName());
                                     try {
-                                        f = targetClass.getDeclaredField(target.getFieldName());
+                                        f = targetClass.getDeclaredField(fName);
                                     } catch(java.lang.NoSuchFieldException nsfe) {}// ignoring exception
                                 }
                                 serviceType = f.getType();
@@ -173,7 +173,7 @@ public class WebServiceReferenceManagerImpl implements WebServiceReferenceManage
                                     String mName = target.getMethodName();
                                     Class targetClass = cl.loadClass(target.getClassName());
                                     try {
-                                        m = targetClass.getDeclaredMethod(target.getMethodName());
+                                        m = targetClass.getDeclaredMethod(mName);
                                     } catch(java.lang.NoSuchMethodException nsfe) {}// ignoring exception
                                 }
                                 if (m.getParameterTypes().length==1) {
@@ -230,7 +230,7 @@ public class WebServiceReferenceManagerImpl implements WebServiceReferenceManage
                         Class requestedPortType = service.getClass().getClassLoader().loadClass(desc.getInjectionTargetType());
                         ArrayList<WebServiceFeature> wsFeatures = getWebServiceFeatures(desc);
                         if (wsFeatures.size() >0) {
-                             injValue = service.getPort(requestedPortType,wsFeatures.toArray(new WebServiceFeature[0]));
+                             injValue = service.getPort(requestedPortType,wsFeatures.toArray(new WebServiceFeature[wsFeatures.size()]));
                         }   else {
                             injValue = service.getPort(requestedPortType);
                         }

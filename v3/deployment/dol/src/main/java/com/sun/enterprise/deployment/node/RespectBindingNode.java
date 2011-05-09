@@ -93,7 +93,7 @@ public class RespectBindingNode extends DisplayableComponentNode {
         String qname = element.getQName();
         RespectBinding rb = (RespectBinding) getDescriptor();
         if (WebServicesTagNames.RESPECT_BINDING_ENABLED.equals(qname)) {
-            rb.setEnabled(new Boolean(value));
+            rb.setEnabled( Boolean.valueOf(value));
         } else super.setElementValue(element, value);
     }
 

@@ -138,7 +138,7 @@ public class ChangeMasterPasswordCommand extends CLICommand {
                 arguments.add("--nodedir");
                 arguments.add(getDefaultNodesDirs().getAbsolutePath());
                 arguments.add(domainNameOrNodeName);
-                String[] newargs = (String[]) arguments.toArray(new String[0]);
+                String[] newargs = (String[]) arguments.toArray(new String[arguments.size()]);
 
                 command = CLICommand.getCommand(habitat,
                         CHANGE_MASTER_PASSWORD_NODE);

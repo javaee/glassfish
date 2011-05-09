@@ -1400,22 +1400,7 @@ public class WsUtil {
         
     }
 
-    private void writeNotFoundErrorPage(HttpServletResponse response,
-                                        String message) throws IOException {
-
-        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
-        out.println("<html>");
-        out.println("<head><title>");
-        out.println("J2EE Web Services");       
-        out.println("</title></head>");
-        out.println("<body>");
-        out.println("<h1>404 Not Found: " + htmlEntityEncoder.encode(message) + "</h1>");
-        out.println("</body>");
-        out.println("</html>");
-
-    }
+    
 
     /*
      * Used to send back the message after a 4XX response code has been set
@@ -2277,7 +2262,7 @@ public class WsUtil {
              SOAPBinding.SOAP12HTTP_MTOM_BINDING.equals(currentBinding))) {
             return true;
         }
-        if((new Boolean(ep.getMtomEnabled())).booleanValue() && 
+        if(( Boolean.valueOf(ep.getMtomEnabled())).booleanValue() && 
             (SOAPBinding.SOAP11HTTP_BINDING.equals(currentBinding) ||
              SOAPBinding.SOAP12HTTP_BINDING.equals(currentBinding) ||
              SOAPBinding.SOAP11HTTP_MTOM_BINDING.equals(currentBinding) ||

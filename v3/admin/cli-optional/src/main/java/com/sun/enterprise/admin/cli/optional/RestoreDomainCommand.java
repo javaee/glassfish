@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -175,7 +175,7 @@ public final class RestoreDomainCommand extends BackupCommands {
             }
         }
         boolean configonlybackup = false;
-        if ((configonly != null) && (new Boolean(configonly))) {
+        if ((configonly != null) && ( Boolean.valueOf(configonly))) {
             configonlybackup = true;
         }
         request = new BackupRequest(domainDirParam, domainName, backupdir_f,
