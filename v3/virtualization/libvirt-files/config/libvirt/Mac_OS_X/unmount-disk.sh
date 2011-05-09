@@ -1,5 +1,3 @@
-sync
-
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
 # Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
@@ -39,6 +37,7 @@ sync
 # holder.
 
 # unmount
+sync
 umount $1
 if [ $? -eq 0 ]; then
     exit 0
