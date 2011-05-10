@@ -308,6 +308,18 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     }
      */
 
+    /**
+     * Return the value of one property.
+     * Example <br>
+     * String pr = getProp(SystemPropertyConstants.PRODUCT_ROOT_PROPERTY);
+     * <br>
+     * @param key the name of the property
+     * @return the value of the property
+     */
+    public final String getProp(String key) {
+        return getProps().get(key);
+    }
+
     public Map<String, String> getProps() {
         return Collections.unmodifiableMap(asenv.getProps());
     }
