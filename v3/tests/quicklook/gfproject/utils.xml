@@ -112,6 +112,11 @@
                 <regexp pattern="${excl_msgs}"/>
             </linecontainsregexp>
             <ignoreblank/>
+            <!-- also exclude lines that do not start with [#|nnnn as they are probably
+                 multi-line messages, stacktraces, etc. continuing from the previous line -->
+            <linecontainsregexp>
+                <regexp pattern="^\[#\|\d\d\d\d.*"/>
+            </linecontainsregexp>
         </filterchain>
     </copy>
 

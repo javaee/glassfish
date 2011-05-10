@@ -51,76 +51,16 @@ org.jboss.weld
 # Shoal logging system overhaul is MS5 deliverable
 ShoalLogger
 
-# Stacktraces
-	at 
-
-
 # Grizzly start-up message
 Grizzly Framework 
 
-
 # GlassFish start-up messages
 # Common messages have [^\w] appended to reduce hits when used in other messages.
-INFO: JVM invocation command line:
-UnlockDiagnosticVMOptions
--XX:MaxPermSize=
--XX:NewRatio=
-LogVMOutput
-com.sun.enterprise.admin.launcher.GFLauncherLogger info
-java.exe
--cp
-glassfish/modules/glassfish.jar
--XX:LogFile=
--Xmx
--javaagent:
--client[^\w]
--Dosgi.shell.telnet.maxconn=
--Djdbc.drivers=org.apache.derby.jdbc.ClientDriver
--Dfelix.fileinstall.dir=
--Djavax.net.ssl.keyStore=
--Dosgi.shell.telnet.port=
--Djava.security.policy=
--Dfelix.fileinstall.log.level=
--Dfelix.fileinstall.poll=
--Dcom.sun.aas.instanceRoot=
--Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory
--Dosgi.shell.telnet.ip=
--Djava.endorsed.dirs=
--Dcom.sun.aas.installRoot=
--Djava.ext.dirs=
--Dfelix.fileinstall.bundles.new.start=
--Djavax.net.ssl.trustStore=
--Dcom.sun.enterprise.security.httpsOutboundKeyAlias=
--Djava.security.auth.login.config=
--DANTLR_USE_DIRECT_CLASS_LOADING=
--Dorg.glassfish.web.rfc2109_cookie_names_enforced=
--Djava.library.path=
-com.sun.enterprise.glassfish.bootstrap.ASMain
--domainname
-domain1[^\w]
--asadmin-args
-start-domain,,,domain1
--instancename
-server[^\w]
--verbose
-false[^\w]
--debug
--asadmin-classpath
-glassfish/modules/admin-cli.jar
--asadmin-classname
-com.sun.enterprise.admin.cli.AsadminMain
--upgrade
--type[^\w]
-DAS[^\w]
--domaindir
-glassfish/domains/domain1
--read-stdin
-true[^\w]
-INFO: Successfully launched in 
+Successfully launched
+JVM invocation command line
 Running GlassFish Version
-This message was emitted before the logging service started:
--Djava.security.manager
-/net/bat-sca.us.oracle.com/repine/export2/hudson
+GlassFish Server Open Source Edition
+
 
 # No need to log following log level messages
 \|CONFIG\|
@@ -187,7 +127,15 @@ Dgosh.args=--nointeractive
 Dorg.glassfish.additionalOSGiBundlesToStart
 Multiple JSF Applications found on same
 Method destroy defined on
-|stopping|
+Initiating Jersey application
+custom-resource =
+profiler =
+config =
+Registered org.glassfish.ha.store.adapter.cache.ShoalBackingStoreProxy
+Stopping com.sun.enterprise.v3.server.AppServerStartup
+Metro monitoring rootname successfully
+Exception while processing 
+Grizzly 2.0 NetworkManager
 
 # From QL Test - No need to fix this
 In SingletonBean::init()
@@ -196,7 +144,6 @@ In SingletonBean::init
 In HelloBean::init
 In HelloBean::hello
  says hello, world
-^.{0,6}\|#\]
 BeanMessage: appendMessage=
 Hello from beanLeaf: 
 resource-adapter-name=AMXConfigProxyTests.connectorConnectionPoolTest
@@ -279,6 +226,9 @@ Config Listener notification got interrupted
 Failed to restart:
 Failed to call the method
 Failed to check connection
+singleton =
+bvsize
+Hello
 
 # From LocalStrings.properties file - No need to fix this
 was successfully deployed in
@@ -295,6 +245,10 @@ Error transferring service tags
 Process executing stclient command failed
 The Admin Console is starting. Please wait
 Admin Console: Initializing Session Attributes...
+Shutdown procedure finished
+
+# Cloud relagted changes need to handle later on
+Interceptor called for
 
 # http://java.net/jira/browse/GLASSFISH-12251
 Portable JNDI names for EJB 
@@ -305,7 +259,6 @@ Glassfish-specific \(Non-portable\) JNDI names for EJB
 StatefulContainerbuilder instantiated store
 StatefulContainerBuilder.buildStoreManager()
 
-
 # http://java.net/jira/browse/GLASSFISH-16535
 ADDRESSLIST in
 JMS Service Connection
@@ -315,8 +268,14 @@ end point determine destionation name
 null for config
 MNTG0205:Gmbal registration
 
-# http://java.net/jira/browse/GLASSFISH-16533
-Erorr stopping context
-
 # http://java.net/jira/browse/GLASSFISH-16531
 JACC Policy Provider: Failed Permission Check
+
+# http://java.net/jira/browse/GLASSFISH-16583
+Listening to REST requests at context
+
+# http://java.net/jira/browse/GLASSFISH-16585
+FileBackingStore
+
+# http://java.net/jira/browse/GLASSFISH-16590
+unable to read instance state
