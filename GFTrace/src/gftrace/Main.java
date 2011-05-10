@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package gftrace;
 
 import java.lang.instrument.Instrumentation;
@@ -48,7 +47,8 @@ import java.lang.instrument.Instrumentation;
  */
 public class Main {
     public static void premain(String args, Instrumentation inst) {
-        System.out.println("PreMain Here!!!!!");
+        //System.out.println("PreMain Here!!!!!");
+        System.out.println("isRedefineClassesSupported(): " + inst.isRedefineClassesSupported());
         init(args, inst);
     }
 
@@ -73,5 +73,4 @@ public class Main {
         System.out.println("Hello from " + Main.class.toString());
     }
     private static volatile Instrumentation instrumentation;
-
 }
