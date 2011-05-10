@@ -177,6 +177,17 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
 
         Domain domain = habitat.getComponent(Domain.class);
         systemApplications = domain.getSystemApplications();
+        
+        for (Application systemApp : systemApplications.getApplications()) {
+            // check to see if we need to load up this system application
+            if (Boolean.valueOf(systemApp.getDeployProperties().getProperty
+                (ServerTags.LOAD_SYSTEM_APP_ON_STARTUP))) {
+                if (deployment.isAppEnabled(systemApp) || server.isDas()) {
+                    ApplicationRef appRef = server.getApplicationRef(systemApp.getName());
+                    processApplication(systemApp, appRef, logger);
+                }
+            }
+        }
 
         List<Application> allApplications = applications.getApplications();
 
