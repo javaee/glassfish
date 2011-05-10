@@ -246,7 +246,7 @@ public abstract class TemplateListOfResource {
             return ResourceUtil.getActionReportResult(404, errorMessage, requestHeaders, uriInfo);
         }
         RestActionReporter ar = new RestActionReporter();
-        final String typeKey = upperCaseFirstLetter((decode(getName(uriInfo.getPath(), '/'))));
+        final String typeKey = (decode(getName(uriInfo.getPath(), '/')));
         ar.setActionDescription(typeKey);
 
         OptionsResult optionsResult = new OptionsResult(Util.getResourceName(uriInfo));

@@ -64,7 +64,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.glassfish.admin.rest.Util.eleminateHypen;
-import static org.glassfish.admin.rest.Util.upperCaseFirstLetter;
 
 /**
  * @author Ludovic Champenois ludo@dev.java.net
@@ -88,6 +87,7 @@ public class TemplateRestResource {
     protected Dom parent;
     protected String tagName;
     protected ConfigModel childModel; //good model even if the child entity is null
+    protected String childID; // id of the current child if part of a list, might be null
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateRestResource.class);
     final private static List<String> attributesToSkip = new ArrayList<String>() {
         {
@@ -338,6 +338,7 @@ public class TemplateRestResource {
     }
 
     public void setBeanByKey(List<Dom> parentList, String id) {
+        childID = id;
         if (parentList != null) { // Believe it or not, this can happen
             for (Dom c : parentList) {
                 String keyAttributeName = null;
@@ -371,8 +372,11 @@ public class TemplateRestResource {
         RestActionReporter ar = new RestActionReporter();
         ar.setExtraProperties(new Properties());
         ConfigBean entity = (ConfigBean) getEntity();
-        if (childModel != null) {
-            ar.setActionDescription(upperCaseFirstLetter(childModel.getTagName()));
+        if (childID!=null){
+             ar.setActionDescription(childID);
+           
+        }else if (childModel != null) {
+            ar.setActionDescription(childModel.getTagName());
         }
         if (showEntityValues) {
             if (entity != null) {
