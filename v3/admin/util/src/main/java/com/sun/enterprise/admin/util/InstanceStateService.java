@@ -42,6 +42,7 @@ package com.sun.enterprise.admin.util;
 
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.logging.LogDomains;
 import java.util.logging.Level;
 import org.glassfish.api.Startup;
 import org.glassfish.api.admin.*;
@@ -74,14 +75,12 @@ public class InstanceStateService implements Startup {
     private Domain domain;
 
     @Inject
-    private Logger logger;
-
-    @Inject
     private CommandThreadPool cmdPool;
 
     private InstanceStateFileProcessor stateProcessor;
     private HashMap<String, InstanceState> instanceStates;
     private final int MAX_RECORDED_FAILED_COMMANDS = 10;
+    private final static Logger logger = LogDomains.getLogger(InstanceStateService.class, LogDomains.ADMIN_LOGGER);
 
     public InstanceStateService() {}
 
@@ -98,7 +97,7 @@ public class InstanceStateService implements Startup {
             stateProcessor = new InstanceStateFileProcessor(instanceStates,
                         stateFile);
         } catch (IOException ioe) {
-            logger.log(Level.INFO, "unable to read instance state file {0}, recreating", stateFile);
+            logger.log(Level.INFO, "ISS.cannotread", stateFile);
             instanceStates = new HashMap<String, InstanceState>();
             // Even though instances may already exist, do not populate the
             // instancesStates array because it will be repopulated as it is
@@ -107,7 +106,7 @@ public class InstanceStateService implements Startup {
             try {
                 stateProcessor = InstanceStateFileProcessor.createNew(instanceStates, stateFile);
             } catch (IOException ex) {
-                logger.log(Level.SEVERE, "unable to create instance state file " + stateFile, ex);
+                logger.log(Level.SEVERE, "ISS.cannotcreate", ex);
                 stateProcessor = null;
             }
         }
@@ -119,7 +118,7 @@ public class InstanceStateService implements Startup {
         try {
             stateProcessor.addNewServer(instanceName);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error while adding new server state to instance state: {0}", e.getLocalizedMessage());
+            logger.log(Level.SEVERE, "ISS.addstateerror", e.getLocalizedMessage());
         }
     }
 
@@ -137,7 +136,7 @@ public class InstanceStateService implements Startup {
                 stateProcessor.addFailedCommand(instance, cmdDetails);
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error while adding failed command to instance state: {0}", e.getLocalizedMessage());
+            logger.log(Level.SEVERE, "ISS.addcmderror", e.getLocalizedMessage());
         }
     }
 
@@ -150,7 +149,7 @@ public class InstanceStateService implements Startup {
                 stateProcessor.removeFailedCommands(instance);
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error while removing failed commands from instance state: {0}", e.getLocalizedMessage());
+            logger.log(Level.SEVERE, "ISS.remcmderror", e.getLocalizedMessage());
         }
     }
 
@@ -203,7 +202,7 @@ public class InstanceStateService implements Startup {
                 stateProcessor.updateState(name, newState.getDescription());
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error while setting instance state: {0}", e.getLocalizedMessage());
+            logger.log(Level.SEVERE, "ISS.setstateerror", e.getLocalizedMessage());
         }
         return ret;
     }
@@ -214,7 +213,7 @@ public class InstanceStateService implements Startup {
         try {
             stateProcessor.removeInstanceNode(name);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error while removing instance: {0}", e.getLocalizedMessage());
+            logger.log(Level.SEVERE, "ISS.remstateerror", e.getLocalizedMessage());
         }
     }
 
