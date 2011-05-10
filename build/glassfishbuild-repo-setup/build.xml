@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -205,6 +205,10 @@
 	<exec dir="target/source/l10n" executable="python" failonerror="true">
 		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-verifier-l10n" />
 	</exec>
+
+        <!-- source directory cleanup step -->
+
+        <delete dir="target/source" quiet="true" />
 
     </target>
 </project>
