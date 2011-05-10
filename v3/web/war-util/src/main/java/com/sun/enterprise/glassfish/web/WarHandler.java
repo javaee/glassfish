@@ -326,8 +326,11 @@ public class WarHandler extends AbstractArchiveHandler {
             while (true) {
                 int event = parser.next();
                 if (event == START_ELEMENT) {
-                    if (!name.equals(parser.getLocalName())) {
-                        throw new XMLStreamException();
+                    String localName = parser.getLocalName();
+                    if (!name.equals(localName)) {
+                        String msg = rb.getString("webcontainer.unexpectedXmlElement");
+                        msg = MessageFormat.format(msg, new Object[] { name, localName }); 
+                        throw new XMLStreamException(msg);
                     }
                     return;
                 }
@@ -338,7 +341,7 @@ public class WarHandler extends AbstractArchiveHandler {
             while (true) {
                 int event = parser.next();
                 if (event == END_DOCUMENT) {
-                    throw new XMLStreamException();
+                    throw new XMLStreamException(rb.getString("webcontainer.unexpectedEndDocument"));
                 } else if (event == END_ELEMENT && name.equals(parser.getLocalName())) {
                     return;
                 }
@@ -380,6 +383,7 @@ public class WarHandler extends AbstractArchiveHandler {
             super(baseStr);
         }
 
+        @Override
         protected String getXmlFileName() {
             return SUN_WEB_XML;
         }
@@ -388,6 +392,7 @@ public class WarHandler extends AbstractArchiveHandler {
             return "sun-web-app";
         }
 
+        @Override
         protected void read(InputStream input) throws XMLStreamException {
             parser = xmlIf.createXMLStreamReader(input);
 
@@ -527,10 +532,12 @@ public class WarHandler extends AbstractArchiveHandler {
             return  versionIdentifierValue;
         }
 
+        @Override
         protected String getXmlFileName() {
             return GLASSFISH_WEB_XML;
         }
 
+        @Override
         protected String getRootElementName() {
             return "glassfish-web-app";
         }
@@ -541,10 +548,12 @@ public class WarHandler extends AbstractArchiveHandler {
             super(baseStr);
         }
 
+        @Override
         protected String getXmlFileName() {
             return WEBLOGIC_XML;
         }
 
+        @Override
         protected void read(InputStream input) throws XMLStreamException {
             parser = xmlIf.createXMLStreamReader(input);
 
