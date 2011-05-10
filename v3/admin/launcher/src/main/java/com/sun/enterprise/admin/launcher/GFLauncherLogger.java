@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,10 +40,10 @@
 
 package com.sun.enterprise.admin.launcher;
 
+import com.sun.enterprise.server.logging.UniformLogFormatter;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.universal.io.SmartFile;
-import java.io.*;
-import java.util.*;
+
+import java.io.IOException;
 import java.util.logging.*;
 
 /**
@@ -94,9 +94,9 @@ public class GFLauncherLogger {
                 return;
             }
             logfileHandler = new FileHandler(logFile, true);
-            logfileHandler.setFormatter(new SimpleFormatter());
+            logfileHandler.setFormatter(new UniformLogFormatter());
             logfileHandler.setLevel(Level.INFO);
-            logger.addHandler(logfileHandler);
+            logger.addHandler(logfileHandler);            
         }
         catch(IOException e)
         {

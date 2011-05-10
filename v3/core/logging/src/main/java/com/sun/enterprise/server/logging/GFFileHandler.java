@@ -42,6 +42,7 @@ package com.sun.enterprise.server.logging;
 
 import com.sun.appserv.server.util.Version;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
+import com.sun.enterprise.module.bootstrap.EarlyLogHandler;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
 import com.sun.logging.LogDomains;
@@ -61,12 +62,14 @@ import java.io.*;
 import java.text.FieldPosition;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Vector;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.*;
-import java.util.logging.Formatter;
 
 /**
  * GFFileHandler publishes formatted log Messages to a FILE.
@@ -183,7 +186,9 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
         pump.start();
         LogRecord lr = new LogRecord(Level.INFO, "Running GlassFish Version: " + version.getFullVersion());
         lr.setThreadID((int) Thread.currentThread().getId());
-        this.publish(lr);
+        lr.setLoggerName(getClass().getName());
+        EarlyLogHandler.earlyMessages.add(lr);
+
 
         String rotationOnDateChange = manager.getProperty(cname + ".rotationOnDateChange");
         if (rotationOnDateChange != null && !("").equals(rotationOnDateChange.trim()) && Boolean.parseBoolean(rotationOnDateChange)) {
@@ -206,7 +211,8 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                 lr = new LogRecord(Level.WARNING,
                         "Cannot parse the date.");
                 lr.setThreadID((int) Thread.currentThread().getId());
-                this.publish(lr);
+                lr.setLoggerName(getClass().getName());
+                EarlyLogHandler.earlyMessages.add(lr);
             }
             long nextsystime = nextDay.getTime();
 
@@ -235,7 +241,8 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                 lr = new LogRecord(Level.SEVERE,
                         "Can't find rotationTimelimitInMinutes property from logging config file");
                 lr.setThreadID((int) Thread.currentThread().getId());
-                this.publish(lr);
+                lr.setLoggerName(getClass().getName());
+                EarlyLogHandler.earlyMessages.add(lr);
             }
 
             if (rotationTimeLimitValue != 0) {
@@ -266,7 +273,8 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                     lr = new LogRecord(Level.WARNING,
                             "Can't find rotationLimitInBytes property from logging config file so using default.");
                     lr.setThreadID((int) Thread.currentThread().getId());
-                    this.publish(lr);
+                    lr.setLoggerName(getClass().getName());
+                    EarlyLogHandler.earlyMessages.add(lr);
                 }
                 // We set the LogRotation limit here. The rotation limit is the
                 // Threshold for the number of bytes in the log file after which
@@ -284,7 +292,8 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                 lr = new LogRecord(Level.WARNING,
                         "Can't find flushFrequency property from logging config file so using default.");
                 lr.setThreadID((int) Thread.currentThread().getId());
-                this.publish(lr);
+                lr.setLoggerName(getClass().getName());
+                EarlyLogHandler.earlyMessages.add(lr);
 
             }
         if (flushFrequency <= 0)
@@ -365,17 +374,20 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                 lr = new LogRecord(Level.SEVERE,
                         "Cannot instantiate formatter class " + formatterName);
                 lr.setThreadID((int) Thread.currentThread().getId());
-                this.publish(lr);
+                lr.setLoggerName(getClass().getName());
+                EarlyLogHandler.earlyMessages.add(lr);
             } catch (IllegalAccessException e) {
                 lr = new LogRecord(Level.SEVERE,
                         "Cannot instantiate formatter class " + formatterName);
                 lr.setThreadID((int) Thread.currentThread().getId());
-                this.publish(lr);
+                lr.setLoggerName(getClass().getName());
+                EarlyLogHandler.earlyMessages.add(lr);
             } catch (ClassNotFoundException e) {
                 lr = new LogRecord(Level.SEVERE,
                         "Cannot load formatter class " + formatterName);
                 lr.setThreadID((int) Thread.currentThread().getId());
-                this.publish(lr);
+                lr.setLoggerName(getClass().getName());
+                EarlyLogHandler.earlyMessages.add(lr);
             }
         }
 
@@ -385,7 +397,8 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
             lr = new LogRecord(Level.WARNING,
                     "Can't find maxHistoryFiles property from logging config file so using default.");
             lr.setThreadID((int) Thread.currentThread().getId());
-            this.publish(lr);
+            lr.setLoggerName(getClass().getName());
+            EarlyLogHandler.earlyMessages.add(lr);
         }
         if (maxHistoryFiles < 0)
             maxHistoryFiles = 10;
