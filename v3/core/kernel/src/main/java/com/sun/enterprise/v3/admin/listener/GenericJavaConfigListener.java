@@ -197,13 +197,13 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
             public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> tc, T t) {
                 NotProcessed result = null;
                 
-                if (t instanceof Profiler) {
+                if (tc == Profiler.class) {
                     result = new NotProcessed("Creation or changes to a profiler require restart");
                 }
-                else if (t instanceof Property && t.getParent() instanceof JavaConfig) {
+                else if (tc == Property.class && t.getParent().getClass() == JavaConfig.class) {
                     result = new NotProcessed("Addition of properties to JavaConfig requires restart");
                 }
-                else if (t instanceof JavaConfig) {
+                else if (tc == JavaConfig.class ) {
                     final JavaConfig njc = (JavaConfig) t; 
                     logFine(type, njc);
                     
@@ -223,7 +223,7 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
                     
                     result = reasons.isEmpty() ? null : new NotProcessed( GenericJavaConfigListener.toString(reasons) );
                 }
-                else if (t instanceof SystemProperty) {
+                else if (tc == SystemProperty.class) {
                     // check to see if this system property is referenced by any of the options
                     final SystemProperty sp = (SystemProperty) t;
                     String pname = sp.getName();
