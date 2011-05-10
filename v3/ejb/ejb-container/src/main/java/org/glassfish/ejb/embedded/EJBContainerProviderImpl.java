@@ -178,6 +178,11 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                 }
 
                 GlassFishProperties glassFishProperties = new GlassFishProperties(newProps);
+                if (Boolean.getBoolean(KEEP_TEMPORARY_FILES)) {
+                    glassFishProperties.setProperty("org.glassfish.embeddable.autoDelete", "false"); // set autodelete to false.
+                    glassFishProperties.setConfigFileReadOnly(false); // make sure the domain.xml is written back. 
+                }
+
                 if (l != null) {
                     if (l.reuse_instance_location) {
                         if (_logger.isLoggable(Level.FINE)) {

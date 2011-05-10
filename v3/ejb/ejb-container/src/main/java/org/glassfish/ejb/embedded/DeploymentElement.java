@@ -154,7 +154,7 @@ public class DeploymentElement {
     public static ResultApplication getOrCreateApplication(Set<DeploymentElement> modules, String appName)
             throws EJBException, IOException {
         Object result = null;
-        boolean deleteOnExit = false;
+        boolean deleteOnExit = !Boolean.getBoolean(EJBContainerProviderImpl.KEEP_TEMPORARY_FILES);
         if (modules == null || modules.size() == 0 || !DeploymentElement.hasEJBModule(modules)) {
             _logger.severe("[DeploymentElement] No modules found");
         } else if (appName == null && DeploymentElement.countEJBModules(modules) == 1) {
@@ -217,10 +217,6 @@ public class DeploymentElement {
 
             } else {
                 throw new EJBException("Not able to create temp dir " + resultFile.getAbsolutePath ());
-            }
-
-            if (System.getProperty(EJBContainerProviderImpl.KEEP_TEMPORARY_FILES) == null) {
-                 deleteOnExit = true;
             }
 
             // Copy module directories and explode module jars
