@@ -1,6 +1,6 @@
 package org.glassfish.tests.ejb.mdb;
 
-import javax.ejb.Stateless;
+import javax.ejb.Singleton;
 import javax.jms.*;
 import javax.annotation.Resource;
 
@@ -8,7 +8,7 @@ import javax.annotation.Resource;
 /**
  * @author Marina Vatkina
  */
-@Stateless
+@Singleton
 public class SimpleEjb {
 
 
