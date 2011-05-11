@@ -89,7 +89,7 @@ import org.glassfish.appclient.client.acc.UserError;
  * @author Tim Quinn
  */
 public class CLIBootstrap {
-
+    
     public final static String FILE_OPTIONS_INTRODUCER = "argsfile=";
 
     private final static String COMMA_IN_ARG_PLACEHOLDER = "+-+-+-+";
@@ -349,14 +349,14 @@ public class CLIBootstrap {
     /**
      * Manages the arguments which will be passed to the ACC Java agent.
      */
-    private class AgentArgs {
+    private static class AgentArgs {
         private final StringBuilder args = new StringBuilder("=mode=acscript");
         private char sep = ',';
 
         AgentArgs() {
             final String appcPath = System.getProperty(ENV_VAR_PROP_PREFIX + "APPCPATH");
             if (appcPath != null && appcPath.length() > 0) {
-                add("appcpath=" + quoteSuppressTokenSubst(appcPath));
+                add("appcpath=" + quote(appcPath));
             }
         }
 
@@ -696,7 +696,7 @@ public class CLIBootstrap {
             final int result = super.processValue(args, slot);
             final OptionValue newOptionValue = optValues.get(optValues.size() - 1);
             agentArgs.addACCArg(newOptionValue.option);
-            agentArgs.addACCArg(quoteSuppressTokenSubst(newOptionValue.value));
+            agentArgs.addACCArg(quote(newOptionValue.value));
             return result;
         }
 
@@ -779,11 +779,11 @@ public class CLIBootstrap {
                          * a directory. Set the main class launch info to
                          * launch the ACC JAR.
                          */
-                        agentArgs.add("client=dir=" + quoteSuppressTokenSubst(clientSpec.getAbsolutePath()));
+                        agentArgs.add("client=dir=" + quote(clientSpec.getAbsolutePath()));
                         introducer = "-jar";
                         values.set(values.size() - 1, gfInfo.agentJarPath());
                     } else {
-                        agentArgs.add("client=jar=" + quoteSuppressTokenSubst(path));
+                        agentArgs.add("client=jar=" + quote(path));
                         /*
                          * The client path is not a directory.  It should be a
                          * .jar or a .ear file.  If an EAR, then we want Java to
@@ -1021,7 +1021,7 @@ public class CLIBootstrap {
      */
     private void addAgentOption() throws UserError {
         otherJVMOptions.processValue(new String[] {
-                "-javaagent:" + quote(gfInfo.agentJarPath())  + agentOptionsFromFile()},
+            "-javaagent:" + quote(gfInfo.agentJarPath())  + agentOptionsFromFile()},
             0);
     }
     
@@ -1042,13 +1042,13 @@ public class CLIBootstrap {
         return argsFile;
     }
 
-/**
+    /**
      * Encapsulates information about the GlassFish installation, mostly useful
      * directories within the installation.
      * <p>
      * Note that we use the property acc._AS_INSTALL to find the installation.
      */
-    class GlassFishInfo {
+    static class GlassFishInfo {
 
         private final File home;
         private final File modules;
@@ -1079,7 +1079,7 @@ public class CLIBootstrap {
         }
 
         File configxml() {
-            return new File(new File(home, "domains/domain1/config"), "sun-acc.xml");
+            return new File(new File(home, "domains/domain1/config"), "glassfish-acc.xml");
         }
 
         String[] endorsedPaths() {
@@ -1118,7 +1118,7 @@ public class CLIBootstrap {
      * the java.home property to find the JRE's home, which we need for the
      * library directory (for example).
      */
-    class JavaInfo {
+    static class JavaInfo {
 
         private final static String CYGWIN_PROP_NAME = "org.glassfish.isCygwin";
         private final static String SHELL_PROP_NAME = "org.glassfish.appclient.shell";
@@ -1143,7 +1143,7 @@ public class CLIBootstrap {
             init();
         }
 
-        protected void init() {
+        private void init() {
             jreHome = new File(System.getProperty("java.home"));
             javaExe = javaExe();
         }
