@@ -304,7 +304,7 @@ public class UniformLogFormatter extends Formatter {
             recordBuffer.append(getRecordFieldSeparator() != null ? getRecordFieldSeparator() : FIELD_SEPARATOR);
 
             String logMessage = record.getMessage();
-            if (logMessage == null) {
+            if (logMessage == null || logMessage.trim().equals("")) {
                 logMessage = "The log message is null.";
             }
             if (logMessage.indexOf("{0}") >= 0 && record.getParameters() != null) {
