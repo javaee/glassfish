@@ -60,6 +60,7 @@ import org.jvnet.hk2.component.Singleton;
 @Scoped(Singleton.class)
 public class ACCStartupContext extends StartupContext {
 
+    private static final String DERBY_ROOT_PROPERTY = "AS_DERBY_INSTALL";
 
     public ACCStartupContext() {
         super(accEnvironment());
@@ -74,6 +75,10 @@ public class ACCStartupContext extends StartupContext {
     private static Properties accEnvironment() {
         final Properties result = ASMainHelper.parseAsEnv(getRootDirectory());
         result.setProperty("com.sun.aas.installRoot", getRootDirectory().getAbsolutePath());
+        final File javadbDir = new File(getRootDirectory().getParentFile(), "javadb");
+        if (javadbDir.isDirectory()) {
+            result.setProperty(DERBY_ROOT_PROPERTY, javadbDir.getAbsolutePath());
+        }
         return result;
     }
 
