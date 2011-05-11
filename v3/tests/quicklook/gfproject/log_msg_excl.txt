@@ -276,6 +276,3 @@ Listening to REST requests at context
 
 # http://java.net/jira/browse/GLASSFISH-16585
 FileBackingStore
-
-# http://java.net/jira/browse/GLASSFISH-16590
-unable to read instance state
