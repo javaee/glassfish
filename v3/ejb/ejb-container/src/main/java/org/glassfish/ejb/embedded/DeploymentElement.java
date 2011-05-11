@@ -154,7 +154,7 @@ public class DeploymentElement {
     public static ResultApplication getOrCreateApplication(Set<DeploymentElement> modules, String appName)
             throws EJBException, IOException {
         Object result = null;
-        boolean deleteOnExit = !Boolean.getBoolean(EJBContainerProviderImpl.KEEP_TEMPORARY_FILES);
+        boolean deleteOnExit = false;
         if (modules == null || modules.size() == 0 || !DeploymentElement.hasEJBModule(modules)) {
             _logger.severe("[DeploymentElement] No modules found");
         } else if (appName == null && DeploymentElement.countEJBModules(modules) == 1) {
@@ -265,8 +265,11 @@ public class DeploymentElement {
                     FileUtils.copy(f, out);
                 }
 
-                result = resultFile;
             }
+            // Check if the archive should not be deleted at the end
+            deleteOnExit = !Boolean.getBoolean(EJBContainerProviderImpl.KEEP_TEMPORARY_FILES);
+
+            result = resultFile;
         }
         return new ResultApplication(result, deleteOnExit);
     }
