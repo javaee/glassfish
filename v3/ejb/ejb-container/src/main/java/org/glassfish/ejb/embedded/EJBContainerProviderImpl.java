@@ -425,7 +425,8 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
         }
 
         // Skip jars in the install modules directory
-        if (l != null && l.modules_dir != null && l.modules_dir.equals(file.getParentFile().getAbsolutePath())) {
+        if (l != null && l.modules_dir != null && 
+                l.modules_dir.equals(file.getAbsoluteFile().getParentFile().getAbsolutePath())) {
             _logger.info("... skipping module: " + file.getName());
             return true;
         }
