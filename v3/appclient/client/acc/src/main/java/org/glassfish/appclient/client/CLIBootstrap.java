@@ -356,7 +356,7 @@ public class CLIBootstrap {
         AgentArgs() {
             final String appcPath = System.getProperty(ENV_VAR_PROP_PREFIX + "APPCPATH");
             if (appcPath != null && appcPath.length() > 0) {
-                add("appcpath=" + quoteSuppressTokenSubst(appcPath));
+                add("appcpath=" + quote(appcPath));
             }
         }
 
@@ -696,7 +696,7 @@ public class CLIBootstrap {
             final int result = super.processValue(args, slot);
             final OptionValue newOptionValue = optValues.get(optValues.size() - 1);
             agentArgs.addACCArg(newOptionValue.option);
-            agentArgs.addACCArg(quoteSuppressTokenSubst(newOptionValue.value));
+            agentArgs.addACCArg(quote(newOptionValue.value));
             return result;
         }
 
@@ -779,11 +779,11 @@ public class CLIBootstrap {
                          * a directory. Set the main class launch info to
                          * launch the ACC JAR.
                          */
-                        agentArgs.add("client=dir=" + quoteSuppressTokenSubst(clientSpec.getAbsolutePath()));
+                        agentArgs.add("client=dir=" + quote(clientSpec.getAbsolutePath()));
                         introducer = "-jar";
                         values.set(values.size() - 1, gfInfo.agentJarPath());
                     } else {
-                        agentArgs.add("client=jar=" + quoteSuppressTokenSubst(path));
+                        agentArgs.add("client=jar=" + quote(path));
                         /*
                          * The client path is not a directory.  It should be a
                          * .jar or a .ear file.  If an EAR, then we want Java to
