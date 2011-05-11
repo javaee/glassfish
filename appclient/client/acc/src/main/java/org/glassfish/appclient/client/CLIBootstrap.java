@@ -1079,7 +1079,7 @@ public class CLIBootstrap {
         }
 
         File configxml() {
-            return new File(new File(home, "domains/domain1/config"), "glassfish-acc.xml");
+            return new File(new File(home, "domains/domain1/config"), "sun-acc.xml");
         }
 
         String[] endorsedPaths() {
