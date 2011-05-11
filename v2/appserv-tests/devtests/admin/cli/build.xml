@@ -270,7 +270,7 @@
 
 <!-- there must be a better way to do this...
 -->
-    <target name="monitoringverbose" depends="init,setup">
+    <target name="monitoringverbose" depends="init,whacker,setup">
         <runtest classname="admin.monitoring.TestDriver">
             <jvmarg value="-Dverbose=true"/>
         </runtest> 
@@ -279,7 +279,7 @@
     <target name="mon" depends="monitoringverbose,teardown">
     </target>
 
-<target name="all" depends="init">
+<target name="all" depends="init,whacker">
     <record name="admin.output" action="start" />
     <antcall target="${teststorun}"/>
     <record name="admin.output" action="stop" />
