@@ -123,7 +123,7 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
                     logger.fine("Web container config changed "+type+" "+tClass+" "+t);
                 }
                 try {
-                    if (t instanceof NetworkListener) {
+                    if (tClass == NetworkListener.class) {
                         if (type==TYPE.ADD) {
                             container.addConnector((NetworkListener) t, httpService, true);
                         } else if (type==TYPE.REMOVE) {
@@ -131,7 +131,7 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
                         } else if (type==TYPE.CHANGE) {
                             container.updateConnector((NetworkListener) t, httpService);
                         }
-                    } else if (t instanceof VirtualServer) {
+                    } else if (tClass == VirtualServer.class) {
                         if (type==TYPE.ADD) {
                             container.createHost((VirtualServer) t, httpService, null);
                             container.loadDefaultWebModule((VirtualServer) t);
@@ -140,16 +140,16 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
                         } else if (type==TYPE.CHANGE) {
                             container.updateHost((VirtualServer)t);
                         }
-                    } else if (t instanceof AccessLog) {
+                    } else if (tClass == AccessLog.class) {
                         container.updateAccessLog(httpService);
-                    } else if (t instanceof ManagerProperties) {
+                    } else if (tClass == ManagerProperties.class) {
                         return new NotProcessed("ManagerProperties requires restart");
-                    } else if (t instanceof WebContainerAvailability) {
+                    } else if (tClass == WebContainerAvailability.class) {
                         // container.updateHttpService handles SingleSignOn valve configuration
                         container.updateHttpService(httpService);
-                    } else if (t instanceof NetworkListeners) {
+                    } else if (tClass == NetworkListeners.class) {
                         // skip updates
-                    } else if (t instanceof Property) {
+                    } else if (tClass == Property.class) {
                         ConfigBeanProxy config = ((Property)t).getParent();
                         if (config instanceof HttpService) {
                             container.updateHttpService((HttpService)config);
@@ -161,7 +161,7 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
                             container.updateHttpService(httpService);
                         }
 
-                    } else if (t instanceof SystemProperty) {
+                    } else if (tClass == SystemProperty.class) {
                         if (((SystemProperty)t).getName().endsWith("LISTENER_PORT")) {
                             for (NetworkListener listener : networkConfig.getNetworkListeners().getNetworkListener()) {
                                 if (listener.getPort().equals(((SystemProperty)t).getValue())) {
