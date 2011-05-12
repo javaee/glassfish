@@ -63,7 +63,9 @@ public class ProbeProviderClassFileTransformer
         } catch (Exception e) {
             _logger.log(Level.WARNING, "Error during re-transformation", e);
         } finally {
-            _inst.removeTransformer(this);
+            if (_inst != null) {
+                _inst.removeTransformer(this);
+            }
         }
 
     }
@@ -83,7 +85,7 @@ public class ProbeProviderClassFileTransformer
 
                 classfileBuffer = cw.toByteArray();
                 if (_debug) {
-                    ProbeProviderClassFileTransformer.writeFile(className.substring(className.lastIndexOf('/') + 1), classfileBuffer);
+                    //ProbeProviderClassFileTransformer.writeFile(className.substring(className.lastIndexOf('/') + 1), classfileBuffer);
                 }
             }
         } catch (Exception ex) {
