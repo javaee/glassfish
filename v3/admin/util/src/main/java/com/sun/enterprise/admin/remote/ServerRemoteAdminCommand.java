@@ -83,7 +83,7 @@ public class ServerRemoteAdminCommand extends RemoteAdminCommand {
     }
 
     @Override
-    protected HttpConnectorAddress getHttpConnectorAddress(String host, int port, boolean shouldUseSecure) {
+    protected synchronized HttpConnectorAddress getHttpConnectorAddress(String host, int port, boolean shouldUseSecure) {
         if (SecureAdmin.Util.isEnabled(secureAdmin)) {
             return new HttpConnectorAddress(host, port,
                 sslUtils().getAdminSocketFactory(getCertAlias(), SSL_SOCKET_PROTOCOL));
@@ -100,7 +100,7 @@ public class ServerRemoteAdminCommand extends RemoteAdminCommand {
      * @param urlConnection
      */
     @Override
-    protected void addAdditionalHeaders(final URLConnection urlConnection) {
+    protected synchronized void addAdditionalHeaders(final URLConnection urlConnection) {
         /*
          * If secure admin is enabled, we do not need to add the admin indicator header.
          */

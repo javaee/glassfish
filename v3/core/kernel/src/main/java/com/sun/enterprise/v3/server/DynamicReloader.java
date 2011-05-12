@@ -77,7 +77,22 @@ public class DynamicReloader implements Runnable {
 
     private static final String RELOAD_FILE_NAME = ".reload";
     
-    private AtomicBoolean inProgress;
+    private static class SyncBoolean {
+        private boolean b = false;
+        
+        private SyncBoolean(final boolean initialValue) {
+            b = initialValue;
+        }
+        
+        private synchronized void set(final boolean value) {
+            b = value;
+        }
+        
+        private synchronized boolean get() {
+            return b;
+        }
+    }
+    private final SyncBoolean inProgress;
     
     /** Records info about apps being monitored */
     private Map<String,AppReloadInfo> appReloadInfo;
@@ -94,7 +109,7 @@ public class DynamicReloader implements Runnable {
         this.applications = applications;
         this.habitat = habitat;
         initAppReloadInfo(applications);
-        inProgress = new AtomicBoolean(false);
+        inProgress = new SyncBoolean(false);
     }
     
     /**
@@ -102,7 +117,7 @@ public class DynamicReloader implements Runnable {
      * 
      * @param applications
      */
-    private void initAppReloadInfo(Applications applications) throws URISyntaxException {
+    private synchronized void initAppReloadInfo(Applications applications) throws URISyntaxException {
          appReloadInfo = new HashMap<String,AppReloadInfo>();
          logger.fine("[Reloader] Preparing list of apps to monitor:");
          for (ApplicationName m : applications.getModules()) {
@@ -236,7 +251,7 @@ public class DynamicReloader implements Runnable {
     
     public void waitUntilIdle() throws InterruptedException {
         synchronized(inProgress) {
-            if (inProgress.get()) {
+            while (inProgress.get()) {
                 inProgress.wait();
             }
         }
