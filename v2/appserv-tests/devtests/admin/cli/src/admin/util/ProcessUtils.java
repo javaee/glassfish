@@ -251,7 +251,7 @@ public final class ProcessUtils {
             paths = new String[0];
     }
     private static boolean debug;
-    static boolean isWindows() {
+    public static boolean isWindows() {
         String osname = System.getProperty("os.name");
         
         if(osname == null || osname.length() <= 0)

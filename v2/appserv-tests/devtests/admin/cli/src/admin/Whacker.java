@@ -43,11 +43,15 @@ import admin.util.ProcessUtils;
  */
 public class Whacker extends AdminBaseDevTest {
     public static void main(String[] args) {
-        ProcessUtils.killJvm("ASMain");
-        ProcessUtils.killJvm("AsadminMain");
-        ProcessUtils.killJvm("DerbyControl");
-        ProcessUtils.killJvm("admin-cli.jar");
-        ProcessUtils.killJvm("derbyrun.jar");
+		if(!ProcessUtils.isWindows() || !Boolean.parseBoolean(System.getenv("HUDSON"))) {
+			// Hudson on Windows would freak out...
+			ProcessUtils.killJvm("ASMain");
+			ProcessUtils.killJvm("ASMain");
+			ProcessUtils.killJvm("AsadminMain");
+			ProcessUtils.killJvm("DerbyControl");
+			ProcessUtils.killJvm("admin-cli.jar");
+			ProcessUtils.killJvm("derbyrun.jar");
+		}
         new Whacker().report("Killed old JVMs", true);
     }
     @Override
