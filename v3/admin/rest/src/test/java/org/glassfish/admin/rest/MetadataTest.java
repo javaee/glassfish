@@ -54,6 +54,7 @@ import static org.junit.Assert.*;
  */
 public class MetadataTest extends RestTestBase {
     protected static final String URL_CONFIG = "/domain/configs/config.json";
+    protected static final String URL_UPTIMECOMMAND = "/domain/uptime.json";
     @Test
     public void configParameterTest() {
         ClientResponse response = options(URL_CONFIG);
@@ -67,4 +68,21 @@ public class MetadataTest extends RestTestBase {
         response = client.resource(getAddress(URL_CONFIG)).get(ClientResponse.class);
         assertTrue(response.getEntity(String.class).contains("extraProperties"));
     }
-}
+    @Test
+    public void UpTimeMetadaDataTest() {
+        ClientResponse response = options(URL_UPTIMECOMMAND);
+        assertTrue(isSuccess(response));
+
+        Map extraProperties = MarshallingUtils.buildMapFromDocument(response.getEntity(String.class));
+        assertNotNull(extraProperties);
+
+        // Another dumb test to make sure that "extraProperties" shows up on the HTML page
+        response = client.resource(getAddress(URL_UPTIMECOMMAND)).get(ClientResponse.class);
+        String resp = response.getEntity(String.class);
+        assertTrue(resp.contains("extraProperties"));
+        // test to see if we get the milliseconds parameter description which is an 
+        //optional param metadata for the uptime command
+        System.out.println("resp="+resp);
+        assertTrue(resp.contains("milliseconds"));
+        assertTrue(resp.contains("GET"));
+    }}
