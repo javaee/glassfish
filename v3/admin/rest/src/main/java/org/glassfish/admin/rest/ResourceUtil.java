@@ -211,7 +211,7 @@ public class ResourceUtil {
      * @param habitat     the habitat
      * @return ActionReport object with command execute status details.
      */
-    public static ActionReport runCommand(String commandName,
+/*    public static ActionReport runCommand(String commandName,
                                           Properties parameters, Habitat habitat, String typeOfResult) {
         CommandRunner cr = habitat.getComponent(CommandRunner.class);
         ActionReport ar = new RestActionReporter();
@@ -222,7 +222,7 @@ public class ResourceUtil {
 
         cr.getCommandInvocation(commandName, ar).parameters(p).execute();
         return ar;
-    }
+    }*/
 
 
     /**
@@ -990,7 +990,15 @@ public class ResourceUtil {
     public static void addMethodMetaData(ActionReport ar, Map<String, MethodMetaData> mmd) {
         List<Map> methodMetaData = new ArrayList<Map>();
 
-        methodMetaData.add(new HashMap() {{ put("name", "GET"); }});
+       MethodMetaData getMetaData = mmd.get("GET");
+       methodMetaData.add(new HashMap() {{ put("name", "GET"); }});
+       if (getMetaData != null) { //are they extra params for a GET command?
+        Map<String, Object> getMetaDataMap = new HashMap<String, Object>();
+        if (getMetaData.sizeParameterMetaData() > 0) {
+                getMetaDataMap.put(MESSAGE_PARAMETERS, buildMethodMetadataMap(getMetaData));
+            }
+        methodMetaData.add(getMetaDataMap);      
+       }
 
         MethodMetaData postMetaData = mmd.get("POST");
         Map<String, Object> postMetaDataMap = new HashMap<String, Object>();
