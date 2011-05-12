@@ -171,8 +171,20 @@ public class DeploymentElement {
                 for (DeploymentElement m : modules) {
                     if (m.isEJBModule()) {
                         File f = m.getElement();
-                        // Need to give archive some meaningful name
-                        sa = new ScatteredArchive(f.getName(), ScatteredArchive.Type.JAR);
+
+                        // XXX Work around GLASSFISH-16618
+                        // Need to give archive some meaningful name, but strip off
+                        // .jar in a jar file as ScatteredArchive adds .jar extension
+                        String name = f.getName();
+                        if (f.isFile()) {
+                            int ext = name.indexOf(".jar");
+                            if (ext != -1) {
+                                name = name.substring(0, ext);
+                            }
+                        }
+                        // XXX End of Work around GLASSFISH-16618
+
+                        sa = new ScatteredArchive(name, ScatteredArchive.Type.JAR);
                         if (_logger.isLoggable(Level.INFO)) {
                             _logger.info("[DeploymentElement] adding EJB module to ScatteredArchive " + f.getName());
                         }
