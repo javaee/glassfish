@@ -160,6 +160,7 @@
           <Name>aix</Name>
           <OtherName>UNDEFINED</OtherName>
           <Arch>PowerPC</Arch>
+          <OtherArch>ppc64</OtherArch>
           <OtherArch>x86_64</OtherArch>
           <OtherArch>i386</OtherArch>
           <VersionCertified>
