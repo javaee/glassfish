@@ -53,6 +53,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.api.*;
 import org.jvnet.hk2.annotations.Inject;
@@ -88,6 +89,9 @@ public class AutoDeployService implements PostStartup, PostConstruct, PreDestroy
 
     @Inject
     Habitat habitat;
+    
+    @Inject
+    ServerEnvironment env;
 
     private AutoDeployer autoDeployer = null;
     
@@ -114,6 +118,13 @@ public class AutoDeployService implements PostStartup, PostConstruct, PreDestroy
     public void postConstruct() {
         logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
 
+        /*
+         * Do not start the autodeployer if this is not the DAS.
+         */
+        if ( ! env.isDas()) {
+            return;
+        }
+        
         /*
          * Always create the autoDeployer, even if autodeployment is not enabled.
          * Just don't start it if it's not enabled.
