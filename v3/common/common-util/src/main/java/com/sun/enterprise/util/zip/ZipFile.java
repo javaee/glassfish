@@ -120,6 +120,7 @@ public class ZipFile
 	{
 		files = new ArrayList<String>();
 		ZipInputStream zin = null;
+                BufferedOutputStream bos = null;
 
 		try
 		{
@@ -154,27 +155,31 @@ public class ZipFile
 				newDir.mkdirs();
 
 				if(fullpath.delete()) {	// wipe-out pre-existing files
-                                        /*
-                                         * Report that a file is being overwritten.
-                                         */
-                                        if (_utillogger.isLoggable(Level.FINE) ) {
-                                            _utillogger.log(Level.FINE, "File " + fullpath.getAbsolutePath() + " is being overwritten during expansion of " + (zipFile != null ? ("file " + zipFile.getAbsolutePath() ) : "stream"));
-                                        }
+                                    /*
+                                     * Report that a file is being overwritten.
+                                     */
+                                    if (_utillogger.isLoggable(Level.FINE) ) {
+                                        _utillogger.log(Level.FINE, "File " + fullpath.getAbsolutePath() + " is being overwritten during expansion of " + (zipFile != null ? ("file " + zipFile.getAbsolutePath() ) : "stream"));
+                                    }
                                 }
 
-                                BufferedOutputStream os = new BufferedOutputStream(getOutputStream(filename), BUFFER_SIZE);
+                                File f = new File(explodeDir, filename);
 
-				if(os == null)	// e.g. if we asked to write to a directory instead of a file...
-					continue;
+		                if (f.isDirectory()) {
+			            continue; // e.g. if we asked to write to a directory instead of a file...
+		                }
+
+                                bos = new BufferedOutputStream(getOutputStream(f), BUFFER_SIZE);
 
 				int totalBytes = 0;
 
 				for(int numBytes = zin.read(buffer); numBytes > 0; numBytes = zin.read(buffer))
 				{
-					os.write(buffer, 0, numBytes);
+					bos.write(buffer, 0, numBytes);
 					totalBytes += numBytes;
 				} 
-				os.close();				
+				bos.close();
+                                bos = null;
 				files.add(filename);
 			}
 		}
@@ -182,16 +187,18 @@ public class ZipFile
 		{
 			throw new ZipFileException(e);
 		}
-		finally
-		{
-			try
-			{ 
-				zin.close(); 
-			}
-			catch(IOException e) 
-			{
-				throw new ZipFileException("Got an exception while trying to close Jar input stream: " + e);//NOI18N
-			}
+		finally {
+                    if(bos != null) {
+                        try {
+                            bos.close();
+                        } catch(IOException e) {
+                        }
+                    }
+		    try {
+		        zin.close(); 
+                    } catch(IOException e) {
+		        throw new ZipFileException("Got an exception while trying to close Jar input stream: " + e);//NOI18N
+                    }
 		}
 		return files;
 	}
@@ -360,15 +367,8 @@ public class ZipFile
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 
-	private FileOutputStream getOutputStream(String filename) throws ZipFileException
+	private FileOutputStream getOutputStream(File f) throws ZipFileException
 	{
-		File f = new File(explodeDir, filename);
-
-		if(f.isDirectory())
-		{
-			return null;
-		}
-
 		try
 		{
 			return new FileOutputStream(f);

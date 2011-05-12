@@ -60,15 +60,15 @@ public class BackupManager extends BackupRestoreManager {
     //////////////////////////////////////////////////////////////////////
 
     public final String backup() throws BackupException {
-        String mesg = "";
+        StringBuilder mesg = new StringBuilder();
         String statusString = writeStatus();
 
 
         if (!request.terse) {
             String backupTime = new Date(request.timestamp).toString();
 
-            mesg = StringHelper.get("backup-res.SuccessfulBackup", 
-                                    request.domainName, backupTime);
+            mesg.append(StringHelper.get("backup-res.SuccessfulBackup",
+                                    request.domainName, backupTime));
         }
         
         try {
@@ -85,28 +85,32 @@ public class BackupManager extends BackupRestoreManager {
                                           request.domainName);
             List<File> recycleFiles = bfm.getRecycleFiles(request.recycleLimit);
             if (recycleFiles.size() > 0 && request.verbose) {
-                mesg += "\n" + StringHelper.get("backup-res.recycle",
-                                                request.recycleLimit) + "\n";
+                mesg.append("\n");
+                mesg.append(StringHelper.get("backup-res.recycle",
+                                                request.recycleLimit));
+                mesg.append("\n");
             }
 
             for (File f : recycleFiles) {
                 if (request.verbose) {
-                    mesg += StringHelper.get("backup-res.recycleDelete", f)
-                         + "\n";
+                    mesg.append(StringHelper.get("backup-res.recycleDelete", f));
+                    mesg.append("\n");
                 }
                 if (!f.delete()) {
-                    mesg += StringHelper.get("backup-res.recycleBadDelete", f)
-                         + "\n";
+                    mesg.append(StringHelper.get("backup-res.recycleBadDelete", f));
+                    mesg.append("\n");
                 }
             }
 
-            if (request.verbose)
-                mesg += "\n\n" + statusString;
+            if (request.verbose) {
+                mesg.append("\n\n");
+                mesg.append(statusString);
+            }
 
             //XXX: This needs to be fixed such that if an error occurs
             //     it is propogated up such that the command exits with
             //     the proper exit code.
-            return mesg;
+            return mesg.toString();
         }
         finally {
             status.delete();

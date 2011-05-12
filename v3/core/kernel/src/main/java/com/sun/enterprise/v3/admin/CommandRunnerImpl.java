@@ -1470,9 +1470,8 @@ public class CommandRunnerImpl implements CommandRunner {
             SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
             return sdf.format(lockTime);
         } else {
-            return new String(
-                adminStrings.getLocalString("lock.timeoutunavailable", 
-                                            "<<Date is unavailable>>"));
+            return adminStrings.getLocalString("lock.timeoutunavailable", 
+                                               "<<Date is unavailable>>");
         }
     }
 }
