@@ -24,6 +24,8 @@ public class ProbeProviderClassFileTransformer
 
     private static Instrumentation _inst;
 
+    private static boolean _debug;
+
     private Class providerClass;
 
     private Map<String, FlashlightProbe> probes = new HashMap<String, FlashlightProbe>();
@@ -53,11 +55,13 @@ public class ProbeProviderClassFileTransformer
 
     public void transform() {
         try {
-            ProbeProviderClassFileTransformer.getInstrumentation().addTransformer(this, true);
-            ProbeProviderClassFileTransformer.getInstrumentation().retransformClasses(providerClass);
+            ProbeProviderClassFileTransformer.getInstrumentation();
+            if (_inst != null) {
+                 _inst.addTransformer(this, true);
+                 _inst.retransformClasses(providerClass);
+            }
         } catch (Exception e) {
             _logger.log(Level.WARNING, "Error during re-transformation", e);
-            throw new RuntimeException("ProbeProviderClassFileTransformer Error", e);
         } finally {
             _inst.removeTransformer(this);
         }
@@ -78,8 +82,9 @@ public class ProbeProviderClassFileTransformer
                 cr.accept(new ProbeProviderClassVisitor(cw), null, 0);
 
                 classfileBuffer = cw.toByteArray();
-                ProbeProviderClassFileTransformer.writeFile(className.substring(className.lastIndexOf('/') + 1), classfileBuffer);
-
+                if (_debug) {
+                    ProbeProviderClassFileTransformer.writeFile(className.substring(className.lastIndexOf('/') + 1), classfileBuffer);
+                }
             }
         } catch (Exception ex) {
             _logger.log(Level.WARNING, "Error during registration of FlashlightProbe", ex);
@@ -92,19 +97,19 @@ public class ProbeProviderClassFileTransformer
         return name + "::" + desc;
     }
 
-    private static final Instrumentation getInstrumentation() {
+    private static final void getInstrumentation() {
         if (_inst == null) {
             try {
                 ClassLoader scl = ProbeProviderClassFileTransformer.class.getClassLoader().getSystemClassLoader();
                 Class agentMainClass = scl.loadClass("org.glassfish.flashlight.agent.ProbeAgentMain");
                 Method mthd = agentMainClass.getMethod("getInstrumentation", null);
                 _inst = (Instrumentation) mthd.invoke(null, null);
+
+                _logger.log(Level.INFO, "Successfully got INSTRUMENTATION: " + _inst);
             } catch (Exception e) {
-                throw new RuntimeException("Error while getting Instrumentation object from ProbeAgentmain",  e);
+                _logger.log(Level.WARNING, "Error while getting Instrumentation object from ProbeAgentmain",  e);
             }
         }
-
-        return _inst;
     }
 
     private static final void writeFile(String name, byte[] data) {
