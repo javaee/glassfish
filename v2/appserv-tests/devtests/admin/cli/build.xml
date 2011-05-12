@@ -279,7 +279,7 @@
     <target name="mon" depends="monitoringverbose,teardown">
     </target>
 
-<target name="all" depends="init,whacker">
+<target name="all" depends="init">
     <record name="admin.output" action="start" />
     <antcall target="${teststorun}"/>
     <record name="admin.output" action="stop" />
