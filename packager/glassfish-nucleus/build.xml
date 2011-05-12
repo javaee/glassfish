@@ -66,6 +66,11 @@
        
        <stage-module-jars graphid="all-modules" />
        <stage-distribution-fragments graphid="all-modules" />
+ 
+       <!-- explicitly moving flashlight-agent.jar to lib/monitor -->
+
+       <move file="target/stage/${install.dir.name}/glassfish/modules/flashlight-agent.jar" todir="target/stage/${install.dir.name}/glassfish/lib/monitor" failonerror="false"/>
+
 
        <!-- leaving custom handling of top level scripts/config -->
 
