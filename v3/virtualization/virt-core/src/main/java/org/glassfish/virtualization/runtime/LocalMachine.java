@@ -255,7 +255,7 @@ public abstract class LocalMachine implements Machine, FileOperations {
                     addStoragePool("glassfishInstances", 136112211968L));
 
         List<StorageVol> volumes = new ArrayList<StorageVol>();
-        File custDir = null, custFile = null;
+        File custFile = null;
         Future<StorageVol> diskFuture=null;
         final String diskLocation = config.getDisksLocation();
         final Machine target = this;
@@ -284,9 +284,6 @@ public abstract class LocalMachine implements Machine, FileOperations {
             );
 
 
-            File machineDisks = absolutize(new File(virtualizations.getDisksLocation(), group.getName()));
-            machineDisks = new File(machineDisks, getName());
-
         } catch(Exception e) {
             e.printStackTrace();
             for (StorageVol vol : volumes) {
@@ -296,9 +293,8 @@ public abstract class LocalMachine implements Machine, FileOperations {
                     ex.printStackTrace();
                 }
             }
-            if (custFile!=null && custFile.exists())
+            if (custFile.exists())
                 assert custFile.delete();
-            // I am not deleting custDir so far as it may be usuful for debugging.
 
             throw new VirtException(e);
         }

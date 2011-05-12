@@ -49,10 +49,7 @@ import org.glassfish.virtualization.util.RuntimeContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -85,7 +82,7 @@ public class Ubuntu implements OsInterface {
         // send magic packet with wakeonlan utility
         // TODO replace this with java datagram broadcast
         try {
-            Process result = shell.executeAndWait(new File("/"), wol() + " " + machine.getConfig().getMacAddress());
+            shell.executeAndWait(new File("/"), wol() + " " + machine.getConfig().getMacAddress());
         } catch (InterruptedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -105,15 +102,24 @@ public class Ubuntu implements OsInterface {
                 result = shell.execute(new File(arpPath()), getArpCommand());
                 // I have to do this because the command does not always exit and return.
                 Thread.sleep(100);
-                LineNumberReader lnReader = new LineNumberReader(new InputStreamReader(result.getInputStream()));
-                String line;
-                // first line is skipped, it's the column titles.
-                lnReader.readLine();
-                while ((line = lnReader.readLine())!=null) {
-                    Thread.sleep(25);
-                    scanArpLine(line, macToIps);
+                InputStream is = result.getInputStream();
+                try {
+                    LineNumberReader lnReader = new LineNumberReader(new InputStreamReader(is));
+                    String line;
+                    // first line is skipped, it's the column titles.
+                    lnReader.readLine();
+                    while ((line = lnReader.readLine())!=null) {
+                        Thread.sleep(25);
+                        scanArpLine(line, macToIps);
+                    }
+                    lnReader.close();
+                } catch (IOException ioe) {
+                    try {
+                        is.close();
+                    } catch(IOException ioe2) {
+                        // ignore
+                    }
                 }
-                lnReader.close();
                 result.destroy();
             } else {
                 System.out.println("error : " + shell.output(result));

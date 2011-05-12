@@ -65,7 +65,7 @@ public class ScriptBasedDisk implements Disk {
     ServerContext env;
 
     int loopCounter = 0;
-    File mountPoint;
+    File mountPoint=null;
 
     public File getScriptPath() {
 
@@ -120,6 +120,7 @@ public class ScriptBasedDisk implements Disk {
 
     @Override
     public int umount() throws IOException {
+        if (mountPoint==null) return -1;
         try{
             Process p = shell.execute(new File("/usr/bin"),
                     "sudo " + getScriptPath() + "/unmount-disk.sh " +

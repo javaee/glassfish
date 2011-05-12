@@ -134,4 +134,13 @@ public class VMOrder {
     public List<VirtualMachine> separateFrom() {
         return Collections.unmodifiableList(noColocationList);
     }
+
+    /**
+     * Returns the template associated with the virtual machine order.
+     *
+     * @return the template to use for the virtual machines allocation.
+     */
+    public Template getTemplate() {
+        return template;
+    }
 }

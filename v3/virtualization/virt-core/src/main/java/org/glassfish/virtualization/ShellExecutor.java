@@ -63,7 +63,7 @@ import java.util.logging.Logger;
 @Service
 public class ShellExecutor {
 
-    final boolean debug = false;
+    final static boolean debug = false;
 
     @Inject
     CommandRunner commandRunner;
@@ -78,24 +78,42 @@ public class ShellExecutor {
 
     public String output(Process pr) throws IOException {
         // dirty hack for the lazy
-        BufferedReader buf = new BufferedReader(new InputStreamReader(pr.getInputStream()));
         StringBuffer sb = new StringBuffer();
-        String line = "";
-        while ((line=buf.readLine())!=null) {
-            if (debug) System.out.println(line);
-            sb.append(line);
+        InputStream is = pr.getInputStream();
+        try {
+            BufferedReader buf = new BufferedReader(new InputStreamReader(is));
+            String line = "";
+            while ((line=buf.readLine())!=null) {
+                if (debug) System.out.println(line);
+                sb.append(line);
+            }
+        } finally {
+            try {
+                if (is!=null) is.close();
+            } catch(IOException ioe) {
+                // ignore
+            }
         }
         return sb.toString();
     }
 
     public String error(Process pr) throws IOException {
         // dirty hack for the lazy
-        BufferedReader buf = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
         StringBuffer sb = new StringBuffer();
-        String line = "";
-        while ((line=buf.readLine())!=null) {
-            if (debug) System.out.println(line);
-            sb.append(line);
+        InputStream is = pr.getErrorStream();
+        try {
+            BufferedReader buf = new BufferedReader(new InputStreamReader(is));
+            String line = "";
+            while ((line=buf.readLine())!=null) {
+                if (debug) System.out.println(line);
+                sb.append(line);
+            }
+        } finally {
+            try {
+                if (is!=null) is.close();
+            } catch(IOException ioe) {
+                // ignore
+            }
         }
         return sb.toString();
     }

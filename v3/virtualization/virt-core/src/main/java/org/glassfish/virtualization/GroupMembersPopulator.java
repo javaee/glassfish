@@ -135,7 +135,7 @@ public class GroupMembersPopulator implements Startup, PostConstruct, GroupManag
         return ConfigSupport.sortAndDispatch(propertyChangeEvents, new Changed() {
             @Override
             public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> tClass, T t) {
-                try {
+                if (t instanceof GroupConfig) {
                     GroupConfig groupConfig = GroupConfig.class.cast(t);
                     if (type.equals(TYPE.ADD)) {
                         processGroupConfig(groupConfig);
@@ -145,8 +145,6 @@ public class GroupMembersPopulator implements Startup, PostConstruct, GroupManag
                             groups.remove(groupConfig.getName());
                         }
                     }
-                } catch(ClassCastException e) {
-                    // don't care
                 }
                 return null;
             }

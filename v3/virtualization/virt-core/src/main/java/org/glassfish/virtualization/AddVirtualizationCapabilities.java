@@ -141,7 +141,11 @@ public class AddVirtualizationCapabilities implements AdminCommand {
                             DomDocument document = parser.parse(url,  new DomDocument(habitat) {
                                 @Override
                                 public Dom make(Habitat habitat, XMLStreamReader in, Dom parent, ConfigModel model) {
-                                    return new GlassFishConfigBean(habitat, this, (GlassFishConfigBean) parent, model, in);
+                                    if (parent instanceof GlassFishConfigBean) {
+                                        return new GlassFishConfigBean(habitat, this, (GlassFishConfigBean) parent, model, in);
+                                    } else {
+                                        throw new IllegalArgumentException("parent is not a GlassFishConfigBean instance");
+                                    }
                                 }
                             }, Dom.unwrap(domain));
                             final Virtualizations defaultConfig = document.getRoot().createProxy(Virtualizations.class);

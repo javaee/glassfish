@@ -45,7 +45,6 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandLock;
-import org.glassfish.virtualization.config.Virtualizations;
 import org.glassfish.virtualization.spi.*;
 import org.glassfish.virtualization.util.RuntimeContext;
 import org.jvnet.hk2.annotations.Inject;
@@ -53,7 +52,6 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
-import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 
 /**
@@ -89,23 +87,12 @@ public class RegisterVirtualMachine implements AdminCommand {
      */
     @Param(optional = true, defaultValue = "false")
     boolean notssh;
-    @Inject
-    Virtualizations virts;
 
     @Inject
     GroupManagement groups;
 
     @Inject
     RuntimeContext rtContext;
-
-    @Inject
-    ExecutorService executorService;
-
-    final ActionReport actionReport;
-
-    public RegisterVirtualMachine(@Inject(name="plain") ActionReport ar) {
-        actionReport = ar;
-    }
 
     @Override
     public void execute(AdminCommandContext context) {
@@ -124,7 +111,7 @@ public class RegisterVirtualMachine implements AdminCommand {
                 ActionReport report = context.getActionReport();
                 // Node name is group_machine_virtualMachine;
                 final String vmName = group + "_" + machine + "_" + virtualMachine;
-                if (notssh == false) { //default, i.e ssh = true
+                if (!notssh) { //default, i.e ssh = true
                     // create-node-ssh --nodehost $ip_address --installdir $GLASSFISH_HOME $node_name
                     rtContext.executeAdminCommand(report, "create-node-ssh", vmName, "nodehost", address,
                             "sshUser", sshUser, "installdir", installDir);
@@ -134,17 +121,9 @@ public class RegisterVirtualMachine implements AdminCommand {
                     }
                     rtContext.executeAdminCommand(report, "create-instance", vmName + "Instance", "node", vmName,
                             "cluster", cluster);
-
-                    if (report.hasFailures()) {
-                        return;
-                    }
-                    
                 } else { //JRVE case, we jsut need a call to _create-node-implicit
                     rtContext.executeAdminCommand(report, "_create-node-implicit", address, "name", vmName,
                             "installdir", installDir);
-                    if (report.hasFailures()) {
-                        return;
-                    }
                 }
             }
         } catch(VirtException e) {

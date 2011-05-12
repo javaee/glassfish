@@ -105,6 +105,15 @@ public class CreateVirtualCluster implements AdminCommand {
     @Override
     public void execute(AdminCommandContext context) {
 
+        try {
+            if (Integer.parseInt(min)>Integer.parseInt(max)) {
+                context.getActionReport().failure(RuntimeContext.logger, "Invalid parameters, min > max");
+                return;
+            }
+        } catch(NumberFormatException e) {
+            context.getActionReport().failure(RuntimeContext.logger, e.getMessage(), e);
+            return;
+        }
 
         List<GroupAccess> targetGroups = new ArrayList<GroupAccess>();
         if (groupNames==null) {
@@ -149,7 +158,6 @@ public class CreateVirtualCluster implements AdminCommand {
             } else {
                 template_ = virt.getTemplates().get(0);
             }
-            List<VirtualMachine> vms = new ArrayList<VirtualMachine>();
             rtContext.executeAdminCommand(report, "create-cluster", name);
             if (report.hasFailures()) {
                 return;
@@ -166,7 +174,6 @@ public class CreateVirtualCluster implements AdminCommand {
                         context.getActionReport().failure(RuntimeContext.logger, "Failure to allocate virtual machine ", e);
                         return;
                     }
-                    vms.add(vm);
                     sb.append(vm.getName()).append( "(").append(vm.getAddress()).append(") ");
                 }
             } catch(VirtException e) {

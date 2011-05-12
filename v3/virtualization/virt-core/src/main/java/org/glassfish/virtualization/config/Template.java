@@ -148,7 +148,10 @@ public interface Template extends ConfigBeanProxy, Named {
                     }
                     if (!source.exists()) {
                         context.getActionReport().failure(RuntimeContext.logger, "File not found : " + source.getAbsolutePath());
-                        new File(templateLocation, instance.getName() + ".img").delete();
+                        File f = new File(templateLocation, instance.getName() + ".img");
+                        if (!(f.delete())) {
+                            RuntimeContext.logger.warning(f.getAbsolutePath() + " cannot be deleted");
+                        }
                         throw new TransactionFailure("Cannot find file " + source.getAbsolutePath());
                     }
                     FileUtils.copy(source, new File(templateLocation, instance.getName() + ".xml"));
