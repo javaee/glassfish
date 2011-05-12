@@ -187,6 +187,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     @Inject
     private ComponentEnvManager componentEnvManager;
 
+    @Inject
+    Configs configs;
+
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Config serverConfig;
 
@@ -524,6 +527,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         bean = (ObservableBean) ConfigSupport.getImpl(server);
         bean.addListener(configListener);
+
+        String instanceConfig = server.getConfigRef();
+        Config config = configs.getConfigByName(instanceConfig);
+        configListener.setNetworkConfig(config.getNetworkConfig());
 
         // embedded mode does not have manager-propertie in domain.xml
         if (configListener.managerProperties != null) {
