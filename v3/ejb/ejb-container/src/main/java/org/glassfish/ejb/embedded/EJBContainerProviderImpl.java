@@ -340,10 +340,10 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
             }
 
             if (!isEJBModule || moduleNames.isEmpty()) {
-                result = new DeploymentElement(file, isEJBModule);
+                result = new DeploymentElement(file, isEJBModule, moduleName);
             } else if (moduleNames.containsKey(moduleName) && !moduleNames.get(moduleName)) {
                 // Is a requested EJB module and was not found already
-                result = new DeploymentElement(file, isEJBModule);
+                result = new DeploymentElement(file, isEJBModule, moduleName);
                 moduleNames.put(moduleName, true);
             }
 

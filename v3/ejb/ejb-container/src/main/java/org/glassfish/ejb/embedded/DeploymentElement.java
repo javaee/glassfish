@@ -75,10 +75,12 @@ public class DeploymentElement {
     private File element;
     private boolean isEJBModule;
     private boolean isWebApp = false;
+    private String mname = null;
 
-    DeploymentElement (File element, boolean isEJBModule) {
+    DeploymentElement (File element, boolean isEJBModule, String mname) {
         this.element  = element;
         this.isEJBModule  = isEJBModule;
+        this.mname  = mname;
         if (element.isFile()) {
             isWebApp = element.getName().endsWith(".war");
         } else {
@@ -101,7 +103,7 @@ public class DeploymentElement {
 
     public static boolean hasEJBModule(Set<DeploymentElement> modules) {
         for (DeploymentElement module : modules) {
-            if (module.isEJBModule()) {
+            if (module.isEJBModule) {
                 return true;
             }
         }
@@ -110,7 +112,7 @@ public class DeploymentElement {
 
     public static boolean hasWar(Set<DeploymentElement> modules) {
         for (DeploymentElement module : modules) {
-            if (module.isWebApp()) {
+            if (module.isWebApp) {
                 return true;
             }
         }
@@ -119,7 +121,7 @@ public class DeploymentElement {
 
     public static DeploymentElement getWar(Set<DeploymentElement> modules) {
         for (DeploymentElement module : modules) {
-            if (module.isWebApp()) {
+            if (module.isWebApp) {
                 return module;
             }
         }
@@ -128,7 +130,7 @@ public class DeploymentElement {
 
     public static boolean hasLibrary(Set<DeploymentElement> modules) {
         for (DeploymentElement module : modules) {
-            if (!module.isEJBModule()) {
+            if (!module.isEJBModule) {
                 return true;
             }
         }
@@ -138,7 +140,7 @@ public class DeploymentElement {
     public static int countEJBModules(Set<DeploymentElement> modules) {
         int result = 0;
         for (DeploymentElement module : modules) {
-            if (module.isEJBModule()) {
+            if (module.isEJBModule) {
                 ++result;
             }
         }
@@ -169,39 +171,26 @@ public class DeploymentElement {
                 // EJB molule with libraries - create ScatteredArchive
                 ScatteredArchive sa = null;
                 for (DeploymentElement m : modules) {
-                    if (m.isEJBModule()) {
-                        File f = m.getElement();
-
+                    if (m.isEJBModule) {
                         // XXX Work around GLASSFISH-16618
-                        // Need to give archive some meaningful name, but strip off
-                        // .jar in a jar file as ScatteredArchive adds .jar extension
-                        String name = f.getName();
-                        if (f.isFile()) {
-                            int ext = name.indexOf(".jar");
-                            if (ext != -1) {
-                                name = name.substring(0, ext);
-                            }
-                        }
-                        // XXX End of Work around GLASSFISH-16618
-
-                        sa = new ScatteredArchive(name, ScatteredArchive.Type.JAR);
+                        // The name was already calculated when DeploymentElement was created
+                        sa = new ScatteredArchive(m.mname, ScatteredArchive.Type.JAR);
                         if (_logger.isLoggable(Level.INFO)) {
-                            _logger.info("[DeploymentElement] adding EJB module to ScatteredArchive " + f.getName());
+                            _logger.info("[DeploymentElement] adding EJB module to ScatteredArchive " + m.mname);
                         }
-                        sa.addClassPath(f);
+                        sa.addClassPath(m.element);
                         break;
                     }
                 }
 
                 if (sa != null) {
                     for (DeploymentElement m : modules) {
-                        if (!m.isEJBModule()) {
-                            File f = m.getElement();
+                        if (!m.isEJBModule) {
                             if (_logger.isLoggable(Level.INFO)) {
-                                _logger.info("[DeploymentElement] adding library to ScatteredArchive " + f.getName());
+                                _logger.info("[DeploymentElement] adding library to ScatteredArchive " + m.element.getName());
                             }
         
-                            sa.addClassPath(f);
+                            sa.addClassPath(m.element);
                         }
                     }
                     result = sa;
@@ -234,11 +223,11 @@ public class DeploymentElement {
             // Copy module directories and explode module jars
             int duplicate_dir_counter = 0;
             for (DeploymentElement m : modules) {
-                File f = m.getElement();
+                File f = m.element;
 
                 if (_logger.isLoggable(Level.INFO)) {
                     _logger.info("[DeploymentElement] adding " + f.getName() + " to exploded ear " +
-                            " isEJBModule? " + m.isEJBModule() + " isWebApp? " + m.isWebApp());
+                            " isEJBModule? " + m.isEJBModule + " isWebApp? " + m.isWebApp);
                 }
 
                 String filename = f.toURI().getSchemeSpecificPart();
@@ -256,8 +245,8 @@ public class DeploymentElement {
                     _logger.fine("[DeploymentElement] Converted file name: " + filename + " to " + name);
                 }
 
-                File base = (m.isEJBModule())? resultFile : lib;
-                if (!f.isDirectory() && m.isEJBModule()) { 
+                File base = (m.isEJBModule)? resultFile : lib;
+                if (!f.isDirectory() && m.isEJBModule) { 
                     File out = new File(base, FileUtils.makeFriendlyFilename(name));
                     if (_logger.isLoggable(Level.FINE)) {
                         _logger.fine("[DeploymentElement] Exploding jar to: " + out);
@@ -265,7 +254,7 @@ public class DeploymentElement {
                     ModuleExploder.explodeJar(f, out);
                 } else {
                     if (f.isDirectory()) { 
-                        name = name + (m.isWebApp()? "_war" : (m.isEJBModule()? "_jar" : ".jar"));
+                        name = name + (m.isWebApp? "_war" : (m.isEJBModule? "_jar" : ".jar"));
                     }
                     File out = new File(base, name);
                     if (out.exists()) {
