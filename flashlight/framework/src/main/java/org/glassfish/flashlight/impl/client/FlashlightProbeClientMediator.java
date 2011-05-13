@@ -42,6 +42,7 @@ package org.glassfish.flashlight.impl.client;
 
 //import org.glassfish.external.probe.provider.annotations.ProbeListener;
 
+import com.sun.enterprise.util.OS;
 import java.lang.annotation.*;
 
 /* BOOBY TRAP SITTING RIGHT HERE!!!  There is a ProbeListener in org.glassfish.flashlight.client
@@ -320,7 +321,6 @@ public class FlashlightProbeClientMediator
         }
     }
 
-
     // this is just used internally for cleanly organizing the code.
     private static class MethodProbe {
         MethodProbe(Method m, FlashlightProbe p) {
@@ -346,13 +346,22 @@ public class FlashlightProbeClientMediator
             String ir = System.getProperty(INSTALL_ROOT_PROPERTY);
             File dir = new File(ir, "lib" + File.separator + "monitor");
             if (dir.isDirectory()) {
-                File agentJar = new File(dir, "btrace-agent.jar");
+                File agentJar = null;
+                File btraceJar = new File(dir, "btrace-agent.jar");
+                File flashlightJar = new File(dir, "flashlight-agent.jar");
+
+                if (btraceJar.isFile() && !OS.isAix())
+                    agentJar = btraceJar;
+                else
+                    agentJar = flashlightJar;
+
                 if (agentJar.isFile()) {
                     setAgentInitialized(false);
                     vm.loadAgent(agentJar.getPath(), "unsafe=true,noServer=true");
-                } else {
+                }
+                else {
                     logger.log(Level.WARNING, localStrings.getLocalString("missing.btrace-agent.jar",
-                        "btrace-agent.jar does not exist under {0}", dir));
+                            "btrace-agent.jar does not exist under {0}", dir));
                     return false;
                 }
             } else {

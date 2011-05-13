@@ -246,6 +246,6 @@ public class EnableMonitoring implements AdminCommand {
     }
 
     static final String BTRACE_PATH                 = "lib/monitor/btrace-agent.jar";
-    static final String FLASHLIGHT_AGENT_PATH       = "modules/flashlight-agent.jar";
+    static final String FLASHLIGHT_AGENT_PATH       = "lib/monitor/flashlight-agent.jar";
     static final boolean OS_SUPPORTS_BTRACE         = !OS.isAix();
 }

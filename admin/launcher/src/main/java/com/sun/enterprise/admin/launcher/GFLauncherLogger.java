@@ -58,6 +58,10 @@ public class GFLauncherLogger {
     {
         logger.info(strings.get(msg, objs));
     }
+    public static void warning(String msg, Object... objs)
+    {
+        logger.warning(strings.get(msg, objs));
+    }
     public static void severe(String msg, Object... objs)
     {
         logger.severe(strings.get(msg, objs));
@@ -112,7 +116,7 @@ public class GFLauncherLogger {
             logfileHandler = null;
         }          
     }
-    
+
     private GFLauncherLogger() {
     }
     private final static Logger logger;

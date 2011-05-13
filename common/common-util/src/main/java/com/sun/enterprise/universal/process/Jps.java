@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.universal.process;
 
 import java.io.*;
@@ -55,33 +54,48 @@ import static com.sun.enterprise.util.StringUtils.ok;
  * @author bnevins
  */
 public class Jps {
-
     public static void main(String[] args) {
-        Set<Map.Entry<String, Integer>> set = getProcessTable().entrySet();
+        Set<Map.Entry<Integer, String>> set = getProcessTable().entrySet();
         System.out.println("** Got " + set.size() + " process entries");
-        for (Map.Entry<String, Integer> e : set) {
-            System.out.printf("%d %s\n", e.getValue(), e.getKey());
+        for (Map.Entry<Integer, String> e : set) {
+            System.out.printf("%d %s\n", e.getKey(), e.getValue());
+        }
+        if(args.length > 0) {
+            System.out.printf("Jps.isPid(%s) ==> %b\n", args[0], Jps.isPid(Integer.parseInt(args[0])));
         }
     }
 
-    final static public Map<String, Integer> getProcessTable() {
+    final static public Map<Integer, String> getProcessTable() {
         return new Jps().pidMap;
     }
 
     /**
      * return the platform-specific process-id of a JVM
-     * @param mainClassName The main class - this is how we identify the right JVM
+     * @param mainClassName The main class - this is how we identify the right JVM.
+     * You can pass in a fully-qualified name or just the classname.
+     * E.g. com.sun.enterprise.glassfish.bootstrap.ASMain and ASMain work the same.
      * @return the process id if possible otherwise 0
      */
-    final static public int getPid(String mainClassName) {
+    final static public List<Integer> getPid(String mainClassName) {
+        if (mainClassName == null)
+            return Collections.emptyList();
+
+        String plainName = plainClassName(mainClassName);
         Jps jps = new Jps();
-        Integer integer = jps.pidMap.get(mainClassName);
+        List<Integer> ints = new LinkedList<Integer>();
+        Set<Map.Entry<Integer, String>> set = jps.pidMap.entrySet();
+        Iterator<Map.Entry<Integer, String>> it = set.iterator();
 
-        if (integer == null) {
-            return 0;
+        while (it.hasNext()) {
+            Map.Entry<Integer, String> entry = it.next();
+            String valueFull = entry.getValue();
+            String valuePlain = plainClassName(valueFull);
+
+            if (mainClassName.equals(valueFull) || plainName.equals(valuePlain))
+                // got a match!
+                ints.add(entry.getKey());
         }
-
-        return integer;
+        return ints;
     }
 
     /**
@@ -90,7 +104,7 @@ public class Jps {
      * @return whether there is a process running with that id
      */
     final static public boolean isPid(int apid) {
-        return new Jps().pidMap.containsValue(apid);
+        return new Jps().pidMap.containsKey(apid);
     }
 
     private Jps() {
@@ -119,16 +133,16 @@ public class Jps {
                 int aPid = 0;
                 try {
                     aPid = Integer.parseInt(sublines[0]);
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     continue;
                 }
-                // todo -- handle duplicate names??
-                // todo -- easy --> make the pid the key not the value!
                 if (!isJps(sublines[1])) {
-                    pidMap.put(sublines[1], aPid);
+                    pidMap.put(aPid, sublines[1]);
                 }
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
         }
     }
 
@@ -147,14 +161,70 @@ public class Jps {
 
         return false;
     }
-    private Map<String, Integer> pidMap = new HashMap<String, Integer>();
+
+    /**
+     * This is a bit tricky.  "jps -l" will return a FQ classname
+     * But it also might return a path if you start with "java -jar"
+     * E.g.
+     <pre>
+     2524 sun.tools.jps.Jps
+     5324 com.sun.enterprise.glassfish.bootstrap.ASMain
+     4120 D:\glassfish3\glassfish\bin\..\modules\admin-cli.jar
+     </pre>
+     * If there is a path -- then there is no classname and vice-versa
+     * @param s
+     * @return
+     */
+    private static String plainClassName(String s) {
+        if(s == null)
+            return null;
+
+        if(hasPath(s))
+            return stripPath(s);
+
+        if (!s.contains(".") || s.endsWith("."))
+            return s;
+
+        return s.substring(s.lastIndexOf('.') + 1);
+    }
+
+    private static boolean hasPath(String s) {
+        if(s.indexOf('/') >= 0)
+            return true;
+        if(s.indexOf('\\') >= 0)
+            return true;
+        return false;
+    }
+
+    /**
+     * return whatever comes after the last file separator
+     */
+    private static String stripPath(String s) {
+        // Don't bother with the annoying back vs. forward
+        s = s.replace('\\', '/');
+        int index = s.lastIndexOf('/');
+
+        if(index < 0)
+            return s;
+
+        // don't forget about handling a name that ends in a slash!
+        // should not happen!!  But if it does return the original
+        if(s.length() - 1 <= index)
+            return s;
+
+        // we are GUARANTEED to have at least one char past the final slash...
+        return s.substring(index + 1);
+    }
+
+    private Map<Integer, String> pidMap = new HashMap<Integer, String>();
     private static final File jpsExe;
     private static final String jpsName;
 
     static {
         if (OS.isWindows()) {
             jpsName = "jps.exe";
-        } else {
+        }
+        else {
             jpsName = "jps";
         }
 
@@ -165,11 +235,12 @@ public class Jps {
 
         if (fhere.isFile()) {
             jpsExe = SmartFile.sanitize(fhere);
-        } else if (fthere.isFile()) {
+        }
+        else if (fthere.isFile()) {
             jpsExe = SmartFile.sanitize(fthere);
-        } else {
+        }
+        else {
             jpsExe = null;
         }
     }
 }
-

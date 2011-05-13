@@ -358,8 +358,8 @@ public abstract class GFLauncher {
 
     private void move(File from, File to) throws IOException {
         FileUtils.copy(from, to);
-    
-        if(!from.delete())
+
+        if (!from.delete())
             from.deleteOnExit();
     }
 
@@ -791,40 +791,37 @@ public abstract class GFLauncher {
 
         File libMonDir = new File(getInfo().getInstallDir(), LIBMON_NAME);
         File btraceJarFile = new File(libMonDir, BTRACE_NAME);
-        String btraceJarPath = SmartFile.sanitize(btraceJarFile).getPath().replace('\\', '/');
-
-        // it has to be in lib/monitoring.  If not then move the one in modules
-        File flashlightJarFileInLibMon = new File(libMonDir, FLASHLIGHT_AGENT_NAME);
-        
-        if (!flashlightJarFileInLibMon.isFile()) {
-            File flashlightJarFileInModules = new File(getInfo().getInstallDir(), "modules/" + FLASHLIGHT_AGENT_NAME);
-            try {
-                move(flashlightJarFileInModules, flashlightJarFileInLibMon);
-            }
-            catch (Exception ex) {
-                throw new GFLauncherException(strings.get("noFlashlightAgentJar"));
-            }
-        }
-
-        // no else clause here!
-        if(!flashlightJarFileInLibMon.isFile()) {
-            throw new GFLauncherException(strings.get("noFlashlightAgentJar"));
-        }
-        
-        String flashlightJarPath = SmartFile.sanitize(flashlightJarFileInLibMon).getPath().replace('\\', '/');
+        File flashlightJarFile = new File(libMonDir, FLASHLIGHT_AGENT_NAME);
         String jvmOption = null;
 
-        // if it exists -- use it
-        if (btraceJarFile.isFile() && GFLauncherConstants.OS_SUPPORTS_BTRACE)
-            jvmOption = "javaagent:" + btraceJarPath + "=unsafe=true,noServer=true";
-        // it would be weird for this to not exist...
-        else
-            jvmOption = "javaagent:" + flashlightJarPath;
+        // the OS is **not** AIX AND btrace jar exists
+        if (btraceJarFile.isFile() && GFLauncherConstants.OS_SUPPORTS_BTRACE) {
+            jvmOption = "javaagent:" + getCleanPath(btraceJarFile) + "=unsafe=true,noServer=true";
 
-        if (Boolean.parseBoolean(Utility.getEnvOrProp("AS_AGENT_DEBUG")))
-            jvmOption += ",debug=true";
+            if (Boolean.parseBoolean(Utility.getEnvOrProp("AS_AGENT_DEBUG")))
+                jvmOption += ",debug=true";
+        }
+        // No Btrace jar exists
+        else if (flashlightJarFile.isFile()) {
+            jvmOption = "javaagent:" + getCleanPath(flashlightJarFile);
+        }
+        // No agent jars at all
+        else {
+            String msg = null;
 
+            if (GFLauncherConstants.OS_SUPPORTS_BTRACE)
+                msg = strings.get("no_agent", flashlightJarFile, btraceJarFile);
+            else
+                msg = strings.get("no_flashlight_agent", flashlightJarFile);
+
+            GFLauncherLogger.warning(msg);
+            throw new GFLauncherException(msg);
+        }
         return jvmOption;
+    }
+
+    private static String getCleanPath(File f) {
+        return SmartFile.sanitize(f).getPath().replace('\\', '/');
     }
 
     private List<String> getSpecialSystemProperties() throws GFLauncherException {
