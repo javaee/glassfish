@@ -91,6 +91,8 @@ public class PackageAppClient {
     private final static String GLASSFISH_LIB = "glassfish/lib";
 
     private final static String GLASSFISH_BIN = "glassfish/bin";
+    
+    private final static String GLASSFISH_CONFIG = "glassfish/config";
 
     private final static String MODULES_ENDORSED_DIR = "glassfish/modules/endorsed";
 
@@ -129,7 +131,7 @@ public class PackageAppClient {
     private final static String OLD_ACC_XML = 
             DOMAIN_1_CONFIG + ACC_CONFIG_FILE_DEFAULT_OLD;
     
-    private final static String[] ACC_CONFIG_FILES = {
+    private final static String[] DEFAULT_ACC_CONFIG_FILES = {
         DEFAULT_ACC_XML, OLD_ACC_XML
         };
 
@@ -145,7 +147,9 @@ public class PackageAppClient {
     private final static String WIN_JS = GLASSFISH_BIN + "/appclient.js";
     private final static String NONWIN_SCRIPT = GLASSFISH_BIN + "/appclient";
 
-
+    private final static String ASENV_CONF = GLASSFISH_CONFIG + "/asenv.conf";
+    private final static String ASENV_BAT = GLASSFISH_CONFIG + "/asenv.bat";
+    
     private final static String[] SINGLE_FILES_TO_COPY = {
         IMQJMSRA_APP,
         IMQ_JAR,
@@ -154,7 +158,9 @@ public class PackageAppClient {
         FSCONTEXT_JAR,
         WIN_SCRIPT,
         WIN_JS,
-        NONWIN_SCRIPT};
+        NONWIN_SCRIPT,
+        ASENV_CONF,
+        ASENV_BAT};
 
     /* default output file */
     private final static String DEFAULT_OUTPUT_PATH = GLASSFISH_LIB +  "/appclient.jar";
@@ -184,17 +190,13 @@ public class PackageAppClient {
         if (outputFile.exists()) {
             if ( ! outputFile.delete()) {
                 throw new RuntimeException(strings.get("errDel", outputFile.getAbsolutePath()));
-            };
+            }
             System.out.println(strings.get("replacingFile", outputFile.getAbsolutePath()));
         } else {
             System.out.println(strings.get("creatingFile", outputFile.getAbsolutePath()));
         }
 
-        File configFile = chooseConfigFile(installDir, args);
-        if ( ! configFile.exists()) {
-            System.err.println(strings.get("xmlNotFound", configFile.getAbsolutePath()));
-        }
-
+        final File[] configFiles = chooseConfigFiles(installDir, args);
         String[] classPathElements = getJarClassPath(thisJarFile).split(" ");
 
         JarOutputStream os = new JarOutputStream(new BufferedOutputStream(
@@ -241,8 +243,8 @@ public class PackageAppClient {
         /*
          * The glassfish-acc.xml file and sun-acc.xml files.
          */
-        for (String configFilePath : ACC_CONFIG_FILES) {
-            addFile(os, installDir.toURI(), new URI(configFilePath), outputFile, "");
+        for (File configFile : configFiles) {
+            addFile(os, installDir.toURI(), configFile.toURI(), outputFile, "");
         }
         
         os.close();
@@ -265,6 +267,7 @@ public class PackageAppClient {
         addDir(os, installDirURI, endorsedDirURI,
                 new FileFilter() {
 
+            @Override
             public boolean accept(File pathname) {
                 return pathname.getName().endsWith(".jar") ||
                     pathname.isDirectory();
@@ -291,45 +294,49 @@ public class PackageAppClient {
             final File outputFile,
             final String indent
             ) throws IOException {
-        final File fileToCopy = new File(absoluteURIToAdd);
-        if (fileToCopy.equals(outputFile)) {
-            return;
-        }
-
-        JarEntry entry = new JarEntry(OUTPUT_PREFIX + installDirURI.relativize(absoluteURIToAdd).toString());
         try {
             if (isVerbose) {
-                System.err.println(indent + strings.get("addingFile", new File(absoluteURIToAdd).getAbsolutePath()));
+                System.err.println(indent + strings.get("addingFile", absoluteURIToAdd));
             }
-            /*
-             * Some modules in the GlassFish build are marked as optional
-             * dependencies, and the resulting JARs are not included in the
-             * GlassFish distribution.  But the JAR file names do appear in
-             * the maven-generated Class-Path for the stand-alone client JAR
-             * library which this tool uses to find out what JARs to include
-             * in the generated appclient.jar file.  So, if the Class-Path
-             * specifies a file we cannot find we keep going -- silently.
-             */
-            if ( ! new File(absoluteURIToAdd).exists()) {
-                if (isVerbose) {
-                    System.err.println(indent + strings.get("noFile", new File(absoluteURIToAdd).getAbsolutePath()));
-                }
+            final File fileToCopy = new File(absoluteURIToAdd);
+            if (fileToCopy.equals(outputFile)) {
                 return;
             }
-            os.putNextEntry(entry);
-            if (new File(absoluteURIToAdd).isFile()) {
-                copyFileToStream(os, absoluteURIToAdd);
+
+            JarEntry entry = new JarEntry(OUTPUT_PREFIX + installDirURI.relativize(absoluteURIToAdd).toString());
+            try {
+                /*
+                 * Some modules in the GlassFish build are marked as optional
+                 * dependencies, and the resulting JARs are not included in the
+                 * GlassFish distribution.  But the JAR file names do appear in
+                 * the maven-generated Class-Path for the stand-alone client JAR
+                 * library which this tool uses to find out what JARs to include
+                 * in the generated appclient.jar file.  So, if the Class-Path
+                 * specifies a file we cannot find we keep going -- silently.
+                 */
+                if ( ! new File(absoluteURIToAdd).exists()) {
+                    if (isVerbose) {
+                        System.err.println(indent + strings.get("noFile", new File(absoluteURIToAdd).getAbsolutePath()));
+                    }
+                    return;
+                }
+                os.putNextEntry(entry);
+                if (new File(absoluteURIToAdd).isFile()) {
+                    copyFileToStream(os, absoluteURIToAdd);
+                }
+                os.closeEntry();
+
+            } catch (ZipException e) {
+                /*
+                 * Probably duplicate entry.  Keep going after logging the error.
+                 */
+                if (isVerbose) {
+                    System.err.println(indent + strings.get("zipExc", e.getLocalizedMessage()));
+                }
+            } catch (FileNotFoundException ignore) {
             }
-            os.closeEntry();
-            
-        } catch (ZipException e) {
-            /*
-             * Probably duplicate entry.  Keep going after logging the error.
-             */
-            if (isVerbose) {
-                System.err.println(indent + strings.get("zipExc", e.getLocalizedMessage()));
-            }
-        } catch (FileNotFoundException ignore) {
+        } catch (Exception ex) {
+            throw new IOException(absoluteURIToAdd.toASCIIString(), ex);
         }
     }
 
@@ -447,18 +454,12 @@ public class PackageAppClient {
             final String[] args) {
         File result = null;
         /*
-         * Look for -output in the arguments.
+         * Look for the option in the arguments.
          */
-        for (int slot = 0; slot < args.length; slot++) {
-            if (args[slot].equals(option)) {
-                if (slot >= args.length - 1) {
-                    throw new IllegalArgumentException(option);
-                }
-                result = new File(args[slot+1]);
-                break;
-            }
-        }
-        if (result == null) {
+        final String optionValue = argValue(option, args);
+        if (optionValue != null) {
+            result = new File(optionValue);
+        } else {
             URI outputFileURI = installDir.toURI().resolve(defaultRelativeURI);
             result = new File(outputFileURI);
         }
@@ -466,13 +467,31 @@ public class PackageAppClient {
     }
 
     /**
-     * Returns the user-specified or default glassfish-acc.xml config file.
+     * Returns the user-specified or default *-acc.xml config files.
      * @param installDir
      * @param args
      * @return
      */
-    private File chooseConfigFile(final File installDir, final String[] args) {
-        return chooseFile("-xml", DEFAULT_ACC_XML, installDir, args);
+    private File[] chooseConfigFiles(final File installDir, final String[] args) {
+        final String xmlArg = argValue("-xml", args);
+        File[] files;
+        if (xmlArg == null) {
+            files = new File[DEFAULT_ACC_CONFIG_FILES.length];
+            int slot = 0;
+            for (String s : DEFAULT_ACC_CONFIG_FILES) {
+                files[slot++] = new File(installDir.toURI().resolve(s));
+            }
+        } else {
+            final File userSpecifiedFile = new File(xmlArg);
+            files = new File[] {userSpecifiedFile};
+            if ( ! userSpecifiedFile.exists()) {
+            System.err.println(strings.get("xmlNotFound", userSpecifiedFile.getAbsolutePath()));
+        }
+
+        
+        }
+        return files;
+        
     }
 
     private File findInstallDir(final File currentJarFile) throws URISyntaxException {
@@ -488,6 +507,26 @@ public class PackageAppClient {
         return false;
     }
 
+    /**
+     * Returns the value for the specified option.
+     * @param option option name to search the args for
+     * @param args args to search
+     * @return token after the specified optionon the command line, if any; 
+     * @throws IllegalArgumentException if there is no value on the command line for the specified option
+     */
+    private String argValue(final String option, final String[] args) {
+        
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals(option)) {
+                if (i + 1 < args.length) {
+                    return args[i+1];
+                } else {
+                    throw new IllegalArgumentException(option);
+                }
+            }
+        }
+        return null;
+    }
     /**
      * Returns a File object for the JAR file that contains this class.
      *
