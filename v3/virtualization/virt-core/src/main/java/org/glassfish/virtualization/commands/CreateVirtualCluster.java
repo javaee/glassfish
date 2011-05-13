@@ -93,8 +93,8 @@ public class CreateVirtualCluster implements AdminCommand {
     @Inject
     GroupsAccess groups;
 
-    @Inject
-    Virtualizations virts;
+    @Inject(optional=true)
+    Virtualizations virts=null;
 
     @Inject
     VirtualClusters clusters;
@@ -105,6 +105,10 @@ public class CreateVirtualCluster implements AdminCommand {
     @Override
     public void execute(AdminCommandContext context) {
 
+        if (virts==null) {
+            context.getActionReport().failure(RuntimeContext.logger, "No virtualization configuration present");
+            return;
+        }
         try {
             if (Integer.parseInt(min)>Integer.parseInt(max)) {
                 context.getActionReport().failure(RuntimeContext.logger, "Invalid parameters, min > max");
