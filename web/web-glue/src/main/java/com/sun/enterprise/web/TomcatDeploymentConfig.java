@@ -507,6 +507,10 @@ public class TomcatDeploymentConfig {
             if (gfSessionCookieConfig.getSecure() != null) {
                 sessionCookieConfig.setSecure(gfSessionCookieConfig.getSecure());
             }
+
+            if (gfSessionCookieConfig.getHttpOnly() != null) {
+                sessionCookieConfig.setHttpOnly(gfSessionCookieConfig.getHttpOnly());
+            }
         }
 
         enumeration = wmd.getWelcomeFiles();

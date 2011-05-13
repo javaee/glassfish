@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -126,6 +126,15 @@ public final class SessionCookieConfig {
     private String _secure = DYNAMIC_SECURE;
 
     /**
+     * The Boolean (if set) indicates whether the session coookie will
+     * be marked as httpOnly.
+     *
+     * The default value is true will be set in
+     * org.apache.catalina.core.SessionCookieConfigImpl
+     */
+    private Boolean _httpOnly = null;
+
+    /**
      * Construct a new SessionCookieConfig with the specified properties.
      *
      * @param name    The name of the cookie used for session tracking
@@ -243,6 +252,14 @@ public final class SessionCookieConfig {
         return _secure;
     }
 
+    public void setHttpOnly(Boolean httpOnly) {
+        _httpOnly = httpOnly;
+    }
+
+    public Boolean getHttpOnly() {
+        return _httpOnly;
+    }
+
     // --------------------------------------------------------- Public Methods
 
     /**
@@ -251,8 +268,10 @@ public final class SessionCookieConfig {
     public String toString() {
 
         StringBuilder sb = new StringBuilder("SessionCookieConfig[");
-        sb.append("name=");
-        sb.append(_name);
+        if (_name != null) {
+            sb.append("name=");
+            sb.append(_name);
+        }
         if (_path != null) {
             sb.append(", path=");
             sb.append(_path);
@@ -266,6 +285,12 @@ public final class SessionCookieConfig {
         if (_comment != null) {
             sb.append(", comment=");
             sb.append(_comment);
+        }
+        sb.append(", secure=");
+        sb.append(_secure);
+        if (_httpOnly != null) {
+            sb.append(", httpOnly=");
+            sb.append(_httpOnly);
         }
         sb.append("]");
         return (sb.toString());
