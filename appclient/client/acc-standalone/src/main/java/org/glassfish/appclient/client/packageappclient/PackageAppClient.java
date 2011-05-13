@@ -92,6 +92,8 @@ public class PackageAppClient {
 
     private final static String GLASSFISH_BIN = "glassfish/bin";
 
+    private final static String GLASSFISH_CONFIG = "glassfish/config";
+
     private final static String MODULES_ENDORSED_DIR = "glassfish/modules/endorsed";
 
     private final static String MQ_LIB = "mq/lib";
@@ -136,7 +138,9 @@ public class PackageAppClient {
     private final static String WIN_JS = GLASSFISH_BIN + "/appclient.js";
     private final static String NONWIN_SCRIPT = GLASSFISH_BIN + "/appclient";
 
-
+    private final static String ASENV_CONF = GLASSFISH_CONFIG + "/asenv.conf";
+    private final static String ASENV_BAT = GLASSFISH_CONFIG + "/asenv.bat";
+    
     private final static String[] SINGLE_FILES_TO_COPY = {
         IMQJMSRA_APP,
         IMQ_JAR,
@@ -145,7 +149,9 @@ public class PackageAppClient {
         FSCONTEXT_JAR,
         WIN_SCRIPT,
         WIN_JS,
-        NONWIN_SCRIPT};
+        NONWIN_SCRIPT,
+        ASENV_CONF,
+        ASENV_BAT};
 
     /* default output file */
     private final static String DEFAULT_OUTPUT_PATH = GLASSFISH_LIB +  "/appclient.jar";
