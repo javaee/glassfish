@@ -64,10 +64,7 @@ import org.glassfish.loader.util.ASClassLoaderUtil;
 import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.io.JaxrpcMappingDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.JaxrpcMappingDescriptor.Mapping;
-import com.sun.enterprise.deployment.util.ApplicationVisitor;
-import com.sun.enterprise.deployment.util.ModuleContentLinker;
-import com.sun.enterprise.deployment.util.WebServerInfo;
-import com.sun.enterprise.deployment.util.XModuleType;
+import com.sun.enterprise.deployment.util.*;
 import com.sun.enterprise.deployment.*;
 import org.glassfish.deployment.common.InstalledLibrariesResolver;
 import org.glassfish.deployment.common.ClientArtifactsManager;
@@ -140,7 +137,7 @@ public class JaxRpcRICodegen extends ModuleContentLinker
     @Override
     public void run(Habitat habitat, DeploymentContext context, String cp) throws Exception {
         rootLocation_ = new FileArchive();
-        BundleDescriptor bundle = context.getModuleMetaData(BundleDescriptor.class);
+        BundleDescriptor bundle = DOLUtils.getCurrentBundleForContext(context);
         if (bundle.hasWebServiceClients() && (bundle instanceof ApplicationClientDescriptor)) {
             hasWebServiceClients = true;
         }
