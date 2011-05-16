@@ -129,13 +129,13 @@ public class TemplateExecCommand {
         ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
         ActionReportResult option = options();
         ActionReportResult results = new ActionReportResult(commandName, actionReport, option.getMetaData());
-        results.getActionReport().setExtraProperties(option.getActionReport().getExtraProperties());
+        results.getActionReport().getExtraProperties().putAll(option.getActionReport().getExtraProperties());
         results.setCommandDisplayName(commandDisplayName);
         int status =HttpURLConnection.HTTP_OK; /*200 - ok*/
         if (exitCode == ActionReport.ExitCode.FAILURE) {
-            status = HttpURLConnection.HTTP_INTERNAL_ERROR;         
+            status = HttpURLConnection.HTTP_INTERNAL_ERROR;
         }
-        results.setStatusCode(status); 
+        results.setStatusCode(status);
 
         return Response.status(status).entity(results).build();
 
@@ -143,7 +143,7 @@ public class TemplateExecCommand {
 
     /*override it
      *
-     * 
+     *
      */
 
     protected HashMap<String, String> getCommandParams() {
@@ -188,7 +188,7 @@ public class TemplateExecCommand {
                 }
             }
             data.remove("jsoncallback"); //these 2 are for JSONP padding, not needed for CLI execs
-            data.remove("_");          
+            data.remove("_");
         }
     }
 
