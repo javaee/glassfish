@@ -304,36 +304,54 @@ public class UniformLogFormatter extends Formatter {
             recordBuffer.append(getRecordFieldSeparator() != null ? getRecordFieldSeparator() : FIELD_SEPARATOR);
 
             String logMessage = record.getMessage();
+            // in some case no msg is passed to the logger API. We assume that either:
+            // 1. A message was logged in a previous logger call and now just the exception is logged.
+            // 2. There is a bug in the calling code causing the message to be missing.
             if (logMessage == null || logMessage.trim().equals("")) {
-                logMessage = "The log message is null.";
-            }
-            if (logMessage.indexOf("{0}") >= 0 && record.getParameters() != null) {
-                // If we find {0} or {1} etc., in the message, then it's most
-                // likely finer level messages for Method Entry, Exit etc.,
-                logMessage = java.text.MessageFormat.format(
-                        logMessage, record.getParameters());
+
+                if (record.getThrown() != null) {
+                    // case 1: Just log the exception instead of a message
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    record.getThrown().printStackTrace(pw);
+                    pw.close();
+                    recordBuffer.append(sw.toString());
+                    sw.close();
+                } else {
+                    // case 2: Log an error message (using original severity)
+                    logMessage = "The log message is empty or null. Please log an issue against the component in the logger field.";
+                    recordBuffer.append(logMessage);
+                }
             } else {
-                ResourceBundle rb = getResourceBundle(record.getLoggerName());
-                if (rb != null) {
-                    try {
-                        logMessage = MessageFormat.format(
-                                rb.getString(logMessage),
-                                record.getParameters());
-                    } catch (java.util.MissingResourceException e) {
-                        // If we don't find an entry, then we are covered 
-                        // because the logMessage is intialized already
+                if (logMessage.indexOf("{0}") >= 0 && record.getParameters() != null) {
+                    // If we find {0} or {1} etc., in the message, then it's most
+                    // likely finer level messages for Method Entry, Exit etc.,
+                    logMessage = java.text.MessageFormat.format(
+                            logMessage, record.getParameters());
+                } else {
+                    ResourceBundle rb = getResourceBundle(record.getLoggerName());
+                    if (rb != null) {
+                        try {
+                            logMessage = MessageFormat.format(
+                                    rb.getString(logMessage),
+                                    record.getParameters());
+                        } catch (java.util.MissingResourceException e) {
+                            // If we don't find an entry, then we are covered 
+                            // because the logMessage is initialized already
+                        }
                     }
                 }
-            }
-            recordBuffer.append(logMessage);
-
-            if (record.getThrown() != null) {
-                recordBuffer.append(LINE_SEPARATOR);
-                StringWriter sw = new StringWriter();
-                PrintWriter pw = new PrintWriter(sw);
-                record.getThrown().printStackTrace(pw);
-                pw.close();
-                recordBuffer.append(sw.toString());
+                recordBuffer.append(logMessage);
+    
+                if (record.getThrown() != null) {
+                    recordBuffer.append(LINE_SEPARATOR);
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    record.getThrown().printStackTrace(pw);
+                    pw.close();
+                    recordBuffer.append(sw.toString());
+                    sw.close();
+                }
             }
 
             recordBuffer.append((getRecordEndMarker() != null ? getRecordEndMarker() : RECORD_END_MARKER) + LINE_SEPARATOR + LINE_SEPARATOR);
