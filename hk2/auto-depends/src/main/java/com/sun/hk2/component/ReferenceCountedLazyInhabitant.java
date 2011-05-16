@@ -36,6 +36,7 @@
  */
 package com.sun.hk2.component;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
@@ -56,7 +57,7 @@ import org.jvnet.hk2.component.PreDestroy;
 @SuppressWarnings("unchecked")
 public class ReferenceCountedLazyInhabitant<T> extends EventPublishingInhabitant<T> {
 
-  private volatile T object;
+  private volatile WeakReference<T> ref;
   private volatile Inhabitant<?> onBehalfOf;
   private final AtomicInteger refCount;
   
@@ -66,7 +67,14 @@ public class ReferenceCountedLazyInhabitant<T> extends EventPublishingInhabitant
   
   public ReferenceCountedLazyInhabitant(Inhabitant<?> delegate, int startingRefCount) {
     super(delegate);
+    ref = new WeakReference(null);
     refCount = new AtomicInteger(startingRefCount);
+  }
+  
+  @Override
+  protected void finalize() throws Throwable {
+    releaseFinal();
+    super.finalize();
   }
   
   int getRefCount() {
@@ -75,43 +83,50 @@ public class ReferenceCountedLazyInhabitant<T> extends EventPublishingInhabitant
 
   @Override
   public T get(Inhabitant onBehalfOf) {
-    T object = this.object; 
+    T object = null; 
     int val = refCount.incrementAndGet();
     if (1 == val || null == this.onBehalfOf) {
       try {
-        object = this.object = super.get(onBehalfOf);
+        object = super.get(onBehalfOf);
+        ref = new WeakReference(object);
       } catch (RuntimeException e) {
         logger.log(Level.FINE, "error encountered", new ComponentException(e));
         refCount.decrementAndGet(); // ignore result
         throw e;
       }
-      this.onBehalfOf = onBehalfOf;
+      if (null != object) {
+        this.onBehalfOf = onBehalfOf;
+      }
+    } else {
+      object = ref.get();
     }
-    assert (onBehalfOf == this.onBehalfOf) : "wrong onBehalfOf context";
+    assert (onBehalfOf == this.onBehalfOf || null == this.onBehalfOf) : "wrong onBehalfOf context";
     return object;
   }
 
   @Override
   public void release() {
     int val = refCount.decrementAndGet();
-    if (val < 0) {  // somebody go too far in release()?
-      refCount.set(0);
-      val = 0;
-    }
+    assert (val >= 0) : "too many releases";
     
     if (0 == val) {
       try {
-        if (PreDestroy.class.isInstance(object)) {
-          PreDestroy.class.cast(object).preDestroy();
-        }
+        releaseFinal();
       } catch (RuntimeException e) {
         logger.log(Level.FINE, "error encountered", new ComponentException(e));
         throw e;
       } finally {
-        this.object = null;
+        this.ref = new WeakReference(null);
         this.onBehalfOf = null;
         super.release();
       }
+    }
+  }
+
+  private void releaseFinal() {
+    Object object = ref.get();
+    if (PreDestroy.class.isInstance(object)) {
+      PreDestroy.class.cast(object).preDestroy();
     }
   }
   
