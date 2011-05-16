@@ -93,30 +93,29 @@ public class FormWriter implements MessageBodyWriter<Dom> {
     }
 
     private String constructForm(Dom data) {
-        String ret = "";
-     //   StringBuilder sb= new StringBuilder();
-        ret = ret +
-                "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n" +
-                "<html><head><title>Data</title></head>\n" +
-                "<body><p>Change "+data.toString()+":</p>\n" +
-                "<form name='pair' action='"+uriInfo.getAbsolutePath()+"' method='POST'>\n" +
-                "<table>\n";
-
+        StringBuilder sb= new StringBuilder();
+        sb.append(
+                "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n").
+                append("<html><head><title>Data</title></head>\n").
+                append("<body><p>Change ").append(data.toString()).append(":</p>\n" ).
+                append("<form name='pair' action='").append(uriInfo.getAbsolutePath()).append("' method='POST'>\n").
+                append("<table>\n");
+        
         Set<String> ss = data.model.getAttributeNames();
 
             for (String name : ss) {
-            ret = ret +
-                    "   <tr>\n" +
-                    "       <td align='right'>"+name+":</td>\n" +
-                    "       <td><input type='text' name='"+name+"' value='"+data.attribute(name)+"' size='30' /></td>\n" +
-                    "   </tr>\n";
+            sb.append(
+                    "   <tr>\n").
+                    append("       <td align='right'>").append(name).append(":</td>\n").
+                    append("       <td><input type='text' name='").append(name).append("' value='").append(data.attribute(name)).append("' size='30' /></td>\n").
+                    append("   </tr>\n");
         }
 
-        ret = ret +
-                "   <tr><td></td><td><input type='submit' value='Set' name='submit' /></td></tr>\n" +
-                "</table></form>\n</body></html>";
+        sb.append(
+                "   <tr><td></td><td><input type='submit' value='Set' name='submit' /></td></tr>\n" ).
+                append("</table></form>\n</body></html>");
 
-        return ret;
+        return sb.toString();
     }
 
 }
