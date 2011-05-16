@@ -55,6 +55,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -66,11 +67,13 @@ import java.util.logging.Logger;
  */
 @SuppressWarnings("unchecked")
 public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T> {
+    private static final boolean MANAGED_ENABLED = Habitat.MANAGED_INJECTION_POINTS_ENABLED;
+    
     protected static final Logger logger = Logger.getLogger(ScopeInstance.class.getName());
 
     private Collection<Inhabitant> companions;
 
-    private Collection<Inhabitant<?>> managed;
+    private volatile Collection<Inhabitant<?>> managed;
 
     @Override
     public String toString() {
@@ -147,14 +150,42 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T> {
       return new ReferenceCountedLazyInhabitant<T>(this);
     }
 
+    public synchronized int getManagedCount() {
+      if (null == managed) {
+        return 0;
+      }
+
+      cleanManaged();
+      return managed.size();
+    }
+    
     @Override
-    public void manage(Inhabitant<?> managedInhabitant) {
+    public synchronized void manage(Inhabitant<?> managedInhabitant) {
+      if (!MANAGED_ENABLED) {
+        return;
+      }
+      
       assert(null != managedInhabitant);
       assert(this != managedInhabitant);
       if (null == managed) {
         managed = new ArrayList<Inhabitant<?>>();
+      } else {
+        cleanManaged();
       }
+      
       managed.add(managedInhabitant);
+    }
+
+    /**
+     * Clean out old, gc-collected managed inhabitants
+     */
+    private void cleanManaged() {
+      Iterator<Inhabitant<?>> iter = managed.iterator();
+      while (iter.hasNext()) {
+        if (!iter.next().isInstantiated()) {
+          iter.remove();
+        }
+      }
     }
 
     @Override
@@ -171,7 +202,7 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T> {
       }
     }
     
-    protected void releaseManaged() {
+    protected synchronized void releaseManaged() {
       if (null != managed) {
         RuntimeException lastException = null;
         
