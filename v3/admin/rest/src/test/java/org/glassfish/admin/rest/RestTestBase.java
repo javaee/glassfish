@@ -88,7 +88,7 @@ public class RestTestBase {
         if (address.startsWith("http://")) {
             return address;
         }
-        
+
         return baseUrl + address;
     }
 
@@ -99,7 +99,7 @@ public class RestTestBase {
     protected void authenticate() {
         client.addFilter(new HTTPBasicAuthFilter(AUTH_USER_NAME, AUTH_PASSWORD));
     }
-    
+
     protected <T> T getTestClass(Class<T> clazz) {
         try {
             T test = clazz.newInstance();
@@ -134,7 +134,7 @@ public class RestTestBase {
     protected ClientResponse get(String address) {
         return get(address, new HashMap<String, String>());
     }
-    
+
     protected ClientResponse get(String address, Map<String, String> payload) {
         return client.resource(getAddress(address)).queryParams(buildMultivaluedMap(payload)).accept(RESPONSE_TYPE).get(ClientResponse.class);
     }
@@ -176,7 +176,10 @@ public class RestTestBase {
     }
 
     protected ClientResponse delete(String address, Map<String, String> payload) {
-        return client.resource(getAddress(address)).queryParams(buildMultivaluedMap(payload)).accept(RESPONSE_TYPE).delete(ClientResponse.class);
+        return client.resource(getAddress(address))
+                .queryParams(buildMultivaluedMap(payload))
+                .accept(RESPONSE_TYPE)
+                .delete(ClientResponse.class);
     }
 
     /**
@@ -279,14 +282,14 @@ public class RestTestBase {
             fail("Expected a status less than 200 or greater than 299 (inclusive).  Found " + status);
         }
     }
-    
+
     protected String getErrorMessage(ClientResponse cr) {
         String message = null;
         Map map = MarshallingUtils.buildMapFromDocument(cr.getEntity(String.class));
         if (map != null) {
             message = (String)map.get("message");
         }
-        
+
         return message;
     }
 

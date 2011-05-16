@@ -61,15 +61,15 @@ import static org.junit.Assert.*;
 public class JvmOptionsTest extends RestTestBase {
     protected static final String URL_SERVER_JVM_OPTIONS = "/domain/configs/config/server-config/java-config/jvm-options";
     protected static final String URL_DEFAULT_JVM_OPTIONS = "/domain/configs/config/default-config/java-config/jvm-options";
-    
+
     protected static final String URL_SERVER_CONFIG_CREATE_PROFILER = "/domain/configs/config/server-config/java-config/create-profiler";
     protected static final String URL_SERVER_CONFIG_DELETE_PROFILER = "/domain/configs/config/server-config/java-config/profiler/delete-profiler";
     protected static final String URL_SERVER_CONFIG_PROFILER_JVM_OPTIONS = "/domain/configs/config/server-config/java-config/profiler/jvm-options";
-    
+
     protected static final String URL_DEFAULT_CONFIG_CREATE_PROFILER = "/domain/configs/config/default-config/java-config/create-profiler";
     protected static final String URL_DEFAULT_CONFIG_DELETE_PROFILER = "/domain/configs/config/default-config/java-config/profiler/delete-profiler";
     protected static final String URL_DEFAULT_CONFIG_PROFILER_JVM_OPTIONS = "/domain/configs/config/default-config/java-config/profiler/jvm-options";
-    
+
     private ConfigTest configTest;
     private String testConfigName;
     private String URL_TEST_CONFIG;
@@ -87,7 +87,7 @@ public class JvmOptionsTest extends RestTestBase {
             add("id", testConfigName);
         }};
         configTest.createAndVerifyConfig(testConfigName, formData);
-        
+
         URL_TEST_CONFIG = "/domain/configs/config/" + testConfigName;
         URL_TEST_CONFIG_JVM_OPTIONS = URL_TEST_CONFIG + "/java-config/jvm-options";
     }
@@ -96,8 +96,8 @@ public class JvmOptionsTest extends RestTestBase {
     public void deleteConfig() {
         configTest.deleteAndVerifyConfig(testConfigName);
     }
-    
-    
+
+
     @Test
     public void getJvmOptions() {
         ClientResponse response = get(URL_SERVER_JVM_OPTIONS);
@@ -113,7 +113,7 @@ public class JvmOptionsTest extends RestTestBase {
         Map<String, String> newOptions = new HashMap<String, String>() {{
             put(optionName, "someValue");
         }};
-        
+
 
 //        Map<String, String> payload = buildJvmOptionsPayload(newOptions);
         ClientResponse response = put(URL_TEST_CONFIG_JVM_OPTIONS, newOptions);
@@ -176,7 +176,7 @@ public class JvmOptionsTest extends RestTestBase {
         jvmOptions = getJvmOptions(response);
         assertFalse(jvmOptions.contains(optionName));
     }
-    
+
     @Test
     public void testProfilerJvmOptions() {
         final String profilerName = "profiler" + generateRandomString();
@@ -190,22 +190,22 @@ public class JvmOptionsTest extends RestTestBase {
 //            put("profiler", "true");
             put(optionName, "");
         }};
-        
+
         deleteProfiler(URL_TEST_CONFIG + "/java-config/profiler/delete-profiler", testConfigName, false);
 
         ClientResponse response = post(URL_TEST_CONFIG + "/java-config/create-profiler", attrs);
         assertTrue(isSuccess(response));
-        
+
         response = put(URL_TEST_CONFIG + "/java-config/profiler/jvm-options", newOptions);
         assertTrue(isSuccess(response));
-        
+
         response = get(URL_TEST_CONFIG + "/java-config/profiler/jvm-options");
         List<String> jvmOptions = getJvmOptions(response);
         assertTrue(jvmOptions.contains(optionName));
-        
+
         deleteProfiler(URL_TEST_CONFIG + "/java-config/profiler/delete-profiler", testConfigName, true);
     }
-    
+
     @Test
     public void testJvmOptionWithColon() {
         final String optionName = "-XX:MaxPermSize";
@@ -226,7 +226,7 @@ public class JvmOptionsTest extends RestTestBase {
         jvmOptions = getJvmOptions(response);
         assertFalse(jvmOptions.contains(optionName+"="+optionValue));
     }
-    
+
     protected void deleteProfiler(final String url, final String target, final boolean failOnError) {
         ClientResponse response = delete (url, new HashMap() {{ put ("target", target); }});
         if (failOnError) {
