@@ -114,7 +114,7 @@ public class SecurityUtil {
         }
 
         if (!goodRealms.isEmpty()) {
-            String goodRealm = goodRealms.iterator().next();
+            //not used String goodRealm = goodRealms.iterator().next();
             try {
                 String defaultRealm = getSecurityService().getDefaultRealm();
                 /*Realm r = */Realm.getInstance(defaultRealm);
