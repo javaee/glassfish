@@ -102,8 +102,9 @@
         <striplinebreaks/>
       </filterchain>
     </loadfile>
+    <!-- Following regex is explained here http://www.regular-expressions.info/completelines.html -->
     <property name="excl_msgs" value="^(?:(?!dummymsg${log_msg_excl}).)*$"/>
-	<!--echo>${excl_msgs}</echo-->
+    <!--echo>excl_msgs: ${excl_msgs}</echo-->
     <!-- copy log file, filter excluded loggers and messages (start-up, stacktrace, etc.) -->
     <!-- further checks are based on this file -->
     <copy file="${server.log.path}" tofile="${log.msg.tmp.path}" overwrite="true">

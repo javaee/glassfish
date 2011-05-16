@@ -188,16 +188,11 @@ Persisting ....
 JpaBean id=1, name=JpaBean
 ==== : com.sun.ejb.containers.EJBLocalObjectInvocationHandler@
 In HelloBean::woke up from 5second sleep
-Got message!!!
-Calling hello
 HelloStateless
 HelloStateful
 Business method marked with @Remove called in local ejb3.0 stateful
 PRE-DESTROY callback received in local ejb3.0 stateful
 NRU-com.sun.mdb.HelloStateful: Cannot load from  BACKUPSTORE FOR Key: 
-Successfully caught EJBException after  accessing removed SFSB
-Sending message
-message sent
 In InterceptorB::init()
 StatelessBean = numberguess.StatelessLocal_
 In InterceptorA::init()
@@ -229,6 +224,14 @@ Failed to check connection
 singleton =
 bvsize
 Hello
+# from ejb/mdb test
+Got message!!!
+Calling hello
+Successfully caught EJBException after  accessing removed SFSB
+javax.ejb.NoSuchObjectLocalException: The EJB does not exist. session-key: 
+Sending message
+message sent
+
 
 # From LocalStrings.properties file - No need to fix this
 was successfully deployed in
@@ -246,6 +249,9 @@ Process executing stclient command failed
 The Admin Console is starting. Please wait
 Admin Console: Initializing Session Attributes...
 Shutdown procedure finished
+
+# From core/kernel AppServerStartup.java - Only logged when env. var. AS_DEBUG is set to true
+TOTAL TIME INCLUDING CLI: 
 
 # Cloud relagted changes need to handle later on
 Interceptor called for
