@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -64,9 +64,9 @@ import com.sun.enterprise.universal.glassfish.TokenResolver;
 import com.sun.enterprise.util.io.DomainDirs;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.net.NetUtils;
 
 import com.trilead.ssh2.SFTPv3DirectoryEntry;
-import com.trilead.ssh2.Connection;
 
 import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.Dom;
@@ -243,7 +243,7 @@ public abstract class SSHCommandsBase extends CLICommand {
      * @param host remote host
      * @return true|false
      */
-    protected boolean checkIfNodeExistsForHost(String host) {
+    protected boolean checkIfNodeExistsForHost(String host, String iDir) {
         boolean result = false;
         try {
             File domainsDirFile = DomainDirs.getDefaultDomainsDir();
@@ -268,7 +268,13 @@ public abstract class SSHCommandsBase extends CLICommand {
                     Nodes nodes = domain.getNodes();
 
                     for (Node node: nodes.getNode()) {
-                        if (node.getNodeHost().equals(host)) {
+                        //make it Unix style and remove trailing slash
+                        iDir = removeTrailingSlash(iDir.replaceAll("\\\\","/"));
+                        String d = removeTrailingSlash(node.getInstallDirUnixStyle());
+
+                        //check both hostname and install location
+                        if ((NetUtils.isEqual(node.getNodeHost(), host) ||
+                                NetUtils.isThisHostLocal(host)) && d.equals(iDir)) {
                             result = true;
                         }
                     }
@@ -287,6 +293,18 @@ public abstract class SSHCommandsBase extends CLICommand {
             }
         }
         return result;        
+    }
+
+     /**
+     * Remove trailing slash from a path string
+     * @param s
+     * @return
+     */
+    String removeTrailingSlash(String s) {
+        if (s.endsWith("/")) {
+            s = s.substring(0, s.length() - 1);
+        }
+        return s;
     }
     
     /**
