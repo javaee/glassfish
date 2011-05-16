@@ -12,7 +12,7 @@
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
- * When distributing the software, include this License Header Notice in each 
+ * When distributing the software, include this License Header Notice in each
  * file and include the License file at packager/legal/LICENSE.txt.
  *
  * GPL Classpath Exception:
@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.rest.cli;
 
 import com.sun.enterprise.config.serverbeans.AuthRealm;
@@ -61,6 +60,10 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.admin.ExecuteOn;
+import org.glassfish.api.admin.RestAttachment;
+import org.glassfish.api.admin.RestAttachment.OpType;
+import org.glassfish.api.admin.RestAttachments;
+import org.glassfish.api.admin.RestParam;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.CommandTarget;
@@ -80,34 +83,38 @@ import org.jvnet.hk2.config.types.Property;
 @Scoped(PerLookup.class)
 @CommandLock(CommandLock.LockType.NONE)
 @ExecuteOn({RuntimeType.DAS})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,
-CommandTarget.CLUSTER, CommandTarget.CONFIG,CommandTarget.CLUSTERED_INSTANCE})
+@TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE,
+    CommandTarget.CLUSTER, CommandTarget.CONFIG, CommandTarget.CLUSTERED_INSTANCE})
+//        {"Config", "__synchronize-realm-from-config", "POST", "synchronize-realm-from-config", "Synchronize-realm-from-config", "target=$parent"},
+@RestAttachments({
+    @RestAttachment(configBean=Config.class,
+        opType=OpType.POST,
+        description="Synchronize-realm-from-config",
+        path="synchronize-realm-from-config",
+        params={
+            @RestParam(name="target", value="$parent")
+        })
+})
 public class SynchronizeRealmFromConfig implements AdminCommand {
 
     @Inject
     com.sun.enterprise.config.serverbeans.Domain domain;
-
     //TODO: for consistency with other commands dealing with realms
     //uncomment this below.
     //@Param(name="authrealmname")
     @Param
     String realmName;
-
-    @Param(name = "target", primary=true, optional = true, defaultValue =
+    @Param(name = "target", primary = true, optional = true, defaultValue =
     SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     private String target;
-
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Config config;
-
     @Inject
     private Configs configs;
-
     @Inject
     RealmsManager realmsManager;
-
     private static final LocalStringManagerImpl _localStrings =
-	new LocalStringManagerImpl(SupportsUserManagementCommand.class);
+            new LocalStringManagerImpl(SupportsUserManagementCommand.class);
 
     @Override
     public void execute(AdminCommandContext context) {
@@ -140,10 +147,10 @@ public class SynchronizeRealmFromConfig implements AdminCommand {
             Realm r = realmsManager.getFromLoadedRealms(realConfig.getName(), realmName);
             if (r == null) {
                 //realm is not loaded yet
-                report .setMessage(
+                report.setMessage(
                         _localStrings.getLocalString("REALM_SYNCH_SUCCESSFUL",
                         "Synchronization of Realm {0} from Configuration Successful.",
-                        new Object[] {realmName}));
+                        new Object[]{realmName}));
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
                 return;
             }
@@ -151,10 +158,10 @@ public class SynchronizeRealmFromConfig implements AdminCommand {
             realmsManager.removeFromLoadedRealms(realConfig.getName(), realmName);
             boolean done = this.instantiateRealm(realConfig, realmName);
             if (done) {
-                report .setMessage(
+                report.setMessage(
                         _localStrings.getLocalString("REALM_SYNCH_SUCCESSFUL",
                         "Synchronization of Realm {0} from Configuration Successful.",
-                        new Object[] {realmName}));
+                        new Object[]{realmName}));
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
                 return;
             }
@@ -180,9 +187,9 @@ public class SynchronizeRealmFromConfig implements AdminCommand {
         Properties extraProperties = new Properties();
         Map<String, Object> entity = new HashMap<String, Object>();
         mp.setMessage(_localStrings.getLocalString("RESTART_REQUIRED",
-                      "Restart required for configuration updates to active server realm: {0}.",
-                       new Object[] {realmName}));
-        entity.put("restartRequired","true");
+                "Restart required for configuration updates to active server realm: {0}.",
+                new Object[]{realmName}));
+        entity.put("restartRequired", "true");
         extraProperties.put("entity", entity);
         ((ActionReport) report).setExtraProperties(extraProperties);
     }
@@ -204,9 +211,6 @@ public class SynchronizeRealmFromConfig implements AdminCommand {
         }
         throw new NoSuchRealmException(
                 _localStrings.getLocalString("NO_SUCH_REALM", "No Such Realm: {0}",
-                new Object[] {realmName}));
+                new Object[]{realmName}));
     }
-
 }
-
-
