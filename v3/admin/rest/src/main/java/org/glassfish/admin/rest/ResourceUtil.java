@@ -523,15 +523,12 @@ public class ResourceUtil {
 
         if ("true".equals(data.get("__remove_empty_entries__"))) {
             data.remove("__remove_empty_entries__");
-
-            Set<String> keys = data.keySet();
-            Iterator<String> iterator = keys.iterator();
-            String key;
-            while (iterator.hasNext()) {
-                key = iterator.next();
-                if ((data.get(key) == null) || (data.get(key).length() < 1)) {
-                    data.remove(key);
-                    iterator = keys.iterator();
+            //findbug
+            for (Iterator<Map.Entry<String, String>> i = data.entrySet().iterator(); i.hasNext();) {
+                Map.Entry<String, String> entry = i.next();
+                String value = entry.getValue();
+                if ((value == null) || (value.length() < 1)) {
+                    i.remove();
                 }
             }
         }
