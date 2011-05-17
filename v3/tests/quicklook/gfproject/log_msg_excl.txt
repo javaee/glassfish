@@ -252,6 +252,10 @@ Shutdown procedure finished
 
 # From core/kernel AppServerStartup.java - Only logged when env. var. AS_DEBUG is set to true
 TOTAL TIME INCLUDING CLI: 
+# From flashlight/framework BtraceClientGenerator.java - Only logged when env. var. AS_DEBUG is set to true
+\*\*\*\* Generated BTRACE Client
+# From common/common/util NetUtils.java - Only logged when env. var. AS_DEBUG is set to true
+ --> FREE
 
 # Cloud relagted changes need to handle later on
 Interceptor called for
