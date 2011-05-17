@@ -37,17 +37,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.config.support;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+package org.glassfish.config.support;
 
 import com.sun.enterprise.config.serverbeans.AccessLog;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.grizzly.config.dom.Http;
-import com.sun.grizzly.config.dom.Protocol;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -55,6 +51,11 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public class HttpServicePropertiesUpgrade extends BaseLegacyConfigurationUpgrade {
@@ -64,26 +65,36 @@ public class HttpServicePropertiesUpgrade extends BaseLegacyConfigurationUpgrade
     public void execute(AdminCommandContext context) {
         for (Config config : configs.getConfig()) {
             HttpService service = config.getHttpService();
-            if (service != null) {
-                try {
-                    for (Property property : service.getProperty()) {
+            if(service == null)
+                continue;
+            boolean done = false;
+            try {
+                final List<Property> properties = service.getProperty();
+                final Iterator<Property> iterator = properties.iterator();
+                while (!done && iterator.hasNext()) {
+                    final Property property = iterator.next();
+                    String name = property.getName();
+                    if ("accessLoggingEnabled".equals(name)
+                        || "accessLogBufferSize".equals(name)
+                        || "accessLogWriteInterval".equals(name)
+                        || "sso-enabled".equals(name)) {
+                        done = true;
                         upgrade(context, property, service);
                     }
-                } catch (TransactionFailure tf) {
-                    Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading http-service properties."
-                        + "  Please check logs for errors", tf);
-                    throw new RuntimeException(tf);
                 }
+            } catch (TransactionFailure tf) {
+                Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading http-service properties."
+                    + "  Please check logs for errors", tf);
+                throw new RuntimeException(tf);
             }
         }
     }
 
     private void upgrade(final AdminCommandContext context, final Property property, final HttpService service)
-        throws TransactionFailure {
-        final String name = property.getName();
-        if ("accessLoggingEnabled".equals(name)) {
+            throws TransactionFailure {
+        if ("accessLoggingEnabled".equals(property.getName())) {
             updatePropertyToAttribute(context, service, "accessLoggingEnabled", "accessLoggingEnabled");
-        } else if ("accessLogBufferSize".equals(name)) {
+        } else if ("accessLogBufferSize".equals(property.getName())) {
             ConfigSupport.apply(new SingleConfigCode<AccessLog>() {
                 @Override
                 public Object run(AccessLog param) {
@@ -94,7 +105,7 @@ public class HttpServicePropertiesUpgrade extends BaseLegacyConfigurationUpgrade
             removeProperty(service, "accessLogBufferSize");
             report(context,
                 "Moved http-service.property.accessLogBufferSize to http-service.access-log.buffer-size-bytes");
-        } else if ("accessLogWriteInterval".equals(name)) {
+        } else if ("accessLogWriteInterval".equals(property.getName())) {
             ConfigSupport.apply(new SingleConfigCode<AccessLog>() {
                 @Override
                 public Object run(AccessLog param) {
@@ -105,28 +116,9 @@ public class HttpServicePropertiesUpgrade extends BaseLegacyConfigurationUpgrade
             removeProperty(service, "accessLogWriteInterval");
             report(context,
                 "Moved http-service.property.accessLogWriteInterval to http-service.access-log.write-interval-seconds");
-        } else if ("sso-enabled".equals(name)) {
+        } else if ("sso-enabled".equals(property.getName())) {
             updatePropertyToAttribute(context, service, "sso-enabled", "ssoEnabled");
-        } else if ("authPassthroughEnabled".equalsIgnoreCase(name)) {
-            for (Config config : configs.getConfig()) {
-                System.out.println("config = " + config);
-                for (Protocol protocol : config.getNetworkConfig().getProtocols().getProtocol()) {
-                    System.out.println("protocol = " + protocol);
-                    System.out.println("protocol.getHttp() = " + protocol.getHttp());
-                    if (protocol.getHttp() != null) {
-                        ConfigSupport.apply(new SingleConfigCode<Http>() {
-                            @Override
-                            public Object run(Http param) {
-                                param.setAuthPassThroughEnabled(property.getValue());
-                                return param;
-                            }
-                        }, protocol.getHttp());
-                    }
-                }
-            }
-            removeProperty(service, name);
-            report(context,
-                "Moved http-service.property.authPassthroughEnabled to http.auth-pass-through-enabled");
         }
     }
+
 }

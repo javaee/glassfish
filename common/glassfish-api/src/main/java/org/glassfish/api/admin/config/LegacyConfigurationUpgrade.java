@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,7 +45,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 
 /**
  * Contract for upgrading legacy configuration values to their new location or simply removing them if they are no
- * longer supported.  Implementations should notify the user any of any changes.
+ * longer supported.  Implmentations should notify the user any of any changes.
  *
  * @author Justin Lee
  */
