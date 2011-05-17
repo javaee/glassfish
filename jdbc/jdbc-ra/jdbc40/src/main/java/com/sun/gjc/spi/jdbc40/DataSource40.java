@@ -41,14 +41,15 @@
 package com.sun.gjc.spi.jdbc40;
 
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.gjc.common.DataSourceObjectBuilder;
 import com.sun.gjc.spi.ManagedConnectionFactory;
 import com.sun.gjc.spi.base.DataSource;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
-import java.sql.SQLException;
 import java.util.logging.Level;
 import java.sql.*;
+import java.util.logging.Logger;
 
 /**
  * Holds the <code>java.sql.Connection</code> object, which is to be
@@ -143,5 +144,18 @@ public class DataSource40 extends DataSource {
             throw new SQLException(e);
         }
         return result;
+    }
+
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        if(DataSourceObjectBuilder.isJDBC41()) {
+            try {
+                return (Logger) executor.invokeMethod(mcf.getDataSource().getClass(),
+                    "getParentLogger", null);
+            } catch (ResourceException ex) {
+                _logger.log(Level.SEVERE, "jdbc.ex_get_parent_logger", ex);
+                throw new SQLFeatureNotSupportedException(ex);
+            }
+        }
+        throw new UnsupportedOperationException("Operation not supported in this runtime.");
     }
 }

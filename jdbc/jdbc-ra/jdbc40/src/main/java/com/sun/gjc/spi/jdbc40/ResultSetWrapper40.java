@@ -41,15 +41,16 @@
 package com.sun.gjc.spi.jdbc40;
 
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.gjc.common.DataSourceObjectBuilder;
 import com.sun.gjc.spi.ManagedConnectionFactory;
 import com.sun.gjc.spi.base.ResultSetWrapper;
 
 import java.io.InputStream;
 import java.io.Reader;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+
 import java.sql.*;
+import java.util.logging.Level;
+import javax.resource.ResourceException;
 
 /**
  * Wrapper for ResultSet
@@ -108,6 +109,32 @@ public class ResultSetWrapper40 extends ResultSetWrapper {
      */
     public RowId getRowId(String columnLabel) throws SQLException {
         return resultSet.getRowId(columnLabel);
+    }
+
+    public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+        if (DataSourceObjectBuilder.isJDBC41()) {
+            Class<?>[] valueTypes = new Class<?>[]{Integer.TYPE, Class.class};
+            try {
+                return (T) executor.invokeMethod(resultSet, "getObject", valueTypes, columnIndex, type);
+            } catch (ResourceException ex) {
+                _logger.log(Level.SEVERE, "jdbc.ex_get_object", ex);
+                throw new SQLException(ex);
+            }
+        }
+        throw new UnsupportedOperationException("Operation not supported in this runtime.");
+    }
+
+    public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+        if (DataSourceObjectBuilder.isJDBC41()) {
+            Class<?>[] valueTypes = new Class<?>[]{String.class, Class.class};
+            try {
+                return (T) executor.invokeMethod(resultSet, "getObject", valueTypes, columnLabel, type);
+            } catch (ResourceException ex) {
+                _logger.log(Level.SEVERE, "jdbc.ex_get_object", ex);
+                throw new SQLException(ex);
+            }
+        }
+        throw new UnsupportedOperationException("Operation not supported in this runtime.");
     }
 
     /**

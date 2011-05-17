@@ -40,6 +40,8 @@
 
 package com.sun.gjc.spi.base;
 
+import com.sun.gjc.util.MethodExecutor;
+import com.sun.logging.LogDomains;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -47,6 +49,7 @@ import java.net.URL;
 import java.sql.*;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.logging.Logger;
 
 
 /**
@@ -56,6 +59,12 @@ public abstract class ResultSetWrapper implements ResultSet {
 
     protected ResultSet resultSet = null;
     protected Statement statement = null;
+    protected MethodExecutor executor = null;
+    protected final static Logger _logger;
+
+    static {
+        _logger = LogDomains.getLogger(MethodExecutor.class, LogDomains.RSR_LOGGER);
+    }
 
     /**
      * Abstract class for wrapping Statement<br>
@@ -66,6 +75,7 @@ public abstract class ResultSetWrapper implements ResultSet {
     public ResultSetWrapper(Statement stmt, ResultSet rs) {
         resultSet = rs;
         statement = stmt;
+        executor = new MethodExecutor();
     }
 
     /**

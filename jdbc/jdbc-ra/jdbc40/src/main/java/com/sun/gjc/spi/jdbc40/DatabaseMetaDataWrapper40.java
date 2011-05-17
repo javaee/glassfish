@@ -40,13 +40,12 @@
 
 package com.sun.gjc.spi.jdbc40;
 
+import com.sun.gjc.common.DataSourceObjectBuilder;
 import com.sun.gjc.spi.base.DatabaseMetaDataWrapper;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.*;
+import java.util.logging.Level;
+import javax.resource.ResourceException;
 
 /**
  * Wrapper class for DatabaseMetaData for JDBC 4.0 <br>
@@ -368,5 +367,35 @@ public class DatabaseMetaDataWrapper40 extends DatabaseMetaDataWrapper {
             result = databaseMetaData.isWrapperFor(iface);
         }
         return result;
+    }
+
+    public ResultSet getPseudoColumns(String catalog, String schemaPattern,
+            String tableNamePattern, String columnNamePattern) throws SQLException {
+        if (DataSourceObjectBuilder.isJDBC41()) {
+            Class<?>[] valueTypes = 
+                    new Class<?>[]{String.class, String.class, String.class, String.class};
+            try {
+                return (ResultSet) executor.invokeMethod(databaseMetaData, 
+                    "getPseudoColumns", valueTypes, catalog, schemaPattern, 
+                    tableNamePattern, columnNamePattern);
+            } catch (ResourceException ex) {
+                _logger.log(Level.SEVERE, "jdbc.ex_dmd_wrapper", ex);
+                throw new SQLException(ex);
+            }
+        }
+        throw new UnsupportedOperationException("Operation not supported in this runtime.");
+    }
+
+    public boolean generatedKeyAlwaysReturned() throws SQLException {
+        if (DataSourceObjectBuilder.isJDBC41()) {
+            try {
+                return (Boolean) executor.invokeMethod(databaseMetaData,
+                    "generatedKeyAlwaysReturned", null);
+            } catch (ResourceException ex) {
+                _logger.log(Level.SEVERE, "jdbc.ex_dmd_wrapper", ex);
+                throw new SQLException(ex);
+            }
+        }
+        throw new UnsupportedOperationException("Operation not supported in this runtime.");
     }
 }

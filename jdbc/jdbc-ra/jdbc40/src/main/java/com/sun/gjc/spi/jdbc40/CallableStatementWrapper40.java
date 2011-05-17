@@ -40,11 +40,14 @@
 
 package com.sun.gjc.spi.jdbc40;
 
+import com.sun.gjc.common.DataSourceObjectBuilder;
 import com.sun.gjc.spi.base.CallableStatementWrapper;
 
 import java.io.InputStream;
 import java.io.Reader;
 import java.sql.*;
+import java.util.logging.Level;
+import javax.resource.ResourceException;
 
 /**
  * Wrapper for JDBC 4.0 CallableStatement
@@ -1467,5 +1470,33 @@ public class CallableStatementWrapper40 extends CallableStatementWrapper {
         if (rs == null)
             return null;
         return new ResultSetWrapper40(this, rs);
+    }
+
+    public <T> T getObject(int parameterIndex, Class<T> type) throws SQLException {
+        if (DataSourceObjectBuilder.isJDBC41()) {
+            Class<?>[] valueTypes = new Class<?>[]{Integer.TYPE, Class.class};
+            try {
+                return (T) executor.invokeMethod(jdbcStatement, "getObject",
+                        valueTypes, parameterIndex, type);
+            } catch (ResourceException ex) {
+                _logger.log(Level.SEVERE, "jdbc.ex_get_object", ex);
+                throw new SQLException(ex);
+            }
+        }
+        throw new UnsupportedOperationException("Operation not supported in this runtime.");
+    }
+
+    public <T> T getObject(String parameterName, Class<T> type) throws SQLException {
+        if (DataSourceObjectBuilder.isJDBC41()) {
+            Class<?>[] valueTypes = new Class<?>[]{String.class, Class.class};
+            try {
+                return (T) executor.invokeMethod(jdbcStatement, "getObject",
+                        valueTypes, parameterName, type);
+            } catch (ResourceException ex) {
+                _logger.log(Level.SEVERE, "jdbc.ex_get_object", ex);
+                throw new SQLException(ex);
+            }
+        }
+        throw new UnsupportedOperationException("Operation not supported in this runtime.");
     }
 }

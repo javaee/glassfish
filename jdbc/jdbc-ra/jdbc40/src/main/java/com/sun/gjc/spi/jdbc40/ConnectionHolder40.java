@@ -41,6 +41,7 @@
 package com.sun.gjc.spi.jdbc40;
 
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.gjc.common.DataSourceObjectBuilder;
 import com.sun.gjc.spi.ManagedConnection;
 import com.sun.gjc.spi.ManagedConnectionFactory;
 import com.sun.gjc.spi.base.ConnectionHolder;
@@ -51,8 +52,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.*;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.resource.ResourceException;
 
 
 /**
@@ -538,5 +540,82 @@ public class ConnectionHolder40 extends ConnectionHolder {
         }
         super.close();
     }
-}
 
+    public void setSchema(String schema) throws SQLException {
+        if(DataSourceObjectBuilder.isJDBC41()) {
+            checkValidity();
+            Class<?>[] valueTypes = new Class<?>[]{String.class};
+            try {
+                executor.invokeMethod(con, "setSchema", valueTypes, schema);
+            } catch (ResourceException ex) {
+                _logger.log(Level.SEVERE, "jdbc.ex_connection_holder", ex);
+                throw new SQLException(ex);
+            }
+            return;
+        }
+        throw new UnsupportedOperationException("Operation not supported in this runtime.");
+    }
+
+    public String getSchema() throws SQLException {
+        if(DataSourceObjectBuilder.isJDBC41()) {
+            checkValidity();
+            try {
+                return (String) executor.invokeMethod(con, "getSchema", null);
+            } catch (ResourceException ex) {
+                _logger.log(Level.SEVERE, "jdbc.ex_connection_holder", ex);
+                throw new SQLException(ex);
+            }
+        }
+        throw new UnsupportedOperationException("Operation not supported in this runtime.");
+    }
+
+    public void setNetworkTimeout(Executor executorObj, int milliseconds)
+            throws SQLException {
+        if (DataSourceObjectBuilder.isJDBC41()) {
+            checkValidity();
+            Class<?>[] valueTypes = new Class<?>[]{Executor.class, Integer.TYPE};
+            try {
+                executor.invokeMethod(con, "setNetworkTimeout", valueTypes,  executorObj, milliseconds);
+            } catch (ResourceException ex) {
+                _logger.log(Level.SEVERE, "jdbc.ex_connection_holder", ex);
+                throw new SQLException(ex);
+            }
+            return;
+        }
+        throw new UnsupportedOperationException("Operation not supported in this runtime.");
+    }
+
+    public int getNetworkTimeout() throws SQLException {
+        if (DataSourceObjectBuilder.isJDBC41()) {
+            checkValidity();
+            try {
+                return (Integer) executor.invokeMethod(con, "getNetworkTimeout", null);
+            } catch (ResourceException ex) {
+                _logger.log(Level.SEVERE, "jdbc.ex_connection_holder", ex);
+                throw new SQLException(ex);
+            }
+        }
+        throw new UnsupportedOperationException("Operation not supported in this runtime.");
+    }
+
+    /**
+     * Abort operation to mark the connection internally as a bad connection
+     * for removal and to close the connection. This ensures that at the end
+     * of the transaction, the connection is destroyed. A running thread
+     * holding a connection will run to completion before the connection is
+     * destroyed
+     * 
+     * @param executor
+     * @throws SQLException
+     */
+    public void abort(Executor executor) throws SQLException {
+        if (DataSourceObjectBuilder.isJDBC41()) {
+            getManagedConnection().markForRemoval(true);
+            if(!getManagedConnection().isTransactionInProgress()) {
+                close();
+            }
+        } else {
+            throw new UnsupportedOperationException("Operation not supported in this runtime.");
+        }
+    }
+}

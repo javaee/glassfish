@@ -40,10 +40,13 @@
 
 package com.sun.gjc.spi.base;
 
+import com.sun.gjc.util.MethodExecutor;
+import com.sun.logging.LogDomains;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 /**
  * Abstract class for wrapping DatabaseMetaData<br>
@@ -52,6 +55,12 @@ public abstract class DatabaseMetaDataWrapper implements DatabaseMetaData {
 
     protected DatabaseMetaData databaseMetaData = null;
     protected Connection connection = null;
+    protected MethodExecutor executor = null;
+    protected final static Logger _logger;
+
+    static {
+        _logger = LogDomains.getLogger(MethodExecutor.class, LogDomains.RSR_LOGGER);
+    }
 
     /**
      * Abstract class for wrapping DatabaseMetaData
@@ -62,6 +71,7 @@ public abstract class DatabaseMetaDataWrapper implements DatabaseMetaData {
     public DatabaseMetaDataWrapper(Connection con, DatabaseMetaData metaData) {
         connection = con;
         databaseMetaData = metaData;
+        executor = new MethodExecutor();
     }
 
     /**
