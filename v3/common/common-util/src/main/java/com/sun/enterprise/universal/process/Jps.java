@@ -185,6 +185,12 @@ public class Jps {
         if (!s.contains(".") || s.endsWith("."))
             return s;
 
+
+        // we handled a/b/c/foo.jar
+        // now let's handle foo.jar
+        if(s.endsWith(".jar"))
+            return s;
+
         return s.substring(s.lastIndexOf('.') + 1);
     }
 
