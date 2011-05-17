@@ -41,22 +41,23 @@
 package com.sun.enterprise.config.serverbeans;
 
 import java.beans.PropertyVetoException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
-import org.jvnet.hk2.config.types.Property;
-import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.config.support.datatypes.NonNegativeInteger;
 import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.Attribute;
-
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 
 @Configured
 public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
@@ -324,10 +325,10 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
             "it might be faster to use non-direct Java's ByteBuffer by setting a value of false"),
         
     @PropertyDesc(name="authPassthroughEnabled", defaultValue="false", dataType=Boolean.class,
-        description="Indicates that the http-listeners receive traffic from an SSL-terminating proxy server, " +
+        description="Indicates that the network-listeners receive traffic from an SSL-terminating proxy server, " +
             "which is responsible for forwarding any information about the original client request (such as client " +
             "IP address, SSL keysize, and authenticated client certificate chain) to the HTTP listeners using custom request headers. " +
-            "Each  subelement can override this setting for itself"),
+            "Each subelement can override this setting for itself"),
     /**
     Specifies the fully qualified class name of a custom implementation of the 
     com.sun.appserv.ProxyHandler abstract class, which allows a back-end 
