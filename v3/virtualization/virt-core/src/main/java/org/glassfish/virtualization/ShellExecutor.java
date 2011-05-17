@@ -79,8 +79,9 @@ public class ShellExecutor {
     public String output(Process pr) throws IOException {
         // dirty hack for the lazy
         StringBuffer sb = new StringBuffer();
-        InputStream is = pr.getInputStream();
+        InputStream is = null;
         try {
+            is =  pr.getInputStream();
             BufferedReader buf = new BufferedReader(new InputStreamReader(is));
             String line = "";
             while ((line=buf.readLine())!=null) {
@@ -100,8 +101,9 @@ public class ShellExecutor {
     public String error(Process pr) throws IOException {
         // dirty hack for the lazy
         StringBuffer sb = new StringBuffer();
-        InputStream is = pr.getErrorStream();
+        InputStream is = null;
         try {
+            is = pr.getErrorStream();
             BufferedReader buf = new BufferedReader(new InputStreamReader(is));
             String line = "";
             while ((line=buf.readLine())!=null) {

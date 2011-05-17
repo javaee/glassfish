@@ -1341,21 +1341,6 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         styledMethodDescriptors = null;
     }
 
-    private void dumpMethodPermissions() {
-        _logger.log(Level.FINE, "For Bean " + getName());
-        Map allPermissions = getPermissionedMethodsByPermission();
-        Set permissions = allPermissions.keySet();
-        for (Iterator permissionsIterator = permissions.iterator(); permissionsIterator.hasNext();) {
-            MethodPermission mp = (MethodPermission) permissionsIterator.next();
-            _logger.log(Level.FINE, " Method Permission : " + mp);
-            Set allMethods = (Set) getPermissionedMethodsByPermission().get(mp);
-            for (Iterator methodIterator = allMethods.iterator(); methodIterator.hasNext();) {
-                MethodDescriptor md = (MethodDescriptor) methodIterator.next();
-                _logger.log(Level.FINE, " -> " + md);
-            }
-        }
-    }
-
     /**
      * Update a method descriptor set of method permission with a new method permission
      * The new method permission is added to the list of existing method permissions

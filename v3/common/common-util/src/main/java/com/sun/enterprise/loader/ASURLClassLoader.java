@@ -78,7 +78,6 @@ import java.util.logging.Logger;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.sun.appserv.server.util.PreprocessorUtil;
-import com.sun.enterprise.util.Print;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
 
@@ -210,7 +209,7 @@ public class ASURLClassLoader
             // before setting doneCalled = true.
             doneSnapshot = "ASURLClassLoader.done() called ON " + this.toString()
                 + "\n AT " + new Date() +
-                " \n BY :" + Print.printStackTraceToString();
+                " \n BY :" + Thread.currentThread().getStackTrace().toString();
             
             // Presumably OK to set this flag now while the rest of the cleanup proceeeds,
             // because we've taken the snapshot.

@@ -152,7 +152,9 @@ public class ZipFile
                                 
 				File newDir	= fullpath.getParentFile();
 
-				newDir.mkdirs();
+				if (!newDir.mkdirs()) {
+                    _utillogger.log(Level.FINE, "Cannot create directory " + newDir);
+                }
 
 				if(fullpath.delete()) {	// wipe-out pre-existing files
                                     /*

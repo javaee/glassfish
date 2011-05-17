@@ -680,32 +680,6 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
     /**
      *
      */
-    private synchronized void sendConsentPage(Request req, Response res) { //should have only one caller
-        setStateMsg(AdapterState.PERMISSION_NEEDED);
-        byte[] bytes;
-        try {
-            OutputBuffer ob = getOutputBuffer(res);
-            try {
-                // Replace locale specific Strings
-                String localHtml = replaceTokens(initHtml, bundle);
-
-                // Replace path token
-                String hp = contextRoot.endsWith("/") ? contextRoot : contextRoot + "/";
-                bytes = localHtml.replace(MYURL_TOKEN, hp).getBytes("UTF-8");
-            } catch (Exception ex) {
-                bytes = ("Catastrophe:" + ex.getMessage()).getBytes("UTF-8");
-            }
-            res.setContentLength(bytes.length);
-            ob.write(bytes, 0, bytes.length);
-            ob.flush();
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    /**
-     *
-     */
     private void sendStatusPage(Request req, Response res) {
         byte[] bytes;
         try {
@@ -782,7 +756,6 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
         int start = 0, end = 0;
         String newString = null;
         StringBuilder buf = new StringBuilder("");
-        Enumeration<String> keys = bundle.getKeys();
 
         while (start != -1) {
             // Find start of token

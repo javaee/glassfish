@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -63,25 +63,46 @@ public class Rejar {
     public void rejar(File out, File modules) throws IOException {
 
         Map<String, ByteArrayOutputStream> metadata = new HashMap<String, ByteArrayOutputStream>();
-        FileOutputStream fos = new FileOutputStream(out);
-        Set<String> names = new HashSet<String>();
-        names.add(Attributes.Name.MAIN_CLASS.toString());
-        JarOutputStream jos = new JarOutputStream(fos, getManifest());
-        processDirectory(jos, modules, names, metadata);
-        for (File directory : modules.listFiles(new FileFilter() {
-            public boolean accept(File pathname) {
-                return pathname.isDirectory();
-            }
-        })) {
-            processDirectory(jos, directory, names, metadata);
-        }
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(out);
+            Set<String> names = new HashSet<String>();
+            names.add(Attributes.Name.MAIN_CLASS.toString());
+            JarOutputStream jos = null;
+            try {
+                jos = new JarOutputStream(fos, getManifest());
+                processDirectory(jos, modules, names, metadata);
+                for (File directory : modules.listFiles(new FileFilter() {
+                    public boolean accept(File pathname) {
+                        return pathname.isDirectory();
+                    }
+                })) {
+                    processDirectory(jos, directory, names, metadata);
+                }
 
-        // copy the inhabitants files.
-        for (Map.Entry<String, ByteArrayOutputStream> e : metadata.entrySet()) {
-            copy(e.getValue().toByteArray(), e.getKey(), jos);
+                // copy the inhabitants files.
+                for (Map.Entry<String, ByteArrayOutputStream> e : metadata.entrySet()) {
+                    copy(e.getValue().toByteArray(), e.getKey(), jos);
+                }
+                jos.flush();
+            } finally {
+                if (jos!=null) {
+                    try {
+                        jos.close();
+                    } catch(IOException ioe) {
+                        // ignore
+                    }
+                }
+            }
+        } finally {
+            if (fos!=null) {
+                try {
+                    fos.close();
+                } catch(IOException ioe) {
+                    // ignore
+                }
+            }
         }
-        jos.flush();
-        jos.close();            
     }
 
     protected Manifest getManifest() throws IOException {

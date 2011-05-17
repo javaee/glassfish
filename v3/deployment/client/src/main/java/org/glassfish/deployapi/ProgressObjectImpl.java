@@ -43,14 +43,11 @@ package org.glassfish.deployapi;
 //import com.sun.enterprise.util.i18n.StringManager;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.Print;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.enterprise.deploy.shared.CommandType;
 import javax.enterprise.deploy.shared.ModuleType;
@@ -159,9 +156,8 @@ public class ProgressObjectImpl extends DFProgressObject {
 	synchronized (listeners) {
             listeners.add(pol);
 	    if (deliveredEvents.size() > 0) {
-		Print.dprintln("Delivering undelivered messages...");
 	        for (Iterator i = deliveredEvents.iterator(); i.hasNext();) {
-		    pol.handleProgressEvent((ProgressEvent)i.next());
+		        pol.handleProgressEvent((ProgressEvent)i.next());
 	        }
 	    }
 	}

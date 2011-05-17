@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -484,7 +484,7 @@ public class StringUtils {
             return value;
         }
         // XXX.YYY
-        value = System.getProperty(propName.toUpperCase());
+        value = System.getProperty(propName.toUpperCase(Locale.getDefault()));
         if (value != null) {
             System.setProperty(propName, value);
             return value;

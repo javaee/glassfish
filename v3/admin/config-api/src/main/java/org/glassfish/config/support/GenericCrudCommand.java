@@ -257,9 +257,17 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                         }
                         return null;
                     }
-                    final Class<? extends ConfigBeanProxy> itemType = Types.erasure(Types.getTypeArgument(
-                            annotated instanceof Method?
-                            ((Method) annotated).getGenericReturnType():(Field.class.cast(annotated)).getGenericType(), 0));
+                    Type genericReturnType=null;
+                    if (annotated instanceof Method) {
+                        genericReturnType = ((Method) annotated).getGenericReturnType();
+                    } else if (annotated instanceof Field) {
+                        genericReturnType = ((Field) annotated).getGenericType();
+                    }
+                    if (genericReturnType==null) {
+                        throw new ComponentException("Cannot determine parametized type from " + annotated.toString());
+                    }
+
+                    final Class<? extends ConfigBeanProxy> itemType = Types.erasure(Types.getTypeArgument(genericReturnType, 0));
                     if (logger.isLoggable(level)) {
                         logger.log(level, "Found that List<?> really is a List<" + itemType.toString() + ">");
                     }
@@ -326,7 +334,7 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                                 @Override
                                 public <V> V getValue(Object component, Inhabitant<?> onBehalfOf, AnnotatedElement annotated, Type genericType, Class<V> type) throws ComponentException {
                                     String name = annotated.getAnnotation(Attribute.class).value();
-                                    if (name==null || name.length()==0 && annotated instanceof Method) {
+                                    if ((name==null || name.length()==0) && annotated instanceof Method) {
 
                                         // maybe there is a better way to do this...
                                         name = ((Method) annotated).getName().substring(3);

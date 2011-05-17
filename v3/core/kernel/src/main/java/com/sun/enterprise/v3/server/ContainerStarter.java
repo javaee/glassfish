@@ -217,7 +217,9 @@ public class ContainerStarter {
                     FileOutputStream fos = null;
                     try {
                         if (!out.getParentFile().exists()) {
-                            out.getParentFile().mkdirs();
+                            if (!out.getParentFile().mkdirs()) {
+                                logger.log(Level.SEVERE, "Cannot create directory " + out.getParentFile());
+                            }
                         }
                         is = new BufferedInputStream(jarFile.getInputStream(entry));
                         fos = new FileOutputStream(out);

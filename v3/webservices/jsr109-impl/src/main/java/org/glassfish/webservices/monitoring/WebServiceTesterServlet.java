@@ -716,13 +716,15 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
     
     private void deleteDir(File path) {
 
-        File[] files = path.listFiles();
-        for (File f : files) {
-            if (f.isDirectory()) {
-                deleteDir(f);
+        if (path.exists() && path.isFile()) {
+            File[] files = path.listFiles();
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    deleteDir(f);
+                }
+                assert f.delete();
             }
-            f.delete();
+            assert path.delete();
         }
-        path.delete();
     }    
 }

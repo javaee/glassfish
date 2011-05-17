@@ -71,8 +71,13 @@ final class Utils {
             }
             return ( sb.toString());
         } finally {
-            if (is!=null)
-                is.close();
+            if (is!=null) {
+                try {
+                    is.close();
+                } catch(IOException ioe) {
+                    // ignore
+                }
+            }
         }
     }
 }

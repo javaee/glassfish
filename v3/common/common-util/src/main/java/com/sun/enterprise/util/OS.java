@@ -47,6 +47,7 @@
 package com.sun.enterprise.util;
 
 import java.io.*;
+import java.util.Locale;
 
 /**
  *
@@ -218,8 +219,8 @@ public class OS
             return false;
         
         // case insensitive compare...
-        archname= archname.toLowerCase();
-        name= name.toLowerCase();
+        archname= archname.toLowerCase(Locale.getDefault());
+        name= name.toLowerCase(Locale.getDefault());
         
         if(archname.indexOf(name) >= 0)
             return true;
@@ -237,8 +238,8 @@ public class OS
             return false;
         
         // case insensitive compare...
-        osname	= osname.toLowerCase();
-        name	= name.toLowerCase();
+        osname	= osname.toLowerCase(Locale.getDefault());
+        name	= name.toLowerCase(Locale.getDefault());
         
         if(osname.indexOf(name) >= 0)
             return true;
