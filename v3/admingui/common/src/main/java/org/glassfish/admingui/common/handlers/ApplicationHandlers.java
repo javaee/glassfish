@@ -616,7 +616,6 @@ public class ApplicationHandlers {
 
             String virtualServers = getVirtualServers(target, appID);
             String configName = TargetUtil.getConfigName(target);
-            Collection<String> hostNames = TargetUtil.getHostNames(target);
 
             List clusters = TargetUtil.getClusters();
             List<String> instances = new ArrayList();
@@ -626,8 +625,10 @@ public class ApplicationHandlers {
                 instances.add(target);
             }
 
-            for (String instance : instances)
+            for (String instance : instances) {
+                Collection<String> hostNames = TargetUtil.getHostNames(instance);
                 URLs.addAll(getURLs(GuiUtil.parseStringList(virtualServers, ","), configName, hostNames, instance));
+            }
         }
 
 	Iterator it = URLs.iterator();
@@ -761,6 +762,8 @@ public class ApplicationHandlers {
                         for (String hostName : hostNames) {
                             if (localHostName != null && hostName.equalsIgnoreCase("localhost"))
                                 hostName = localHostName;
+//                            URLs.add("[" + target + "]  - " + protocol + "://" + hostName + ":" + resolvedPort + "[ " + one + " " + configName 
+//                                    + " " + listener + " " + target + " ]");
                             URLs.add(protocol + "://" + hostName + ":" + resolvedPort);
                         }
                     }
