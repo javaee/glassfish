@@ -43,6 +43,7 @@ package com.sun.gjc.spi.base;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.gjc.common.DataSourceObjectBuilder;
 import com.sun.gjc.spi.ManagedConnection;
+import com.sun.gjc.util.MethodExecutor;
 import com.sun.logging.LogDomains;
 
 import javax.resource.ResourceException;
@@ -87,6 +88,7 @@ public abstract class ConnectionHolder implements Connection {
     static {
         _logger = LogDomains.getLogger(ManagedConnection.class, LogDomains.RSR_LOGGER);
     }
+    protected MethodExecutor executor = null;
 
     public static enum ConnectionType {
         LAZY_ENLISTABLE, LAZY_ASSOCIATABLE, STANDARD
@@ -121,6 +123,7 @@ public abstract class ConnectionHolder implements Connection {
         mcf_ = mc.getMcf();
         cxReqInfo_ = cxRequestInfo;
         statementTimeout = mc.getStatementTimeout();
+        executor = new MethodExecutor();
         if (statementTimeout > 0) {
             statementTimeoutEnabled = true;
         }

@@ -80,9 +80,11 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
     }
 
     private static boolean jdbc40;
+    private static boolean jdbc41;
 
     static {
         jdbc40 = detectJDBC40();
+        jdbc41 = detectJDBC41();
     }
 
     private boolean debug = false;
@@ -303,6 +305,10 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
         return jdbc40;
     }
 
+    public static boolean isJDBC41() {
+        return jdbc41;
+    }
+    
     /**
      * Check whether the jdbc api version is 4.0 or not.
      *
@@ -320,5 +326,25 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
             }
         }
         return jdbc40;
+    }
+
+    /**
+     * Detect if jdbc api version is 4.1 or not
+     *
+     * @return boolean
+     */
+    private static boolean detectJDBC41() {
+        boolean jdbc41 = false;
+        try {
+            Class.forName("java.sql.PseudoColumnUsage");
+            jdbc41 = true;
+        } catch (ClassNotFoundException cnfe) {
+            if(_logger.isLoggable(Level.FINEST)) {
+                _logger.log(Level.FINEST,
+                    "could not find PseudoColumnUsage(enum available in jdbc-41)," +
+                    " jdk supports jdbc-40 or lesser");
+            }
+        }
+        return jdbc41;
     }
 }

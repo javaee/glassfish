@@ -44,10 +44,6 @@ import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.gjc.spi.ManagedConnectionFactory;
 import com.sun.gjc.spi.base.StatementWrapper;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.*;
 
 /**

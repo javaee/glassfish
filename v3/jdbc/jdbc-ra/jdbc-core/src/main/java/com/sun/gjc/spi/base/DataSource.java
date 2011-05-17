@@ -45,6 +45,7 @@ import com.sun.gjc.spi.ConnectionRequestInfo;
 import com.sun.gjc.spi.ManagedConnectionFactory;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.gjc.util.MethodExecutor;
 
 import javax.naming.Reference;
 import javax.resource.ResourceException;
@@ -66,6 +67,7 @@ public abstract class DataSource implements javax.sql.DataSource, java.io.Serial
         com.sun.appserv.jdbc.DataSource, javax.resource.Referenceable {
 
     protected ManagedConnectionFactory mcf;
+    protected MethodExecutor executor = null;
     private ConnectionManager cm;
     private int loginTimeout;
     private PrintWriter logWriter;
@@ -91,6 +93,7 @@ public abstract class DataSource implements javax.sql.DataSource, java.io.Serial
      */
     public DataSource(ManagedConnectionFactory mcf, ConnectionManager cm) {
         this.mcf = mcf;
+        executor = new MethodExecutor();
         if (cm == null) {
             this.cm = new com.sun.gjc.spi.ConnectionManager();
         } else {

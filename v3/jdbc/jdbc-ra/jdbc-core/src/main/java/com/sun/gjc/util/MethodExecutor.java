@@ -214,5 +214,29 @@ public class MethodExecutor implements java.io.Serializable {
         }
     }
 
+    public Object invokeMethod(Object object, String methodName, 
+            Class<?>[] valueTypes, Object... values) throws ResourceException {
+        Object returnValue = null;
+        Method actualMethod = null;
+        try {
+            actualMethod = object.getClass().getMethod(methodName, valueTypes);
+        } catch (NoSuchMethodException ex) {
+            throw new ResourceException(ex);
+        } catch (SecurityException ex) {
+            throw new ResourceException(ex);
+        }
+        if (actualMethod != null) {
+            try {
+                returnValue = actualMethod.invoke(object, values);
+            } catch (IllegalAccessException ex) {
+                throw new ResourceException(ex);
+            } catch (IllegalArgumentException ex) {
+                throw new ResourceException(ex);
+            } catch (InvocationTargetException ex) {
+                throw new ResourceException(ex);
+            }
+        }
+        return returnValue;
+    }
 }
 

@@ -40,14 +40,20 @@
 
 package com.sun.gjc.spi.base;
 
+import com.sun.gjc.common.DataSourceObjectBuilder;
+import com.sun.gjc.util.MethodExecutor;
 import com.sun.gjc.util.StatementLeakDetector;
 import com.sun.gjc.util.StatementLeakListener;
+import com.sun.logging.LogDomains;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.resource.ResourceException;
 
 /**
  * Abstract class for wrapping Statement<br>
@@ -58,6 +64,13 @@ public abstract class StatementWrapper implements Statement, StatementLeakListen
     protected Statement jdbcStatement = null;
     protected StatementLeakDetector leakDetector = null;
     private boolean markedForReclaim = false;
+    protected final static Logger _logger;
+    protected MethodExecutor executor = null;
+
+
+    static {
+        _logger = LogDomains.getLogger(MethodExecutor.class, LogDomains.RSR_LOGGER);
+    }
     
     /**
      * Abstract class for wrapping Statement<br>
@@ -68,6 +81,7 @@ public abstract class StatementWrapper implements Statement, StatementLeakListen
     public StatementWrapper(Connection con, Statement statement) {
         connection = con;
         jdbcStatement = statement;
+        executor = new MethodExecutor();
         //Start leak tracing if statement is a pure Statement & stmtWrapping is ON
         //Check if this is an instanceof PS/CS. There could exist
         //a CustomStatement class in a jdbc driver that implements PS/CS as well
@@ -845,5 +859,35 @@ public abstract class StatementWrapper implements Statement, StatementLeakListen
 
     public boolean isMarkedForReclaim() {
         return markedForReclaim;
+    }
+
+    public void closeOnCompletion() throws SQLException {
+        if (leakDetector != null) {
+            _logger.log(Level.INFO, "jdbc.invalid_operation.close_on_completion");
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+        if (DataSourceObjectBuilder.isJDBC41()) {
+            try {
+                executor.invokeMethod(jdbcStatement, "closeOnCompletion", null);
+            } catch (ResourceException ex) {
+                _logger.log(Level.SEVERE, "jdbc.ex_stmt_wrapper", ex);
+                throw new SQLException(ex);
+            }
+            return;
+        }
+        throw new UnsupportedOperationException("Operation not supported in this runtime.");
+    }
+    
+    public boolean isCloseOnCompletion() throws SQLException {
+        if (DataSourceObjectBuilder.isJDBC41()) {
+            try {
+                return (Boolean) executor.invokeMethod(jdbcStatement,
+                        "isCloseOnCompletion", null);
+            } catch (ResourceException ex) {
+                _logger.log(Level.SEVERE, "jdbc.ex_stmt_wrapper", ex);
+                throw new SQLException(ex);
+            }
+        }
+        throw new UnsupportedOperationException("Operation not supported in this runtime.");
     }
 }
