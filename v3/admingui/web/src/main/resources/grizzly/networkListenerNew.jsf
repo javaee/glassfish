@@ -166,7 +166,7 @@
     function setProtocolName(){
         var currentChoice = getTextElement('#{pageSession.protocolChoiceId}').value;
         if (currentChoice == 'create'){
-            getTextElement('#{pageSession.pNameId}').value = getTextElement('#{pageSession.listenerId}').value+"$resource{i18n_web.grizzly.protocolExtension}";
+            getTextElement('#{pageSession.pNameId}').value = getTextElement('#{pageSession.listenerId}').value+"-protocol";
         }
     }
 
