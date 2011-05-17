@@ -189,11 +189,11 @@ public class EnableMonitoring implements AdminCommand {
                     vm.loadAgent(agentJar.getPath(), options);
                 }
                 part.setMessage(localStrings.getLocalString("attach.agent.suucess",
-                    "btrace agent attached"));
+                    "flashlight agent attached"));
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
             } else {
                 part.setMessage(localStrings.getLocalString("attach.agent.exception",
-                    "btrace-agent.jar does not exist under {0}", agentJar));
+                    "flashlight-agent.jar does not exist under {0}", agentJar));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             }
         } catch (Exception e) {
@@ -231,21 +231,8 @@ public class EnableMonitoring implements AdminCommand {
 
     // Old code re-arranged.  Please redo later!!
     private File getAgentJar(File installDir) {
-        File btraceJarFile = new File(installDir, BTRACE_PATH);
-        File flashlightJarFile = new File(installDir, FLASHLIGHT_AGENT_PATH);
-
-        if (btraceJarFile.isFile() && OS_SUPPORTS_BTRACE) {
-            if (options == null)
-                options = "unsafe=true,noServer=true";
-            else
-                options = "unsafe=true,noServer=true" + "," + options;
-            return btraceJarFile;
-        }
-        else
-            return flashlightJarFile;
+        return new File(installDir, FLASHLIGHT_AGENT_PATH);
     }
 
-    static final String BTRACE_PATH                 = "lib/monitor/btrace-agent.jar";
     static final String FLASHLIGHT_AGENT_PATH       = "lib/monitor/flashlight-agent.jar";
-    static final boolean OS_SUPPORTS_BTRACE         = !OS.isAix();
 }

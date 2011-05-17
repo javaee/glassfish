@@ -56,13 +56,11 @@ public class ProbeAgentMain {
 
 
     public static void agentmain(String agentArgs, Instrumentation inst) {
-        System.out.println("ProbeAgentMain:agentmain: " + inst);
         agentMainCalled = true;
         _inst = inst;
     }
     
     public static void premain(String agentArgs, Instrumentation inst) {
-        System.out.println("ProbeAgentMain:premain: " + inst);
         premainCalled = true;
         _inst = inst;
     }

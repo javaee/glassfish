@@ -63,7 +63,7 @@
                     <archive>
                         <manifestEntries>
                             <Premain-Class>org.glassfish.flashlight.agent.ProbeAgentMain</Premain-Class>
-                            <!--<Agent-Class>org.glassfish.flashlight.agent.ProbeAgentMain</Agent-Class>-->
+                            <Agent-Class>org.glassfish.flashlight.agent.ProbeAgentMain</Agent-Class>
                             <Can-Redefine-Classes>true</Can-Redefine-Classes>
                             <Can-Retransform-Classes>true</Can-Retransform-Classes>
                         </manifestEntries>

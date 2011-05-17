@@ -58,7 +58,6 @@ class GFLauncherConstants {
     static final String NATIVE_LIB_PREFIX           = "native-library-path-prefix";
     static final String NATIVE_LIB_SUFFIX           = "native-library-path-suffix";
     static final String LIBMON_NAME                 = "lib/monitor";
-    static final String BTRACE_NAME                 = "btrace-agent.jar";
     static final String FLASHLIGHT_AGENT_NAME       = "flashlight-agent.jar";
     static final String DEFAULT_LOGFILE             = "logs/server.log";
     static final boolean OS_SUPPORTS_BTRACE         = !OS.isAix();

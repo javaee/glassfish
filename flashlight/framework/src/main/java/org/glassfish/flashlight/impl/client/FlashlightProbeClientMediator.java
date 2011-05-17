@@ -308,6 +308,7 @@ public class FlashlightProbeClientMediator
         return mp;
     }
 
+    /*
     private void submit2BTrace(byte [] bArr) {
         try {
             ClassLoader scl = this.getClass().getClassLoader().getSystemClassLoader();
@@ -320,7 +321,7 @@ public class FlashlightProbeClientMediator
             throw new RuntimeException("BTrace Error");
         }
     }
-
+*/
     // this is just used internally for cleanly organizing the code.
     private static class MethodProbe {
         MethodProbe(Method m, FlashlightProbe p) {
@@ -347,21 +348,17 @@ public class FlashlightProbeClientMediator
             File dir = new File(ir, "lib" + File.separator + "monitor");
             if (dir.isDirectory()) {
                 File agentJar = null;
-                File btraceJar = new File(dir, "btrace-agent.jar");
                 File flashlightJar = new File(dir, "flashlight-agent.jar");
 
-                if (btraceJar.isFile() && !OS.isAix())
-                    agentJar = btraceJar;
-                else
-                    agentJar = flashlightJar;
+                agentJar = flashlightJar;
 
                 if (agentJar.isFile()) {
                     setAgentInitialized(false);
-                    vm.loadAgent(agentJar.getPath(), "unsafe=true,noServer=true");
+                    vm.loadAgent(agentJar.getPath(), "");
                 }
                 else {
                     logger.log(Level.WARNING, localStrings.getLocalString("missing.btrace-agent.jar",
-                            "btrace-agent.jar does not exist under {0}", dir));
+                            "flashlight-agent.jar does not exist under {0}", dir));
                     return false;
                 }
             } else {

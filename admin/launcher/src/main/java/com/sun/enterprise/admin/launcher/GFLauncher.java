@@ -770,7 +770,7 @@ public abstract class GFLauncher {
             if (key.startsWith("javaagent:")) {
                 // complications -- of course!!  They may have mix&match forward and back slashes
                 key = key.replace('\\', '/');
-                if (key.indexOf(BTRACE_NAME) >= 0 || key.indexOf(FLASHLIGHT_AGENT_NAME) >= 0)
+                if (key.indexOf(FLASHLIGHT_AGENT_NAME) >= 0)
                     return; // Done!!!!
             }
         }
@@ -786,38 +786,17 @@ public abstract class GFLauncher {
     }
 
     private String getMonitoringAgentJvmOptionString() throws GFLauncherException {
-        //-javaagent:${ASINSTALL_ROOT}/lib/monitor/btrace-agent.jar=unsafe=true
-        //-javaagent:${ASINSTALL_ROOT}/modules/flashlight-agent.jar
-
         File libMonDir = new File(getInfo().getInstallDir(), LIBMON_NAME);
-        File btraceJarFile = new File(libMonDir, BTRACE_NAME);
         File flashlightJarFile = new File(libMonDir, FLASHLIGHT_AGENT_NAME);
-        String jvmOption = null;
 
-        // the OS is **not** AIX AND btrace jar exists
-        if (btraceJarFile.isFile() && GFLauncherConstants.OS_SUPPORTS_BTRACE) {
-            jvmOption = "javaagent:" + getCleanPath(btraceJarFile) + "=unsafe=true,noServer=true";
-
-            if (Boolean.parseBoolean(Utility.getEnvOrProp("AS_AGENT_DEBUG")))
-                jvmOption += ",debug=true";
-        }
-        // No Btrace jar exists
-        else if (flashlightJarFile.isFile()) {
-            jvmOption = "javaagent:" + getCleanPath(flashlightJarFile);
-        }
-        // No agent jars at all
+        if (flashlightJarFile.isFile())
+            return "javaagent:" + getCleanPath(flashlightJarFile);
+        // No agent jar...
         else {
-            String msg = null;
-
-            if (GFLauncherConstants.OS_SUPPORTS_BTRACE)
-                msg = strings.get("no_agent", flashlightJarFile, btraceJarFile);
-            else
-                msg = strings.get("no_flashlight_agent", flashlightJarFile);
-
+            String msg = strings.get("no_flashlight_agent", flashlightJarFile);
             GFLauncherLogger.warning(msg);
             throw new GFLauncherException(msg);
         }
-        return jvmOption;
     }
 
     private static String getCleanPath(File f) {
