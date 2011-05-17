@@ -326,6 +326,13 @@
             </modules>
         </profile>
         <profile>
+            <!-- this profile is used for development testing -->
+            <id>devtests</id>
+            <modules>
+                <module>devtests</module>
+            </modules>
+        </profile>
+        <profile>
             <!--
                 The hk2 module depends on hk2-maven-plugin as an extension,
                 so it causes a chicken and egg problem during a release;
@@ -359,7 +366,7 @@
           <reportSet>
             <reports>
               <!--
-                 Maven releaase process fails with NPE when a dependency report generation
+                 Maven release process fails with NPE when a dependency report generation
                  tries to obtain a POM for the system-scope Artifact.
 		 See MPIR-37 for the bug report. Kohsuke to file a bug report on this
 		 with a proposed patch.
