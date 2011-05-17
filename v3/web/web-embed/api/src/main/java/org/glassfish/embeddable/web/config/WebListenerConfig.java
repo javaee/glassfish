@@ -40,6 +40,8 @@
 
 package org.glassfish.embeddable.web.config;
 
+import org.glassfish.embeddable.web.WebListener;
+
 /**
  * Class that is used for configuring WebListener instances.
  *
@@ -54,6 +56,17 @@ public class WebListenerConfig {
     private String protocol;
 
     private boolean traceEnabled;
+
+    public WebListenerConfig(String id, int port) {
+        this.id = id;
+        this.port = port;
+    }
+
+    public WebListenerConfig(String id, int port, String protocol) {
+        this.id = id;
+        this.port = port;
+        this.protocol = protocol;
+    }
 
     /**
      * Sets the id used for configuring <tt>WebListener</tt>.

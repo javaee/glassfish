@@ -59,6 +59,16 @@ public class WebListenerBase implements WebListener  {
 
     private String protocol;
 
+    private WebContainer webContainer;
+
+    public WebListenerBase() {
+    }
+
+    public WebListenerBase(String id, int port) {
+        this.id = id;
+        this.port = port;
+    }
+
     /**
      * Sets the id for this <tt>WebListener</tt>.
      */
@@ -77,11 +87,16 @@ public class WebListenerBase implements WebListener  {
      * Reconfigures this <tt>WebListener</tt> with the given
      * configuration.
      */
-    public void setConfig(WebListenerConfig config) throws ConfigException {
+    public void setConfig(WebListenerConfig config)
+            throws ConfigException, GlassFishException {
         this.config = config;
         setId(config.getId());
         setPort(config.getPort());
         setProtocol(config.getProtocol());
+        if (webContainer != null) {
+            webContainer.removeWebListener(this);
+            webContainer.addWebListener(this);
+        }
     }
 
     /**
@@ -117,6 +132,20 @@ public class WebListenerBase implements WebListener  {
      */
     public String getProtocol() {
         return protocol;
+    }
+
+    /**
+     * Sets the <tt>WebContainer</tt> which will be used by this <tt>WebListener</tt>.
+     */
+    public void setWebContainer(WebContainer webContainer) {
+        this.webContainer = webContainer;
+    }
+
+    /**
+     * Gets the <tt>WebContainer</tt> used by this <tt>WebListener</tt>.
+     */
+    public WebContainer getWebContainer() {
+        return webContainer;
     }
 
 

@@ -40,6 +40,7 @@
 
 package org.glassfish.embeddable.web;
 
+import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.web.config.WebListenerConfig;
 
 /**
@@ -106,9 +107,11 @@ public interface WebListener  {
      *
      * @throws ConfigException if the configuration requires a restart,
      * and this <tt>WebListener</tt> fails to be restarted
+     * @throws GlassFishException if an error occurs,
+     * and this <tt>WebListener</tt> fails to be restarted
      */
     public void setConfig(WebListenerConfig config)
-            throws ConfigException;
+            throws ConfigException, GlassFishException;
 
     /**
      * Gets the current configuration of this <tt>WebListener</tt>.
@@ -118,5 +121,15 @@ public interface WebListener  {
      * <tt>WebListener</tt>
      */
     public WebListenerConfig getConfig();
+
+    /**
+     * Sets the <tt>WebContainer</tt> which will be used by this <tt>WebListener</tt>.
+     */
+    public void setWebContainer(WebContainer webContainer);
+
+    /**
+     * Gets the <tt>WebContainer</tt> used by this <tt>WebListener</tt>.
+     */
+    public WebContainer getWebContainer();
 
 }

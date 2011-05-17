@@ -60,7 +60,12 @@ public class HttpsListener extends WebListenerBase  {
      */
     public HttpsListener() {
         super();
-        //TODO: Define a constant for this
+        this.setProtocol("https");
+    }
+
+
+    public HttpsListener(String id, int port) {
+        super(id, port);
         this.setProtocol("https");
     }
 

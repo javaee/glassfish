@@ -55,7 +55,11 @@ public class HttpListener extends WebListenerBase  {
      */
     public HttpListener() {
         super();
-        //TODO: Define constatnts somewhere
+        this.setProtocol("http");
+    }
+
+    public HttpListener(String id, int port) {
+        super(id, port);
         this.setProtocol("http");
     }
 

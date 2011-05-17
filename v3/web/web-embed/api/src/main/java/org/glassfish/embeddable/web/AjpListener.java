@@ -55,5 +55,16 @@ public class AjpListener extends WebListenerBase  {
         super();
         this.setProtocol("AJP/1.3");
     }
+
+    /**
+     * Initializes a newly created AjpListener object with AJP protocol.
+     *
+     * @param id the id of the listener
+     * @param port the port of the listener
+     */
+    public AjpListener(String id, int port) {
+        super(id, port);
+        this.setProtocol("AJP/1.3");
+    }
     
 }

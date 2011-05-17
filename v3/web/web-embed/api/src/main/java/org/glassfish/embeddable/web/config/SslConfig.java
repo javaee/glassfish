@@ -58,8 +58,13 @@ public class SslConfig {
 
     /**
      * Create an instance of <tt>SslConfig</tt>.
+     *
+     * @param key the location of the keystore file
+     * @param trust the location of the truststore file
      */
-    public SslConfig() {
+    public SslConfig(String key, String trust) {
+        this.keyStore = key;
+        this.trustStore = trust;
     }
 
     /**

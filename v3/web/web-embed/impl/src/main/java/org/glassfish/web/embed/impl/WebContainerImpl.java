@@ -282,7 +282,9 @@ public class WebContainerImpl implements WebContainer {
             }, vs);
 
         } catch (Exception e) {
-            removeListener(listenerName);
+            if (listeners.contains(webListener)) {
+                listeners.remove(webListener);
+            }
             e.printStackTrace();
         }
 
@@ -375,6 +377,8 @@ public class WebContainerImpl implements WebContainer {
             throw new ConfigException(ex);
         }
 
+        webListener.setWebContainer(this);
+
         if (log.isLoggable(Level.INFO)) {
             log.info("Added connector " + webListener.getId() +
                     " port " + webListener.getPort() + " to virtual server " + vsId);
@@ -421,12 +425,14 @@ public class WebContainerImpl implements WebContainer {
         try {
 
             NetworkListeners networkListeners = networkConfig.getNetworkListeners();
-
             final NetworkListener listenerToBeRemoved =
-                    networkConfig.getNetworkListener(listenerName);
+                    networkConfig.getNetworkListener(name);
+
+            final Protocols protocols = networkConfig.getProtocols();
+            final Protocol protocol = networkConfig.findProtocol(name);
 
             if (listenerToBeRemoved == null) {
-                log.severe("Network Listener " + listenerName + " doesn't exist");
+                log.severe("Network Listener " + name + " doesn't exist");
             } else {
                 final com.sun.enterprise.config.serverbeans.VirtualServer virtualServer =
                         httpService.getVirtualServerByName(
@@ -441,6 +447,15 @@ public class WebContainerImpl implements WebContainer {
                         return listenerToBeRemoved;
                     }
                 }, networkListeners, virtualServer);
+
+                ConfigSupport.apply(new ConfigCode() {
+                    public Object run(ConfigBeanProxy... params) throws PropertyVetoException {
+                        final Protocols protocols = (Protocols) params[0];
+                        final Protocol protocol = (Protocol) params[1];
+                        protocols.getProtocol().remove(protocol);
+                        return protocol;
+                    }
+                }, protocols, protocol);
 
             }
             
@@ -842,6 +857,10 @@ public class WebContainerImpl implements WebContainer {
         }
 
         removeListener(webListener.getId());
+
+        if (log.isLoggable(Level.INFO)) {
+            log.info("Removed connector " + webListener.getId());
+        }
     }
 
 
