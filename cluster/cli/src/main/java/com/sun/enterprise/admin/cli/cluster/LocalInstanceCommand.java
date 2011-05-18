@@ -155,8 +155,9 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
 
         if (ok(nodeDir)) {
             // Ensure later uses of nodeDir get an absolute path
-            // See bug 15014
-            nodeDir = FileUtils.safeGetCanonicalPath(nodeDirRoot);
+            // See bug 15014. Don't use getCanonicalPath(). See bug
+            // 15889
+            nodeDir = nodeDirRoot.getAbsolutePath();
         }
 
         if (!isDirectory(nodeDirRoot)) {
