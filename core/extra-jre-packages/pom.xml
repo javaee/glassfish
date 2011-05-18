@@ -154,8 +154,7 @@
  sun.security.pkcs,
  sun.tools.javac,
  sunw.io,
- sunw.util,
- org.glassfish.flashlight.agent
+ sunw.util
 
                                     </Export-Package>
                                 <Bundle-Description>${project.description}</Bundle-Description> 
@@ -258,8 +257,7 @@
  sun.security.pkcs,
  sun.tools.javac,
  sunw.io,
- sunw.util,
- org.glassfish.flashlight.agent
+ sunw.util
                                     </Export-Package>
                                 <Bundle-Description>${project.description}</Bundle-Description> 
                                 </manifestEntries>
