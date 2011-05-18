@@ -155,7 +155,6 @@
  sun.tools.javac,
  sunw.io,
  sunw.util
-
                                     </Export-Package>
                                 <Bundle-Description>${project.description}</Bundle-Description> 
                                 </manifestEntries>
