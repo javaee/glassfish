@@ -77,7 +77,7 @@ println("sectionDetail =  $attribute{sectionDetail}");
                 url="#{request.contextPath}/common/applications/endpoint.jsf?appName=#{appName}&moduleName=#{td.value.moduleName}&compName=#{td.value.name}" />
 
             <sun:hyperlink id="link" rendered="#{td.value.hasLaunch}" text="$resource{i18n.deployTable.launch}"
-                onClick="var win=window.open('applications/webApplicationLinks.jsf?appID=#{appName}&contextRoot=#{td.value.contextRoot}','ViewerWindow','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes');win.focus(); return false;" />
+                onClick="var win=window.open('#{request.contextPath}/common/applications/webApplicationLinks.jsf?appID=#{appName}&contextRoot=#{td.value.contextRoot}','ViewerWindow','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes');win.focus(); return false;" />
 
             <sun:hyperlink id="appClientLink" rendered="#{td.value.hasAppClientLaunch}" text="$resource{i18n.deployTable.launch}"
                 url="#{request.contextPath}/common/applications/appclientLaunch.jsf?appName=#{appName}&moduleName=#{td.value.moduleName}"/>
