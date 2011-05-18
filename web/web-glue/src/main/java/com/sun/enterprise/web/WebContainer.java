@@ -2807,7 +2807,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             docroot = vsBean.getDocroot();
         }
         if (docroot != null) {
-            updateDocroot(docroot, vs, vsBean);
+            // Only update docroot if it is modified
+            if (!vs.getDocRoot().getAbsolutePath().equals(docroot)) {
+                updateDocroot(docroot, vs, vsBean);
+            }
         }
 
         List<Property> props = vs.getProperties();
