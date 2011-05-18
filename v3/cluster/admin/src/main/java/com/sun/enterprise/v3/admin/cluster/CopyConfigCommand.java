@@ -43,27 +43,21 @@ package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.config.support.GenericCrudCommand;
-import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
 import java.beans.PropertyVetoException;
-import java.util.List;
-import java.util.Properties;
 import java.util.logging.Logger;
-import java.io.File;
-import org.jvnet.hk2.component.ComponentException;
+import org.glassfish.api.admin.RestAttachment;
+import org.glassfish.api.admin.RestAttachment.OpType;
+import org.glassfish.api.admin.RestAttachments;
 
 /**
  *  This is a remote command that copies a config to a destination config.
@@ -75,6 +69,10 @@ import org.jvnet.hk2.component.ComponentException;
 @Service(name = "copy-config")
 @I18n("copy.config.command")
 @Scoped(PerLookup.class)
+//        {"Configs", "copy-config", "POST", "copy-config", "Copy Config"},
+@RestAttachments({
+    @RestAttachment(configBean=Configs.class, opType=OpType.POST, path="copy-config", description="Copy Config")
+})
 public final class CopyConfigCommand extends CopyConfig {
 
     final private static LocalStringManagerImpl localStrings =
@@ -84,7 +82,7 @@ public final class CopyConfigCommand extends CopyConfig {
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-       
+
         if (configs.size() != 2) {
             report.setMessage(localStrings.getLocalString("Config.badConfigNames",
                     "You must specify a source and destination config."));
@@ -103,7 +101,7 @@ public final class CopyConfigCommand extends CopyConfig {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
-        
+
         //does dest config exist
         final Config destinationConfig = domain.getConfigNamed(destConfig);
         if (destinationConfig != null ){

@@ -39,8 +39,22 @@
  */
 package org.glassfish.admin.rest.generator;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.RestAttachment;
+import org.glassfish.api.admin.RestAttachments;
+import org.glassfish.api.admin.RestParam;
+import org.glassfish.internal.api.Globals;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Inhabitant;
 
 /**
  * @author Mitesh Meswani
@@ -53,6 +67,7 @@ public class CommandResourceMetaData {
     public String displayName;
     public ParameterMetaData[] commandParams;
     public String customClassName; // used by the custom resource mapping
+    private static final Map<String, List<CommandResourceMetaData>> restRedirects = new HashMap<String, List<CommandResourceMetaData>>();
 
     public static class ParameterMetaData {
 
@@ -85,6 +100,10 @@ public class CommandResourceMetaData {
                 retVal.add(metaData);
             }
         }
+        final List<CommandResourceMetaData> restRedirectPointToBean = getRestRedirectPointToBean(beanName);
+        if (restRedirectPointToBean != null) {
+            retVal.addAll(restRedirectPointToBean);
+        }
         return retVal;
     }
 
@@ -103,8 +122,54 @@ public class CommandResourceMetaData {
         return customResources;
     }
 
+    public static List<CommandResourceMetaData> getRestRedirectPointToBean(String beanName) {
+        synchronized (restRedirects) {
+            if (restRedirects.isEmpty()) {
+                Iterator<Inhabitant<?>> iter = Globals.getDefaultHabitat().getInhabitantsByContract(AdminCommand.class.getName()).iterator();
+                while (iter.hasNext()) {
+                    Inhabitant<?> inhab = iter.next();
+                    final Class<? extends AdminCommand> clazz = (Class<? extends AdminCommand>)inhab.type();
+                    RestAttachments attachments = clazz.getAnnotation(RestAttachments.class);
+                    if (attachments != null) {
+                        Logger.getLogger("CommandResourceMetaData").log(Level.INFO, "Found annotations on {0}", clazz.getName());
+                        RestAttachment[] list = attachments.value();
+                        if ((list != null) && (list.length > 0)) {
+                            for (RestAttachment attachment : list) {
+                                Service service = clazz.getAnnotation(Service.class);
+                                String configBean = attachment.configBean().getSimpleName();
+
+                                CommandResourceMetaData metaData = new CommandResourceMetaData();
+                                metaData.command = service.name();
+                                metaData.httpMethod = attachment.opType().name();
+                                metaData.resourcePath = service.name(); // FIXME: probably needs another attribute on the annotations
+                                metaData.displayName = service.name();
+
+                                metaData.commandParams = new ParameterMetaData[attachment.params().length];
+                                int index = 0;
+                                for (RestParam param : attachment.params()) {
+                                    ParameterMetaData currentParam = new ParameterMetaData();
+                                    metaData.commandParams[index] = currentParam;
+                                    currentParam.name = param.name();
+                                    currentParam.value = param.value();
+                                }
+
+                                List<CommandResourceMetaData> commandList = restRedirects.get(configBean);
+                                if (commandList == null) {
+                                    commandList = new ArrayList<CommandResourceMetaData>();
+                                    restRedirects.put(configBean, commandList);
+                                }
+                                commandList.add(metaData);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return restRedirects.get(beanName);
+    }
     private static String configBeansToCommandResourcesMap[][] = {
-        //{config-bean, command, method, resource-path, command-action, command-params...}     
+        //{config-bean, command, method, resource-path, command-action, command-params...}
         {"Application", "_get-deployment-configurations", "GET", "_get-deployment-configurations", "Get Deployment Configurations", "appname=$parent"},
         {"Application", "disable", "POST", "disable", "Disable", "id=$parent"},
         {"Application", "disable-http-lb-application", "POST", "disable-http-lb-application", "disable-http-lb-application", "name=$parent"},
@@ -154,8 +219,8 @@ public class CommandResourceMetaData {
         {"Cluster", "stop-cluster", "POST", "stop-cluster", "Stop Cluster", "id=$parent"},
         {"Config", "__resolve-tokens", "GET", "resolve-tokens", "Resolve Tokens", "target=$parent"},
         {"Config", "delete-config", "POST", "delete-config", "Delete Config", "id=$parent"},
-        {"Config", "__synchronize-realm-from-config", "POST", "synchronize-realm-from-config", "Synchronize-realm-from-config", "target=$parent"},
-        {"Configs", "copy-config", "POST", "copy-config", "Copy Config"},
+//        {"Config", "__synchronize-realm-from-config", "POST", "synchronize-realm-from-config", "Synchronize-realm-from-config", "target=$parent"},
+//        {"Configs", "copy-config", "POST", "copy-config", "Copy Config"},
         {"Configs", "list-configs", "GET", "list-configs", "list-configs"},
         {"ConnectionPool", "ping-connection-pool", "GET", "ping", "Ping"},
         {"Domain", "__anonymous-user-enabled", "GET", "anonymous-user-enabled", "Get"},
@@ -188,7 +253,7 @@ public class CommandResourceMetaData {
         {"Domain", "_restart-instance", "POST", "_restart-instance", "_restart-instance"},
         {"Domain", "_stop-instance", "POST", "_stop-instance", "_stop-instance"},
         {"Domain", "_synchronize-files", "POST", "_synchronize-files", "_synchronize-files"},
-        {"Domain", "_unregister-instance", "POST", "_unregister-instance", "_unregister-instance"},
+        {"Domain", "_unregister-instance", "POST", "_unregister-instance ", "_unregister-instance "},
         {"Domain", "_validate-node", "POST", "_validate-node", "_validate-node"},
         {"Domain", "_validateRemoteDirDeployment", "POST", "_validateRemoteDirDeployment", "_validateRemoteDirDeployment"},
         {"Domain", "change-admin-password", "POST", "change-admin-password", "change-admin-password"},
@@ -279,8 +344,8 @@ public class CommandResourceMetaData {
         {"Protocol", "delete-protocol-filter", "DELETE", "delete-protocol-filter", "Delete", "protocol=$parent"},
         {"Protocol", "delete-protocol-finder", "DELETE", "delete-protocol-finder", "Delete", "protocol=$parent"},
         {"Protocol", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=http-listener"},
-        {"Config", "_get-rest-admin-config", "GET", "_get-rest-admin-config", "_get-rest-admin-config"},
-        {"Config", "_set-rest-admin-config", "POST", "_set-rest-admin-config", "_set-rest-admin-config"},
+        //        {"Config", "_get-rest-admin-config", "GET", "_get-rest-admin-config", "_get-rest-admin-config"},
+        //        {"Config", "_set-rest-admin-config", "POST", "_set-rest-admin-config", "_set-rest-admin-config"},
         {"Resources", "_get-activation-spec-class", "GET", "get-activation-spec-class", "Get Activation Spec Class"},
         {"Resources", "_get-admin-object-class-names", "GET", "get-admin-object-class-names", "Get Admin Object Class Names"},
         {"Resources", "_get-admin-object-config-properties", "GET", "get-admin-object-config-properties", "Get Admin Object Config Properties"},
