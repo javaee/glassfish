@@ -41,6 +41,7 @@
 package org.glassfish.webservices.codegen;
 
 import com.sun.appserv.ClassLoaderUtil;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -140,7 +141,7 @@ public class JaxRpcRICodegen extends ModuleContentLinker
     @Override
     public void run(Habitat habitat, DeploymentContext context, String cp) throws Exception {
         rootLocation_ = new FileArchive();
-        BundleDescriptor bundle = context.getModuleMetaData(BundleDescriptor.class);
+        BundleDescriptor bundle = DOLUtils.getCurrentBundleForContext(context);
         if (bundle.hasWebServiceClients() && (bundle instanceof ApplicationClientDescriptor)) {
             hasWebServiceClients = true;
         }

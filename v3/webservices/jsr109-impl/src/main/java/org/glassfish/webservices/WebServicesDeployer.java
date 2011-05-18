@@ -42,6 +42,7 @@ package org.glassfish.webservices;
 
 
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.archivist.Archivist;
 import com.sun.enterprise.deployment.util.WebServerInfo;
 import com.sun.enterprise.deployment.util.XModuleType;
@@ -154,7 +155,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
                 logger.severe(format(rb.getString("failed.loading.dd")));
                 return false;
             }
-            BundleDescriptor bundle = dc.getModuleMetaData(BundleDescriptor.class);
+            BundleDescriptor bundle = DOLUtils.getCurrentBundleForContext(dc);
 
             String moduleCP = getModuleClassPath(dc);
             List<URL> moduleCPUrls = ASClassLoaderUtil.getURLsFromClasspath(moduleCP, File.pathSeparator, null);
