@@ -113,22 +113,6 @@ public class ASMainHelper {
         return platform;
     }
 
-    /**
-     * use META-INF/services services definition to look up all possible platform implementations
-     * and return the one
-     *
-     * @param platform the platform name {@see AbstractMain#getName()}
-     * @return an platform provider or null if not found
-     */
-    static PlatformMain getMain(String platform) {
-        ServiceLoader<PlatformMain> loader = ServiceLoader.load(PlatformMain.class, ASMain.class.getClassLoader());
-        for (PlatformMain main : loader) {
-            if (main.getName().equalsIgnoreCase(platform))
-                return main;
-        }
-        return null;
-    }
-
     public static Properties parseAsEnv(File installRoot) {
 
         Properties asenvProps = new Properties();
