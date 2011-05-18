@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../config/common.xml">
+]>
+
+<project name="osgi" default="all" basedir=".">
+
+    &commonBuild;
+
+    <target name="private-all">
+        <ant dir="simple" target="private-all">
+            <property name="build" value="${build}/simple"/>
+        </ant>
+    </target>
+</project>

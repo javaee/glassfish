@@ -3,7 +3,7 @@ Results of deployment dev tests with v3
 
 1. Running with PE installation and EE installation on DAS
 
-PASS: 251 
+PASS: 255 
 FAIL: 0
 UNKNOWN: 0
 
@@ -254,16 +254,21 @@ UNKNOWN: 0
 [PASSED] simple-versioned-ear : xml.version(6) autodeploy - logID=6 - (server) - (sucess expected)
 [PASSED] simple-versioned-ear : xml.version(7) deploy-stream jsr88 - logID=7 - (server) - (sucess expected)
 [PASSED] simple-versioned-ear : xml.version(8) deploy-stream jsr88 - logID=8 - (server) - (sucess expected)
+[PASSED] simple : osgi/simple Test asadmin deploy (server)
+[PASSED] simple : osgi/simple Test asadmin redeploy (server)
+[PASSED] simple : osgi/simple Test asadmin disable (server)
+[PASSED] simple : osgi/simple Test asadmin enable (server)
 [PASSED] AppClientAnnotationTest : testDescriptors,
 [PASSED] EjbAnnotationTest : testDescriptors,
 [PASSED] InheritanceAnnotationTest : testDescriptors,
 [PASSED] WebAnnotationTest : testDescriptors,
+
 ===========================================================
 
 2. Running with EE installation on Remote Instance 
    (DEPL_TARGET=SERVER)
 
-PASS: 181
+PASS: 185
 FAIL: 0
 UNKNOWN: 0
 
@@ -444,6 +449,10 @@ UNKNOWN: 0
 [PASSED] simple-versioned-ear : xml.version(5) redeploy jsr88 - logID=5 - (depltest-server) - (sucess expected)
 [PASSED] simple-versioned-ear : xml.version(7) deploy-stream jsr88 - logID=6 - (depltest-server) - (sucess expected)
 [PASSED] simple-versioned-ear : xml.version(8) deploy-stream jsr88 - logID=7 - (depltest-server) - (sucess expected)
+[PASSED] simple : osgi/simple Test asadmin deploy (server)
+[PASSED] simple : osgi/simple Test asadmin redeploy (server)
+[PASSED] simple : osgi/simple Test asadmin disable (server)
+[PASSED] simple : osgi/simple Test asadmin enable (server)
 [PASSED] AppClientAnnotationTest : testDescriptors,
 [PASSED] EjbAnnotationTest : testDescriptors,
 [PASSED] InheritanceAnnotationTest : testDescriptors,
@@ -453,7 +462,7 @@ UNKNOWN: 0
 3. Running with EE installation on Remote Instance and Cluster
    (DEPL_TARGET=CLUSTER)
 
-PASS: 333
+PASS: 341
 FAIL: 0
 UNKNOWN: 0
 
@@ -786,6 +795,14 @@ UNKNOWN: 0
 [PASSED] simple-versioned-ear : xml.version(7) deploy-stream jsr88 - logID=12 - (depltest-server) - (sucess expected)
 [PASSED] simple-versioned-ear : xml.version(8) deploy-stream jsr88 - logID=13 - (depltest-cluster) - (sucess expected)
 [PASSED] simple-versioned-ear : xml.version(8) deploy-stream jsr88 - logID=14 - (depltest-server) - (sucess expected)
+[PASSED] simple : osgi/simple Test asadmin deploy (server)
+[PASSED] simple : osgi/simple Test asadmin deploy (cluster-inst1)
+[PASSED] simple : osgi/simple Test asadmin redeploy (server)
+[PASSED] simple : osgi/simple Test asadmin redeploy (cluster-inst1)
+[PASSED] simple : osgi/simple Test asadmin disable (server)
+[PASSED] simple : osgi/simple Test asadmin disable (cluster-inst1)
+[PASSED] simple : osgi/simple Test asadmin enable (server)
+[PASSED] simple : osgi/simple Test asadmin enable (cluster-inst1)
 [PASSED] AppClientAnnotationTest : testDescriptors,
 [PASSED] EjbAnnotationTest : testDescriptors,
 [PASSED] InheritanceAnnotationTest : testDescriptors,
