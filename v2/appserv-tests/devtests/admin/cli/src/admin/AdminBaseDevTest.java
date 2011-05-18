@@ -290,7 +290,16 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
         AsadminReturn ret = asadminWithOutput("list-instances");
         String[] lines = ret.out.split("[\r\n]");
 
+        // beware!  The echo'd command can have a pathwith the instance name embedded,
+        // innocently in it.  THis happened on a Hudson build which had a directory named
+        // makati1 in it!!
+        // So now we throw away the echo'd command line if we see it (just in case we turn
+        // echoing off later)
+
         for (String line : lines) {
+            if(line.indexOf("list-instances") >= 0)
+                continue;
+            
             if (line.indexOf(iname) >= 0) {
                 printf("Line from list-instances = " + line);
                 return line.indexOf("  running") >= 0;
