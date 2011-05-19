@@ -89,8 +89,10 @@ public class Client extends AdminBaseDevTest {
             asadmin("set", "configs.config." + CLUSTER_NAME + "-config.transaction-service.automatic-recovery=false");
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE1_NAME);
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE2_NAME);
-            asadmin("set-log-levels", "ShoalLogger=FINER");
-            asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger=FINER");
+            if (Boolean.getBoolean("enableShoalLogger")) {
+                 asadmin("set-log-levels", "ShoalLogger=FINER");
+                 asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger=FINER");
+            }
             asadmin("start-cluster", CLUSTER_NAME);
             System.out.println("Started cluster. Setting up resources.");
 

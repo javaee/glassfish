@@ -97,6 +97,7 @@
               classname="${se.client}">
            <arg line="prepare"/>
            <arg line="${assemble.dir}/${appname}-web.war"/>
+           <sysproperty key="enableShoalLogger" value="${enableShoalLogger}"/>
         </java>
     </target>
 

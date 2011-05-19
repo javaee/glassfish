@@ -91,6 +91,7 @@
            <arg line="prepare"/>
            <arg line="${assemble.dir}/${appname}-web.war"/>
            <arg line="${assemble.dir}"/>
+           <sysproperty key="enableShoalLogger" value="${enableShoalLogger}"/>
         </java>
     </target>
 

@@ -85,9 +85,16 @@ public class Client extends AdminBaseDevTest {
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE1_NAME);
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE2_NAME);
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE3_NAME);
-            asadmin("set-log-levels", "ShoalLogger=FINER");
-            asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger=FINER");
-            asadmin("start-cluster", CLUSTER_NAME);
+            if (Boolean.getBoolean("enableShoalLogger")) {
+                asadmin("set-log-levels", "ShoalLogger=FINER");
+                asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger=FINER");
+            }
+            AsadminReturn result = asadminWithOutput("start-cluster", CLUSTER_NAME);
+                System.out.println("Executed command: " + result.out);
+                if (!result.returnValue) {
+                    System.out.println("CLI FAILED: " + result.err);
+                }
+
             System.out.println("Started cluster. Setting up resources.");
 
             asadmin("create-resource-ref", "--target", CLUSTER_NAME, DEF_RESOURCE);

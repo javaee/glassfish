@@ -91,8 +91,10 @@ public class Client extends AdminBaseDevTest {
             asadmin("create-jms-resource", "--target", CLUSTER_NAME, "--restype", "javax.jms.Queue", "--property", "imqDestinationName=ejb_mdb_Queue", "jms/ejb_mdb_Queue");
             System.out.println("Finished creating JMS resources");
 
-            asadmin("set-log-levels", "ShoalLogger=FINER");
-            asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger=FINER");
+            if (Boolean.getBoolean("enableShoalLogger")) {
+                asadmin("set-log-levels", "ShoalLogger=FINER");
+                asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger=FINER");
+            }
             asadmin("start-cluster", CLUSTER_NAME);
             asadmin("create-resource-ref", "--target", CLUSTER_NAME, XA_RESOURCE);
             asadmin("create-resource-ref", "--target", CLUSTER_NAME, "jms/ejb_mdb_QCF");

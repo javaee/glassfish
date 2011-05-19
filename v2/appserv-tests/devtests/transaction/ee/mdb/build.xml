@@ -140,6 +140,7 @@
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
               classname="${se.client}">
            <arg line="prepare"/>
+           <sysproperty key="enableShoalLogger" value="${enableShoalLogger}"/>
         </java>
     </target>
 

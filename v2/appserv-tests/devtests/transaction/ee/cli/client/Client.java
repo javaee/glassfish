@@ -95,8 +95,10 @@ public class Client extends AdminBaseDevTest {
             asadmin("create-cluster", CLUSTER_NAME);
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE1_NAME);
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE2_NAME);
-            asadmin("set-log-levels", "ShoalLogger=FINER");
-            asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger=FINER");
+            if (Boolean.getBoolean("enableShoalLogger")) {
+                asadmin("set-log-levels", "ShoalLogger=FINER");
+                asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger=FINER");
+            }
             asadmin("start-cluster", CLUSTER_NAME);
             asadmin("set", "configs.config." + CLUSTER_NAME + "-config.monitoring-service.module-monitoring-levels.transaction-service=HIGH");
             asadmin("set", "configs.config." + CLUSTER_NAME + "-config.log-service.module-log-levels.jta=FINE");
