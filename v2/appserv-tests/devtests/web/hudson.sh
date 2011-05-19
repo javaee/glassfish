@@ -40,10 +40,11 @@
 #
 
 # 
-# Usage: hudson.sh [<url for download glassfish> <job name for skip file>]
+# Usage: appserv-tests/devtests/web/hudson.sh [<url for download glassfish> <job name for skip file>]
 #
 # Hudson setup:
 #
+# Source Code Management: Subversion Modules
 # Repository URL: https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/devtests/web
 # Local module directory: appserv-tests/devtests/web
 # Repository URL: https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/lib
@@ -91,7 +92,6 @@ JOB_NAME=$2
 
 (jps |grep Main |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
 java -version
-
 
 rm -rf glassfish-v3-image
 mkdir glassfish-v3-image
