@@ -634,13 +634,22 @@ public class ApplicationHandlers {
 	Iterator it = URLs.iterator();
 	String url = null;
         ArrayList list = new ArrayList();
+
 	while (it.hasNext()) {
 	    url = (String)it.next();
+            String target = "";
+            int i = url.indexOf("@@@");
+            if (i >= 0) {
+                target = url.substring(0, i);
+                url = url.substring(i + 3);                
+            }
+                
             HashMap<String, String> m = new HashMap();
             m.put("url", url + ctxRoot);
+            m.put("target", target);
             list.add(m);
 	}
-        
+                
         handlerCtx.setOutputValue("URLList", list);
 
     }
@@ -764,7 +773,7 @@ public class ApplicationHandlers {
                                 hostName = localHostName;
 //                            URLs.add("[" + target + "]  - " + protocol + "://" + hostName + ":" + resolvedPort + "[ " + one + " " + configName 
 //                                    + " " + listener + " " + target + " ]");
-                            URLs.add(protocol + "://" + hostName + ":" + resolvedPort);
+                            URLs.add(target + "@@@" + protocol + "://" + hostName + ":" + resolvedPort);
                         }
                     }
                 }

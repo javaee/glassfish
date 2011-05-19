@@ -50,12 +50,20 @@
                             <sun:staticText id="name" text="#{pageSession.appName}" />
                         </sun:property>
                         <sun:property id="linkProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Links}">
+
+                            "<table>
                             <foreach key="list" list="#{pageSession.urlList}">
-                                <sun:hyperlink
-                                    text="#{list.url}"
-                                    url="#{list.url}"/>
-                                "<br />
+                               "<tr>
+                                   "<td>
+                                       <sun:staticText id="linkTarget" text="[#{list.target}] " />
+                                   "</td>
+                                   "<td>
+                                        <sun:hyperlink text="#{list.url}" url="#{list.url}"/>
+                                   "</td>
+                                "</tr>
                             </foreach>
+                            "</table>
+
                         </sun:property>
                     </sun:propertySheetSection>
                 </sun:propertySheet>
