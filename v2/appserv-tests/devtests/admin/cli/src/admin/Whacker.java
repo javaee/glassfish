@@ -44,11 +44,11 @@ import admin.util.ProcessUtils;
 public class Whacker extends AdminBaseDevTest {
     public static void main(String[] args) {
 		ProcessUtils.killJvm("ASMain");
-		ProcessUtils.killJvm("ASMain");
 		ProcessUtils.killJvm("AsadminMain");
 		ProcessUtils.killJvm("DerbyControl");
 		ProcessUtils.killJvm("admin-cli.jar");
 		ProcessUtils.killJvm("derbyrun.jar");
+		ProcessUtils.killJvm("glassfish.jar");
 		new Whacker().report("Killed old JVMs", true);
     }
 

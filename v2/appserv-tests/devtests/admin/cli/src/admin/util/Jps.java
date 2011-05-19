@@ -37,10 +37,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package admin.util;
 
 import java.io.*;
 import java.util.*;
+import static admin.util.ProcessUtils.isWindows;
+import static admin.util.ProcessUtils.ok;
 
 /**
  * Run a native process with jps
@@ -55,7 +58,7 @@ public class Jps {
         for (Map.Entry<Integer, String> e : set) {
             System.out.printf("%d %s\n", e.getKey(), e.getValue());
         }
-        if (args.length > 0) {
+        if(args.length > 0) {
             System.out.printf("Jps.isPid(%s) ==> %b\n", args[0], Jps.isPid(Integer.parseInt(args[0])));
         }
     }
@@ -142,7 +145,7 @@ public class Jps {
     }
 
     private boolean isJps(String id) {
-        if (!ProcessUtils.ok(id)) {
+        if (!ok(id)) {
             return false;
         }
 
@@ -157,18 +160,72 @@ public class Jps {
         return false;
     }
 
+    /**
+     * This is a bit tricky.  "jps -l" will return a FQ classname
+     * But it also might return a path if you start with "java -jar"
+     * E.g.
+     <pre>
+     2524 sun.tools.jps.Jps
+     5324 com.sun.enterprise.glassfish.bootstrap.ASMain
+     4120 D:\glassfish3\glassfish\bin\..\modules\admin-cli.jar
+     </pre>
+     * If there is a path -- then there is no classname and vice-versa
+     * @param s
+     * @return
+     */
     private static String plainClassName(String s) {
-        if (s == null || !s.contains(".") || s.endsWith("."))
+        if(s == null)
+            return null;
+
+        if(hasPath(s))
+            return stripPath(s);
+
+        if (!s.contains(".") || s.endsWith("."))
+            return s;
+
+
+        // we handled a/b/c/foo.jar
+        // now let's handle foo.jar
+        if(s.endsWith(".jar"))
             return s;
 
         return s.substring(s.lastIndexOf('.') + 1);
     }
+
+    private static boolean hasPath(String s) {
+        if(s.indexOf('/') >= 0)
+            return true;
+        if(s.indexOf('\\') >= 0)
+            return true;
+        return false;
+    }
+
+    /**
+     * return whatever comes after the last file separator
+     */
+    private static String stripPath(String s) {
+        // Don't bother with the annoying back vs. forward
+        s = s.replace('\\', '/');
+        int index = s.lastIndexOf('/');
+
+        if(index < 0)
+            return s;
+
+        // don't forget about handling a name that ends in a slash!
+        // should not happen!!  But if it does return the original
+        if(s.length() - 1 <= index)
+            return s;
+
+        // we are GUARANTEED to have at least one char past the final slash...
+        return s.substring(index + 1);
+    }
+
     private Map<Integer, String> pidMap = new HashMap<Integer, String>();
     private static final File jpsExe;
     private static final String jpsName;
 
     static {
-        if (ProcessUtils.isWindows()) {
+        if (isWindows()) {
             jpsName = "jps.exe";
         }
         else {
@@ -177,18 +234,17 @@ public class Jps {
 
         final String javaroot = System.getProperty("java.home");
         final String relpath = "/bin/" + jpsName;
-        final File fhere = new File(javaroot + relpath).getAbsoluteFile();
-        File fthere = new File(javaroot + "/.." + relpath).getAbsoluteFile();
+        final File fhere = new File(javaroot + relpath);
+        File fthere = new File(javaroot + "/.." + relpath);
 
         if (fhere.isFile()) {
-            jpsExe = fhere;
+            jpsExe = SmartFile.sanitize(fhere);
         }
         else if (fthere.isFile()) {
-            jpsExe = fthere;
+            jpsExe = SmartFile.sanitize(fthere);
         }
         else {
             jpsExe = null;
         }
     }
-
 }
