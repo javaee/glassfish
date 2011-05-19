@@ -253,7 +253,7 @@ public class CommandResourceMetaData {
         {"Domain", "_restart-instance", "POST", "_restart-instance", "_restart-instance"},
         {"Domain", "_stop-instance", "POST", "_stop-instance", "_stop-instance"},
         {"Domain", "_synchronize-files", "POST", "_synchronize-files", "_synchronize-files"},
-        {"Domain", "_unregister-instance", "POST", "_unregister-instance ", "_unregister-instance "},
+        {"Domain", "_unregister-instance", "POST", "_unregister-instance", "_unregister-instance"},
         {"Domain", "_validate-node", "POST", "_validate-node", "_validate-node"},
         {"Domain", "_validateRemoteDirDeployment", "POST", "_validateRemoteDirDeployment", "_validateRemoteDirDeployment"},
         {"Domain", "change-admin-password", "POST", "change-admin-password", "change-admin-password"},
