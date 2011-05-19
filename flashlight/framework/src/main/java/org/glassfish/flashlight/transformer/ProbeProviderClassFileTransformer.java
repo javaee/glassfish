@@ -1,5 +1,7 @@
 package org.glassfish.flashlight.transformer;
 
+import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.util.Utility;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeRegistry;
 import org.objectweb.asm.*;
@@ -24,7 +26,7 @@ public class ProbeProviderClassFileTransformer
 
     private static Instrumentation _inst;
 
-    private static boolean _debug;
+    private static boolean _debug = Boolean.parseBoolean(Utility.getEnvOrProp("AS_DEBUG"));
 
     private Class providerClass;
 
@@ -85,7 +87,7 @@ public class ProbeProviderClassFileTransformer
 
                 classfileBuffer = cw.toByteArray();
                 if (_debug) {
-                    //ProbeProviderClassFileTransformer.writeFile(className.substring(className.lastIndexOf('/') + 1), classfileBuffer);
+                    ProbeProviderClassFileTransformer.writeFile(className.substring(className.lastIndexOf('/') + 1), classfileBuffer);
                 }
             }
         } catch (Exception ex) {
@@ -117,17 +119,21 @@ public class ProbeProviderClassFileTransformer
     private static final void writeFile(String name, byte[] data) {
         FileOutputStream fos = null;
         try {
-            File dir = new File("/space/work/v3/trunk/glassfish3/glassfish/flashlight-generated");
-            dir.mkdirs();
-            fos = new FileOutputStream(new File(dir, name + ".class"));
+            File installRoot = new File(System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
+            File dir = new File(installRoot, "flashlight-generated");
 
+            if(!dir.isDirectory() && !dir.mkdirs())
+                throw new RuntimeException("Can't create directory: " + dir);
+            fos = new FileOutputStream(new File(dir, name + ".class"));
             fos.write(data);
         } catch (Throwable th) {
             _logger.log(Level.INFO, "Couldn't write the retransformed class data", th);
         } finally {
             try {
-                fos.close();
+                if(fos != null)
+                    fos.close();
             } catch (Exception ex) {
+                // nothing can be done...
             }
         }
     }
