@@ -52,7 +52,7 @@
             <sun:staticText id="name" text="#{pageSession.Name}"  rendered="#{Edit}" />
         </sun:property>
 
-        <sun:property id="status"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.protocol.securityEnabled}" >
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['securityEnabled']}" selectedValue="true" />
+        <sun:property id="status"  disabled="#{readOnly}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.protocol.securityEnabled}" helpText="$resource{i18n_web.common.secureAdminHelp}" >
+            <sun:checkbox disabled="#{readOnly}" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['securityEnabled']}" selectedValue="true" />
         </sun:property>
 </sun:propertySheetSection>
