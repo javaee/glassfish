@@ -87,21 +87,18 @@
 #     Recipients: <....>@oracle.com
 #     Send e-mail for every unstable build
 
+kill_processes() {
+    uname=`uname | awk '{print $1}'`
+    case "$uname" in
+        CYGWIN*) KILL="taskkill /F /T /PID";;
+        *) KILL="kill -9";;
+    esac
+
+    (ps -af | grep java | grep ASMain | grep -v grep | awk '{print $2}' | xargs $KILL > /dev/null 2>&1) || true
+}
+
 GLASSFISH_DOWNLOAD_URL=${1:-"http://hudson.glassfish.org/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip"}
 JOB_NAME=$2
-
-os=`uname`
-if [ "$os" = "AIX" ]; then
-    num=2
-else      
-    num=1
-fi 
-
-if $JAVA_HOME/bin/jps > /dev/null 2>&1; then
-    KILLCMD="(jps |grep ASMain |cut -f1 -d' ' | xargs kill -9  > /dev/null 2>&1) || true"
-else
-    KILLCMD="(ps -aef | grep java |grep ASMain | grep -v grep | awk '{print \$$num}' | xargs kill -9  > /dev/null 2>&1) || true"
-fi
 
 java -version
 
@@ -167,7 +164,7 @@ instance.http.port.2=${WEBTIER_INSTANCE_PORT_2}
 instance.http.port.3=${WEBTIER_INSTANCE_PORT_3}
 " > config.properties
 
-eval $KILLCMD
+kill_processes
 
 pushd $APS_HOME/devtests/web
 ./exclude-jobs.sh $JOB_NAME
@@ -175,10 +172,10 @@ pushd $APS_HOME/devtests/web
 ant all
 status=$?
 
-eval $KILLCMD
+kill_processes
 (cat web.output | grep FAIL | grep -v "Total FAIL") || true
 #popd
 #cd $S1AS_HOME/bin/
 #./asadmin stop-domain
-#eval $KILLCMD
+#kill_processes
 exit $status
