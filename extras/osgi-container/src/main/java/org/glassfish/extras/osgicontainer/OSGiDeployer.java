@@ -43,6 +43,7 @@ package org.glassfish.extras.osgicontainer;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
+import org.glassfish.api.deployment.OpsParams;
 import org.jvnet.hk2.annotations.Service;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -72,10 +73,13 @@ public class OSGiDeployer implements Deployer<OSGiContainer, OSGiDeployedBundle>
 
     public void clean(DeploymentContext context) {
         try {
-            Bundle bundle = getApplicationBundle(context);
-            bundle.uninstall();
-            getPA().refreshPackages(new Bundle[]{bundle});
-            System.out.println("Uninstalled " + bundle);
+            OpsParams params = context.getCommandParameters(OpsParams.class);
+            if (params.origin.isUndeploy()) {
+                Bundle bundle = getApplicationBundle(context);
+                bundle.uninstall();
+                getPA().refreshPackages(new Bundle[]{bundle});
+                System.out.println("Uninstalled " + bundle);
+            }
         } catch (BundleException e) {
             throw new RuntimeException(e);
         }
@@ -97,11 +101,12 @@ public class OSGiDeployer implements Deployer<OSGiContainer, OSGiDeployedBundle>
     public boolean prepare(DeploymentContext context) {
         File file = context.getSourceDir();
         try {
-            assert(file.isDirectory());
-            Bundle bundle = getBundleContext().installBundle(makeBundleLocation(file));
-            System.out.println("Installed " + bundle + " from " + bundle.getLocation());
-            // We must store String values only, else config backend won't accept our values!!!
-            context.getAppProps().setProperty(BUNDLE_ID, "" + bundle.getBundleId());
+            OpsParams params = context.getCommandParameters(OpsParams.class);
+            if (params.origin.isDeploy()) {
+                assert(file.isDirectory());
+                Bundle bundle = getBundleContext().installBundle(makeBundleLocation(file));
+                System.out.println("Installed " + bundle + " from " + bundle.getLocation());
+            }
         } catch (BundleException e) {
             throw new RuntimeException(e);
         }
@@ -113,16 +118,13 @@ public class OSGiDeployer implements Deployer<OSGiContainer, OSGiDeployedBundle>
     }
 
     private Bundle getApplicationBundle(DeploymentContext context) {
-//        String location = makeBundleLocation(context.getSourceDir());
-//        for(Bundle b : getBundleContext().getBundles()) {
-//            if (location.equals(b.getLocation())) {
-//                return b;
-//            }
-//        }
-//        throw new RuntimeException("Unable to determine bundle corresponding to application location " + context.getSourceDir());
-        Long bundleId = Long.valueOf(context.getAppProps().getProperty(BUNDLE_ID));
-        assert(bundleId != null);
-        return getBundleContext().getBundle(bundleId);
+        String location = makeBundleLocation(context.getSourceDir());
+        for(Bundle b : getBundleContext().getBundles()) {
+            if (location.equals(b.getLocation())) {
+                return b;
+            }
+        }
+        throw new RuntimeException("Unable to determine bundle corresponding to application location " + context.getSourceDir());
     }
 
     private String makeBundleLocation(File file) {
