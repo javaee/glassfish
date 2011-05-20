@@ -234,7 +234,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
             if (childElement.isCollection()) {
                 childResourceClassName = "List" + childResourceClassName;
             }
-            classWriter.createGetChildResource(childModel.getTagName(), childResourceClassName);
+            classWriter.createGetChildResource(/*childModel.getTagName()*/elementName, childResourceClassName);
         }
 
         if (childElement.isCollection()) {
