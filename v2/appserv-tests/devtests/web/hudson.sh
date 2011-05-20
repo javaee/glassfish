@@ -98,7 +98,7 @@ kill_processes() {
 }
 
 GLASSFISH_DOWNLOAD_URL=${1:-"http://hudson.glassfish.org/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip"}
-JOB_NAME=$2
+SKIP_NAME=$2
 
 java -version
 
@@ -167,7 +167,7 @@ instance.http.port.3=${WEBTIER_INSTANCE_PORT_3}
 kill_processes
 
 pushd $APS_HOME/devtests/web
-./exclude-jobs.sh $JOB_NAME
+./exclude-jobs.sh $SKIP_NAME
 
 ant all
 status=$?

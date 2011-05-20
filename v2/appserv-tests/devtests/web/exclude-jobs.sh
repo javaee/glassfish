@@ -60,13 +60,19 @@ skip() {
 }
 
 echo start
-if [ -z "${JOB_NAME}" -o "$JOB_NAME" = "webtier-dev-tests-v3-source" ]
-then
-    JOB_NAME=webtier-dev-tests-v3
+if [ "x$1" = "x" ]; then
+    SKIP_NAME=${JOB_NAME}
+else
+    SKIP_NAME=$1
 fi
 
-if [ -f "${JOB_NAME}.skip" ]
+if [ -z "${SKIP_NAME}" -o "$SKIP_NAME" = "webtier-dev-tests-v3-source" ]
 then
-    skip ${JOB_NAME}.skip
+    SKIP_NAME=webtier-dev-tests-v3
+fi
+
+if [ -f "${SKIP_NAME}.skip" ]
+then
+    skip ${SKIP_NAME}.skip
 fi
 
