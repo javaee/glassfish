@@ -45,13 +45,12 @@ import javax.xml.xpath.XPathConstants;
 
 /*
  * Dev test for config upgrade from v2.1 to 3.1.
- * If you want to add more tests, you can probably make changes in
- * an existing domain.xml file in the resources/configs directory.
+ * 
+ * Also copies a 3.0.1 config file into domain and upgrades it. This should
+ * add the default-config element so that a cluster can be created.
+ * See for more details:
+ * http://java.net/jira/browse/GLASSFISH-15774
  *
- * Otherwise, just add another domain.xml file there and follow
- * the instructions in the runEm() method.
- *
- * @author Bobby Who Copied Everything From Other Tests So Don't Ask Him
  */
 public class UpgradeTest extends AdminBaseDevTest {
 
@@ -71,12 +70,9 @@ public class UpgradeTest extends AdminBaseDevTest {
         // before copying in our domain config, move the old one
         renameOriginalDomainConfig();
 
-        /*
-         * To add tests that require a different source domain.xml,
-         * put them in a new method like this one. In your test method,
-         * just call copyDomainConfig() and you're ready to test.
-         */
         testV2Domain();
+
+        testV3_0_1Domain();
 
         // after all the tests have run, move back the old domain
         restoreOriginalDomainConfig();
@@ -134,6 +130,40 @@ public class UpgradeTest extends AdminBaseDevTest {
 
         // and bring it down
         report("server-stop-post-upgrade", asadmin("stop-domain"));
+    }
+
+    private void testV3_0_1Domain() {
+        copyDomainConfig("v3_0_1domain.xml");
+
+        // make sure default-config isn't really there first
+        String xPath = "/domain/configs/config[@name='server-config']";
+        Object node = evalXPath(xPath, XPathConstants.NODE);
+        report("found-server-config", node != null);
+        xPath = "/domain/configs/config[@name='default-config']";
+        node = evalXPath(xPath, XPathConstants.NODE);
+        report("missing-default-config-expected", node == null);
+
+        // run the upgrade
+        report("run-upgrade-3_0_1", asadmin("start-domain", "--upgrade"));
+
+        // default-config should be there
+        node = evalXPath(xPath, XPathConstants.NODE);
+        report("found-default-config", node != null);
+
+        // start server
+        report("start-post-upgrade-3_0_1", asadmin("start-domain"));
+
+        // create/test/stop cluster
+        report("create-cluster", asadmin("create-cluster", "clus1"));
+        report("create-instance1", asadmin("create-local-instance", "in1"));
+        report("create-instance2", asadmin("create-local-instance", "in2"));
+        report("start-cluster", asadmin("start-cluster", "clus1"));
+        report("stop-cluster", asadmin("stop-cluster", "clus1"));
+        report("cleanup-nodes-dir", deleteDirectory(
+            new File(getGlassFishHome(), "nodes")));
+
+        // stop server
+        report("stop-post-upgrade-3_0_1", asadmin("stop-domain"));
     }
 
     // run before any upgrade test
