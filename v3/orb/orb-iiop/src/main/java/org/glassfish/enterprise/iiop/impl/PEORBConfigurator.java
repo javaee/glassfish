@@ -62,6 +62,7 @@ import org.glassfish.enterprise.iiop.util.IIOPUtils;
 
 import java.nio.channels.SocketChannel;
 import java.net.Socket;
+import java.util.List;
 
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 
@@ -150,9 +151,10 @@ public class PEORBConfigurator implements ORBConfigurator {
             // portable interceptor initialization
             IIOPUtils iiopUtils = IIOPUtils.getInstance();
             if (iiopUtils.getProcessType().isServer()) {
-                IiopListener[] iiopListenerBeans = 
-                    IIOPUtils.getInstance().getIiopService()
-                    .getIiopListener().toArray(new IiopListener[0]);
+                List<IiopListener> iiop_listener_list = IIOPUtils.getInstance()
+                        .getIiopService().getIiopListener() ;
+                IiopListener[] iiopListenerBeans =  iiop_listener_list
+                        .toArray(new IiopListener [iiop_listener_list.size()]) ;                
                 this.createORBListeners(iiopUtils, iiopListenerBeans, orb);
             }
             if (orb.getORBData().environmentIsGFServer()) {
