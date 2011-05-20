@@ -90,7 +90,7 @@
 GLASSFISH_DOWNLOAD_URL=${1:-"http://hudson.glassfish.org/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip"}
 JOB_NAME=$2
 
-(jps |grep Main |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
+(ps -aef | grep java |grep ASMain | grep -v grep | sed -e 'sm^ *mm' | cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
 java -version
 
 rm -rf glassfish-v3-image
@@ -155,16 +155,17 @@ instance.http.port.2=${WEBTIER_INSTANCE_PORT_2}
 instance.http.port.3=${WEBTIER_INSTANCE_PORT_3}
 " > config.properties
 
-(jps |grep Main |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
+(ps -aef | grep java |grep ASMain | grep -v grep | sed -e 'sm^ *mm' | cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
 
 pushd $APS_HOME/devtests/web
 ./exclude-jobs.sh $JOB_NAME
 
 ant all
 
+(ps -aef | grep java |grep ASMain | grep -v grep | sed -e 'sm^ *mm' | cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
 (cat web.output | grep FAIL | grep -v "Total FAIL") || true
-popd
-cd $S1AS_HOME/bin/
+#popd
+#cd $S1AS_HOME/bin/
 #./asadmin stop-domain
 
-(jps |grep ASMain |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
+#(jps |grep ASMain |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
