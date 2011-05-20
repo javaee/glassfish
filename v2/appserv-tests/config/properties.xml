@@ -122,10 +122,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}</echo>
   <condition property="isWindows">
     <os family="windows" />
   </condition>
-
-  <condition property="isAIX">
-    <equals arg1="${os.name}" arg2="AIX"/>
-  </condition>
 </target>
 
 <target name="setToolWin" if="isWindows">  

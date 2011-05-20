@@ -43,6 +43,12 @@
     <waitfor timeoutproperty="unableToStart">
       <http url="http://${http.host}:${http.port}"/>
     </waitfor>
+    <condition property="dumpStack">
+        <and>
+            <isset property="unableToStart"/>
+            <available file="${env.JAVA_HOME}/bin/jps"/>
+        </and>
+    </condition>
     <echo message="run.xml:DONE doing wait for ${http.host}:${http.port}..."/>
     <antcall target="dumpThreadStack"/>
 </target>
@@ -52,13 +58,19 @@
     <exec executable="${ASADMIN}" spawn="true">
         <arg line="start-domain"/>
     </exec>
-    <waitfor timeoutproperty="unableToStart">
+    <waitfor timeoutproperty="dumpStack">
       <http url="http://${http.host}:${http.port}"/>
     </waitfor>
+    <condition property="dumpStack">
+        <and>
+            <isset property="unableToStart"/>
+            <available file="${env.JAVA_HOME}/bin/jps"/>
+        </and>
+    </condition>
     <antcall target="dumpThreadStack"/>
 </target>
 
-<target name="dumpThreadStack" if="unableToStart">
+<target name="dumpThreadStack" if="dumpStack">
     <exec executable="${env.JAVA_HOME}/bin/jps" output="pid.out.file">
        <arg value="-v"/>
     </exec>
