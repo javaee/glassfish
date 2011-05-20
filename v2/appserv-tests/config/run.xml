@@ -44,7 +44,7 @@
       <http url="http://${http.host}:${http.port}"/>
     </waitfor>
     <echo message="run.xml:DONE doing wait for ${http.host}:${http.port}..."/>
-    <antcall target="dumpThreadStack" unless="isAIX"/>
+    <antcall target="dumpThreadStack"/>
 </target>
 
 <target name="startDomainWindows" depends="init-common" if="isWindows">
