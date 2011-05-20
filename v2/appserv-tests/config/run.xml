@@ -58,7 +58,7 @@
     <exec executable="${ASADMIN}" spawn="true">
         <arg line="start-domain"/>
     </exec>
-    <waitfor timeoutproperty="dumpStack">
+    <waitfor timeoutproperty="unableToStart">
       <http url="http://${http.host}:${http.port}"/>
     </waitfor>
     <condition property="dumpStack">
