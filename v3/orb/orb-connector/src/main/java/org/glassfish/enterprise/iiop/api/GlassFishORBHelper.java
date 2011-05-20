@@ -182,12 +182,14 @@ public class GlassFishORBHelper implements PostConstruct, ORBLocator {
         if( !processEnv.getProcessType().isServer() ) {
             return null;
         }
-
-        if (protocolManager == null) {
-            getORB();
+        
+        synchronized (this) {
+            if (protocolManager == null) {
+                getORB();
+            }
+            
+            return protocolManager;
         }
-
-        return protocolManager;
     }
 
     public boolean isORBInitialized() {
