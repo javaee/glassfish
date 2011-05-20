@@ -55,7 +55,7 @@
     <waitfor timeoutproperty="unableToStart">
       <http url="http://${http.host}:${http.port}"/>
     </waitfor>
-    <antcall target="dumpThreadStack"/>
+    <antcall target="dumpThreadStack" unless="isAIX"/>
 </target>
 
 <target name="dumpThreadStack" if="unableToStart">
