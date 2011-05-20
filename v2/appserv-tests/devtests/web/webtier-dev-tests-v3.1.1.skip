@@ -1,4 +1,5 @@
 singleengine # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=7548 is fixed
 cometEcho # Grizzly 2.1
 portUnification # Grizzly 2.1
+portUnificationTarget # Grizzly 2.1
 wrongTransport # Grizzly 2.1
