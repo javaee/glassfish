@@ -64,12 +64,9 @@ public class ProbeProviderClassFileTransformer
             }
         } catch (Exception e) {
             _logger.log(Level.WARNING, "Error during re-transformation", e);
-        } finally {
-            if (_inst != null) {
-                _inst.removeTransformer(this);
-            }
         }
 
+		// note -- do NOT remove the Transformer.  If we transform it again we will need ALL transformers
     }
 
     @Override
