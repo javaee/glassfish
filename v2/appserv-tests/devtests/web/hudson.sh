@@ -90,7 +90,19 @@
 GLASSFISH_DOWNLOAD_URL=${1:-"http://hudson.glassfish.org/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip"}
 JOB_NAME=$2
 
-(ps -aef | grep java |grep ASMain | grep -v grep | sed -e 'sm^ *mm' | cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
+os=`uname`
+if [ "$os" = "AIX" ]; then
+    num=2
+else      
+    num=1
+fi 
+
+if $JAVA_HOME/bin/jps > /dev/null 2>&1; then
+    KILLCMD="(jps |grep ASMain |cut -f1 -d' ' | xargs kill -9  > /dev/null 2>&1) || true"
+else
+    KILLCMD="(ps -aef | grep java |grep ASMain | grep -v grep | awk '{print \$$num}' | xargs kill -9  > /dev/null 2>&1) || true"
+fi
+
 java -version
 
 rm -rf glassfish-v3-image
@@ -155,17 +167,18 @@ instance.http.port.2=${WEBTIER_INSTANCE_PORT_2}
 instance.http.port.3=${WEBTIER_INSTANCE_PORT_3}
 " > config.properties
 
-(ps -aef | grep java |grep ASMain | grep -v grep | sed -e 'sm^ *mm' | cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
+eval $KILLCMD
 
 pushd $APS_HOME/devtests/web
 ./exclude-jobs.sh $JOB_NAME
 
 ant all
+status=$?
 
-(ps -aef | grep java |grep ASMain | grep -v grep | sed -e 'sm^ *mm' | cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
+eval $KILLCMD
 (cat web.output | grep FAIL | grep -v "Total FAIL") || true
 #popd
 #cd $S1AS_HOME/bin/
 #./asadmin stop-domain
-
-#(jps |grep ASMain |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
+#eval $KILLCMD
+exit $status
