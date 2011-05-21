@@ -7,34 +7,21 @@ import org.glassfish.flashlight.provider.ProbeRegistry;
 import org.objectweb.asm.*;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
 import java.security.ProtectionDomain;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 
 /**
  * @author Mahesh Kannan
+ * @author Byron Nevins
  */
 public class ProbeProviderClassFileTransformer
         implements ClassFileTransformer {
-
-    private static Instrumentation _inst;
-
-    private static boolean _debug = Boolean.parseBoolean(Utility.getEnvOrProp("AS_DEBUG"));
-
-    private Class providerClass;
-
-    private Map<String, FlashlightProbe> probes = new HashMap<String, FlashlightProbe>();
-
-    private ClassWriter cw;
-
-    private static final Logger _logger = Logger.getLogger(ProbeProviderClassFileTransformer.class.getName());
 
     public ProbeProviderClassFileTransformer(Class providerClass) {
         this.providerClass = providerClass;
@@ -190,5 +177,10 @@ public class ProbeProviderClassFileTransformer
                     org.objectweb.asm.commons.Method.getMethod("void invokeProbe(int, Object[])"));
         }
     }
-
+    private static Instrumentation _inst;
+    private static boolean _debug = Boolean.parseBoolean(Utility.getEnvOrProp("AS_DEBUG"));
+    private Class providerClass;
+    private Map<String, FlashlightProbe> probes = new HashMap<String, FlashlightProbe>();
+    private ClassWriter cw;
+    private static final Logger _logger = Logger.getLogger(ProbeProviderClassFileTransformer.class.getName());
 }
