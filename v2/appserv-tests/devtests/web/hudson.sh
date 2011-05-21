@@ -94,7 +94,7 @@ kill_processes() {
         *) KILL="kill -9";;
     esac
 
-    (ps -af | grep java | grep ASMain | grep -v grep | awk '{print $2}' | xargs $KILL > /dev/null 2>&1) || true
+    (ps -aef | grep java | grep ASMain | grep -v grep | awk '{print $2}' | xargs $KILL > /dev/null 2>&1) || true
 }
 
 GLASSFISH_DOWNLOAD_URL=${1:-"http://hudson.glassfish.org/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip"}
