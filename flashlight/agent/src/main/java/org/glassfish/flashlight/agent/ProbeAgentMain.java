@@ -44,32 +44,19 @@ import java.lang.instrument.Instrumentation;
 
 /**
  * @author Mahesh Kannan
+ * @author Byron Nevins
  *         Date: May 30, 2008
  */
 public class ProbeAgentMain {
 
-    private static Instrumentation _inst;
-
-    private static boolean agentMainCalled;
-
-    private static boolean premainCalled;
-
-
     public static void agentmain(String agentArgs, Instrumentation inst) {
-        agentMainCalled = true;
-        _inst = inst;
+        instrumentation = inst;
     }
-    
     public static void premain(String agentArgs, Instrumentation inst) {
-        premainCalled = true;
-        _inst = inst;
+        instrumentation = inst;
     }
-
     public static Instrumentation getInstrumentation() {
-        return _inst;
+        return instrumentation;
     }
-
-    public static String getInitStatus() {
-        return "agentMainCalled: " + agentMainCalled + "; premaincalled: " + premainCalled;
-    }
+    private static Instrumentation instrumentation;
 }
