@@ -173,7 +173,8 @@ public class WrongTransportSSL extends BaseDevTest {
         try {
             KeyStore trustStore = KeyStore.getInstance("JKS");
             trustStore.load(stream, null);
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(
+                    TrustManagerFactory.getDefaultAlgorithm());
             tmf.init(trustStore);
             tms = tmf.getTrustManagers();
         } finally {

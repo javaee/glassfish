@@ -142,13 +142,15 @@ public class WebTest {
         KeyStore ks = KeyStore.getInstance("JKS");
         char[] passphrase = "changeit".toCharArray();
         ks.load(new FileInputStream(keyStorePath), passphrase);
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(
+                KeyManagerFactory.getDefaultAlgorithm());
         kmf.init(ks, passphrase);
 
         // Truststore
         KeyStore trustStore = KeyStore.getInstance("JKS");
         trustStore.load(new FileInputStream(trustStorePath), null);
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(
+                TrustManagerFactory.getDefaultAlgorithm());
         tmf.init(trustStore);
 
         ctx.init(kmf.getKeyManagers(),tmf.getTrustManagers(), null);

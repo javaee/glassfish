@@ -135,7 +135,8 @@ public class WebTest extends BaseDevTest {
             trustStore.load(stream, null);
             stream.close();
             stream = null;
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(
+                    TrustManagerFactory.getDefaultAlgorithm());
             tmf.init(trustStore);
             tms = tmf.getTrustManagers();
 

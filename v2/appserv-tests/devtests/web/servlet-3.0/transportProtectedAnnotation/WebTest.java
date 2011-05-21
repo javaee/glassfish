@@ -183,7 +183,8 @@ public class WebTest{
             trustStore.load(istream, null);
             istream.close();
             istream = null;
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(
+                    TrustManagerFactory.getDefaultAlgorithm());
             tmf.init(trustStore);
             tms = tmf.getTrustManagers();
 
