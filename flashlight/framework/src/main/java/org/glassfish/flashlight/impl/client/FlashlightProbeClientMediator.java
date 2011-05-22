@@ -248,8 +248,13 @@ public class FlashlightProbeClientMediator
                 transformer = new ProbeProviderClassFileTransformer(clz);
                 transformers.put(clz, transformer);
             }
-
-            transformer.registerProbe(probe);
+            try {
+                transformer.regProbe(probe);
+            }
+            catch (NoSuchMethodException ex) {
+                logger.severe(localStrings.getLocalString("bad.transform",
+                    "MNTG0505:Error transforming Probe: {0}", ex));
+            }
         }
 
         for (ProbeProviderClassFileTransformer t : transformers.values()) {

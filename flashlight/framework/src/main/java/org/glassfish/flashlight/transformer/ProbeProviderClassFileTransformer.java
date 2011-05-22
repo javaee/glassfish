@@ -1,3 +1,42 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
+ * Contributor(s):
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
 package org.glassfish.flashlight.transformer;
 
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -20,25 +59,18 @@ import java.util.logging.*;
  * @author Mahesh Kannan
  * @author Byron Nevins
  */
-public class ProbeProviderClassFileTransformer
-        implements ClassFileTransformer {
+public class ProbeProviderClassFileTransformer implements ClassFileTransformer {
     public ProbeProviderClassFileTransformer(Class providerClass) {
         this.providerClass = providerClass;
     }
 
-    public void registerProbe(FlashlightProbe probe) {
-        Method m = probe.getProbeMethod();
-        if (m == null) {
-            try {
-                m = probe.getProviderClazz().getDeclaredMethod(probe.getProviderJavaMethodName(),
-                        probe.getParamTypes());
-                probe.setProbeMethod(m);
-            }
-            catch (Exception ex) {
-                _logger.log(Level.WARNING, "Error during registration of FlashlightProbe", ex);
-            }
-        }
-
+    /**
+     * This code can get confusing.  I didn't want to get this method confused with
+     * ProbeRegistry.registerProbe() so I gave it a slightly different name...
+     * @param probe
+     */
+    public void regProbe(FlashlightProbe probe) throws NoSuchMethodException {
+        Method m = getMethod(probe);
         probes.put(probe.getProviderJavaMethodName() + "::" + Type.getMethodDescriptor(m), probe);
     }
 
@@ -49,9 +81,11 @@ public class ProbeProviderClassFileTransformer
                 _inst.addTransformer(this, true);
                 _inst.retransformClasses(providerClass);
             }
+            // hmmm else nothing?!?
+
         }
         catch (Exception e) {
-            _logger.log(Level.WARNING, "Error during re-transformation", e);
+            logger.log(Level.WARNING, "Error during re-transformation", e);
         }
 
         // note -- do NOT remove the Transformer.  If we transform it again we will need ALL transformers
@@ -77,17 +111,17 @@ public class ProbeProviderClassFileTransformer
             }
         }
         catch (Exception ex) {
-            _logger.log(Level.WARNING, "Error during registration of FlashlightProbe", ex);
+            logger.log(Level.WARNING, "Error during registration of FlashlightProbe", ex);
 
         }
         return classfileBuffer;
     }
 
-    private static final String makeKey(String name, String desc) {
+    private static String makeKey(String name, String desc) {
         return name + "::" + desc;
     }
 
-    private static final void getInstrumentation() {
+    private static void getInstrumentation() {
         if (_inst == null) {
             try {
                 ClassLoader scl = ProbeProviderClassFileTransformer.class.getClassLoader().getSystemClassLoader();
@@ -95,10 +129,10 @@ public class ProbeProviderClassFileTransformer
                 Method mthd = agentMainClass.getMethod("getInstrumentation", null);
                 _inst = (Instrumentation) mthd.invoke(null, null);
 
-                _logger.log(Level.INFO, "Successfully got INSTRUMENTATION: " + _inst);
+                logger.log(Level.INFO, "Successfully got INSTRUMENTATION: " + _inst);
             }
             catch (Exception e) {
-                _logger.log(Level.WARNING, "Error while getting Instrumentation object from ProbeAgentmain", e);
+                logger.log(Level.WARNING, "Error while getting Instrumentation object from ProbeAgentmain", e);
             }
         }
     }
@@ -115,7 +149,7 @@ public class ProbeProviderClassFileTransformer
             fos.write(data);
         }
         catch (Throwable th) {
-            _logger.log(Level.INFO, "Couldn't write the retransformed class data", th);
+            logger.log(Level.INFO, "Couldn't write the retransformed class data", th);
         }
         finally {
             try {
@@ -133,7 +167,7 @@ public class ProbeProviderClassFileTransformer
         ProbeProviderClassVisitor(ClassVisitor cv) {
             super(cv);
             for (String methodDesc : probes.keySet()) {
-                _logger.log(Level.FINE, "ProbeProviderClassVisitor will visit" + methodDesc);
+                logger.log(Level.FINE, "ProbeProviderClassVisitor will visit" + methodDesc);
             }
         }
 
@@ -178,10 +212,22 @@ public class ProbeProviderClassFileTransformer
                     org.objectweb.asm.commons.Method.getMethod("void invokeProbe(int, Object[])"));
         }
     }
+
+    private Method getMethod(FlashlightProbe probe) throws NoSuchMethodException {
+        Method m = probe.getProbeMethod();
+
+        if (m == null) {
+            m = probe.getProviderClazz().getDeclaredMethod(
+                    probe.getProviderJavaMethodName(), probe.getParamTypes());
+            probe.setProbeMethod(m);
+        }
+
+        return m;
+    }
     private static Instrumentation _inst;
     private static boolean _debug = Boolean.parseBoolean(Utility.getEnvOrProp("AS_DEBUG"));
-    private Class providerClass;
+    private final Class providerClass;
     private Map<String, FlashlightProbe> probes = new HashMap<String, FlashlightProbe>();
     private ClassWriter cw;
-    private static final Logger _logger = Logger.getLogger(ProbeProviderClassFileTransformer.class.getName());
+    private static final Logger logger = Logger.getLogger(ProbeProviderClassFileTransformer.class.getName());
 }
