@@ -22,7 +22,6 @@ import java.util.logging.*;
  */
 public class ProbeProviderClassFileTransformer
         implements ClassFileTransformer {
-
     public ProbeProviderClassFileTransformer(Class providerClass) {
         this.providerClass = providerClass;
     }
@@ -34,7 +33,8 @@ public class ProbeProviderClassFileTransformer
                 m = probe.getProviderClazz().getDeclaredMethod(probe.getProviderJavaMethodName(),
                         probe.getParamTypes());
                 probe.setProbeMethod(m);
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 _logger.log(Level.WARNING, "Error during registration of FlashlightProbe", ex);
             }
         }
@@ -46,20 +46,21 @@ public class ProbeProviderClassFileTransformer
         try {
             ProbeProviderClassFileTransformer.getInstrumentation();
             if (_inst != null) {
-                 _inst.addTransformer(this, true);
-                 _inst.retransformClasses(providerClass);
+                _inst.addTransformer(this, true);
+                _inst.retransformClasses(providerClass);
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             _logger.log(Level.WARNING, "Error during re-transformation", e);
         }
 
-		// note -- do NOT remove the Transformer.  If we transform it again we will need ALL transformers
+        // note -- do NOT remove the Transformer.  If we transform it again we will need ALL transformers
     }
 
     @Override
     public byte[] transform(ClassLoader loader, String className,
-                            Class<?> classBeingRedefined, ProtectionDomain protectionDomain,
-                            byte[] classfileBuffer)
+            Class<?> classBeingRedefined, ProtectionDomain protectionDomain,
+            byte[] classfileBuffer)
             throws IllegalClassFormatException {
 
         try {
@@ -74,7 +75,8 @@ public class ProbeProviderClassFileTransformer
                     ProbeProviderClassFileTransformer.writeFile(className.substring(className.lastIndexOf('/') + 1), classfileBuffer);
                 }
             }
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             _logger.log(Level.WARNING, "Error during registration of FlashlightProbe", ex);
 
         }
@@ -94,8 +96,9 @@ public class ProbeProviderClassFileTransformer
                 _inst = (Instrumentation) mthd.invoke(null, null);
 
                 _logger.log(Level.INFO, "Successfully got INSTRUMENTATION: " + _inst);
-            } catch (Exception e) {
-                _logger.log(Level.WARNING, "Error while getting Instrumentation object from ProbeAgentmain",  e);
+            }
+            catch (Exception e) {
+                _logger.log(Level.WARNING, "Error while getting Instrumentation object from ProbeAgentmain", e);
             }
         }
     }
@@ -106,17 +109,20 @@ public class ProbeProviderClassFileTransformer
             File installRoot = new File(System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
             File dir = new File(installRoot, "flashlight-generated");
 
-            if(!dir.isDirectory() && !dir.mkdirs())
+            if (!dir.isDirectory() && !dir.mkdirs())
                 throw new RuntimeException("Can't create directory: " + dir);
             fos = new FileOutputStream(new File(dir, name + ".class"));
             fos.write(data);
-        } catch (Throwable th) {
+        }
+        catch (Throwable th) {
             _logger.log(Level.INFO, "Couldn't write the retransformed class data", th);
-        } finally {
+        }
+        finally {
             try {
-                if(fos != null)
+                if (fos != null)
                     fos.close();
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 // nothing can be done...
             }
         }
@@ -124,7 +130,6 @@ public class ProbeProviderClassFileTransformer
 
     private class ProbeProviderClassVisitor
             extends ClassAdapter {
-
         ProbeProviderClassVisitor(ClassVisitor cv) {
             super(cv);
             for (String methodDesc : probes.keySet()) {
@@ -147,13 +152,9 @@ public class ProbeProviderClassFileTransformer
 
     private class ProbeProviderMethodVisitor
             extends MethodAdapter {
-
         private FlashlightProbe probe;
-
         private int access;
-
         private String name;
-
         private String desc;
 
         ProbeProviderMethodVisitor(MethodVisitor mv, int access, String name, String desc, FlashlightProbe probe) {
