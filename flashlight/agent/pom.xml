@@ -53,7 +53,7 @@
     <groupId>org.glassfish.flashlight</groupId>
     <artifactId>flashlight-agent</artifactId>
     <packaging>jar</packaging>
-    <name>GlassFish Flashlight Agent</name>
+    <name>flashlight-agent</name>
     <build>
         <plugins>
             <plugin>
