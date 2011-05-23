@@ -131,7 +131,7 @@ public class ProviderUtil {
                 default:
                     if (c < ' ') {
                         t = "000" + Integer.toHexString(c);
-                        sb.append("\\u" + t.substring(t.length() - 4));
+                        sb.append("\\u").append(t.substring(t.length() - 4));
                     } else {
                         sb.append(c);
                     }
@@ -141,7 +141,7 @@ public class ProviderUtil {
         return sb.toString();
     }
 
-    static protected final String slashToDash(String string) {
+    protected static String slashToDash(String string) {
         if (string != null && !string.isEmpty()) {
             return string.replaceAll("/", "-");
         } else {
@@ -149,7 +149,7 @@ public class ProviderUtil {
         }
     }
 
-    static protected final String readAsString(InputStream in) throws IOException {
+    protected static String readAsString(InputStream in) throws IOException {
         Reader reader = new InputStreamReader(in);
         StringBuilder sb = new StringBuilder();
         char[] c = new char[1024];
@@ -240,7 +240,7 @@ public class ProviderUtil {
         }
         return stringMap;
     }
-    
+
     static protected String getHtmlRepresentationForAttributes(ConfigBean proxy, UriInfo uriInfo) {
         StringBuilder result = new StringBuilder();
 
@@ -368,8 +368,8 @@ public class ProviderUtil {
             String encType = methodMetaData.isFileUploadOperation() ?
                 " enctype=\"multipart/form-data\"" : "" ;
             result = "<div><form action=\"" + uriInfo.getAbsolutePath().toString() +
-                "\" method=\"" + webMethod+ "\"" + encType + ">" +  
-                "<dl>" + result;                       
+                "\" method=\"" + webMethod+ "\"" + encType + ">" +
+                "<dl>" + result;
 
             //hack-1 : support delete method for html
             //add hidden field
@@ -381,7 +381,7 @@ public class ProviderUtil {
             //add hidden field
             result = result +
                     "<dd><input name=\"__remove_empty_entries__\" value=\"true\" type=\"hidden\"></dd>";
-            
+
             result = result + "<dt class=\"button\"></dt><dd class=\"button\"><input value=\"" + commandDisplayName + "\" type=\"submit\"></dd>";
             result = result + "</dl></form></div>";
         }
@@ -491,16 +491,16 @@ public class ProviderUtil {
 
     static private String getHtmlRespresentationForParameter(String parameter,
             ParameterMetaData parameterMetaData, String parameterValue) {
-        
+
       if ("true".equals(parameterMetaData.getAttributeValue(Constants.DEPRECATED))) {
             return "";
         }
-      
+
         String result = parameter;
         //set appropriate type of input field. In can be of type file or text
         //file type is used in case of deploy operation
         String parameterType = parameterMetaData.isFileParameter() ? "file" : "text";
-        
+
         //indicate mandatory field with * super-script
         if (parameterMetaData.getAttributeValue(Constants.OPTIONAL).equalsIgnoreCase("false")) {
             result = result + "<sup>*</sup>";

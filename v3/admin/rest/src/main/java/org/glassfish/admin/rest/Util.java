@@ -144,7 +144,7 @@ public class Util {
         int nameIndex = url.indexOf(name, url.indexOf(":") + 1);
         return getName(url.substring(0, nameIndex - 1), '/');
     }
-    
+
     public static void main (String... args) {
         String url = "http://localhost:4848/management/domain/configs/config/server-config/java-config/generate-jvm-report";
         String gp = getGrandparentName(url);
@@ -200,6 +200,19 @@ public class Util {
             return string;
         }
         return string.substring(0, 1).toUpperCase(Locale.US) + string.substring(1);
+    }
+
+    /**
+     * Converts the first letter of the given string to lower case.
+     *
+     * @param string the input string
+     * @return the string with the lower case first letter
+     */
+    public static String lowerCaseFirstLetter(String string) {
+        if (string == null || string.length() <= 0) {
+            return string;
+        }
+        return string.substring(0, 1).toLowerCase(Locale.US) + string.substring(1);
     }
 
     /**
@@ -278,7 +291,7 @@ public class Util {
             candidatePathSegment = pathSegments.subList(1, pathSegments.size());
         } else {
             // We are being called for a config change at domain level.
-            // CLI "set" requires name to be of form domain.<attribute-name>. 
+            // CLI "set" requires name to be of form domain.<attribute-name>.
             // Preserve "domain"
             candidatePathSegment = pathSegments;
         }
@@ -291,7 +304,7 @@ public class Util {
         String setBasePath = sb.toString();
         ParameterMap parameters = new ParameterMap();
         Map<String, String> currentValues = getCurrentValues(setBasePath, habitat);
-        
+
         for (Map.Entry<String, String> entry : data.entrySet()) {
             String currentValue = currentValues.get(setBasePath + entry.getKey());
             if ((currentValue == null) || (!currentValue.equals(entry.getValue()))) {
@@ -304,14 +317,14 @@ public class Util {
             return new RestActionReporter(); // noop
         }
     }
-    
+
     private static Map<String, String> getCurrentValues(String basePath, Habitat habitat) {
         Map<String, String> values = new HashMap<String, String>();
         final String path = (basePath.endsWith(".")) ? basePath.substring(0, basePath.length()-1) : basePath;
-        RestActionReporter gr = ResourceUtil.runCommand("get", new ParameterMap() {{ 
-            add ("DEFAULT", path); 
+        RestActionReporter gr = ResourceUtil.runCommand("get", new ParameterMap() {{
+            add ("DEFAULT", path);
         }}, habitat, "");
-        
+
         MessagePart top = gr.getTopMessagePart();
         for (MessagePart child : top.getChildren()) {
             String message = child.getMessage();
@@ -320,7 +333,7 @@ public class Util {
                 values.put(parts[0], (parts.length > 1) ? parts[1] : "");
             }
         }
-        
+
         return values;
     }
 }

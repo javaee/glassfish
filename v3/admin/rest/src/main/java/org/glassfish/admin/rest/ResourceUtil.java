@@ -247,7 +247,7 @@ public class ResourceUtil {
      * @param logger              the logger to use
      * @return MethodMetaData the meta-data store for the resource method.
      */
-    public static MethodMetaData getMethodMetaData(String command, HashMap<String, String> commandParamsToSkip, 
+    public static MethodMetaData getMethodMetaData(String command, HashMap<String, String> commandParamsToSkip,
                                                    Habitat habitat, Logger logger) {
         MethodMetaData methodMetaData = new MethodMetaData();
 
@@ -298,7 +298,7 @@ public class ResourceUtil {
                     commandParams.put(key, parent);
                     break;
                 }
-                
+
             }
             /*
             Set<String> keys = commandParams.keySet();
@@ -423,7 +423,7 @@ public class ResourceUtil {
 
 
                 methodMetaData.putParameterMetaData(attributeName, parameterMetaData);
-    
+
             }
         } catch (ClassNotFoundException cnfe) {
             throw new RuntimeException(cnfe);
@@ -446,13 +446,13 @@ public class ResourceUtil {
     }
 
     /* test if a command really exists in the current runningVM
-     * 
+     *
      */
     public static boolean commandIsPresent(Habitat habitat , String commandName){
         CommandRunner cr = habitat.getComponent(CommandRunner.class);
         CommandModel cm = cr.getModel(commandName, RestService.logger);
         return (cm!=null);
-        
+
     }
     /**
      * Constructs and returns the parameter meta-data.
@@ -552,11 +552,11 @@ public class ResourceUtil {
     public static ActionReportResult getActionReportResult(Response.Status status, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
         return getActionReportResult(status.getStatusCode(), null, message, requestHeaders, uriInfo);
     }
-    
+
     public static ActionReportResult getActionReportResult(int status, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
         return getActionReportResult(status, null, message, requestHeaders, uriInfo);
     }
-    
+
     public static ActionReportResult getActionReportResult(int status, ActionReport parentActionReport, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
         if (isBrowser(requestHeaders)) {
             message = getHtml(message, uriInfo, false);
@@ -565,9 +565,9 @@ public class ResourceUtil {
         if (parentActionReport != null) {
             ar.getSubActionsReport().addAll(((ActionReporter)parentActionReport).getSubActionsReport());
         }
-        
+
         ActionReportResult result = new ActionReportResult(ar);
-        
+
         if ((status >= 200) && (status <= 299)) {
             ar.setSuccess();
         } else {
@@ -723,7 +723,7 @@ public class ResourceUtil {
         return javaType;
     }
 
-    static String getAttributeMethodName(String attributeName) {
+    public static String getAttributeMethodName(String attributeName) {
         return methodNameFromDtdName(attributeName, "get");
     }
 
@@ -821,7 +821,7 @@ public class ResourceUtil {
 
         return pmdm;
     }
-    
+
     /* REST can now be configured via RestConfig to show or hide the deprecated elements and attributes
      * @return true if this model is deprecated
      */
@@ -878,14 +878,14 @@ public class ResourceUtil {
         }
 
         String beanName = getUnqualifiedTypeName(dom.model.targetTypeName);
-        
+
         for (CommandResourceMetaData cmd : CommandResourceMetaData.getCustomResourceMapping(beanName)) {
             links.put(cmd.resourcePath, ProviderUtil.getElementLink(uriInfo, cmd.resourcePath));
         }
 
         return links;
     }
-   
+
     /**
      * @param qualifiedTypeName
      * @return unqualified type name for given qualified type name. This is a substring of qualifiedTypeName after last "."
@@ -954,14 +954,14 @@ public class ResourceUtil {
         return key;
     }
 
-    
+
     public static Map<String, String> getResourceLinks(List<Dom> proxyList, UriInfo uriInfo) {
         Map<String, String> links = new TreeMap<String, String>();
         Collections.sort(proxyList, new DomConfigurator());
         for (Dom proxy : proxyList) { //for each element
             try {
                 links.put(
-                        getKey(proxy), 
+                        getKey(proxy),
                         getElementLink(uriInfo, getKey(proxy)));
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -994,7 +994,7 @@ public class ResourceUtil {
         if (getMetaData.sizeParameterMetaData() > 0) {
                 getMetaDataMap.put(MESSAGE_PARAMETERS, buildMethodMetadataMap(getMetaData));
             }
-        methodMetaData.add(getMetaDataMap);      
+        methodMetaData.add(getMetaDataMap);
        }
 
         MethodMetaData postMetaData = mmd.get("POST");
@@ -1021,7 +1021,7 @@ public class ResourceUtil {
 
         ar.getExtraProperties().put("methods", methodMetaData);
     }
-    
+
      public static RestConfig getRestConfig(Habitat habitat) {
         if (habitat == null) {
             return null;

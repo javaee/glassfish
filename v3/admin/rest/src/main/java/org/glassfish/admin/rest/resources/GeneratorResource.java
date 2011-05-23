@@ -64,10 +64,11 @@ import org.jvnet.hk2.config.DomDocument;
 @Path("/generator/")
 public class GeneratorResource {
 
-    private static final String DEFAULT_OUTPUT_DIR = System.getProperty("user.home") + 
+    private static final String DEFAULT_OUTPUT_DIR = System.getProperty("user.home") +
             "/src/glassfish/v3/admin/rest/src/generated/java/org/glassfish/admin/rest/resources/generated";
     @Context
     protected Habitat habitat;
+
     @GET
     @Produces({"text/plain"})
     public String get(@QueryParam("outputDir")String outputDir) {
@@ -81,7 +82,7 @@ public class GeneratorResource {
             Dom dom = Dom.unwrap(entity);
             DomDocument document = dom.document;
             ConfigModel rootModel = dom.document.getRoot().model;
-            
+
             ResourcesGenerator resourcesGenerator = new TextResourcesGenerator(outputDir, habitat);
             resourcesGenerator.generateSingle(rootModel, document);
             resourcesGenerator.endGeneration();

@@ -528,7 +528,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         }
     };
     //TODO - fetch command name from config bean(RestRedirect annotation).
-    private static final Map<String, String> configBeanToPOSTCommand = new HashMap<String, String>() {
+    public static final Map<String, String> configBeanToPOSTCommand = new HashMap<String, String>() {
 
         {
             put("Application", "redeploy"); //TODO check : This row is not used
@@ -568,23 +568,10 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
             put("ListSecurityMap", "create-connector-security-map");
         }
     };
-
-    private static class CollectionLeafMetaData {
-
-        String postCommandName;
-        String deleteCommandName;
-        String displayName;
-
-        CollectionLeafMetaData(String postCommandName, String deleteCommandName, String displayName) {
-            this.postCommandName = postCommandName;
-            this.deleteCommandName = deleteCommandName;
-            this.displayName = displayName;
-        }
-    }
     //This map is used to generate CollectionLeaf resources.
     //Example: JVM Options. This information will eventually move to config bean-
     //JavaConfig or JvmOptionBag
-    private static final Map<String, CollectionLeafMetaData> configBeanToCollectionLeafMetaData =
+    public static final Map<String, CollectionLeafMetaData> configBeanToCollectionLeafMetaData =
             new HashMap<String, CollectionLeafMetaData>() {
 
                 {

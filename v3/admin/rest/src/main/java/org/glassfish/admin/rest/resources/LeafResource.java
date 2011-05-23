@@ -40,10 +40,8 @@
 
 package org.glassfish.admin.rest.resources;
 
-import javax.ws.rs.core.PathSegment;
 import org.jvnet.hk2.component.Habitat;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -66,17 +64,14 @@ import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.results.OptionsResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
-import org.glassfish.api.ActionReport;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.jersey.api.core.ResourceContext;
 import org.glassfish.admin.rest.ResourceUtil;
-import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.Util;
 import org.jvnet.hk2.config.Dom;
 
 import static org.glassfish.admin.rest.Util.decode;
-import static org.glassfish.admin.rest.Util.upperCaseFirstLetter;
 
 
 /**
@@ -119,7 +114,7 @@ public abstract class LeafResource {
         entity = new LeafContent();
         entity.name = tagName;//parent.leafElements(tagName);
         entity.value = parent.leafElement(tagName);
-                
+
 
     }
 
