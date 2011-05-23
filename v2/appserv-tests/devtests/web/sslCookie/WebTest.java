@@ -96,7 +96,7 @@ public class WebTest{
 
     private static SSLSocketFactory getSSLSocketFactory(String trustStorePath)
                     throws Exception {
-        SSLContext sc = SSLContext.getInstance("SSL");
+        SSLContext sc = SSLContext.getInstance("TLS");
         sc.init(null, getTrustManagers(trustStorePath), null);
         return sc.getSocketFactory();
     }

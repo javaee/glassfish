@@ -58,7 +58,7 @@ public class WebTest {
     private static final SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests", TEST_NAME);
     private String host;
     private String port;
-    public static final String SSL = "SSL";
+    public static final String TLS = "TLS";
 
     public WebTest(String[] args) {
         host = args[0];
@@ -125,7 +125,7 @@ public class WebTest {
                 }
             };
             // Install the all-trusting trust manager
-            SSLContext sc = SSLContext.getInstance(SSL);
+            SSLContext sc = SSLContext.getInstance(TLS);
             sc.init(null, trustAllCerts, new SecureRandom());
             //---------------------------------
             return sc.getSocketFactory();
