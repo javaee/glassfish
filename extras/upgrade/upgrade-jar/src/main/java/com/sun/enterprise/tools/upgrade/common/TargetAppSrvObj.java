@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -110,7 +110,7 @@ public class TargetAppSrvObj extends BaseDomainInfoObj {
         if (versionEdition == null) {
             VersionExtracter vExtracter = new VersionExtracter(
                 CommonInfoModel.getInstance());
-            version = UpgradeConstants.VERSION_3_1;
+            version = UpgradeConstants.VERSION_3_1_1;
             edition = UpgradeConstants.ALL_PROFILE;
             versionEdition = vExtracter.formatVersionEditionStrings(
                 version, edition);
