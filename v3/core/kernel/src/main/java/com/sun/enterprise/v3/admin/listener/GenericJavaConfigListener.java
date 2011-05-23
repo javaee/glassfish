@@ -203,7 +203,8 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
                 else if (tc == Property.class && t.getParent().getClass() == JavaConfig.class) {
                     result = new NotProcessed("Addition of properties to JavaConfig requires restart");
                 }
-                else if (tc == JavaConfig.class ) {
+                // check tc first because it is faster than instanceof
+                else if (tc == JavaConfig.class && t instanceof JavaConfig) {
                     final JavaConfig njc = (JavaConfig) t; 
                     logFine(type, njc);
                     
@@ -223,7 +224,8 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
                     
                     result = reasons.isEmpty() ? null : new NotProcessed( GenericJavaConfigListener.toString(reasons) );
                 }
-                else if (tc == SystemProperty.class) {
+                // check tc first because it is faster than instanceof
+                else if (tc == SystemProperty.class && t instanceof SystemProperty) {
                     // check to see if this system property is referenced by any of the options
                     final SystemProperty sp = (SystemProperty) t;
                     String pname = sp.getName();
@@ -266,15 +268,15 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
         
         // find all the differences and generate helpful messages
         final List<String> reasons = new ArrayList<String>();
-        for( final String key : old.keySet() ) {
-            final String oldValue = old.get(key);
-            final String curValue = cur.get(key);
+        for( final Map.Entry<String,String> e : old.entrySet() ) {
+            final String oldValue = e.getValue();
+            final String curValue = cur.get(e.getKey());
             
             final boolean changed = (oldValue == null && curValue != null) ||
                                     (oldValue != null && curValue == null) ||
                                     (oldValue != null && ! oldValue.equals(curValue));
             if ( changed ) {
-                reasons.add( "JavaConfig attribute '" + key + "' was changed from '" + oldValue + "' to '" + curValue + "'");
+                reasons.add( "JavaConfig attribute '" + e.getKey() + "' was changed from '" + oldValue + "' to '" + curValue + "'");
             }
         }
         return reasons;

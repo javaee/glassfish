@@ -132,7 +132,11 @@ public class SystemPropertyListener implements ConfigListener, PostConstruct, St
         {
             @Override
             public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> changedType, T changedInstance) {
-                if (changedType == SystemProperty.class && type == TYPE.ADD) {  //create-system-properties
+                if (changedType != SystemProperty.class || 
+                        !(changedInstance instanceof SystemProperty)) {
+                    return null;
+                }
+                if (type == TYPE.ADD) {  //create-system-properties
                     SystemProperty sp = (SystemProperty) changedInstance;
                     ConfigBeanProxy proxy = sp.getParent();
                     if (proxy instanceof Domain) {
@@ -146,7 +150,7 @@ public class SystemPropertyListener implements ConfigListener, PostConstruct, St
                         return addToServer(sp);
                     }
                 }
-                if (changedType == SystemProperty.class && type == TYPE.REMOVE) { //delete-system-property
+                if (type == TYPE.REMOVE) { //delete-system-property
                     SystemProperty sp = (SystemProperty) changedInstance;
                     ConfigBeanProxy proxy = sp.getParent();
                     if (proxy instanceof Domain) {
@@ -160,7 +164,7 @@ public class SystemPropertyListener implements ConfigListener, PostConstruct, St
                         return removeFromServer(sp);
                     }
                 }
-                if (changedType == SystemProperty.class && type == TYPE.CHANGE) { //set on the dotted name e.g. servers.server.server.system-property.foo.value
+                if (type == TYPE.CHANGE) { //set on the dotted name e.g. servers.server.server.system-property.foo.value
                     SystemProperty sp = (SystemProperty) changedInstance;
                     ConfigBeanProxy proxy = sp.getParent();
                     if (proxy instanceof Domain) {
