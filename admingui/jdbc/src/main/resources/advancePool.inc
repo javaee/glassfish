@@ -137,7 +137,7 @@
     <sun:propertySheetSection id="connectionValidationPropertySheet" label="$resource{i18njdbc.jdbcPool.Validation}">
 
         <sun:property id="conValidationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.conValidation}" helpText="$resource{i18njdbc.jdbcPool.conValidationHelp}">
-            <sun:checkbox label="$resource{i18n.common.Required}" selected="#{pageSession.valueMap.isConnectionValidationRequired}" selectedValue="true" onChange="javascript: disableTableField();" >
+            <sun:checkbox label="$resource{i18n.common.Required}" selected="#{pageSession.valueMap.isConnectionValidationRequired}" selectedValue="true" onChange="javascript: getValidationTableInfo('#{pageSession.attrMap}', '#{pageSession.valueMap.validationTableName}'); disableTableField('#{pageSession.valueMap.validationTableName}');" >
                 <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{conValidationId});
                 />
@@ -146,7 +146,7 @@
 
         <sun:property id="methodProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.valMethod}" >
             <sun:dropDown id="valMethod" selected="#{pageSession.valueMap.connectionValidationMethod}"
-                labels={"auto-commit" "meta-data"  "custom-validation" "table"} onChange="javascript: disableTableField();">
+                labels={"auto-commit" "meta-data"  "custom-validation" "table"} onChange="javascript: getValidationTableInfo('#{pageSession.attrMap}', '#{pageSession.valueMap.validationTableName}'); disableTableField('#{pageSession.valueMap.validationTableName}');">
                 <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{valMethod});
                 />

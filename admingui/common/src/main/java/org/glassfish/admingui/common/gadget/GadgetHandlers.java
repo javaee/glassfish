@@ -187,6 +187,7 @@ public class GadgetHandlers {
 	String args = (String) handlerCtx.getInputValue("args");
 	StringTokenizer tok = new StringTokenizer(args, ",");
 	String nvp, name, value;
+    Object val = null;
 	int colon;
 	while (tok.hasMoreTokens()) {
 	    // Get the NVP...
@@ -209,11 +210,17 @@ public class GadgetHandlers {
 
 	    // See if it is an input...
 	    if (handlerDef.getInputDef(name) != null) {
-		// It's an input...
-		handler.setInputValue(name, value);
-	    } else {
+		    // It's an input...
+            if (value.startsWith("{") && value.endsWith("}")) {
+                Object t = parseString(value.substring(1, (value.length()) - 1));
+                val = t;
+            } else {
+                val = value;
+            }
+            handler.setInputValue(name, val);
+        } else {
 		// Assume it's an output mapping...
-		handler.setOutputMapping(name, value, OutputTypeManager.EL_TYPE);
+		handler.setOutputMapping(name, val.toString(), OutputTypeManager.EL_TYPE);
 		outputNames.add(name);
 	    }
 	}
@@ -246,5 +253,15 @@ public class GadgetHandlers {
 	handlerCtx.setOutputValue("values", JSONUtil.javaToJSON(outputValues, depth));
 
 	return result;
+    }
+    public static Object parseString(String test) {
+        Map newMap = new HashMap();
+        String[] strs = test.split(",");
+        for (String str : strs) {
+            int end = str.length();
+            int index = str.indexOf("=");
+            newMap.put(str.substring(0, index), str.substring(index+1, end));
+        }
+        return newMap;
     }
 }
