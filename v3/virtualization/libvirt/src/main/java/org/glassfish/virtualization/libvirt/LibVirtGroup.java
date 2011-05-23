@@ -136,16 +136,14 @@ public class LibVirtGroup implements PhysicalGroup, ConfigListener {
         return ConfigSupport.sortAndDispatch(propertyChangeEvents, new Changed() {
             @Override
             public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> tClass, T t) {
-                try {
-                    MachineConfig machineConfig = MachineConfig.class.cast(t);
-                    if (type.equals(TYPE.ADD)) {
-                        Map<String, String> macToIps = MacAddressesToIps();
-                        addMachine(machineConfig, macToIps.get(machineConfig.getMacAddress()));
-                        // we should update our cache as well...
+                    if (t instanceof MachineConfig) {
+                        MachineConfig machineConfig = MachineConfig.class.cast(t);
+                        if (type.equals(TYPE.ADD)) {
+                            Map<String, String> macToIps = macAddressesToIps();
+                            addMachine(machineConfig, macToIps.get(machineConfig.getMacAddress()));
+                            // we should update our cache as well...
+                        }
                     }
-                } catch(ClassCastException e) {
-                    // don't care
-                }
                 return null;
             }
         }, Logger.getAnonymousLogger());
@@ -156,9 +154,8 @@ public class LibVirtGroup implements PhysicalGroup, ConfigListener {
     }
 
 
-    private Map<String, String> MacAddressesToIps() {
-        Habitat habitat = Dom.unwrap(config).getHabitat();
-        OsInterface os = habitat.getComponent(OsInterface.class);
+    private Map<String, String> macAddressesToIps() {
+        OsInterface os = getHabitat().getComponent(OsInterface.class);
         return os.populateMacToIpsTable(this);
     }
 
@@ -196,7 +193,7 @@ public class LibVirtGroup implements PhysicalGroup, ConfigListener {
             // the cache did not contain an entry for this machine or the cached IP address is not responding, le'ts be safe.
             String macAddress = machineConfig.getMacAddress();
             if (macAddress!=null && macToIps==null) {
-                macToIps = MacAddressesToIps();
+                macToIps = macAddressesToIps();
             }
             String ipAddress=null;
             if (macToIps!=null) {

@@ -325,7 +325,7 @@ public class LibVirtLocalMachine extends LocalMachine implements PostConstruct {
 
         File custDirectory = prepareCustDirectory(name, cluster, template);
         File custFile = new File(machineDisks, name + "cust.iso");
-        Disk custDisk = prepareCustomization(custDirectory, custFile,  name);
+        prepareCustomization(custDirectory, custFile,  name);
 
         // copy the customization file over.
         final String diskLocation = config.getDisksLocation();
@@ -386,7 +386,7 @@ public class LibVirtLocalMachine extends LocalMachine implements PostConstruct {
         }
 
         // write out to a temporary file.
-        File destXml = new File("/tmp/foo.xml");
+        File destXml = new File(System.getProperty("java.io.tmpdir"),"foo.xml");
         writeConfig(vmConfig, destXml);
 
         System.out.println("I would use " + uuid + " id with mac " + macAddress);

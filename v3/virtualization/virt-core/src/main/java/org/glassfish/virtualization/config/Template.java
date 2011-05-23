@@ -156,7 +156,10 @@ public interface Template extends ConfigBeanProxy, Named {
                     }
                     FileUtils.copy(source, new File(templateLocation, instance.getName() + ".xml"));
                 } catch(IOException e) {
-                    new File(templateLocation, instance.getName() + ".img").delete();
+                    File f = new File(templateLocation, instance.getName() + ".img");
+                    if (!f.delete()) {
+                        RuntimeContext.logger.warning(f.getAbsolutePath() + " cannot be deleted");
+                    }
                     context.getActionReport().failure(RuntimeContext.logger, "Error copying xml " + location, e);
                 }
             }

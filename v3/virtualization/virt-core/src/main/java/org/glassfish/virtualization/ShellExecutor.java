@@ -78,11 +78,10 @@ public class ShellExecutor {
 
     public String output(Process pr) throws IOException {
         // dirty hack for the lazy
-        StringBuffer sb = new StringBuffer();
-        InputStream is = null;
+        StringBuilder sb = new StringBuilder();
+        BufferedReader buf = null;
         try {
-            is =  pr.getInputStream();
-            BufferedReader buf = new BufferedReader(new InputStreamReader(is));
+            buf = new BufferedReader(new InputStreamReader(pr.getInputStream()));
             String line = "";
             while ((line=buf.readLine())!=null) {
                 if (debug) System.out.println(line);
@@ -90,7 +89,7 @@ public class ShellExecutor {
             }
         } finally {
             try {
-                if (is!=null) is.close();
+                if (buf!=null) buf.close();
             } catch(IOException ioe) {
                 // ignore
             }
@@ -100,11 +99,10 @@ public class ShellExecutor {
 
     public String error(Process pr) throws IOException {
         // dirty hack for the lazy
-        StringBuffer sb = new StringBuffer();
-        InputStream is = null;
+        StringBuilder sb = new StringBuilder();
+        BufferedReader buf = null;
         try {
-            is = pr.getErrorStream();
-            BufferedReader buf = new BufferedReader(new InputStreamReader(is));
+            buf = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
             String line = "";
             while ((line=buf.readLine())!=null) {
                 if (debug) System.out.println(line);
@@ -112,7 +110,7 @@ public class ShellExecutor {
             }
         } finally {
             try {
-                if (is!=null) is.close();
+                if (buf!=null) buf.close();
             } catch(IOException ioe) {
                 // ignore
             }

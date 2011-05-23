@@ -61,12 +61,11 @@ final class Utils {
         String file = Utils.class.getPackage().getName().replace('.', '/') + "/" + name;
         InputStream is=null;
         try {
-            is = Utils.class.getClassLoader().getResourceAsStream(file);
-            BufferedInputStream bis = new BufferedInputStream(is);
+            is = new BufferedInputStream(Utils.class.getClassLoader().getResourceAsStream(file));
             byte[] bytes = new byte[1024];
             int read;
-            StringBuffer sb = new StringBuffer();
-            while ((read = bis.read(bytes)) != -1) {
+            StringBuilder sb = new StringBuilder();
+            while ((read = is.read(bytes)) != -1) {
                 sb.append(new String(bytes, 0, read, "UTF-8"));
             }
             return ( sb.toString());

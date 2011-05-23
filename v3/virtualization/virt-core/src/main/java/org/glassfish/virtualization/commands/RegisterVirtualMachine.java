@@ -101,8 +101,9 @@ public class RegisterVirtualMachine implements AdminCommand {
             return;
         }
         Group targetGroup = groups.byName(group);
-        if (group==null) {
+        if (targetGroup==null) {
             context.getActionReport().failure(RuntimeContext.logger, "Cannot find group " + group);
+            return;
         }
         try {
             VirtualMachine vm = targetGroup.vmByName(virtualMachine);

@@ -99,7 +99,7 @@ public interface Virtualization extends ConfigBeanProxy {
      *
      * @return  list of registered templates
      */
-    @Element()
+    @Element("template")
     @Create(value="add-template", resolver = VirtResolver.class, decorator = Template.TemplateAddDecorator.class, i18n = @I18n("org.glassfish.virtualization.add-template"))
     @Listing(value = "list-templates", resolver = VirtResolver.class, i18n = @I18n("org.glassfish.virtualization.list-templates"))
     @Delete(value="remove-template", resolver = TypeAndNameResolver.class, i18n = @I18n("org.glassfish.virtualization.remove-template"))

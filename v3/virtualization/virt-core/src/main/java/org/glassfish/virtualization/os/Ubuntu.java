@@ -102,9 +102,9 @@ public class Ubuntu implements OsInterface {
                 result = shell.execute(new File(arpPath()), getArpCommand());
                 // I have to do this because the command does not always exit and return.
                 Thread.sleep(100);
-                InputStream is = result.getInputStream();
+                LineNumberReader lnReader = null;
                 try {
-                    LineNumberReader lnReader = new LineNumberReader(new InputStreamReader(is));
+                    lnReader = new LineNumberReader(new InputStreamReader(result.getInputStream()));
                     String line;
                     // first line is skipped, it's the column titles.
                     lnReader.readLine();
@@ -115,7 +115,7 @@ public class Ubuntu implements OsInterface {
                     lnReader.close();
                 } catch (IOException ioe) {
                     try {
-                        is.close();
+                        if (lnReader!=null) lnReader.close();
                     } catch(IOException ioe2) {
                         // ignore
                     }

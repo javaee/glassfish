@@ -61,7 +61,7 @@ import java.util.logging.Logger;
  *
  * @author Jerome Dochez
  */
-class LibVirtMachine extends LibVirtLocalMachine implements Machine, PostConstruct {
+class LibVirtMachine extends LibVirtLocalMachine {
 
     // Sa far, IP addresses are static within a single run. we could support changing the IP address eventually.
     final String ipAddress;

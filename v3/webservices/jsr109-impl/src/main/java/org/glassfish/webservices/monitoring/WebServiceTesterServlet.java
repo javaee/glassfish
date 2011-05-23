@@ -267,7 +267,7 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
             }            
             
             if (toInvoke==null) {
-                out.print("cannot find method " + operationName);
+                out.print("cannot  \"action\" request parameter method");
             } else {
                 out.print(localStrings.getLocalString(
 		    	   "enterprise.webservice.monitoring.methodInvocation",
@@ -615,8 +615,12 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
         System.setProperty("java.class.path",classpath1);
         // create a dumy file to have a unique temporary name for a directory
         classesDir = File.createTempFile("jax-ws", "tester", classesDir);
-        classesDir.delete();
-        classesDir.mkdirs();
+        if (!classesDir.delete()) {
+            logger.log(Level.WARNING, "deleting directory failed : " + classesDir);
+        }
+        if (!classesDir.mkdirs()) {
+            logger.log(Level.SEVERE, "creating directory failed : " + classesDir);
+        }
 
         String[] wsimportArgs = new String[7];
         wsimportArgs[0]="-d";
