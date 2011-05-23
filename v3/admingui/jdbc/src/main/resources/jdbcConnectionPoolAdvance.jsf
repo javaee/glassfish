@@ -81,19 +81,22 @@
                                                                 "associateWithThread" "matchConnections" "allowNonComponentCallers"
                                                                 "isConnectionValidationRequired" "failAllConnections"});
         setPageSessionAttribute(key="skipAttrsList", value={"jndiName"});
-
-        gf.createAttributeMap(keys={"poolname"} values={"$pageSession{encodedName}"} map="#{requestScope.attrMap}");
-        gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-validation-table-names"
-                       attrs="#{requestScope.attrMap}"
-                       method="get"
-                       result="#{requestScope.result}");
-        setPageSessionAttribute(key="tableNameList" value="#{requestScope.result.data.extraProperties.validationTableNames}");
-        gf.containedIn(list="#{pageSession.tableNameList}" testStr="#{pageSession.valueMap.validationTableName}" contain="#{requestScope.isTableNames}");
+        gf.createAttributeMap(keys={"poolname"} values={"$pageSession{encodedName}"} map="#{pageSession.attrMap}");
+        if ("#{pageSession.valueMap.isConnectionValidationRequired}=true") {
+            if ("#{pageSession.valueMap.connectionValidationMethod}=table") {
+                gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-validation-table-names"
+                    attrs="#{pageSession.attrMap}"
+                    method="get"
+                    result="#{requestScope.result}");
+                setPageSessionAttribute(key="tableNameList" value="#{requestScope.result.data.extraProperties.validationTableNames}");
+                gf.containedIn(list="#{pageSession.tableNameList}" testStr="#{pageSession.valueMap.validationTableName}" contain="#{requestScope.isTableNames}");
+            }
+        }
         setAttribute(key="emptyStr" value="");
         if (#{requestScope.isTableNames}) {
             setPageSessionAttribute(key="tableDropDownValue" value="#{pageSession.valueMap.validationTableName}");
             setPageSessionAttribute(key="myOption" value="dropdown");
-        }        
+        }
         if (!#{requestScope.isTableNames}) {
             if (#{pageSession.valueMap.validationTableName}) {
                 if ("#{pageSession.valueMap.validationTableName}=#{emptyStr}") {
@@ -131,54 +134,9 @@
 	<sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcConnectionPoolAdvance}" />
 </sun:form>
 
-<f:verbatim>
-<script type="text/javascript">
-    
-    function disableTableField() {
-        var val = document.getElementById("$pageSession{valMethod}").value;
-        if (val == 'table'){
-            var isConnValidation = document.getElementById("$pageSession{conValidationId}").checked;
-            if (isConnValidation) {
-                disableRadioButtons(false);
-                var dropDownVal = document.getElementById("$pageSession{dropdownTextId}").value;
-                if (dropDownVal == '') {
-                    enableRadioButtonFields('text');
-                } else {
-                    if('$pageSession{myOption}' == 'dropdown') {
-                        enableRadioButtonFields('dropdown');
-                    } else {
-                        enableRadioButtonFields('text');
-                    }
-                }
-                disableComponent('$pageSession{validCNTextField}', 'text');
-            } else {
-                disableComponent('$pageSession{dropdownTextId}', 'select');
-                disableTextComponent('$pageSession{textId}');
-                disableComponent('$pageSession{validCNTextField}', 'text');
-                disableRadioButtons(true);
-            }
-        }else
-        if (val == 'custom-validation') {
-            disableComponent('$pageSession{dropdownTextId}', 'select');
-            disableTextComponent('$pageSession{textId}');
-            disableRadioButtons(true);
-            enableComponent('$pageSession{validCNTextField}', 'text');
-        }else{
-            disableComponent('$pageSession{dropdownTextId}', 'select');
-            disableTextComponent('$pageSession{textId}');
-            disableComponent('$pageSession{validCNTextField}', 'text');
-            disableRadioButtons(true);
-        }
-    }
-    function disableTextComponent(textId) {
-        var textVal = document.getElementById(textId).value;
-        disableComponent('$pageSession{textId}', 'text');
-        document.getElementById('$pageSession{textId}').value=textVal;
-    }
-    </script>
-</f:verbatim>
 #include "/common/shared/radioButtonsJS.inc"
 #include "/jdbc/lazyConnectionJS.inc"
+#include "/jdbc/jdbcConnectionPoolAdvanceJS.inc"
 
 </define>
 </composition>
