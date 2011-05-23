@@ -92,8 +92,8 @@ public class Client extends AdminBaseDevTest {
             System.out.println("Finished creating JMS resources");
 
             if (Boolean.getBoolean("enableShoalLogger")) {
-                asadmin("set-log-levels", "ShoalLogger=FINER");
-                asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger=FINER");
+                asadmin("set-log-levels", "ShoalLogger.dsc=FINER");
+                asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger.dsc=FINER");
             }
             asadmin("start-cluster", CLUSTER_NAME);
             asadmin("create-resource-ref", "--target", CLUSTER_NAME, XA_RESOURCE);
@@ -145,7 +145,7 @@ public class Client extends AdminBaseDevTest {
             asadmin("delete-local-instance", INSTANCE1_NAME);
             asadmin("delete-local-instance", INSTANCE2_NAME);
             asadmin("delete-cluster", CLUSTER_NAME);
-            asadmin("set-log-levels", "ShoalLogger=CONFIG");
+            asadmin("set-log-levels", "ShoalLogger.dsc=CONFIG");
             System.out.println("Removed cluster");
         } catch (Exception e) {
             e.printStackTrace();

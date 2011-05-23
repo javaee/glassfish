@@ -74,7 +74,7 @@ cat derby.properties
 
 pushd $APS_HOME/devtests/transaction/ee
 
-ant -Dsave.logs=true -DenableShoalLogger=false all |tee log.txt
+ant -Dsave.logs=true -DenableShoalLogger=true all |tee log.txt
 antStatus=$?
 
 ant dev-report

@@ -86,8 +86,8 @@ public class Client extends AdminBaseDevTest {
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE2_NAME);
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE3_NAME);
             if (Boolean.getBoolean("enableShoalLogger")) {
-                asadmin("set-log-levels", "ShoalLogger=FINER");
-                asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger=FINER");
+                asadmin("set-log-levels", "ShoalLogger.dsc=FINER");
+                asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger.dsc=FINER");
             }
             AsadminReturn result = asadminWithOutput("start-cluster", CLUSTER_NAME);
                 System.out.println("Executed command: " + result.out);
@@ -135,7 +135,7 @@ public class Client extends AdminBaseDevTest {
             asadmin("delete-local-instance", INSTANCE2_NAME);
             asadmin("delete-local-instance", INSTANCE3_NAME);
             asadmin("delete-cluster", CLUSTER_NAME);
-            asadmin("set-log-levels", "ShoalLogger=CONFIG");
+            asadmin("set-log-levels", "ShoalLogger.dsc=CONFIG");
             System.out.println("Removed cluster");
         } catch (Exception e) {
             e.printStackTrace();

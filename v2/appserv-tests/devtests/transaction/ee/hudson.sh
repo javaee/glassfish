@@ -14,8 +14,8 @@ wget http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuc
 unzip -q glassfish.zip
 
 # PUT IN GMS PATCH
-wget http://java.net/jira/secure/attachment/45919/shoal-gms-impl.jar
-mv shoal-gms-impl.jar $PWD/glassfish3/glassfish/modules
+#wget http://java.net/jira/secure/attachment/45919/shoal-gms-impl.jar
+#mv shoal-gms-impl.jar $PWD/glassfish3/glassfish/modules
 # PUT IN GMS PATCH
 
 export S1AS_HOME=$PWD/glassfish3/glassfish
