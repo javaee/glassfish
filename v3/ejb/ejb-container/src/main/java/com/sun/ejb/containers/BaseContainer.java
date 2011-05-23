@@ -2931,8 +2931,9 @@ public abstract class BaseContainer
         throws EJBException
         
     {
-        boolean flushEnabled = findFlushEnabledAttr(method, methodIntf);
-        int txAttr = findTxAttr(method, methodIntf);
+        MethodDescriptor md = new MethodDescriptor(method, methodIntf);
+        boolean flushEnabled = findFlushEnabledAttr(md);
+        int txAttr = findTxAttr(md);
         InvocationInfo info = createInvocationInfo
             (method, txAttr, flushEnabled, methodIntf, originalIntf);
         boolean isHomeIntf = (methodIntf.equals(MethodDescriptor.EJB_HOME)
@@ -3589,13 +3590,12 @@ public abstract class BaseContainer
     // Search for the transaction attribute for a method.
     // This is only used during container initialization.  After that,
     // tx attributes can be looked up with variations of getTxAttr()
-    protected int findTxAttr(Method method, String methodIntf) {
+    protected int findTxAttr(MethodDescriptor md) {
         int txAttr = -1;
         
         if ( isBeanManagedTran )
             return TX_BEAN_MANAGED;
 
-        MethodDescriptor md = new MethodDescriptor(method, methodIntf);
         ContainerTransaction ct = ejbDescriptor.getContainerTransactionFor(md);
                                                                     
         if ( ct != null ) {
@@ -3616,7 +3616,7 @@ public abstract class BaseContainer
         
         if ( txAttr == -1 ) {
             throw new EJBException("Transaction Attribute not found for method "
-                + method);
+                + md.prettyPrint());
         }
         
         // For EJB2.0 CMP EntityBeans, container is only required to support
@@ -3644,7 +3644,7 @@ public abstract class BaseContainer
      * this method if it's correct.
      */
     private void processTxAttrForScheduledTimeoutMethod(Method m) {
-        int txAttr = findTxAttr(m, MethodDescriptor.EJB_BEAN);
+        int txAttr = findTxAttr(new MethodDescriptor(m, MethodDescriptor.EJB_BEAN));
         if( isBeanManagedTran ||
             txAttr == TX_REQUIRED ||
             txAttr == TX_REQUIRES_NEW ||
@@ -3663,11 +3663,10 @@ public abstract class BaseContainer
     // This is only used during container initialization and set into   
     // the invocation info object. This method is over-riden in the
     // EntityContainer.
-    protected boolean findFlushEnabledAttr(Method method, String methodIntf) {
+    protected boolean findFlushEnabledAttr(MethodDescriptor md) {
             
         //Get the flushMethodDescriptor and then find if flush has been
         //enabled for this method
-        MethodDescriptor md = new MethodDescriptor(method, methodIntf);
         boolean flushEnabled = 
             ejbDescriptor.getIASEjbExtraDescriptors().isFlushEnabledFor(md);
 
