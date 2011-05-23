@@ -59,7 +59,7 @@
 # The following TCP ports are assigned by Hudson to avoid collision
 #   WEBTIER_ADMIN_PORT 
 #   WEBTIER_JMS_PORT
-#   JMX_PORT 
+#   WEBTIER_JMX_PORT 
 #   WEBTIER_ORB_PORT
 #   WEBTIER_SSL_PORT
 #   WEBTIER_PORT
@@ -76,10 +76,6 @@
 #
 # Archive the artifacts: appserv-tests/test_results*.*,glassfish-v3-image/glassfish3/glassfish/domains/domain1/logs/*
 #
-# Hudson Text Finder
-#     Also search the console output
-#     Unstable if found
-# 
 # Publish SQE test result report
 #     SQE report XMLs: appserv-tests/test_resultsValid.xml
 #
@@ -125,7 +121,7 @@ rm -rf $S1AS_HOME/domains/domain1
 cd $APS_HOME
 
 echo "AS_ADMIN_PASSWORD=" > temppwd
-$S1AS_HOME/bin/asadmin --user admin --passwordfile $APS_HOME/config/adminpassword.txt create-domain --adminport ${WEBTIER_ADMIN_PORT} --domainproperties jms.port=${WEBTIER_JMS_PORT}:domain.jmxPort=${JMX_PORT}:orb.listener.port=${WEBTIER_ORB_PORT}:http.ssl.port=${WEBTIER_SSL_PORT}:orb.ssl.port=${WEBTIER_ORB_SSL_PORT}:orb.mutualauth.port=${WEBTIER_ORB_SSL_MUTUALAUTH_PORT} --instanceport ${WEBTIER_PORT} domain1
+$S1AS_HOME/bin/asadmin --user admin --passwordfile $APS_HOME/config/adminpassword.txt create-domain --adminport ${WEBTIER_ADMIN_PORT} --domainproperties jms.port=${WEBTIER_JMS_PORT}:domain.jmxPort=${WEBTIER_JMX_PORT}:orb.listener.port=${WEBTIER_ORB_PORT}:http.ssl.port=${WEBTIER_SSL_PORT}:orb.ssl.port=${WEBTIER_ORB_SSL_PORT}:orb.mutualauth.port=${WEBTIER_ORB_SSL_MUTUALAUTH_PORT} --instanceport ${WEBTIER_PORT} domain1
 
 #Create 
 echo "admin.domain=domain1
@@ -170,7 +166,6 @@ pushd $APS_HOME/devtests/web
 ./exclude-jobs.sh $SKIP_NAME
 
 ant all
-status=$?
 
 kill_processes
 (cat web.output | grep FAIL | grep -v "Total FAIL") || true
@@ -178,4 +173,3 @@ kill_processes
 #cd $S1AS_HOME/bin/
 #./asadmin stop-domain
 #kill_processes
-exit $status
