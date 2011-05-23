@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -172,7 +172,8 @@ public abstract class AbstractSingletonContainer
 
                     Method postConstructMethod =
                         lcd.getLifecycleCallbackMethodObject(loader);
-                    int txAttr = findTxAttr(postConstructMethod, MethodDescriptor.EJB_BEAN);
+                    int txAttr = findTxAttr(
+                        new MethodDescriptor(postConstructMethod, MethodDescriptor.EJB_BEAN));
                     // Since REQUIRED and REQUIRES_NEW are already taken care of, only
                     // override the value if it's TX_NOT_SUPPORTED.
                     if( txAttr == Container.TX_NOT_SUPPORTED ) {
@@ -186,7 +187,8 @@ public abstract class AbstractSingletonContainer
 
                     Method preDestroyMethod =
                         lcd.getLifecycleCallbackMethodObject(loader);
-                    int txAttr = findTxAttr(preDestroyMethod, MethodDescriptor.EJB_BEAN);
+                    int txAttr = findTxAttr(
+                        new MethodDescriptor(preDestroyMethod, MethodDescriptor.EJB_BEAN));
                     // Since REQUIRED and REQUIRES_NEW are already taken care of, only
                     // override the value if it's TX_NOT_SUPPORTED.
                     if( txAttr == Container.TX_NOT_SUPPORTED ) {

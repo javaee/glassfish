@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -145,10 +145,9 @@ public final class MethodDescriptor extends Descriptor {
      */
     public MethodDescriptor(Method method) {
         super(method.getName(), "");
-        Class methodClass = method.getClass();
-        Method[] methods = methodClass.getMethods();
-        this.parameterClassNames = getParameterClassNamesFor(method);
-        this.javaParameterClassNames = getJavaFormatClassNamesFor(method);
+        Class[] paramTypes = method.getParameterTypes();
+        this.parameterClassNames = getParameterClassNamesFor(method, paramTypes);
+        this.javaParameterClassNames = getJavaFormatClassNamesFor(paramTypes);
         this.className = method.getDeclaringClass().getName();
     }
     
@@ -503,19 +502,21 @@ public final class MethodDescriptor extends Descriptor {
     }
     
     public String getPrettyParameterString() {
-	String prettyParameterString = "(";
+	StringBuilder prettyParameterString = new StringBuilder("(");
 	if (this.parameterClassNames != null) {
 	    for (int i = 0; i < this.parameterClassNames.length; i++) {
 		int j = i + 1;
 		if (i > 0) {
-		    prettyParameterString = prettyParameterString + ", " + this.parameterClassNames[i] + " p" + j;
+		    prettyParameterString.append(", ").append(this.parameterClassNames[i]).
+                            append(" p").append(j);
 		} else {
-		    prettyParameterString = prettyParameterString + this.parameterClassNames[i] + " p" + j;
+		    prettyParameterString.append(this.parameterClassNames[i]).
+                            append(" p").append(j);
 		}
 	    }
 	}
-	prettyParameterString = prettyParameterString + ")";
-	return prettyParameterString;
+	prettyParameterString.append(")");
+	return prettyParameterString.toString();
     }
     
     public String[] getParameterClassNames() {
@@ -549,13 +550,13 @@ public final class MethodDescriptor extends Descriptor {
     
     /** Equlity iff the parameter names match and the name matches.*/
     public boolean equals(Object other) {
-	if (other != null && other instanceof MethodDescriptor) {
+	if (other instanceof MethodDescriptor) {
 	    MethodDescriptor otherMethodDescriptor = (MethodDescriptor) other;
 	    if (otherMethodDescriptor.getName().equals(getName())
 		&& stringArrayEquals(otherMethodDescriptor.getParameterClassNames(), getParameterClassNames())) {
                     if (getEjbClassSymbol()!=null && otherMethodDescriptor.getEjbClassSymbol()!=null) {                        
                         return getEjbClassSymbol().equals(otherMethodDescriptor.getEjbClassSymbol());
-                    } 
+                    }
                     // if the ejb class symbol is not defined in both descriptor, we consider
                     // the method described being the same.
                     return true;
@@ -581,10 +582,10 @@ public final class MethodDescriptor extends Descriptor {
     }
 
     
-    /** My Hashcode. */
     public int hashCode() {
 	return this.getPrettyParameterString().hashCode() + this.getName().hashCode();
     }
+
     /** My pretty format. */
     public void print(StringBuffer toStringBuffer) {
 	toStringBuffer.append("Method Descriptor").append((ejbName==null?"":" for ejb " + ejbName)).append(
@@ -597,13 +598,12 @@ public final class MethodDescriptor extends Descriptor {
     }
     
     
-    public String[] getParameterClassNamesFor(Method method) {
-	Class[] classes = method.getParameterTypes();
-	String[] classNames = new String[classes.length];
-	for (int i = 0; i < classes.length; i++) {
-	    Class compType = classes[i].getComponentType();
+    public String[] getParameterClassNamesFor(Method method, Class[] paramTypes) {
+	String[] classNames = new String[paramTypes.length];
+	for (int i = 0; i < paramTypes.length; i++) {
+	    Class compType = paramTypes[i].getComponentType();
 	    if ( compType == null ) { // not an array
-		classNames[i] = classes[i].getName();
+		classNames[i] = paramTypes[i].getName();
 	    }
 	    else {
 		// name of array types should be like int[][][]
@@ -641,11 +641,10 @@ public final class MethodDescriptor extends Descriptor {
 	return ret;	
     }
 
-    private String[] getJavaFormatClassNamesFor(Method method){
-	Class[] classes = method.getParameterTypes();
-	String[] classNames = new String[classes.length];
-	for (int i = 0; i < classes.length; i++) {
-	    classNames[i] = classes[i].getName();
+    private String[] getJavaFormatClassNamesFor(Class[] paramTypes){
+	String[] classNames = new String[paramTypes.length];
+	for (int i = 0; i < paramTypes.length; i++) {
+	    classNames[i] = paramTypes[i].getName();
 	}
 	return classNames;
     }
@@ -670,7 +669,7 @@ public final class MethodDescriptor extends Descriptor {
     private String[] xmlFormat2JavaClassNames (String[] from) {
 	String[] to = new String[from.length];
 	for (int i=0; i<from.length; i++) {
-	    to[i] = new String (xmlFormat2JavaClassNames (from[i]));
+	    to[i] = xmlFormat2JavaClassNames (from[i]);
 	}
 	return to;
     }
