@@ -80,9 +80,9 @@ public class MetadataTest extends RestTestBase {
         response = client.resource(getAddress(URL_UPTIMECOMMAND)).get(ClientResponse.class);
         String resp = response.getEntity(String.class);
         assertTrue(resp.contains("extraProperties"));
-        // test to see if we get the milliseconds parameter description which is an 
+        // test to see if we get the milliseconds parameter description which is an
         //optional param metadata for the uptime command
-        System.out.println("resp="+resp);
         assertTrue(resp.contains("milliseconds"));
         assertTrue(resp.contains("GET"));
-    }}
+    }
+}
