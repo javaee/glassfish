@@ -293,7 +293,7 @@ public class LBCommandsTest extends AdminBaseDevTest {
         asadmin("export-http-lb-config", TARGETS_OPTION, STANDALONE_INSTANCE1
                 + "," + STANDALONE_INSTANCE2, loadbalancerXml.getAbsolutePath());
         runTest(i++ + ".export-http-lb-config", validateXML(loadbalancerXml,
-                CHECKSUM4));
+                CHECKSUM4, CHECKSUM4_2));
 
         deleteXML(loadbalancerXml);
         
@@ -397,6 +397,19 @@ public class LBCommandsTest extends AdminBaseDevTest {
         return false;
     }
 
+    private boolean validateXML(File loadbalancerXml, String checkSum1, String checkSum2) {
+        try {
+            String lbXmlCheckSum = getMD5Checksum(loadbalancerXml);
+            System.out.println("lbXmlCheckSum : " + lbXmlCheckSum);
+            if(checkSum1.equals(lbXmlCheckSum) || checkSum2.equals(lbXmlCheckSum)){
+                return true;
+            }
+        } catch (Exception ex) {
+            System.out.println("Unable to get checksum : " + ex.getMessage());
+        }
+        return false;
+    }
+
     public static byte[] createChecksum(File file) throws Exception {
         BufferedReader reader = new BufferedReader(new FileReader(file));
         MessageDigest complete = MessageDigest.getInstance("MD5");
@@ -467,4 +480,5 @@ public class LBCommandsTest extends AdminBaseDevTest {
     private static final String CHECKSUM2 = "b8f0b333dc1b935d8921a420985953b0";
     private static final String CHECKSUM3 = "4b5d431750cc251bf1920ce46c38ce38";
     private static final String CHECKSUM4 = "99d66d54e9749427359e2c4b06f63847";
+    private static final String CHECKSUM4_2 = "71f922d8e1e6aafc4d6f99c3ae4edb54";
 }
