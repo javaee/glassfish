@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -409,8 +409,8 @@ public class BasePolicyWrapper extends java.security.Policy {
                     logger.log(Level.FINE, "JACC Policy Provider, failed Permission Check at :", ex);
                 }
                 AccessController.doPrivileged(new PrivilegedAction() {
-                    public Object run() {
-                        logger.info("JACC Policy Provider: Failed Permission Check, context(" + contextId2 + ")- permission(" + permission2 + ")");
+                    public Object run() {                       
+                        logMsg(Level.INFO, "pc.failed.permission.check", new Object[] {contextId2,permission2}, null);
                         if (logger.isLoggable(Level.FINE)) {
                             logger.fine("Domain that failed(" + domain2 + ")");
                         }
