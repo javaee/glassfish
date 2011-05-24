@@ -56,7 +56,6 @@ public class SingletonInhabitant<T> extends AbstractCreatorInhabitantImpl<T> {
       super(creator);
   }
 
-  @SuppressWarnings("unchecked")
   public T get(Inhabitant onBehalfOf) {
       if(object==null) {
           synchronized(this) {

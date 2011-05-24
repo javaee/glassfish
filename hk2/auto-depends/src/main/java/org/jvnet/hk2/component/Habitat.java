@@ -122,7 +122,7 @@ public class Habitat implements Injector {
 
     // see InjectInjectionResolver
     // this manages whether {@link PerLookup} scoped inhabitants (and other applicable scopes) get released when their parents get released
-    public static final boolean MANAGED_INJECTION_POINTS_ENABLED = true;
+    public static final boolean MANAGED_INJECTION_POINTS_ENABLED = false;
 
     private static final String NULL_STR_ARR[] = new String[] { null };
 
