@@ -350,13 +350,17 @@ public class ProgramOptions {
      */
     public String getPasswordFile() {
         String passwordFile = options.getOne(PASSWORDFILE);
+
         if (!ok(passwordFile))
             passwordFile = env.getStringOption(PASSWORDFILE);
+
         if (!ok(passwordFile))
-            passwordFile = null;        // no default
-        
-        if(ok(passwordFile))
-                passwordFile = SmartFile.sanitize(passwordFile);
+            return null;        // no default
+
+        // weird, huh?  This means use standard input
+        if (!passwordFile.equals("-"))
+            passwordFile = SmartFile.sanitize(passwordFile);
+
         return passwordFile;
     }
 
