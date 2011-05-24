@@ -15,7 +15,9 @@ unzip -q glassfish.zip
 
 # PUT IN GMS PATCH
 wget http://java.net/jira/secure/attachment/45919/shoal-gms-impl.jar
+wget http://java.net/jira/secure/attachment/45994/shoal-gms-api.jar
 mv shoal-gms-impl.jar $PWD/glassfish3/glassfish/modules
+mv shoal-gms-api.jar $PWD/glassfish3/glassfish/modules
 # PUT IN GMS PATCH
 
 export S1AS_HOME=$PWD/glassfish3/glassfish
