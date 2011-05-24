@@ -52,13 +52,12 @@ import org.jvnet.hk2.component.PreDestroy;
  * and keeping it cached while ref count >= 1.
  * 
  * @author Jeff Trent
- * @since 3.1
  */
 @SuppressWarnings("unchecked")
-public class ReferenceCountedLazyInhabitant<T> extends EventPublishingInhabitant<T> {
+class ReferenceCountedLazyInhabitant<T> extends EventPublishingInhabitant<T> {
 
   private volatile WeakReference<T> ref;
-  private volatile Inhabitant<?> onBehalfOf;
+  private WeakReference<Inhabitant<?>> onBehalfOfRef;
   private final AtomicInteger refCount;
   
   public ReferenceCountedLazyInhabitant(Inhabitant<?> delegate) {
@@ -68,6 +67,7 @@ public class ReferenceCountedLazyInhabitant<T> extends EventPublishingInhabitant
   public ReferenceCountedLazyInhabitant(Inhabitant<?> delegate, int startingRefCount) {
     super(delegate);
     ref = new WeakReference(null);
+    onBehalfOfRef = new WeakReference(null);
     refCount = new AtomicInteger(startingRefCount);
   }
   
@@ -81,11 +81,12 @@ public class ReferenceCountedLazyInhabitant<T> extends EventPublishingInhabitant
     return refCount.get();
   }
 
+  @SuppressWarnings("rawtypes")
   @Override
   public T get(Inhabitant onBehalfOf) {
     T object = null; 
     int val = refCount.incrementAndGet();
-    if (1 == val || null == this.onBehalfOf) {
+    if (1 == val) {
       try {
         object = super.get(onBehalfOf);
         ref = new WeakReference(object);
@@ -94,13 +95,14 @@ public class ReferenceCountedLazyInhabitant<T> extends EventPublishingInhabitant
         refCount.decrementAndGet(); // ignore result
         throw e;
       }
-      if (null != object) {
-        this.onBehalfOf = onBehalfOf;
+      if (null != object && this != onBehalfOf) {
+        this.onBehalfOfRef = new WeakReference(onBehalfOf);
       }
     } else {
       object = ref.get();
     }
-    assert (onBehalfOf == this.onBehalfOf || null == this.onBehalfOf) : "wrong onBehalfOf context";
+    Inhabitant<?> i = this.onBehalfOfRef.get();
+    assert (onBehalfOf == i || null == i) : "wrong onBehalfOf context";
     return object;
   }
 
@@ -116,8 +118,10 @@ public class ReferenceCountedLazyInhabitant<T> extends EventPublishingInhabitant
         logger.log(Level.FINE, "error encountered", new ComponentException(e));
         throw e;
       } finally {
-        this.ref = new WeakReference(null);
-        this.onBehalfOf = null;
+        this.ref.clear();
+        this.ref = null;
+        this.onBehalfOfRef.clear();
+        this.onBehalfOfRef = null;
         super.release();
       }
     }
@@ -130,12 +134,12 @@ public class ReferenceCountedLazyInhabitant<T> extends EventPublishingInhabitant
     }
   }
   
-  @Override
-  public Inhabitant<T> scopedClone() {
-    if (null == real) {
-      fetch();
-    }
-    Inhabitant<T> real = this.real;
-    return real.scopedClone();
-  }
+//  @Override
+//  public Inhabitant<T> scopedClone() {
+//    if (null == real) {
+//      fetch();
+//    }
+//    Inhabitant<T> real = this.real;
+//    return real.scopedClone();
+//  }
 }

@@ -23,6 +23,6 @@ public class HabitatConfigTest extends Hk2Test {
 
   @Test
   public void managedInjectionPointMode() {
-    assertTrue("managed injection point default", Habitat.MANAGED_INJECTION_POINTS_ENABLED);
+    assertFalse("managed injection point default", Habitat.MANAGED_INJECTION_POINTS_ENABLED);
   }
 }

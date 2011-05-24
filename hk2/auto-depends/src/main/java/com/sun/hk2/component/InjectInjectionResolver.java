@@ -59,7 +59,7 @@ import org.jvnet.tiger_types.Types;
  */
 public class InjectInjectionResolver extends InjectionResolver<Inject> {
 
-    public static final boolean MANAGED_ENABLED = Habitat.MANAGED_INJECTION_POINTS_ENABLED;
+//    public static final boolean MANAGED_ENABLED = Habitat.MANAGED_INJECTION_POINTS_ENABLED;
   
     final Habitat habitat;
 
@@ -219,13 +219,26 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
     }
 
     protected Inhabitant<?> manage(Inhabitant<?> onBehalfOf, Inhabitant<?> inhabitant) {
-      if (null == inhabitant || null == onBehalfOf || !MANAGED_ENABLED) {
-        return inhabitant;
-      }
-      Inhabitant<?> scopedClone = inhabitant.scopedClone();
-      onBehalfOf.manage(scopedClone);
-      return scopedClone;
+      return inhabitant;
     }
+  
+//    /**
+//     * Manage the fact that the inhabitant represented by "onBehalfOf" is being injected with 
+//     * the component coming from "inhabitant".
+//     * 
+//     * @param onBehalfOf the inhabitant which is the target for injection
+//     * @param inhabitant the inhabitant producing the service used to inject the onBehalfOf instance
+//     * 
+//     * @return a managed inhabitant, if under management; the unmanaged inhabitant argument otherwise
+//     */
+//    protected Inhabitant<?> manage(Inhabitant<?> onBehalfOf, Inhabitant<?> inhabitant) {
+//      if (null == inhabitant || null == onBehalfOf || onBehalfOf == inhabitant || !MANAGED_ENABLED) {
+//        return inhabitant;
+//      }
+//      Inhabitant<?> scopedClone = inhabitant.scopedClone();
+//      onBehalfOf.manage(scopedClone);
+//      return scopedClone;
+//    }
 
     @SuppressWarnings("unchecked")
     protected <V> Collection<V> manage(Inhabitant<?> onBehalfOf, Iterable<?> inhabitants) {
@@ -236,19 +249,13 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
       final ArrayList<V> managed = new ArrayList<V>();
       for (Object iObj : inhabitants) {
         Inhabitant<V> i = (Inhabitant<V>)iObj;
-        
-        if (MANAGED_ENABLED) {
-          managed.add((V)manage(onBehalfOf, i).get());
-        } else {
-          managed.add(i.get());
-        }
+        managed.add((V)manage(onBehalfOf, i).get());
       }
       
       return managed;
     }
     
     protected Inhabitant<?> getInhabitantByType(Inhabitant<?> onBehalfOf, Habitat habitat, Class<?> finalType) {
-//      return habitat.getInhabitantByType(finalType);
       return manage(onBehalfOf, habitat.getInhabitantByType(finalType));
     }
 
@@ -258,13 +265,11 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
     
     @SuppressWarnings("unchecked")
     protected <V> Collection<V> getAllByType(Inhabitant<?> onBehalfOf, Habitat habitat, Class<V> ct) {
-//      return habitat.getAllByType(ct);
       return (Collection<V>) manage(onBehalfOf, habitat.getAllInhabitantsByType(ct));
     }
 
     @SuppressWarnings("unchecked")
     protected <V> Collection<V> getAllByContract(Inhabitant<?> onBehalfOf, Habitat habitat, Class<V> ct) {
-//      return habitat.getAllByContract(ct);
       return (Collection<V>) manage(onBehalfOf, habitat.getAllInhabitantsByContract(ct.getName()));
     }
     

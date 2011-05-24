@@ -149,4 +149,10 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
 //      return null;
     }
     
+//    @Override
+//    public void manage(Inhabitant<?> managedInhabitant) {
+//      // TODO: test me
+//      // NOP; creators should not manage anything!  Doing so may likely result in a memory leak.
+//    }
+    
 }
