@@ -43,6 +43,8 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +52,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.GET;
@@ -58,6 +61,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import org.glassfish.admin.rest.RestService;
+import org.glassfish.admin.rest.Util;
 import org.glassfish.admin.rest.generator.ClassWriter;
 import org.glassfish.admin.rest.generator.CommandResourceMetaData;
 import org.glassfish.admin.rest.generator.CommandResourceMetaData.ParameterMetaData;
@@ -79,7 +83,7 @@ import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.DomDocument;
 
 /**
- * @author Ludovic Champenois ludo@dev.java.net
+ * @author Ludovic Champenois ludo@java.net
  */
 @Path("/status/")
 public class StatusGenerator {
@@ -93,8 +97,19 @@ public class StatusGenerator {
     private Map<String, String> commandsToResources = new TreeMap<String, String>();
     private Map<String, String> resourcesToDeleteCommands = new TreeMap<String, String>();
 
-    private Properties propsI18N= new Properties();
+    private Properties propsI18N= new SortedProperties();
+    static private class SortedProperties extends Properties {
 
+        public Enumeration keys() {
+            Enumeration keysEnum = super.keys();
+            Vector<String> keyList = new Vector<String>();
+            while (keysEnum.hasMoreElements()) {
+                keyList.add((String) keysEnum.nextElement());
+            }
+            Collections.sort(keyList);
+            return keyList.elements();
+        }
+    }
     @GET
     @Produces({"text/plain"})
     public String getPlain() {
@@ -430,8 +445,9 @@ public class StatusGenerator {
         public void configModelVisited(ConfigModel model) {
             //I18n Calculation
             for (String a : model.getAttributeNames()) {
-
-                propsI18N.setProperty(model.targetTypeName + "." + a, "");
+                String key = model.targetTypeName + "." + Util.eleminateHypen(a);
+                propsI18N.setProperty(key+".label", a);
+                propsI18N.setProperty(key+".help", a);
             }
 
 
