@@ -1,4 +1,0 @@
-Directory: appserv-tests/devtests/ee/admin/nodeagent
-Purpose: Tests for node agent and MBeans therein. It may also contain longevity tests, stress tests for node agent.
-
-Contact Mark Basler for details/enhancements etc.

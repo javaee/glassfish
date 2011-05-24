@@ -1,5 +1,0 @@
-Test
-- Use of business method interceptors 
-    - Multiple interceptors implementations for a binding type
-    - Ordering of interceptors (via beans.xml)
-    - Disabling of interceptors (via beans.xml)   

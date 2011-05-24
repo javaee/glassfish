@@ -1,3 +1,0 @@
-Test
-- Simple WAB (Web Application Bundle) that is CDI enabled.
-- Test injection of beans, access to BeanManager within WAB

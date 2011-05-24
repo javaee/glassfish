@@ -1,5 +1,0 @@
-DROP TABLE ONLYGETCONNECTION;
-CREATE TABLE ONLYGETCONNECTION(
-    name char(20), 
-    num integer
-);

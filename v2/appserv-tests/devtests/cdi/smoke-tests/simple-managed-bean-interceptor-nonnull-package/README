@@ -1,1 +1,0 @@
- A modification of the simple managed bean intereceptor test that uses non-default packages for the Managed Beans to get around Issue WELD-728

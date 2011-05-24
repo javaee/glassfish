@@ -1,7 +1,0 @@
-Test
-- Use of Specializes 
-    - tests that the @Specializes annotated bean (X) replaces the other bean(Y) 
-    [ie inherits Qualifiers] in these 2 scenarios
-        - X extended the other bean Y and marks X as @Specializes
-        - XProducer overrides the producer method YProducer and markes the
-        XProducer's producer method as @Specializes.   

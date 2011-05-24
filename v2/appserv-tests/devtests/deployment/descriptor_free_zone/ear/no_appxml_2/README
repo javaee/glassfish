@@ -1,7 +1,0 @@
-This test verifies the following functionalities:
-
-1. deployment of an ear without application.xml
-2. the correct identification of the type of the jar file if the 
-   application.xml does not exist
-3. this test also makes sure that the war can be located anywhere in the package,
-   whereas the ejbs are only under directories not named "lib"

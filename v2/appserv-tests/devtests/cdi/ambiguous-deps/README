@@ -1,5 +1,0 @@
-Test
-- Ensure that presence of disabled alternatives do not result in ambiguous 
-dependencies
-- Ensure that the presence of disabled alternatives do not result in appearance
-of @Any

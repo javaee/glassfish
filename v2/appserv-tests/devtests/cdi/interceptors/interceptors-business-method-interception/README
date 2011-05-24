@@ -1,5 +1,0 @@
-Test
-- Use of business method interceptors 
-    - definition of interceptor binding, interceptor and enabling
-interceptor in beans.xml. check interceptor AroundInvoke invocation count
-    - injection of beans into Interceptors  

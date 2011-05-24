@@ -1,6 +1,0 @@
-<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>javax.el</groupId>
-  <artifactId>el-api</artifactId>
-  <version>@VERSION@</version>
-</project>

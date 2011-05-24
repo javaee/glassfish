@@ -1,6 +1,0 @@
-Test
-- Use of Java EE component environment resources 
-    - type safe injection of JPA resources (EntityManagerFactory, EntityManager) 
-    by declaring a resource through
-        - a static field of a singleton EJB acting as a producer field
-        - a business method in a singleton EJB acting as a producer method 
