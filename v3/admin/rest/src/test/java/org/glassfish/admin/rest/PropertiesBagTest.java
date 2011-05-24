@@ -82,12 +82,41 @@ public class PropertiesBagTest extends RestTestBase {
     public void serverProperties() {
         createAndDeleteProperties(URL_SERVER_PROPERTIES);
     }
-    
+
+    @Test
+    public void propsWithEmptyValues() {
+        List<Map<String, String>> properties = new ArrayList<Map<String, String>>();
+        final String empty = "empty" + generateRandomNumber();
+        final String foo = "foo" + generateRandomNumber();
+        final String bar = "bar" + generateRandomNumber();
+        final String abc = "abc" + generateRandomNumber();
+
+        properties.add(createProperty(empty,""));
+        properties.add(createProperty(foo,"foovalue"));
+        properties.add(createProperty(bar,"barvalue"));
+        createProperties(URL_DERBYPOOL_PROPERTIES, properties);
+        List<Map<String, String>> newProperties = getProperties(get(URL_DERBYPOOL_PROPERTIES));
+
+        assertTrue(isPropertyFound(newProperties, empty));
+        assertTrue(isPropertyFound(newProperties, foo));
+        assertTrue(isPropertyFound(newProperties, bar));
+
+        properties.clear();
+        properties.add(createProperty(abc,"abcvalue"));
+        createProperties(URL_DERBYPOOL_PROPERTIES, properties);
+        newProperties = getProperties(get(URL_DERBYPOOL_PROPERTIES));
+
+        assertTrue(isPropertyFound(newProperties, abc));
+        assertFalse(isPropertyFound(newProperties, empty));
+        assertFalse(isPropertyFound(newProperties, foo));
+        assertFalse(isPropertyFound(newProperties, bar));
+    }
+
     @Test
     public void testOptimizedPropertyHandling() {
         // First, test changing one property and adding a new
         List<Map<String, String>> properties = new ArrayList<Map<String, String>>();
-        properties.add(createProperty("PortNumber","1527")); 
+        properties.add(createProperty("PortNumber","1527"));
         properties.add(createProperty("Password","APP"));
         properties.add(createProperty("User","APP"));
         properties.add(createProperty("serverName","localhost"));
@@ -95,7 +124,7 @@ public class PropertiesBagTest extends RestTestBase {
         properties.add(createProperty("connectionAttributes",";create=false"));
         properties.add(createProperty("foo","bar","test"));
         createProperties(URL_DERBYPOOL_PROPERTIES, properties);
-        
+
         List<Map<String, String>> newProperties = getProperties(get(URL_DERBYPOOL_PROPERTIES));
         for (Map<String, String> property : newProperties) {
             if (property.get("name").equals("connectionAttributes")) {
@@ -105,12 +134,12 @@ public class PropertiesBagTest extends RestTestBase {
                 assertEquals("test", property.get("description"));
             }
         }
-        
+
         // Test updating the description and value
         properties.clear();
         properties.add(createProperty("foo","bar 2","test 2"));
         createProperties(URL_DERBYPOOL_PROPERTIES, properties);
-        
+
         newProperties = getProperties(get(URL_DERBYPOOL_PROPERTIES));
         assertNotSame(1, newProperties);
         for (Map<String, String> property : newProperties) {
@@ -119,7 +148,7 @@ public class PropertiesBagTest extends RestTestBase {
                 assertEquals("test 2", property.get("description"));
             }
         }
-        
+
         // Now test changing that property back and deleting the new one
         properties.clear();
         properties.add(createProperty("PortNumber","1527"));
@@ -128,9 +157,9 @@ public class PropertiesBagTest extends RestTestBase {
         properties.add(createProperty("serverName","localhost"));
         properties.add(createProperty("DatabaseName","sun-appserv-samples"));
         properties.add(createProperty("connectionAttributes",";create=true"));
-        
+
         createProperties(URL_DERBYPOOL_PROPERTIES, properties);
-        
+
         newProperties = getProperties(get(URL_DERBYPOOL_PROPERTIES));
         for (Map<String, String> property : newProperties) {
             if (property.get("name").equals("connectionAttributes")) {
@@ -140,14 +169,14 @@ public class PropertiesBagTest extends RestTestBase {
             }
         }
     }
-    
+
     // This operation is taking a REALLY long time from the console, probably due
     // to improper properties handling when create the RA config.  However, when
     // updating the config's properties, we need to verfiy that only the changed
     // properties are updated, as the broker restarts after every property is
-    // saved. This test will create the jmsra config with a set of properties, 
+    // saved. This test will create the jmsra config with a set of properties,
     // then update only one the object's properties, which should be a very quick,
-    // inexpensive operation.  
+    // inexpensive operation.
     @Test
     public void testJmsRaCreateAndUpdate() {
         List<Map<String, String>> props = new ArrayList<Map<String, String>>(){{
@@ -174,12 +203,12 @@ public class PropertiesBagTest extends RestTestBase {
             put("threadPoolIds","thread-pool-1");
             put("property", propertyList);
         }};
-        
+
         final String URL = "/domain/resources/resource-adapter-config";
         delete(URL+"/jmsra");
         ClientResponse response = post(URL, attrs);
         assertTrue(isSuccess(response));
-        
+
         // Change one property value (AddressListIterations) and update the object
         props = new ArrayList<Map<String, String>>(){{
            add(createProperty("AddressListBehavior", "random"));
@@ -202,7 +231,7 @@ public class PropertiesBagTest extends RestTestBase {
 
         delete(URL+"/jmsra");
     }
-    
+
     protected String buildPropertyList(List<Map<String, String>> props) {
         StringBuilder sb = new StringBuilder();
         String sep = "";
@@ -210,7 +239,7 @@ public class PropertiesBagTest extends RestTestBase {
             sb.append(sep).append(prop.get("name")).append("=").append(prop.get("value"));
             sep = ":";
         }
-        
+
         return sb.toString();
     }
 
@@ -229,7 +258,7 @@ public class PropertiesBagTest extends RestTestBase {
         response = delete(endpoint);
         checkStatusForSuccess(response);
     }
-    
+
     protected Map<String, String> createProperty(final String name, final String value) {
         return createProperty(name, value, "");
     }
