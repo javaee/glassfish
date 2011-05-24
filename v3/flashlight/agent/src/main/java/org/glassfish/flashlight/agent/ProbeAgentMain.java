@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,24 +44,21 @@ import java.lang.instrument.Instrumentation;
 
 /**
  * @author Mahesh Kannan
- *         Date: May 30, 2008
+ * @author Byron Nevins
+ * Created: May 30, 2008
  */
+
 public class ProbeAgentMain {
 
-    private static Instrumentation _inst;
-
     public static void agentmain(String agentArgs, Instrumentation inst) {
-        //System.out.println("agentmain: " + inst);
-        _inst = inst;
+        instrumentation = inst;
     }
-    
     public static void premain(String agentArgs, Instrumentation inst) {
-        //System.out.println("premain: " + inst);
-        _inst = inst;
+        instrumentation = inst;
     }
-
     public static Instrumentation getInstrumentation() {
-        return _inst;
+        return instrumentation;
     }
-
+    private static Instrumentation instrumentation;
 }
+
