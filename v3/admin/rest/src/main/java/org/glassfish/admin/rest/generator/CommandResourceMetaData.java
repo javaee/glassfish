@@ -141,8 +141,8 @@ public class CommandResourceMetaData {
                                 CommandResourceMetaData metaData = new CommandResourceMetaData();
                                 metaData.command = service.name();
                                 metaData.httpMethod = attachment.opType().name();
-                                metaData.resourcePath = service.name(); // FIXME: probably needs another attribute on the annotations
-                                metaData.displayName = service.name();
+                                metaData.resourcePath = attachment.path();
+                                metaData.displayName = attachment.description();
 
                                 metaData.commandParams = new ParameterMetaData[attachment.params().length];
                                 int index = 0;
