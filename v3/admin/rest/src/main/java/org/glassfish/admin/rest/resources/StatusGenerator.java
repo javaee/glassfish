@@ -56,6 +56,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.generator.ClassWriter;
 import org.glassfish.admin.rest.generator.CommandResourceMetaData;
@@ -66,7 +67,6 @@ import org.glassfish.admin.rest.generator.ResourcesGenerator;
 import org.glassfish.admin.rest.generator.ResourcesGeneratorBase;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandModel;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
@@ -92,12 +92,12 @@ public class StatusGenerator {
     private Set<String> restRedirectCommands = new TreeSet<String>();
     private Map<String, String> commandsToResources = new TreeMap<String, String>();
     private Map<String, String> resourcesToDeleteCommands = new TreeMap<String, String>();
-    
+
     private Properties propsI18N= new Properties();
 
     @GET
     @Produces({"text/plain"})
-    public String get() {
+    public String getPlain() {
 //        status.append("\n------------------------");
 //        status.append("Status of Command usage\n");
         try {
@@ -155,11 +155,96 @@ public class StatusGenerator {
 
         }
          status.append("\n------------------------");
-        status.append("Resources with Delete Commands in REST Admin (not counting RESTREDIRECT:\n");       
+        status.append("Resources with Delete Commands in REST Admin (not counting RESTREDIRECT:\n");
         for (String ss : resourcesToDeleteCommands.keySet()) {
             status.append(ss + "      :::      " + resourcesToDeleteCommands.get(ss) + "\n");
-        }     
-        
+        }
+
+        FileOutputStream f=null;
+        try {
+            f = new FileOutputStream(System.getProperty("user.home")+"/GlassFishI18NData.properties");
+            propsI18N.store(f, "");
+
+        } catch (Exception ex) {
+            Logger.getLogger(StatusGenerator.class.getName()).log(Level.SEVERE, null, ex);
+        } finally{
+            if (f!=null){
+                try {
+                    f.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(StatusGenerator.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return status.toString();
+    }
+
+    @GET
+    @Produces({MediaType.TEXT_HTML})
+    public String getHtml() {
+        try {
+            Domain entity = habitat.getComponent(Domain.class);
+            Dom dom = Dom.unwrap(entity);
+            DomDocument document = dom.document;
+            ConfigModel rootModel = dom.document.getRoot().model;
+
+            ResourcesGenerator resourcesGenerator = new NOOPResourcesGenerator(habitat);
+            resourcesGenerator.generateSingle(rootModel, document);
+            resourcesGenerator.endGeneration();
+        } catch (Exception ex) {
+            Logger.getLogger(GeneratorResource.class.getName()).log(Level.SEVERE, null, ex);
+            //retVal = "Exception encountered during generation process: " + ex.toString() + "\nPlease look at server.log for more information.";
+        }
+
+        status.append("<h4>All Commands used in REST Admin</h4>\n<ul>\n");
+        for (String ss : commandsUsed) {
+            status.append("<li>").append(ss).append("</li>\n");
+        }
+
+        listOfCommands();
+        for (String ss : commandsUsed) {
+            allCommands.remove(ss);
+        }
+
+        status.append("</ul>\n<hr/>\n")
+                .append("<h4>Missing Commands not used in REST Admin</h4>\n<ul>\n");
+
+        for (String ss : allCommands) {
+            if (hasTargetParam(ss)) {
+                status.append("<li>").append(ss).append("          has a target param.</li>\n");
+            } else {
+                status.append("<li>").append(ss).append("</li>\n");
+            }
+        }
+
+        status.append("</ul>\n<hr/>\n")
+                .append("<h4>REST-REDIRECT Commands defined on ConfigBeans</h4>\n<ul>\n");
+
+        for (String ss : restRedirectCommands) {
+            status.append("<li>").append(ss).append("</li>\n");
+        }
+
+
+        status.append("</ul>\n<hr/>\n")
+                .append("<h4>Commands to Resources Mapping Usage in REST Admin</h4>\n")
+                .append("<table border=\"1\" style=\"border-collapse: collapse\">\n")
+                .append("<tr><th>Command</th><th>Target</th><th>Resource</th></tr>\n");
+
+        for (String ss : commandsToResources.keySet()) {
+            status.append("<tr><td>").append(ss).append("</td><td>")
+                    .append(hasTargetParam(ss) ? "target" : "").append("</td><td>")
+                    .append(commandsToResources.get(ss)).append("</td></tr>\n");
+        }
+        status.append("</table>\n<hr/>\n")
+                .append("<h4>Resources with Delete Commands in REST Admin (not counting RESTREDIRECT)</h4>\n")
+                .append("<table border=\"1\" style=\"border-collapse: collapse\">\n")
+                .append("<tr><th>Resource</th><th>Delete Command</th></tr>\n");
+        for (String ss : resourcesToDeleteCommands.keySet()) {
+            status.append("<tr><td>").append(ss)
+                    .append("</td><td>").append(resourcesToDeleteCommands.get(ss)).append("</td></tr>\n");
+        }
+        status.append("</table>");
+
         FileOutputStream f=null;
         try {
             f = new FileOutputStream(System.getProperty("user.home")+"/GlassFishI18NData.properties");
@@ -279,7 +364,7 @@ public class StatusGenerator {
             } else {
                 commandsToResources.put(commandName, className);
             }
-            
+
         }
 
         @Override
@@ -329,7 +414,7 @@ public class StatusGenerator {
 
         public NOOPResourcesGenerator(Habitat h){
             super(h);
-            
+
         }
         @Override
         public ClassWriter getClassWriter(String className, String baseClassName, String resourcePath) {
@@ -348,8 +433,8 @@ public class StatusGenerator {
 
                 propsI18N.setProperty(model.targetTypeName + "." + a, "");
             }
-            
-            
+
+
             Class<? extends ConfigBeanProxy> cbp = null;
             try {
                 cbp = (Class<? extends ConfigBeanProxy>) model.classLoaderHolder.get().loadClass(model.targetTypeName);
