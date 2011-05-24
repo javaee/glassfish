@@ -39,6 +39,7 @@
  */
 package org.glassfish.admin.rest.resources;
 
+import java.lang.reflect.Method;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.common.ActionReporter;
 import com.sun.jersey.api.core.ResourceContext;
@@ -55,6 +56,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.RestRedirect;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.*;
+import org.glassfish.config.support.Delete;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -66,7 +68,7 @@ import java.util.logging.Logger;
 import static org.glassfish.admin.rest.Util.eleminateHypen;
 
 /**
- * @author Ludovic Champenois ludo@dev.java.net
+ * @author Ludovic Champenois ludo@java.net
  * @author Rajeshwar Patil
  */
 @Produces({"text/html;qs=2", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
@@ -337,7 +339,12 @@ public class TemplateRestResource {
 
     }
 
-    public void setBeanByKey(List<Dom> parentList, String id) {
+    /* this method is called by the ASM generated code
+     *  change very carefully
+     */
+        public void setBeanByKey(List<Dom> parentList, String id, String tag) {
+        this.tagName = tag;
+
         childID = id;
         if (parentList != null) { // Believe it or not, this can happen
             for (Dom c : parentList) {
@@ -413,7 +420,31 @@ public class TemplateRestResource {
         if (entity == null) {
             return null;
         }
-        return ResourceUtil.getCommand(RestRedirect.OpType.DELETE, getEntity().model);
+        String result =
+         ResourceUtil.getCommand(RestRedirect.OpType.DELETE, getEntity().model);
+        
+        if ((result==null)&&(entity.parent()!=null)){
+            //trying @Delete annotation that as a generic CRUD delete command, possibly...
+           Class<? extends ConfigBeanProxy> cbp = null;
+            try {
+                cbp = (Class<? extends ConfigBeanProxy>) entity.parent().model.classLoaderHolder.get().loadClass(entity.parent().model.targetTypeName);
+            } catch (ClassNotFoundException e) {
+                return null;//
+            }
+            Delete del = null;
+            for (Method m : cbp.getMethods()) {
+                ConfigModel.Property pp = entity.parent().model.toProperty(m);
+                if ((pp != null) && (pp.xmlName.equals(tagName))) {
+                    del = m.getAnnotation(Delete.class);
+                    break;
+                }
+            }
+            if (del != null) {
+                return del.value();
+            }
+                 
+        }
+        return result;
     }
 
     private static File saveFile(String fileName, String mimeType, InputStream fileStream) {

@@ -376,11 +376,13 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
         mv.visitVarInsn(ALOAD, 0);
         mv.visitFieldInsn(GETFIELD, GENERATED_PATH + "List" + childResourceClassName , "entity", "Ljava/util/List;");
         mv.visitVarInsn(ALOAD, 1);
-        mv.visitMethodInsn(INVOKEVIRTUAL, GENERATED_PATH + childResourceClassName , "setBeanByKey", "(Ljava/util/List;Ljava/lang/String;)V");
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitFieldInsn(GETFIELD, GENERATED_PATH + "List" + childResourceClassName, "tagName", "Ljava/lang/String;");
+        mv.visitMethodInsn(INVOKEVIRTUAL, GENERATED_PATH + childResourceClassName , "setBeanByKeyLUDO", "(Ljava/util/List;Ljava/lang/String;Ljava/lang/String;)V");
         mv.visitVarInsn(ALOAD, 2);
         mv.visitInsn(ARETURN);
-        mv.visitMaxs(3, 3);
-        mv.visitEnd();
+        mv.visitMaxs(4, 3);
+        mv.visitEnd();    
     }
 
     @Override

@@ -39,6 +39,8 @@
  */
 package org.glassfish.admin.rest.resources;
 
+import java.lang.reflect.Method;
+import org.glassfish.config.support.Create;
 import java.net.HttpURLConnection;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.jersey.api.core.ResourceContext;
@@ -65,7 +67,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static org.glassfish.admin.rest.Util.*;
+import static org.glassfish.admin.rest.Util.decode;
+import static org.glassfish.admin.rest.Util.getName;
 
 /**
  * @author Ludovic Champenois ludo@dev.java.net
@@ -206,7 +209,29 @@ public abstract class TemplateListOfResource {
             }
         } else {
             ConfigModel.Node n = (ConfigModel.Node) p;
-            return ResourceUtil.getCommand(RestRedirect.OpType.POST, n.getModel());
+            String command =
+             ResourceUtil.getCommand(RestRedirect.OpType.POST, n.getModel());
+            if (command!=null){
+                return command;
+            }
+            //last  possible case...the @Create annotation on a parent method
+            Class<? extends ConfigBeanProxy> cbp = null;
+            try {
+                cbp = (Class<? extends ConfigBeanProxy>) parent.model.classLoaderHolder.get().loadClass(parent.model.targetTypeName);
+            } catch (ClassNotFoundException e) {
+                return null;//
+            }
+            Create create = null;
+            for (Method m : cbp.getMethods()) {
+                ConfigModel.Property pp = parent.model.toProperty(m);
+                if ((pp != null) && (pp.xmlName.equals(tagName))) {
+                    create = m.getAnnotation(Create.class);
+                    break;
+                }
+            }
+            if (create != null) {
+                return create.value();
+            }
         }
 
         return null;

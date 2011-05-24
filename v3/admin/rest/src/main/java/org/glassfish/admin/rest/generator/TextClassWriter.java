@@ -90,7 +90,7 @@ public class TextClassWriter implements ClassWriter {
         writer.write("/*\n");
         writer.write(" * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n");
         writer.write(" *\n");
-        writer.write(" * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.\n");
+        writer.write(" * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.\n");
         writer.write(" *\n");
         writer.write(" * The contents of this file are subject to the terms of either the GNU\n");
         writer.write(" * General Public License Version 2 only (\"GPL\") or the Common Development\n");
@@ -277,7 +277,7 @@ public class TextClassWriter implements ClassWriter {
             writer.write("\t@Path(\"{" + keyAttributeName + "}/\")\n");
             writer.write("\tpublic " + childResourceClassName + " get" + childResourceClassName + "(@PathParam(\"" + keyAttributeName + "\") String id) {\n");
             writer.write("\t\t" + childResourceClassName + " resource = resourceContext.getResource(" + childResourceClassName + ".class);\n");
-            writer.write("\t\tresource.setBeanByKey(entity, id);\n");
+            writer.write("\t\tresource.setBeanByKey(entity, id, tagName);\n");
             writer.write("\t\treturn resource;\n");
             writer.write("\t}\n\n");
         } catch (IOException e) {

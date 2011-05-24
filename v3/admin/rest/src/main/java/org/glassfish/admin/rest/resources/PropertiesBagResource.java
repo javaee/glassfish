@@ -100,7 +100,7 @@ public class PropertiesBagResource {
     @Path("{Name}/")
     public PropertyResource getProperty(@PathParam("Name") String id) {
         PropertyResource resource = resourceContext.getResource(PropertyResource.class);
-        resource.setBeanByKey(getEntity(), id);
+        resource.setBeanByKey(getEntity(), id, tagName);
         return resource;
     }
 

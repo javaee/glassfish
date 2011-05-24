@@ -384,9 +384,9 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
     /**
      * @param elementName
      * @return bean name for the given element name. The name is derived by uppercasing first letter of elementName,
-     *         eliminating hyphens from elementName and ppercasing letter followed by hyphen
+     *         eliminating hyphens from elementName and uppercasing letter followed by hyphen
      */
-    private String getBeanName(String elementName) {
+    public static String getBeanName(String elementName) {
         String ret = "";
         boolean nextisUpper = true;
         for (int i = 0; i < elementName.length(); i++) {
