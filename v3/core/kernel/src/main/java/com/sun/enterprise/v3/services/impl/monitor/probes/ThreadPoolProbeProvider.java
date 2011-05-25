@@ -71,14 +71,14 @@ public class ThreadPoolProbeProvider {
     public void threadAllocatedEvent(
         @ProbeParam("monitoringId") String monitoringId,
         @ProbeParam("threadPoolName") String threadPoolName,
-        @ProbeParam("threadId") String threadId) {}
+        @ProbeParam("threadId") long threadId) {}
 
 
     @Probe(name="threadReleasedEvent")
     public void threadReleasedEvent(
         @ProbeParam("monitoringId") String monitoringId,
         @ProbeParam("threadPoolName") String threadPoolName,
-        @ProbeParam("threadId") String threadId) {}
+        @ProbeParam("threadId") long threadId) {}
 
 
     @Probe(name="maxNumberOfThreadsReachedEvent")
@@ -92,12 +92,12 @@ public class ThreadPoolProbeProvider {
     public void threadDispatchedFromPoolEvent(
         @ProbeParam("monitoringId") String monitoringId,
         @ProbeParam("threadPoolName") String threadPoolName,
-        @ProbeParam("threadId") String threadId) {}
+        @ProbeParam("threadId") long threadId) {}
 
 
     @Probe(name="threadReturnedToPoolEvent")
     public void threadReturnedToPoolEvent(
         @ProbeParam("monitoringId") String monitoringId,
         @ProbeParam("threadPoolName") String threadPoolName,
-        @ProbeParam("threadId") String threadId) {}
+        @ProbeParam("threadId") long threadId) {}
 }

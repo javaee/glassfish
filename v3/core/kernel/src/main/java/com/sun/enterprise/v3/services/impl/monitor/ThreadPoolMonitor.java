@@ -90,14 +90,14 @@ public class ThreadPoolMonitor implements ThreadPoolProbe {
     public void onThreadAllocateEvent(AbstractThreadPool threadPool, Thread thread) {
         grizzlyMonitoring.getThreadPoolProbeProvider().threadAllocatedEvent(
                 monitoringId, threadPool.getConfig().getPoolName(),
-                thread.getName());
+                thread.getId());
     }
 
     @Override
     public void onThreadReleaseEvent(AbstractThreadPool threadPool, Thread thread) {
         grizzlyMonitoring.getThreadPoolProbeProvider().threadReleasedEvent(
                 monitoringId, threadPool.getConfig().getPoolName(),
-                thread.getName());
+                thread.getId());
     }
 
     @Override
@@ -111,22 +111,22 @@ public class ThreadPoolMonitor implements ThreadPoolProbe {
     public void onTaskDequeueEvent(AbstractThreadPool threadPool, Runnable task) {
         grizzlyMonitoring.getThreadPoolProbeProvider().threadDispatchedFromPoolEvent(
                 monitoringId, threadPool.getConfig().getPoolName(),
-                Thread.currentThread().getName());
+                Thread.currentThread().getId());
         grizzlyMonitoring.getConnectionQueueProbeProvider().onTaskDequeuedEvent(
-                monitoringId, task.toString());
+                monitoringId, task.getClass().getName());
     }
 
     @Override
     public void onTaskCompleteEvent(AbstractThreadPool threadPool, Runnable task) {
         grizzlyMonitoring.getThreadPoolProbeProvider().threadReturnedToPoolEvent(
                 monitoringId, threadPool.getConfig().getPoolName(),
-                Thread.currentThread().getName());
+                Thread.currentThread().getId());
     }
 
     @Override
     public void onTaskQueueEvent(AbstractThreadPool threadPool, Runnable task) {
         grizzlyMonitoring.getConnectionQueueProbeProvider().onTaskQueuedEvent(
-                monitoringId, task.toString());
+                monitoringId, task.getClass().getName());
     }
 
     @Override
