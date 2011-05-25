@@ -135,7 +135,7 @@
         <jaxrpc.api.version>1.1-b01</jaxrpc.api.version>
 
         <javax-persistence-api.version>2.0.3</javax-persistence-api.version>
-        <eclipselink.version>2.3.0-RC1</eclipselink.version>
+        <eclipselink.version>2.3.0-RC2</eclipselink.version>
         <dbschema.version>RELEASE60</dbschema.version>
         <!-- osgi version string must start with a number. Manually mapping above dbschema.version to osgi.version here -->
         <dbschema.osgi.version>6.0</dbschema.osgi.version>
