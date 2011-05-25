@@ -101,6 +101,7 @@
                 <chmod perm="a+x" file="${server.dir}/glassfish/bin/asadmin"/>
             </then>
         </if>
+        <antcall target="shutdown-database"/>
         <antcall target="shutdown-server"/>
     </target>
 
@@ -169,10 +170,18 @@
         </exec>
     </target>
 
+    <target name="start-database" depends="recreate-domain">
+        <echo message="***** Starting GlassFish Database"/>
+        <exec executable="${executable}">
+            <arg value="start-database"/>
+        </exec>
+    </target>
+
     <target name="test" depends="setup,download">
         <trycatch>
             <try>
                 <antcall target="start-server"/>
+                <antcall target="start-database"/>
                 <artifact:mvn pom="pom.xml" fork="true" mavenHome="${env.MAVEN_HOME}" failonerror="false" resultproperty="test.result">
                     <arg value="-Dhttp.proxyHost=${http.proxyHost}"/>
                     <arg value="-Dhttp.proxyPort=${http.proxyPort}"/>
@@ -186,6 +195,7 @@
                 </artifact:mvn>
             </try>
             <finally>
+                <antcall target="shutdown-database"/>
                 <antcall target="shutdown-server"/>
                 <delete dir="${install.dir}" failonerror="false" deleteonexit="true"/>
             </finally>
@@ -204,6 +214,12 @@
         <exec executable="${executable}">
             <arg value="stop-domain"/>
             <arg value="${DOMAIN}"/>
+        </exec>
+    </target>
+    <target name="shutdown-database">
+        <echo message="***** Stopping GlassFish Database"/>
+        <exec executable="${executable}">
+            <arg value="stop-database"/>
         </exec>
     </target>
 </project>

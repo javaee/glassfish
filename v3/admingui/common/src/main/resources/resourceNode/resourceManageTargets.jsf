@@ -53,6 +53,7 @@
         <!beforeCreate
             getRequestValue(key="resName" value="#{pageSession.resName}");
             getRequestValue(key="generalPage" value="#{pageSession.generalPage}");
+            setPageSessionAttribute(key="resourceName" value="#{pageSession.resName}");
             urlencode(value="#{pageSession.resName}" encoding="UTF-8" result="#{pageSession.encodedResName}");
 #include "/common/shared/targetsList.inc"
             setPageSessionAttribute(key="resTargets" value={});
@@ -136,6 +137,7 @@
         </sun:panelGroup>
     </facet>
 </sun:title>
+#include "/common/resourceNode/resourceNameSection.inc"
 <event>
     <!afterCreate
         getUIComponent(clientId="#{formId}"  component=>$attribute{component})

@@ -140,12 +140,31 @@
     }
     function disableEnableFields(type) {
         if(type == 'java.sql.Driver') {
+            var val = document.getElementById("$pageSession{dsTextField}").value;
             disableComponent("$pageSession{dsTextField}", 'text');
+            document.getElementById("$pageSession{dsTextField}").value = val;
             enableComponent("$pageSession{ddsTextField}", 'text');
         } else{
             enableComponent("$pageSession{dsTextField}", 'text');
+            var val = document.getElementById("$pageSession{ddsTextField}").value;
             disableComponent("$pageSession{ddsTextField}", 'text');
+            document.getElementById("$pageSession{ddsTextField}").value = val;
         }
+    }
+
+    function isClassNamePresent(reqMsg) {
+        var resType = document.getElementById("$pageSession{resTypeVal}").value;
+        var className = '';
+        if (resType == 'java.sql.Driver') {
+            className = document.getElementById("$pageSession{ddsTextField}").value;
+        } else {
+            className = document.getElementById("$pageSession{dsTextField}").value;
+        }
+        if (className == null || className == ''){
+            showAlert(reqMsg);
+            return false;
+        }
+        return true;
     }
 
 </script>
