@@ -63,6 +63,7 @@ import java.io.IOException;
 import java.security.KeyStore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
@@ -94,10 +95,10 @@ public class KeystoreManager {
 
     private static final String INSTANCE_CN_SUFFIX = "-instance";
     
-    private static Logger logger = LogDomains.getLogger(KeystoreManager.class, 
+    private static final Logger logger = LogDomains.getLogger(KeystoreManager.class, 
             LogDomains.ADMIN_LOGGER);
     
-    protected class KeytoolExecutor extends ProcessExecutor {            
+    protected static class KeytoolExecutor extends ProcessExecutor {            
                 
         public KeytoolExecutor(String[] args, long timeoutInSeconds)
         {
@@ -115,6 +116,7 @@ public class KeystoreManager {
         
         //We must override this message so that the stdout appears in the exec exception.
         //Keytool seems to output errors to stdout.
+        @Override
         protected String getExceptionMessage() 
         {            
             return getLatestOutput(mOutFile) + " " +  getFileBuffer(mErrFile);
@@ -207,7 +209,7 @@ public class KeystoreManager {
                 dest = lo.getTrustStore();
                 FileUtils.copy(src, dest); //and then cacerts with CA-signed certs
             } catch(Exception e) {
-                e.printStackTrace(); //this was best case effort, anyway
+                logger.log(Level.SEVERE, null, e);
             }
             
         }
@@ -431,7 +433,6 @@ public class KeystoreManager {
             throws RepositoryException {
         if (!storePassword.equals(oldKeyPassword) && !oldKeyPassword.equals(newKeyPassword)) {
             final PEFileLayout layout = getFileLayout(config);
-            final File src = layout.getTrustStoreTemplate();
             final File keystore = layout.getKeyStore();
             //First see if the alias exists. The user could have deleted it. Any failure in the 
             //command indicates that the alias does not exist, so we return without error.
@@ -442,15 +443,25 @@ public class KeystoreManager {
 
             //add code to change all the aliases that exist rather then change s1as only
             List<String> aliases = new ArrayList<String>();
+            FileInputStream is = null;
             try {
                 KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-                keyStore.load(new FileInputStream(keystore), storePassword.toCharArray());
+                is = new FileInputStream(keystore);
+                keyStore.load(is, storePassword.toCharArray());
                 Enumeration<String> all = keyStore.aliases();
                 while (all.hasMoreElements()) {
                     aliases.add(all.nextElement());
                 }
             } catch (Exception e) {
                 aliases.add(CERTIFICATE_ALIAS);
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException ex) {
+                        logger.log(Level.SEVERE, null, ex);
+                    }
+                }
             }
 
             String[] keytoolCmd = {
@@ -509,9 +520,9 @@ public class KeystoreManager {
             try {
                 changeS1ASAliasPassword(config, newPassword, oldPassword, newPassword);
             } catch (Exception ex) {
-                //For now we eat all exceptions and dump to stderr if the password 
+                //For now we eat all exceptions and dump to the log if the password 
                 //alias could not be changed.
-                ex.printStackTrace();
+                logger.log(Level.SEVERE, null, ex);
             }
         }
 
@@ -532,8 +543,7 @@ public class KeystoreManager {
             final String[] argsString = args.split(" +");
             List<String> cmdList = new ArrayList<String>();
             cmdList.add("/bin/chmod");
-            for (String arg : argsString)
-                cmdList.add(arg);
+            cmdList.addAll(Arrays.asList(argsString));
             cmdList.add(file.getAbsolutePath());
             new ProcessBuilder(cmdList).start();
         }

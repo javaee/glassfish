@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,12 +42,12 @@ package com.sun.enterprise.admin.servermgmt;
 
 import java.util.HashMap;
 import java.util.Properties;
-import java.util.Iterator;
 
 import java.util.Map;
 
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import java.util.Locale;
 
 /**
  * This class defines the keys that are used to create the domain config object.
@@ -141,12 +141,9 @@ public class DomainConfig extends RepositoryConfig
             put(K_OSGI_SHELL_TELNET_PORT, osgiShellTelnetPort);
             put(K_JAVA_DEBUGGER_PORT, javaDebuggerPort);
 
-            if(domainProperties!=null) {
-                Iterator iterator = domainProperties.keySet().iterator();
-                while (iterator.hasNext()) {
-                    String key = (String)iterator.next();
-                    String value = (String)domainProperties.get(key);
-                    put(key,value);
+            if (domainProperties != null) {
+                for (String pname : domainProperties.stringPropertyNames()) {
+                    put(pname, domainProperties.getProperty(pname));
                 }
             }
         } catch (Exception ex) {
@@ -164,13 +161,12 @@ public class DomainConfig extends RepositoryConfig
     }
 
   public Map getPorts(){
-	final Iterator it = ((Map) this).keySet().iterator();
 	final Map result = new HashMap();
-	while (it.hasNext()){
-	  String key = (String) it.next();
-	  if (key.toLowerCase().endsWith("port")){
-		result.put(key, this.get(key));
-	  }
+        for (Map.Entry<String, Object> p : entrySet()) {
+            String key = p.getKey();
+            if (key.toLowerCase(Locale.ENGLISH).endsWith("port")) {
+		result.put(key, p.getValue());
+            }
 	}
 	return result;
   }

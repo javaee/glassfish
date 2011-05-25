@@ -69,6 +69,7 @@ public class V2ToV3ConfigUpgrade implements ConfigurationUpgrade, PostConstruct 
     @Inject
     Configs configs;
 
+    @Override
     public void postConstruct() {
         // the 'prevent' defense
         if (configs == null ||
@@ -120,9 +121,7 @@ public class V2ToV3ConfigUpgrade implements ConfigurationUpgrade, PostConstruct 
     }
 
     private void doAdditionsFrom(String [] strings) {
-        for (String s : strings) {
-            newJvmOptions.add(s);
-        }
+        newJvmOptions.addAll(Arrays.asList(strings));
     }
 
     private boolean shouldRemove(String option) {
@@ -140,7 +139,7 @@ public class V2ToV3ConfigUpgrade implements ConfigurationUpgrade, PostConstruct 
         return s != null && s.length() > 0;
     }
 
-    private         List<String> oldJvmOptions;
+    private         List<String> oldJvmOptions = null;
     private final   List<String> newJvmOptions = new ArrayList<String>();
 
     private static final String[] BASE_REMOVAL_LIST = new String[] {
@@ -192,6 +191,7 @@ public class V2ToV3ConfigUpgrade implements ConfigurationUpgrade, PostConstruct 
     }
 
     private class JavaConfigChanger implements SingleConfigCode<JavaConfig> {
+        @Override
         public Object run(JavaConfig jc) throws PropertyVetoException, TransactionFailure {
            jc.setJvmOptions(newJvmOptions);
            return jc;

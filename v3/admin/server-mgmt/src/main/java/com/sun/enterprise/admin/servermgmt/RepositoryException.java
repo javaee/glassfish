@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -78,13 +78,13 @@ public class RepositoryException extends java.lang.Exception {
         super(message, cause);
     }
 
-    private final String PREFIX = "( ";
-    private final String POSTFIX = " )";
+    private static final String PREFIX = "( ";
+    private static final String POSTFIX = " )";
    
     private String format(String msg, String causeMsg, Throwable cause)
     {
         if (cause != null) {
-            if (msg != null) {
+            if (msg == null) {
                 if (causeMsg != null) {
                     msg = causeMsg;
                 } else {
@@ -92,7 +92,7 @@ public class RepositoryException extends java.lang.Exception {
                 }
             } else if (causeMsg != null && !causeMsg.equals(msg)) {
                 msg += PREFIX + causeMsg + POSTFIX;               
-            } else if (causeMsg == null) {
+            } else {
                 msg += PREFIX + cause.toString() + POSTFIX;
             }
         }
@@ -102,6 +102,7 @@ public class RepositoryException extends java.lang.Exception {
     /** If there is a cause, appends the getCause().getMessage()
      *  to the original message.
      */    
+    @Override
     public String getMessage()
     {
         String msg = super.getMessage();
@@ -115,6 +116,7 @@ public class RepositoryException extends java.lang.Exception {
     /** If there is a cause, appends the getCause().getMessage()
      *  to the original message.
      */
+    @Override
     public String getLocalizedMessage()
     {
         String msg = super.getLocalizedMessage();

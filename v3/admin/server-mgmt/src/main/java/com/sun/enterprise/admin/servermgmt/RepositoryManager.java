@@ -67,10 +67,7 @@ import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
-
 import java.util.*;
-import java.util.logging.Level;
-
 import com.sun.enterprise.util.zip.ZipFile;
 
 
@@ -103,7 +100,7 @@ public class RepositoryManager extends MasterPasswordFileManager {
      * ResourceBundle messages that are specific to a domain, node-agent,
      * or server instance. 
      */
-    protected class RepositoryManagerMessages
+    protected static class RepositoryManagerMessages
     {
         private StringManager _strMgr;
         private String _badNameMessage;
@@ -500,7 +497,7 @@ public class RepositoryManager extends MasterPasswordFileManager {
     protected String[] listRepository(RepositoryConfig config) throws RepositoryException
     {
         File repository = getRepositoryRootDir(config);
-        String[] dirs = new String[0];
+        String[] dirs;
         try {
             File f = repository.getCanonicalFile();
             if (!f.isDirectory()) {
@@ -509,6 +506,7 @@ public class RepositoryManager extends MasterPasswordFileManager {
             }
             dirs = f.list(new FilenameFilter() {
                 //Only accept directories that are valid (contain the property startserv script)
+                @Override
                 public boolean accept(File dir, String name) {
                     File f = new File(dir, name);
                     if (!f.isDirectory()) {
@@ -693,7 +691,7 @@ public class RepositoryManager extends MasterPasswordFileManager {
 
         byte[] hash = SSHA.compute(salt, pwdBytes, algoSHA256);
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append(name);
         sb.append(FIELD_SEP);
@@ -931,7 +929,7 @@ public class RepositoryManager extends MasterPasswordFileManager {
                layout.getHttpBcArchiveDestination());
  
         ZipFile zf = new ZipFile(layout.getHttpBcArchiveSource(), layout.getHttpBcInstallRoot());
-        ArrayList list = zf.explode();
+        zf.explode();
     }
 
    /**
@@ -946,7 +944,7 @@ public class RepositoryManager extends MasterPasswordFileManager {
                layout.getJavaEESEArchiveDestination());
        
         ZipFile zf = new ZipFile(layout.getJavaEESEArchiveSource(), layout.getJavaEESEInstallRoot());
-        ArrayList list = zf.explode();
+        zf.explode();
     }
 
    /**
@@ -961,7 +959,7 @@ public class RepositoryManager extends MasterPasswordFileManager {
                layout.getWSDLSLArchiveDestination());
         
         ZipFile zf = new ZipFile(layout.getWSDLSLArchiveSource(), layout.getWSDLSLInstallRoot());
-        ArrayList list = zf.explode();
+        zf.explode();
 
     }
     /**
@@ -974,7 +972,7 @@ public class RepositoryManager extends MasterPasswordFileManager {
         final File broker = layout.getImqBrokerExecutable();
         final File mqVarHome = layout.getImqVarHome();
         try {
-            mqVarHome.mkdirs();
+            FileUtils.mkdirsMaybe(mqVarHome);  
             final List<String> cmdInput = new ArrayList<String>();
             cmdInput.add(broker.getAbsolutePath()); 
             cmdInput.add("-init");
@@ -1090,6 +1088,7 @@ public class RepositoryManager extends MasterPasswordFileManager {
         deleteTable(conn);
         final Statement cs = conn.createStatement();
         cs.executeUpdate(createStatement);
+        cs.close();
     }
     
     private void deleteTable(final Connection conn) {
@@ -1097,6 +1096,7 @@ public class RepositoryManager extends MasterPasswordFileManager {
             final Statement ds = conn.createStatement();
             final String deleteTable = "delete table " + PEFileLayout.EJB_TIMER_TABLE_NAME;
             ds.executeUpdate(deleteTable);
+            ds.close();
         } catch (final Exception e) 
         {
             // There is an excellent chance that an Exception will get
@@ -1239,7 +1239,7 @@ public class RepositoryManager extends MasterPasswordFileManager {
     }
     */
     protected String[] getInteractiveOptions(String user, String password,
-        String masterPassword, HashMap extraPasswords)
+        String masterPassword, HashMap<Object,Object> extraPasswords)
     {        
         int numKeys = extraPasswords == null ? 0 : extraPasswords.size();
         String[] options = new String[3 + numKeys];
@@ -1248,11 +1248,9 @@ public class RepositoryManager extends MasterPasswordFileManager {
         options[1] = password;
         options[2] = masterPassword;
         if (extraPasswords != null) {
-            Iterator it = extraPasswords.keySet().iterator();
-            String key = null;
-            for (int i = 0; i < numKeys; i++) {
-                key = (String)it.next();
-                options[3 + i] = key + "=" + (String)extraPasswords.get(key);
+            int i = 3;
+            for (Map.Entry<Object,Object> me : extraPasswords.entrySet()) {
+                options[i++] = (String)me.getKey() + "=" + (String)me.getValue();
             }
         }
         return options;

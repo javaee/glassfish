@@ -49,15 +49,8 @@ package com.sun.enterprise.admin.servermgmt;
 import com.sun.enterprise.admin.servermgmt.pe.PEFileLayout;
 import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.util.SystemPropertyConstants;
-
-import java.io.ByteArrayOutputStream;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+import com.sun.enterprise.util.io.FileUtils;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 
 /**
@@ -98,7 +91,7 @@ public class MasterPasswordFileManager extends KeystoreManager {
     {
         final PEFileLayout layout = getFileLayout(config);
         final File pwdFile = layout.getMasterPasswordFile();    
-        pwdFile.delete();
+        FileUtils.deleteFile(pwdFile);
     }
     
     /**
