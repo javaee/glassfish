@@ -408,7 +408,7 @@ public class TimerState implements Serializable {
         lastExpiration_ = (lastExpirationRaw > 0) ? 
             new Date(lastExpirationRaw) : null;
         
-        // Populate derived state of immutable cmp fields.
+        // Populate derived state of immutable persistent fields.
         creationTime_ = new Date(creationTimeRaw);
         initialExpiration_ = new Date(initialExpirationRaw);
         if (schedule != null) {

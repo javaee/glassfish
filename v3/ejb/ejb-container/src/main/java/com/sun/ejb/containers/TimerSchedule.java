@@ -55,7 +55,6 @@ import java.util.regex.Pattern;
 import java.io.Serializable;
 
 import javax.ejb.ScheduleExpression;
-import javax.ejb.EJBException;
 
 import com.sun.enterprise.deployment.ScheduledTimerDescriptor;
 
@@ -207,7 +206,7 @@ public class TimerSchedule implements Serializable {
         String[] sp = s.split(" # ");
 
         if (!(sp.length == 11 || sp.length == 13)) {
-            throw new EJBException("Cannot construct TimerSchedule from " + s);
+            throw new IllegalStateException("Cannot construct TimerSchedule from " + s);
         }
 
         second_ = sp[0];
