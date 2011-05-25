@@ -276,6 +276,7 @@ public class CommandResourceMetaData {
         {"Domain", "list-instances", "GET", "list-instances", "List Instances"},
         {"Domain", "list-log-attributes", "GET", "list-log-attributes", "list-log-attributes"},
         {"Domain", "list-log-levels", "GET", "list-log-levels", "LogLevels"},
+        {"Domain", "delete-log-levels", "DELETE", "delete-log-levels", "delete-log-levels"},
         {"Domain", "list-modules", "GET", "list-modules", "list-modules"},
         {"Domain", "list-nodes", "GET", "list-nodes", "list-nodes"},
         {"Domain", "list-nodes-config", "GET", "list-nodes-config", "list-nodes-config"},
