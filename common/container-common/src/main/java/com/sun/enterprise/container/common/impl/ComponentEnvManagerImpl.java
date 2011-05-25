@@ -443,17 +443,27 @@ public class ComponentEnvManagerImpl
             String name = descriptorToLogicalJndiName(resourceRef);
             Object value = null;
             String physicalJndiName = resourceRef.getJndiName();
+            
+            // the jndi-name of URL resource can be either the actual URL value,
+            // or another jndi-name that can be looked up
             if (resourceRef.isURLResource()) {
-                Object obj = null;
-                try {
-                   obj  = new java.net.URL(physicalJndiName);
+                if(physicalJndiName.startsWith(JAVA_GLOBAL_PREFIX) ||
+                   physicalJndiName.startsWith(JAVA_APP_PREFIX) ||
+                   physicalJndiName.startsWith(JAVA_MODULE_PREFIX) ||
+                   physicalJndiName.startsWith(JAVA_COMP_PREFIX)) {
+                    //for jndi-name or lookup-name like "java:module/env/url/testUrl"
+                    value = namingUtils.createLazyNamingObjectFactory(name, physicalJndiName, false);
+                } else {
+                    try {
+                        //for jndi-name like "http://localhost:8080/index.html"
+                        Object obj = new java.net.URL(physicalJndiName);
+                        NamingObjectFactory factory = namingUtils.createSimpleNamingObjectFactory(name, obj);
+                        value = namingUtils.createCloningNamingObjectFactory(name, factory);
+                    } catch (MalformedURLException e) {
+                        // for jndi-name or lookup-name like "url/testUrl"
+                        value = namingUtils.createLazyNamingObjectFactory(name, physicalJndiName, false);
+                    }
                 }
-                catch(MalformedURLException e) {
-                    // no need to print the stack trace, this is allowed
-                    //e.printStackTrace();
-                }
-                NamingObjectFactory factory = namingUtils.createSimpleNamingObjectFactory(name, obj);
-                value = namingUtils.createCloningNamingObjectFactory(name, factory);
             } else if (resourceRef.isORB()) {
                 // TODO handle non-default ORBs
                 value = namingUtils.createLazyNamingObjectFactory(name, physicalJndiName, false);
