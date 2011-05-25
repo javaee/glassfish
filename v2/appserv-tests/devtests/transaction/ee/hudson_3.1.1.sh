@@ -81,4 +81,7 @@ antStatus=$?
 
 ant dev-report
 
+date
+ls -l $APS_HOME/test_results*
+
 exit $antStatus
