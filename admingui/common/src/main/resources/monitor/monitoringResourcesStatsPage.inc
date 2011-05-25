@@ -56,6 +56,9 @@
         if(!#{viewVal}) {
             setAttribute(key="viewVal" value="#{firstVal}");
         }
+        if(!#{appVal}) {
+            setAttribute(key="appVal" value="");
+        }
         calculateHelpUrl(pluginId="#{pluginId}", helpKey: "$resource{help_web.monitorResources}", url="#{olhLink}");
     />
 </event>    
@@ -68,7 +71,7 @@
                          text="$resource{i18n.button.Refresh}">
                   <!command
                       setAttribute(key="viewVal" value="#{viewVal}");
-                      setAttribute(key="monitorList" value="#{monitorList}");
+                      setAttribute(key="appVal" value="#{appVal}");
                       if ("$pageSession{encodedInstanceName}") {
                           setAttribute(key="instanceName" value="$pageSession{encodedInstanceName}");
                       }
@@ -84,11 +87,10 @@
      <sun:propertySheet id="propertySheet">
          <sun:propertySheetSection id="viewPropertySection">
              <sun:property id="VsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}">
-                 <sun:dropDown id="View" label="$resource{i18nc.monitoring.View} : " selected="#{viewVal}" items="$attribute{monitorList}" submitForm="#{true}" immediate="#{true}" >
+                 <sun:dropDown id="View" label="$resource{i18nc.monitoring.connectionPool} : " selected="#{viewVal}" items="$attribute{monitorList}" submitForm="#{true}" immediate="#{true}" >
                      <!command
                          setAttribute(key="click" value="$this{component}");
                          setAttribute(key="viewVal" value="#{click.selected}");
-                         setAttribute(key="monitorList" value="#{monitorList}");
                          if ("$pageSession{encodedInstanceName}") {
                             setAttribute(key="instanceName" value="$pageSession{encodedInstanceName}");
                         }
@@ -97,8 +99,50 @@
                         }
                          gf.navigate(page="#{pageSession.selfPage}");
                      />
+                     <!afterCreate
+                         getClientId(component="$this{component}" clientId=>$page{poolId});
+                     />
                  </sun:dropDown>
-             </sun:property>
+                 "&nbsp;&nbsp;&nbsp;&nbsp;
+                 //To provide the support for application based pool monitoring.
+                 <sun:dropDown id="appView" visible="#{hasResApps}" label="$resource{i18nc.monitoring.application} : " selected="#{appVal}" items="$attribute{resApps}" submitForm="#{true}" immediate="#{true}" >
+                     <!beforeCreate
+                         setAttribute(key="resAppsList" value={});
+                         gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/applications/application", result="#{appsList}");
+                         gf.getChildrenNamesList(endpoint="#{pageSession.monitorURL}/resources/#{viewVal}", result="#{poolAppsList}");
+                         foreach (var="poolApp" list="#{poolAppsList}") {
+                            gf.containedIn(list="#{appsList}" testStr="#{poolApp}" contain=>$attribute{hasApp});
+                            if(#{hasApp}) {
+                                listAdd(list="#{resAppsList}" value="#{poolApp}" result=>$attribute{resAppsList});
+                            }
+                         }
+                         setAttribute(key="resAppsSize" value="#{resAppsList.size()}");
+                         setAttribute(key="zero" value="$int{0}");
+                         if(#{resAppsSize} > #{zero}) {
+                            setAttribute(key="hasResApps" value="$boolean{true}");                                                        
+                         }
+                         if(#{resAppsSize} = #{zero}) {
+                            setAttribute(key="hasResApps" value="$boolean{false}");
+                         }
+                         addEmptyFirstElement(in="#{resAppsList}" out="#{resAppsList}");
+                         gf.convertListToOptionArray(list="#{resAppsList}" optionArray=>$attribute{resApps});
+                                                  
+                     />
+                     <!command
+                         setAttribute(key="click" value="$this{component}");
+                         setAttribute(key="appVal" value="#{click.selected}");
+                         getUIComponent(clientId="$pageSession{poolId}", component=>$attribute{poolComp});
+                         setAttribute(key="viewVal" value="#{poolComp.selected}");
+                         if ("$pageSession{encodedInstanceName}") {
+                            setAttribute(key="instanceName" value="$pageSession{encodedInstanceName}");
+                        }
+                        if ("$pageSession{encodedClusterName}") {
+                            setAttribute(key="clusterName" value="$pageSession{encodedClusterName}");
+                        }
+                        gf.navigate(page="#{pageSession.selfPage}");
+                     />
+                 </sun:dropDown>
+             </sun:property>                 
          </sun:propertySheetSection>
      </sun:propertySheet>   
                    
@@ -108,12 +152,18 @@
              getClientId(component="$this{component}" clientId=>$page{tableId});
          />
    
-         <sun:tableRowGroup id="jdbcStats" rendered="#{hasStatsJdbc}" data={"$attribute{jdbcStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.JDBC} : #{viewVal}"
+         <sun:tableRowGroup id="jdbcStats" rendered="#{hasStatsJdbc}" data={"$attribute{jdbcStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.JDBC} : #{jdbcHeader}"
              groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
              <!beforeCreate
                  isPool(poolName="#{viewVal}", endpoint="#{sessionScope.REST_URL}/resources/jdbc-connection-pool", result=>$attribute{isJdbcPool});
                  if (#{isJdbcPool}) {
-                     getStats(endpoint="#{pageSession.monitorURL}/resources/#{viewVal}", result=>$attribute{jdbcStatsList}  hasStats=>$attribute{hasStatsJdbc});
+                     if(#{appVal}) {
+                        setAttribute(key="jdbcHeader" value="#{viewVal}/#{appVal}");
+                     }
+                     if(!#{appVal}) {
+                        setAttribute(key="jdbcHeader" value="#{viewVal}");
+                     }
+                     getStats(endpoint="#{pageSession.monitorURL}/resources/#{viewVal}/#{appVal}", result=>$attribute{jdbcStatsList}  hasStats=>$attribute{hasStatsJdbc});
                  }
                  if (!#{isJdbcPool}) {
                      setAttribute(key="hasStatsJdbc" value="#{false}");
@@ -122,12 +172,18 @@
 #include "/common/monitor/monitoringTableRows.inc"
              "<br/>
          </sun:tableRowGroup>
-         <sun:tableRowGroup id="connectionPoolStats" rendered="#{hasStatsConnectionPool}" data={"$attribute{connectionPoolStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.ConnectorConnectionPool} : #{viewVal}"
+         <sun:tableRowGroup id="connectionPoolStats" rendered="#{hasStatsConnectionPool}" data={"$attribute{connectionPoolStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.ConnectorConnectionPool} : #{connectorHeader}"
              groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
              <!beforeCreate
                  isPool(poolName="#{viewVal}", endpoint="#{sessionScope.REST_URL}/resources/connector-connection-pool", result=>$attribute{isConnectorPool});
+                 if(#{appVal}) {
+                    setAttribute(key="connectorHeader" value="#{viewVal}/#{appVal}");
+                 }
+                 if(!#{appVal}) {
+                    setAttribute(key="connectorHeader" value="#{viewVal}");
+                 }
                  if (#{isConnectorPool}) {
-                     getStats(endpoint="#{pageSession.monitorURL}/resources/#{viewVal}", result=>$attribute{connectionPoolStatsList}  hasStats=>$attribute{hasStatsConnectionPool});
+                     getStats(endpoint="#{pageSession.monitorURL}/resources/#{viewVal}/#{appVal}", result=>$attribute{connectionPoolStatsList}  hasStats=>$attribute{hasStatsConnectionPool});
                  }
                  if (!#{isConnectorPool}) {
                     setAttribute(key="hasStatsConnectionPool" value="#{false}");
