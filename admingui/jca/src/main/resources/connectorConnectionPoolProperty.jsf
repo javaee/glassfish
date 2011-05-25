@@ -106,6 +106,7 @@
     </facet>
     </sun:title>
     "<br>
+#include "/common/resourceNode/poolNameSection.inc"
 #include "/common/shared/propertyDescTable.inc"
     
     <sun:hidden id="helpKey" value="$resource{help_jca.connectorConnectionPoolProperty}" />

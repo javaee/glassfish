@@ -72,7 +72,7 @@
                  <sun:title id="propertyContentPage" title="$resource{i18njca.connectorSecurityMaps.pageTitle}"
                  helpText="$resource{i18njca.connectorSecurityMaps.pageTitleHelp}" />
 		 "<br /> <br />
-
+#include "/common/resourceNode/poolNameSection.inc"
 #include "/jca/securityMapsTable.inc"
 
 	<sun:hidden id="helpKey" value="$resource{help_jca.connectorSecurityMaps}" />

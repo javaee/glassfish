@@ -54,6 +54,7 @@
     <event>
         <!beforeCreate
             getRequestValue(key="name" value="#{pageSession.Name}");
+            setPageSessionAttribute(key="resourceName" value="#{pageSession.Name}");
             urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
             //For resourceEditTabs.inc
             setSessionAttribute(key="resEditTabs" value="targetTab");
@@ -68,7 +69,7 @@
 #include "/common/shared/alertMsg.inc"
  <sun:title id="propertyContentPage" title="$resource{i18n.resourceTargetListing.PageTitle}" helpText="$resource{i18n.resourceTargetListing.PageTitleHelp}"/>
  "<br />
-
+#include "/common/resourceNode/resourceNameSection.inc"
 <sun:table id="targetTable" title="$resource{i18n.common.TargetTableTitle}" sortPanelToggleButton="#{false}"
     deselectMultipleButton="$boolean{true}"
     deselectMultipleButtonOnClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
