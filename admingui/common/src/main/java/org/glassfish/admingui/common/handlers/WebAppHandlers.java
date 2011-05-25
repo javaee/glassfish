@@ -157,16 +157,13 @@ public class WebAppHandlers {
                String vsStr = (String) apprefAttrs.get("VirtualServers");
                List<String> lvsList = GuiUtil.parseStringList(vsStr, ",");
                boolean changed = false;
-               String newVS = "";
                for(String oneVs: lvsList ){
                    if (! vsList.contains(oneVs)){
                        changed = true;
                        continue;
                    }
-                   newVS = newVS+","+oneVs;
                }
                if (changed){
-                   newVS = newVS.substring(1);
                    apprefAttrs.put("VirtualServers", vsStr);
                    RestResponse response = RestUtil.sendUpdateRequest(apprefEndpoint, apprefAttrs, null, null, null);
                    if (!response.isSuccess()) {
