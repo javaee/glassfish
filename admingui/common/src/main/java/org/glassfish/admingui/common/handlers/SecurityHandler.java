@@ -653,18 +653,13 @@ public class SecurityHandler {
          input={
             @HandlerInput(name="attrMap", type=Map.class, required=true),
             @HandlerInput(name="configName", type=String.class, required=true),
-            @HandlerInput(name="edit", type=String.class, required=true),
-            @HandlerInput(name = "propList", type = List.class)             //propList used when edit is false.
-     },
-        output={
-            @HandlerOutput(name="objName", type=String.class)}
-     )
+            @HandlerInput(name="edit", type=String.class, required=true)
+     })
      public static void saveMsgProviderInfo(HandlerContext handlerCtx){
         Map<String,String> attrMap = (Map<String,String>) handlerCtx.getInputValue("attrMap");
         String edit = (String)handlerCtx.getInputValue("edit");
         String msgSecurityName = attrMap.get("msgSecurityName");
         String configName = (String)handlerCtx.getInputValue("configName");
-        List propList = (List) handlerCtx.getInputValue("propList");
         
         try{
             String providerName = URLEncoder.encode((String)attrMap.get("Name"), "UTF-8");
