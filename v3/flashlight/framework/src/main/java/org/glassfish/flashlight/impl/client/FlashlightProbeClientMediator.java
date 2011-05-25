@@ -42,6 +42,7 @@ package org.glassfish.flashlight.impl.client;
 
 //import org.glassfish.external.probe.provider.annotations.ProbeListener;
 
+import com.sun.enterprise.util.OS;
 import java.lang.annotation.*;
 
 /* BOOBY TRAP SITTING RIGHT HERE!!!  There is a ProbeListener in org.glassfish.flashlight.client
@@ -56,6 +57,7 @@ import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeRegistry;
+import org.glassfish.flashlight.transformer.ProbeProviderClassFileTransformer;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import com.sun.logging.LogDomains;
@@ -230,12 +232,35 @@ public class FlashlightProbeClientMediator
     }
 
     public void transformProbes(Object listener, List<FlashlightProbe> probes) {
-        int clientID = clientIdGenerator.incrementAndGet();
-        clients.put(clientID, listener);
-
         if(probes.isEmpty())
             return;
 
+        int clientID = clientIdGenerator.incrementAndGet();
+        clients.put(clientID, listener);
+
+        HashMap<Class, ProbeProviderClassFileTransformer> transformers
+                = new HashMap<Class, ProbeProviderClassFileTransformer>();
+
+        for (FlashlightProbe probe : probes) {
+            Class clz = probe.getProviderClazz();
+            ProbeProviderClassFileTransformer transformer = transformers.get(clz);
+            if (transformer == null) {
+                transformer = new ProbeProviderClassFileTransformer(clz);
+                transformers.put(clz, transformer);
+            }
+            try {
+                transformer.regProbe(probe);
+            }
+            catch (NoSuchMethodException ex) {
+                logger.severe(localStrings.getLocalString("bad.transform",
+                    "MNTG0505:Error transforming Probe: {0}", ex));
+            }
+        }
+
+        for (ProbeProviderClassFileTransformer t : transformers.values()) {
+            t.transform();
+        }
+/*
         byte [] bArr = BtraceClientGenerator.generateBtraceClientClassData(clientID, probes);
 
         if (bArr == null) {
@@ -246,7 +271,7 @@ public class FlashlightProbeClientMediator
 
         if(isAgentAttached()) {
             submit2BTrace(bArr);
-        }
+        }*/
     }
 
     /**
@@ -288,6 +313,7 @@ public class FlashlightProbeClientMediator
         return mp;
     }
 
+    /*
     private void submit2BTrace(byte [] bArr) {
         try {
             ClassLoader scl = this.getClass().getClassLoader().getSystemClassLoader();
@@ -300,8 +326,7 @@ public class FlashlightProbeClientMediator
             throw new RuntimeException("BTrace Error");
         }
     }
-
-
+*/
     // this is just used internally for cleanly organizing the code.
     private static class MethodProbe {
         MethodProbe(Method m, FlashlightProbe p) {
@@ -327,13 +352,18 @@ public class FlashlightProbeClientMediator
             String ir = System.getProperty(INSTALL_ROOT_PROPERTY);
             File dir = new File(ir, "lib" + File.separator + "monitor");
             if (dir.isDirectory()) {
-                File agentJar = new File(dir, "btrace-agent.jar");
+                File agentJar = null;
+                File flashlightJar = new File(dir, "flashlight-agent.jar");
+
+                agentJar = flashlightJar;
+
                 if (agentJar.isFile()) {
                     setAgentInitialized(false);
-                    vm.loadAgent(agentJar.getPath(), "unsafe=true,noServer=true");
-                } else {
+                    vm.loadAgent(agentJar.getPath(), "");
+                }
+                else {
                     logger.log(Level.WARNING, localStrings.getLocalString("missing.btrace-agent.jar",
-                        "btrace-agent.jar does not exist under {0}", dir));
+                            "flashlight-agent.jar does not exist under {0}", dir));
                     return false;
                 }
             } else {

@@ -54,6 +54,10 @@ import java.util.logging.*;
 
 public class GFLauncherLogger {
 
+    public static void warning(String msg, Object... objs)
+    {
+        logger.warning(strings.get(msg, objs));
+    }
     public static void info(String msg, Object... objs)
     {
         logger.info(strings.get(msg, objs));

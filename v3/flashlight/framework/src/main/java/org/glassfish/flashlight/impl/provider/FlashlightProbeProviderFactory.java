@@ -249,6 +249,7 @@ public class FlashlightProbeProviderFactory
                     providerClazz, moduleProviderName, moduleName, probeProviderName, probeName,
                     probeParamNames, m.getParameterTypes(), self, hidden);
             probe.setProviderJavaMethodName(m.getName());
+            probe.setProbeMethod(m);
             provider.addProbe(probe);
 
             if (invokerId != null) {

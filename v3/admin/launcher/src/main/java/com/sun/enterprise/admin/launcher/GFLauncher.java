@@ -56,6 +56,7 @@ import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
 import static com.sun.enterprise.util.SystemPropertyConstants.*;
 import static com.sun.enterprise.admin.launcher.GFLauncherConstants.*;
+import java.util.logging.Logger;
 
 /**
  * This is the main Launcher class designed for external and internal usage.
@@ -353,6 +354,13 @@ public abstract class GFLauncher {
             logFilename = f.getPath();
 
         logFilenameWasFixed = true;
+    }
+
+    private void move(File from, File to) throws IOException {
+        FileUtils.copy(from, to);
+
+        if (!from.delete())
+            from.deleteOnExit();
     }
 
     // unit tests will want 'fake' so that the process is not really started.
@@ -762,7 +770,7 @@ public abstract class GFLauncher {
             if (key.startsWith("javaagent:")) {
                 // complications -- of course!!  They may have mix&match forward and back slashes
                 key = key.replace('\\', '/');
-                if (key.indexOf(BTRACE_PATH) >= 0 || key.indexOf(FLASHLIGHT_AGENT_PATH) >= 0)
+                if (key.indexOf(FLASHLIGHT_AGENT_NAME) >= 0)
                     return; // Done!!!!
             }
         }
@@ -778,33 +786,21 @@ public abstract class GFLauncher {
     }
 
     private String getMonitoringAgentJvmOptionString() throws GFLauncherException {
-        //-javaagent:${ASINSTALL_ROOT}/lib/monitor/btrace-agent.jar=unsafe=true
-        //-javaagent:${ASINSTALL_ROOT}/modules/flashlight-agent.jar
+        File libMonDir = new File(getInfo().getInstallDir(), LIBMON_NAME);
+        File flashlightJarFile = new File(libMonDir, FLASHLIGHT_AGENT_NAME);
 
-        File btraceJarFile = new File(getInfo().getInstallDir(), BTRACE_PATH);
-        String btraceJarPath = SmartFile.sanitize(btraceJarFile).getPath().replace('\\', '/');
-
-        File flashlightJarFile = new File(getInfo().getInstallDir(), FLASHLIGHT_AGENT_PATH);
-        String flashlightJarPath = SmartFile.sanitize(flashlightJarFile).getPath().replace('\\', '/');
-
-        String jvmOption = null;
-
-        // if it exists -- use it
-        if (btraceJarFile.isFile() && GFLauncherConstants.OS_SUPPORTS_BTRACE)
-            jvmOption = "javaagent:" + btraceJarPath + "=unsafe=true,noServer=true";
-        // it would be weird for this to not exist...
-        else if (flashlightJarFile.isFile())
-            jvmOption = "javaagent:" + flashlightJarPath;
+        if (flashlightJarFile.isFile())
+            return "javaagent:" + getCleanPath(flashlightJarFile);
+        // No agent jar...
         else {
-            String msg = strings.get("no_agent_jars", btraceJarPath, flashlightJarPath);
-            GFLauncherLogger.info(msg);
+            String msg = strings.get("no_flashlight_agent", flashlightJarFile);
+            GFLauncherLogger.warning(msg);
             throw new GFLauncherException(msg);
         }
+    }
 
-        if (Boolean.parseBoolean(Utility.getEnvOrProp("AS_AGENT_DEBUG")))
-            jvmOption += ",debug=true";
-
-        return jvmOption;
+    private static String getCleanPath(File f) {
+        return SmartFile.sanitize(f).getPath().replace('\\', '/');
     }
 
     private List<String> getSpecialSystemProperties() throws GFLauncherException {
