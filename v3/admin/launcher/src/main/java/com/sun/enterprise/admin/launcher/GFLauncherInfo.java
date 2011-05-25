@@ -364,15 +364,15 @@ public class GFLauncherInfo {
 
         tsb = getBoolean("verbose");
         if(tsb.isTrue())
-            debug = true;
+            verbose = true;
         else if(tsb.isFalse())
-            debug = false;
+            verbose = false;
 
         tsb = getBoolean("upgrade");
         if(tsb.isTrue())
-            debug = true;
+            upgrade = true;
         else if(tsb.isFalse())
-            debug = false;
+            upgrade = false;
     }
 
     private void finalSetup() throws GFLauncherException {
