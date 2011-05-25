@@ -45,7 +45,7 @@
 <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-                    onClick="if (isClassNamePresent('$resource{i18njdbc.msg.Error.classNameCannotBeEmpty}') && guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
+                    onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                     gf.updateEntity(endpoint="#{pageSession.resourceUrl}"
                         attrs="#{pageSession.valueMap}"
