@@ -52,7 +52,7 @@
     
     <artifactId>cluster-cli</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Cluster Admin CLI</name>
+    <name>cluster-cli</name>
 
     <properties>
         <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>

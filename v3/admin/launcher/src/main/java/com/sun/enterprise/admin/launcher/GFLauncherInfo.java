@@ -90,6 +90,18 @@ public class GFLauncherInfo {
     }
 
     /**
+     * Starts the server in watchdog mode.  This is only useful if verbose is false.
+     * It does the same thing as verbose -- except without the dumping of output
+     * to standard out and err streams.
+     * @param b
+     * @since 3.2
+     */
+    public void setWatchdog(boolean b) {
+        watchdog = b;
+    }
+
+
+    /**
      * Starts the server in debug mode
      * @param b 
      */
@@ -125,11 +137,19 @@ public class GFLauncherInfo {
     }
 
     /**
-     * 
+     *
      * @return true if verbose mode is on.
      */
     public boolean isVerbose() {
         return verbose;
+    }
+
+    /**
+     *
+     * @return true if watchdog mode is on.
+     */
+    public boolean isWatchdog() {
+        return watchdog;
     }
 
     /**
@@ -254,6 +274,7 @@ public class GFLauncherInfo {
             map.put("-instancedir", SmartFile.sanitize(instanceRootDir.getPath()));
         }
 
+        // no need for watchdog here.  It is a client-side phenomenon only!
         map.put("-verbose", Boolean.toString(verbose));
         map.put("-debug", Boolean.toString(debug));
         map.put("-instancename", instanceName);
@@ -367,6 +388,12 @@ public class GFLauncherInfo {
             verbose = true;
         else if(tsb.isFalse())
             verbose = false;
+
+        tsb = getBoolean("watchdog");
+        if(tsb.isTrue())
+            watchdog = true;
+        else if(tsb.isFalse())
+            watchdog = false;
 
         tsb = getBoolean("upgrade");
         if(tsb.isTrue())
@@ -520,6 +547,7 @@ public class GFLauncherInfo {
 
     private RuntimeType type;
     private boolean verbose = false;
+    private boolean watchdog = false;
     private boolean debug = false;
     private boolean upgrade = false;
     File installDir;
@@ -543,6 +571,10 @@ public class GFLauncherInfo {
     private final static String CONFIG_FILENAME = "domain.xml";
     //password tokens -- could be multiple -- launcher should *just* write them onto stdin of server
     final List<String> securityTokens = new ArrayList<String>(); // note: it's package private
+
+    boolean isVerboseOrWatchdog() {
+        return verbose || watchdog;
+    }
 
     final private static class ThreeStateBoolean {
 

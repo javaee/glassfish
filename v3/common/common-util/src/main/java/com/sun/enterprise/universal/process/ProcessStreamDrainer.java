@@ -104,7 +104,7 @@ public class ProcessStreamDrainer
     }
 
     /**
-     * Create an instance, drain and redirect the process' stderr and stdout to 
+     * Create an instance, drain and redirect the process' stderr and stdout to
      * System.err and System.out respectively.
      * @param process The Process to drain
      * @param processName The name will be used to name the drainer threads
@@ -112,6 +112,17 @@ public class ProcessStreamDrainer
     public static ProcessStreamDrainer redirect(String processName, Process process)
     {
         ProcessStreamDrainer psd = new ProcessStreamDrainer(processName, process, true, false);
+        psd.drain();
+        return psd;
+    }
+    /**
+     * Create an instance, drain and throw away the process' stderr and stdout output.
+     * @param process The Process to drain
+     * @param processName The name will be used to name the drainer threads
+     */
+    public static ProcessStreamDrainer dispose(String processName, Process process)
+    {
+        ProcessStreamDrainer psd = new ProcessStreamDrainer(processName, process, false, false);
         psd.drain();
         return psd;
     }

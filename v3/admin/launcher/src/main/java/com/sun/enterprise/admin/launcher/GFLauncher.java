@@ -406,7 +406,7 @@ public abstract class GFLauncher {
         }
 
         List<String> cmds = null;
-        if ((OS.isDarwin() && (!getInfo().isVerbose()))) {
+        if ((OS.isDarwin() && (!getInfo().isVerboseOrWatchdog()))) {
             // On MacOS we need to start long running process with
             // StartupItemContext. See IT 12942
             cmds = new ArrayList<String>();
@@ -435,11 +435,17 @@ public abstract class GFLauncher {
         try {
             closeStandardStreamsMaybe();
             process = pb.start();
+            final String name = getInfo().getDomainName();
+
+            // verbose trumps watchdog.
             if (getInfo().isVerbose()) {
-                psd = ProcessStreamDrainer.redirect(getInfo().getDomainName(), process);
+                psd = ProcessStreamDrainer.redirect(name, process);
+            }
+             else if (getInfo().isWatchdog()) {
+                psd = ProcessStreamDrainer.dispose(name, process);
             }
             else {
-                psd = ProcessStreamDrainer.save(getInfo().getDomainName(), process);
+                psd = ProcessStreamDrainer.save(name, process);
             }
             writeSecurityTokens(process);
         }
@@ -450,8 +456,8 @@ public abstract class GFLauncher {
         long endTime = System.currentTimeMillis();
         GFLauncherLogger.info("launchTime", (endTime - getStartTime()));
 
-        //if verbose, hang round until the domain stops
-        if (getInfo().isVerbose())
+        //if verbose, hang around until the domain stops
+        if (getInfo().isVerboseOrWatchdog())
             wait(process);
     }
 
@@ -872,7 +878,7 @@ public abstract class GFLauncher {
         // Process B absolutely positively does exit whether or not this code runs...
         // don't run this unless we have to because our "..." messages disappear.
 
-        if (System.console() == null && OS.isWindows() && !info.isVerbose()) {
+        if (System.console() == null && OS.isWindows() && !(info.isVerboseOrWatchdog()) ) {
             String sname;
 
             if (info.isDomain())

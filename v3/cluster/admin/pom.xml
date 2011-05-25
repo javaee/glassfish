@@ -51,7 +51,7 @@
     </parent>    
     <artifactId>cluster-admin</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Cluster Admin</name>
+    <name>cluster-admin</name>
     <build>
 	<resources>
             <resource>

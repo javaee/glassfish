@@ -74,6 +74,8 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
     private boolean verbose;
     @Param(optional = true, defaultValue = "false")
     private boolean upgrade;
+    @Param(optional = true, shortName = "w", defaultValue = "false")
+    private boolean watchdog;
     @Param(optional = true, shortName = "d", defaultValue = "false")
     private boolean debug;
     @Param(name = "domain_name", primary = true, optional = true)
@@ -143,7 +145,7 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
             // if verbose is set then it returns after the domain dies
             launcher.launch();
 
-            if (verbose || upgrade) { // we can potentially loop forever here...
+            if (verbose || upgrade || watchdog) { // we can potentially loop forever here...
                 while (true) {
                     int returnValue = launcher.getExitValue();
 
@@ -202,6 +204,7 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
         info.setVerbose(verbose || upgrade);
         info.setDebug(debug);
         info.setUpgrade(upgrade);
+        info.setWatchdog(watchdog);
 
         info.setRespawnInfo(programOpts.getClassName(),
                 programOpts.getClassPath(),
@@ -211,7 +214,7 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
     }
 
     /**
-     * Return the asadmin command line arguments necessar to start
+     * Return the asadmin command line arguments necessary to start
      * this domain admin server.
      */
     private String[] respawnArgs() {
@@ -221,6 +224,7 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
         // now the start-domain specific arguments
         args.add(getName());    // the command name
         args.add("--verbose=" + String.valueOf(verbose));
+        args.add("--watchdog=" + String.valueOf(watchdog));
         args.add("--debug=" + String.valueOf(debug));
         args.add("--domaindir");
         args.add(getDomainsDir().toString());

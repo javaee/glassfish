@@ -71,6 +71,9 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
     @Param(optional = true, shortName = "v", defaultValue = "false")
     private boolean verbose;
 
+    @Param(optional = true, shortName = "w", defaultValue = "false")
+    private boolean watchdog;
+
     @Param(optional = true, shortName = "d", defaultValue = "false")
     private boolean debug;
 
@@ -165,7 +168,7 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
             
             launcher.launch();
 
-            if (verbose) { // we can potentially loop forever here...
+            if (verbose || watchdog) { // we can potentially loop forever here...
                 while (true) {
                     int returnValue = launcher.getExitValue();
 
@@ -216,6 +219,7 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
             info.setInstanceName(instanceName);
             info.setInstanceRootDir(instanceDir);
             info.setVerbose(verbose);
+            info.setWatchdog(watchdog);
             info.setDebug(debug);
             info.setRespawnInfo(programOpts.getClassName(),
                             programOpts.getClassPath(),
@@ -235,6 +239,7 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
         // now the start-local-instance specific arguments
         args.add(getName());    // the command name
         args.add("--verbose=" + String.valueOf(verbose));
+        args.add("--watchdog=" + String.valueOf(watchdog));
         args.add("--debug=" + String.valueOf(debug));
         
         // IT 14015

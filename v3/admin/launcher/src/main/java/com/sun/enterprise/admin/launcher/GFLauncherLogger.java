@@ -104,7 +104,7 @@ public class GFLauncherLogger {
         }
         catch(IOException e)
         {
-            // should be seen in verbose mode for debugging
+            // should be seen in verbose and watchdog modes for debugging
             e.printStackTrace();
         }
 
