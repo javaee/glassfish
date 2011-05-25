@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -90,7 +90,7 @@ class Constants {
     static final boolean LINUX_HACK;
 
     static {
-        LINUX_HACK = System.getProperty("user.name").equals("bnevins") &&
+        LINUX_HACK = System.getProperty("user.name").indexOf("nevins") >= 0 &&
                 Boolean.parseBoolean(System.getenv("LINUX_HACK"));
     }
 }
