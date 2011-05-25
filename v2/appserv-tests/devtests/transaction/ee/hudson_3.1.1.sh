@@ -14,7 +14,7 @@ wget http://gf-hudson.us.oracle.com/hudson/job/gf-3.1.1-build-continuous/lastSuc
 unzip -q glassfish.zip
 
 # PUT IN GMS PATCH
-wget http://java.net/jira/secure/attachment/45919/shoal-gms-impl.jar
+wget http://java.net/jira/secure/attachment/45993/shoal-gms-impl.jar
 wget http://java.net/jira/secure/attachment/45994/shoal-gms-api.jar
 mv shoal-gms-impl.jar $PWD/glassfish3/glassfish/modules
 mv shoal-gms-api.jar $PWD/glassfish3/glassfish/modules
