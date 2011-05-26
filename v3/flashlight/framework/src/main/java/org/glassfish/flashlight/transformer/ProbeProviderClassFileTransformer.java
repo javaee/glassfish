@@ -55,6 +55,7 @@ import java.lang.reflect.Method;
 import java.security.ProtectionDomain;
 import java.util.*;
 import java.util.logging.*;
+import org.glassfish.flashlight.impl.client.AgentAttacher;
 
 /**
  * @author Mahesh Kannan
@@ -143,7 +144,7 @@ public class ProbeProviderClassFileTransformer implements ClassFileTransformer {
             return classLoader.loadClass(className);
         }
         catch (Exception e) {
-            FlashlightProbeClientMediator.attachAgent();
+            AgentAttacher.attachAgent();
             return classLoader.loadClass(className);
         }
     }

@@ -42,14 +42,11 @@ package org.glassfish.flashlight.impl.client;
 
 //import org.glassfish.external.probe.provider.annotations.ProbeListener;
 
-import com.sun.enterprise.util.OS;
-import java.lang.annotation.*;
-
 /* BOOBY TRAP SITTING RIGHT HERE!!!  There is a ProbeListener in org.glassfish.flashlight.client
  * -- don't use that one or everything will fail!
  * Do not use this import --> import org.glassfish.flashlight.client.* --> import individually instead!!
  */
-
+import java.lang.annotation.*;
 import org.glassfish.external.probe.provider.annotations.ProbeListener;
 import org.glassfish.flashlight.client.ProbeClientInvoker;
 import org.glassfish.flashlight.client.ProbeClientInvokerFactory;
@@ -69,14 +66,9 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.lang.reflect.Method;
 import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.io.PrintWriter;
-import java.io.File;
 import org.glassfish.flashlight.impl.core.FlashlightProbeProvider;
 import org.glassfish.flashlight.FlashlightUtils;
-import static com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY;
-import com.sun.enterprise.universal.process.ProcessUtils;
-import com.sun.tools.attach.VirtualMachine;
 
 /**
  * @author Mahesh Kannan
@@ -88,30 +80,19 @@ public class FlashlightProbeClientMediator
         implements ProbeClientMediator, PostConstruct {
 
     private static final ProbeRegistry probeRegistry = ProbeRegistry.getInstance();
-    private static boolean btraceAgentAttached = false;
 
     private static final Logger logger =
         LogDomains.getLogger(FlashlightProbeClientMediator.class, LogDomains.MONITORING_LOGGER);
     public final static LocalStringManagerImpl localStrings =
                             new LocalStringManagerImpl(FlashlightProbeClientMediator.class);
 
-    private static final PrintWriter fpw =
-        new FlashLightBTracePrintWriter(new NullStream(), logger);
-
     private static FlashlightProbeClientMediator _me = new FlashlightProbeClientMediator();
-
-    private static AtomicBoolean agentInitialized =
-            new AtomicBoolean(false);
-
-    private final static Object syncOnMe = new Object();
 
     private AtomicInteger clientIdGenerator =
             new AtomicInteger(0);
 
     private static ConcurrentHashMap<Integer, Object> clients =
             new ConcurrentHashMap<Integer, Object>();
-
-    Instrumentation inst = null;
 
     public void postConstruct() {
         FlashlightProbeClientMediator.initMe(this);
@@ -127,30 +108,6 @@ public class FlashlightProbeClientMediator
 
     public static Object getClient(int id) {
         return clients.get(id);
-    }
-
-    public static void setAgentInitialized(boolean b) {
-            agentInitialized.set(b);
-    }
-
-    public static boolean isAgentAttached() {
-        if (agentInitialized.get()) {
-            return btraceAgentAttached;
-        }
-        synchronized (syncOnMe) {
-            if (agentInitialized.get()) {
-                return btraceAgentAttached;
-            }
-            try {
-                ClassLoader scl = agentInitialized.getClass().getClassLoader().getSystemClassLoader();
-                Class agentMainClass = scl.loadClass("com.sun.btrace.agent.Main");
-                btraceAgentAttached = true;
-            } catch(Exception e) {
-                btraceAgentAttached = false;
-            }
-            agentInitialized.set(true);
-        }
-        return btraceAgentAttached;
     }
 
     public Collection<ProbeClientMethodHandle> registerListener(Object listener) {
@@ -260,18 +217,6 @@ public class FlashlightProbeClientMediator
         for (ProbeProviderClassFileTransformer t : transformers.values()) {
             t.transform();
         }
-/*
-        byte [] bArr = BtraceClientGenerator.generateBtraceClientClassData(clientID, probes);
-
-        if (bArr == null) {
-            String errStr = localStrings.getLocalString("btraceClientGeneratorError",
-                                "Internal Error: BtraceClientGenerator.generateBtraceClientClassData() returned null");
-            throw new RuntimeException(errStr);
-        }
-
-        if(isAgentAttached()) {
-            submit2BTrace(bArr);
-        }*/
     }
 
     /**
@@ -313,20 +258,6 @@ public class FlashlightProbeClientMediator
         return mp;
     }
 
-    /*
-    private void submit2BTrace(byte [] bArr) {
-        try {
-            ClassLoader scl = this.getClass().getClassLoader().getSystemClassLoader();
-            Class agentMainClass = scl.loadClass("com.sun.btrace.agent.Main");
-            Class[] params = new Class[] {(new byte[0]).getClass(), PrintWriter.class};
-            Method mthd = agentMainClass.getMethod("handleFlashLightClient", params);
-            mthd.invoke(null, new Object[] {bArr, fpw});
-        } 
-        catch(Exception e) {
-            throw new RuntimeException("BTrace Error");
-        }
-    }
-*/
     // this is just used internally for cleanly organizing the code.
     private static class MethodProbe {
         MethodProbe(Method m, FlashlightProbe p) {
@@ -337,44 +268,4 @@ public class FlashlightProbeClientMediator
         FlashlightProbe probe;
     }
 
-    public static boolean attachAgent() {
-        if (isAgentAttached()) {
-            return true;
-        }
-        try {
-            int pid = ProcessUtils.getPid();
-            if (pid == -1) {
-                logger.log(Level.WARNING, localStrings.getLocalString("invalid.pid", 
-                    "invalid pid, start btrace-agent using asadmin enable-monitoring with --pid option, you may get pid using jps command"));
-                return false;
-            }
-            VirtualMachine vm = VirtualMachine.attach(String.valueOf(pid));
-            String ir = System.getProperty(INSTALL_ROOT_PROPERTY);
-            File dir = new File(ir, "lib" + File.separator + "monitor");
-            if (dir.isDirectory()) {
-                File agentJar = null;
-                File flashlightJar = new File(dir, "flashlight-agent.jar");
-
-                agentJar = flashlightJar;
-
-                if (agentJar.isFile()) {
-                    setAgentInitialized(false);
-                    vm.loadAgent(agentJar.getPath(), "");
-                }
-                else {
-                    logger.log(Level.WARNING, localStrings.getLocalString("missing.btrace-agent.jar",
-                            "flashlight-agent.jar does not exist under {0}", dir));
-                    return false;
-                }
-            } else {
-                logger.log(Level.WARNING, localStrings.getLocalString("missing.btrace-agent.jar.dir",
-                    "btrace-agent.jar directory {0} does not exist", dir));
-                return false;
-            }
-        } catch (Throwable t) {
-            logger.log(Level.WARNING, localStrings.getLocalString("attach.agent.exception",
-                "Encountered exception during agent attach {0}", t.getMessage()));
-        }
-        return (isAgentAttached());
-    }
 }
