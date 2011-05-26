@@ -37,12 +37,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.flashlight.cli;
 
-import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.*;
-import com.sun.enterprise.util.OS;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -50,58 +47,44 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.config.support.*;
+import org.glassfish.flashlight.impl.client.AgentAttacher;
 import org.glassfish.internal.api.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.tools.attach.VirtualMachine;
 import java.io.File;
-import static com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY;
 import com.sun.enterprise.config.serverbeans.MonitoringService;
-import com.sun.enterprise.universal.process.ProcessUtils;
-import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
 
 /**
  * @author Sreenivas Munnangi (3.0)
  * @author Byron Nevins (3.1+)
  */
-
-@Service(name="enable-monitoring")
+@Service(name = "enable-monitoring")
 @Scoped(PerLookup.class)
 @I18n("enable.monitoring")
 @ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
-
+@TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CONFIG})
 public class EnableMonitoring implements AdminCommand {
-
     // do NOT inject this.
     private MonitoringService ms;
-
     @Inject
     private Target targetService;
-
-    @Param(name="target", optional=true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
+    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
     String target;
-
-    @Param(optional=true)
+    @Param(optional = true)
     private String pid;
-
-    @Param(optional=true)
+    @Param(optional = true)
     private String options;
-
-    @Param(optional=true)
+    @Param(optional = true)
     private String modules;
-
-    @Param(optional=true)
+    @Param(optional = true)
     private Boolean mbean;
-
-    @Param(optional=true)
+    @Param(optional = true)
     private Boolean dtrace;
-
-    final private LocalStringManagerImpl localStrings = 
-        new LocalStringManagerImpl(EnableMonitoring.class);
+    final private LocalStringManagerImpl localStrings =
+            new LocalStringManagerImpl(EnableMonitoring.class);
 
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
@@ -109,33 +92,35 @@ public class EnableMonitoring implements AdminCommand {
         try {
             ms = targetService.getConfig(target).getMonitoringService();
         }
-        catch(Exception e) {
+        catch (Exception e) {
             report.setMessage(localStrings.getLocalString("target.service.exception",
-                "Encountered exception trying to locate the MonitoringService element "
-                + "in the target ({0}) configuration: {1}", target, e.getMessage()));
+                    "Encountered exception trying to locate the MonitoringService element "
+                    + "in the target ({0}) configuration: {1}", target, e.getMessage()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
-        
-        // attach agent using given options
-        // TODO: allow for user defined port
-        if (!FlashlightProbeClientMediator.isAgentAttached()) {
-            if (! isValidString(pid)) {
-                int i = ProcessUtils.getPid();
-                if (i == -1) {
-                    ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                    part.setMessage(localStrings.getLocalString("attach.agent.exception",
-                        "invalid pid, pl. provide the application server's pid using --pid option, you may get pid using jps command"));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                } else {
-                    pid = String.valueOf(i);
-                }
-            }
-            if (isValidString(pid)) {
-                FlashlightProbeClientMediator.setAgentInitialized(false);
-                attachAgent(report);
-            }
+
+        int pidInt = -1;
+
+        try {
+            if (pid != null)
+                pidInt = Integer.parseInt(pid);
         }
+        catch (Exception e) {
+            pidInt = -1;
+        }
+
+        if (options == null)
+            options = "";
+
+        if (!AgentAttacher.isAttached() && !AgentAttacher.attachAgent(pidInt, options)) {
+            ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+            part.setMessage(localStrings.getLocalString("attach.agent.exception",
+                    "Can''t attach the agent to the JVM."));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+
 
         // following ordering is deliberate to facilitate config change
         // event handling by monitoring infrastructure
@@ -144,27 +129,28 @@ public class EnableMonitoring implements AdminCommand {
 
         // module monitoring levels
         if ((modules != null) && (modules.length() > 0)) {
-            String[] strArr = modules.split(":"); 
+            String[] strArr = modules.split(":");
             String[] nvArr = null;
-            for (String nv: strArr) { 
+            for (String nv : strArr) {
                 if (nv.length() > 0) {
                     nvArr = nv.split("=");
                     if (nvArr.length > 1) {
                         if (isValidString(nvArr[1])) {
                             setModuleMonitoringLevel(nvArr[0], nvArr[1], report);
                         }
-                    } else {
+                    }
+                    else {
                         if (isValidString(nvArr[0])) {
                             setModuleMonitoringLevel(nvArr[0], "HIGH", report);
                         }
                     }
                 }
-            } 
+            }
         }
 
         // mbean-enabled
         if (mbean != null) {
-            MonitoringConfig .setMBeanEnabled(ms, mbean.toString(), report);
+            MonitoringConfig.setMBeanEnabled(ms, mbean.toString(), report);
         }
 
         // dtrace-enabled
@@ -176,45 +162,18 @@ public class EnableMonitoring implements AdminCommand {
         MonitoringConfig.setMonitoringEnabled(ms, "true", report);
     }
 
-    private void attachAgent(ActionReport report) {
-        ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-        try {
-            VirtualMachine vm = VirtualMachine.attach(pid);
-            File installDir = new File(System.getProperty(INSTALL_ROOT_PROPERTY));
-            File agentJar = getAgentJar(installDir);
-            if (agentJar.isFile()) {
-                if (options == null) {
-                    vm.loadAgent(agentJar.getPath());
-                } else {
-                    vm.loadAgent(agentJar.getPath(), options);
-                }
-                part.setMessage(localStrings.getLocalString("attach.agent.suucess",
-                    "flashlight agent attached"));
-                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-            } else {
-                part.setMessage(localStrings.getLocalString("attach.agent.exception",
-                    "flashlight-agent.jar does not exist under {0}", agentJar));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            }
-        } catch (Exception e) {
-            part.setMessage(localStrings.getLocalString("attach.agent.exception",
-                "Encountered exception during agent attach {0}", e.getMessage()));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-        }
-    }
-
     private void setModuleMonitoringLevel(String moduleName, String level, ActionReport report) {
         ActionReport.MessagePart part = report.getTopMessagePart().addChild();
 
-        if (! isValidString(moduleName)) {
+        if (!isValidString(moduleName)) {
             part.setMessage(localStrings.getLocalString("enable.monitoring.invalid",
-                "Invalid module name {0}", moduleName));
+                    "Invalid module name {0}", moduleName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
         }
 
         if ((!isValidString(level)) || (!isValidLevel(level))) {
             part.setMessage(localStrings.getLocalString("enable.monitoring.invalid",
-                "Invalid level {0} for module name {1}", level, moduleName));
+                    "Invalid level {0} for module name {1}", level, moduleName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
         }
 
@@ -222,7 +181,7 @@ public class EnableMonitoring implements AdminCommand {
     }
 
     private boolean isValidString(String str) {
-        return (str!=null && str.length()>0);
+        return (str != null && str.length() > 0);
     }
 
     private boolean isValidLevel(String level) {
@@ -233,6 +192,5 @@ public class EnableMonitoring implements AdminCommand {
     private File getAgentJar(File installDir) {
         return new File(installDir, FLASHLIGHT_AGENT_PATH);
     }
-
-    static final String FLASHLIGHT_AGENT_PATH       = "lib/monitor/flashlight-agent.jar";
+    static final String FLASHLIGHT_AGENT_PATH = "lib/monitor/flashlight-agent.jar";
 }
