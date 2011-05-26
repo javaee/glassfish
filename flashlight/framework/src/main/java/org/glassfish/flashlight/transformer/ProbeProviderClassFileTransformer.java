@@ -133,7 +133,7 @@ public class ProbeProviderClassFileTransformer implements ClassFileTransformer {
 
                 logger.log(Level.INFO, "Successfully got INSTRUMENTATION: " + _inst);
             }
-            catch (Exception e) {
+            catch (Throwable e) {
                 logger.log(Level.WARNING, "Error while getting Instrumentation object from ProbeAgentmain", e);
             }
         }
@@ -143,7 +143,7 @@ public class ProbeProviderClassFileTransformer implements ClassFileTransformer {
         try {
             return classLoader.loadClass(className);
         }
-        catch (Exception e) {
+        catch (Throwable t) {
             AgentAttacher.attachAgent();
             return classLoader.loadClass(className);
         }
