@@ -74,7 +74,8 @@ public class OSGiDeployer implements Deployer<OSGiContainer, OSGiDeployedBundle>
     public void clean(DeploymentContext context) {
         try {
             OpsParams params = context.getCommandParameters(OpsParams.class);
-            if (params.origin.isUndeploy()) {
+            // we should clean for both undeployment and the failed deployment
+            if (params.origin.isUndeploy() || params.origin.isDeploy()) {
                 Bundle bundle = getApplicationBundle(context);
                 bundle.uninstall();
                 getPA().refreshPackages(new Bundle[]{bundle});
