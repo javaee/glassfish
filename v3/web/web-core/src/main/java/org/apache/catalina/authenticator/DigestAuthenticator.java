@@ -64,7 +64,6 @@ import org.apache.catalina.HttpResponse;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.util.DigestEncoder;
 import org.apache.catalina.LifecycleException;
-import org.apache.catalina.util.SessionIdGenerator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
