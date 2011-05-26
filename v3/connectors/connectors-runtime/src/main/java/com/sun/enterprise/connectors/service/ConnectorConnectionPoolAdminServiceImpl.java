@@ -1527,6 +1527,9 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.fine("ConnectorRuntime.getConnection :: poolName : " + poolInfo);
             }
+            if(poolInfo == null){
+                throw new SQLException("No pool by name "+poolInfo+" exists ");
+            }
             //Maintain consitency with the ConnectionManagerImpl change to be checked in later
             String passwd = (password == null) ? "" : password;
 
@@ -1598,6 +1601,9 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
                 _logger.fine("ConnectorRuntime.getConnection :: poolName : "
                         + poolInfo);
             }
+            if(poolInfo == null){
+                throw new SQLException("No pool by name "+poolInfo+" exists ");
+            }
             con = (java.sql.Connection) getUnpooledConnection(poolInfo, null,
                     true);
             if (con == null) {
@@ -1645,31 +1651,24 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
      * @return poolName of the pool that this resource directly/indirectly points to
      */
     private PoolInfo getPoolNameFromResourceJndiName(ResourceInfo resourceInfo) {
-        //String poolName = null;
         PoolInfo poolInfo= null;
         JdbcResource jdbcResource = null;
-/*     
-        DASResourcesUtil resourcesUtil = (DASResourcesUtil) ResourcesUtil.createInstance();
-
-        //check if the jndi name is that of a pmf resource or a jdbc resource
-        PersistenceManagerFactoryResource pmfRes =
-                resourcesUtil.getPMFResourceByJndiName(jndiName );
-	if (pmfRes != null) {
-	    jdbcRes = resourcesUtil.getJdbcResourceByJndiName(
-                    pmfRes.getJdbcResourceJndiName());
-	} else {
-
-	    jdbcRes = resourcesUtil.getJdbcResourceByJndiName(jndiName);
-/*	}*/
         ResourceInfo actualResourceInfo = resourceInfo;
         String jndiName = resourceInfo.getName();
-        String suffix = ConnectorsUtil.getValidSuffix(jndiName);
-        if(suffix != null){
-            jndiName = jndiName.substring(0, jndiName.lastIndexOf(suffix));
-            actualResourceInfo =
-                    new ResourceInfo(jndiName, resourceInfo.getApplicationName(), resourceInfo.getModuleName());
-        }
+
+        actualResourceInfo =
+                new ResourceInfo(jndiName, resourceInfo.getApplicationName(), resourceInfo.getModuleName());
         ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
+        jdbcResource = (JdbcResource) runtime.getResources(actualResourceInfo).getResourceByName
+                (JdbcResource.class, actualResourceInfo.getName());
+        if(jdbcResource == null){
+            String suffix = ConnectorsUtil.getValidSuffix(jndiName);
+            if(suffix != null){
+                jndiName = jndiName.substring(0, jndiName.lastIndexOf(suffix));
+                actualResourceInfo =
+                        new ResourceInfo(jndiName, resourceInfo.getApplicationName(), resourceInfo.getModuleName());
+            }
+        }
         jdbcResource = (JdbcResource) runtime.getResources(actualResourceInfo).getResourceByName
                 (JdbcResource.class, actualResourceInfo.getName());
 
