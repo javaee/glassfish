@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,7 +58,9 @@ import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Hashtable;
+import java.util.logging.Logger;
 import java.util.logging.Level;
 
 /**
@@ -301,6 +303,10 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
         }
         public <T> T unwrap(Class<T> iface) throws SQLException{
            throw new SQLException("Not supported operation");
+        }
+
+        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+            throw new SQLFeatureNotSupportedException("Not supported operation");
         }
     }
 }
