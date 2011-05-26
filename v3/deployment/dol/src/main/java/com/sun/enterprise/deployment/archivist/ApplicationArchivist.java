@@ -458,7 +458,12 @@ public class ApplicationArchivist extends Archivist<Application>
 
         //if archive deploy, need to make sure all of the directory
         //structure is correctly included
-        String uri = subModule.getAbsolutePath().substring(aRoot.length() + 1);
+        String uri = null;
+        try {
+            uri = subModule.getCanonicalPath().substring(aRoot.length() + 1);
+        } catch (IOException ex) {
+            uri = subModule.getAbsolutePath().substring(aRoot.length() + 1);;
+        } 
         return uri.replace(File.separatorChar, '/');
     }
 
