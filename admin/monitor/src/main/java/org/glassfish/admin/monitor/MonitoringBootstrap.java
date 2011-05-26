@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,7 +52,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.external.probe.provider.StatsProviderInfo;
 import org.jvnet.hk2.component.*;
 import org.glassfish.external.probe.provider.StatsProviderManager;
@@ -96,11 +95,11 @@ import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.monitoring.ContainerMonitoring;
 import org.glassfish.flashlight.client.ProbeClientMediator;
+import org.glassfish.flashlight.impl.client.AgentAttacher;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
 import org.glassfish.flashlight.provider.ProbeProviderEventListener;
 import org.glassfish.flashlight.provider.ProbeRegistry;
 import org.glassfish.internal.api.Init;
-import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
 
 /**
  *
@@ -597,7 +596,7 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
             if(enabled) {
                 logger.log(Level.INFO,"monitoringEnabled");
                 // attach btrace agent dynamically
-                FlashlightProbeClientMediator.attachAgent();
+                AgentAttacher.attachAgent();
                 enableMonitoringForProbeProviders(true);
                 //Lets do the catch up for all the statsProviders (we might have ignored the module level changes earlier) s
                 spmd.updateAllStatsProviders();
