@@ -111,7 +111,7 @@ public abstract class AuthenticatorBase
     
     // ----------------------------------------------------- Static Variables
     
-    private static Logger log = Logger.getLogger(
+    protected static final Logger log = Logger.getLogger(
         AuthenticatorBase.class.getName());
 
     /**
@@ -1008,7 +1008,7 @@ public abstract class AuthenticatorBase
                 log.log(Level.SEVERE, "Exception getting debug value", e);
             }
         }
-        /** CR 6411114 (Lifecycle implementation moved to ValveBase)                             ÷
+        /** CR 6411114 (Lifecycle implementation moved to ValveBase)
         started = true;
         */
 
