@@ -371,9 +371,9 @@ public class FlashlightProbeClientMediator
                     "btrace-agent.jar directory {0} does not exist", dir));
                 return false;
             }
-        } catch (Exception e) {
+        } catch (Throwable t) {
             logger.log(Level.WARNING, localStrings.getLocalString("attach.agent.exception",
-                "Encountered exception during agent attach {0}", e.getMessage()));
+                "Encountered exception during agent attach {0}", t.getMessage()));
         }
         return (isAgentAttached());
     }
