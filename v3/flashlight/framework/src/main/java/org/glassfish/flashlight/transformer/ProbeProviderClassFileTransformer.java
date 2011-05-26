@@ -41,6 +41,7 @@ package org.glassfish.flashlight.transformer;
 
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.Utility;
+import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeRegistry;
 import org.objectweb.asm.*;
@@ -125,7 +126,7 @@ public class ProbeProviderClassFileTransformer implements ClassFileTransformer {
         if (_inst == null) {
             try {
                 ClassLoader scl = ProbeProviderClassFileTransformer.class.getClassLoader().getSystemClassLoader();
-                Class agentMainClass = scl.loadClass("org.glassfish.flashlight.agent.ProbeAgentMain");
+                Class agentMainClass = getAgentClass(scl, "org.glassfish.flashlight.agent.ProbeAgentMain");
                 Method mthd = agentMainClass.getMethod("getInstrumentation", null);
                 _inst = (Instrumentation) mthd.invoke(null, null);
 
@@ -134,6 +135,16 @@ public class ProbeProviderClassFileTransformer implements ClassFileTransformer {
             catch (Exception e) {
                 logger.log(Level.WARNING, "Error while getting Instrumentation object from ProbeAgentmain", e);
             }
+        }
+    }
+
+    private static Class getAgentClass(ClassLoader classLoader, String className) throws ClassNotFoundException {
+        try {
+            return classLoader.loadClass(className);
+        }
+        catch (Exception e) {
+            FlashlightProbeClientMediator.attachAgent();
+            return classLoader.loadClass(className);
         }
     }
 
