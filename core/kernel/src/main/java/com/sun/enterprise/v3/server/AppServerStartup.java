@@ -407,7 +407,7 @@ public class AppServerStartup implements ModuleStartup {
             Collections.reverse(services);
 
             for (Inhabitant<?> svc : services) {
-                if (svc.isInstantiated()) {
+                if (svc.isActive()) {
                     try {
                         if (logger.isLoggable(Level.FINE)) {
                             logger.fine("Releasing services " + svc.type());
@@ -429,7 +429,7 @@ public class AppServerStartup implements ModuleStartup {
             // we send the shutdown events before the Init services are released since
             // evens handler can still rely on services like logging during their processing
             for (Inhabitant<? extends Init> svc : habitat.getInhabitants(Init.class)) {
-                if (svc.isInstantiated()) {
+                if (svc.isActive()) {
                     try {
                         svc.release();
                     } catch(Exception e) {

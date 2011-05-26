@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,10 +43,10 @@ package org.glassfish.admin.mbeanserver;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 
+import org.glassfish.config.support.ConfigBeanListener;
+import org.glassfish.hk2.ComponentProvider;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.CageBuilder;
-import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.ConfigBean;
@@ -68,7 +68,7 @@ is maintained for processing by the AMXConfigLoader, which is lazily loaded.
  * @author llc
  */
 @Service(name = "PendingConfigBeans")
-public class PendingConfigBeans implements CageBuilder<ConfigBean>, PostConstruct, TransactionListener
+public class PendingConfigBeans implements ConfigBeanListener, PostConstruct, TransactionListener
 {
     @Inject
     Transactions transactions;
@@ -113,11 +113,11 @@ public class PendingConfigBeans implements CageBuilder<ConfigBean>, PostConstruc
         return (o instanceof ConfigBean) ? ConfigBean.class.cast(o) : null;
     }
 
-    public void onEntered(final Inhabitant<ConfigBean> inhabitant)
+    public void onEntered(final ComponentProvider<ConfigBean> provider)
     {
         //debug( "PendingConfigBeansNew.onEntered(): " + inhabitant);
 
-        final ConfigBean cb = asConfigBean(inhabitant);
+        final ConfigBean cb = asConfigBean(provider);
         if (cb != null)
         {
             add(cb);
