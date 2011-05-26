@@ -220,10 +220,19 @@ public class Jira extends MonTest {
         report(logfile.isFile(), prepend + "logfile is-a-file");
         report(logfile.canRead(), prepend + "logfile is readable");
 
+
+
+        // WBN, 5/26/11 -- We probably will see an off-the-wall log message generated like this:
+        // [#|2011-05-26T11:43:13.312-0700|INFO|glassfish3.2|org.hibernate.validator.engine.resolver.DefaultTraversableResolver|_ThreadID=12;_ThreadName=Thread-1;|Instanti
+        // ated an instance of org.hibernate.validator.engine.resolver.JPATraversableResolver.|#]
+        // this happens after the very first enable-monitoring call.  But after that it ought to be quiet.
+        // SO -- call it twice in a row and set the lengths after the first call.
+        report(asadmin("enable-monitoring", "--modules", "web-container=LOW"), prepend + "flush-JPA-message");
+
         long prevLen = logfile.length();
         long len = prevLen;
-
         report(prevLen > 0, prepend + "logfile is not empty");
+
         // verify that changing mon-level does not cause any logging
         report(asadmin("enable-monitoring", "--modules", "web-container=LOW"), prepend + "change-mon-level-nolog-");
         len = logfile.length();

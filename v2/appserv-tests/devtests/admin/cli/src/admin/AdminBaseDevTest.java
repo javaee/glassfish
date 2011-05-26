@@ -78,6 +78,11 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
         return this.getClass().getName();
     }
 
+    public void report(boolean success, String name) {
+        // WBN ==> sometimes I like it in this order!
+        report(name, success);
+    }
+    
     @Override
     public void report(String name, boolean success) {
         // bnevins june 6 2010
