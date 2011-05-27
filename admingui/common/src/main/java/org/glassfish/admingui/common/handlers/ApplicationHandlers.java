@@ -404,15 +404,16 @@ public class ApplicationHandlers {
         String Enabled = (String) handlerCtx.getInputValue("Enabled");
         List<Map>  selectedRows = (List) handlerCtx.getInputValue("selectedRows");
         boolean forLB = (Boolean) handlerCtx.getInputValue("forLB");
+        String prefix = (String)GuiUtil.getSessionValue("REST_URL");
         for(Map oneRow : selectedRows){
             Map attrs = new HashMap();
             String endpoint = (String) oneRow.get("endpoint");
             if(forLB){
                 attrs.put("lbEnabled", Enabled);
-                RestUtil.restRequest(endpoint, attrs, "post", handlerCtx, false);
+                RestUtil.restRequest(prefix + endpoint, attrs, "post", handlerCtx, false);
             }else{
                 attrs.put("enabled", Enabled);
-                RestUtil.restRequest(endpoint, attrs, "post", handlerCtx, false);
+                RestUtil.restRequest(prefix + endpoint, attrs, "post", handlerCtx, false);
             }
         }
      }
@@ -560,12 +561,12 @@ public class ApplicationHandlers {
         List result = new ArrayList();
         String prefix = (String) GuiUtil.getSessionValue("REST_URL");
 	if (appPropsMap != null) {
-	    for(String oneAppName : appPropsMap.keySet()){
+            for(Map.Entry<String,String> e : appPropsMap.entrySet()){
                 try{
-                    String engines = appPropsMap.get(oneAppName);
+                    String engines = e.getValue();
                     HashMap oneRow = new HashMap();
-                    oneRow.put("name", oneAppName);
-                    String encodedName = URLEncoder.encode(oneAppName, "UTF-8");
+                    oneRow.put("name", e.getKey());
+                    String encodedName = URLEncoder.encode(e.getKey(), "UTF-8");
                     oneRow.put("targetName", target);
                     oneRow.put("selected", false);
                     Map appRefAttrsMap = RestUtil.getAttributesMap(prefix + appRefEndpoint + encodedName);
@@ -633,6 +634,7 @@ public class ApplicationHandlers {
 	Iterator it = URLs.iterator();
 	String url = null;
         ArrayList list = new ArrayList();
+
 	while (it.hasNext()) {
 	    url = (String)it.next();
             String target = "";
@@ -647,7 +649,7 @@ public class ApplicationHandlers {
             m.put("target", target);
             list.add(m);
 	}
-        
+                
         handlerCtx.setOutputValue("URLList", list);
 
     }
@@ -769,7 +771,7 @@ public class ApplicationHandlers {
                         for (String hostName : hostNames) {
                             if (localHostName != null && hostName.equalsIgnoreCase("localhost"))
                                 hostName = localHostName;
-//                            URLs.add("[" + target + "]  - " + protocol + "://" + hostName + ":" + resolvedPort + "[ " + one + " " + configName
+//                            URLs.add("[" + target + "]  - " + protocol + "://" + hostName + ":" + resolvedPort + "[ " + one + " " + configName 
 //                                    + " " + listener + " " + target + " ]");
                             URLs.add(target + "@@@" + protocol + "://" + hostName + ":" + resolvedPort);
                         }
