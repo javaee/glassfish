@@ -78,7 +78,6 @@ public class BootstrapSecureAdminCommand implements AdminCommand, PostConstruct 
     @Override
     public void postConstruct() {
         bootstrappedFiles = new File[] {
-            env.getDomainXML(),
             env.getJKS(),
             env.getTrustStore()
                 };
