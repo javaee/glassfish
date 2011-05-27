@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -91,7 +91,7 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
                     result.append(processReport(ar));
                 }
             }
-            
+
             if ((postMetaData != null) && (entity == null)) {
                 String postCommand = getHtmlRespresentationsForCommand(postMetaData, "POST", ( proxy.getCommandDisplayName()==null )? "Create" : proxy.getCommandDisplayName(), uriInfo);
                 result.append(getHtmlForComponent(postCommand, "Create " + ar.getActionDescription(), ""));
@@ -103,7 +103,7 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
             if ((getMetaData != null) && (entity == null) &&(proxy.getCommandDisplayName()!=null )) {
                 String getCommand = getHtmlRespresentationsForCommand(getMetaData, "GET", ( proxy.getCommandDisplayName()==null )? "Get" : proxy.getCommandDisplayName(), uriInfo);
                 result.append(getHtmlForComponent(getCommand, "Get " + ar.getActionDescription(), ""));
-            }           
+            }
             if (entity != null) {
                 String attributes = ProviderUtil.getHtmlRepresentationForAttributes(proxy.getEntity(), uriInfo);
                 result.append(ProviderUtil.getHtmlForComponent(attributes, ar.getActionDescription() + " Attributes", ""));
@@ -121,7 +121,7 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
                                 "</dd><dt class=\"button\"></dt><dd class=\"button\"><input value=\"Update\" type=\"submit\"></dd></dl>"+
                                 "</form><br><hr class=\"separator\"/";
                 result.append(content);
-                
+
             }
             else  { //This is a monitoring result!!!
 
@@ -129,7 +129,7 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
 
                 if ((vals != null) && (!vals.isEmpty())) {
                     result.append("<ul>");
-                    
+
                     for (Map.Entry entry : (Set<Map.Entry>) vals.entrySet()) {
 
                         Object object = entry.getValue();
@@ -244,18 +244,19 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
     }
 
     protected String processReport(ActionReporter ar) {
-        
+
         StringBuilder result = new StringBuilder();
         String des=ar.getActionDescription();
         //check for no description, make it blank
         if (des==null){
             des="";
         }
-        if (ar.getMessage()!=null){
+        final String message = (ar instanceof RestActionReporter) ? ((RestActionReporter)ar).getCombinedMessage() : ar.getMessage();
+        if (message!=null){
             result.append("<h2>")
                 .append(des)
                 .append(" output:</h2><h3>")
-                .append("<pre>"+ar.getMessage()+"</pre>")
+                .append("<pre>"+message+"</pre>")
                 .append("</h3>");
         }
         if (ar.getActionExitCode() != ExitCode.SUCCESS) {

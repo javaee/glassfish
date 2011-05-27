@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,6 +52,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import java.lang.reflect.Field;
 import java.util.*;
+import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 
 /**
  * @author Ludovic Champenois
@@ -66,7 +67,7 @@ public class ActionReportResultJsonProvider extends BaseProvider<ActionReportRes
 
     @Override
     public String getContent(ActionReportResult proxy) {
-        ActionReporter ar = (ActionReporter)proxy.getActionReport();
+        RestActionReporter ar = (RestActionReporter)proxy.getActionReport();
         String JSONP=getCallBackJSONP();
         try {
             JSONObject result = processReport(ar);
@@ -91,10 +92,10 @@ public class ActionReportResultJsonProvider extends BaseProvider<ActionReportRes
 
     protected JSONObject processReport(ActionReporter ar) throws JSONException {
         JSONObject result = new JSONObject();
-        result.put("message", ar.getMessage());
+        result.put("message", (ar instanceof RestActionReporter) ? ((RestActionReporter)ar).getCombinedMessage() : ar.getMessage());
         result.put("command", ar.getActionDescription());
         result.put("exit_code", ar.getActionExitCode());
-        
+
         Properties properties = ar.getTopMessagePart().getProps();
         if ((properties != null) && (!properties.isEmpty())) {
             result.put("properties", properties);

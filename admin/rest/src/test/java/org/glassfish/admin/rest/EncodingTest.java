@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,7 @@
 
 package org.glassfish.admin.rest;
 
-import com.sun.enterprise.v3.common.ActionReporter;
+import com.sun.jersey.api.client.ClientResponse;
 import org.glassfish.admin.rest.clientutils.MarshallingUtils;
 import org.glassfish.admin.rest.provider.ActionReportResultHtmlProvider;
 import org.glassfish.admin.rest.provider.ActionReportResultJsonProvider;
@@ -63,7 +63,32 @@ import static org.junit.Assert.assertTrue;
  *
  * @author jasonlee
  */
-public class EncodingTest {
+public class EncodingTest extends RestTestBase {
+    @Test
+    public void messageEncoding() {
+        ClusterTest ct = this.getTestClass(ClusterTest.class);
+        final String clusterName = "mec" + generateRandomNumber(10);
+        final String instanceName = clusterName + "in" + generateRandomNumber(10);
+
+        try {
+            ct.createCluster(clusterName);
+            ct.createClusterInstance(clusterName, instanceName);
+
+            Map<String, String> payload = new HashMap<String, String>() {{
+                put ("target", "server");
+                put ("transactionlogdir", "/dummy");
+            }};
+
+            ClientResponse response = post("/domain/servers/server/" + instanceName + "/recover-transactions", payload);
+            Map body = MarshallingUtils.buildMapFromDocument(response.getEntity(String.class));
+            String message = (String)body.get("message");
+
+            assertTrue(message.contains("No such file or directory"));
+        } finally {
+            ct.deleteCluster(clusterName);
+        }
+    }
+
     @Test
     public void encodeAsJson() {
         RestActionReporter ar = buildActionReport();
@@ -105,7 +130,7 @@ public class EncodingTest {
         ar.setActionDescription("test description");
         ar.setActionExitCode(ExitCode.SUCCESS);
         ar.setMessage("test message");
-        
+
         // top message properties
         ar.getTopMessagePart().getProps().put("property1", "value1");
         ar.getTopMessagePart().getProps().put("property2", "value2");
