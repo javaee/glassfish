@@ -82,15 +82,6 @@ public final class ContainerFactoryImpl implements ContainerFactory {
 	     throws Exception 
     {
         BaseContainer container = null;
-        /** TODO ??? - see below
-        String archiveuri = ejbDescriptor.getEjbBundleDescriptor().
-            getModuleDescriptor().getArchiveUri();
-         **/
-            
-        String modulename = "";
-            //TODO com.sun.enterprise.util.io.FileUtils.makeFriendlyFilename(archiveuri);
-
-        IASEjbExtraDescriptors iased = null;
 
         try {
             // instantiate container class
@@ -132,7 +123,7 @@ public final class ContainerFactoryImpl implements ContainerFactory {
                             container = new TimerBeanContainer(ejbDescriptor, loader);
                         } else {
                         	String commitOption = null;
-                            iased = ((EjbEntityDescriptor)ejbDescriptor).
+                            IASEjbExtraDescriptors iased = ((EjbEntityDescriptor)ejbDescriptor).
                                 getIASEjbExtraDescriptors();
                             if (iased != null) {
                                 commitOption = iased.getCommitOption();    	

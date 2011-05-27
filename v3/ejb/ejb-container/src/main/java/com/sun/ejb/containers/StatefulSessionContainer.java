@@ -2102,7 +2102,7 @@ public final class StatefulSessionContainer
                         incrementMethodReadyStat();
                         return false;
                     }
-                    // TODO sfsbStoreMonitor.incrementPassivationCount(true);
+                    // V2: sfsbStoreMonitor.incrementPassivationCount(true);
                     cacheProbeNotifier.ejbBeanPassivatedEvent(getContainerId(),
                             containerInfo.appName, containerInfo.modName,
                             containerInfo.ejbName, true);
@@ -2171,7 +2171,7 @@ public final class StatefulSessionContainer
                         logTraceInfo(sc, "Successfully passivated");
                     }
                 } catch (java.io.NotSerializableException nsEx) {
-                    // TODO sfsbStoreMonitor.incrementPassivationCount(false);
+                    // V2: sfsbStoreMonitor.incrementPassivationCount(false);
                     cacheProbeNotifier.ejbBeanPassivatedEvent(getContainerId(),
                             containerInfo.appName, containerInfo.modName,
                             containerInfo.ejbName, false);
@@ -2185,7 +2185,7 @@ public final class StatefulSessionContainer
                         _logger.log(Level.FINE, "error destroying bean", e);
                     }
                 } catch (Throwable ex) {
-                    // TODO sfsbStoreMonitor.incrementPassivationCount(false);
+                    // V2: sfsbStoreMonitor.incrementPassivationCount(false);
                     cacheProbeNotifier.ejbBeanPassivatedEvent(getContainerId(),
                             containerInfo.appName, containerInfo.modName,
                             containerInfo.ejbName, false);
@@ -2204,7 +2204,7 @@ public final class StatefulSessionContainer
                     if (passStartTime != -1) {
                         long timeSpent = System.currentTimeMillis()
                                 - passStartTime;
-                        // TODO sfsbStoreMonitor.setPassivationTime(timeSpent);
+                        // V2: sfsbStoreMonitor.setPassivationTime(timeSpent);
                     }
                 }
             } //synchronized

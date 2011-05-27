@@ -163,16 +163,6 @@ public final class EJBServerConfigLookup {
     }
 
     /**
-     * Get the cluster name from domain.xml for this server.
-     * return null if not found
-     */
-    public String getClusterName() {
-        String result = null;
-        //TODO
-        return result;
-    }
-
-    /**
      * Get the availability-enabled from domain.xml.
      * This takes into account:
      * global

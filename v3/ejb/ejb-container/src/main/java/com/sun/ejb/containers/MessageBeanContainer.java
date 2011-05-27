@@ -228,7 +228,7 @@ public final class MessageBeanContainer extends BaseContainer implements
                         getContainerId(), containerInfo.appName, containerInfo.modName,
                         containerInfo.ejbName);
                 poolProbeListener.register();
-		// TODO registryMediator.registerProvider(messageBeanPool_);
+		// registryMediator.registerProvider(messageBeanPool_);
 		// super.setMonitorOn(mdbc.isMonitoringEnabled());
 		_logger.log(Level.FINE, "[MessageBeanContainer] registered monitorable");
 	}
@@ -820,13 +820,14 @@ public final class MessageBeanContainer extends BaseContainer implements
 		ASyncClientShutdownTask task = new ASyncClientShutdownTask(appEJBName_,
 				messageBeanClient_, loader, messageBeanPool_);
 		int timeout = 0;
-		/*
-		 * TODO try { timeout =
-		 * ResourcesUtil.createInstance().getShutdownTimeout(); } catch
-		 * (Throwable th) { _logger.log(Level.WARNING,
-		 * "[MDBContainer] Got exception while trying " +
-		 * " to get shutdown timeout", th); }
-		 */
+/**
+		try { 
+                    timeout = ConnectorsUtil.getShutdownTimeout();
+                } catch (Throwable th) { 
+                    _logger.log(Level.WARNING, "[MDBContainer] Got exception while trying " +
+		             " to get shutdown timeout", th); 
+                }
+**/
 		try {
 			boolean addedAsyncTask = false;
 			if (timeout > 0) {
@@ -880,7 +881,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 						.log(Level.FINE,
 								"[MDBContainer] Attempting to do cleanup()in current thread...");
 				task.run();
-				_logger.log(Level.WARNING,
+				_logger.log(Level.FINE,
 						"[MDBContainer] Current thread done cleanup()... ");
 			}
 		} catch (InterruptedException inEx) {

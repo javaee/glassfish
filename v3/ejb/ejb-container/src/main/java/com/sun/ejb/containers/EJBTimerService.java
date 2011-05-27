@@ -755,12 +755,11 @@ public class EJBTimerService
                                containerId + ", " + primaryKey);
                 }
             }
-// XXX ??? OK to make a public call ??? XXX
 // XXX check if we need a FinderException XXX
             // Called by EntityContainer.removeBean and will be 
             // called with the proper Tx context
 
-// TODO - non-persistent timers
+            // Non-persistent timers are not supported for entity beans
             timerLocal_.cancelTimers(timers);
         } catch(Exception e) {
             logger.log(Level.WARNING, "ejb.cancel_entity_timers",
@@ -1444,8 +1443,6 @@ public class EJBTimerService
      * but a client in a different transaction doesn't. Called by
      * EJBTimerServiceWrapper when caller calls getTimers.
      * 
-     * For non-persistent timers... TODO ...
-     *
      * @param primaryKey can be null if not entity bean
      * @return Collection of Timer Ids.
      */

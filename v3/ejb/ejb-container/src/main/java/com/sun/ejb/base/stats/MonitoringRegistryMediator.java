@@ -273,7 +273,6 @@ public class MonitoringRegistryMediator
 	    ejbTimedObjectStatsProvider = null;
 
 	    if (registry != null) registry.unregisterMonitoringLevelListener(this);
-	    // TODO registry.unregisterMonitoringLevelListener(this);
 	}
     }
 
