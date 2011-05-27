@@ -294,7 +294,7 @@ public class Util {
         
         for (Map.Entry<String, String> entry : data.entrySet()) {
             String currentValue = currentValues.get(setBasePath + entry.getKey());
-            if ((currentValue == null) || (!currentValue.equals(entry.getValue()))) {
+            if ((currentValue == null) || entry.getValue().equals("") || (!currentValue.equals(entry.getValue()))) {
                 parameters.add("DEFAULT", setBasePath + entry.getKey() + "=" + entry.getValue());
             }
         }
