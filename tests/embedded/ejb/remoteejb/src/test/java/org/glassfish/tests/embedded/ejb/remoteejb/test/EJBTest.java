@@ -98,17 +98,17 @@ public class EJBTest {
         System.out.println("TimerEJB tested successfully.");
 
 
-        ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
-        try {
+//        ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
+//        try {
             System.out.println("Looking up RemoteEJB.");
-            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+//            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
             RemoteEJBInf remoteEjb = (RemoteEJBInf) ic.lookup("java:global/remoteejb/RemoteEJB");
             System.out.println("Invoking RemoteEJB [" + remoteEjb + "]");
             Assert.assertEquals(remoteEjb.sayHi(), "Hi Bhavani");
             System.out.println("RemoteEjb tested successfully");
-        } finally {
-            Thread.currentThread().setContextClassLoader(oldCL);
-        }
+//        } finally {
+//            Thread.currentThread().setContextClassLoader(oldCL);
+//        }
         
         glassfish.stop();
         glassfish.dispose();
