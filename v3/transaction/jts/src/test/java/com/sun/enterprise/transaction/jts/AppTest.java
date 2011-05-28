@@ -910,6 +910,9 @@ public class AppTest extends TestCase {
     public void testCommitOnePhaseWithXAExc() {
         System.out.println("**Testing TM with failed 1PC commit ===>");
         _testCommitOnePhaseWithExc(XAException.XAER_RMFAIL, SystemException.class, false, false);
+
+        System.out.println("**Testing TM with XA_HEURCOM in 1PC commit ===>");
+        _testCommitOnePhaseWithExc(XAException.XA_HEURCOM, null, false, true);
     }
 
     public void testRollbackWithErrorNoExc() {
@@ -927,7 +930,7 @@ public class AppTest extends TestCase {
     }
 
     private void _testCommitOnePhaseWithExc(int errorCode, Class exType, boolean setRollbackOnly, boolean isHeuristic) {
-        System.out.println("**Testing TM with " + exType.getName() + " during 1PC commit ===>");
+        System.out.println("**Testing TM with " + ((exType == null)? "success" : exType.getName()) + " during 1PC commit ===>");
         ((JavaEETransactionManagerSimplified)t).getLogger().setLevel(Level.SEVERE);
         LogDomains.getLogger(OTSResourceImpl.class, LogDomains.TRANSACTION_LOGGER).setLevel(Level.SEVERE);
         TestResource theResource = new TestResource();
@@ -956,10 +959,15 @@ public class AppTest extends TestCase {
             System.out.println("**Calling TM commit ===>");
             t.commit();
             String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
-            System.out.println("**Error - successful commit - Status after commit: " + status + " <===");
-            assert (false);
+            if (exType != null) {
+                System.out.println("**Error - successful commit - Status after commit: " + status + " <===");
+                assert (false);
+            } else {
+                System.out.println("**Successful commit - Status after commit: " + status + " <===");
+                assert (true);
+            }
         } catch (Exception ex) {
-            if (exType.isInstance(ex)) {
+            if (exType != null && exType.isInstance(ex)) {
                 System.out.println("**Caught expected " + exType.getName() + " ...");
                 try {
                     String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
@@ -976,6 +984,7 @@ public class AppTest extends TestCase {
 
                 assert (status);
             } else {
+                System.out.println("**Caught " + ((exType == null)? " unexpected " : " NOT a " + exType.getName()) + " during 2PC...");
                 ex.printStackTrace();
                 assert (false);
             }
@@ -1007,6 +1016,7 @@ public class AppTest extends TestCase {
                     + " <===");
             assert (true);
         } catch (Exception ex) {
+            System.out.println("**Caught unexpected exception");
             ex.printStackTrace();
             assert (false);
         }
@@ -1027,6 +1037,12 @@ public class AppTest extends TestCase {
 
         System.out.println("**Testing TM with 1 XA_HEURCOM & 1 XA_HEURRB 2PC commit ===>");
         _testCommit2PCWithXAExc(XAException.XA_HEURCOM, XAException.XA_HEURRB, HeuristicMixedException.class, true);
+
+        System.out.println("**Testing TM with 2 XA_HEURCOM 2PC commit ===>");
+        _testCommit2PCWithXAExc(XAException.XA_HEURCOM, XAException.XA_HEURCOM, true, null, true);
+
+        System.out.println("**Testing TM with 1 XA_HEURCOM 2PC commit ===>");
+        _testCommit2PCWithXAExc(XAException.XA_HEURCOM, 9999, true, null, true);
 
         System.out.println("**Testing TM with 1 XA_HEURRB 2PC commit ===>");
         _testCommit2PCWithXAExc(XAException.XA_HEURRB, 9999, HeuristicMixedException.class, true);
@@ -1058,7 +1074,7 @@ public class AppTest extends TestCase {
     }
 
     private void _testCommit2PCWithXAExc(int errorCode1, int errorCode2, boolean failOnCommit, Class exType, boolean isHeuristic) {
-        System.out.println("**Testing TM with " + exType.getName() + " during failed 2PC commit ===>");
+        System.out.println("**Testing TM with " + ((exType == null)? "success" : exType.getName()) + " during 2PC commit ===>");
         TestResource theResource1 = new TestResource();
         TestResource theResource2 = new TestResource();
         try {
@@ -1087,10 +1103,15 @@ public class AppTest extends TestCase {
             System.out.println("**Calling TM commit ===>");
             t.commit();
             String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
-            System.out.println("**Error - successful commit - Status after commit: " + status + " <===");
-            assert (false);
-        } catch (Exception ex) {
-            if (exType.isInstance(ex)) {
+            if (exType != null) {
+                System.out.println("**Error - successful commit - Status after commit: " + status + " <===");
+                assert (false);
+            } else {
+                System.out.println("**Successful commit - Status after commit: " + status + " <===");
+                assert (true);
+            }
+        } catch (Throwable ex) {
+            if (exType != null && exType.isInstance(ex)) {
                 System.out.println("**Caught expected " + exType.getName() + " ...");
                 try {
                     String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
@@ -1108,7 +1129,7 @@ public class AppTest extends TestCase {
 
                 assert (status);
             } else {
-                System.out.println("**Caught NOT a " + exType.getName() + " during 2PC...");
+                System.out.println("**Caught " + ((exType == null)? " unexpected " : " NOT a " + exType.getName()) + " during 2PC...");
                 ex.printStackTrace();
                 assert (false);
             }
@@ -1210,7 +1231,7 @@ public class AppTest extends TestCase {
         // test goes here
         System.out.println("in XA commit");
         if (commitErrorCode != 9999) {
-          System.out.println("throwing XAException." + commitErrorCode + " during " + (onePhase? "1" : "2") + "pc");
+          System.out.println("throwing XAException." + commitErrorCode + " during commit of " + (onePhase? "1" : "2") + "pc");
           throw new XAException(commitErrorCode);
         }
       }
