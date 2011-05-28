@@ -105,7 +105,7 @@ public class GlassFishMainActivator implements BundleActivator {
                 instanceRoot);
 
         // This property is understood by our corresponding builder.
-        properties.setProperty(EmbeddedOSGiGlassFishRuntimeBuilder.BUILDER_NAME_PROPERTY, EmbeddedOSGiGlassFishRuntimeBuilder.class.getName());
+        properties.setProperty(Constants.BUILDER_NAME_PROPERTY, EmbeddedOSGiGlassFishRuntimeBuilder.class.getName());
         return properties;
     }
 
