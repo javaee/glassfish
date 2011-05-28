@@ -37,9 +37,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package admin.monitoring;
 
+import admin.util.LogListener;
 import com.sun.appserv.test.BaseDevTest.AsadminReturn;
 import java.io.*;
 import static admin.monitoring.Constants.*;
@@ -67,7 +67,7 @@ public class Jira extends MonTest {
 
     }
 
-    private void test16313() { 
+    private void test16313() {
         final String yesDatum = "server.network.http-listener-1.connection-queue.countopenconnections-count";
         final String noDatum = "No monitoring data to report.";
         final String prepend = "16313::check-getm-";
@@ -213,54 +213,55 @@ public class Jira extends MonTest {
      * At the FINE level we should see it.
      */
     private void test13905() {
-        final String prepend = "test13905::";
-        File logfile = new File(System.getenv("S1AS_HOME"));
-        logfile = new File(logfile, "domains/" + DOMAIN_NAME + "/logs/server.log");
-        report(logfile.exists(), prepend + "logfile exists");
-        report(logfile.isFile(), prepend + "logfile is-a-file");
-        report(logfile.canRead(), prepend + "logfile is readable");
-
-
-
-        // WBN, 5/26/11 -- We probably will see an off-the-wall log message generated like this:
-        // [#|2011-05-26T11:43:13.312-0700|INFO|glassfish3.2|org.hibernate.validator.engine.resolver.DefaultTraversableResolver|_ThreadID=12;_ThreadName=Thread-1;|Instanti
-        // ated an instance of org.hibernate.validator.engine.resolver.JPATraversableResolver.|#]
-        // this happens after the very first enable-monitoring call.  But after that it ought to be quiet.
-        // SO -- call it twice in a row and set the lengths after the first call.
-        report(asadmin("enable-monitoring", "--modules", "web-container=LOW"), prepend + "flush-JPA-message");
-
-        long prevLen = logfile.length();
-        long len = prevLen;
-        report(prevLen > 0, prepend + "logfile is not empty");
-
-        // verify that changing mon-level does not cause any logging
-        report(asadmin("enable-monitoring", "--modules", "web-container=LOW"), prepend + "change-mon-level-nolog-");
-        len = logfile.length();
-        report(len == prevLen, prepend + "no-log-output");
-        report(asadmin("enable-monitoring", "--modules", "web-container=HIGH"), prepend + "change-mon-level-nolog-");
-        len = logfile.length();
-        report(len == prevLen, prepend + "no-log-output");
-        report(asadmin("set-log-levels", "javax.enterprise.system.tools.monitor=FINE"), "set-log-level-to-fine");
+        LogListener listener = null;
+        
         try {
-            Thread.sleep(5000); // wait for it to get logged!
-        }
-        catch (InterruptedException ex) {
-            // don't care
-        }
+            final String prepend = "test13905::";
+            listener = new LogListener(DOMAIN_NAME);
+            File logfile = listener.getFile();
+            report(logfile.exists(), prepend + "logfile exists");
+            report(logfile.isFile(), prepend + "logfile is-a-file");
+            report(logfile.canRead(), prepend + "logfile is readable");
+            report(logfile.length() > 0, prepend + "logfile is not empty");
 
-        len = logfile.length();
-        report(len > prevLen, prepend + "set-log-level was noticed");
-        prevLen = len;
-        report(asadmin("enable-monitoring", "--modules", "web-container=LOW"), prepend + "change-mon-level-yeslog-");
-        len = logfile.length();
-        report(len > prevLen, prepend + "yes-log-output");
-        prevLen = len;
-        report(asadmin("enable-monitoring", "--modules", "web-container=HIGH"), prepend + "change-mon-level-yeslog-");
-        len = logfile.length();
-        report(len > prevLen, prepend + "yes-log-output");
+            // verify that changing mon-level does not cause any logging
 
-        // return to original state
-        report(asadmin("set-log-levels", "javax.enterprise.system.tools.monitor=INFO"), "set-log-level-back");
+            // don't just ASSUME it is set to INFO!!!
+            report(asadmin("set-log-levels", "javax.enterprise.system.tools.monitor=INFO"), "set-log-level-back");
+
+            // clear log
+            listener.getLatest(3);
+
+            // level set to INFO -- we ought to not see any **monitoring**  log messages
+            report(asadmin("enable-monitoring", "--modules", "web-container=LOW"), prepend + "change-mon-level-nolog-");
+            String s = listener.getLatest(2);
+            report(s.indexOf("monitor") < 0, prepend + "no-log-output");
+
+            report(asadmin("enable-monitoring", "--modules", "web-container=HIGH"), prepend + "change-mon-level-nolog-");
+            s = listener.getLatest(2);
+            report(s.indexOf("monitor") < 0, prepend + "no-log-output");
+
+            report(asadmin("set-log-levels", "javax.enterprise.system.tools.monitor=FINE"), "set-log-level-to-fine");
+            s = listener.getLatest(5);
+            report(s.length() > 0, prepend + "set-log-level was noticed");
+
+            // level set to FINE -- now we ought to see some log messages
+            report(asadmin("enable-monitoring", "--modules", "web-container=LOW"), prepend + "change-mon-level-yeslog-");
+            s = listener.getLatest(2);
+            report(s.indexOf("monitor") >= 0, prepend + "yes-log-output");
+
+            report(asadmin("enable-monitoring", "--modules", "web-container=HIGH"), prepend + "change-mon-level-yeslog-");
+            s = listener.getLatest(2);
+            report(s.indexOf("monitor") >= 0, prepend + "yes-log-output");
+
+            // return to original state
+            report(asadmin("set-log-levels", "javax.enterprise.system.tools.monitor=INFO"), "set-log-level-back");
+            s = listener.getLatest(5);
+            report(s.length() > 0, prepend + "set-log-level was noticed");
+        }
+        finally { //
+            listener.close();
+        }
     }
 
     /*
@@ -271,7 +272,6 @@ public class Jira extends MonTest {
     private void test13723() {
         report(true, "this test had to run earlier");
     }
-
     private final static String[] KEYS14461_GET = new String[]{
         STAND_ALONE_INSTANCE_NAME + ".monitoring-service.monitoring-enabled",
         CLUSTERED_INSTANCE_NAME1 + ".monitoring-service.monitoring-enabled",
