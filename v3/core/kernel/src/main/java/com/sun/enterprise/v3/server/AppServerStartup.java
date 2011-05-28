@@ -128,10 +128,20 @@ public class AppServerStartup implements ModuleStartup {
     private Thread serverThread;
 
     public synchronized void start() {
+        ClassLoader origCL = Thread.currentThread().getContextClassLoader();
+        try {
+            // See issue #5596 to know why we set context CL as common CL.
+            Thread.currentThread().setContextClassLoader(
+                    commonCLS.getCommonClassLoader());
+            doStart();
+        } finally {
+            // reset the context classloader. See issue GLASSFISH-15775
+            Thread.currentThread().setContextClassLoader(origCL);
+        }
+    }
 
-        // See issue #5596 to know why we set context CL as common CL.
-        Thread.currentThread().setContextClassLoader(
-                commonCLS.getCommonClassLoader());
+    private void doStart() {
+
         run();
 
         final CountDownLatch latch = new CountDownLatch(1);
