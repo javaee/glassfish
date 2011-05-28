@@ -96,6 +96,11 @@ public final class OSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
     }
 
     public boolean handles(BootstrapProperties bsProps) {
+        // See GLASSFISH-16743 for the reason behind additional check
+        final String builderName = bsProps.getProperty(Constants.BUILDER_NAME_PROPERTY);
+        if (builderName != null && !builderName.equals(getClass().getName())) {
+            return false;
+        }
         /*
          * This builder can't handle GOSGi platform, because we read framework configuration from a framework
          * specific file in ASMainHelper.buildStartupContext(properties);

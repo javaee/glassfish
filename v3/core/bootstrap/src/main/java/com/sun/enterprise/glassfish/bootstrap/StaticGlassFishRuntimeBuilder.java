@@ -97,6 +97,11 @@ public class StaticGlassFishRuntimeBuilder implements RuntimeBuilder {
     }
 
     public boolean handles(BootstrapProperties bsProps) {
+        // See GLASSFISH-16743 for the reason behind additional check
+        final String builderName = bsProps.getProperty(Constants.BUILDER_NAME_PROPERTY);
+        if (builderName != null && !builderName.equals(getClass().getName())) {
+            return false;
+        }
         String platform = bsProps.getProperty(Constants.PLATFORM_PROPERTY_KEY);
         return platform == null || Constants.Platform.Static.toString().equalsIgnoreCase(platform);
     }

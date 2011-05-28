@@ -78,14 +78,11 @@ public class EmbeddedOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
 
     private static final String mainBundleName = "org.glassfish.core.kernel";
 
-    /* package */
-    static final String BUILDER_NAME_PROPERTY = "GlassFish.BUILDER_NAME";
-
     private static final String JAR_EXT = ".jar";
 
     public boolean handles(BootstrapProperties bsProps) {
         return EmbeddedOSGiGlassFishRuntimeBuilder.class.getName().
-                equals(bsProps.getProperties().getProperty(BUILDER_NAME_PROPERTY));
+                equals(bsProps.getProperties().getProperty(Constants.BUILDER_NAME_PROPERTY));
     }
 
     public GlassFishRuntime build(BootstrapProperties bsProps) throws GlassFishException {
