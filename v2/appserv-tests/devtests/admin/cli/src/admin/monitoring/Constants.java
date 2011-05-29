@@ -56,6 +56,7 @@ class Constants {
     final static String LOW = "LOW";
     final static String OFF = "OFF";
     final static boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+    final static File installDir = new File(System.getenv("S1AS_HOME"));
 
     // this is annoying!!!
     final static String STAR = isWindows ? "\"*\"" : "*";

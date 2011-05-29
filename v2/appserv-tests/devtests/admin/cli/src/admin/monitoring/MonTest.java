@@ -43,6 +43,7 @@ package admin.monitoring;
 import com.sun.appserv.test.BaseDevTest.AsadminReturn;
 import java.io.*;
 import java.net.*;
+import java.nio.channels.*;
 import static admin.monitoring.Constants.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -105,6 +106,7 @@ abstract class MonTest {
     final void deleteDomain() {
         if (asadminHasString(DOMAIN_NAME, "list-domains")) {
             stopDomain();
+            copyDomainLog();
             report(asadmin("delete-domain", DOMAIN_NAME), "delete domain");
         }
         else
@@ -141,7 +143,34 @@ abstract class MonTest {
     final void stopDomain() {
         report(asadmin("stop-domain", DOMAIN_NAME), "stopped mon-domain");
     }
+    final void copyDomainLog() {
+        InputStream ins = null;
+        FileOutputStream outs = null;
 
+        try {
+            File inlog = new File(installDir, "domains/" + DOMAIN_NAME + "/logs/server.log");
+            File outlog = new File(DOMAIN_NAME + "-server.log");
+            ins = new BufferedInputStream(new FileInputStream(inlog));
+            outs = new FileOutputStream(outlog);
+            ReadableByteChannel inChannel = Channels.newChannel(ins);
+            FileChannel outChannel = outs.getChannel();
+            outChannel.transferFrom(inChannel, 0, inlog.length());
+            report(true, "Copy-" + DOMAIN_NAME + "-log");
+        }
+        catch (Exception ex) {
+            report(false, "Copy-" + DOMAIN_NAME + "-log");
+        }
+        finally {
+            try {
+                ins.close();
+                outs.close();
+            }
+            catch (IOException ex) {
+                // nothing to do!
+            }
+        }
+
+    }
     final void createCluster() {
         verifyCluster(false);
         report(asadmin("create-cluster", CLUSTER_NAME), "created cluster");
