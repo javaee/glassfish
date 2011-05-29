@@ -104,18 +104,13 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
      * @param validating true if the parser should excercise DTD validation
      */
     public SAXParser getSAXParser (boolean validating) { 
+        // always use system SAXParser to parse DDs, see IT 8229
+        ClassLoader currentLoader =
+            Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(
+            getClass().getClassLoader());
         try {
-            // always use system SAXParser to parse DDs, see IT 8229
-            ClassLoader currentLoader =
-                Thread.currentThread().getContextClassLoader();
-            Thread.currentThread().setContextClassLoader(
-                getClass().getClassLoader());
-            SAXParserFactory spf = null;
-            try {
-                spf = SAXParserFactory.newInstance();
-            } finally {
-                Thread.currentThread().setContextClassLoader(currentLoader);
-            }
+            SAXParserFactory spf = SAXParserFactory.newInstance();
 
             // set the namespace awareness
             spf.setNamespaceAware(true);
@@ -178,6 +173,8 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
                                 new Object[]{e.getMessage()});
             DOLUtils.getDefaultLogger().log(Level.WARNING, "Error occurred", e);
 
+        } finally {
+                Thread.currentThread().setContextClassLoader(currentLoader);
         }
         return null;
     }
