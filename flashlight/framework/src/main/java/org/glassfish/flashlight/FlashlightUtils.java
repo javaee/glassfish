@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,10 +38,6 @@
  * holder.
  */
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.glassfish.flashlight;
 
 import com.sun.enterprise.config.serverbeans.MonitoringService;
@@ -200,6 +196,14 @@ public class FlashlightUtils {
         return false;
     }
 
+    public static boolean isIntegralOrFloat(Class clazz) {
+        for (Class c : INTEGRAL_FLOAT_CLASSES) {
+            if (c.equals(clazz))
+                return true;
+        }
+        return false;
+    }
+
     /**
      * return true if they are the same -- ignoring boxing/unboxing
      * AND if they are "integrals"
@@ -252,6 +256,68 @@ public class FlashlightUtils {
         }
         if (c2.equals(boolean.class)) {
             return c1.equals(Boolean.class);
+        }
+
+        // can't get here!!!
+        return false;
+    }
+
+    public static boolean compareIntegralOrFloat(Class c1, Class c2) {
+        // first make sure they are both in the 12 element array of legal classes
+        if (!isIntegralOrFloat(c1) || !isIntegralOrFloat(c2))
+            return false;
+
+        // next a sanity check -- they ought to be different classes but let's check anyways!
+        if (c1.equals(c2))
+            return true;
+
+        if (c1.equals(short.class)) {
+            return c2.equals(Short.class);
+        }
+        if (c1.equals(long.class)) {
+            return c2.equals(Long.class);
+        }
+        if (c1.equals(int.class)) {
+            return c2.equals(Integer.class);
+        }
+        if (c1.equals(byte.class)) {
+            return c2.equals(Byte.class);
+        }
+        if (c1.equals(char.class)) {
+            return c2.equals(Character.class);
+        }
+        if (c1.equals(boolean.class)) {
+            return c2.equals(Boolean.class);
+        }
+        if (c1.equals(float.class)) {
+            return c2.equals(Float.class);
+        }
+        if (c1.equals(double.class)) {
+            return c2.equals(Double.class);
+        }
+        if (c2.equals(short.class)) {
+            return c1.equals(Short.class);
+        }
+        if (c2.equals(long.class)) {
+            return c1.equals(Long.class);
+        }
+        if (c2.equals(int.class)) {
+            return c1.equals(Integer.class);
+        }
+        if (c2.equals(byte.class)) {
+            return c1.equals(Byte.class);
+        }
+        if (c2.equals(char.class)) {
+            return c1.equals(Character.class);
+        }
+        if (c2.equals(boolean.class)) {
+            return c1.equals(Boolean.class);
+        }
+        if (c2.equals(float.class)) {
+            return c1.equals(Float.class);
+        }
+        if (c2.equals(double.class)) {
+            return c1.equals(Double.class);
         }
 
         // can't get here!!!
@@ -366,4 +432,8 @@ public class FlashlightUtils {
     private final static Class[] INTEGRAL_CLASSES = new Class[]{
         int.class, long.class, short.class, boolean.class, char.class, byte.class,
         Integer.class, Long.class, Short.class, Boolean.class, Character.class, Byte.class,};
+    private final static Class[] INTEGRAL_FLOAT_CLASSES = new Class[]{
+        int.class, long.class, short.class, boolean.class, char.class, byte.class,
+        Integer.class, Long.class, Short.class, Boolean.class, Character.class, Byte.class,
+        float.class, Float.class, double.class, Double.class,};
 }

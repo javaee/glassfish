@@ -39,11 +39,13 @@
  */
 package org.glassfish.flashlight.impl.client;
 
+import java.lang.reflect.InvocationTargetException;
 import org.glassfish.flashlight.client.ProbeClientInvoker;
 import org.glassfish.flashlight.impl.core.ComputedParamsHandlerManager;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import org.glassfish.flashlight.FlashlightUtils;
 
@@ -56,6 +58,8 @@ public class ReflectiveClientInvoker
     boolean hasComputedParams;
     int[] probeIndices;
     boolean useProbeArgs;
+    Class[] methodParamTypes;
+    boolean emittedOneMessage = false;
 
     public ReflectiveClientInvoker(int id, Object target, Method method,
             String[] clientParamNames, FlashlightProbe probe) {
@@ -63,7 +67,7 @@ public class ReflectiveClientInvoker
         this.target = target;
         this.method = method;
         this.paramNames = clientParamNames;
-
+        methodParamTypes = method.getParameterTypes();
         int size = clientParamNames.length;
         probeIndices = new int[size];
 
@@ -95,6 +99,19 @@ public class ReflectiveClientInvoker
                 }
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("id=").append(id).append('\n');
+        sb.append("target=").append(target).append('\n');
+        sb.append("method=").append(method).append('\n');
+        sb.append("paramNames=").append(Arrays.toString(paramNames)).append('\n');
+        sb.append("probeIndices=").append(Arrays.toString(probeIndices)).append('\n');
+        sb.append("useProbeArgs=").append(useProbeArgs).append('\n');
+        sb.append("hasComputedParams=").append(hasComputedParams).append('\n');
+        return sb.toString();
     }
 
     public int getId() {
@@ -135,11 +152,76 @@ public class ReflectiveClientInvoker
             if (method.isVarArgs())
                 method.invoke(target, (Object) args);
             else
-                method.invoke(target, args);
+                methodInvoke(args);
         }
         catch (Exception ex) {
-            System.out.println("Error while invoking client: "
-                    + "hasComputedParams=" + hasComputedParams + " ==> " + ex);
+            if (!emittedOneMessage) {
+                // Only do this one time!
+                emittedOneMessage = true;
+                StringBuilder sb = new StringBuilder();
+                sb.append(getClass().getName()).append('\n').append(ex).append('\n');
+                sb.append("CAUSE:  ").append(ex.getCause()).append('\n');
+                sb.append(this);
+                System.out.println(sb.toString());
+            }
+        }
+    }
+
+    private void methodInvoke(Object[] args) throws IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException {
+        try {
+            method.invoke(target, args);
+        }
+        catch (Exception e1) {
+            matchupArgs(args);
+            method.invoke(target, args);
+        }
+    }
+
+    private void matchupArgs(Object[] args) {
+        // if any error -- just return quietly
+        // if it can be fixed -- then change the contents of args
+
+        if (args == null || args.length == 0 || methodParamTypes == null || methodParamTypes.length == 0)
+            return;
+        if (args.length != methodParamTypes.length)
+            return;
+
+        // it may look odd because I'm trying to be as efficient as possible...
+        for (int i = 0; i < args.length; i++) {
+            // weird.  Should not happen
+            if (args[i] == null || methodParamTypes[i] == null)
+                continue;
+
+            Class argClass = args[i].getClass();
+
+            // normal
+            if (argClass.equals(methodParamTypes[i]))
+                continue;
+
+            // not an exact match.  Is it a sub-class?
+            if (methodParamTypes[i].isAssignableFrom(argClass))
+                continue;
+
+            // is the only difference boxing, e.g. Short and short ??
+            if (FlashlightUtils.compareIntegralOrFloat(argClass, methodParamTypes[i]))
+                continue;
+
+            // mismatch!!
+            if (methodParamTypes[i].isAssignableFrom(String.class)) {
+                args[i] = args[i].toString();
+                if (!emittedOneMessage) {
+                    System.out.println("FIXED MISMATCH!!!!\n" + toString());
+                    emittedOneMessage = true;
+                }
+            }
+            else {
+                if (!emittedOneMessage) {
+                    System.out.printf("ERROR!  Mismatched params  Expected " + methodParamTypes[i].toString()
+                            + " but got " + args[i].getClass().toString() + "\n" + toString());
+                    emittedOneMessage = true;
+                }
+            }
         }
     }
 }
