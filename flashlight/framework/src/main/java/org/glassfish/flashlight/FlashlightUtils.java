@@ -42,7 +42,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.glassfish.flashlight;
 
 import com.sun.enterprise.config.serverbeans.MonitoringService;
@@ -69,24 +68,23 @@ import org.jvnet.hk2.component.Habitat;
  * // TODO -- just make this a Service and inject the habitat and simplify the code a bit!
  * @author Byron Nevins
  */
-
 public class FlashlightUtils {
-
     private static final Logger logger =
-        LogDomains.getLogger(FlashlightUtils.class, LogDomains.MONITORING_LOGGER);
+            LogDomains.getLogger(FlashlightUtils.class, LogDomains.MONITORING_LOGGER);
+
     private FlashlightUtils() {
         // All static.  No instances allowed.
     }
 
     public static void initialize(Habitat h, MonitoringService mc) {
         // only do once -- ignore multiple calls...
-        synchronized(LOCK) {
-            if(habitat == null) {
+        synchronized (LOCK) {
+            if (habitat == null) {
                 habitat = h;
                 monConfig = mc;
                 setDTraceEnabled(Boolean.parseBoolean(monConfig.getDtraceEnabled()));
                 setMonitoringEnabled(Boolean.parseBoolean(monConfig.getMonitoringEnabled()));
-                
+
                 // order mattrs.  the next method is depending on the previous 
                 //methods having been run already...
                 setDTraceAvailabilty();
@@ -112,13 +110,13 @@ public class FlashlightUtils {
     public static boolean isDtraceAvailable() {
         ok();
 
-        if(dt == null)
+        if (dt == null)
             return false;
 
-        if(!dtraceEnabled)
+        if (!dtraceEnabled)
             return false;
 
-        if(!monitoringEnabled)
+        if (!monitoringEnabled)
             return false;
 
         return true;
@@ -140,11 +138,10 @@ public class FlashlightUtils {
         ok();
         dt = habitat.getByContract(DTraceContract.class);
 
-        if(dt == null) {
+        if (dt == null) {
             logDTraceAvailability(false, false);
         }
-
-        else if(!dt.isSupported()) {
+        else if (!dt.isSupported()) {
             dt = null;
             logDTraceAvailability(true, false);
         }
@@ -185,7 +182,7 @@ public class FlashlightUtils {
         List<Method> list = new LinkedList<Method>();
 
         for (Method m : clazz.getDeclaredMethods())
-            if(m.getAnnotation(Probe.class) != null)
+            if (m.getAnnotation(Probe.class) != null)
                 list.add(m);
 
         return list;
@@ -194,10 +191,10 @@ public class FlashlightUtils {
     public static boolean isLegalDtraceParam(Class clazz) {
         return isIntegral(clazz) || String.class.equals(clazz);
     }
-    
+
     public static boolean isIntegral(Class clazz) {
-        for(Class c : INTEGRAL_CLASSES) {
-            if(c.equals(clazz))
+        for (Class c : INTEGRAL_CLASSES) {
+            if (c.equals(clazz))
                 return true;
         }
         return false;
@@ -213,34 +210,58 @@ public class FlashlightUtils {
      */
     public static boolean compareIntegral(Class c1, Class c2) {
         // first make sure they are both in the 12 element array of legal classes
-        if(!isIntegral(c1) || !isIntegral(c2))
+        if (!isIntegral(c1) || !isIntegral(c2))
             return false;
 
         // next a sanity check -- they ought to be different classes but let's check anyways!
-        if(c1.equals(c2))
+        if (c1.equals(c2))
             return true;
-        
-        if(c1.equals(short.class))  { return c2.equals(Short.class); }
-        if(c1.equals(long.class))  { return c2.equals(Long.class); }
-        if(c1.equals(int.class))  { return c2.equals(Integer.class); }
-        if(c1.equals(byte.class))  { return c2.equals(Byte.class); }
-        if(c1.equals(char.class))  { return c2.equals(Character.class); }
-        if(c1.equals(boolean.class))  { return c2.equals(Boolean.class); }
-        if(c2.equals(short.class))  { return c1.equals(Short.class); }
-        if(c2.equals(long.class))  { return c1.equals(Long.class); }
-        if(c2.equals(int.class))  { return c1.equals(Integer.class); }
-        if(c2.equals(byte.class))  { return c1.equals(Byte.class); }
-        if(c2.equals(char.class))  { return c1.equals(Character.class); }
-        if(c2.equals(boolean.class))  { return c1.equals(Boolean.class); }
-        
+
+        if (c1.equals(short.class)) {
+            return c2.equals(Short.class);
+        }
+        if (c1.equals(long.class)) {
+            return c2.equals(Long.class);
+        }
+        if (c1.equals(int.class)) {
+            return c2.equals(Integer.class);
+        }
+        if (c1.equals(byte.class)) {
+            return c2.equals(Byte.class);
+        }
+        if (c1.equals(char.class)) {
+            return c2.equals(Character.class);
+        }
+        if (c1.equals(boolean.class)) {
+            return c2.equals(Boolean.class);
+        }
+        if (c2.equals(short.class)) {
+            return c1.equals(Short.class);
+        }
+        if (c2.equals(long.class)) {
+            return c1.equals(Long.class);
+        }
+        if (c2.equals(int.class)) {
+            return c1.equals(Integer.class);
+        }
+        if (c2.equals(byte.class)) {
+            return c1.equals(Byte.class);
+        }
+        if (c2.equals(char.class)) {
+            return c1.equals(Character.class);
+        }
+        if (c2.equals(boolean.class)) {
+            return c1.equals(Boolean.class);
+        }
+
         // can't get here!!!
         return false;
     }
 
     public static String makeName(FlashlightProbeProvider provider) {
         return makeName(provider.getModuleProviderName(),
-                        provider.getModuleName(),
-                        provider.getProbeProviderName());
+                provider.getModuleName(),
+                provider.getProbeProviderName());
     }
 
     public static String makeName(String a, String b, String c) {
@@ -259,8 +280,8 @@ public class FlashlightUtils {
         String name = null;
 
         for (Annotation annotation : annotations) {
-            if(annotation instanceof ProbeParam) {
-                ProbeParam pp = (ProbeParam)annotation;
+            if (annotation instanceof ProbeParam) {
+                ProbeParam pp = (ProbeParam) annotation;
                 name = pp.value();
             }
         }
@@ -268,7 +289,7 @@ public class FlashlightUtils {
         // If we do not find an annotated parameter -- the we simply make one up.
         // Just the index would make a unique name, but to make things a bit easier to
         // follow -- we prepend the number with the type.
-        if(name == null) {
+        if (name == null) {
             name = paramTypes[index].getName().replace('.', '_') + "_arg" + index;
         }
         return name;
@@ -282,28 +303,27 @@ public class FlashlightUtils {
 
         // if dtrace is not enabled then don't harass user with noisy
         // DTrace messages
-       
-        if(!dtraceEnabled)
-           return;
 
-       String message;
+        if (!dtraceEnabled)
+            return;
 
-        if(!contractExists) {
+        String message;
+
+        if (!contractExists) {
             message = localStrings.getLocalString("no_impl",
-                "DTrace is not available.  This can be caused by two things:\n" +
-                "1. JDK 7 is required to run DTrace\n" +
-                "2. glassfish-dtrace.jar value-add is required for DTrace");
+                    "DTrace is not available.  This can be caused by two things:\n"
+                    + "1. JDK 7 is required to run DTrace\n"
+                    + "2. glassfish-dtrace.jar value-add is required for DTrace");
         }
-        else if(!isSupported){
+        else if (!isSupported) {
             message = localStrings.getLocalString("not_supported",
-            "DTrace is not available.  This condition normally only occurs when your\n" +
-            "Operating System does not support DTrace.  Currently you must have Solaris 10\n" +
-            "or better for dtrace support");
+                    "DTrace is not available.  This condition normally only occurs when your\n"
+                    + "Operating System does not support DTrace.  Currently you must have Solaris 10\n"
+                    + "or better for dtrace support");
         }
-
         else {
             message = localStrings.getLocalString("init_ok",
-            "DTrace is connected and ready.");
+                    "DTrace is connected and ready.");
         }
 
         logger.info(message);
@@ -311,8 +331,8 @@ public class FlashlightUtils {
 
 
     /*
-        Will replace special characters with ascii codes
-        (to avoid problems during class creation)
+    Will replace special characters with ascii codes
+    (to avoid problems during class creation)
      */
     public static String getUniqueInvokerId(String suffix) {
         StringBuilder sb = new StringBuilder("_");
@@ -329,26 +349,21 @@ public class FlashlightUtils {
         return sb.toString();
     }
 
-
-
     private static void ok() {
-        if(habitat == null || monConfig == null) {
+        if (habitat == null || monConfig == null) {
             String errStr = localStrings.getLocalString("habitatNotSet", "Internal Error: habitat was not set in {0}", FlashlightUtils.class);
             throw new RuntimeException(errStr);
         }
     }
-
-
     private final static LocalStringManagerImpl localStrings =
-                            new LocalStringManagerImpl(FlashlightUtils.class);
-    private static              volatile Habitat             habitat;
-    private static              volatile MonitoringService   monConfig;
-    private static              DTraceContract      dt;
-    private static              boolean             dtraceEnabled;
-    private static              boolean             monitoringEnabled;
-    private final static        Object              LOCK                = new Object();
-    private final static        Class[]             INTEGRAL_CLASSES    = new Class[] {
+            new LocalStringManagerImpl(FlashlightUtils.class);
+    private static volatile Habitat habitat;
+    private static volatile MonitoringService monConfig;
+    private static DTraceContract dt;
+    private static boolean dtraceEnabled;
+    private static boolean monitoringEnabled;
+    private final static Object LOCK = new Object();
+    private final static Class[] INTEGRAL_CLASSES = new Class[]{
         int.class, long.class, short.class, boolean.class, char.class, byte.class,
-        Integer.class, Long.class, Short.class, Boolean.class, Character.class, Byte.class,
-    };
+        Integer.class, Long.class, Short.class, Boolean.class, Character.class, Byte.class,};
 }

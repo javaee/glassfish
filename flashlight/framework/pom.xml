@@ -92,11 +92,6 @@
         </profile>
         <profile>
             <id>aix-jdk</id>
-            <activation>
-                <os>
-                    <name>AIX</name>
-                </os>
-            </activation>
             <build>
                 <plugins>
                     <plugin>
