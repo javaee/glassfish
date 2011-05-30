@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.config.serverbeans.customvalidators;
 
+import com.sun.enterprise.util.i18n.StringManager;
+
 /**
  * Enum containing the different custom validation failures for a connection 
  * pool. The message strings for the different validation scenarios are 
@@ -49,26 +51,21 @@ package com.sun.enterprise.config.serverbeans.customvalidators;
  * @author Shalini M
  */
 public enum ConnectionPoolErrorMessages {
-    
-    MAX_STEADY_INVALID ("Max-pool-size has to be greater than or equal to steady-pool-size"),
-    
-    STMT_WRAPPING_DISABLED ("Statement Wrapping should be set to true before performing this operation"),
-    
-    RES_TYPE_MANDATORY ("Must specify either datasource-classname or driver-classname. " +
-            "datasource-classname is mandatory when res-type is " +
-                    "javax.sql.DataSource or javax.sql.ConnectionPoolDataSource or " +
-                            "javax.sql.XADataSource. driver-classname is mandatory " +
-                                    "when res-type is java.sql.Driver."),
 
-    TABLE_NAME_MANDATORY ("Default validation method is 'table' when validation is enabled. Please specify a valid" +
-            "table name ['validation-table-name'] before enabling 'table' based validation."),
+    MAX_STEADY_INVALID ("connpool.maxpoolsize.invalid"),
     
-    CUSTOM_VALIDATION_CLASS_NAME_MANDATORY("Must specify 'validation-class-name' when 'connection-validation' " +
-            "is enabled and 'validation-method' is 'custom-validation'. Please specify 'validation-class-name' " +
-            "before enabling 'custom-validation' based validation");
+    STMT_WRAPPING_DISABLED ("connpool.stmtwrapping.disabled"),
+    
+    RES_TYPE_MANDATORY ("connpool.restype.mandatory"),
 
-    private ConnectionPoolErrorMessages(String message) {
-        this.message = message;
+    TABLE_NAME_MANDATORY ("connpool.validation.table.name.mandatory"),
+    
+    CUSTOM_VALIDATION_CLASS_NAME_MANDATORY("connpool.custom.validation.classname.mandatory");
+    
+    private final StringManager localStrings = StringManager.getManager(getClass());
+
+    private ConnectionPoolErrorMessages(String messagekey) {
+        this.message = localStrings.getString(messagekey);
     }
     private final String message;    
     

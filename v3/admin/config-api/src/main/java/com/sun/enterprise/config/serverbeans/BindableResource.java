@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,12 +44,13 @@ import com.sun.enterprise.config.serverbeans.customvalidators.ResourceNameConstr
 import org.jvnet.hk2.config.Attribute;
 
 import java.beans.PropertyVetoException;
+import javax.validation.Payload;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-@ResourceNameConstraint
-public interface BindableResource extends Resource{
+@ResourceNameConstraint(message="{resourcename.invalid.character}", payload=BindableResource.class)
+public interface BindableResource extends Resource, Payload {
     /**
      * Gets the value of the jndiName property.
      *
