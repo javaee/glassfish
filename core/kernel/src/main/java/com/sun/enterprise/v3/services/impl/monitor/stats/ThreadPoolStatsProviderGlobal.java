@@ -82,7 +82,7 @@ public class ThreadPoolStatsProviderGlobal extends ThreadPoolStatsProvider {
     public void threadAllocatedEvent(
             @ProbeParam("monitoringId") String monitoringId,
             @ProbeParam("threadPoolName") String threadPoolName,
-            @ProbeParam("threadId") String threadId) {
+            @ProbeParam("threadId") long threadId) {
 
         currentThreadCount.increment();
     }
@@ -91,7 +91,7 @@ public class ThreadPoolStatsProviderGlobal extends ThreadPoolStatsProvider {
     public void threadReleasedEvent(
             @ProbeParam("monitoringId") String monitoringId,
             @ProbeParam("threadPoolName") String threadPoolName,
-            @ProbeParam("threadId") String threadId) {
+            @ProbeParam("threadId") long threadId) {
 
         currentThreadCount.decrement();
     }
@@ -100,7 +100,7 @@ public class ThreadPoolStatsProviderGlobal extends ThreadPoolStatsProvider {
     public void threadDispatchedFromPoolEvent(
             @ProbeParam("monitoringId") String monitoringId,
             @ProbeParam("threadPoolName") String threadPoolName,
-            @ProbeParam("threadId") String threadId) {
+            @ProbeParam("threadId") long threadId) {
 
         currentThreadsBusy.increment();
     }
@@ -109,7 +109,7 @@ public class ThreadPoolStatsProviderGlobal extends ThreadPoolStatsProvider {
     public void threadReturnedToPoolEvent(
             @ProbeParam("monitoringId") String monitoringId,
             @ProbeParam("threadPoolName") String threadPoolName,
-            @ProbeParam("threadId") String threadId) {
+            @ProbeParam("threadId") long threadId) {
 
         totalExecutedTasksCount.increment();
         currentThreadsBusy.decrement();
