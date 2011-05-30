@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.flashlight.impl.client;
 
 import org.glassfish.flashlight.client.ProbeClientInvoker;
@@ -50,18 +49,16 @@ import org.glassfish.flashlight.FlashlightUtils;
 
 public class ReflectiveClientInvoker
         implements ProbeClientInvoker {
-
     private int id;
     private Object target;
     private Method method;
     private String[] paramNames;
-
     boolean hasComputedParams;
     int[] probeIndices;
     boolean useProbeArgs;
 
     public ReflectiveClientInvoker(int id, Object target, Method method,
-                                   String[] clientParamNames, FlashlightProbe probe) {
+            String[] clientParamNames, FlashlightProbe probe) {
         this.id = id;
         this.target = target;
         this.method = method;
@@ -81,7 +78,8 @@ public class ReflectiveClientInvoker
             if (clientParamNames[index].startsWith("$")) {
                 hasComputedParams = true;
                 probeIndices[index] = -1;
-            } else {
+            }
+            else {
                 int actualIndex = probeParamIndexMap.get(clientParamNames[index]);
                 probeIndices[index] = actualIndex;
             }
@@ -104,13 +102,14 @@ public class ReflectiveClientInvoker
     }
 
     public void invoke(Object[] args) {
-        if(!FlashlightUtils.isMonitoringEnabled())
+        if (!FlashlightUtils.isMonitoringEnabled())
             return;
-        
+
         try {
             if (useProbeArgs) {
                 //We can use the args as it is
-            } else if (hasComputedParams) {
+            }
+            else if (hasComputedParams) {
                 ComputedParamsHandlerManager cphm = ComputedParamsHandlerManager.getInstance();
                 int size = paramNames.length;
                 Object[] tempArgs = args;
@@ -118,11 +117,13 @@ public class ReflectiveClientInvoker
                 for (int i = 0; i < size; i++) {
                     if (probeIndices[i] == -1) {
                         args[i] = cphm.computeValue(paramNames[i]);
-                    } else {
+                    }
+                    else {
                         args[i] = tempArgs[probeIndices[i]];
                     }
                 }
-            } else {
+            }
+            else {
                 int size = paramNames.length;
                 Object[] tempArgs = args;
                 args = new Object[size];
@@ -132,12 +133,13 @@ public class ReflectiveClientInvoker
             }
 
             if (method.isVarArgs())
-                method.invoke(target, (Object)args);
+                method.invoke(target, (Object) args);
             else
                 method.invoke(target, args);
-        } catch (Exception ex) {
-            System.out.println("Error while invoking client: " +
-                    "hasComputedParams=" + hasComputedParams + " ==> " + ex);
+        }
+        catch (Exception ex) {
+            System.out.println("Error while invoking client: "
+                    + "hasComputedParams=" + hasComputedParams + " ==> " + ex);
         }
     }
 }
