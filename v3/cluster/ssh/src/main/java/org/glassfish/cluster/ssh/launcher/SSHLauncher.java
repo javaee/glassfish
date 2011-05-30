@@ -637,10 +637,10 @@ public class SSHLauncher {
             }
 
             //copy over the public key to remote host
-            scp.put(pubKey.getAbsolutePath(), ".ssh");            
+            scp.put(pubKey.getAbsolutePath(), "key.tmp", ".ssh", "0600");            
 
             //append the public key file contents to authorized_keys file on remote host
-            String mergeCommand = "cd .ssh; cat " + pubKey.getName() + " >> " + AUTH_KEY_FILE;
+            String mergeCommand = "cd .ssh; cat key.tmp >> " + AUTH_KEY_FILE;
             if(logger.isLoggable(Level.FINER)) {
                 logger.finer("mergeCommand = " + mergeCommand);
             }
@@ -651,9 +651,8 @@ public class SSHLauncher {
 
             //remove the public key file on remote host
             //for some reason sftp.rm() hangs for MKS ssh
-            if(connection.exec("rm .ssh/" + pubKey.getName(), new ByteArrayOutputStream())!=0) {
-                logger.warning("WARNING: Failed to remove the public key file " + pubKey.getName()
-                                + " on remote host " + host);
+            if(connection.exec("rm .ssh/key.tmp", new ByteArrayOutputStream())!=0) {
+                logger.warning("WARNING: Failed to remove the public key file key.tmp on remote host " + host);
             }
             if(logger.isLoggable(Level.FINER)) {
                 logger.finer("Removed the key file on remote host");
