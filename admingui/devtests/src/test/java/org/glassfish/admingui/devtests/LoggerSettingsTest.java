@@ -73,7 +73,6 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
 
     @Test
     public void testLogLevels() {
-        final String loggerName = "testLogger" + Integer.toString(generateRandomNumber());
         clickAndWait("treeForm:tree:configurations:server-config:loggerSetting:loggerSetting_link", TRIGGER_LOGGER_SETTINGS);
         clickAndWait("form1:loggingTabs:loggerLevels", TRIGGER_LOG_LEVELS);
         String newLevel = "WARNING";
@@ -84,29 +83,15 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
         selectDropdownOption("form1:basicTable:topActionsGroup1:change_list", newLevel);
         pressButton("form1:basicTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image");
 
-        waitForButtonEnabled("form1:basicTable:topActionsGroup1:button2");
+        waitForButtonEnabled("form1:basicTable:topActionsGroup1:button1");
 
-        pressButton("form1:basicTable:topActionsGroup1:button2");
-        waitForButtonDisabled("form1:basicTable:topActionsGroup1:button2");
+        pressButton("form1:basicTable:topActionsGroup1:button1");
+        waitForButtonDisabled("form1:basicTable:topActionsGroup1:button1");
 
         clickAndWait("form1:title:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         clickAndWait("form1:loggingTabs:loggerGeneral", TRIGGER_LOGGER_SETTINGS);
         clickAndWait("form1:loggingTabs:loggerLevels", TRIGGER_LOG_LEVELS);
-        assertEquals(newLevel, getFieldValue("form1:basicTable:rowGroup1:0:col3:level"));
-
-        clickAndWait("treeForm:tree:configurations:server-config:loggerSetting:loggerSetting_link", TRIGGER_LOGGER_SETTINGS);
-        clickAndWait("form1:loggingTabs:loggerLevels", TRIGGER_LOG_LEVELS);
-
-        // Add Logger
-        int count = addTableRow("form1:basicTable", "form1:basicTable:topActionsGroup1:addSharedTableButton", "Logger Settings");
-        setFieldValue("form1:basicTable:rowGroup1:0:col2:col1St", loggerName);
-        clickAndWait("form1:title:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
-        assertTableRowCount("form1:basicTable", count);
-
-        // delete functionality through dev test framework does not select the rows and it hangs
-        // need to be fixed
-        //deleteRow("form1:basicTable:topActionsGroup1:button1", "form1:basicTable", loggerName);
-        //clickAndWait("form1:title:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
+        assertEquals(newLevel, getFieldValue("form1:basicTable:rowGroup1:0:col3:level")); 
     } 
 }

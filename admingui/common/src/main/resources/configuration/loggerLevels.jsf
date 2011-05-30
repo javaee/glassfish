@@ -82,9 +82,9 @@
 <!-- Table .... -->
 <sun:table id="basicTable"  style="padding: 10pt" title="$resource{i18nc.log.LoggerLevelTableTitle}"
             deselectMultipleButton="$boolean{true}"
-            deselectMultipleButtonOnClick="setTimeout('changeTwoTableButtons()', 0)"
+            deselectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
             selectMultipleButton="$boolean{true}"
-            selectMultipleButtonOnClick="setTimeout('changeTwoTableButtons()', 0)" >
+            selectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)" >
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});
         />
@@ -95,29 +95,13 @@
             getClientId(component="$this{component}" clientId=>$page{topActionGroup});
         />
 
-        <sun:button id="addSharedTableButton" disabled="#{false}" text="$resource{i18nc.log.addLogger}" >
-        <!command
-            getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
-            addRowToTable(TableRowGroup="$attribute{tableRowGroup}", NameList={"loggerName", "level"});
-        />
-        </sun:button>
-
-        <sun:button id="button1" text="$resource{i18nc.log.deleteLogger}" disabled="#{true}" primary="#{true}">
-        <!command
-            getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{trg});
-            getSelectedTableRowKeys(tableRowGroup="${trg}" rowKeys=>$attribute{rowKeys});
-            deleteTableRows(tableRowGroup="${trg}" rowKeys="${rowKeys}");
-            commitTableRowGroup(tableRowGroup="${trg}");
-        />
-        </sun:button>
-
         <sun:dropDown id="change" selected="#{changeValue}" label="$resource{i18nc.log.levelLabel}" submitForm="#{false}" immediate="#{false}" labels="$pageSession{newLevelList}">
             <!beforeCreate
                 addEmptyFirstElement(in="#{pageSession.levelList}"  out="#{pageSession.newLevelList}")
             />
         </sun:dropDown>
 
-        <sun:button id="button2" text="$resource{i18n.button.changeLevel}" disabled="#{true}" primary="#{true}" >
+        <sun:button id="button1" text="$resource{i18n.button.changeLevel}" disabled="#{true}" primary="#{true}" >
         <!command
             getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
             getAllSingleMapRows(TableRowGroup="${tableRowGroup}" Rows=>$attribute{allRows});
@@ -136,11 +120,11 @@
             <sun:checkbox id="select"
                 selected="#{td.value.selected}"
                 selectedValue="$boolean{true}"
-                onClick="setTimeout('changeTwoTableButtons()', 0);"
+                onClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
             />
         </sun:tableColumn>
         <sun:tableColumn headerText="$resource{i18nc.log.LoggerNameCol}" sort="loggerName" rowHeader="$boolean{false}" id="col2">
-            <sun:textField columns="$int{50}" id="col1St" value="#{td.value.loggerName}" />
+            <sun:staticText id="col1St" text="#{td.value.loggerName}" />
         </sun:tableColumn>
         <sun:tableColumn headerText="$resource{i18nc.log.LoggerLeveCol}" sort="level" rowHeader="$boolean{false}" id="col3">
             //<sun:textField columns="$int{30}" id="col1St" value="#{td.value.level}" />
