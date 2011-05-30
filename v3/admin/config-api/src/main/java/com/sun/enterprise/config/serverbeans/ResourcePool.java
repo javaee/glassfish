@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,12 +45,13 @@ import org.jvnet.hk2.config.Attribute;
 import static org.glassfish.config.support.Constants.NAME_APP_REGEX;
 
 import java.beans.PropertyVetoException;
+import javax.validation.Payload;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-@ResourceNameConstraint
-public interface ResourcePool extends Resource {
+@ResourceNameConstraint(message="{resourcename.invalid.character}", payload=ResourcePool.class)
+public interface ResourcePool extends Resource, Payload {
     /**
      * Gets the value of the name property.
      *
@@ -59,7 +60,7 @@ public interface ResourcePool extends Resource {
      */
     @Attribute(key=true)
     @NotNull
-    @Pattern(regexp=NAME_APP_REGEX)
+    @Pattern(regexp=NAME_APP_REGEX, message="{resourcepool.invalid.name.key}", payload=ResourcePool.class)
     public String getName();
 
     /**
