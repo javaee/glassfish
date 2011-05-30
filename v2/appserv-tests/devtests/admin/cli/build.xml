@@ -162,15 +162,15 @@
         </runtest>
     </target>
 
-    <property name="ssh_host" value="HOST"/>
-    <property name="ssh_user" value="USER"/>
-    <property name="ssh_password" value="PASSWORD"/>
+    <property name="ssh.host" value="HOST"/>
+    <property name="ssh.user" value="USER"/>
+    <property name="ssh.password" value="PASSWORD"/>
 
     <target name="setup-ssh" depends="init">
         <runtest classname="admin.SetupSshTest">
             <jvmarg value="-Dssh.host=${ssh.host}"/>
             <jvmarg value="-Dssh.user=${ssh.user}"/>
-            <jvmarg value="-Dssh.password=${ssh_password}"/>
+            <jvmarg value="-Dssh.password=${ssh.password}"/>
         </runtest>
     </target>
 
