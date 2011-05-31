@@ -100,7 +100,14 @@ public class ProbeProviderClassFileTransformer implements ClassFileTransformer {
             throws IllegalClassFormatException {
 
         try {
-            if (classBeingRedefined == providerClass) {
+            if(!AgentAttacher.canAttach()) {
+                if(!emittedAttachUnavailableMessageAlready) {
+                    // only show it once
+                    emittedAttachUnavailableMessageAlready = true;
+                    logger.warning("Monitoring is disabled because there is no Attach API from the JVM available.");
+                }
+            }
+            else if (classBeingRedefined == providerClass) {
 
                 cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES + ClassWriter.COMPUTE_MAXS);
                 ClassReader cr = new ClassReader(classfileBuffer);
@@ -242,4 +249,5 @@ public class ProbeProviderClassFileTransformer implements ClassFileTransformer {
     private Map<String, FlashlightProbe> probes = new HashMap<String, FlashlightProbe>();
     private ClassWriter cw;
     private static final Logger logger = Logger.getLogger(ProbeProviderClassFileTransformer.class.getName());
+    private static boolean emittedAttachUnavailableMessageAlready = false;
 }
