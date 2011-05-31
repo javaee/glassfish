@@ -719,8 +719,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         try {
             // 1 mom per statsProvider
             mom = ManagedObjectManagerFactory.createFederated(MONITORING_SERVER);
-            mom.setJMXRegistrationDebug(false);
             if (mom != null) {
+                mom.setJMXRegistrationDebug(false);
                 if (mom.isManagedObject(statsProvider)) {
                     mom.stripPackagePrefix();
                     if (mbeanName != null && !mbeanName.isEmpty()) {
