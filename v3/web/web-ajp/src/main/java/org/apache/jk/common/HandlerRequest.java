@@ -399,21 +399,22 @@ public class HandlerRequest extends JkHandler
 
     static int count = 0;
 
-    private HttpRequestPacket checkRequest(MsgContext ep) {
-        HttpRequestPacket req = ep.getRequest();
-        if( req==null ) {
-            req=HttpRequestPacket.builder().build();
-            HttpResponsePacket res = HttpResponsePacket.builder(req).build();
-//            req.setResponse(res);
-            ep.setRequest( req );
-            if( registerRequests ) {
-                synchronized(lock) {
-                    ep.getSource().registerRequest(req, ep, count++);
-                }
-            }
-        }
-        return req;
-    }
+
+//    private HttpRequestPacket checkRequest(MsgContext ep) {
+//        HttpRequestPacket req = ep.getRequest();
+//        if( req==null ) {
+//            req=HttpRequestPacket.builder().build();
+//            HttpResponsePacket.builder(req).build();
+////            req.setResponse(res);
+//            ep.setRequest( req );
+//            if( registerRequests ) {
+//                synchronized(lock) {
+//                    ep.getSource().registerRequest(req, ep, count++);
+//                }
+//            }
+//        }
+//        return req;
+//    }
 
     private int decodeRequest( Msg msg, MsgContext ep, MessageBytes tmpMB )
         throws IOException    {
@@ -476,7 +477,7 @@ public class HandlerRequest extends JkHandler
 
         return OK;
     }
-        
+
     private int decodeAttributes( MsgContext ep, Msg msg, HttpRequestPacket req,
                                   MessageBytes tmpMB) {
 //        boolean moreAttr=true;
@@ -590,7 +591,7 @@ public class HandlerRequest extends JkHandler
 //        }
         return 200;
     }
-    
+
     private void decodeHeaders( MsgContext ep, Msg msg, HttpRequestPacket req,
                                 MessageBytes tmpMB ) {
         // Decode headers
