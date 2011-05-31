@@ -86,7 +86,7 @@ public class GrizzlyProxy implements NetworkProxy {
 
     private GrizzlyService grizzlyService;
 
-    private VirtualServer vs;
+    //private VirtualServer vs;
 
 
     public GrizzlyProxy(GrizzlyService service, NetworkListener listener) {
@@ -158,8 +158,8 @@ public class GrizzlyProxy implements NetworkProxy {
     @Override
     public String toString() {
         return "GrizzlyProxy{" +
-                "virtual server=" + vs +
-                ", address=" + address +
+                //"virtual server=" + vs +
+                "address=" + address +
                 ", portNumber=" + portNumber +
                 '}';
     }
