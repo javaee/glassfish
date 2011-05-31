@@ -187,7 +187,8 @@ public class MiniXmlParser {
             if (map != null) {
                 logFilename = map.get(LoggingPropertyNames.file);
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             // just return null
         }
         return logFilename;
@@ -446,6 +447,11 @@ public class MiniXmlParser {
         // cursor --> START_ELEMENT of profiler
         // it has attributes and <jvm-options>'s and <property>'s
         profilerConfig = parseAttributes();
+       
+        // the default is true
+        if (!profilerConfig.containsKey("enabled"))
+            profilerConfig.put("enabled", "true");
+
         while (skipToButNotPast("profiler", "jvm-options", "property")) {
             if ("jvm-options".equals(parser.getLocalName())) {
                 profilerJvmOptions.add(parser.getElementText());
@@ -617,7 +623,7 @@ public class MiniXmlParser {
         if (name == null || value == null) {
             return;
         }
-        
+
         if ("administrative.domain.name".equals(name)) {
             domainName = value;
         }

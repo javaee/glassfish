@@ -292,7 +292,7 @@ public class MiniXmlParserTest {
             assertEquals("-Dprofiler2=foo2", jvm.get(1));
             assertEquals("-Dprofiler1=foof", jvm.get(2));
             assertNotNull(config);
-            assertEquals(3, config.size());
+            assertEquals(4, config.size());
             assertEquals("/profiler/class/path", config.get("classpath"));
             assertEquals("MyProfiler", config.get("name"));
             assertEquals("/bin", config.get("native-library-path"));
