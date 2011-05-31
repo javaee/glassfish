@@ -463,6 +463,11 @@ public class MiniXmlParser {
         // cursor --> START_ELEMENT of profiler
         // it has attributes and <jvm-options>'s and <property>'s
         profilerConfig = parseAttributes();
+       
+        // the default is true
+        if (!profilerConfig.containsKey("enabled"))
+            profilerConfig.put("enabled", "true");
+
         while (skipToButNotPast("profiler", "jvm-options", "property")) {
             if ("jvm-options".equals(parser.getLocalName())) {
                 profilerJvmOptions.add(parser.getElementText());
