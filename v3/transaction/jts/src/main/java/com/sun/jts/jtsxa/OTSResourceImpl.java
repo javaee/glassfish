@@ -361,6 +361,13 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
                 _logger.log(Level.WARNING, "jts.unexpected_error_occurred_twopc_rollback", ex);
                 throw new TRANSACTION_ROLLEDBACK(0, CompletionStatus.COMPLETED_MAYBE);
             }
+            if (e.errorCode == XAException.XA_HEURRB) {
+                // Can't throw HeuristicRollback exception because org.omg.CosTransactions.ResourceOperations#rollback
+                // doesn't declare it
+                HeuristicHazard hh = new HeuristicHazard(ex.getMessage());
+                hh.initCause(ex);
+                throw hh;
+            }
             INTERNAL internal =  new INTERNAL(0,CompletionStatus.COMPLETED_MAYBE);
             internal.initCause(ex);
             _logger.log(Level.WARNING, "jts.unexpected_error_occurred_twopc_rollback", ex);
