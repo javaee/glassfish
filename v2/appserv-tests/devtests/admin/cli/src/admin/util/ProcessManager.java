@@ -110,7 +110,6 @@ public class ProcessManager {
 
             try {
                 exit = process.exitValue();
-                wasError = false;
             }
             catch (IllegalThreadStateException tse) {
                 // this means that the process is still running...
@@ -273,7 +272,6 @@ public class ProcessManager {
     private int exit = -1;
     private int timeout;
     private Process process;
-    private boolean wasError = true;
     private boolean echo = true;
     private static final boolean debugOn = false;
     private String[] stdinLines;
