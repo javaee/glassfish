@@ -925,29 +925,34 @@ public class AppTest extends TestCase {
         _testCommitOnePhaseWithExc(XAException.XA_HEURCOM, null, false, true);
     }
 
-    public void testRollbackWithErrorNoExc3() {
+    public void testRollbackWithErrorNoExc1() {
         System.out.println("**Testing XA_RBROLLBACK in rollback ===>");
-        _testXARollbackWithError(XAException.XA_RBROLLBACK);
+        _testXARollback(XAException.XA_RBROLLBACK);
     }
 
-    public void testCommitOnePhaseWithXAExc4() {
+    public void testRollbackWithErrorNoExc2() {
         System.out.println("**Testing XAER_RMERR in rollback ===>");
-        _testXARollbackWithError(XAException.XAER_RMERR);
+        _testXARollback(XAException.XAER_RMERR);
     }
 
-    public void testCommitOnePhaseWithXAExc5() {
+    public void testRollbackWithErrorNoExc3() {
         System.out.println("**Testing XAER_NOTA in rollback ===>");
-        _testXARollbackWithError(XAException.XAER_NOTA);
+        _testXARollback(XAException.XAER_NOTA);
     }
 
-    public void testCommitOnePhaseWithXAExc6() {
+    public void testRollbackWithErrorNoExc4() {
         System.out.println("**Testing XAER_RMFAIL in rollback ===>");
-        _testXARollbackWithError(XAException.XAER_RMFAIL);
+        _testXARollback(XAException.XAER_RMFAIL);
     }
 
-    public void testCommitOnePhaseWithXAExc7() {
-        System.out.println("**Testing XAER_RMFAIL in rollback ===>");
-        _testXARollbackWithError(XAException.XA_HEURRB);
+    public void testRollbackWithErrorNoExc5() {
+        System.out.println("**Testing XA_HEURRB in rollback ===>");
+        _testXARollback(XAException.XA_HEURRB);
+    }
+
+    public void testRollbackWithErrorNoExc6() {
+        System.out.println("**Testing 2 XA_HEURRB in rollback ===>");
+        _testXARollback(XAException.XA_HEURRB, XAException.XA_HEURRB);
     }
 
     private void _testCommitOnePhaseWithExc(int errorCode, Class exType, boolean setRollbackOnly, boolean isHeuristic) {
@@ -1012,7 +1017,7 @@ public class AppTest extends TestCase {
         }
     }
 
-    private void _testXARollbackWithError(int errorCode) {
+    private void _testXARollback(int... errorCode) {
         System.out.println("**Testing TM with XA error during XA rollback ===>");
         ((JavaEETransactionManagerSimplified)t).getLogger().setLevel(Level.SEVERE);
         LogDomains.getLogger(OTSResourceImpl.class, LogDomains.TRANSACTION_LOGGER).setLevel(Level.SEVERE);
@@ -1025,10 +1030,16 @@ public class AppTest extends TestCase {
             // Create and set invMgr
             createUtx();
             Transaction tx = t.getTransaction();
-            TestResource theResource = new TestResource();
-            t.enlistResource(tx, new TestResourceHandle(theResource));
-            theResource.setRollbackErrorCode(errorCode);
-            t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
+            TestResource[] theResource = new TestResource[errorCode.length];
+            for (int i = 0; i < errorCode.length; i++) {
+                theResource[i] = new TestResource();
+                t.enlistResource(tx, new TestResourceHandle(theResource[i]));
+                theResource[i].setRollbackErrorCode(errorCode[i]);
+            }
+
+            for (int i = 0; i < errorCode.length; i++) {
+                t.delistResource(tx, new TestResourceHandle(theResource[i]), XAResource.TMSUCCESS);
+            }
 
             System.out.println("**Calling TM rollback ===>");
             t.rollback();
