@@ -113,10 +113,10 @@ public class EnableMonitoring implements AdminCommand {
         if (options == null)
             options = "";
 
-        if (!AgentAttacher.isAttached() && !AgentAttacher.attachAgent(pidInt, options)) {
+         if (!AgentAttacher.attachAgent(pidInt, options)) {
             ActionReport.MessagePart part = report.getTopMessagePart().addChild();
             part.setMessage(localStrings.getLocalString("attach.agent.exception",
-                    "Can''t attach the agent to the JVM."));
+                    "Can't attach the agent to the JVM."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }

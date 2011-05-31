@@ -39,66 +39,67 @@
  */
 package org.glassfish.flashlight.impl.client;
 
+import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.universal.process.ProcessUtils;
+import com.sun.logging.LogDomains;
+import com.sun.tools.attach.VirtualMachine;
+import java.io.File;
+import java.util.logging.*;
+import static com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY;
+
 /**
  * created May 26, 2011
  * @author Byron Nevins
  */
-public final class AgentAttacher {
-    public synchronized static boolean canAttach() {
-        return canAttach;
+final class AgentAttacherInternal {
+    static boolean isAttached() {
+        return isAttached;
     }
-    
-    public synchronized static boolean isAttached() {
+
+    static boolean attachAgent() {
+        return attachAgent(-1, "");
+    }
+
+    static boolean attachAgent(int pid, String options) {
         try {
-            if (!canAttach)
+            if (isAttached)
+                return true;
+
+            if(pid < 0)
+                pid = ProcessUtils.getPid();
+
+            if (pid < 0) {
+                logger.warning(Strings.get("invalid.pid"));
                 return false;
+            }
 
-            return AgentAttacherInternal.isAttached();
-        }
-        catch (Throwable t) {
-            return false;
-        }
-    }
+            VirtualMachine vm = VirtualMachine.attach(String.valueOf(pid));
+            String ir = System.getProperty(INSTALL_ROOT_PROPERTY);
+            File dir = new File(ir, "lib" + File.separator + "monitor");
 
-    public synchronized static boolean attachAgent() {
-
-        try {
-            if (!canAttach)
+            if (!dir.isDirectory()) {
+                logger.warning(Strings.get("missing.agent.jar.dir", dir));
                 return false;
+            }
 
-            return attachAgent(-1, "");
-        }
-        catch (Throwable t) {
-            return false;
-        }
-    }
+            File agentJar = new File(dir, "flashlight-agent.jar");
 
-    public synchronized static boolean attachAgent(int pid, String options) {
-        try {
-            if (!canAttach)
+            if (!agentJar.isFile()) {
+                logger.log(Level.WARNING, Strings.get("missing.agent.jar", dir));
                 return false;
+            }
 
-            return AgentAttacherInternal.attachAgent(pid, options);
+            vm.loadAgent(SmartFile.sanitize(agentJar.getPath()), options);
+            isAttached = true;
         }
         catch (Throwable t) {
-            return false;
+            logger.warning(Strings.get("attach.agent.exception", t.getMessage()));
+            isAttached = false;
         }
+        
+        return isAttached;
     }
-
-    //private static final Logger logger = LogDomains.getLogger(AgentAttacher.class, LogDomains.MONITORING_LOGGER);
-    private final static boolean canAttach;
-
-    static {
-        boolean b = false;
-        try {
-            // this will cause a class not found error if tools.jar is missing
-            // this is a distinct possibility in embedded mode.
-            AgentAttacherInternal.isAttached();
-            b = true;
-        }
-        catch (Throwable t) {
-            b = false;
-        }
-        canAttach = b;
-    }
+    private static final Object syncOnMe = new Object();
+    private static final Logger logger = LogDomains.getLogger(AgentAttacherInternal.class, LogDomains.MONITORING_LOGGER);
+    private static boolean isAttached = false;
 }
