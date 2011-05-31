@@ -471,6 +471,7 @@
         <ant dir="sslCookie" target="all"/>
         <ant dir="traceEnabled" target="all"/>
         <ant dir="virtualServerAuthRealmProperty" target="all"/>
+        <ant dir="csrfFilter" target="all"/>
     </target>
 
     <target name="http-connector" depends="init-report">
