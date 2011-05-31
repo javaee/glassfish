@@ -4010,8 +4010,7 @@ public class Request
         }
 
         final AsyncContextImpl asyncContextLocal = asyncContext;
-        final AsyncContextImpl asyncContextFinal;
-        
+
         if (asyncContextLocal != null) {
             if (isAsyncStarted()) {
                 throw new IllegalStateException(
@@ -4029,11 +4028,13 @@ public class Request
             // Reinitialize existing AsyncContext
             asyncContextLocal.reinitialize(servletRequest, servletResponse,
                     isOriginalRequestAndResponse);
-            asyncContextFinal = asyncContextLocal;
         } else {
-            asyncContextFinal = new AsyncContextImpl(this, servletRequest,
-                    (Response) getResponse(), servletResponse,
-                    isOriginalRequestAndResponse);
+            final AsyncContextImpl asyncContextFinal =
+                    new AsyncContextImpl(this,
+                                         servletRequest,
+                                         (Response) getResponse(),
+                                         servletResponse,
+                                         isOriginalRequestAndResponse);
             asyncContext = asyncContextFinal;
 
             final CompletionHandler<org.glassfish.grizzly.http.server.Response> requestCompletionHandler =
