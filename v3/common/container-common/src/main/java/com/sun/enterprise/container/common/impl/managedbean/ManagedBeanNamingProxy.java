@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,10 +42,7 @@ package com.sun.enterprise.container.common.impl.managedbean;
 
 import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.deployment.ManagedBeanDescriptor;
-
-import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.container.common.spi.ManagedBeanManager;
-
 
 /**
  */
@@ -62,20 +59,14 @@ public class ManagedBeanNamingProxy implements org.glassfish.api.naming.NamingOb
     }
 
     public Object create(javax.naming.Context ic) throws javax.naming.NamingException {
-
         Object managedBean = null;
         try {
-
-            InjectionManager injectionMgr = habitat.getByContract(InjectionManager.class);
             ManagedBeanManager managedBeanMgr = habitat.getByContract(ManagedBeanManager.class);
-
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
             // Create managed bean instance
             Class managedBeanClass = loader.loadClass(managedBeanDesc.getBeanClassName());
-
             managedBean = managedBeanMgr.createManagedBean(managedBeanDesc, managedBeanClass);
-            
         } catch(Exception e) {
             javax.naming.NamingException ne = new javax.naming.NamingException(e.getMessage());
             ne.initCause(e);
@@ -83,7 +74,5 @@ public class ManagedBeanNamingProxy implements org.glassfish.api.naming.NamingOb
         }
 
         return managedBean;
-
-
     }
 }

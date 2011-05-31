@@ -52,7 +52,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
 import javax.naming.InitialContext;
 
-import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
 
 import com.sun.enterprise.deployment.*;
@@ -86,14 +85,11 @@ import org.glassfish.api.naming.NamingObjectProxy;
 @Service(name="ManagedBeanManagerImpl")
 public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, PostConstruct, EventListener {
 
-     private static Logger _logger = LogDomains.getLogger(ManagedBeanManagerImpl.class,
+     private static final Logger _logger = LogDomains.getLogger(ManagedBeanManagerImpl.class,
             LogDomains.CORE_LOGGER);
 
     @Inject
     private ComponentEnvManager compEnvManager;
-
-    @Inject
-    private InvocationManager invocationMgr;
 
     @Inject
     private InjectionManager injectionMgr;
@@ -404,15 +400,11 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
     }
 
     public <T> T createManagedBean(Class<T> managedBeanClass) throws Exception {
-
-        JCDIService jcdiService = habitat.getByContract(JCDIService.class);
-
         ManagedBeanDescriptor managedBeanDesc = null;
 
         try {
             BundleDescriptor bundle = getBundle();
-
-            managedBeanDesc = getManagedBeanDescriptor(bundle, managedBeanClass);
+            managedBeanDesc = bundle.getManagedBeanByBeanClass(managedBeanClass.getName());
         } catch(Exception e) {
             // OK.  Can mean that it's not annotated with @ManagedBean but 299 can handle it.
         }
@@ -421,15 +413,11 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
     }
 
     public <T> T createManagedBean(Class<T> managedBeanClass, boolean invokePostConstruct) throws Exception {
-
-        JCDIService jcdiService = habitat.getByContract(JCDIService.class);
-
         ManagedBeanDescriptor managedBeanDesc = null;
 
         try {
             BundleDescriptor bundle = getBundle();
-
-            managedBeanDesc = getManagedBeanDescriptor(bundle, managedBeanClass);
+            managedBeanDesc = bundle.getManagedBeanByBeanClass(managedBeanClass.getName());
         } catch(Exception e) {
             // OK.  Can mean that it's not annotated with @ManagedBean but 299 can handle it.
         }
@@ -663,13 +651,14 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
                 throw new IllegalArgumentException("invalid managed bean " + managedBean, e);
             }
 
-            ManagedBeanDescriptor desc = getManagedBeanDescriptor(bundle, managedBeanInstance.getClass());
-
+            ManagedBeanDescriptor desc = bundle.getManagedBeanByBeanClass(
+                    managedBeanInstance.getClass().getName());
+            
             if( desc == null ) {
                 throw new IllegalStateException("Could not retrieve managed bean descriptor for " +
                     managedBean + " of class " + managedBean.getClass());
             }
-
+            
             InterceptorInvoker invoker = (InterceptorInvoker)
                 desc.getSupportingInfoForBeanInstance(managedBeanInstance);
 
@@ -681,7 +670,6 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
 
             desc.clearBeanInstanceInfo(managedBeanInstance);
         }                      
-
     }
 
     private BundleDescriptor getBundle() {
@@ -706,24 +694,5 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
         }
 
         return bundle;
-
     }
-
-    private ManagedBeanDescriptor getManagedBeanDescriptor(BundleDescriptor bundle, Class managedBeanClass) {
-
-
-        ManagedBeanDescriptor managedBeanDesc =
-                bundle.getManagedBeanByBeanClass(managedBeanClass.getName());
-
-        if( managedBeanDesc == null ) {
-            throw new IllegalArgumentException("No managed bean with name " + managedBeanClass +
-                    " found in bundle " + bundle.getModuleName());
-        }
-
-        return managedBeanDesc;
-    }
-
-
-    
-
 }

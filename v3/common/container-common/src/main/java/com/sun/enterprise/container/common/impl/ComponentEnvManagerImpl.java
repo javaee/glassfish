@@ -684,11 +684,9 @@ public class ComponentEnvManagerImpl
     }
 
     private boolean dependencyAppliesToScope(String name, ScopeType scope) {
-
         boolean appliesToScope = false;
 
         switch(scope) {
-
             case COMPONENT :
                 // Env names without an explicit java: prefix default to java:comp
                 appliesToScope = name.startsWith(JAVA_COMP_PREFIX) || !name.startsWith(JAVA_COLON);
@@ -702,10 +700,11 @@ public class ComponentEnvManagerImpl
             case GLOBAL :
                 appliesToScope = name.startsWith(JAVA_GLOBAL_PREFIX);
                 break;
+            default :
+                break;
         }
 
         return appliesToScope;
-
     }
 
     private boolean getTreatComponentAsModule(JndiNameEnvironment env) {
