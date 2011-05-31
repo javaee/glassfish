@@ -969,6 +969,9 @@ class RegisteredResources {
         boolean infiniteRetry = true;
         boolean heuristicMixed = false;
         boolean isProxy = false;
+        int heuristicRollback = 0;
+        int success = 0;
+        int processed = 0;
 
         // First, get the retry count.
 
@@ -1002,6 +1005,7 @@ class RegisteredResources {
 
             if (resourceStates.get(i).equals(
                     ResourceStatus.Registered)) {
+                processed++;
                 boolean heuristicRaised = false;
 
                 // We determine here whether the object is a proxy because
@@ -1059,6 +1063,7 @@ class RegisteredResources {
                             heuristicException = true;
                             heuristicRaised = true;
                             exceptionThrown = false;
+                            heuristicRollback++;
 
                         } else if (exc instanceof HeuristicCommit ||
                                    exc instanceof HeuristicHazard ||
@@ -1072,6 +1077,13 @@ class RegisteredResources {
                             heuristicMixed = !(exc instanceof HeuristicHazard);
                             heuristicRaised = true;
                             exceptionThrown = false;
+
+                            // Work around the fact that org.omg.CosTransactions.ResourceOperations#rollback
+                            // does not declare HeuristicRollback exception
+                            if (exc instanceof HeuristicHazard && exc.getCause() instanceof XAException && 
+                                    ((XAException)exc.getCause()).errorCode == XAException.XA_HEURRB) {
+                                heuristicRollback++;
+                            }
 
                         } else if (exc instanceof INV_OBJREF ||
                                    exc instanceof OBJECT_NOT_EXIST){
@@ -1147,6 +1159,7 @@ class RegisteredResources {
 
                 } else {
 
+                    success++;
                     // If completed, and the object is a proxy,
                     // release the proxy now.
 
@@ -1165,7 +1178,8 @@ class RegisteredResources {
         // to the caller.
 
         if (heuristicException)
-            distributeForget(commitRetries, infiniteRetry, true, heuristicMixed);
+            distributeForget(commitRetries, infiniteRetry, 
+                    (((heuristicRollback + success) == processed)? false : true), heuristicMixed);
 
         if (!transactionCompleted) {
             if (coord != null)

@@ -882,6 +882,64 @@ public class AppTest extends TestCase {
         }
     }
 
+    public void testCommit2PCWithRollbackExc1() {
+        System.out.println("**Testing XA_RBROLLBACK in prepare & XA_HEURRB in rollback ===>");
+        _testCommit2PCWithRollbackExc(XAException.XA_RBROLLBACK, XAException.XA_HEURRB);
+    }
+
+    public void testCommit2PCWithRollbackExc2() {
+        System.out.println("**Testing XA_RBROLLBACK in prepare & 2 XA_HEURRB in rollback ===>");
+        _testCommit2PCWithRollbackExc(XAException.XA_RBROLLBACK, XAException.XA_HEURRB, XAException.XA_HEURRB);
+    }
+
+    private void _testCommit2PCWithRollbackExc(int preapareErrCode, int... rollbackErrorCode) {
+        System.out.println("**Testing different rollback errors in prepare & rollback ===>");
+        TestResource theResourceP = new TestResource();
+        TestResource[] theResourceR = null;
+        try {
+            System.out.println("**Starting transaction ....");
+            t.begin();
+            assertEquals (JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus()), 
+                "Active");
+
+            // Create and set invMgr
+            createUtx();
+            Transaction tx = t.getTransaction();
+            t.enlistResource(tx, new TestResourceHandle(theResourceP));
+            theResourceP.setPrepareErrorCode(preapareErrCode);
+            theResourceR = enlistForRollback(tx, rollbackErrorCode);
+
+            t.delistResource(tx, new TestResourceHandle(theResourceP), XAResource.TMSUCCESS);
+            
+            System.out.println("**Calling TM commit ===>");
+            t.commit();
+            String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
+            System.out.println("**Error - successful commit - Status after commit: " + status + " <===");
+            assert (false);
+        } catch (RollbackException ex) {
+            System.out.println("**Caught expected RollbackException...");
+            try {
+                String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
+                System.out.println("**Status after commit: " + status + " <===");
+            } catch (Exception ex1) {
+                System.out.println("**Caught exception checking for status ...");
+                ex1.printStackTrace();
+            }
+            boolean status = theResourceP.forgetCalled();
+            System.out.println("**Forget 1 was called: " + theResourceP.forgetCalled());
+
+            for (int i = 0; i < theResourceR.length; i++) {
+                System.out.println("**Forget 2 was called for resourceR " + i + ": " + theResourceR[i].forgetCalled());
+                status = status && theResourceR[i].forgetCalled();
+            }
+            assert (status);
+        } catch (Throwable ex) {
+            System.out.println("**Caught NOT a RollbackException during 2PC...");
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
+
     public void testCommitOnePhaseWithHeuristicRlbExc1() {
         _testCommitOnePhaseWithExc(XAException.XA_HEURRB, HeuristicRollbackException.class, false, true);
     }
@@ -1030,16 +1088,7 @@ public class AppTest extends TestCase {
             // Create and set invMgr
             createUtx();
             Transaction tx = t.getTransaction();
-            TestResource[] theResource = new TestResource[errorCode.length];
-            for (int i = 0; i < errorCode.length; i++) {
-                theResource[i] = new TestResource();
-                t.enlistResource(tx, new TestResourceHandle(theResource[i]));
-                theResource[i].setRollbackErrorCode(errorCode[i]);
-            }
-
-            for (int i = 0; i < errorCode.length; i++) {
-                t.delistResource(tx, new TestResourceHandle(theResource[i]), XAResource.TMSUCCESS);
-            }
+            enlistForRollback(tx, errorCode);
 
             System.out.println("**Calling TM rollback ===>");
             t.rollback();
@@ -1196,6 +1245,22 @@ public class AppTest extends TestCase {
         ((UserTransactionImpl)utx).setForTesting(t, im);
         return utx;
     }
+
+    private TestResource[] enlistForRollback(Transaction tx, int... errorCode) throws Exception {
+        TestResource[] theResources = new TestResource[errorCode.length];
+        for (int i = 0; i < errorCode.length; i++) {
+            theResources[i] = new TestResource();
+            t.enlistResource(tx, new TestResourceHandle(theResources[i]));
+            theResources[i].setRollbackErrorCode(errorCode[i]);
+        }
+
+        for (int i = 0; i < errorCode.length; i++) {
+            t.delistResource(tx, new TestResourceHandle(theResources[i]), XAResource.TMSUCCESS);
+        }
+
+        return theResources;
+    }
+
 
     static class TestSync implements Synchronization {
 
