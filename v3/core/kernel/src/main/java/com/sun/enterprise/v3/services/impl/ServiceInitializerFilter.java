@@ -57,8 +57,9 @@ import org.glassfish.internal.grizzly.LazyServiceInitializer;
 import org.jvnet.hk2.component.Habitat;
 
 /**
- * The {@link Filter} implementation, which lazily initializes custom service
- * on the first accepted connection and passes connection there.
+ * The {@link org.glassfish.grizzly.filterchain.Filter} implementation,
+ * which lazily initializes custom service on the first accepted connection
+ * and passes connection there.
  *
  * @author Vijay Ramachandran
  */
@@ -67,8 +68,6 @@ public class ServiceInitializerFilter extends BaseFilter {
     private Collection<LazyServiceInitializer> initializerImplList = null;
     
     protected final Logger logger;
-
-    private final Habitat habitat;
 
     private final ServiceInitializerListener listener;
 
@@ -85,7 +84,6 @@ public class ServiceInitializerFilter extends BaseFilter {
         }
 
         this.logger = logger;
-        this.habitat = habitat;
         this.listener = listener;
     }
 
