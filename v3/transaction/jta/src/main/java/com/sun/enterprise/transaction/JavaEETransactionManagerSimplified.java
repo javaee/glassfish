@@ -994,6 +994,17 @@ public class JavaEETransactionManagerSimplified
             throw new IllegalStateException(
                     sm.getString("enterprise_distributedtx.transaction_exist_on_currentThread"));
 
+        if ( tobj != null ) {
+            int status = tobj.getStatus();
+            if (status == Status.STATUS_ROLLEDBACK ||
+                    status == Status.STATUS_COMMITTED ||
+                    status == Status.STATUS_NO_TRANSACTION ||
+                    status == Status.STATUS_UNKNOWN) {
+                throw new InvalidTransactionException(sm.getString(
+                    "enterprise_distributedtx.transaction_notactive"));
+            }
+        }
+
         if ( tobj instanceof JavaEETransactionImpl ) {
             JavaEETransactionImpl javaEETx = (JavaEETransactionImpl)tobj;
             if ( !javaEETx.isLocalTx() )

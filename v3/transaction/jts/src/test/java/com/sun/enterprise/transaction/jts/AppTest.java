@@ -250,6 +250,10 @@ public class AppTest extends TestCase {
             t.enlistResource(tx, new TestResourceHandle(theResource));
             t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
             t.commit();
+
+            String status = JavaEETransactionManagerSimplified.getStatusAsString(tx.getStatus());
+            System.out.println("**Status after commit: "  + status + " <===");
+
         } catch (Exception ex) {
             ex.printStackTrace();
             assert (false);
@@ -281,7 +285,6 @@ public class AppTest extends TestCase {
             assert (false);
         }
 
-/**
         try {
             System.out.println("**Calling resume(tx) ===>");
             t.resume(tx);
@@ -294,7 +297,29 @@ public class AppTest extends TestCase {
             ex.printStackTrace();
             assert (false);
         }
-**/
+
+        try {
+            System.out.println("**Calling begin-resume(null) ===>");
+            t.begin();
+            t.resume(null);
+            System.out.println("**WRONG: begin-resume(null) successful <===");
+            assert (false);
+        } catch (IllegalStateException ex) {
+            System.out.println("**Caught IllegalStateException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+
+        try {
+            System.out.println("**Calling Tx rollback ===>");
+            t.rollback();
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
 
         try {
             System.out.println("**Calling Tx setRollbackOnly ===>");
@@ -511,6 +536,9 @@ public class AppTest extends TestCase {
     public void testTxSuspendResume() {
         System.out.println("**Testing TM suspend ===>");
         try {
+            System.out.println("**Calling TM resume null ===>");
+            t.resume(null);
+
             System.out.println("**No-tx suspend ....");
             assertNull(t.suspend());
 

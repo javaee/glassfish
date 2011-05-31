@@ -503,6 +503,9 @@ public class AppTest extends TestCase {
     public void testTxSuspendResume() {
         System.out.println("**Testing TM suspend ===>");
         try {
+            System.out.println("**Null resume ....");
+            t.resume(null);
+
             System.out.println("**No-tx suspend ....");
             assertNull(t.suspend());
 
