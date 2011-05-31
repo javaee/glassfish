@@ -82,12 +82,17 @@ public class ManifestUtils {
 
         // now add all the "sub-attributes"
         Map<String,Attributes> unwashed = m.getEntries();
-        Set<String> entryNames = unwashed.keySet();
+        Set<Map.Entry<String,Attributes>> entries = unwashed.entrySet();
         
-        for(String entryName : entryNames) {
-            all.put(entryName, normalize(unwashed.get(entryName)));
+        for(Map.Entry<String,Attributes> entry : entries) {
+            String name = entry.getKey();
+            Attributes value = entry.getValue();
+            
+            if(name == null || value == null)
+                continue;
+            
+            all.put(name, normalize(value));
         }
-        
         return all;
     }
 

@@ -78,7 +78,7 @@ public class JavaClassRunner {
 
         ProcessBuilder pb = new ProcessBuilder(cmdline);
         Process p = pb.start();
-        ProcessStreamDrainer drainer = ProcessStreamDrainer.drain(classname, p);
+        ProcessStreamDrainer.drain(classname, p);
     }
 
     private boolean ok(String s) {

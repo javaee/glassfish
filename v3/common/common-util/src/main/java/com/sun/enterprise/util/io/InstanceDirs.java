@@ -138,12 +138,12 @@ public final class InstanceDirs {
         });
 
         // ERROR:  No node dirs
-        if (files != null && files.length < 1) {
+        if (files == null || files.length < 1) {
             throw new IOException(
                     Strings.get("InstanceDirs.noNodes", parent));
         }
         // ERROR:  more than one node dir child
-        if (files != null && files.length > 1) {
+        if (files.length > 1) {
             throw new IOException(
                     Strings.get("InstanceDirs.tooManyNodes", parent, files.length));
         }
@@ -163,12 +163,12 @@ public final class InstanceDirs {
         });
 
         // ERROR:  No instance dirs
-        if (files != null && files.length < 1) {
+        if (files == null || files.length < 1) {
             throw new IOException(
                     Strings.get("InstanceDirs.noInstances", nodeDir));
         }
         // ERROR:  more than one instance dir
-        if (files != null && files.length > 1) {
+        if (files.length > 1) {
             throw new IOException(
                     Strings.get("InstanceDirs.tooManyInstances", files.length, nodeDir));
         }

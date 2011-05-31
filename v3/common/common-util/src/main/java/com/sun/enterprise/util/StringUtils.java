@@ -76,16 +76,16 @@ public class StringUtils {
     public static String formatSQLException(SQLException ex) {
         assert ex != null;
 
-        String s = "SQLException:\n";
+        StringBuilder sb = new StringBuilder("SQLException:\n");
 
         do {
-            s += "SQLState: " + ex.getSQLState() + "\n";
-            s += "Message:  " + ex.getMessage() + "\n";
-            s += "Vendor:   " + ex.getErrorCode() + "\n";
-            s += "\n";
+            sb.append("SQLState: ").append(ex.getSQLState()).append('\n');
+            sb.append("Message:  ").append(ex.getMessage()).append('\n');
+            sb.append("Vendor:   ").append(ex.getErrorCode()).append('\n');
+            sb.append('\n');
         } while ((ex = ex.getNextException()) != null);
 
-        return s;
+        return sb.toString();
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -188,26 +188,28 @@ public class StringUtils {
             return s;
         }
 
+        StringBuilder sb = new StringBuilder(s);
+
         for (int i = len - s.length(); i > 0; --i) {
-            s += ' ';
+            sb.append(' ');
         }
 
-        return s;
+        return sb.toString();
     }
 
     ////////////////////////////////////////////////////////////////////////////
     public static String padLeft(String s, int len) {
-        String ss = "";
-
         if (s == null || s.length() >= len) {
             return s;
         }
+        
+        StringBuilder sb = new StringBuilder();
 
         for (int i = len - s.length(); i > 0; --i) {
-            ss += ' ';
+            sb.append(' ');
         }
 
-        return ss + s;
+        return sb.append(s).toString();
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -245,12 +247,12 @@ public class StringUtils {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    public static String UpperCaseFirstLetter(String s) {
+    public static String upperCaseFirstLetter(String s) {
         if (s == null || s.length() <= 0) {
             return s;
         }
 
-        return s.substring(0, 1).toUpperCase() + s.substring(1);
+        return s.substring(0, 1).toUpperCase(Locale.getDefault()) + s.substring(1);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -370,7 +372,7 @@ public class StringUtils {
         String[] test = new String[]{"xyz", "HITHERE", "123aa", "aSSS", "yothere"};//NOI18N
 
         for (int i = 0; i < test.length; i++) {
-            System.out.println(test[i] + " >>> " + UpperCaseFirstLetter(test[i]));//NOI18N
+            System.out.println(test[i] + " >>> " + upperCaseFirstLetter(test[i]));//NOI18N
         }
     }
 
@@ -387,10 +389,9 @@ public class StringUtils {
     an empty string.
      */
     public static String makeFilePath(String[] strings, boolean addTrailing) {
-        StringBuffer path = null;
+        StringBuffer path = new StringBuffer();
         String separator = System.getProperty("file.separator");
         if (strings != null) {
-            path = new StringBuffer();
             for (int i = 0; i < strings.length; i++) {
                 String element = strings[i];
                 if (element == null || element.length() == 0) {
@@ -496,7 +497,7 @@ public class StringUtils {
             return value;
         }
         // XXX_YYY
-        value = System.getProperty(propName.toUpperCase().replace('.', '_'));
+        value = System.getProperty(propName.toUpperCase(Locale.getDefault()).replace('.', '_'));
         if (value != null) {
             System.setProperty(propName, value);
         }

@@ -1129,7 +1129,6 @@ public class FileUtils {
         finally {
             if(writer != null) {
                 try {
-                    writer.flush();
                     writer.close();
                 }
                 catch(Exception e) {

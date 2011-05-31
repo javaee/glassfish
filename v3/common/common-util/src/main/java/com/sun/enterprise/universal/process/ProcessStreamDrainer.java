@@ -165,12 +165,8 @@ public class ProcessStreamDrainer
         if(process == null)
             throw new NullPointerException("Internal Error: null Process object");
         
-        this.process = process;
-        
         if(processName == null || processName.length() <= 0)
-            this.processName = "UnknownProcessName";
-        else
-            this.processName = processName;
+            processName = "UnknownProcessName";
         
         redirectStandardStreams = redirect;
 
@@ -206,12 +202,10 @@ public class ProcessStreamDrainer
     
     ///////////////////////////////////////////////////////////////////////////
     
-    private final           Process                     process;
     private final           ProcessStreamDrainerWorker  outWorker;
     private final           ProcessStreamDrainerWorker  errWorker;
     private final           Thread                      errThread;
     private final           Thread                      outThread;
-    private final           String                      processName;
     private final           boolean                     redirectStandardStreams;
     private final   static  String                      ERROR_DRAINER   = "StderrDrainer";
     private final   static  String                      OUT_DRAINER     = "StdoutDrainer";

@@ -99,7 +99,9 @@ class SysPropsHandler {
             case DOMAIN:
                 domain.putAll(map);
                 break;
-        }
+            default:
+                throw new IllegalArgumentException("unknown type");
+       }
     }
     void add(Type type, String name, String value) {
         if (type == null || !ok(name))
@@ -119,6 +121,8 @@ class SysPropsHandler {
             case DOMAIN:
                 domain.put(name, value);
                 break;
+            default:
+                throw new IllegalArgumentException("unknown type");
         }
     }
     private Map<String, String> server = new HashMap<String, String>();

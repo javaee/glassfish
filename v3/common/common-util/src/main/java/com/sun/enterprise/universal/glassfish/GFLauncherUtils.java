@@ -127,7 +127,7 @@ public class GFLauncherUtils {
         }
 
         // case insensitive compare...
-        osname = osname.toLowerCase();
+        osname = osname.toLowerCase(Locale.ENGLISH);
 
         if (osname.indexOf("windows") >= 0) {
             return true;

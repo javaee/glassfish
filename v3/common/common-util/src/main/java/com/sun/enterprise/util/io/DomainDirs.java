@@ -176,15 +176,15 @@ public final class DomainDirs {
             throw new IOException(strings.get("Domain.noDomainDirs", parent));
 
         if(files.length > 1) {
-            String names = "";
+            StringBuilder names = new StringBuilder();
             
             for(int i = 0 ; i < files.length; i++) {
                 if(i > 0)
-                    names += ", ";
-                names += files[i].getName();
+                    names.append(", ");
+                names.append(files[i].getName());
             }
             
-            throw new IOException(strings.get("Domain.tooManyDomainDirs", parent, names));
+            throw new IOException(strings.get("Domain.tooManyDomainDirs", parent, names.toString()));
         }
 
         return files[0];

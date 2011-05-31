@@ -161,7 +161,6 @@ public class AdminCommandResponse {
 
     private void makeMain() {
         mainMessage = mainRaw.get(MESSAGE);
-        mainChildrenType = mainRaw.get(CHILDREN_TYPE);
 
         String exitCodeString = mainRaw.get(EXITCODE);
         if(SUCCESS.equalsIgnoreCase(exitCodeString))
@@ -170,7 +169,6 @@ public class AdminCommandResponse {
             exitCode = 1;
         else
             exitCode = 2;
-        signature = mainRaw.get("Signature-Version");
         cause = mainRaw.get("cause");
         makeMainKeys();
     }
@@ -207,8 +205,6 @@ public class AdminCommandResponse {
     private Map<String, String> mainRaw;
     private List<NameValue<String,String>> mainKeys;
     private String  mainMessage;
-    private String  mainChildrenType;
-    private String  signature;
     private String  cause;
     private int exitCode = 0;   // 0=success, 1=failure
     private boolean isGeneratedHelp;

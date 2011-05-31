@@ -565,11 +565,8 @@ public class NetUtils {
             OutputStream os = socket.getOutputStream();
             InputStream is = socket.getInputStream();
             os.close();
-            os = null;
             is.close();
-            is = null;
             socket.close();
-            socket = null;
         }
         catch (Exception e) {
             // Nobody is listening on this port
@@ -719,7 +716,7 @@ public class NetUtils {
             count++;
         }
         byte[] input = new byte[istream.available()];
-        int len = istream.read(input);
+        istream.read(input);
 
         // Close the socket
         socket.close();
@@ -727,7 +724,7 @@ public class NetUtils {
         // Determine protocol from result
         // Can't read https response w/ OpenSSL (or equiv), so use as
         // default & try to detect an http response.
-        String response = new String(input).toLowerCase();
+        String response = new String(input).toLowerCase(Locale.ENGLISH);
         boolean isSecure = true;
         if (response.length() == 0) {
             isSecure = false;

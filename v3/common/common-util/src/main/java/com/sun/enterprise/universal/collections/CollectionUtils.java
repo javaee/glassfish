@@ -59,14 +59,14 @@ public class CollectionUtils {
     public static Map<String,String> propertiesToStringMap(Properties p)
     {
         Map<String,String> map = new HashMap<String,String>();
-        Set<Object> names = p.keySet();
-        
-        for(Object name : names) {
-            if(name == null) // impossible
-                continue;
+        Set<Map.Entry<Object,Object>> entries = p.entrySet();
+
+        for(Map.Entry<Object,Object> entry : entries) {
+            Object name = entry.getKey();
+            Object value = entry.getValue();
             
-            Object value = p.get(name);
-            
+            if(name == null)
+                continue; // impossible.  Ignore if I was wrong...
             if(value == null)
                 map.put(name.toString(), null);
             else
