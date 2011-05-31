@@ -882,51 +882,72 @@ public class AppTest extends TestCase {
         }
     }
 
-    public void testCommitOnePhaseWithHeuristicRlbExc() {
+    public void testCommitOnePhaseWithHeuristicRlbExc1() {
         _testCommitOnePhaseWithExc(XAException.XA_HEURRB, HeuristicRollbackException.class, false, true);
     }
 
-    public void testCommitOnePhaseWithHeuristicMixedExc() {
+    public void testCommitOnePhaseWithHeuristicMixedExc2() {
         _testCommitOnePhaseWithExc(XAException.XA_HEURMIX, HeuristicMixedException.class, false, true);
     }
 
-    public void testCommitOnePhaseWithRlbExc() {
+    public void testCommitOnePhaseWithRlbExc1() {
         System.out.println("**Testing XAER_NOTA in 1PC ===>");
         _testCommitOnePhaseWithExc(XAException.XAER_NOTA, RollbackException.class, false, false);
+    }
 
+    public void testCommitOnePhaseWithRlbExc2() {
         System.out.println("**Testing XAER_RMERR in 1PC ===>");
         _testCommitOnePhaseWithExc(XAException.XAER_RMERR, RollbackException.class, false, false);
+    }
 
+    public void testCommitOnePhaseWithRlbExc3() {
         System.out.println("**Testing XA_RBROLLBACK in rollback part of 1PC ===>");
         _testCommitOnePhaseWithExc(XAException.XA_RBROLLBACK, RollbackException.class, true, false);
+    }
 
+    public void testCommitOnePhaseWithRlbExc4() {
         System.out.println("**Testing XAER_RMERR in rollback part of 1PC ===>");
         _testCommitOnePhaseWithExc(XAException.XAER_RMERR, RollbackException.class, true, false);
+    }
 
+    public void testCommitOnePhaseWithRlbExc5() {
         System.out.println("**Testing XAER_RMFAIL in rollback part of 1PC ===>");
         _testCommitOnePhaseWithExc(XAException.XAER_RMFAIL, RollbackException.class, true, false);
     }
 
-    public void testCommitOnePhaseWithXAExc() {
+    public void testCommitOnePhaseWithXAExc1() {
         System.out.println("**Testing TM with failed 1PC commit ===>");
         _testCommitOnePhaseWithExc(XAException.XAER_RMFAIL, SystemException.class, false, false);
+    }
 
+    public void testCommitOnePhaseWithXAExc2() {
         System.out.println("**Testing TM with XA_HEURCOM in 1PC commit ===>");
         _testCommitOnePhaseWithExc(XAException.XA_HEURCOM, null, false, true);
     }
 
-    public void testRollbackWithErrorNoExc() {
+    public void testRollbackWithErrorNoExc3() {
         System.out.println("**Testing XA_RBROLLBACK in rollback ===>");
         _testXARollbackWithError(XAException.XA_RBROLLBACK);
+    }
 
+    public void testCommitOnePhaseWithXAExc4() {
         System.out.println("**Testing XAER_RMERR in rollback ===>");
         _testXARollbackWithError(XAException.XAER_RMERR);
+    }
 
+    public void testCommitOnePhaseWithXAExc5() {
         System.out.println("**Testing XAER_NOTA in rollback ===>");
         _testXARollbackWithError(XAException.XAER_NOTA);
+    }
 
+    public void testCommitOnePhaseWithXAExc6() {
         System.out.println("**Testing XAER_RMFAIL in rollback ===>");
         _testXARollbackWithError(XAException.XAER_RMFAIL);
+    }
+
+    public void testCommitOnePhaseWithXAExc7() {
+        System.out.println("**Testing XAER_RMFAIL in rollback ===>");
+        _testXARollbackWithError(XAException.XA_HEURRB);
     }
 
     private void _testCommitOnePhaseWithExc(int errorCode, Class exType, boolean setRollbackOnly, boolean isHeuristic) {
@@ -1022,40 +1043,62 @@ public class AppTest extends TestCase {
         }
     }
 
-    public void testCommit2PCWithXAExc() {
+    public void testCommit2PCWithXAExc1() {
         System.out.println("**Testing TM with 1 XAER_RMFAIL 2PC commit ===>");
         _testCommit2PCWithXAExc(XAException.XAER_RMFAIL, 9999, SystemException.class);
+    }
 
+    public void testCommit2PCWithXAExc2() {
         System.out.println("**Testing TM with both XA_HEURRB 2PC commit ===>");
         _testCommit2PCWithXAExc(XAException.XA_HEURRB, XAException.XA_HEURRB, HeuristicRollbackException.class, true);
+    }
 
+    public void testCommit2PCWithXAExc3() {
         System.out.println("**Testing TM with 1 XA_HEURRB & 1 XA_HEURMIX 2PC commit ===>");
         _testCommit2PCWithXAExc(XAException.XA_HEURRB, XAException.XA_HEURMIX, HeuristicMixedException.class, true);
+    }
 
+    public void testCommit2PCWithXAExc4() {
         System.out.println("**Testing TM with 1 XA_HEURRB & 1 XA_HEURCOM 2PC commit ===>");
         _testCommit2PCWithXAExc(XAException.XA_HEURRB, XAException.XA_HEURCOM, HeuristicMixedException.class, true);
+    }
 
+    public void testCommit2PCWithXAExc5() {
         System.out.println("**Testing TM with 1 XA_HEURCOM & 1 XA_HEURRB 2PC commit ===>");
         _testCommit2PCWithXAExc(XAException.XA_HEURCOM, XAException.XA_HEURRB, HeuristicMixedException.class, true);
+    }
 
+    public void testCommit2PCWithXAExc6() {
         System.out.println("**Testing TM with 2 XA_HEURCOM 2PC commit ===>");
         _testCommit2PCWithXAExc(XAException.XA_HEURCOM, XAException.XA_HEURCOM, true, null, true);
+    }
 
-        System.out.println("**Testing TM with 1 XA_HEURCOM 2PC commit ===>");
+    public void testCommit2PCWithXAExc7() {
+        System.out.println("**Testing TM with 1 XA_HEURCOM & 1 OK 2PC commit ===>");
         _testCommit2PCWithXAExc(XAException.XA_HEURCOM, 9999, true, null, true);
+    }
 
+    public void testCommit2PCWithXAExc8() {
         System.out.println("**Testing TM with 1 XA_HEURRB 2PC commit ===>");
         _testCommit2PCWithXAExc(XAException.XA_HEURRB, 9999, HeuristicMixedException.class, true);
+    }
 
+    public void testCommit2PCWithXAExc9() {
         System.out.println("**Testing TM with 2nd XAER_PROTO in *prepare* of 2PC commit ===>");
         _testCommit2PCWithXAExc(9999, XAException.XAER_PROTO, false, SystemException.class);
+    }
 
+    public void testCommit2PCWithXAExc10() {
         System.out.println("**Testing TM with 1st XAER_PROTO in *prepare* of 2PC commit ===>");
         _testCommit2PCWithXAExc(XAException.XAER_PROTO, 9999, false, SystemException.class);
+    }
 
+    public void testCommit2PCWithXAExc11() {
         System.out.println("**Testing TM with 2nd XAER_INVAL in *prepare* of 2PC commit ===>");
         _testCommit2PCWithXAExc(9999, XAException.XAER_INVAL, false, SystemException.class);
+    }
 
+    public void testCommit2PCWithXAExc12() {
         System.out.println("**Testing TM with 1st XAER_INVAL in *prepare* of 2PC commit ===>");
         _testCommit2PCWithXAExc(XAException.XAER_INVAL, 9999, false, SystemException.class);
 
