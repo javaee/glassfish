@@ -1432,8 +1432,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     }
 
     /**
-     * Gets the shutdown-timeout attribute configured in <code>connector-service</code>
-     * @return long shutdown timeout (in milli-seconds)
+     * @inheritDoc
      */
     public long getShutdownTimeout() {
         return ConnectorsUtil.getShutdownTimeout(
