@@ -402,7 +402,6 @@
         <ant dir="valveWithParams" target="all"/>
         <ant dir="virtualServerAlternateDocroot" target="all"/>
         <ant dir="virtualServerAlternateDocrootDynamicReconfig" target="all"/>
-        <ant dir="virtualServerAlternateDocrootRestart" target="all"/>
         <ant dir="virtualServerAlternateDocrootWelcomePageRedirect" target="all"/>
         <ant dir="virtualServerChangeHttpListenerWebappNoLongerAccessible" target="all"/>
         <ant dir="virtualServerCreateUpperCaseDeployExclusive" target="all"/>
