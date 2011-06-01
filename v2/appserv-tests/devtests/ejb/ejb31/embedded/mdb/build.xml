@@ -70,6 +70,7 @@
         </exec>
 
         <antcall target="stopDomain"/>
+        <echo message="Domain has beed STOPPED to run the test"/>
     </target> 
     
     <target name="unsetup" depends="init-common">
@@ -95,6 +96,7 @@
 
         <!-- Should domain be stopped? -->
         <antcall target="stopDomain"/>
+        <echo message="Domain has beed STOPPED"/>
     </target> 
     
     <target name="run" depends="init-common">
