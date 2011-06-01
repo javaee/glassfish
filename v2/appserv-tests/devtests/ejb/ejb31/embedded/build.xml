@@ -30,6 +30,11 @@
         <antcall target="skipjar"/>
         <antcall target="twocontainers"/>
         <antcall target="embedasync"/>
+
+        <!-- These 2 tests will stop domain to run -->
+        <antcall target="mdb"/>
+        <antcall target="remote"/>
+
         <antcall target="stop-derby"/>
     </target>
 
@@ -103,6 +108,18 @@
         <record name="embedasync.output" action="start" />
             <ant dir="embedasync" target="all"/>
         <record name="embedasync.output" action="stop" />
+    </target>
+
+    <target name="mdb">
+        <record name="mdb.output" action="start" />
+            <ant dir="mdb" target="all"/>
+        <record name="mdb.output" action="stop" />
+    </target>
+
+    <target name="remote">
+        <record name="remote.output" action="start" />
+            <ant dir="remote" target="all"/>
+        <record name="remote.output" action="stop" />
     </target>
 
     <target name="usage">
