@@ -94,7 +94,7 @@
         </exec>
 
         <!-- Should domain be stopped? -->
-        <!-- antcall target="stopDomain"/ -->
+        <antcall target="stopDomain"/>
     </target> 
     
     <target name="run" depends="init-common">
@@ -108,6 +108,9 @@
               classpath="${assemble.dir}/${appname}-ejb.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
               classname="${se.client}">
            <arg line="${jndiroot}"/>
+<!--
+           <jvmarg value="-Dorg.glassfish.ejb.embedded.keep-temporary-files=true"/>
+-->
         </java>
     </target>
 
