@@ -60,7 +60,7 @@ import org.glassfish.embeddable.web.config.SecurityConfig;
  *
  * @author Amy Roh
  */
-public class ContextFacade extends StandardContext implements Context {
+public class ContextFacade extends WebModule implements Context {
         
     // ----------------------------------------------------------- Constructors
 

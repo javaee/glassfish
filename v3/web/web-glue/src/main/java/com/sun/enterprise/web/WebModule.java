@@ -1923,7 +1923,8 @@ public class WebModule extends PwcWebModule {
     protected <T extends Servlet> T createServletInstance(Class<T> clazz)
             throws Exception {
         if (DefaultServlet.class.equals(clazz) ||
-                JspServlet.class.equals(clazz)) {
+                JspServlet.class.equals(clazz) ||
+                webContainer == null) {
             // Container-provided servlets, skip injection
             return super.createServletInstance(clazz);
         } else {
@@ -1939,7 +1940,11 @@ public class WebModule extends PwcWebModule {
     @Override
     protected <T extends Filter> T createFilterInstance(Class<T> clazz)
             throws Exception {
-        return webContainer.createFilterInstance(this, clazz);
+        if (webContainer != null) {
+            return webContainer.createFilterInstance(this, clazz);
+        } else {
+            return super.createFilterInstance(clazz);
+        }
     }
 
     /**
@@ -1950,7 +1955,11 @@ public class WebModule extends PwcWebModule {
     @Override
     public <T extends EventListener> T createListenerInstance(
                 Class<T> clazz) throws Exception {
-        return webContainer.createListenerInstance(this, clazz);
+        if (webContainer != null) {
+            return webContainer.createListenerInstance(this, clazz);
+        } else {
+            return super.createListenerInstance(clazz);
+        }
     }
 
 
