@@ -243,18 +243,35 @@
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
         <arg line="set-authority -P -O ${repo.url} '${stable.authority}'"/>
     </exec>
+    <!-- removing dev publisher reference
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
         <arg line="set-authority -O ${dev.repository.url} '${dev.authority}'"/>
     </exec>
+    -->
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
         <arg line="set-authority -O ${contrib.repository.url} '${contrib.authority}'"/>
     </exec>
-    <!-- disabling sun contrib authority setup - not used until close to fcs
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
-	    <arg line="set-authority -O ${repo.url} '${sun.contrib.authority}'"/>
+	    <arg line="set-authority -O ${sun.contrib.repository.url} '${sun.contrib.authority}'"/>
     </exec>
-    -->
+
+    <!-- adding Java EE SDK repository for non-AIX platforms -->
+
+    <condition property="isAIX">
+            <os name="AIX" />
+    </condition>
+    <antcall target="add-SDK-publisher"> 
+         <param name="image.dir" value="${image.dir}"/>
+    </antcall> 
+    
 </target>
+
+<target name="add-SDK-publisher" unless="isAIX">
+    <exec dir="${image.dir}" executable="pkg" failonerror="true">
+	    <arg line="set-authority -O ${javaeesdk.release.repository.url} -d '${javaeesdk.release.authority}'"/>
+    </exec>
+</target>
+
 
 <!-- Create Domain -->
 <target name="create-domain"
