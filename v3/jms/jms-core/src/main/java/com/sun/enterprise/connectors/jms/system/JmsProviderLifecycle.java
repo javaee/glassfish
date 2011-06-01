@@ -103,7 +103,7 @@ public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
     }
     private void configureConfigListener(){
         //do a lookup of the config listener to get it started
-        JMSConfigListener jmsConfigListener=habitat.getComponent(JMSConfigListener.class);
+        habitat.getComponent(JMSConfigListener.class);
     }
     public void initializeBroker () throws ConnectorRuntimeException
     {
@@ -117,6 +117,8 @@ public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
         if(jmsService == null) return false;
         String integrationMode =jmsService.getType();
         List <JmsHost> jmsHostList = jmsService.getJmsHost();
+        if (jmsHostList == null) return false;
+        
         String defaultJmsHostName = jmsService.getDefaultJmsHost();
         JmsHost defaultJmsHost = null;
         for (JmsHost host : jmsHostList){
@@ -125,7 +127,7 @@ public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
                 break;
             }
         }
-        if(defaultJmsHost == null && jmsHostList != null && jmsHostList.size() >0)  {
+        if(defaultJmsHost == null && jmsHostList.size() >0)  {
             defaultJmsHost = jmsHostList.get(0);
         }
 	    boolean lazyInit = false;
