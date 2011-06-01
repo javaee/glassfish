@@ -228,7 +228,7 @@ ListLbConfig
              {"Domain", "_restart-instance", "POST", "_restart-instance", "_restart-instance"},
              {"Domain", "_stop-instance", "POST", "_stop-instance", "_stop-instance"},
              {"Domain", "_synchronize-files", "POST", "_synchronize-files", "_synchronize-files"},
-             {"Domain", "_unregister-instance", "POST", "_unregister-instance ", "_unregister-instance "},
+             {"Domain", "_unregister-instance", "POST", "_unregister-instance", "_unregister-instance"},
              {"Domain", "_validate-node", "POST", "_validate-node", "_validate-node"},
              {"Domain", "_validateRemoteDirDeployment", "POST", "_validateRemoteDirDeployment", "_validateRemoteDirDeployment"},
 
@@ -265,6 +265,7 @@ ListLbConfig
             {"Domain", "rotate-log", "POST", "rotate-log", "RotateLog"},
             {"Domain", "set-log-attributes", "POST", "set-log-attributes", "set-log-attributes"},
             {"Domain", "set-log-levels", "POST", "set-log-levels", "LogLevel"},
+            {"Domain", "delete-log-levels", "DELETE", "delete-log-levels", "delete-log-levels"},
             {"Domain", "stop-domain", "POST", "stop", "Stop"},          
             {"Domain", "uptime", "GET", "uptime", "Uptime"},
             {"Domain", "version", "GET", "version", "Version"},
