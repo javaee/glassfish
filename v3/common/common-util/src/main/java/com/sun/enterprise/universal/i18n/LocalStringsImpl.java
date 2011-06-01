@@ -101,8 +101,8 @@ public class LocalStringsImpl {
      * use the proffered String.  The String is the FQN of the properties file,
      * without the '.properties'.  E.g. 'com.elf.something.LogStrings' 
      */
-    public LocalStringsImpl(String packageName, String localPropsName) {
-        this.localPropsName = localPropsName;
+    public LocalStringsImpl(String packageName, String propsName) {
+        this.propsName = propsName;
         int len = packageName.length();
 
         // side-effect -- make sure it ends in '.'
@@ -120,7 +120,7 @@ public class LocalStringsImpl {
      */
     public String get(String indexString) {
         try {
-            return getStringFromBundles(indexString);
+            return getBundle().getString(indexString);
         }
         catch (Exception e) {
             // it is not an error to have no key...
@@ -154,7 +154,7 @@ public class LocalStringsImpl {
      */
     public String getString(String indexString, String defaultValue) {
         try {
-            return getStringFromBundles(indexString);
+            return getBundle().getString(indexString);
         }
         catch (Exception e) {
             // it is not an error to have no key...
@@ -170,7 +170,7 @@ public class LocalStringsImpl {
      */
     public int getInt(String indexString, int defaultValue) {
         try {
-            String s = getStringFromBundles(indexString);
+            String s = getBundle().getString(indexString);
             return Integer.parseInt(s);
         }
         catch (Exception e) {
@@ -187,7 +187,7 @@ public class LocalStringsImpl {
      */
     public boolean getBoolean(String indexString, boolean defaultValue) {
         try {
-            return new Boolean(getStringFromBundles(indexString));
+            return new Boolean(getBundle().getString(indexString));
         }
         catch (Exception e) {
             // it is not an error to have no key...
@@ -197,17 +197,8 @@ public class LocalStringsImpl {
 
     ///////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
-    private String getStringFromBundles(String indexString) {
-        for (ResourceBundle rb : bundles) {
-            try {
-                // throws an Exception if it isn't there
-                return rb.getString(indexString);
-            }
-            catch (Exception e) {
-                // ignore
-            }
-        }
-        return indexString;
+    private ResourceBundle getBundle() {
+        return bundle;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -233,7 +224,7 @@ public class LocalStringsImpl {
             setBundle(className);
         }
         catch (Exception e) {
-            bundles.clear();
+            bundle = null;
         }
     }
 
@@ -245,47 +236,34 @@ public class LocalStringsImpl {
             String className = clazz.getName();
             setBundle(className);
 
-            String pkg = className.substring(0, className.lastIndexOf('.')) + ".";
             // April 25, 2009 -- if OSGi is in charge then we might not have got the
             // bundle!  Fix: send in the class's Classloader...
-            if(bundles.isEmpty()) {
-                // order matters!  The LogStrings overrides LocalStrings...
-                bundles.add(ResourceBundle.getBundle(pkg + logPropsName, 
-                        Locale.getDefault(), clazz.getClassLoader(), rbcontrol));
-                bundles.add(ResourceBundle.getBundle(pkg + localPropsName, 
-                        Locale.getDefault(), clazz.getClassLoader(), rbcontrol));
+            if(bundle == null) {
+                String props = className.substring(0, className.lastIndexOf('.')) + "." + propsName;
+                bundle = ResourceBundle.getBundle(props, Locale.getDefault(), clazz.getClassLoader(),
+                        rbcontrol);
             }
         }
         catch (Exception e) {
-            bundles.clear();
+            bundle = null;
         }
     }
 
     ///////////////////////////////////////////////////////////////////////////
 
     private void setBundle(String className) {
-        String pkg = className.substring(0, className.lastIndexOf('.')) + ".";
-
-        // there may be zero, one or two files...
         try {
-            bundles.add(ResourceBundle.getBundle(pkg + localPropsName, rbcontrol));
+            String props = className.substring(0, className.lastIndexOf('.')) + "." + propsName;
+            bundle = ResourceBundle.getBundle(props, rbcontrol);
         }
         catch (Exception e) {
-            //ignore
-        }
-        try {
-            bundles.add(ResourceBundle.getBundle(pkg + logPropsName, rbcontrol));
-        }
-        catch (Exception e) {
-            //ignore
+            bundle = null;
         }
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    private final static ResourceBundle[] EMPTY = new ResourceBundle[0];
-    private List<ResourceBundle> bundles = new ArrayList<ResourceBundle>(2);
-    private String localPropsName = "LocalStrings";
-    private final String logPropsName = "LogStrings";
+    private ResourceBundle bundle;
+    private String propsName = "LocalStrings";
     private static final String thisPackage = "com.elf.util";
     private static final ResourceBundle.Control rbcontrol =
             ResourceBundle.Control.getControl(ResourceBundle.Control.FORMAT_PROPERTIES);
