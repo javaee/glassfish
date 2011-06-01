@@ -920,6 +920,11 @@ public class AppTest extends TestCase {
         _testCommit2PCWithRollbackExc(XAException.XA_RBROLLBACK, XAException.XA_HEURRB, XAException.XA_HEURRB);
     }
 
+    public void testCommit2PCWithRollbackExc3() {
+        System.out.println("**Testing XA_RDONLY in prepare & 2 XA_HEURRB in rollback ===>");
+        _testCommit2PCWithRollbackExc(XAException.XA_RDONLY, XAException.XA_HEURRB, 9999);
+    }
+
     private void _testCommit2PCWithRollbackExc(int preapareErrCode, int... rollbackErrorCode) {
         System.out.println("**Testing different rollback errors in prepare & rollback ===>");
         TestResource theResourceP = new TestResource();
