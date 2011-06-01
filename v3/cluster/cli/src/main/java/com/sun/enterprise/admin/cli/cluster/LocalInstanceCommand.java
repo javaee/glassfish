@@ -268,7 +268,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
                 String hostProp = dasprops.getProperty("agent.das.host");
                 String portProp = dasprops.getProperty("agent.das.port");
                 String secureProp = dasprops.getProperty("agent.das.isSecure");
-                if (hostProp != null && !hostProp.equals(hostOption)) {
+                if (!matchingHostnames(hostProp, hostOption)) {
                     errorMsg = errorMsg + Strings.get("Instance.DasHostInvalid", hostOption, nodeName) + "\n";
                 }
                 if (portProp != null && !portProp.equals(portOption)) {
@@ -283,6 +283,46 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
                 }
             }
         }
+    }
+
+   /**
+     * Check if two hostnames refer to the same host. We start with a cheap
+     * string comparison. If that fails we see if the hostnames refer to the
+     * same host.
+     * 
+     * @param host1
+     * @param host2
+     * @return 
+     */
+    private boolean matchingHostnames(String host1, String host2) {
+
+        if (!StringUtils.ok(host1) || !StringUtils.ok(host2)) {
+            if (!StringUtils.ok(host1) && !StringUtils.ok(host2)) {
+                // Both empty/null strings. Consider it a match.
+                return true;
+            } else {
+                // Only one string null/empty. No match.
+                return false;
+            }
+        }
+
+        if (host1.equalsIgnoreCase(host2)) {
+            // Hostnames exactly match. Same host.
+            return true;
+        }
+
+        if (NetUtils.isEqual(host1, host2)) {
+            // Hostnames don't exactly match, but refer to same IP. Match.
+            return true;
+        }
+
+        if (NetUtils.isThisHostLocal(host1) && NetUtils.isThisHostLocal(host2)) {
+            // Hostnames both refer to the local host. Match.
+            return true;
+        }
+
+        // Don't match.
+        return false;
     }
 
     final protected Properties getDasProperties(File propfile) throws CommandException {
