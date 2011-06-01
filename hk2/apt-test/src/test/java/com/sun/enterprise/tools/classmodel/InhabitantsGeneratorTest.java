@@ -226,6 +226,9 @@ public class InhabitantsGeneratorTest {
   public void testReducedScopeHabitatFileGeneration() throws IOException {
     ArrayList<File> testDir = getTestClassPathEntries(false);
 
+    for (File f : testDir) {
+        System.out.println(f.getAbsolutePath());
+    }
     InhabitantsDescriptor descriptor = new InhabitantsDescriptor();
     descriptor.enableDateOutput(false);
 
@@ -480,28 +483,31 @@ public class InhabitantsGeneratorTest {
   static ArrayList<File> getTestClassPathEntries(boolean worldView) {
     ArrayList<File> entries = new ArrayList<File>();
 
-    ClassPath classpath = ClassPath.create(null, false);
-    Set<String> cpSet = classpath.getEntries();
-    for (String entry : cpSet) {
-      if (false) {
-        entries.add(new File(entry));
-      } else {
-        if (entry.contains("test-inhabitant-generator")) {
-          entries.add(new File(entry));
-        } else if (entry.contains("auto-depends-")
-            && !entry.contains("auto-depends-plugin")) {
+      ClassPath classpath = ClassPath.create(null, false);
+      Set<String> cpSet = classpath.getEntries();
+      for (String entry : cpSet) {
+          System.out.println("Raw " + entry);
           if (worldView) {
-            entries.add(new File(entry));
-          } else if (!entry.contains("test-inhabitant-gen-ifaces")) {
-            entries.add(new File(entry));
+              entries.add(new File(entry));
+          } else {
+              if (entry.contains("test-inhabitant-generator") && !entry.contains("test-inhabitant-gen-ifaces")) {
+                  entries.add(new File(entry));
+              } else if (entry.contains("auto-depends-")
+                      && !entry.contains("auto-depends-plugin")) {
+                  if (worldView) {
+                      entries.add(new File(entry));
+                  } else if (!entry.contains("test-inhabitant-gen-ifaces")) {
+                      entries.add(new File(entry));
+                  }
+              } else if (entry.contains("test-classes")) {
+                  entries.add(new File(entry));
+              } else if (entry.contains("hk2-core") && worldView) {
+                  entries.add(new File(entry));
+              } else if (entry.contains("hk2-api")) {
+                  entries.add(new File(entry));
+              }
           }
-        } else if (entry.contains("test-classes")) {
-          entries.add(new File(entry));
-        } else if (entry.contains("hk2-core") && worldView) {
-          entries.add(new File(entry));
-        }
       }
-    }
 
     if (entries.isEmpty()) {
       throw new RuntimeException("can't find test-classes in " + cpSet);

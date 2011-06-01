@@ -77,6 +77,7 @@ public class ModuleDependencyAnalyser {
     ModuleDefinition moduleDef;
     ClosureCompilerImpl closure;
     Repository moduleRepository;
+    final Logger logger = Logger.getLogger("apiscan.classfile");
 
     String[] excludedPatterns = {"java."
             // add all HK2 package patterns, because we don't handle reexport yet.
@@ -118,7 +119,7 @@ public class ModuleDependencyAnalyser {
             throws IOException {
         closure.buildClosure(new JarFile(moduleJar));
         if (System.getProperty("debugOutput") != null) {
-            Logger.getLogger("apiscan.classfile").setLevel(Level.FINER);
+            logger.setLevel(Level.FINER);
             PrintStream out = new PrintStream(new FileOutputStream(System.getProperty("debugOutput")));
             out.println(closure);
         }
