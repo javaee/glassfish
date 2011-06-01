@@ -1001,8 +1001,11 @@ public class JavaEETransactionManagerSimplified
                     status == Status.STATUS_NO_TRANSACTION ||
                     status == Status.STATUS_UNKNOWN) {
                 throw new InvalidTransactionException(sm.getString(
-                    "enterprise_distributedtx.transaction_notactive"));
+                    "enterprise_distributedtx.resume_invalid_transaction", tobj));
             }
+        } else {
+            throw new InvalidTransactionException(sm.getString(
+                    "enterprise_distributedtx.resume_invalid_transaction", "null"));
         }
 
         if ( tobj instanceof JavaEETransactionImpl ) {
