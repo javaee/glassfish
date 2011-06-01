@@ -107,7 +107,12 @@ public class JMSConfigListener implements ConfigListener{
             Object oldValue = event.getOldValue();
             Object newValue = event.getNewValue();
 
-         if(event.getSource().toString().indexOf("config.serverbeans.JmsHost") != -1)   {
+         if(event.getSource().toString().indexOf("config.serverbeans.JmsService") != -1)   {
+             UnprocessedChangeEvent uchangeEvent = new UnprocessedChangeEvent(event, "restart required");
+             unprocessedEvents.add(uchangeEvent);
+         }
+
+         else if(event.getSource().toString().indexOf("config.serverbeans.JmsHost") != -1)   {
              UnprocessedChangeEvent uchangeEvent = new UnprocessedChangeEvent(event, "restart required");
              unprocessedEvents.add(uchangeEvent);
          }
@@ -146,7 +151,7 @@ public class JMSConfigListener implements ConfigListener{
                 //if(event instanceof ServerRef){
                     String oldServerRef = oldValue != null ? oldValue.toString() : null;
                     String newServerRef = newValue != null ? newValue.toString(): null;
-                    if(oldServerRef  != null && newServerRef == null) {//instance has been deleted
+                    if(oldServerRef  != null && newServerRef == null && !thisServer.isDas()) {//instance has been deleted
                         _logger.log(Level.FINE, "Got Cluster change event for server_ref"
                             + event.getSource() + " "
                         + eventName + " " + oldServerRef + " " + newServerRef);
