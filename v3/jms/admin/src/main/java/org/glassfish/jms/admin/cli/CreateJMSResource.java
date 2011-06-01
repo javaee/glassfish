@@ -122,7 +122,7 @@ public class CreateJMSResource implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
-        Collection connPools = domain.getResources().getResources(ConnectorConnectionPool.class);  
+        //Collection connPools = domain.getResources().getResources(ConnectorConnectionPool.class);
          if (resourceType == null) {
             report.setMessage(localStrings.getLocalString("create.jms.resource.noResourceType",
                             "No Resoruce Type specified for JMS Resource."));

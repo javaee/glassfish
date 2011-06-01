@@ -141,8 +141,8 @@ public class ListJMSResources implements AdminCommand {
             } else {
 
                List <String> resourceList = filterListForTarget(list);
-               if(resourceList == null)
-                    resourceList = list;
+               //if(resourceList == null)
+                 //   resourceList = list;
 
 
                 for (String jndiName : resourceList) {
@@ -178,7 +178,7 @@ public class ListJMSResources implements AdminCommand {
           }
 
 
-        List <String> resourceList = filterListForTarget(list);
+        //List <String> resourceList = filterListForTarget(list);
         //if(resourceList == null)
           // resourceList = list;
 
