@@ -3,6 +3,7 @@
 <!DOCTYPE project [
 <!ENTITY commonSetup SYSTEM "../../../../../config/properties.xml">
 <!ENTITY commonBuild SYSTEM "../../../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "../../../../../config/run.xml">
 <!ENTITY embeddedCommon SYSTEM "../embedded.xml">
 <!ENTITY testproperties SYSTEM "build.properties">
 ]>
@@ -12,9 +13,10 @@
     &embeddedCommon;
     &commonSetup;
     &commonBuild;
+    &commonRun;
     &testproperties;
 
-    <target name="all" depends="build,run"/>
+    <target name="all" depends="build,run,warn"/>
 
     <target name="clean" depends="init-common">
       <antcall  target="clean-common"/>
@@ -41,7 +43,14 @@
     </target> 
     
     <target name="run" depends="init-common">
+        <antcall target="stopDomain"/>
+        <echo message="Domain has beed STOPPED to run the test"/>
+
         <antcall target="run_se"/>
+    </target> 
+    
+    <target name="warn" depends="init-common">
+        <echo message="Domain was STOPPED to run the test"/>
     </target>
  
     <target name="run_se" depends="init-common">
