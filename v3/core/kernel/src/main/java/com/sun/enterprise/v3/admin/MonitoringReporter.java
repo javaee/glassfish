@@ -477,7 +477,7 @@ public class MonitoringReporter extends V2DottedNameSupport {
             for (Statistic s : ((Stats) value).getStatistics()) {
                 String statisticName = s.getName();
                 if (statisticName != null) {
-                    statisticName = s.getName().toLowerCase();
+                    statisticName = s.getName().toLowerCase(Locale.getDefault());
                 }
                 addStatisticInfo(s, name + "." + statisticName, map);
             }

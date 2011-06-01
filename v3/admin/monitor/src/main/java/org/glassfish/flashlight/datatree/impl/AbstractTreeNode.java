@@ -58,7 +58,7 @@ import java.util.regex.Pattern;
  * NOT something like "\\." -- there is too much code around making assumptions
  * about dots, splitting strings, etc.  So we replace with ___MONDOT___
  */
-public abstract class AbstractTreeNode implements TreeNode, Comparable {
+public abstract class AbstractTreeNode implements TreeNode, Comparable<TreeNode> {
 
     protected Map<String, TreeNode> children =
             new ConcurrentHashMap<String, TreeNode>();
@@ -395,8 +395,8 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
     }
 
     @Override
-    public int compareTo(Object o) {
-        return this.getName().compareTo(((TreeNode) o).getName());
+    public int compareTo(TreeNode other) {
+        return getName().compareTo(other.getName());
     }
 
     @Override
