@@ -60,6 +60,8 @@ public class JSFTest {
     public void testWeb() throws Exception {
 
         disableCertValidation();
+
+        goGet("http://localhost:8080/hellojsf/JSFTestServlet", "Created viewRoot");
         
         // test non secure access.
         goGet("http://localhost:8080/hellojsf", "BHAVANI", "SHANKAR", "Mr. X");
