@@ -89,6 +89,8 @@ public interface EjbContainerUtil {
 
     public  void setEJBTimerService(EJBTimerService es);
 
+    public  void unsetEJBTimerService();
+
     public  void setEJBTimerServiceDBReadBeforeTimeout(boolean value);
 
     public  boolean isEJBTimerServiceLoaded();

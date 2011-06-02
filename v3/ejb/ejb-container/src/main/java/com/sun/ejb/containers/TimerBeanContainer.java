@@ -83,6 +83,8 @@ public class TimerBeanContainer
         }
 
         super.doConcreteContainerShutdown(appBeingUndeployed);        
+
+        ejbContainerUtil.unsetEJBTimerService();
     }
 
     /**

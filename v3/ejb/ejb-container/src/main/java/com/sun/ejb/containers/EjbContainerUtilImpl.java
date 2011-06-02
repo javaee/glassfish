@@ -265,6 +265,11 @@ public class EjbContainerUtilImpl
         _ejbTimerService = es;
     }
 
+    public  void unsetEJBTimerService() {
+        _ejbTimerServiceVerified = false;
+        _ejbTimerService = null;
+    }
+
     public  EJBTimerService getEJBTimerService() {
         return getEJBTimerService(null);
     }
