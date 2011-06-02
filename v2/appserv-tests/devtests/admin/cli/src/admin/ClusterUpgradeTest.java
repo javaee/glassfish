@@ -155,6 +155,8 @@ public class ClusterUpgradeTest extends AdminBaseDevTest {
             report("delete-new-instance-issue-14719",
                 asadmin("delete-local-instance", "upin_new_guy"));
 
+            backUpInstanceLogs();
+
             // delete instances
             report("delete-instance-1", asadmin("delete-local-instance",
                 "upin1"));
@@ -180,8 +182,7 @@ public class ClusterUpgradeTest extends AdminBaseDevTest {
     }
 
     private void unzipUpDomain() {
-        File domainsDir = new File(getGlassFishHome(), "domains");
-        final String domains = domainsDir.getAbsolutePath();
+        final String domains = getDomainsDir().getAbsolutePath();
 
         try {
             ZipFile domainZip = new ZipFile("resources/updomain.zip");
@@ -222,10 +223,11 @@ public class ClusterUpgradeTest extends AdminBaseDevTest {
     }
 
     // remove updomain if it's there
-    public void removeUpDomain() {
+    private void removeUpDomain() {
         File deleteMe = new File(
             new File(getGlassFishHome(), "domains"), "updomain");
         if (deleteMe.exists()) {
+            backupServerLog();
             report("delete-updomain", asadmin("delete-domain", "updomain"));
         }
     }
@@ -234,6 +236,71 @@ public class ClusterUpgradeTest extends AdminBaseDevTest {
     private boolean isDirectory(String s) {
         char c = s.charAt(s.length() - 1);		
         return c== '/' || c == '\\';
+    }
+
+    private void backUpInstanceLogs() {
+        // yes, it's node agent 007
+        File nodeDir = new File(
+            new File(getGlassFishHome(), "nodes"), "007");
+        File source1 = new File(new File(new File(
+            nodeDir, "upin1"),
+            "logs"),
+            "server.log");
+        File source2 = new File(new File(new File(
+            nodeDir, "upin2"),
+            "logs"),
+            "server.log");
+        File target1 = new File(getLogsDir(), "cluster-upgrade-instance1.log");
+        File target2 = new File(getLogsDir(), "cluster-upgrade-instance2.log");
+        moveFile(source1, target1);
+        moveFile(source2, target2);
+    }
+
+    private void backupServerLog() {
+        File updomainDir = new File(getDomainsDir(), "updomain");
+        File logSource = new File(new File(updomainDir, "logs"), "server.log");
+        File logTarget = new File(
+            getLogsDir(), "cluster-upgrade-server.log");
+        moveFile(logSource, logTarget);
+    }
+
+    /*
+     * Since we're going to remove the directory containing the
+     * log file, we can just move the file instead of copying
+     * it.
+     */
+    private void moveFile(File source, File target) {
+        if (source == null || target == null) {
+            System.err.println("Files can't be null: " +
+                source + "|" + target);
+            return;
+        }
+        System.out.println(String.format("Backing up '%s' to '%s'.",
+            source.getAbsolutePath(), target.getAbsolutePath()));
+        if (source.exists()) {
+            if (target.exists() && !target.delete()) {
+                System.err.println("*** Could not remove old log file. May " +
+                    "not be able to save updomain server log. File: " +
+                    target.getAbsolutePath());
+            }
+            if (!source.renameTo(target)) {
+                System.err.println("*** Could not make a copy of " +
+                source.getAbsolutePath());
+            }
+        } else {
+            System.err.println("*** File does not exist to copy: " +
+                source.getAbsolutePath());
+        }
+    }
+
+    // get 'domains' directory
+    private File getDomainsDir() {
+        return new File(getGlassFishHome(), "domains");
+    }
+
+    // get domain1/logs dir for backing up other log files
+    private File getLogsDir() {
+        return new File(getDASDomainDir(), "logs");
     }
 
 }
