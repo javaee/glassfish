@@ -214,6 +214,7 @@
                 <module>packager</module>
                 <module>distributions</module>
                 <module>virtualization</module>
+                <module>paas</module>
                 <module>security</module>
                 <module>registration</module>
                 <module>tests</module>
@@ -273,6 +274,7 @@
                 <module>load-balancer</module> 
                 <module>jdbc</module>
                 <module>virtualization</module>
+                <module>paas</module>
                 <module>extras</module>
                 <module>distributions</module>
                 <module>security</module>
@@ -367,6 +369,7 @@
                 <module>flashlight</module>
                 <module>webservices</module>
                 <module>virtualization</module>
+                <module>paas</module>
                 <module>orb</module>
                 <module>installer</module>
                 <module>sun-glassfish</module>
@@ -413,6 +416,7 @@
                 <module>extras/embedded/shell</module>
                 <module>packager</module>
                 <module>virtualization</module>
+                <module>paas</module>
                 <module>distributions</module>
                 <module>security</module>
                 <module>registration</module>
