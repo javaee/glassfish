@@ -457,8 +457,7 @@ public class SSLClientConfigurator {
 
         final String[] ciphers = getJSSECiphers(tmpSSLArtifactsList);
         if (ciphers == null || ciphers.length == 0) {
-            _logger.log(Level.WARNING, "All SSL cipher suites disabled for network-listener(s) {0}." +
-                    "  Using SSL implementation specific defaults");
+            _logger.log(Level.INFO, "Using default cipher suites for SSL connections");
         } else {
             enabledCipherSuites = ciphers;
         }
