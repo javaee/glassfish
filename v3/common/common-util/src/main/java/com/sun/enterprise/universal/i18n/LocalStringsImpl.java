@@ -51,20 +51,20 @@ import java.util.ResourceBundle;
 import java.text.MessageFormat;
 
 /**
- * This class makes getting localized strings super-simple.  This is the companion
+ * This class makes getting localized strings super-simple.  This is the companion 
  * class to Strings.  Use this class when performance may be an issue.  I.e. Strings
  * is all-static and creates a ResourceBundle on every call.  This class is instantiated
  * once and can be used over and over from the same package.
  * <p>Specifics:
  * <ul>
- *    <li>Your calling code should have a file named LocalStrings.properties in its
+ *    <li>Your calling code should have a file named LocalStrings.properties in its 
  * package directory.
  *    <li>If your localized string has no arguments call get(String) to get the localized
  *    String value.
  *    <li>If you have a parameterized string, call get(String, Object...)
  * </ul>
  * <p>Note: <b>You can not get an Exception out of calling this code!</b>  If the String
- * or the properties file does not exist, it will return the String that you gave
+ * or the properties file does not exist, it will return the String that you gave 
  * in the first place as the argument.
  * <p>Example:
  * <ul>
@@ -73,12 +73,13 @@ import java.text.MessageFormat;
  * <li>String s = sh.get("xyz", new Date(), 500, "something", 2.00003);
  * <li>String s = sh.get("xyz", "something", "foo", "whatever");
  * </ul>
- *
+ * 
  * @author bnevins
  */
 public class LocalStringsImpl {
+
     /**
-     * Create a LocalStringsImpl instance.
+     * Create a LocalStringsImpl instance.  
      * Automatically discover the caller's LocalStrings.properties file
      */
     public LocalStringsImpl() {
@@ -86,7 +87,7 @@ public class LocalStringsImpl {
     }
 
     /**
-     * Create a LocalStringsImpl instance.
+     * Create a LocalStringsImpl instance.  
      * use the proffered class object to find LocalStrings.properties.
      * This is the constructor to use if you are concerned about getting
      * the fastest performance.
@@ -96,12 +97,12 @@ public class LocalStringsImpl {
     }
 
     /**
-     * Create a LocalStringsImpl instance.
+     * Create a LocalStringsImpl instance.  
      * use the proffered String.  The String is the FQN of the properties file,
-     * without the '.properties'.  E.g. 'com.elf.something.LogStrings'
+     * without the '.properties'.  E.g. 'com.elf.something.LogStrings' 
      */
-    public LocalStringsImpl(String packageName, String localPropsName) {
-        this.localPropsName = localPropsName;
+    public LocalStringsImpl(String packageName, String propsName) {
+        this.propsName = propsName;
         int len = packageName.length();
 
         // side-effect -- make sure it ends in '.'
@@ -119,7 +120,7 @@ public class LocalStringsImpl {
      */
     public String get(String indexString) {
         try {
-            return getStringFromBundles(indexString);
+            return getBundle().getString(indexString);
         }
         catch (Exception e) {
             // it is not an error to have no key...
@@ -153,7 +154,7 @@ public class LocalStringsImpl {
      */
     public String getString(String indexString, String defaultValue) {
         try {
-            return getStringFromBundles(indexString);
+            return getBundle().getString(indexString);
         }
         catch (Exception e) {
             // it is not an error to have no key...
@@ -164,12 +165,12 @@ public class LocalStringsImpl {
     /**
      * Get an integer from the caller's package's LocalStrings.properties
      * @param indexString The string index into the localized string file
-     * @return the integer value from LocalStrings or the supplied default if
+     * @return the integer value from LocalStrings or the supplied default if 
      * it doesn't exist or is bad.
      */
     public int getInt(String indexString, int defaultValue) {
         try {
-            String s = getStringFromBundles(indexString);
+            String s = getBundle().getString(indexString);
             return Integer.parseInt(s);
         }
         catch (Exception e) {
@@ -181,12 +182,12 @@ public class LocalStringsImpl {
     /**
      * Get a boolean from the caller's package's LocalStrings.properties
      * @param indexString The string index into the localized string file
-     * @return the integer value from LocalStrings or the supplied default if
+     * @return the integer value from LocalStrings or the supplied default if 
      * it doesn't exist or is bad.
      */
     public boolean getBoolean(String indexString, boolean defaultValue) {
         try {
-            return new Boolean(getStringFromBundles(indexString));
+            return new Boolean(getBundle().getString(indexString));
         }
         catch (Exception e) {
             // it is not an error to have no key...
@@ -196,17 +197,8 @@ public class LocalStringsImpl {
 
     ///////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
-    private String getStringFromBundles(String indexString) {
-        for (ResourceBundle rb : bundles) {
-            try {
-                // throws an Exception if it isn't there
-                return rb.getString(indexString);
-            }
-            catch (Exception e) {
-                // ignore
-            }
-        }
-        return indexString;
+    private ResourceBundle getBundle() {
+        return bundle;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -232,65 +224,46 @@ public class LocalStringsImpl {
             setBundle(className);
         }
         catch (Exception e) {
-            bundles.clear();
+            bundle = null;
         }
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    private void setBundle(Class clazz) {
-            String className = clazz.getName();
 
-            // first try w/o the classloader
+    private void setBundle(Class clazz) {
+
+        try {
+            String className = clazz.getName();
             setBundle(className);
 
-            if (bundles.isEmpty())
-                setBundle(className, clazz.getClassLoader());
+            // April 25, 2009 -- if OSGi is in charge then we might not have got the
+            // bundle!  Fix: send in the class's Classloader...
+            if(bundle == null) {
+                String props = className.substring(0, className.lastIndexOf('.')) + "." + propsName;
+                bundle = ResourceBundle.getBundle(props, Locale.getDefault(), clazz.getClassLoader(),
+                        rbcontrol);
+            }
+        }
+        catch (Exception e) {
+            bundle = null;
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////
+
     private void setBundle(String className) {
-        String pkg = className.substring(0, className.lastIndexOf('.')) + ".";
-
-        // there may be zero, one or two files...
         try {
-            bundles.add(ResourceBundle.getBundle(pkg + localPropsName, rbcontrol));
+            String props = className.substring(0, className.lastIndexOf('.')) + "." + propsName;
+            bundle = ResourceBundle.getBundle(props, rbcontrol);
         }
         catch (Exception e) {
-            //ignore
-        }
-        try {
-            bundles.add(ResourceBundle.getBundle(pkg + logPropsName, rbcontrol));
-        }
-        catch (Exception e) {
-            //ignore
+            bundle = null;
         }
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    private void setBundle(String className, ClassLoader cl) {
-        String pkg = className.substring(0, className.lastIndexOf('.')) + ".";
-
-        // there may be zero, one or two files...
-        try {
-            bundles.add(ResourceBundle.getBundle(pkg + localPropsName,
-                    Locale.getDefault(), cl, rbcontrol));
-        }
-        catch (Exception e) {
-            //ignore
-        }
-        try {
-            bundles.add(ResourceBundle.getBundle(pkg + logPropsName,
-                    Locale.getDefault(), cl, rbcontrol));
-        }
-        catch (Exception e) {
-            //ignore
-        }
-    }
-    ///////////////////////////////////////////////////////////////////////////
-    private final static ResourceBundle[] EMPTY = new ResourceBundle[0];
-    private List<ResourceBundle> bundles = new ArrayList<ResourceBundle>(2);
-    private String localPropsName = "LocalStrings";
-    private final String logPropsName = "LogStrings";
+    private ResourceBundle bundle;
+    private String propsName = "LocalStrings";
     private static final String thisPackage = "com.elf.util";
     private static final ResourceBundle.Control rbcontrol =
             ResourceBundle.Control.getControl(ResourceBundle.Control.FORMAT_PROPERTIES);
