@@ -82,6 +82,9 @@ public final class WebServiceInvocationHandler extends EJBLocalRemoteObject
     private boolean hasHandlers_;
     private Map invocationInfoMap_;
 
+    protected static final LocalStringManagerImpl localStrings =
+        new LocalStringManagerImpl(WebServiceInvocationHandler.class);
+
 
     public WebServiceInvocationHandler(Class ejbClass, 
                                        WebServiceEndpoint endpoint,
@@ -162,8 +165,8 @@ public final class WebServiceInvocationHandler extends EJBLocalRemoteObject
                 // application handlers have not changed
                 // which method is invoked.
 
-                // TODO Method methodBefore = inv.getWebServiceMethod();
-                /*
+                Method methodBefore = inv.getWebServiceMethod();
+                
                 if (methodBefore != null && !methodBefore.equals(inv.method)) {
                     inv.exception = new UnmarshalException
 			    (localStrings.getLocalString
@@ -171,7 +174,7 @@ public final class WebServiceInvocationHandler extends EJBLocalRemoteObject
 			    "Original Method {0} does not match post-handler method {1}",
 			    new Object[] { methodBefore, inv.method }));
 		        throw inv.exception;
-		        */
+		        }
             }
 
 
