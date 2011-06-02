@@ -47,6 +47,7 @@
         <antcall target="startDomain"/>
 
         <exec executable="${ASADMIN}" failonerror="false">
+          <arg line="--user ${admin.user} --host ${admin.host} --port ${admin.port} --echo=true --terse=true"/>
           <arg line="create-jms-resource"/>
           <arg line="--restype"/>
           <arg line="javax.jms.QueueConnectionFactory"/>
@@ -54,6 +55,7 @@
         </exec>
 
         <exec executable="${ASADMIN}" failonerror="false">
+          <arg line="--user ${admin.user} --host ${admin.host} --port ${admin.port} --echo=true --terse=true"/>
           <arg line="create-jmsdest"/>
           <arg line="--desttype"/>
           <arg line="queue"/>
@@ -61,6 +63,7 @@
         </exec>
 
         <exec executable="${ASADMIN}" failonerror="false">
+          <arg line="--user ${admin.user} --host ${admin.host} --port ${admin.port} --echo=true --terse=true"/>
           <arg line="create-jms-resource"/>
           <arg line="--restype"/>
           <arg line="javax.jms.Queue"/>
@@ -78,11 +81,13 @@
         <antcall target="startDomain"/>
 
         <exec executable="${ASADMIN}" failonerror="false">
+          <arg line="--user ${admin.user} --host ${admin.host} --port ${admin.port} --echo=true --terse=true"/>
           <arg line="delete-jms-resource"/>
           <arg line="jms/ejb_mdb_QCF"/>
         </exec>
 
         <exec executable="${ASADMIN}" failonerror="false">
+          <arg line="--user ${admin.user} --host ${admin.host} --port ${admin.port} --echo=true --terse=true"/>
           <arg line="delete-jmsdest"/>
           <arg line="--desttype"/>
           <arg line="queue"/>
@@ -90,6 +95,7 @@
         </exec>
 
         <exec executable="${ASADMIN}" failonerror="false">
+          <arg line="--user ${admin.user} --host ${admin.host} --port ${admin.port} --echo=true --terse=true"/>
           <arg line="delete-jms-resource"/>
           <arg line="jms/ejb_mdb_Queue"/>
         </exec>
