@@ -261,9 +261,9 @@ public class JmxConnectorServerDriver {
         //Note that the Connector Server can only be started on the host where this method is called
         if (protocol == RemoteJmxProtocol.RMIJRMP) {
             this.url = JmxServiceUrlFactory.forRmiWithJndiInAppserver(
-                JmxServiceUrlFactory.localhost(), this.port);
+                this.host, this.port);
             this.jconsoleurl = JmxServiceUrlFactory.forJconsoleOverRmiWithJndiInAppserver(
-                JmxServiceUrlFactory.localhost(), this.port);
+                this.host, this.port);
         }
     }
     private void prepare() {
