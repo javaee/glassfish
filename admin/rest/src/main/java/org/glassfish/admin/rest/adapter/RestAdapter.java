@@ -73,6 +73,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 
 import java.net.HttpURLConnection;
+import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -290,14 +291,22 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     }
 
 
+    private static final String DAS_LOOK_FOR_CERT_PROPERTY_NAME = "org.glassfish.admin.DASCheckAdminCert";
+
     private boolean authenticateViaAdminRealm(GrizzlyRequest req) throws LoginException, IOException  {
         String[] up = AdminAdapter.getUserPassword(req.getRequest());
         String user = up[0];
         String password = up.length > 1 ? up[1] : "";
         AdminAccessController authenticator = habitat.getByContract(AdminAccessController.class);
         if (authenticator != null) {
+            // This is temporary workaround for a Grizzly issue that prohibits uploading (deploy)  files larger than 2MB when secure admin is enabled.
+            // The workaround will not be required in trunk when the corresponding Grizzly issue is fixed.
+            // Please see http://java.net/jira/browse/GLASSFISH-16665 for details
+            // The workaround duplicates code from AdminAdapter.
+           final Principal sslPrincipal = ! serverEnvironment.isDas() || Boolean.getBoolean(DAS_LOOK_FOR_CERT_PROPERTY_NAME) ? req.getUserPrincipal() : null;
+
             return authenticator.loginAsAdmin(user, password, as.getAuthRealmName(), req.getRemoteHost(),
-                    getAuthRelatedHeaders(req), req.getUserPrincipal()) != AdminAccessController.Access.NONE;
+                    getAuthRelatedHeaders(req), sslPrincipal) != AdminAccessController.Access.NONE;
         }
         return true;   //if the authenticator is not available, allow all access - per Jerome
     }
