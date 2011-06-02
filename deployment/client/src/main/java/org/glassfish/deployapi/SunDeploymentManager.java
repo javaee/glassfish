@@ -1320,7 +1320,7 @@ public class SunDeploymentManager implements DeploymentManager {
         StartupContext startupContext = new StartupContext();
         habitat.add(new ExistingSingletonInhabitant(startupContext));
 
-        habitat.addComponent(null, new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
+        habitat.addComponent(new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
     }
 
     private ArchiveFactory getArchiveFactory() {

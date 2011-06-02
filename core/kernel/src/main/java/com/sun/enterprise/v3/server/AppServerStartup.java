@@ -192,9 +192,9 @@ public class AppServerStartup implements ModuleStartup {
         final Level level = Level.FINE;
 
         // prepare the global variables
-        habitat.addComponent(null, this);
-        habitat.addComponent(null, systemRegistry);
-        habitat.addComponent(LogDomains.CORE_LOGGER, logger);
+        habitat.addComponent(this);
+        habitat.addComponent(systemRegistry);
+        habitat.addComponent(logger);
         Inhabitant<ProcessEnvironment> inh = habitat.getInhabitantByType(ProcessEnvironment.class);
         if (inh!=null) {
             habitat.remove(inh);
