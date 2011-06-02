@@ -53,7 +53,7 @@
     <groupId>org.glassfish.flashlight</groupId>
     <artifactId>glassfish-flashlight</artifactId>
     <packaging>pom</packaging>
-    <name>GlassFish Flashlight Module</name>  
+    <name>Flashlight</name>  
     <modules>
         <module>btrace</module>
         <module>agent</module>
