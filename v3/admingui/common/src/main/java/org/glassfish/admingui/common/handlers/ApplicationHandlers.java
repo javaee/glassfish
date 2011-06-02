@@ -404,16 +404,15 @@ public class ApplicationHandlers {
         String Enabled = (String) handlerCtx.getInputValue("Enabled");
         List<Map>  selectedRows = (List) handlerCtx.getInputValue("selectedRows");
         boolean forLB = (Boolean) handlerCtx.getInputValue("forLB");
-        String prefix = (String)GuiUtil.getSessionValue("REST_URL");
         for(Map oneRow : selectedRows){
             Map attrs = new HashMap();
             String endpoint = (String) oneRow.get("endpoint");
             if(forLB){
                 attrs.put("lbEnabled", Enabled);
-                RestUtil.restRequest(prefix + endpoint, attrs, "post", handlerCtx, false);
+                RestUtil.restRequest(endpoint, attrs, "post", handlerCtx, false);
             }else{
                 attrs.put("enabled", Enabled);
-                RestUtil.restRequest(prefix + endpoint, attrs, "post", handlerCtx, false);
+                RestUtil.restRequest(endpoint, attrs, "post", handlerCtx, false);
             }
         }
      }
@@ -569,12 +568,13 @@ public class ApplicationHandlers {
                     String encodedName = URLEncoder.encode(e.getKey(), "UTF-8");
                     oneRow.put("targetName", target);
                     oneRow.put("selected", false);
-                    Map appRefAttrsMap = RestUtil.getAttributesMap(prefix + appRefEndpoint + encodedName);
+                    String endpoint = prefix  + appRefEndpoint + encodedName;
+                    oneRow.put("endpoint", endpoint);
+                    Map appRefAttrsMap = RestUtil.getAttributesMap(endpoint);
                     String image = (appRefAttrsMap.get("enabled").equals("true")) ?  "/resource/images/enabled.png" : "/resource/images/disabled.png";
                     oneRow.put("enabled", image);
                     image = (appRefAttrsMap.get("lbEnabled").equals("true")) ?  "/resource/images/enabled.png" : "/resource/images/disabled.png";
                     oneRow.put("lbEnabled",  image);
-                    oneRow.put("endpoint", appRefEndpoint+encodedName);
                     oneRow.put("sniffers", engines);
                     List sniffersList = GuiUtil.parseStringList(engines, ",");
                     oneRow.put("sniffersList", sniffersList);
