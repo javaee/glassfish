@@ -462,7 +462,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
                          * We have matched this customization with a descriptor
                          * item, so we can skip to the next customization.
                          */
-                        break nextCustomization;
+                        continue nextCustomization;
                     }
                 }
                 /*
