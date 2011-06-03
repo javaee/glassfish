@@ -130,11 +130,6 @@ public interface ServerEnvironment {
      */
     File getTrustStore();
 
-    /**
-     * The domain.xml config file
-     * @return File for the domain.xml config file
-     */
-    File getDomainXML();
 
     /**
      * Gets the server status
