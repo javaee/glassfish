@@ -270,26 +270,35 @@ public class DeploymentElement {
             // Check if the archive should not be deleted at the end
             deleteOnExit = !Boolean.getBoolean(EJBContainerProviderImpl.KEEP_TEMPORARY_FILES);
 
+            if (appName == null) {
+                appName = "ejb-app";
+            }
             result = resultFile;
         }
-        return new ResultApplication(result, deleteOnExit);
+        return new ResultApplication(result, appName, deleteOnExit);
     }
 
     protected static class ResultApplication {
         private boolean deleteOnExit = false;
         private Object app = null;
+        private String appName = null;
 
         ResultApplication (Object app) {
             this.app = app;
         }
 
-        ResultApplication (Object app, boolean deleteOnExit) {
+        ResultApplication (Object app, String appName, boolean deleteOnExit) {
             this.app = app;
+            this.appName = appName;
             this.deleteOnExit = deleteOnExit;
         }
 
         Object getApplication() {
             return app;
+        }
+
+        String getAppName() {
+            return appName;
         }
 
         boolean deleteOnExit() {

@@ -117,7 +117,7 @@ public class EJBContainerImpl extends EJBContainer {
             String appName = (properties == null)? null : (String)properties.get(EJBContainer.APP_NAME);
             res_app = DeploymentElement.getOrCreateApplication(modules, appName);
             Object app = res_app.getApplication();
-            
+
             if (app == null) {
                 throw new EJBException("Invalid set of modules to deploy - see log for details");
             }
@@ -126,6 +126,9 @@ public class EJBContainerImpl extends EJBContainer {
                 _logger.info("[EJBContainerImpl] Deploying app: " + app);
             }
 
+            // Check if appName was set by application creation code
+            appName = res_app.getAppName();
+            
             String[] params;
             if (appName != null) {
                 params = new String[] {"--name", appName};
