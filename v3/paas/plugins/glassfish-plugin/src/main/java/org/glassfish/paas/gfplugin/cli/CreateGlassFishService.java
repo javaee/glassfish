@@ -164,7 +164,7 @@ public class CreateGlassFishService implements AdminCommand, Runnable {
 
         try {
             conn = ds.getConnection();
-            String sql = "UPDATE GF_CLOUD_INFO SET IP_ADDRESS = ?, " +
+            final String sql = "UPDATE GF_CLOUD_INFO SET IP_ADDRESS = ?, " +
                     "STATE = ? WHERE CLOUD_NAME = \'" + entry.getCloudName() + "\'";
 
             stmt = conn.prepareStatement(sql);

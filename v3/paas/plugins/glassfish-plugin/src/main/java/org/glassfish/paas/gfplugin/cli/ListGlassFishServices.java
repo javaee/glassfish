@@ -100,7 +100,8 @@ public class ListGlassFishServices implements AdminCommand {
             if (query != null) {
                 con = ds.getConnection();
                 stmt = con.createStatement();
-                rs = stmt.executeQuery(query);
+                final String sqlQuery = query;
+                rs = stmt.executeQuery(sqlQuery);
 
                 String headings[] = {"CLOUD_NAME", "IP_ADDRESS", "INSTANCE_ID", "SERVER_TYPE", "STATE"};
                 ColumnFormatter cf = new ColumnFormatter(headings);

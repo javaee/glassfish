@@ -69,7 +69,7 @@ public class ServiceUtil implements PostConstruct {
 
     public static enum SERVICE_TYPE {APPLICATION_SERVER, DATABASE, LOAD_BALANCER}
 
-    public static Map<SERVICE_TYPE, String> serviceTypeTableMapping;
+    public final static Map<SERVICE_TYPE, String> serviceTypeTableMapping;
 
     static {
         serviceTypeTableMapping = new HashMap<SERVICE_TYPE, String>();
@@ -249,7 +249,7 @@ public class ServiceUtil implements PostConstruct {
         Statement stmt = null;
         try {
             //check whether the serviceName exists
-            String query = "update " + tableName +
+            final String query = "update " + tableName +
                     " set " + CloudRegistryService.CLOUD_COLUMN_INSTANCE_ID + "='" + instanceID + "'  " +
                     "where " + CLOUD_COLUMN_CLOUD_NAME + " = '" + serviceName + "'";
             System.out.println("Executing query : " + query);
@@ -271,7 +271,7 @@ public class ServiceUtil implements PostConstruct {
         Statement stmt = null;
         try {
             //check whether the serviceName exists
-            String query = "update " + tableName +
+            final String query = "update " + tableName +
                     " set " + CloudRegistryService.CLOUD_COLUMN_STATE + "='" + state + "'  " +
                     "where " + CLOUD_COLUMN_CLOUD_NAME + " = '" + serviceName + "'";
             System.out.println("Executing query : " + query);
@@ -295,7 +295,7 @@ public class ServiceUtil implements PostConstruct {
         boolean valid = false;
         try {
             //check whether the serviceName exists
-            String query = "update " + tableName +
+            final String query = "update " + tableName +
                     " set " + CloudRegistryService.CLOUD_COLUMN_IP_ADDRESS + "='" + IPAddress + "'  " +
                     "where " + CLOUD_COLUMN_CLOUD_NAME + " = '" + serviceName + "'";
             System.out.println("Executing query : " + query);
@@ -380,7 +380,7 @@ public class ServiceUtil implements PostConstruct {
         ResultSet rs = null;
         String serviceName = null;
         try {
-            String query = "select " + CLOUD_COLUMN_CLOUD_NAME + " from " + tableName + " where IP_ADDRESS = '" + ipAddress + "'";
+            final String query = "select " + CLOUD_COLUMN_CLOUD_NAME + " from " + tableName + " where IP_ADDRESS = '" + ipAddress + "'";
             con = ds.getConnection();
             stmt = con.createStatement();
             rs = stmt.executeQuery(query);
@@ -414,7 +414,7 @@ public class ServiceUtil implements PostConstruct {
         Statement stmt = null;
         ResultSet rs = null;
         try {
-            String query = "select * from " + CloudRegistryService.CLOUD_TABLE_NAME + " where CLOUD_NAME like '" + domainName + ".%' and " +
+            final String query = "select * from " + CloudRegistryService.CLOUD_TABLE_NAME + " where CLOUD_NAME like '" + domainName + ".%' and " +
                     CloudRegistryService.CLOUD_COLUMN_SERVER_TYPE + "='" + Type.StandAloneInstance.toString() + "' " +
                     "or " + CloudRegistryService.CLOUD_COLUMN_SERVER_TYPE + "='" + Type.ClusterInstance + "'";
             con = ds.getConnection();
@@ -488,7 +488,7 @@ public class ServiceUtil implements PostConstruct {
         CloudRegistryEntry entry = null;
         try {
             conn = ds.getConnection();
-            String sql = "select * from " + tableName + " where " +
+            final String sql = "select * from " + tableName + " where " +
                     CLOUD_COLUMN_CLOUD_NAME + "='" + serviceName + "'";
 
             stmt = conn.createStatement();
@@ -550,7 +550,7 @@ public class ServiceUtil implements PostConstruct {
 
         try {
             conn = ds.getConnection();
-            String sql = "SELECT " + CLOUD_COLUMN_CLOUD_NAME + " from " + tableName;
+            final String sql = "SELECT " + CLOUD_COLUMN_CLOUD_NAME + " from " + tableName;
             stmt = conn.prepareStatement(sql);
             resultSet = stmt.executeQuery();
             while (resultSet.next()) {

@@ -49,6 +49,6 @@ public abstract class ServiceType {
     // TODO :: Siva should review/fix this.
     @Override
     public boolean equals(Object other) {
-        return other.getClass().getName() == getClass().getName();
+        return getClass().getName().equals(other.getClass().getName());
     }
 }
