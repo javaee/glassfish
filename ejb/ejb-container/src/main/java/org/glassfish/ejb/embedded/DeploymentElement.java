@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -55,7 +55,7 @@ import java.util.logging.Level;
 
 import javax.ejb.EJBException;
 
-import org.glassfish.internal.embedded.ScatteredArchive;
+import org.glassfish.embeddable.archive.ScatteredArchive;
 import org.glassfish.deployment.common.ModuleExploder;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
@@ -75,10 +75,12 @@ public class DeploymentElement {
     private File element;
     private boolean isEJBModule;
     private boolean isWebApp = false;
+    private String mname = null;
 
-    DeploymentElement (File element, boolean isEJBModule) {
+    DeploymentElement (File element, boolean isEJBModule, String mname) {
         this.element  = element;
         this.isEJBModule  = isEJBModule;
+        this.mname  = mname;
         if (element.isFile()) {
             isWebApp = element.getName().endsWith(".war");
         } else {
@@ -101,7 +103,7 @@ public class DeploymentElement {
 
     public static boolean hasEJBModule(Set<DeploymentElement> modules) {
         for (DeploymentElement module : modules) {
-            if (module.isEJBModule()) {
+            if (module.isEJBModule) {
                 return true;
             }
         }
@@ -110,7 +112,7 @@ public class DeploymentElement {
 
     public static boolean hasWar(Set<DeploymentElement> modules) {
         for (DeploymentElement module : modules) {
-            if (module.isWebApp()) {
+            if (module.isWebApp) {
                 return true;
             }
         }
@@ -119,7 +121,7 @@ public class DeploymentElement {
 
     public static DeploymentElement getWar(Set<DeploymentElement> modules) {
         for (DeploymentElement module : modules) {
-            if (module.isWebApp()) {
+            if (module.isWebApp) {
                 return module;
             }
         }
@@ -128,7 +130,7 @@ public class DeploymentElement {
 
     public static boolean hasLibrary(Set<DeploymentElement> modules) {
         for (DeploymentElement module : modules) {
-            if (!module.isEJBModule()) {
+            if (!module.isEJBModule) {
                 return true;
             }
         }
@@ -138,7 +140,7 @@ public class DeploymentElement {
     public static int countEJBModules(Set<DeploymentElement> modules) {
         int result = 0;
         for (DeploymentElement module : modules) {
-            if (module.isEJBModule()) {
+            if (module.isEJBModule) {
                 ++result;
             }
         }
@@ -167,32 +169,32 @@ public class DeploymentElement {
                 result = DeploymentElement.getWar(modules).getElement();
             } else {
                 // EJB molule with libraries - create ScatteredArchive
-                String aName = null;
-                List<URL> archives = new ArrayList<URL>();
+                ScatteredArchive sa = null;
                 for (DeploymentElement m : modules) {
-                    boolean isEJBModule = m.isEJBModule();
-                    File f = m.getElement();
-                    String name = f.getName();
-                    if (_logger.isLoggable(Level.INFO)) {
-                        _logger.info("[DeploymentElement] adding " + ((isEJBModule)? "EJB module" : "library") + " to ScatteredArchive " + name);
-                    }
-        
-                    if (isEJBModule) {
-                        // Need to give archive some meaningful name
-                        aName = name;
-
-                        // workaround for bug 6975728: add the ejb module as the first element of
-                        // urls in ScatteredArchive.  In the current ScatteredArchvie.getURI() method,
-                        // if both topDir and resources are null, the first element in urls list is
-                        // returned as this archvie's URI.
-                        archives.add(0, f.toURI().toURL());
-                    } else {
-                        archives.add(f.toURI().toURL());
+                    if (m.isEJBModule) {
+                        // XXX Work around GLASSFISH-16618
+                        // The name was already calculated when DeploymentElement was created
+                        sa = new ScatteredArchive(m.mname, ScatteredArchive.Type.JAR);
+                        if (_logger.isLoggable(Level.INFO)) {
+                            _logger.info("[DeploymentElement] adding EJB module to ScatteredArchive " + m.mname);
+                        }
+                        sa.addClassPath(m.element);
+                        break;
                     }
                 }
-                ScatteredArchive.Builder saBuilder = new ScatteredArchive.Builder(aName,
-                        Collections.unmodifiableCollection(archives));
-                result = saBuilder.buildJar();
+
+                if (sa != null) {
+                    for (DeploymentElement m : modules) {
+                        if (!m.isEJBModule) {
+                            if (_logger.isLoggable(Level.INFO)) {
+                                _logger.info("[DeploymentElement] adding library to ScatteredArchive " + m.element.getName());
+                            }
+        
+                            sa.addClassPath(m.element);
+                        }
+                    }
+                    result = sa;
+                }
             }
         } else {
             // Create an ear if appName is set or if there is more than 1 EJB module
@@ -218,18 +220,14 @@ public class DeploymentElement {
                 throw new EJBException("Not able to create temp dir " + resultFile.getAbsolutePath ());
             }
 
-            if (System.getProperty(EJBContainerProviderImpl.KEEP_TEMPORARY_FILES) == null) {
-                 deleteOnExit = true;
-            }
-
             // Copy module directories and explode module jars
             int duplicate_dir_counter = 0;
             for (DeploymentElement m : modules) {
-                File f = m.getElement();
+                File f = m.element;
 
                 if (_logger.isLoggable(Level.INFO)) {
                     _logger.info("[DeploymentElement] adding " + f.getName() + " to exploded ear " +
-                            " isEJBModule? " + m.isEJBModule() + " isWebApp? " + m.isWebApp());
+                            " isEJBModule? " + m.isEJBModule + " isWebApp? " + m.isWebApp);
                 }
 
                 String filename = f.toURI().getSchemeSpecificPart();
@@ -247,8 +245,8 @@ public class DeploymentElement {
                     _logger.fine("[DeploymentElement] Converted file name: " + filename + " to " + name);
                 }
 
-                File base = (m.isEJBModule())? resultFile : lib;
-                if (!f.isDirectory() && m.isEJBModule()) { 
+                File base = (m.isEJBModule)? resultFile : lib;
+                if (!f.isDirectory() && m.isEJBModule) { 
                     File out = new File(base, FileUtils.makeFriendlyFilename(name));
                     if (_logger.isLoggable(Level.FINE)) {
                         _logger.fine("[DeploymentElement] Exploding jar to: " + out);
@@ -256,7 +254,7 @@ public class DeploymentElement {
                     ModuleExploder.explodeJar(f, out);
                 } else {
                     if (f.isDirectory()) { 
-                        name = name + (m.isWebApp()? "_war" : (m.isEJBModule()? "_jar" : ".jar"));
+                        name = name + (m.isWebApp? "_war" : (m.isEJBModule? "_jar" : ".jar"));
                     }
                     File out = new File(base, name);
                     if (out.exists()) {
@@ -268,8 +266,11 @@ public class DeploymentElement {
                     FileUtils.copy(f, out);
                 }
 
-                result = resultFile;
             }
+            // Check if the archive should not be deleted at the end
+            deleteOnExit = !Boolean.getBoolean(EJBContainerProviderImpl.KEEP_TEMPORARY_FILES);
+
+            result = resultFile;
         }
         return new ResultApplication(result, deleteOnExit);
     }
