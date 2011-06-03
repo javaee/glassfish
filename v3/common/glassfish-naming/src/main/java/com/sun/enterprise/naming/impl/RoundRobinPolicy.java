@@ -128,10 +128,6 @@ public class RoundRobinPolicy {
         doLog( Level.WARNING, fmt, args ) ;
     }
 
-    private static void infoLog( String fmt, Object... args ) {
-        doLog( Level.INFO, fmt, args ) ;
-    }
-
     private static void fineLog( String fmt, Object... args ) {
         doLog( Level.FINE, fmt, args ) ;
     }
@@ -416,21 +412,6 @@ public class RoundRobinPolicy {
      * corresponding to a particular host.
      * (multi-homed hosts).
      */
-    private List<String> getAddressPortList(List<String> hostPortList) {
-        // The list is assumed to contain <HOST NAME>:<PORT> values
-        List<String> addressPortVector = new ArrayList<String>();
-        for (String str : hostPortList) {
-            try {
-                IiopUrl url = new IiopUrl("iiop://" + str);
-                List<String> apList = getAddressPortList(url);
-                addressPortVector.addAll(apList);
-            } catch (MalformedURLException me) {
-                warnLog( "bad.host.port", str, me.getMessage() );
-            }
-        }
-
-        return addressPortVector ;
-    }
     
     private List<String> getAddressPortList(IiopUrl iiopUrl) {
         // Pull out the host name and port
@@ -486,7 +467,7 @@ public class RoundRobinPolicy {
         return sb.toString() ;
     }
 
-    public List<String> getHostPortList() {
+    public synchronized List<String> getHostPortList() {
         return resolvedEndpoints ;
     }
 }
