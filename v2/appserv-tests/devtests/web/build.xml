@@ -437,6 +437,7 @@
         <ant dir="oneSessionCookieHeader" target="all"/>
         <ant dir="cachingHang" target="all"/>
         <ant dir="jsessionIdParameter" target="all"/>
+        <ant dir="setWebContextParam" target="all"/>
     </target>
 
     <target name="security" depends="init-report">
