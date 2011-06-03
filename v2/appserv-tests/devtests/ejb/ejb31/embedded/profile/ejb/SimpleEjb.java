@@ -6,7 +6,7 @@ import javax.ejb.Stateless;
  * @author Marina Vatkina
  */
 @Stateless
-public class SimpleEjb {
+public class SimpleEjb implements Simple {
 
     public String saySomething() {
         return "hello";

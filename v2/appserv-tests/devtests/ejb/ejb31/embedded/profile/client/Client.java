@@ -36,7 +36,7 @@
 
 package com.acme;
 
-import org.glassfish.tests.ejb.profile.SimpleEjb;
+import org.glassfish.tests.ejb.profile.Simple;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -80,7 +80,7 @@ public class Client {
         try {
             System.out.println("Looking up EJB...");
             startTime = now();
-            SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/" + module + "/SimpleEjb");
+            Simple ejb = (Simple) ic.lookup("java:global/" + module + "/SimpleEjb");
             System.err.println("\n==> Spent on LOOKUP: " + (now() - startTime) + " msec");
             System.out.println("Invoking EJB...");
             startTime = now();
