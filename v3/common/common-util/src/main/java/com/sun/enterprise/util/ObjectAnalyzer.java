@@ -192,9 +192,6 @@ public class ObjectAnalyzer {
         if (obj == null)
             throw new ObjectAnalyzerException(fatal + "null Object parameter");//NOI18N
 
-        if (!(obj instanceof Object))
-            throw new ObjectAnalyzerException(fatal + "Object parameter is not really a java.lang.Object");//NOI18N
-
         Class cl = obj.getClass();
 
         if (cl == null)
