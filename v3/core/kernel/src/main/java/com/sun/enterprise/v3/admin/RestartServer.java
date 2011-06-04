@@ -44,6 +44,7 @@ import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.process.JavaClassRunner;
+import com.sun.enterprise.universal.process.ProcessUtils;
 import com.sun.enterprise.util.StringUtils;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.internal.api.Globals;
@@ -309,7 +310,7 @@ public class RestartServer {
     private String serverName = "";
     private static final LocalStringsImpl strings = new LocalStringsImpl(RestartServer.class);
     /////////////             static variables               ///////////////////
-    private static final String magicProperty = "-DAS_RESTART=true";
+    private static final String magicProperty = "-DAS_RESTART=" + ProcessUtils.getPid();
     private static final String[] normalProps = {magicProperty};
     private static final int RESTART_NORMAL = 10;
     private static final int RESTART_DEBUG_ON = 11;
