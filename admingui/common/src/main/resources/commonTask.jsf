@@ -71,7 +71,7 @@
                 onClick="javascript:var win=window.open('#{request.contextPath}/common/registration.jsf','_blank');if (win) {win.focus();}; return false;">
             </sun:commonTask>
             <sun:commonTask
-                rendered="#{!sessionScope._noNetwork}"
+                rendered="#{!sessionScope._noNetwork && !pageSession.isAIX}"
                 text="$resource{i18n.commonTasks.task.glassfishNews}"
                 toolTip="$resource{i18n.commonTasks.task.glassfishNews}"
                 onClick="javascript:var win=window.open('#{request.contextPath}/common/sysnet/support.jsf','_blank');if (win) {win.focus();}; return false;">
@@ -84,6 +84,7 @@
             <event>
                 <!beforeCreate
                     gf.isRegistrationEnabled(isEnabled="#{pageSession.isRegistrationEnabled}");
+                    gf.isAIX(result="#{pageSession.isAIX}");
                     setSessionAttribute(key="gf_application_cancel_page" value="/common/commonTask.jsf");
                 />
             </event>
