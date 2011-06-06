@@ -53,7 +53,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -68,31 +67,21 @@ public class ApplicationTest extends RestTestBase {
     @Test
     public void testApplicationDeployment() throws URISyntaxException {
         final String appName = "testApp" + generateRandomString();
-        Map<String, Object> newApp = new HashMap<String, Object>() {{
-                put("id", getFile("test.war"));
-                put("contextroot", appName);
-                put("name", appName);
-        }};
+
         try {
-            Map<String, String> deployedApp = deployApp(newApp);
+            Map<String, String> deployedApp = deployApp(getFile("test.war"), appName, appName);
             assertEquals(appName, deployedApp.get("name"));
 
             assertEquals("/" + appName, deployedApp.get("contextRoot"));
         } finally {
-            undeployApp(newApp);
+            undeployApp(appName);
         }
     }
-    
+
     @Test
     public void deployCodiApp() throws URISyntaxException, MalformedURLException, IOException {
         try {
             final String appName = "testApp" + generateRandomString();
-
-            Map<String, Object> newApp = new HashMap<String, Object>() {{
-                    put("id", downloadFile(new URL(URL_CODI_SAMPLE)));
-                    put("contextroot", appName);
-                    put("name", appName);
-            }};
 
             Map<String, String> params = new HashMap<String, String>();
             params.put("name", "CloudBeesDS");
@@ -101,12 +90,12 @@ public class ApplicationTest extends RestTestBase {
             ClientResponse response = post (JdbcTest.BASE_JDBC_RESOURCE_URL, params);
             assertTrue(isSuccess(response));
 
-            Map<String, String> deployedApp = deployApp(newApp);
+            Map<String, String> deployedApp = deployApp(downloadFile(new URL(URL_CODI_SAMPLE)), appName, appName);
             assertEquals(appName, deployedApp.get("name"));
 
             assertEquals("/" + appName, deployedApp.get("contextRoot"));
 
-            undeployApp(newApp);
+            undeployApp(appName);
         } finally {
             delete(JdbcTest.BASE_JDBC_RESOURCE_URL + "/CloudBeesDS");
         }
@@ -115,13 +104,8 @@ public class ApplicationTest extends RestTestBase {
     @Test
     public void testApplicationDisableEnable() throws URISyntaxException {
         final String appName = "testApp" + generateRandomString();
-        Map<String, Object> newApp = new HashMap<String, Object>() {{
-            put("id", getFile("test.war"));
-            put("contextroot", appName);
-            put("name", appName);
-        }};
 
-        Map<String, String> deployedApp = deployApp(newApp);
+        Map<String, String> deployedApp = deployApp(getFile("test.war"), appName, appName);
         assertEquals(appName, deployedApp.get("name"));
 
         assertEquals("/" + appName, deployedApp.get("contextRoot"));
@@ -131,33 +115,28 @@ public class ApplicationTest extends RestTestBase {
             ClientResponse response = get(appUrl);
             assertEquals ("Test", response.getEntity(String.class).trim());
 
-            response = post(URL_APPLICATION_DEPLOY + "/" + newApp.get("name") + "/disable");
+            response = post(URL_APPLICATION_DEPLOY + "/" + appName + "/disable");
             checkStatusForSuccess(response);
 
             response = get(appUrl);
             assertFalse("Response was " + response.getStatus(), isSuccess(response));
 
-            response = post(URL_APPLICATION_DEPLOY + "/" + newApp.get("name") + "/enable");
+            response = post(URL_APPLICATION_DEPLOY + "/" + appName + "/enable");
             checkStatusForSuccess(response);
 
             response = get(appUrl);
             assertEquals ("Test", response.getEntity(String.class).trim());
         } finally {
-            undeployApp(newApp);
+            undeployApp(appName);
         }
     }
 
     @Test
     public void listSubComponents() throws URISyntaxException {
         final String appName = "testApp" + generateRandomString();
-        Map<String, Object> newApp = new HashMap<String, Object>() {{
-                put("id", getFile("stateless-simple.ear"));
-                put("contextroot", appName);
-                put("name", appName);
-        }};
 
         try {
-            deployApp(newApp);
+            deployApp(getFile("stateless-simple.ear"), appName, appName);
             ClientResponse response = get(URL_SUB_COMPONENTS + "?id=" + appName);
             checkStatusForSuccess(response);
             String subComponents = response.getEntity(String.class);
@@ -167,10 +146,8 @@ public class ApplicationTest extends RestTestBase {
             checkStatusForSuccess(response);
             subComponents = response.getEntity(String.class);
             assertTrue(subComponents.contains("GreeterServlet"));
-        } catch (Exception e) {
-            e.printStackTrace();
         } finally {
-            undeployApp(newApp);
+            undeployApp(appName);
         }
     }
 
@@ -179,11 +156,7 @@ public class ApplicationTest extends RestTestBase {
         final String instanceName = "instance_" + generateRandomString();
         final String appName = "testApp" + generateRandomString();
         final String appRefUrl = "/domain/servers/server/" + instanceName + "/application-ref";
-        Map<String, Object> newApp = new HashMap<String, Object>() {{
-            put("id", getFile("test.war"));
-            put("contextroot", appName);
-            put("name", appName);
-        }};
+
         Map<String, String> newInstance = new HashMap<String, String>() {{
             put("id", instanceName);
             put("node", "localhost-domain1");
@@ -197,14 +170,14 @@ public class ApplicationTest extends RestTestBase {
             ClientResponse response = post(URL_CREATE_INSTANCE, newInstance);
             checkStatusForSuccess(response);
 
-            deployApp(newApp);
+            deployApp(getFile("test.war"), appName, appName);
 
             response = post (appRefUrl, applicationRef);
             checkStatusForSuccess(response);
 
             response = get(appRefUrl + "/" + appName);
             checkStatusForSuccess(response);
-            
+
             response = delete(appRefUrl + "/" + appName, new HashMap<String, String>() {{ put("target", instanceName); }});
             checkStatusForSuccess(response);
         } finally {
@@ -212,21 +185,16 @@ public class ApplicationTest extends RestTestBase {
             checkStatusForSuccess(response);
             response = get("/domain/servers/server/" + instanceName);
             assertFalse(isSuccess(response));
-            undeployApp(newApp);
+            undeployApp(appName);
         }
     }
 
     @Test
     public void testGetContextRoot() throws URISyntaxException {
         final String appName = "testApp" + generateRandomString();
-        Map<String, Object> newApp = new HashMap<String, Object>() {{
-            put("id", getFile("stateless-simple.ear"));
-            put("contextroot", appName);
-            put("name", appName);
-        }};
 
         try {
-            Map<String, String> deployedApp = deployApp(newApp);
+            Map<String, String> deployedApp = deployApp(getFile("stateless-simple.ear"), appName, appName);
             assertEquals(appName, deployedApp.get("name"));
             Map<String, String> contextRootPayload = new HashMap<String, String>() {{
                 put("appname", appName);
@@ -237,19 +205,14 @@ public class ApplicationTest extends RestTestBase {
             checkStatusForSuccess(response);
             assertTrue(response.getEntity(String.class).contains("helloworld"));
         } finally {
-            undeployApp(newApp);
+            undeployApp(appName);
         }
     }
-    
+
     @Test
     public void testUndeploySubActionWarnings() throws URISyntaxException {
         final String appName = "testApp" + generateRandomString();
         final String serverName = "in" + generateRandomNumber();
-        Map<String, Object> newApp = new HashMap<String, Object>() {{
-                put("id", getFile("test.war"));
-                put("contextroot", appName);
-                put("name", appName);
-        }};
         try {
             ClientResponse response = post ("/domain/create-instance", new HashMap<String, String>() {{
                 put("id", serverName);
@@ -259,13 +222,13 @@ public class ApplicationTest extends RestTestBase {
 
             response = post("/domain/servers/server/" + serverName + "/start-instance");
             checkStatusForSuccess(response);
-           
-            deployApp(newApp);
+
+            deployApp(getFile("test.war"), appName, appName);
             addAppRef(appName, serverName);
-            
+
             response = post("/domain/servers/server/" + serverName + "/stop-instance");
             checkStatusForSuccess(response);
-            
+
             response = delete ("/domain/applications/application/"+appName, new HashMap<String, String>() {{
                 put("target", "domain");
             }});
@@ -281,7 +244,7 @@ public class ApplicationTest extends RestTestBase {
         final URL resource = getClass().getResource("/" + fileName);
         return new File(resource.toURI());
     }
-    
+
     protected File downloadFile(URL url) throws IOException {
         String urlText = url.getFile();
         String fileName = urlText.substring(urlText.lastIndexOf("/")+1);
@@ -299,29 +262,39 @@ public class ApplicationTest extends RestTestBase {
         }
         bout.close();
         in.close();
-        
+
         return file;
     }
 
-    protected Map<String, String> deployApp(Map<String, Object> app) {
+    public Map<String, String> deployApp (final String fileName, final String contextRoot, final String name) throws URISyntaxException {
+        return deployApp(getFile(fileName), contextRoot, name);
+    }
+
+    public Map<String, String> deployApp (final File archive, final String contextRoot, final String name) {
+        Map<String, Object> app = new HashMap<String, Object>() {{
+            put("id", archive);
+            put("contextroot", contextRoot);
+            put("name", name);
+        }};
+
         ClientResponse response = postWithUpload(URL_APPLICATION_DEPLOY, app);
         checkStatusForSuccess(response);
 
         return getEntityValues(get(URL_APPLICATION_DEPLOY + "/" + app.get("name")));
     }
-    
-    protected void addAppRef(final String applicationName, final String targetName){
+
+    public void addAppRef(final String applicationName, final String targetName){
         ClientResponse cr = post("/domain/servers/server/" + targetName + "/application-ref", new HashMap<String,String>() {{
             put("id", applicationName);
             put("target", targetName);
         }});
         checkStatusForSuccess(cr);
     }
-    
-    protected ClientResponse undeployApp(Map<String, Object> app) {
-        ClientResponse response = delete(URL_APPLICATION_DEPLOY + "/" + app.get("name"));
+
+    public ClientResponse undeployApp(String appName) {
+        ClientResponse response = delete(URL_APPLICATION_DEPLOY + "/" + appName);
         checkStatusForSuccess(response);
-        
+
         return response;
     }
 }
