@@ -220,7 +220,7 @@ public class MonitorableThreadPool extends StatsThreadPool {
                     monitoring.getThreadPoolProbeProvider()
                           .threadAllocatedEvent(monitoringId,
                                                 threadPoolName,
-                                                thread.getName());
+                                                thread.getId());
                 }
 
             }
@@ -236,7 +236,7 @@ public class MonitorableThreadPool extends StatsThreadPool {
                     monitoring.getThreadPoolProbeProvider()
                           .threadReleasedEvent(monitoringId,
                                                threadPoolName,
-                                               thread.getName());
+                                               thread.getId());
                 }
 
             }
@@ -285,7 +285,7 @@ public class MonitorableThreadPool extends StatsThreadPool {
                     monitoring.getThreadPoolProbeProvider()
                           .threadDispatchedFromPoolEvent(monitoringId,
                                                          getPoolName(),
-                                                         Thread.currentThread().getName());
+                                                         Thread.currentThread().getId());
                 }
 
             }
@@ -314,7 +314,7 @@ public class MonitorableThreadPool extends StatsThreadPool {
                     monitoring.getThreadPoolProbeProvider()
                           .threadReturnedToPoolEvent(monitoringId,
                                                      getPoolName(),
-                                                     Thread.currentThread().getName());
+                                                     Thread.currentThread().getId());
                 }
 
             }

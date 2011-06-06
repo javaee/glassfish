@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -71,14 +71,14 @@ public class ThreadPoolProbeProvider {
     public void threadAllocatedEvent(
         @ProbeParam("monitoringId") String monitoringId,
         @ProbeParam("threadPoolName") String threadPoolName,
-        @ProbeParam("threadId") String threadId) {}
+        @ProbeParam("threadId") long threadId) {}
 
 
     @Probe(name="threadReleasedEvent")
     public void threadReleasedEvent(
         @ProbeParam("monitoringId") String monitoringId,
         @ProbeParam("threadPoolName") String threadPoolName,
-        @ProbeParam("threadId") String threadId) {}
+        @ProbeParam("threadId") long threadId) {}
 
 
     @Probe(name="maxNumberOfThreadsReachedEvent")
@@ -92,12 +92,12 @@ public class ThreadPoolProbeProvider {
     public void threadDispatchedFromPoolEvent(
         @ProbeParam("monitoringId") String monitoringId,
         @ProbeParam("threadPoolName") String threadPoolName,
-        @ProbeParam("threadId") String threadId) {}
+        @ProbeParam("threadId") long threadId) {}
 
 
     @Probe(name="threadReturnedToPoolEvent")
     public void threadReturnedToPoolEvent(
         @ProbeParam("monitoringId") String monitoringId,
         @ProbeParam("threadPoolName") String threadPoolName,
-        @ProbeParam("threadId") String threadId) {}
+        @ProbeParam("threadId") long threadId) {}
 }
