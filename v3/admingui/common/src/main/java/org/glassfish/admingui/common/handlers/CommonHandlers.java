@@ -82,6 +82,8 @@ import org.glassfish.admingui.common.util.TargetUtil;
 
 public class CommonHandlers {
     
+    private static final String AIX = "AIX";
+
     /** Creates a new instance of CommonHandlers */
     public CommonHandlers() {
     }
@@ -699,6 +701,16 @@ public class CommonHandlers {
         handlerCtx.setOutputValue("resultMap", resultMap);
     }
 
+
+    @Handler(id = "gf.isAIX",
+        output = {
+            @HandlerOutput(name = "result", type =Boolean.class)
+    })
+    public static void isAIX(HandlerContext handlerCtx) {
+        Boolean isAIX = AIX.equalsIgnoreCase(System.getProperty("os.name"));
+        handlerCtx.setOutputValue("result", isAIX);         
+    }
+    
     /**
      * If the bare attribute is found in the query string and the value is "true",
      * then add "bare=true" to the specified url string.
