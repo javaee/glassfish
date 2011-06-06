@@ -232,7 +232,6 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
         try {
             if (!latch.await(100L, TimeUnit.SECONDS)) {
-                // todo : better error reporting.
                 logger.log(Level.SEVERE, "console.adapter.timeout");
                 return;
             }
@@ -428,7 +427,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
         InputStream in = null;
         try {
-            in = loader.getResourceAsStream(resourcePath);
+            //in = loader.getResourceAsStream(resourcePath);
             if (in == null) {
                 if (logger.isLoggable(Level.WARNING)) {
                     logger.log(Level.WARNING, "console.adapter.resourceNotFound", resourcePath);
