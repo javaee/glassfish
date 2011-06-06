@@ -307,7 +307,7 @@ public class CommandResourceMetaData {
         {"JmsService", "list-jms-hosts", "GET", "list-jms-hosts", "list-jms-hosts"},
         {"JmsService", "list-jms-resources", "GET", "list-jms-resources", "list-jms-resources"},
         {"JmsHost", "delete-jms-host", "DELETE", "delete-jms-host", "Delete JMS Host", "id=$parent"},
-        {"LbConfig", "create-http-lb-ref", "POST", "create-http-lb-ref", "create-http-lb-ref"},
+        {"LbConfig", "create-http-lb-ref", "POST", "create-http-lb-ref", "create-http-lb-ref", "config=$parent"},
         {"LbConfig", "create-http-listener", "POST", "create-http-listener", "create-http-listener"},
         {"LbConfig", "delete-http-lb-ref", "POST", "delete-http-lb-ref", "delete-http-lb-ref"},
         {"LbConfig", "delete-http-listener", "POST", "delete-http-listener", "delete-http-listener"},
