@@ -201,6 +201,8 @@ public final class ExtendedAccessLogValve
     protected static final String info =
         "org.apache.catalina.valves.ExtendedAccessLogValve/1.0";
 
+    private static final String REQUEST_START_TIME_NOTE =
+        "org.apache.catalina.valves.ExtendedAccessLogValve.requestStartTime";
 
     /**
      * The lifecycle event support for this component.
@@ -380,9 +382,6 @@ public final class ExtendedAccessLogValve
      * Date format to place in log file name. Use at your own risk!
      */
     private String fileDateFormat = null;
-
-
-    private long startTime;
 
 
     // ------------------------------------------------------------- Properties
@@ -593,7 +592,7 @@ public final class ExtendedAccessLogValve
          throws IOException, ServletException {
 
         // Pass this request on to the next valve in our pipeline
-        startTime = System.currentTimeMillis();
+        request.setNote(REQUEST_START_TIME_NOTE, Long.valueOf(System.currentTimeMillis()));
 
         return INVOKE_NEXT;
     }
@@ -603,7 +602,13 @@ public final class ExtendedAccessLogValve
                                     throws IOException, ServletException{
 
         long endTime = System.currentTimeMillis();
-        long runTime = endTime-startTime;
+        Object startTimeObj = request.getNote(REQUEST_START_TIME_NOTE);
+        if (!(startTimeObj instanceof Long)) {
+            // should not happen
+            return;
+        }
+
+        long runTime = endTime - ((Long)startTimeObj).longValue();
 
         if (fieldInfos==null || condition!=null &&
               null!=request.getRequest().getAttribute(condition)) {
@@ -643,8 +648,6 @@ public final class ExtendedAccessLogValve
                     result.append(getServerToClient(fieldInfos[i], response));
                     break;
                 case FieldInfo.DATA_SERVER_TO_RSERVER:
-                    result.append('-');
-                    break;
                 case FieldInfo.DATA_RSERVER_TO_SERVER:
                     result.append('-');
                     break;
