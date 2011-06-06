@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -69,13 +69,14 @@ public class EmbeddedSetConfigurationTest {
     static WebContainer embedded;
     static File root;
     static int newPort = 9090;
+    static String contextRoot = "test";
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
         glassfish = GlassFishRuntime.bootstrap().newGlassFish();
         glassfish.start();
         embedded = glassfish.getService(WebContainer.class);
-        System.out.println("================ EmbeddedSetDocRoot Test");
+        System.out.println("================ EmbeddedSetConfiguration Test");
         System.out.println("Starting Web "+embedded);
         embedded.setLogLevel(Level.INFO);
         WebContainerConfig config = new WebContainerConfig();
@@ -90,11 +91,17 @@ public class EmbeddedSetConfigurationTest {
     
     @Test
     public void testEmbeddedWebAPIConfig() throws Exception {
+
         WebListener listener = embedded.createWebListener("test-listener", HttpListener.class);
         listener.setPort(newPort);
         embedded.addWebListener(listener);
 
-        URL servlet = new URL("http://localhost:"+newPort);
+        Context context = embedded.createContext(root);
+        embedded.addContext(context, contextRoot);
+
+        // TODO
+        //URL servlet = new URL("http://localhost:"+newPort);
+        URL servlet = new URL("http://localhost:9090/"+contextRoot+"/hello");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(
