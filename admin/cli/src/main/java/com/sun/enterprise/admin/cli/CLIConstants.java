@@ -53,7 +53,7 @@ public class CLIConstants {
     public static final String  EOL                             = System.getProperty("line.separator");
 
     // sent in as a System Property for restarts
-    public static final String  RESTART_FLAG                    = "AS_RESTART";
+    public static final String  RESTART_FLAG_PARENT_PID         = "AS_RESTART";
     public static final long    WAIT_FOR_DAS_TIME_MS            = 10 * 60 * 1000; // 10 minutes
     public static final int     RESTART_NORMAL                  = 10;
     public static final int     RESTART_DEBUG_ON                = 11;
@@ -65,7 +65,7 @@ public class CLIConstants {
     public static final int     SUCCESS                         = 0;
     public static final int     ERROR                           = 1;
     public static final int     WARNING                         = 4;
-    public static final int     DEATH_TIMEOUT_MS                = 1 * 60 * 1000;
+    public static final long     DEATH_TIMEOUT_MS                = 1 * 60 * 1000;
 
     public static final String K_ADMIN_PORT = "agent.adminPort";
     public static final String K_ADMIN_HOST = "agent.adminHost";

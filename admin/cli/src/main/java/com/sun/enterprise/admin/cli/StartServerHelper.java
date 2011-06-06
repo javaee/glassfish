@@ -39,15 +39,18 @@
  */
 package com.sun.enterprise.admin.cli;
 
+import com.sun.enterprise.util.OS;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.sun.enterprise.admin.launcher.GFLauncher;
 import com.sun.enterprise.admin.launcher.GFLauncherException;
 import com.sun.enterprise.admin.launcher.GFLauncherInfo;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.process.ProcessStreamDrainer;
+import com.sun.enterprise.universal.process.ProcessUtils;
 import com.sun.enterprise.util.HostAndPort;
 import com.sun.enterprise.util.io.ServerDirs;
 import com.sun.enterprise.util.net.NetUtils;
@@ -66,7 +69,6 @@ import static com.sun.enterprise.admin.cli.CLIConstants.WAIT_FOR_DAS_TIME_MS;
  * @author bnevins
  */
 public class StartServerHelper {
-
     public StartServerHelper(Logger logger0, boolean terse0,
             ServerDirs serverDirs0, GFLauncher launcher0,
             String masterPassword0, boolean debug0) {
@@ -85,11 +87,11 @@ public class StartServerHelper {
         pidFile = serverDirs.getPidFile();
         masterPassword = masterPassword0;
         debug = debug0;
-                // it will be < 0 if both --debug is false and debug-enabled=false in jvm-config
+        // it will be < 0 if both --debug is false and debug-enabled=false in jvm-config
         debugPort = launcher.getDebugPort();
         isDebugSuspend = launcher.isDebugSuspend();
 
-        if(isDebugSuspend && debugPort >= 0) {
+        if (isDebugSuspend && debugPort >= 0) {
             logger.info(strings.get("ServerStart.DebuggerSuspendedMessage", "" + debugPort));
         }
     }
@@ -209,20 +211,6 @@ public class StartServerHelper {
             logfile = "UNKNOWN";        // should never happen
         }
 
-
-        // TODO  TODO  TODO  TODO  Todo  todo
-        // TODO  TODO  TODO  TODO  Todo  todo
-        // TODO  TODO  TODO  TODO  Todo  todo
-        // TODO  TODO  TODO  TODO  Todo  todo
-        // add logfile path to ServerDirs
-        // TODO IMPORTANT have the enum itself return the strings "domain"  "instance" etc.
-        // TODO  TODO  TODO  TODO  Todo  todo
-        // TODO  TODO  TODO  TODO  Todo  todo
-        // TODO  TODO  TODO  TODO  Todo  todo
-        // TODO  TODO  TODO  TODO  Todo  todo
-        // TODO  TODO  TODO  TODO  Todo  todo
-        // TODO  TODO  TODO  TODO  Todo  todo
-
         int adminPort = -1;
         String adminPortString = "-1";
 
@@ -253,12 +241,27 @@ public class StartServerHelper {
     /**
      * If the parent is a GF server -- then wait for it to die.  This is part
      * of the Client-Server Restart Dance!
+     * THe dying server called us with the system property AS_RESTART set to its pid
      * @throws CommandException if we timeout waiting for the parent to die or
      *  if the admin ports never free up
      */
     private void waitForParentToDie() throws CommandException {
-        if (Boolean.getBoolean(CLIConstants.RESTART_FLAG))
-            new ParentDeathWaiter();
+        // we also come here with just a regular start in which case there is
+        // no parent, and the System Property is NOT set to anything...
+        String pids = System.getProperty(CLIConstants.RESTART_FLAG_PARENT_PID);
+
+        if (!ok(pids))
+            return;
+
+        int pid = -1;
+
+        try {
+            pid = Integer.parseInt(pids);
+        }
+        catch (Exception e) {
+            pid = -1;
+        }
+        waitForParentDeath(pid);
     }
 
     private boolean checkPorts() {
@@ -298,8 +301,64 @@ public class StartServerHelper {
         return null;
     }
 
-    private boolean timedOut(long startTime) {
-        return (System.currentTimeMillis() - startTime) > WAIT_FOR_DAS_TIME_MS;
+    // use the pid we received from the parent server and platform specific tools
+    // to see FOR SURE when the entire JVM process is gone.  This solves
+    // potential niggling bugs.
+    private void waitForParentDeath(int pid) throws CommandException {
+        if (pid < 0) {
+            // can not happen.  (Famous Last Words!)
+            new ParentDeathWaiterPureJava();
+            return;
+        }
+
+        long start = System.currentTimeMillis();
+        try {
+            do {
+                Boolean b = ProcessUtils.isProcessRunning(pid);
+                if (b == null) {
+                    // this means we were unable to find out from the OS if the process
+                    // is running or not
+                    debugMessage("ProcessUtils.isProcessRunning(" + pid + ") "
+                            + "returned null which means we can't get process "
+                            + "info on this platform.");
+
+                    new ParentDeathWaiterPureJava();
+                    return;
+                }
+                if (b.booleanValue() == false) {
+                    debugMessage("Parent process (" + pid + ") is dead.");
+                    return;
+                }
+                // else parent is still breathing...
+                debugMessage("Wait one more second for parent to die...");
+                Thread.sleep(1000);
+            }while (!timedOut(start, CLIConstants.DEATH_TIMEOUT_MS));
+
+        }
+        catch (Exception e) {
+            // fall through.  Normal returns are in the block above
+        }
+
+        // abnormal return path
+        throw new CommandException(
+                strings.get("deathwait_timeout", CLIConstants.DEATH_TIMEOUT_MS));
+    }
+
+    private static boolean timedOut(long startTime) {
+        return timedOut(startTime, WAIT_FOR_DAS_TIME_MS);
+    }
+
+    private static boolean timedOut(long startTime, long span) {
+        return (System.currentTimeMillis() - startTime) > span;
+    }
+
+    private static void debugMessage(String s) {
+        // very difficult to see output from this process when part of restart-domain.
+        // Normally there is no console.
+        // There are **three** JVMs in a restart -- old server, new server, cli
+        // we will not even see AS_DEBUG!
+        if (DEBUG_MESSAGES_ON)
+            CLIUtil.writeCommandToDebugLog(new String[]{"DEBUG MESSAGE FROM RESTART JVM", s}, 99999);
     }
     private final boolean terse;
     private final GFLauncher launcher;
@@ -313,6 +372,8 @@ public class StartServerHelper {
     private final boolean debug;
     private final int debugPort;
     private final boolean isDebugSuspend;
+    // only set when actively trouble-shooting or investigating...
+    private final static boolean DEBUG_MESSAGES_ON = false;
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StartServerHelper.class);
 
@@ -321,11 +382,10 @@ public class StartServerHelper {
      * the restart flag is set by the RestartDomain command in the local
      * server.  The dying server has started a new JVM process and is
      * running this code.  Our official parent process is the dying server.
-     * The ParentDeathWaiter waits for the parent process to disappear.
+     * The ParentDeathWaiterPureJava waits for the parent process to disappear.
      * see RestartDomainCommand in core/kernel for more details
      */
-    private class ParentDeathWaiter implements Runnable {
-
+    private class ParentDeathWaiterPureJava implements Runnable {
         @Override
         @SuppressWarnings("empty-statement")
         public void run() {
@@ -340,12 +400,12 @@ public class StartServerHelper {
             }
 
             // The port may take some time to become free after the pipe breaks
-            while (adminPortInUse(addresses) != null);
-
+            while (adminPortInUse(addresses) != null)
+                ;
             success = true;
         }
 
-        private ParentDeathWaiter() throws CommandException {
+        private ParentDeathWaiterPureJava() throws CommandException {
             try {
                 Thread t = new Thread(this);
                 t.start();
