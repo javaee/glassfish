@@ -61,6 +61,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hk2.component.Habitat;
 import static org.junit.Assert.*;
@@ -440,6 +441,7 @@ public class FileArchiveTest {
         }
     }
 
+    @Ignore
     @Test
     public void testInaccessibleDirectoryInFileArchive() throws Exception {
         final String vendorURLText = System.getProperty("java.vendor.url");
