@@ -392,6 +392,17 @@ public abstract class ConnectionHolder implements Connection {
     }
 
     /**
+     * Set the isClosed flag based on whether the underlying <code>Connection</code>
+     * object is closed.
+     *
+     * @param flag true if <code>Connection</code> object is closed, false if
+     * its not closed.
+     */
+    public void setClosed(boolean flag) {
+        isClosed = flag;
+    }
+
+    /**
      * Retrieves whether this <code>Connection</code> object is read-only.
      *
      * @return true if <code> Connection </code> is read-only, false other-wise

@@ -389,6 +389,12 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
         putbackResourceToPool(resource, true);
     }
 
+    public void resourceAbortOccurred(ResourceHandle resource) {
+        ResourceManager rm = getResourceManager(resource.getResourceSpec());
+        rm.delistResource(resource, XAResource.TMSUCCESS);
+        putbackResourceToPool(resource, true);
+    }
+
     public void putbackBadResourceToPool(ResourceHandle h) {
 
         // notify pool
@@ -682,7 +688,7 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
             result = pool.flushConnectionPool();
         } else {
             _logger.log(Level.WARNING, "poolmgr.flush_noop_pool_not_initialized", poolInfo);
-            throw new PoolingException("Flush Connection Pool for pool " + 
+            throw new PoolingException("Flush Connection Pool for pool " +
                     poolInfo + " failed. Please see server.log for more details.");
         }
         return result;

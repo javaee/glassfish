@@ -611,6 +611,7 @@ public class ConnectionHolder40 extends ConnectionHolder {
     public void abort(Executor executor) throws SQLException {
         if (DataSourceObjectBuilder.isJDBC41()) {
             getManagedConnection().markForRemoval(true);
+            getManagedConnection().setAborted(true);
             if(!getManagedConnection().isTransactionInProgress()) {
                 close();
             }
