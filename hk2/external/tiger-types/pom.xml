@@ -111,7 +111,7 @@
         <dependency>
             <groupId>org.jvnet</groupId>
             <artifactId>tiger-types</artifactId>
-            <version>1.2</version>
+            <version>1.4</version>
             <!-- By indicating the scope as provided, GF distribution mechanism 
                  excludes this -->
             <scope>provided</scope>
