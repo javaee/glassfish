@@ -85,5 +85,12 @@ public interface ExtensibleType<T extends ExtensibleType> extends Type {
      *
      * @return collection of implemented or extended interfaces
      */
-    Collection<InterfaceModel> getInterfaces();    
+    Collection<InterfaceModel> getInterfaces();
+
+    /**
+     * Returns an unmodifiable list of static fields defined by this type
+     *
+     * @reutrn collection of defined static fields
+     */
+    Collection<FieldModel> getStaticFields();
 }

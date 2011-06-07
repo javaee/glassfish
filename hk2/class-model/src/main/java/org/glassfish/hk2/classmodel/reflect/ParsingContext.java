@@ -188,6 +188,11 @@ public class ParsingContext {
             public Set<String> getTypesOfInterest() {
                 return emptyList;
             }
+
+            @Override
+            public boolean modelUnAnnotatedMembers() {
+                return false;
+            }
         };
     }
 

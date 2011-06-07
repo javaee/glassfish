@@ -144,6 +144,11 @@ public abstract class InhabitantsParsingContextGenerator implements Closeable {
             public Set<String> getTypesOfInterest() {
                 return annotations;
             }
+
+            @Override
+            public boolean modelUnAnnotatedMembers() {
+                return false;
+            }
         });
 
         // optionally provide an executor

@@ -40,8 +40,10 @@
 package org.glassfish.hk2.classmodel.reflect.impl;
 
 import org.glassfish.hk2.classmodel.reflect.*;
+import org.glassfish.hk2.classmodel.reflect.util.ParsingConfig;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Implementation of an extensible type (Class or Interface)
@@ -49,7 +51,8 @@ import java.util.*;
 public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeImpl implements ExtensibleType<T> {
 
     private TypeProxy<?> parent;
-    private final Set<TypeProxy<InterfaceModel>> implementedIntf = Collections.synchronizedSet(new HashSet<TypeProxy<InterfaceModel>>());
+    private final List<FieldModel> staticFields = new ArrayList<FieldModel> ();
+    private final List<TypeProxy<InterfaceModel>> implementedIntf = new ArrayList<TypeProxy<InterfaceModel>>();
     
     public ExtensibleTypeImpl(String name, TypeProxy<Type> sink, TypeProxy parent) {
         super(name, sink);
@@ -71,7 +74,7 @@ public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeI
         return this.parent;
     }
 
-    void isImplementing(TypeProxy<InterfaceModel> intf) {
+    synchronized void isImplementing(TypeProxy<InterfaceModel> intf) {
         implementedIntf.add(intf);
     }
 
@@ -81,8 +84,8 @@ public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeI
     }
 
     @Override
-    public Set<T> subTypes() {
-        Set<T> subTypes = new HashSet<T>();
+    public Collection<T> subTypes() {
+        List<T> subTypes = new ArrayList<T>();
         for (Type t : sink.getSubTypeRefs()) {
             subTypes.add((T) t);
         }
@@ -91,11 +94,24 @@ public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeI
 
     @Override
     public Collection<T> allSubTypes() {
-        Set<T> allTypes = subTypes();
+        Collection<T> allTypes = subTypes();
         for (T child : subTypes()) {
             allTypes.addAll(child.allSubTypes());
         }
         return allTypes;
+    }
+
+    synchronized void addStaticField(FieldModel field) {
+        staticFields.add(field);
+    }
+
+    void addField(FieldModel field) {
+        throw new RuntimeException("Cannot add a field to a non classmodel type");
+    }
+
+    @Override
+    public Collection<FieldModel> getStaticFields() {
+        return Collections.unmodifiableCollection(staticFields);
     }
 
     /**

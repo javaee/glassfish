@@ -40,6 +40,7 @@
 package org.glassfish.hk2.classmodel.reflect.impl;
 
 import org.glassfish.hk2.classmodel.reflect.*;
+import org.glassfish.hk2.classmodel.reflect.util.ParsingConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,7 +56,7 @@ public class TypeImpl extends AnnotatedElementImpl implements Type {
 
     final TypeProxy<Type> sink;
     final List<MethodModel> methods = new ArrayList<MethodModel>();
-    final Set<URI> definingURIs= Collections.synchronizedSet(new HashSet<URI>());
+    final Set<URI> definingURIs= new HashSet<URI>();
 
 
     public TypeImpl(String name, TypeProxy<Type> sink) {
@@ -68,7 +69,7 @@ public class TypeImpl extends AnnotatedElementImpl implements Type {
         return Collections.unmodifiableSet(definingURIs);
     }
 
-    void addDefiningURI(URI uri) {
+    synchronized void addDefiningURI(URI uri) {
         definingURIs.add(uri);
         try {
             File file = new File(uri);
@@ -90,7 +91,7 @@ public class TypeImpl extends AnnotatedElementImpl implements Type {
         return false;
     }
 
-    void addMethod(MethodModelImpl m) {
+    synchronized void addMethod(MethodModelImpl m) {
         methods.add(m);
     }
 
@@ -105,7 +106,7 @@ public class TypeImpl extends AnnotatedElementImpl implements Type {
 
     @Override
     public Collection<Member> getReferences() {
-        return Collections.unmodifiableSet(sink.getRefs());
+        return sink.getRefs();
     }
 
     @Override

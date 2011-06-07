@@ -60,7 +60,7 @@ public interface ParsingConfig {
      * @return list of annotations that triggers an exhaustive scanning of the
      * annotated type
      */
-    public Set<String> getAnnotationsOfInterest();
+    Set<String> getAnnotationsOfInterest();
 
     /**
      * Returns a list of types (classes or interfaces) that a type must either
@@ -68,5 +68,14 @@ public interface ParsingConfig {
      *
      * @return list of types that will trigger an exhaustive scanning.
      */
-    public Set<String> getTypesOfInterest();
+    Set<String> getTypesOfInterest();
+
+    /**
+     * Returns true if unannotated fields and methods should be part of the
+     * model returned.
+     *
+     * @return true if unannotated fields and methods will be accessible from
+     * the returned {@link org.glassfish.hk2.classmodel.reflect.Types} model.
+     */
+    boolean modelUnAnnotatedMembers();
 }

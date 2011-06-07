@@ -52,7 +52,7 @@ public class AnnotatedElementImpl implements AnnotatedElement {
     
     public final String name;
 
-    public final Set<AnnotationModel> annotations = Collections.synchronizedSet(new HashSet<AnnotationModel>());
+    public final List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();
 
     public AnnotatedElementImpl(String name) {
         this.name = name;
@@ -63,13 +63,13 @@ public class AnnotatedElementImpl implements AnnotatedElement {
         return name;
     }
 
-    void addAnnotation(AnnotationModel annotation) {
+    synchronized void addAnnotation(AnnotationModel annotation) {
         annotations.add(annotation);
     }
 
     @Override
     public Collection<AnnotationModel> getAnnotations() {
-        return Collections.unmodifiableSet(annotations);
+        return Collections.unmodifiableList(annotations);
     }
 
     @Override

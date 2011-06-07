@@ -58,5 +58,5 @@ public interface FieldModel extends Member, AnnotatedElement {
      *
      * @return the field declaring class.
      */
-    public ClassModel getDeclaringType();
+    public ExtensibleType getDeclaringType();
 }

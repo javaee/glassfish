@@ -55,7 +55,7 @@ public interface Types {
      *
      * @return list of types
      */
-    public Collection<Type> getAllTypes();
+    Collection<Type> getAllTypes();
 
     /**
      * Returns a Type instance given a name
@@ -63,7 +63,7 @@ public interface Types {
      * @param name the requested type name
      * @return a type instance
      */
-    public Type getBy(String name);
+    Type getBy(String name);
 
     /**
      * Returns a Model instance given a name

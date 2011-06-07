@@ -40,6 +40,7 @@
 package org.glassfish.hk2.classmodel.reflect.impl;
 
 import org.glassfish.hk2.classmodel.reflect.ClassModel;
+import org.glassfish.hk2.classmodel.reflect.ExtensibleType;
 import org.glassfish.hk2.classmodel.reflect.Type;
 
 /**
@@ -51,7 +52,7 @@ public interface TypeBuilder {
 
     TypeImpl getType(int access, String name, TypeProxy parent);
 
-    FieldModelImpl getFieldModel(String name, TypeProxy type, ClassModel declaringType);
+    FieldModelImpl getFieldModel(String name, TypeProxy type, ExtensibleType declaringType);
 
     TypeProxy getHolder(String name);
 

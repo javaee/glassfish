@@ -49,26 +49,26 @@ import java.util.*;
  */
 public class ClassModelImpl extends ExtensibleTypeImpl<ClassModel> implements ClassModel {
 
-    final Map<String, FieldModel> fields = Collections.synchronizedMap(new HashMap<String, FieldModel>());
+    final List<FieldModel> fields = new ArrayList<FieldModel > ();
 
     public ClassModelImpl(String name, TypeProxy<Type> sink, TypeProxy parent) {
         super(name, sink, parent);
     }
     
-    void addField(FieldModel field) {
-        fields.put(field.getName(), field);
+    synchronized void addField(FieldModel field) {
+        fields.add(field);
     }
 
     @Override
     public Collection<FieldModel> getFields() {
-        return Collections.unmodifiableCollection(fields.values());
+        return Collections.unmodifiableCollection(fields);
     }
 
     @Override
     protected void print(StringBuffer sb) {
         super.print(sb);
         sb.append(", fields=[");
-        for (FieldModel fm : fields.values()) {
+        for (FieldModel fm : fields) {
             sb.append(" ").append(fm.toString());
         }
         sb.append("]");
