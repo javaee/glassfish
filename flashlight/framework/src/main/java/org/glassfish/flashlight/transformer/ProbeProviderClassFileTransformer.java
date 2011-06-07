@@ -41,7 +41,6 @@ package org.glassfish.flashlight.transformer;
 
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.Utility;
-import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeRegistry;
 import org.objectweb.asm.*;
@@ -78,13 +77,10 @@ public class ProbeProviderClassFileTransformer implements ClassFileTransformer {
 
     public void transform() {
         try {
-            ProbeProviderClassFileTransformer.getInstrumentation();
-            if (_inst != null) {
-                _inst.addTransformer(this, true);
-                _inst.retransformClasses(providerClass);
+            if (instrumentation != null) {
+                instrumentation.addTransformer(this, true);
+                instrumentation.retransformClasses(providerClass);
             }
-            // hmmm else nothing?!?
-
         }
         catch (Exception e) {
             logger.log(Level.WARNING, "Error during re-transformation", e);
@@ -93,6 +89,7 @@ public class ProbeProviderClassFileTransformer implements ClassFileTransformer {
         // note -- do NOT remove the Transformer.  If we transform it again we will need ALL transformers
     }
 
+    // this method is called from the JDK itself!!!
     @Override
     public byte[] transform(ClassLoader loader, String className,
             Class<?> classBeingRedefined, ProtectionDomain protectionDomain,
@@ -100,12 +97,8 @@ public class ProbeProviderClassFileTransformer implements ClassFileTransformer {
             throws IllegalClassFormatException {
 
         try {
-            if(!AgentAttacher.canAttach()) {
-                if(!emittedAttachUnavailableMessageAlready) {
-                    // only show it once
-                    emittedAttachUnavailableMessageAlready = true;
-                    logger.warning("Monitoring is disabled because there is no Attach API from the JVM available.");
-                }
+            if (!AgentAttacher.canAttach()) {
+                // return the buffer
             }
             else if (classBeingRedefined == providerClass) {
 
@@ -128,32 +121,6 @@ public class ProbeProviderClassFileTransformer implements ClassFileTransformer {
 
     private static String makeKey(String name, String desc) {
         return name + "::" + desc;
-    }
-
-    private static void getInstrumentation() {
-        if (_inst == null) {
-            try {
-                ClassLoader scl = ProbeProviderClassFileTransformer.class.getClassLoader().getSystemClassLoader();
-                Class agentMainClass = getAgentClass(scl, "org.glassfish.flashlight.agent.ProbeAgentMain");
-                Method mthd = agentMainClass.getMethod("getInstrumentation", null);
-                _inst = (Instrumentation) mthd.invoke(null, null);
-
-                logger.log(Level.INFO, "Successfully got INSTRUMENTATION: " + _inst);
-            }
-            catch (Throwable e) {
-                logger.log(Level.WARNING, "Error while getting Instrumentation object from ProbeAgentmain", e);
-            }
-        }
-    }
-
-    private static Class getAgentClass(ClassLoader classLoader, String className) throws ClassNotFoundException {
-        try {
-            return classLoader.loadClass(className);
-        }
-        catch (Throwable t) {
-            AgentAttacher.attachAgent();
-            return classLoader.loadClass(className);
-        }
     }
 
     private static final void writeFile(String name, byte[] data) {
@@ -243,11 +210,60 @@ public class ProbeProviderClassFileTransformer implements ClassFileTransformer {
 
         return m;
     }
-    private static Instrumentation _inst;
+    private static final Instrumentation instrumentation;
     private static boolean _debug = Boolean.parseBoolean(Utility.getEnvOrProp("AS_DEBUG"));
     private final Class providerClass;
     private Map<String, FlashlightProbe> probes = new HashMap<String, FlashlightProbe>();
     private ClassWriter cw;
     private static final Logger logger = Logger.getLogger(ProbeProviderClassFileTransformer.class.getName());
     private static boolean emittedAttachUnavailableMessageAlready = false;
+    private static final String AGENT_CLASSNAME = "org.glassfish.flashlight.agent.ProbeAgentMain";
+
+    static {
+        Instrumentation nonFinalInstrumentation = null;
+        Throwable throwable = null;
+        Class agentMainClass = null;
+        boolean canAttach = false;
+
+        // if tools.jar is not available (e.g. we are running in JRE --
+        // then there is no point doing anything else!
+
+        if (AgentAttacher.canAttach()) {
+            canAttach = true;
+
+            try {
+                ClassLoader classLoader = ProbeProviderClassFileTransformer.class.getClassLoader().getSystemClassLoader();
+
+                try {
+                    agentMainClass = classLoader.loadClass(AGENT_CLASSNAME);
+                }
+                catch (Throwable t) {
+                    // need throwable, not Exception - it may throw an Error!
+                    // try one more time after attempting to attach.
+                    AgentAttacher.attachAgent();
+                    // might throw
+                    agentMainClass = classLoader.loadClass(AGENT_CLASSNAME);
+                }
+
+                Method mthd = agentMainClass.getMethod("getInstrumentation", null);
+                nonFinalInstrumentation = (Instrumentation) mthd.invoke(null, null);
+            }
+            catch (Throwable t) {
+                nonFinalInstrumentation = null;
+                // save it for nice neat message code below
+                throwable = t;
+            }
+        }
+        // set the final
+        instrumentation = nonFinalInstrumentation;
+
+        if (!canAttach)
+            logger.warning("Monitoring is disabled because there is no Attach API from the JVM available.");
+        else if (instrumentation != null)
+            logger.log(Level.INFO, "Successfully got INSTRUMENTATION: " + instrumentation);
+        else if (throwable != null)
+            logger.log(Level.WARNING, "Error while getting Instrumentation object from ProbeAgentmain", throwable);
+        else
+            logger.log(Level.WARNING, "Error while getting Instrumentation object from ProbeAgentmain");
+    }
 }
