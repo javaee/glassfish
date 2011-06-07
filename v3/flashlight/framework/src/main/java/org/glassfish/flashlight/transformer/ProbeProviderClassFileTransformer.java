@@ -89,6 +89,7 @@ public class ProbeProviderClassFileTransformer implements ClassFileTransformer {
         // note -- do NOT remove the Transformer.  If we transform it again we will need ALL transformers
     }
 
+    // this method is called from the JDK itself!!!
     @Override
     public byte[] transform(ClassLoader loader, String className,
             Class<?> classBeingRedefined, ProtectionDomain protectionDomain,
