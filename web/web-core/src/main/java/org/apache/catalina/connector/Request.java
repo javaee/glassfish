@@ -610,6 +610,22 @@ public class Request
         clientClosedConnection = false;
     }
 
+    /**
+     * Set the unsuccessfulSessionFind flag.
+     *
+     * @param unsuccessfulSessionFind
+     */
+    public void setUnsuccessfulSessionFind(boolean unsuccessfulSessionFind) {
+        this.unsuccessfulSessionFind = unsuccessfulSessionFind;
+    }
+
+    /**
+     * Get the unsuccessfulSessionFind flag.
+     */
+    public boolean getUnsuccessfulSessionFind() {
+        return this.unsuccessfulSessionFind;
+    }
+
     // -------------------------------------------------------- Request Methods
     /**
      * Return the authorization credentials sent with this request.
