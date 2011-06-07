@@ -12,6 +12,7 @@ cd appserv-tests
 svn co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/config
 svn co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/lib
 svn co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/util
+svn co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/sqetests
 svn -N co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/devtests
 cd devtests
 svn co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/devtests/connector
@@ -48,6 +49,7 @@ cd appserv-tests
 svn co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/config
 svn co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/lib
 svn co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/util
+svn co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/sqetests
 svn -N co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/devtests
 cd devtests
 svn -N co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/devtests/connector
