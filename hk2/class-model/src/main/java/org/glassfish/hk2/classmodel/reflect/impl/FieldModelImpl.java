@@ -49,9 +49,9 @@ import org.glassfish.hk2.classmodel.reflect.FieldModel;
 public class FieldModelImpl extends AnnotatedElementImpl implements FieldModel {
 
     final TypeProxy type;
-    private final ClassModel declaringType;
+    private final ExtensibleType declaringType;
 
-    public FieldModelImpl(String name, TypeProxy type, ClassModel declaringType) {
+    public FieldModelImpl(String name, TypeProxy type, ExtensibleType declaringType) {
         super(name);
         this.type = type;
         this.declaringType = declaringType;
@@ -63,7 +63,7 @@ public class FieldModelImpl extends AnnotatedElementImpl implements FieldModel {
     }
 
     @Override
-    public ClassModel getDeclaringType() {
+    public ExtensibleType getDeclaringType() {
         return declaringType;
     }
 

@@ -55,9 +55,9 @@ public class TypeProxy<T extends Type> {
     private volatile boolean visited = false;
     private final String name;
     private final Notifier<T> notifier;
-    private final Set<Member> fieldRefs;
-    private final Set<Type> subTypeRefs;
-    private final Set<ClassModel> implementations = Collections.synchronizedSet(new HashSet<ClassModel>());
+    private final List<Member> fieldRefs = new ArrayList<Member>();
+    private final List<Type> subTypeRefs = new ArrayList<Type>();
+    private final List<ClassModel> implementations = new ArrayList<ClassModel>();
 
 
     /**
@@ -71,8 +71,6 @@ public class TypeProxy<T extends Type> {
     TypeProxy(Notifier<T> notifier, String name) {
         this.notifier = notifier;
         this.name = name;
-        fieldRefs = Collections.synchronizedSet(new HashSet<Member>());
-        subTypeRefs = Collections.synchronizedSet(new HashSet<Type>());
     }
     
     @Override
@@ -101,20 +99,28 @@ public class TypeProxy<T extends Type> {
         public void valueSet(T value);
     }
 
-    public Set<Member> getRefs() {
-        return fieldRefs;
+    public synchronized void addFieldRef(FieldModel field) {
+        fieldRefs.add(field);
     }
 
-    public Set<Type> getSubTypeRefs() {
-        return subTypeRefs;
+    public List<Member> getRefs() {
+        return Collections.unmodifiableList(fieldRefs);
     }
 
-    void addSubTypeRef(Type subType) {
+    public synchronized void addSubTypeRef(Type subType) {
         subTypeRefs.add(subType);
     }
 
-    public Set<ClassModel> getImplementations() {
-        return implementations;
+    public List<Type> getSubTypeRefs() {
+        return Collections.unmodifiableList(subTypeRefs);
+    }
+
+    public synchronized void addImplementation(ClassModel classModel) {
+        implementations.add(classModel);
+    }
+
+    public List<ClassModel> getImplementations() {
+        return Collections.unmodifiableList(implementations);
     }
 
     public static <U extends Type> Collection<U> adapter(final Collection<TypeProxy<U>> source) {

@@ -355,9 +355,8 @@ public class Parser implements Closeable {
                             if (logger.isLoggable(Level.FINER)) {
                                 logger.log(Level.FINER, "Parsing class " + entry.name);
                             }
-
-                            ClassReader cr = new ClassReader(is);
                             try {
+                                ClassReader cr = new ClassReader(is);
                                 cr.accept(context.getClassVisitor(uri, entry.name), ClassReader.SKIP_DEBUG);
                             } catch (Throwable e) {
                                 logger.log(Level.SEVERE, "Exception while visiting " + entry.name

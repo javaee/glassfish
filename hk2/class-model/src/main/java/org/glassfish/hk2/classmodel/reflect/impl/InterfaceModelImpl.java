@@ -40,6 +40,7 @@
 package org.glassfish.hk2.classmodel.reflect.impl;
 
 import org.glassfish.hk2.classmodel.reflect.*;
+import org.glassfish.hk2.classmodel.reflect.util.ParsingConfig;
 
 import java.util.*;
 
@@ -54,7 +55,7 @@ public class InterfaceModelImpl extends ExtensibleTypeImpl<InterfaceModel> imple
 
     @Override
     public Collection<ClassModel> implementations() {
-        return Collections.unmodifiableCollection(sink.getImplementations());
+        return sink.getImplementations();
     }
 
     @Override

@@ -39,13 +39,11 @@
  */
 package org.glassfish.hk2.classmodel.reflect.impl;
 
-import org.glassfish.hk2.classmodel.reflect.ClassModel;
-import org.glassfish.hk2.classmodel.reflect.ExtensibleType;
-import org.glassfish.hk2.classmodel.reflect.InterfaceModel;
-import org.glassfish.hk2.classmodel.reflect.ParsingContext;
+import org.glassfish.hk2.classmodel.reflect.*;
 import org.objectweb.asm.*;
 import org.objectweb.asm.commons.EmptyVisitor;
 
+import javax.naming.Context;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
@@ -67,11 +65,13 @@ public class ModelClassVisitor implements ClassVisitor {
     private final String entryName;
     TypeImpl type;
     boolean deepVisit =false;
-    final VisitingContext visitingContext = new VisitingContext();
-    private final ModelFieldVisitor fieldVisitor = new ModelFieldVisitor(visitingContext);
-    private final ModelMethodVisitor methodVisitor = new ModelMethodVisitor(visitingContext);
-    private final ModelAnnotationVisitor annotationVisitor = new ModelAnnotationVisitor(visitingContext);
-    private final ModelDefaultAnnotationVisitor defaultAnnotationVisitor = new ModelDefaultAnnotationVisitor(visitingContext);
+    private final ClassVisitingContext classContext;
+    private final MemberVisitingContext visitingContext;
+    private final ModelFieldVisitor fieldVisitor;
+    private final ModelMethodVisitor methodVisitor;
+    private final ModelAnnotationVisitor annotationVisitor;
+    private final ModelDefaultAnnotationVisitor defaultAnnotationVisitor;
+    private static int discarded=0;
 
 
     public ModelClassVisitor(ParsingContext ctx, URI definingURI, String entryName) {
@@ -79,6 +79,12 @@ public class ModelClassVisitor implements ClassVisitor {
         this.definingURI = definingURI;
         this.entryName = entryName;
         typeBuilder = ctx.getTypeBuilder(definingURI);
+        classContext = new ClassVisitingContext();
+        visitingContext = new MemberVisitingContext(ctx.getConfig().modelUnAnnotatedMembers());
+        fieldVisitor = new ModelFieldVisitor(visitingContext);
+        methodVisitor = new ModelMethodVisitor(visitingContext);
+        annotationVisitor = new ModelAnnotationVisitor();
+        defaultAnnotationVisitor = new ModelDefaultAnnotationVisitor(methodVisitor.getContext());
     }
 
     @Override
@@ -117,6 +123,9 @@ public class ModelClassVisitor implements ClassVisitor {
         type.addDefiningURI(classDefURI);
         deepVisit = ctx.getConfig().getAnnotationsOfInterest().isEmpty();
 
+        classContext.type = type;
+        classContext.interfaces = interfaces;
+        classContext.parent = parent;
         // reverse index
         if (parent!=null) {
             parent.addSubTypeRef(type);
@@ -130,7 +139,7 @@ public class ModelClassVisitor implements ClassVisitor {
                 TypeProxy<InterfaceModel> typeProxy = typeBuilder.getHolder(interfaceName, InterfaceModel.class);
                 classModel.isImplementing(typeProxy);
                 if (classModel instanceof ClassModel)
-                    typeProxy.getImplementations().add((ClassModel) classModel);
+                    typeProxy.addImplementation((ClassModel) classModel);
 
             }
         } catch(ClassCastException e) {
@@ -166,7 +175,7 @@ public class ModelClassVisitor implements ClassVisitor {
             logger.log(Level.FINER, "Inspecting fields of {0}", type.getName());
             deepVisit =true;
         }
-        visitingContext.annotation=am;
+        annotationVisitor.getContext().annotation=am;
         return annotationVisitor;
     }
 
@@ -187,27 +196,24 @@ public class ModelClassVisitor implements ClassVisitor {
             return null;
         }
 
-        ClassModelImpl cm;
-        try {
-             cm = (ClassModelImpl) type;
-        } catch (Exception e) {
+        ExtensibleTypeImpl cm;
+        if (!(type instanceof ExtensibleTypeImpl)) {
+            logger.severe("Field visitor invoked for field " + name +
+                "in type " + type.getName() + " which is not a ClassModel type instance but a "
+                + type.getClass().getName());
             return null;
         }
+        cm = (ExtensibleTypeImpl) type;
 
         org.objectweb.asm.Type asmType = org.objectweb.asm.Type.getType(desc);
-//        if (type==org.objectweb.asm.Type.INT_TYPE || type==org.objectweb.asm.Type.BOOLEAN_TYPE) {
-//            return null;
-//        }
 
         TypeProxy<?> fieldType =  typeBuilder.getHolder(asmType.getClassName());
         final FieldModelImpl field = typeBuilder.getFieldModel(name, fieldType, cm);
-        visitingContext.field = field;
+        fieldVisitor.getContext().field = field;
+        fieldVisitor.getContext().typeDesc = desc;
+        fieldVisitor.getContext().access = access;
+        fieldVisitor.getContext().classModel = cm;
 
-        // reverse index.
-        fieldType.getRefs().add(field);
-
-        // forward index
-        cm.addField(field);
         return fieldVisitor;
     }
 
@@ -217,15 +223,17 @@ public class ModelClassVisitor implements ClassVisitor {
             return null;
         }
 
+
         ExtensibleType cm;
-        try {
-             cm = (ExtensibleType) type;
-        } catch (Exception e) {
+        if (!(type instanceof ExtensibleType)) {
+            logger.severe("Method visitor invoked for method " + name +
+                    "in type " + type.getName() + " which is not an ExtensibleType type instance but a "
+                    + type.getClass().getName());
             return null;
         }
-        final MethodModelImpl method = new MethodModelImpl(name, cm, (signature==null?desc:signature));
-        type.addMethod(method);
-        visitingContext.method = method;
+        cm = (ExtensibleType) type;
+
+        methodVisitor.getContext().method = new MethodModelImpl(name, cm, (signature==null?desc:signature));
         return methodVisitor;
     }
 
@@ -238,19 +246,53 @@ public class ModelClassVisitor implements ClassVisitor {
         return org.objectweb.asm.Type.getType(desc).getClassName();
     }
 
-    private static class VisitingContext {
-        FieldModelImpl field;
-        MethodModelImpl method;
-        AnnotationModelImpl annotation;
+    private static class ClassVisitingContext {
+        TypeImpl type;
+        TypeProxy parent;
+        String[] interfaces;
+    }
 
+    private static class MemberVisitingContext {
+        final boolean modelUnAnnotatedMembers;
+
+        private MemberVisitingContext(boolean modelUnAnnotatedMembers) {
+            this.modelUnAnnotatedMembers = modelUnAnnotatedMembers;
+        }
+    }
+
+    private static class FieldVisitingContext extends MemberVisitingContext {
+        FieldModelImpl field;
+        String typeDesc;
+        ExtensibleTypeImpl classModel;
+        int access;
+
+        private FieldVisitingContext(boolean modelUnAnnotatedMembers) {
+            super(modelUnAnnotatedMembers);
+        }
+    }
+
+    private static class MethodVisitingContext extends MemberVisitingContext {
+        MethodModelImpl method;
+
+        private MethodVisitingContext(boolean modelUnAnnotatedMembers) {
+            super(modelUnAnnotatedMembers);
+        }
+    }
+
+    private static class AnnotationVisitingContext {
+        AnnotationModelImpl annotation;
     }
 
     private class ModelMethodVisitor extends EmptyVisitor implements MethodVisitor {
 
-        private final VisitingContext context;
+        private final MethodVisitingContext context;
 
-        private ModelMethodVisitor(VisitingContext context) {
-            this.context = context;
+        private ModelMethodVisitor(MemberVisitingContext context) {
+            this.context = new MethodVisitingContext(context.modelUnAnnotatedMembers);
+        }
+
+        MethodVisitingContext getContext() {
+            return context;
         }
 
         @Override
@@ -268,13 +310,16 @@ public class ModelClassVisitor implements ClassVisitor {
 
             // forward index
             context.method.addAnnotation(am);
-            context.annotation = am;
+            annotationVisitor.getContext().annotation= am;
 
             return annotationVisitor;
         }
 
         @Override
         public void visitEnd() {
+            if (context.modelUnAnnotatedMembers || !context.method.getAnnotations().isEmpty()) {
+                type.addMethod(context.method);
+            }
 //            context.method=null;
         }
 
@@ -287,9 +332,9 @@ public class ModelClassVisitor implements ClassVisitor {
     
     private class ModelDefaultAnnotationVisitor extends EmptyVisitor implements AnnotationVisitor {
 
-      private final VisitingContext context;
+      private final MethodVisitingContext context;
       
-      public ModelDefaultAnnotationVisitor(VisitingContext visitingContext) {
+      public ModelDefaultAnnotationVisitor(MethodVisitingContext visitingContext) {
         this.context = visitingContext;
       }
 
@@ -302,10 +347,14 @@ public class ModelClassVisitor implements ClassVisitor {
     
     private class ModelFieldVisitor extends EmptyVisitor implements FieldVisitor {
 
-        private final VisitingContext context;
+        private final FieldVisitingContext context;
 
-        private ModelFieldVisitor(VisitingContext context) {
-            this.context = context;
+        private ModelFieldVisitor(MemberVisitingContext context) {
+            this.context = new FieldVisitingContext(context.modelUnAnnotatedMembers);
+        }
+
+        FieldVisitingContext getContext() {
+            return context;
         }
 
         @Override
@@ -320,21 +369,40 @@ public class ModelClassVisitor implements ClassVisitor {
 
             // forward index
             field.addAnnotation(annotationModel);
-            context.annotation = annotationModel;
+            annotationVisitor.getContext().annotation = annotationModel;
             return annotationVisitor;
         }
 
         @Override
         public void visitEnd() {
+
+            // if we have been requested to model unannotated members OR the field has annotations.
+            if (context.modelUnAnnotatedMembers || !context.field.getAnnotations().isEmpty()) {
+
+                // reverse index.
+                context.field.type.addFieldRef(context.field);
+
+                // forward index
+                if ((Opcodes.ACC_STATIC & context.access)==Opcodes.ACC_STATIC) {
+                    context.classModel.addStaticField(context.field);
+                } else {
+                    context.classModel.addField(context.field);
+                }
+            }
+
             context.field = null;
         }
     }
 
     private class ModelAnnotationVisitor extends EmptyVisitor implements AnnotationVisitor {
-        private final VisitingContext context;
+        private final AnnotationVisitingContext context;
 
-        private ModelAnnotationVisitor(VisitingContext context) {
-            this.context = context;
+        private ModelAnnotationVisitor() {
+            this.context = new AnnotationVisitingContext();
+        }
+
+        AnnotationVisitingContext getContext() {
+            return context;
         }
         
         @Override

@@ -57,7 +57,6 @@ import java.util.logging.Level;
 /**
  * scans all glassfish jar, glassfish must be installed in ~/glassfish
  */
-@Ignore
 public class GFInstallationTest {
 
     @Test
@@ -117,6 +116,11 @@ public class GFInstallationTest {
             public Set<String> getTypesOfInterest() {
                 return empty;
             }
+
+            @Override
+            public boolean modelUnAnnotatedMembers() {
+                return true;
+            }
         });
         ParsingContext context = builder.build();
         Parser parser = new Parser(context);
@@ -126,7 +130,7 @@ public class GFInstallationTest {
             parser.parse(f, new Runnable() {
                 @Override
                 public void run() {
-                    //System.out.println("Finished parsing " + f.getName());
+                    System.out.println("Finished parsing " + f.getName());
                 }
             });
         }
