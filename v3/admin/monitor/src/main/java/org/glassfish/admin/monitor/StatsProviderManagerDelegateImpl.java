@@ -105,11 +105,11 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     private final TreeNode serverNode;
     private static final ObjectName MONITORING_ROOT = AMXGlassfish.DEFAULT.monitoringRoot();
     static ObjectName MONITORING_SERVER;
-    private static String DOMAIN;
-    private static String PP;
-    private static String TYPE;
-    private static String NAME;
-    private static String PARENT_PATH;
+    private String DOMAIN;
+    private String PP;
+    private String TYPE;
+    private String NAME;
+    private String PARENT_PATH;
     private boolean AMXReady = false;
     private StatsProviderRegistry statsProviderRegistry;
     private static final Logger logger =
