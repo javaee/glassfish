@@ -78,7 +78,7 @@
                                 <artifactItem>
                                     <groupId>org.jvnet</groupId>
                                     <artifactId>tiger-types</artifactId>
-                                    <version>1.2</version>
+                                    <version>1.4</version>
                                 </artifactItem>                                
                             </artifactItems>
                         </configuration>
@@ -117,10 +117,10 @@
         </plugins>
     </build>
     <dependencies>
-   		<dependency>
+        <dependency>
             <groupId>org.jvnet</groupId>
             <artifactId>tiger-types</artifactId>
-            <version>1.2</version>
+            <version>1.4</version>
             <optional>true</optional>
         </dependency>
    		<dependency>
