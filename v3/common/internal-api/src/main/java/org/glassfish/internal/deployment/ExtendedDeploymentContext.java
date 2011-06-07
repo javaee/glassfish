@@ -176,5 +176,17 @@ public interface ExtendedDeploymentContext extends DeploymentContext {
      */
     public File getAppInternalDir();
 
-
+    /**
+     * Performs any clean-up of the deployment context after deployment has
+     * finished.
+     * <p>
+     * This method can be invoked either with "true", meaning that this is the
+     * final clean-up for the DC, or with "false," meaning that the DC
+     * implementation should be selective.  (Some data is used, for instance,
+     * in the DeployCommand logic after ApplicationLifeCycle.deploy has
+     * completed.)
+     * 
+     * @param isFinalClean whether this clean is the final clean or a selective one.
+     */
+    public void postDeployClean(boolean isFinalClean);
 }

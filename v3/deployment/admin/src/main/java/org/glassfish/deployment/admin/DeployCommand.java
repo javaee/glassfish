@@ -200,6 +200,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             return;
         }
         File expansionDir=null;
+        ExtendedDeploymentContext deploymentContext = null;
         try {
 
             ArchiveHandler archiveHandler = deployment.getArchiveHandler(archive, type);
@@ -321,7 +322,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             }
 
             // create the parent class loader
-            final ExtendedDeploymentContext deploymentContext =
+            deploymentContext =
                     deployment.getBuilder(logger, this, report).
                             source(archive).archiveHandler(archiveHandler).build(initialContext);
             if (tracing!=null) {
@@ -489,6 +490,9 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                         }
 
                 }
+            }
+            if (deploymentContext != null) {
+                deploymentContext.postDeployClean(true);
             }
         }
       } finally {

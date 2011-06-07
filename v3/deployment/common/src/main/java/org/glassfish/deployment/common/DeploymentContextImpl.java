@@ -66,6 +66,8 @@ import java.net.MalformedURLException;
 
 import org.jvnet.hk2.component.PreDestroy;
 import com.sun.enterprise.util.io.FileUtils;
+import org.glassfish.hk2.classmodel.reflect.Parser;
+import org.glassfish.hk2.classmodel.reflect.Types;
 
 /**
  *
@@ -79,7 +81,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
     ReadableArchive originalSource;
     final OpsParams parameters;
     final Logger logger;
-    final ActionReport actionReport;
+    ActionReport actionReport;
     final ServerEnvironment env;
     ClassLoader cloader;
     ArchiveHandler archiveHandler;
@@ -525,5 +527,21 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
     public File getAppInternalDir() {
         final File internalDir = new File(env.getApplicationRepositoryPath(), INTERNAL_DIR_NAME);
         return new File(internalDir, VersioningUtils.getRepositoryName(parameters.name()));
+    }
+
+    @Override
+    public void postDeployClean(boolean isFinalClean) {
+        if (transientAppMetaData != null) {
+            if (isFinalClean) {
+                transientAppMetaData.clear();
+            } else {
+                final String [] classNamesToClean = {Types.class.getName(), Parser.class.getName()};
+        
+                for (String className : classNamesToClean) {
+                    transientAppMetaData.remove(className);
+                }
+            }
+        }
+        actionReport = null;
     }
 }

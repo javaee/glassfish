@@ -470,6 +470,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 }
                 return appInfo;
             } finally {
+                context.postDeployClean(false /* not final clean-up yet */);
                 Thread.currentThread().setContextClassLoader(currentCL);
             }
 
