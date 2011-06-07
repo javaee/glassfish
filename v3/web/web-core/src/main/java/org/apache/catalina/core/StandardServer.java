@@ -290,7 +290,7 @@ public final class StandardServer
     /**
      * The property change support for this component.
      */
-    protected PropertyChangeSupport support = new PropertyChangeSupport(this);
+    private PropertyChangeSupport support = new PropertyChangeSupport(this);
 
 
     // ------------------------------------------------------------- Properties
@@ -837,11 +837,11 @@ public final class StandardServer
         }
     }
     
-    protected String type;
-    protected String domain;
-    protected String suffix;
-    protected ObjectName oname;
-    protected MBeanServer mserver;
+    private String type;
+    private String domain;
+    private String suffix;
+    private ObjectName oname;
+    private MBeanServer mserver;
 
     public ObjectName getObjectName() {
         return oname;

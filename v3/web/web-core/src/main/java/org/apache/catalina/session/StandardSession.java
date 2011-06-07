@@ -2304,7 +2304,7 @@ public class StandardSession
 final class StandardSessionContext implements HttpSessionContext {
 
 
-    protected HashMap<?, String> dummy = new HashMap<String, String>();
+    private HashMap<?, String> dummy = new HashMap<String, String>();
 
     /**
      * Return the session identifiers of all sessions defined

@@ -126,7 +126,7 @@ public final class FileStore extends StoreBase {
     * Our write-through cache of session objects
     * HERCULES: addition
     */
-    protected Hashtable<String, Session> sessions = new Hashtable<String, Session>();     
+    private Hashtable<String, Session> sessions = new Hashtable<String, Session>();     
 
 
     // ------------------------------------------------------------- Properties

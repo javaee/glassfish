@@ -198,7 +198,7 @@ public final class ExtendedAccessLogValve
     /**
      * The descriptive information about this implementation.
      */
-    protected static final String info =
+    private static final String info =
         "org.apache.catalina.valves.ExtendedAccessLogValve/1.0";
 
     private static final String REQUEST_START_TIME_NOTE =
