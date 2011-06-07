@@ -138,6 +138,8 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
 
     protected static final StringManager localStrings =
             StringManager.getManager(DataSourceObjectBuilder.class);
+    
+    private boolean aborted = false;
 
     /**
      * Constructor for <code>ManagedConnection</code>. The pooledConn parameter is expected
@@ -631,9 +633,18 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         }
 
         if (markedForRemoval) {
-            connectionErrorOccurred(null, null);
-            _logger.log(Level.INFO, "jdbc.markedForRemoval_txCompleted");
-            markedForRemoval = false;
+            if (aborted) {
+                com.sun.appserv.connectors.internal.spi.BadConnectionEventListener bcel =
+                        (BadConnectionEventListener) listener;
+                bcel.connectionAbortOccurred(ce);
+                _logger.log(Level.INFO, "jdbc.markedForRemoval_conAborted");
+                markedForRemoval = false;
+                myLogicalConnection.setClosed(true);
+            } else {
+                connectionErrorOccurred(null, null);
+                _logger.log(Level.INFO, "jdbc.markedForRemoval_txCompleted");
+                markedForRemoval = false;
+            }
         }
 
         isClean = true;
@@ -1210,5 +1221,13 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
     
     boolean isFree(PreparedStatementWrapper cachedps) {
         return !cachedps.isBusy();
+    }
+
+    public void setAborted(boolean flag) {
+        aborted = flag;
+    }
+
+    public boolean isAborted() {
+        return aborted;
     }
 }
