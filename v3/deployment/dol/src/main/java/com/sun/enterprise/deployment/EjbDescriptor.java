@@ -841,7 +841,11 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
                 }
 
                 break;
-
+                
+            default:
+                throw new IllegalStateException(localStrings.getLocalString(
+                    "enterprise.deployment.invalidcallbacktype",
+                    "Invalid callback type: [{0}]", type));
         }
 
         if (beanClassCallbackInfo != null) {
