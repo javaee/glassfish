@@ -184,6 +184,7 @@
             <param name="operand.props"
                    value="${appserver.instance.name}.http-service.virtual-server.server.property.alternatedocroot_3="/>
         </antcall>
+        <antcall target="restart-server"/>
     </target>
 
     <target name="usage">
