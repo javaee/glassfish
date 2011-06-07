@@ -57,6 +57,7 @@ import java.util.logging.Level;
 /**
  * scans all glassfish jar, glassfish must be installed in ~/glassfish
  */
+@Ignore
 public class GFInstallationTest {
 
     @Test
