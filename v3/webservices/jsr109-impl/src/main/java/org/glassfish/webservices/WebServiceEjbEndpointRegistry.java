@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -76,9 +76,7 @@ public class WebServiceEjbEndpointRegistry implements WSEjbEndpointRegistry {
 
     private ResourceBundle rb = logger.getResourceBundle()   ;
 
-    private org.glassfish.webservices.SecurityService  secServ;
 
-    
     // Ejb service endpoint info.  
     private Hashtable webServiceEjbEndpoints = new Hashtable();
 
@@ -93,25 +91,17 @@ public class WebServiceEjbEndpointRegistry implements WSEjbEndpointRegistry {
 
     // This keeps the list for each service
     private HashMap adapterListMap = new HashMap();
-    
 
-    
-    public WebServiceEjbEndpointRegistry() {
-        if (Globals.getDefaultHabitat() != null) {
-            secServ = Globals.get(org.glassfish.webservices.SecurityService.class);
-        }
-    }
-    
+
     public void registerEndpoint(WebServiceEndpoint webserviceEndpoint,
                                   EjbEndpointFacade ejbContainer,
                                   Object servant, Class tieClass)  {
         String ctxtRoot = null;
-        String uri = null;
         EjbRuntimeEndpointInfo endpoint = createEjbEndpointInfo(webserviceEndpoint, ejbContainer,servant,tieClass);
         synchronized(webServiceEjbEndpoints) {
             String uriRaw = endpoint.getEndpointAddressUri();
             if (uriRaw != null ) {
-                uri = (uriRaw.charAt(0)=='/') ? uriRaw.substring(1) : uriRaw;
+                String uri = (uriRaw.charAt(0)=='/') ? uriRaw.substring(1) : uriRaw;
                 if (webServiceEjbEndpoints.containsKey(uri)) {
                     logger.log(Level.SEVERE,
                             format(rb.getString("enterprise.webservice.duplicateService"),
@@ -119,33 +109,30 @@ public class WebServiceEjbEndpointRegistry implements WSEjbEndpointRegistry {
                 }
                 webServiceEjbEndpoints.put(uri, endpoint);
                 regenerateEjbContextRoots();
-               
-                if(adapterListMap.get(uri) == null) {
+                ctxtRoot = getContextRootForUri(uri);
+                if(adapterListMap.get(ctxtRoot) == null) {
                     ServletAdapterList list = new ServletAdapterList();
-                    adapterListMap.put(uri, list);
+                    adapterListMap.put(ctxtRoot, list);
                 }
             } else throw new WebServiceException(rb.getString("ejb.endpointuri.error"));
         }
 
-        
+
         // notify monitoring layers that a new endpoint is being created.
         WebServiceEngineImpl engine = WebServiceEngineImpl.getInstance();
         if (endpoint.getEndpoint().getWebService().getMappingFileUri()!=null) {
-             SystemHandlerDelegate securityHandlerDelegate = null;
-             if (secServ != null) {
-                securityHandlerDelegate = secServ.getSecurityHandler(endpoint.getEndpoint());
-             }
-             engine.createHandler(securityHandlerDelegate, endpoint.getEndpoint());
+            engine.createHandler((com.sun.xml.rpc.spi.runtime.SystemHandlerDelegate)null, endpoint.getEndpoint());
         } else {
             engine.createHandler(endpoint.getEndpoint());
             try {
-                endpoint.initRuntimeInfo((ServletAdapterList)adapterListMap.get(uri));
+                endpoint.initRuntimeInfo((ServletAdapterList)adapterListMap.get(ctxtRoot));
             } catch (Exception e) {
                 logger.log(Level.WARNING,
                        "Unexpected error in EJB WebService endpoint post processing", e);
             }
         }
     }
+
 
     public void unregisterEndpoint(String endpointAddressUri) {
 
@@ -154,15 +141,23 @@ public class WebServiceEjbEndpointRegistry implements WSEjbEndpointRegistry {
         synchronized(webServiceEjbEndpoints) {
             String uriRaw = endpointAddressUri;
             String uri = (uriRaw.charAt(0)=='/') ? uriRaw.substring(1) : uriRaw;
-
-            ServletAdapterList list = (ServletAdapterList)adapterListMap.get(uri);
-            if(list != null) {
-                for(ServletAdapter x : list) {
-                    x.getEndpoint().dispose();
+            String ctxtRoot = getContextRootForUri(uri);
+            ServletAdapterList list = (ServletAdapterList)adapterListMap.get(ctxtRoot);
+            if (list != null) {
+            	//bug12540102: remove only the data related to the endpoint that is unregistered
+            	Iterator<ServletAdapter> it = list.iterator();
+                while (it.hasNext()) {
+                	ServletAdapter x = it.next();
+                	if (endpointAddressUri.equalsIgnoreCase(x.urlPattern)) {
+                		x.getEndpoint().dispose();
+                		it.remove();
+                	}
+                }
+                //Fix for issue 9523
+                if (list.isEmpty()) {
+                	adapterListMap.remove(ctxtRoot);
                 }
             }
-            //Fix for issue 9523
-            adapterListMap.remove(uri);
             endpoint = (EjbRuntimeEndpointInfo) webServiceEjbEndpoints.remove(uri);
             regenerateEjbContextRoots();
         }
