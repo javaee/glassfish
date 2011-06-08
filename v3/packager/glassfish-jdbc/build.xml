@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -46,22 +46,12 @@
 
    <target name="create.package">
 	   <property name="package.name" value="glassfish-jdbc"/> 
-
+           <property name="previous.package.name" value="glassfish-osgi-gui" />
         
-	<graphDef id="all-modules" tolerateBrokenPOMs="true">
-		<scope level="compile,runtime">
-			<subtract>
-			    <fullGraph/>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-osgi-gui">	
-	                                 <scope level="compile,runtime"/>
-			     </subGraph>
-			</subtract>
-		</scope>					 
-       </graphDef>
-
-       
-       <stage-module-jars graphid="all-modules" />
-       <stage-distribution-fragments graphid="all-modules" />
+       <antcall target="filter-module-artifacts"/>
+      
+       <stage-module-jars/>
+       <stage-distribution-fragments/>
 
        <mkdir dir="target/stage/${install.dir.name}/glassfish/modules/autostart"/>
 
@@ -73,6 +63,7 @@
        </if>
 
        <antcall target="create-zip-artifact"/> 
+       <antcall target="create-list-artifact"/>
    </target>
 </project>
 

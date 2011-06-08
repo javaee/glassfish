@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -45,23 +45,13 @@
     <import file="${basedir}/../common-targets.xml"/>
 
  <target name="create.package">
- <property name="package.name" value="glassfish-common-tmp"/> 
+     <property name="package.name" value="glassfish-common-tmp"/> 
+     <property name="previous.package.name" value="glassfish-corba-base" />
 
-        
-	<graphDef id="all-modules" tolerateBrokenPOMs="true">
-		<scope level="compile,runtime">
-			<subtract>
-			    <fullGraph/>
-		            <subGraph groupID="org.glassfish.packager" artifactID="glassfish-corba-base">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			 </subtract>
-		</scope>					 
-       </graphDef>
+       <antcall target="filter-module-artifacts"/>
 
-       
-       <stage-module-jars graphid="all-modules" />
-       <stage-distribution-fragments graphid="all-modules" />
+       <stage-module-jars/>
+       <stage-distribution-fragments/>
        
        <!-- brute force cleanup at this point, need to look into extended ant
            plugin and fix the issue at the source -->
@@ -97,6 +87,7 @@
        </if>
 
        <antcall target="create-zip-artifact"/>		
+       <antcall target="create-list-artifact"/>
 
    </target>
 </project>
