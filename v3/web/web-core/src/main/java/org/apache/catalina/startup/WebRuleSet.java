@@ -492,7 +492,7 @@ public class WebRuleSet extends RuleSetBase {
  * only 1 time within the web.xml
  */
 final class SetLoginConfig extends Rule {
-    protected boolean isLoginConfigSet = false;
+    boolean isLoginConfigSet = false;
     public SetLoginConfig(Digester digester) {
         super(digester);
     }
@@ -513,7 +513,7 @@ final class SetLoginConfig extends Rule {
  * only 1 time within the web.xml
  */
 final class SetJspConfig extends Rule {
-    protected boolean isJspConfigSet = false;
+    boolean isJspConfigSet = false;
     public SetJspConfig(Digester digester) {
         super(digester);
     }
@@ -534,7 +534,7 @@ final class SetJspConfig extends Rule {
  * only 1 time within the web.xml
  */
 final class SetSessionConfig extends Rule {
-    protected boolean isSessionConfigSet = false;
+    boolean isSessionConfigSet = false;
     public SetSessionConfig(Digester digester) {
         super(digester);
     }
