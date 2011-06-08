@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -127,13 +127,15 @@ public class TemplateExecCommand {
         RestActionReporter actionReport = ResourceUtil.runCommand(commandName, data, habitat,
                 ResourceUtil.getResultType(requestHeaders));
         ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
-        ActionReportResult results = new ActionReportResult(commandName, actionReport, options().getMetaData());
+        ActionReportResult option = options();
+        ActionReportResult results = new ActionReportResult(commandName, actionReport, option.getMetaData());
+        results.getActionReport().getExtraProperties().putAll(option.getActionReport().getExtraProperties());
         results.setCommandDisplayName(commandDisplayName);
         int status =HttpURLConnection.HTTP_OK; /*200 - ok*/
         if (exitCode == ActionReport.ExitCode.FAILURE) {
-            status = HttpURLConnection.HTTP_INTERNAL_ERROR;         
+            status = HttpURLConnection.HTTP_INTERNAL_ERROR;
         }
-        results.setStatusCode(status); 
+        results.setStatusCode(status);
 
         return Response.status(status).entity(results).build();
 
@@ -141,7 +143,7 @@ public class TemplateExecCommand {
 
     /*override it
      *
-     * 
+     *
      */
 
     protected HashMap<String, String> getCommandParams() {
@@ -185,6 +187,8 @@ public class TemplateExecCommand {
                     renameParameter(data, "id", "DEFAULT");
                 }
             }
+            data.remove("jsoncallback"); //these 2 are for JSONP padding, not needed for CLI execs
+            data.remove("_");
         }
     }
 

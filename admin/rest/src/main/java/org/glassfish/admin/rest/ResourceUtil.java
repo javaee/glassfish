@@ -93,7 +93,7 @@ import static org.glassfish.admin.rest.provider.ProviderUtil.getElementLink;
 
 /**
  * Resource utilities class. Used by resource templates,
- * <code>TemplateListOfResource</code> and <code>TemplateResource</code>
+ * <code>TemplateListOfResource</code> and <code>TemplateRestResource</code>
  *
  * @author Rajeshwar Patil
  */
@@ -211,7 +211,7 @@ public class ResourceUtil {
      * @param habitat     the habitat
      * @return ActionReport object with command execute status details.
      */
-    public static ActionReport runCommand(String commandName,
+/*    public static ActionReport runCommand(String commandName,
                                           Properties parameters, Habitat habitat, String typeOfResult) {
         CommandRunner cr = habitat.getComponent(CommandRunner.class);
         ActionReport ar = new RestActionReporter();
@@ -222,7 +222,7 @@ public class ResourceUtil {
 
         cr.getCommandInvocation(commandName, ar).parameters(p).execute();
         return ar;
-    }
+    }*/
 
 
     /**
@@ -523,15 +523,12 @@ public class ResourceUtil {
 
         if ("true".equals(data.get("__remove_empty_entries__"))) {
             data.remove("__remove_empty_entries__");
-
-            Set<String> keys = data.keySet();
-            Iterator<String> iterator = keys.iterator();
-            String key;
-            while (iterator.hasNext()) {
-                key = iterator.next();
-                if ((data.get(key) == null) || (data.get(key).length() < 1)) {
-                    data.remove(key);
-                    iterator = keys.iterator();
+            //findbug
+            for (Iterator<Map.Entry<String, String>> i = data.entrySet().iterator(); i.hasNext();) {
+                Map.Entry<String, String> entry = i.next();
+                String value = entry.getValue();
+                if ((value == null) || (value.length() < 1)) {
+                    i.remove();
                 }
             }
         }
@@ -990,7 +987,15 @@ public class ResourceUtil {
     public static void addMethodMetaData(ActionReport ar, Map<String, MethodMetaData> mmd) {
         List<Map> methodMetaData = new ArrayList<Map>();
 
-        methodMetaData.add(new HashMap() {{ put("name", "GET"); }});
+       MethodMetaData getMetaData = mmd.get("GET");
+       methodMetaData.add(new HashMap() {{ put("name", "GET"); }});
+       if (getMetaData != null) { //are they extra params for a GET command?
+        Map<String, Object> getMetaDataMap = new HashMap<String, Object>();
+        if (getMetaData.sizeParameterMetaData() > 0) {
+                getMetaDataMap.put(MESSAGE_PARAMETERS, buildMethodMetadataMap(getMetaData));
+            }
+        methodMetaData.add(getMetaDataMap);      
+       }
 
         MethodMetaData postMetaData = mmd.get("POST");
         Map<String, Object> postMetaDataMap = new HashMap<String, Object>();
