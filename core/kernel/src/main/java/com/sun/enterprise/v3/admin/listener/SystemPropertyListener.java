@@ -143,7 +143,17 @@ public class SystemPropertyListener implements ConfigListener, PostConstruct, St
                         return addToCluster(sp);
                     } else {
                         //this has to be instance of Server
-                        return addToServer(sp);
+                        //GLASSFISH-15665 Check if this is the current running server.
+                        //Don't call addToServer if this is for a different server.
+                        if (proxy instanceof Server) {
+                            Server changedServer = (Server) proxy;
+                            String changedServerName = changedServer.getName();
+                            String thisServerName = server.getName();
+                            if (changedServerName.equals(thisServerName)) {
+                                return addToServer(sp);
+                            }
+                        }
+                        return null;
                     }
                 }
                 if (changedType == SystemProperty.class && type == TYPE.REMOVE) { //delete-system-property
