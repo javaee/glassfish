@@ -53,6 +53,44 @@
     <artifactId>paas</artifactId>
     <packaging>pom</packaging>
     <name>GlassFish Service Orchestration related modules</name>
+    <developers>
+        <developer>
+            <id>bhavanishankar</id>
+            <name>Bhavanishankara Sapaliga</name>
+            <url>http://www.java.net/blogs/bhavanishankar</url>
+            <organization>Oracle, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>jr158900</id>
+            <name>Jagadish Ramu</name>
+            <url>http://blogs.oracle.com/JagadishPrasath</url>
+            <organization>Oracle, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+ 	<developer>
+            <id>ss141213</id>
+            <name>Sanjeeb Sahoo</name>
+            <url>http://www.java.net/blogs/ss141213</url>
+            <organization>Oracle, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+	<developer>
+            <id>sivakumart</id>
+            <name>Sivakumar Thyagarajan</name>
+            <url>http://blogs.oracle.com/sivakumart</url>
+            <organization>Oracle, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
     <modules>
         <module>orchestrator</module>
         <module>plugins</module>
