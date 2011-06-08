@@ -593,10 +593,10 @@ public class VirtualServer extends StandardHost
     /**
      * Determines whether the specified web module is "active" under this
      * virtual server.
-     */
+     *
     private boolean isActive(com.sun.enterprise.config.serverbeans.WebModule wm) {
         return isActive(wm, true);
-    }
+    }*/
 
     /**
      * Determines whether the specified web module is "active" under this
@@ -1959,7 +1959,9 @@ public class VirtualServer extends StandardHost
 
             if (delete) {
                 if (!file.delete()) {
-                    // ignore
+                    _logger.log(Level.WARNING,
+                            "webcontainer.unableToDelete",
+                            file.toString());
                 }
             }
 

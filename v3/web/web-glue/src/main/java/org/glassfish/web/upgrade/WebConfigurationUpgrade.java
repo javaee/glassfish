@@ -41,7 +41,10 @@
 package org.glassfish.web.upgrade;
 
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.sun.logging.LogDomains;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import org.jvnet.hk2.component.PostConstruct;
@@ -56,6 +59,9 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Service(name="webConfigurationUpgrade")
 public class WebConfigurationUpgrade implements ConfigurationUpgrade, PostConstruct {
+
+    protected static final Logger _logger = LogDomains.getLogger(
+            WebConfigurationUpgrade.class, LogDomains.WEB_LOGGER);
 
     @Inject
     private ServerEnvironment serverEnvironment;
@@ -72,7 +78,9 @@ public class WebConfigurationUpgrade implements ConfigurationUpgrade, PostConstr
                     removeSerializedSessions(f);
                 } else if (f.getName().endsWith("SESSIONS.ser")) {
                     if (!f.delete()) {
-                        // Ignore for now
+                        _logger.log(Level.WARNING,
+                                "webcontainer.unableToDelete",
+                                f.toString());
                     }
                 }
             }

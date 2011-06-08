@@ -930,7 +930,9 @@ public final class PEAccessLogValve
         if (!dir.isAbsolute())
             dir = new File(System.getProperty("catalina.base"), directory);
         if (!dir.mkdirs()) {
-            // Ignore for now
+            _logger.log(Level.WARNING,
+                    "webcontainer.unableToCreate",
+                    dir.toString());
         }
 
         // Open the current log file

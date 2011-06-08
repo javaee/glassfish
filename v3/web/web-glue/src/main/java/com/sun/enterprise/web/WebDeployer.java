@@ -40,12 +40,10 @@
 
 package com.sun.enterprise.web;
 
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.logging.LogDomains;
-import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -61,7 +59,6 @@ import org.jvnet.hk2.annotations.Service;
 
 import java.io.File;
 import java.text.MessageFormat;
-import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -85,9 +82,6 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
 
     @Inject
     Domain domain;
-
-    @Inject
-    ServerEnvironment env;
 
     @Inject
     RequestDispatcher dispatcher;
