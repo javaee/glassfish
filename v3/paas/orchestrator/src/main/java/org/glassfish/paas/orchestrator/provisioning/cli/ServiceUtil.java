@@ -246,7 +246,7 @@ public class ServiceUtil implements PostConstruct {
     public void updateInstanceID(String serviceName, String instanceID, SERVICE_TYPE type) {
         String tableName = getTableName(type);
         Connection con = null;
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         try {
             //check whether the serviceName exists
             final String query = "update " + tableName +
@@ -254,8 +254,8 @@ public class ServiceUtil implements PostConstruct {
                     "where " + CLOUD_COLUMN_CLOUD_NAME + " = '" + serviceName + "'";
             System.out.println("Executing query : " + query);
             con = ds.getConnection();
-            stmt = con.createStatement();
-            stmt.executeUpdate(query);
+            stmt = prepareStatement(con, query);
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -268,7 +268,7 @@ public class ServiceUtil implements PostConstruct {
     public void updateState(String serviceName, String state, SERVICE_TYPE type) {
         String tableName = getTableName(type);
         Connection con = null;
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         try {
             //check whether the serviceName exists
             final String query = "update " + tableName +
@@ -276,8 +276,8 @@ public class ServiceUtil implements PostConstruct {
                     "where " + CLOUD_COLUMN_CLOUD_NAME + " = '" + serviceName + "'";
             System.out.println("Executing query : " + query);
             con = ds.getConnection();
-            stmt = con.createStatement();
-            stmt.executeUpdate(query);
+            stmt = prepareStatement(con, query);
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -291,7 +291,7 @@ public class ServiceUtil implements PostConstruct {
     public void updateIPAddress(String serviceName, String IPAddress, SERVICE_TYPE type) {
         String tableName = getTableName(type);
         Connection con = null;
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         boolean valid = false;
         try {
             //check whether the serviceName exists
@@ -300,8 +300,8 @@ public class ServiceUtil implements PostConstruct {
                     "where " + CLOUD_COLUMN_CLOUD_NAME + " = '" + serviceName + "'";
             System.out.println("Executing query : " + query);
             con = ds.getConnection();
-            stmt = con.createStatement();
-            stmt.executeUpdate(query);
+            stmt = prepareStatement(con, query);
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -315,13 +315,13 @@ public class ServiceUtil implements PostConstruct {
     public Collection<String> getAllSubComponents(String serviceName) {
         List<String> subComponents = new ArrayList<String>();
         Connection con = null;
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            String query = "select * from " + CloudRegistryService.CLOUD_TABLE_NAME + " where CLOUD_NAME like '" + serviceName + ".%'";
+            final String query = "select * from " + CloudRegistryService.CLOUD_TABLE_NAME + " where CLOUD_NAME like '" + serviceName + ".%'";
             con = ds.getConnection();
-            stmt = con.createStatement();
-            rs = stmt.executeQuery(query);
+            stmt = prepareStatement(con, query);
+            rs = stmt.executeQuery();
             while (rs.next()) {
                 subComponents.add(rs.getString("CLOUD_NAME"));
             }
@@ -376,14 +376,17 @@ public class ServiceUtil implements PostConstruct {
         String tableName = getTableName(type);
 
         Connection con = null;
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         String serviceName = null;
         try {
-            final String query = "select " + CLOUD_COLUMN_CLOUD_NAME + " from " + tableName + " where IP_ADDRESS = '" + ipAddress + "'";
+            StringBuffer stringBuffer = new StringBuffer();
+            stringBuffer.append("select ").append(CLOUD_COLUMN_CLOUD_NAME).append(" from ").append(tableName).append(" where IP_ADDRESS = ?");
             con = ds.getConnection();
-            stmt = con.createStatement();
-            rs = stmt.executeQuery(query);
+            final String query = stringBuffer.toString();
+            stmt = prepareStatement(con, query);
+            stmt.setString(1, ipAddress);
+            rs = stmt.executeQuery();
             if (rs.next()) {
                 serviceName = rs.getString("CLOUD_NAME");
             }
@@ -395,6 +398,11 @@ public class ServiceUtil implements PostConstruct {
             closeDBObjects(con, stmt, rs);
         }
         return serviceName;
+    }
+
+    private PreparedStatement prepareStatement(Connection con, final String query)
+            throws SQLException {
+        return con.prepareStatement(query);
     }
 
     public String generateNodeName(String suffix) {
@@ -411,15 +419,17 @@ public class ServiceUtil implements PostConstruct {
 
         List<String> instances = new ArrayList<String>();
         Connection con = null;
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            final String query = "select * from " + CloudRegistryService.CLOUD_TABLE_NAME + " where CLOUD_NAME like '" + domainName + ".%' and " +
+            StringBuffer query = new StringBuffer();
+            query.append("select * from " + CloudRegistryService.CLOUD_TABLE_NAME + " where CLOUD_NAME like '" + domainName + ".%' and " +
                     CloudRegistryService.CLOUD_COLUMN_SERVER_TYPE + "='" + Type.StandAloneInstance.toString() + "' " +
-                    "or " + CloudRegistryService.CLOUD_COLUMN_SERVER_TYPE + "='" + Type.ClusterInstance + "'";
+                    "or " + CloudRegistryService.CLOUD_COLUMN_SERVER_TYPE + "='" + Type.ClusterInstance + "'");
+
             con = ds.getConnection();
-            stmt = con.createStatement();
-            rs = stmt.executeQuery(query);
+            stmt = prepareStatement(con,query.toString());
+            rs = stmt.executeQuery();
             while (rs.next()) {
                 System.out.println("CLOUD_NAME-getNextID : " + rs.getString("CLOUD_NAME"));
                 instances.add(rs.getString("CLOUD_NAME"));
@@ -483,7 +493,7 @@ public class ServiceUtil implements PostConstruct {
         DataSource ds = cloudRegistryService.getDataSource();
 
         Connection conn = null;
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         CloudRegistryEntry entry = null;
         try {
@@ -491,8 +501,8 @@ public class ServiceUtil implements PostConstruct {
             final String sql = "select * from " + tableName + " where " +
                     CLOUD_COLUMN_CLOUD_NAME + "='" + serviceName + "'";
 
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
+            stmt = prepareStatement(conn, sql);
+            rs = stmt.executeQuery();
             if (rs.next()) {
                 entry = new CloudRegistryEntry();
                 entry.setCloudName(rs.getString(CLOUD_COLUMN_CLOUD_NAME));
@@ -521,7 +531,7 @@ public class ServiceUtil implements PostConstruct {
             conn = ds.getConnection();
             String sql = "INSERT into " + tableName + " values(?,?,?,?,?)";
 
-            stmt = conn.prepareStatement(sql);
+            stmt = prepareStatement(conn, sql);
             stmt.setString(1, entry.getCloudName());
             stmt.setString(2, entry.getIpAddress());
             stmt.setString(3, entry.getInstanceId());
@@ -551,7 +561,7 @@ public class ServiceUtil implements PostConstruct {
         try {
             conn = ds.getConnection();
             final String sql = "SELECT " + CLOUD_COLUMN_CLOUD_NAME + " from " + tableName;
-            stmt = conn.prepareStatement(sql);
+            stmt = prepareStatement(conn, sql);
             resultSet = stmt.executeQuery();
             while (resultSet.next()) {
                 if (serviceName.equals(resultSet.getString(CLOUD_COLUMN_CLOUD_NAME).trim())) {
@@ -581,14 +591,15 @@ public class ServiceUtil implements PostConstruct {
     public void createTable(ServiceUtil.SERVICE_TYPE type) {
         String tableName = getTableName(type);
         Connection con = null;
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         try {
             InitialContext ic = new InitialContext();
             ds = (DataSource) ic.lookup(RESOURCE_NAME);
             con = ds.getConnection();
-            stmt = con.createStatement();
-            stmt.executeUpdate("create table " + tableName + " (" + CLOUD_COLUMN_CLOUD_NAME + " varchar(50), " + CLOUD_COLUMN_IP_ADDRESS + " varchar(100), " +
-                    "" + CLOUD_COLUMN_INSTANCE_ID + " varchar(15), " + CLOUD_COLUMN_SERVER_TYPE + " varchar(20), " + CLOUD_COLUMN_STATE + " varchar(20))");
+            final String query = "create table " + tableName + " (" + CLOUD_COLUMN_CLOUD_NAME + " varchar(50), " + CLOUD_COLUMN_IP_ADDRESS + " varchar(100), " +
+                    "" + CLOUD_COLUMN_INSTANCE_ID + " varchar(15), " + CLOUD_COLUMN_SERVER_TYPE + " varchar(20), " + CLOUD_COLUMN_STATE + " varchar(20))";
+            stmt = prepareStatement(con, query);
+            stmt.executeUpdate();
             debug("create table " + tableName);
         } catch (Exception e) {
             e.printStackTrace();

@@ -164,12 +164,12 @@ public class CreateGlassFishService implements AdminCommand, Runnable {
 
         try {
             conn = ds.getConnection();
-            final String sql = "UPDATE GF_CLOUD_INFO SET IP_ADDRESS = ?, " +
-                    "STATE = ? WHERE CLOUD_NAME = \'" + entry.getCloudName() + "\'";
 
-            stmt = conn.prepareStatement(sql);
+            stmt = conn.prepareStatement("UPDATE GF_CLOUD_INFO SET IP_ADDRESS = ?, " +
+                    "STATE = ? WHERE CLOUD_NAME = ?");
             stmt.setString(1, entry.getIpAddress());
             stmt.setString(2, entry.getState());
+            stmt.setString(3, entry.getCloudName());
 
             int retVal = stmt.executeUpdate();
             System.out.println("Executed [ " + stmt + " ], retVal = [" + retVal + "]");

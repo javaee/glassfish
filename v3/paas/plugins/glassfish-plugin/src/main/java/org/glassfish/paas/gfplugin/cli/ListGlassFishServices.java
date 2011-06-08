@@ -56,10 +56,7 @@ import org.jvnet.hk2.component.PerLookup;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 
 /**
@@ -81,7 +78,7 @@ public class ListGlassFishServices implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         Connection con = null;
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
             InitialContext ic = new InitialContext();
@@ -99,9 +96,8 @@ public class ListGlassFishServices implements AdminCommand {
 
             if (query != null) {
                 con = ds.getConnection();
-                stmt = con.createStatement();
-                final String sqlQuery = query;
-                rs = stmt.executeQuery(sqlQuery);
+                stmt = prepareStatement(con, query);
+                rs = stmt.executeQuery();
 
                 String headings[] = {"CLOUD_NAME", "IP_ADDRESS", "INSTANCE_ID", "SERVER_TYPE", "STATE"};
                 ColumnFormatter cf = new ColumnFormatter(headings);
@@ -144,4 +140,10 @@ public class ListGlassFishServices implements AdminCommand {
             serviceUtil.closeDBObjects(con, stmt, rs);
         }
     }
+
+    private PreparedStatement prepareStatement(Connection con, final String query)
+            throws SQLException {
+        return con.prepareStatement(query);
+    }
+
 }
