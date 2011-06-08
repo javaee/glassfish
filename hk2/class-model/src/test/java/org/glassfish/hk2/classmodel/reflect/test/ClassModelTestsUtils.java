@@ -94,7 +94,7 @@ public class ClassModelTestsUtils {
                     Parser parser = new Parser(pc);
 
                     parser.parse(modelDir, null);
-                    Exception[] exceptions = parser.awaitTermination(10000, TimeUnit.SECONDS);
+                    Exception[] exceptions = parser.awaitTermination(100, TimeUnit.SECONDS);
                     if (exceptions!=null) {
                         for (Exception e : exceptions) {
                             System.out.println("Found Exception ! : " +e);
