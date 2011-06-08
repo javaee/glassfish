@@ -150,6 +150,10 @@ public class DynamicReloader implements Runnable {
         cancelRequested.set(true);
     }
     
+    void init() {
+        cancelRequested.set(false);
+    }
+    
     private void reloadApps() throws URISyntaxException, IOException {
         List<AppReloadInfo> appsToReload = chooseAppsToReload();
         for (AppReloadInfo appInfo : appsToReload) {
@@ -158,7 +162,6 @@ public class DynamicReloader implements Runnable {
             }
             reloadApp(appInfo);
         }
-        cancelRequested.set(false);
     }
     
     private synchronized List<AppReloadInfo> chooseAppsToReload() throws URISyntaxException {

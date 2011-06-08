@@ -378,12 +378,6 @@ public class AutoDeployer {
     public void run() {
         if (directory.exists()) {
             run(DEFAULT_INCLUDE_SUBDIR);
-            /*
-             * If the cancel request was set then it has already caused the
-             * earlier logic to end.  Clear it so the next iteration will run
-             * normally.
-             */
-            cancelDeployment = false;
         } else {
             sLogger.fine("autodeploy directory does not exist");
         }
@@ -400,6 +394,10 @@ public class AutoDeployer {
         } finally {
             clearInProgress();
         }
+    }
+
+    void init() {
+        cancelDeployment = false;
     }
 
     private void setRetryManager(Habitat habitat) {
