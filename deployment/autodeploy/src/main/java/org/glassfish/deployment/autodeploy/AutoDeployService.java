@@ -205,6 +205,7 @@ public class AutoDeployService implements PostStartup, PostConstruct, PreDestroy
     
     private void startAutoDeployer(int pollingIntervalInSeconds) {
         long pollingInterval = pollingIntervalInSeconds * 1000L;
+        autoDeployer.init();
         autoDeployerTimer.schedule(
                 autoDeployerTimerTask = new TimerTask() {
                     @Override
