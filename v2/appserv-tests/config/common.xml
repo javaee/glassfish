@@ -1401,6 +1401,14 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     </java>
   </parallel>
 </target>
+<condition property="aix">
+    <os name="AIX"/>
+</condition>
+
+<target name="execute-sleep" if="aix">
+    <sleep seconds="15"/>
+</target>
+
 
 <!--  start Derby Database -->
 <target name="startDerby">

@@ -135,10 +135,11 @@
         <parallel>
             <java classname="org.apache.derby.drda.NetworkServerControl"
                   classpath="${db.classpath}" fork="true" spawn="true">
-                <arg line="-h 0.0.0.0 -p 1527 start"/>
+                <arg line="-h localhost -p 1527 start"/>
                 <jvmarg value="-Dderby.system.home=${env.S1AS_HOME}/databases"/>
             </java>
         </parallel>
+        <antcall target="execute-sleep"/>
     </target>
 
     <target name="stop-derby">
@@ -146,7 +147,7 @@
         <parallel>
             <java classname="org.apache.derby.drda.NetworkServerControl"
                   classpath="${db.classpath}" failonerror="true" fork="true">
-                <arg line="-h 0.0.0.0 -p 1527 shutdown"/>
+                <arg line="-h localhost -p 1527 shutdown"/>
             </java>
         </parallel>
     </target>
