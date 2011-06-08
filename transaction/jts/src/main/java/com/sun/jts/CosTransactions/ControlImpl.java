@@ -963,42 +963,38 @@ public class ControlImpl extends JControlPOA implements Control {
      * interface method implementation below shall be discarded.
      */
     
-    private static org.omg.CORBA.NO_IMPLEMENT no_implement =
-    new org.omg.CORBA.NO_IMPLEMENT("This is a locally constrained object.");
-    
-    
     public org.omg.CORBA.Object _duplicate() {
-        throw no_implement;
+        throw new org.omg.CORBA.NO_IMPLEMENT("This is a locally constrained object.");
         
     }
     
     public void _release() {
-        throw no_implement;
+        throw new org.omg.CORBA.NO_IMPLEMENT("This is a locally constrained object.");
         
     }
     
     public boolean _is_a(String repository_id) {
-        throw no_implement;
+        throw new org.omg.CORBA.NO_IMPLEMENT("This is a locally constrained object.");
         
     }
     
     public boolean _is_equivalent(org.omg.CORBA.Object that) {
-        throw no_implement;
+        throw new org.omg.CORBA.NO_IMPLEMENT("This is a locally constrained object.");
         
     }
     
     public boolean _non_existent() {
-        throw no_implement;
+        throw new org.omg.CORBA.NO_IMPLEMENT("This is a locally constrained object.");
         
     }
     
     public int _hash(int maximum) {
-        throw no_implement;
+        throw new org.omg.CORBA.NO_IMPLEMENT("This is a locally constrained object.");
         
     }
     
     public Request _request(String operation) {
-        throw no_implement;
+        throw new org.omg.CORBA.NO_IMPLEMENT("This is a locally constrained object.");
         
     }
     
@@ -1006,7 +1002,7 @@ public class ControlImpl extends JControlPOA implements Control {
     String operation,
     NVList arg_list,
     NamedValue result) {
-        throw no_implement;
+        throw new org.omg.CORBA.NO_IMPLEMENT("This is a locally constrained object.");
         
     }
     
@@ -1016,29 +1012,29 @@ public class ControlImpl extends JControlPOA implements Control {
     NamedValue result,
     ExceptionList exceptions,
     ContextList contexts) {
-        throw no_implement;
+        throw new org.omg.CORBA.NO_IMPLEMENT("This is a locally constrained object.");
         
     }
     
     public org.omg.CORBA.Object _get_interface_def() {
-        throw no_implement;
+        throw new org.omg.CORBA.NO_IMPLEMENT("This is a locally constrained object.");
         
     }
     
     public org.omg.CORBA.Policy _get_policy(int policy_type) {
-        throw no_implement;
+        throw new org.omg.CORBA.NO_IMPLEMENT("This is a locally constrained object.");
         
     }
     
     public org.omg.CORBA.DomainManager[] _get_domain_managers() {
-        throw no_implement;
+        throw new org.omg.CORBA.NO_IMPLEMENT("This is a locally constrained object.");
         
     }
     
     public org.omg.CORBA.Object _set_policy_override(
     org.omg.CORBA.Policy[] policies,
     org.omg.CORBA.SetOverrideType set_add) {
-        throw no_implement;
+        throw new org.omg.CORBA.NO_IMPLEMENT("This is a locally constrained object.");
         
     }
 }
