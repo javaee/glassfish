@@ -240,7 +240,7 @@ public class JavaEETransactionManagerJTSDelegate
         int status = javax.transaction.Status.STATUS_NO_TRANSACTION;
 
         TransactionManager tm = tmLocal.get();
-        if ( tx != null && tx.isLocalTx())
+        if ( tx != null) 
             status = tx.getStatus();
         else if (tm != null) 
             status = tm.getStatus();

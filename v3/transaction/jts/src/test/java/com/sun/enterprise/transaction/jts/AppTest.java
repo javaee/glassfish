@@ -239,6 +239,71 @@ public class AppTest extends TestCase {
 
     }
 
+    public void testResourceStatus() {
+        System.out.println("**Testing Resource Status ===>");
+        Transaction tx = null;
+        try {
+            t.begin();
+            tx = t.getTransaction();
+            System.out.println("**Testing Resource Status in 2PC ===>");
+            TestResource theResource = new TestResource(tx);
+            TestResource theResource1 = new TestResource(tx);
+            t.enlistResource(tx, new TestResourceHandle(theResource));
+            t.enlistResource(tx, new TestResourceHandle(theResource1));
+            t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
+            t.delistResource(tx, new TestResourceHandle(theResource1), XAResource.TMSUCCESS);
+            t.commit();
+
+            String status = JavaEETransactionManagerSimplified.getStatusAsString(tx.getStatus());
+            System.out.println("**Status after commit: "  + status + " <===");
+            assert(theResource.prepareStatusOK());
+            assert(theResource1.prepareStatusOK());
+            assert(theResource.commitStatusOK());
+            assert(theResource1.commitStatusOK());
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+
+        try {
+            t.begin();
+            tx = t.getTransaction();
+            System.out.println("**Testing resource status in rollback ===>");
+            TestResource theResource = new TestResource(tx);
+            t.enlistResource(tx, new TestResourceHandle(theResource));
+            t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
+            t.rollback();
+
+            String status = JavaEETransactionManagerSimplified.getStatusAsString(tx.getStatus());
+            System.out.println("**Status after rollback: "  + status + " <===");
+            assert(theResource.rollbackStatusOK());
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+
+        try {
+            t.begin();
+            tx = t.getTransaction();
+            System.out.println("**Testing resource status in 1PC ===>");
+            TestResource theResource = new TestResource(tx);
+            t.enlistResource(tx, new TestResourceHandle(theResource));
+            t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
+            t.commit();
+
+            String status = JavaEETransactionManagerSimplified.getStatusAsString(tx.getStatus());
+            System.out.println("**Status after commit: "  + status + " <===");
+            assert(theResource.commitStatusOK());
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+
+    }
+
     public void testWrongTXOperationsAfterCommit() {
         System.out.println("**Testing Wrong Tx Operations After Commit ===>");
         Transaction tx = null;
@@ -1021,6 +1086,13 @@ public class AppTest extends TestCase {
         _testCommitOnePhaseWithExc(XAException.XAER_RMFAIL, RollbackException.class, true, false);
     }
 
+/**
+    public void testCommitOnePhaseWithRlbExc6() {
+        System.out.println("================= **Testing XA Exception on start ===>");
+        _testCommitOnePhaseWithExc(XAException.XA_RBROLLBACK, RollbackException.class, false, false, true);
+    }
+**/
+
     public void testCommitOnePhaseWithXAExc1() {
         System.out.println("**Testing TM with failed 1PC commit ===>");
         _testCommitOnePhaseWithExc(XAException.XAER_RMFAIL, SystemException.class, false, false);
@@ -1062,10 +1134,16 @@ public class AppTest extends TestCase {
     }
 
     private void _testCommitOnePhaseWithExc(int errorCode, Class exType, boolean setRollbackOnly, boolean isHeuristic) {
+        _testCommitOnePhaseWithExc(errorCode, exType, setRollbackOnly, isHeuristic, false);
+    }
+
+    private void _testCommitOnePhaseWithExc(int errorCode, Class exType, 
+            boolean setRollbackOnly, boolean isHeuristic, boolean failAtStart) {
         System.out.println("**Testing TM with " + ((exType == null)? "success" : exType.getName()) + " during 1PC commit ===>");
         ((JavaEETransactionManagerSimplified)t).getLogger().setLevel(Level.SEVERE);
         LogDomains.getLogger(OTSResourceImpl.class, LogDomains.TRANSACTION_LOGGER).setLevel(Level.SEVERE);
         TestResource theResource = new TestResource();
+        boolean enlist_status = true;
         try {
             System.out.println("**Starting transaction ....");
             t.begin();
@@ -1075,12 +1153,26 @@ public class AppTest extends TestCase {
             // Create and set invMgr
             createUtx();
             Transaction tx = t.getTransaction();
-            t.enlistResource(tx, new TestResourceHandle(theResource));
             if (setRollbackOnly) {
                 theResource.setRollbackErrorCode(errorCode);
+            } else if (failAtStart) {
+                theResource.setStartErrorCode(errorCode);
             } else {
                 theResource.setCommitErrorCode(errorCode);
             }
+
+            try {
+                t.enlistResource(tx, new TestResourceHandle(theResource));
+            } catch (Exception ex) {
+                if (failAtStart && exType != null && exType.isInstance(ex)) {
+                    System.out.println("**Caught expected " + exType.getName() + " ...");
+                } else {
+                    System.out.println("**Caught unexpected exception" );
+                    ex.printStackTrace();
+                    enlist_status = false;
+                }
+            }
+
             t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
             
             if (setRollbackOnly) {
@@ -1096,7 +1188,7 @@ public class AppTest extends TestCase {
                 assert (false);
             } else {
                 System.out.println("**Successful commit - Status after commit: " + status + " <===");
-                assert (true);
+                assert (enlist_status & true);
             }
         } catch (Exception ex) {
             if (exType != null && exType.isInstance(ex)) {
@@ -1114,7 +1206,7 @@ public class AppTest extends TestCase {
                    System.out.println("**Forget was called: " + status);
                 }
 
-                assert (status);
+                assert (enlist_status & status);
             } else {
                 System.out.println("**Caught " + ((exType == null)? " unexpected " : " NOT a " + exType.getName()) + " during 2PC...");
                 ex.printStackTrace();
@@ -1369,11 +1461,27 @@ public class AppTest extends TestCase {
       private int commitErrorCode = 9999;
       private int rollbackErrorCode = 9999;
       private int prepareErrorCode = 9999;
+      private int startErrorCode = 9999;
+
+      private Transaction tx;
+      private int commit_status = -1;
+      private int rollback_status = -1;
+      private int prepare_status = -1;
     
+      TestResource() {}
+
+      TestResource(Transaction tx) {
+         this.tx = tx;
+      }
+
       // to test different xaexception error codes
       public void setCommitErrorCode(int errorCode) {
         this.commitErrorCode = errorCode;
         setHeuristic(errorCode);
+      }
+    
+      public void setStartErrorCode(int errorCode) {
+        this.startErrorCode = errorCode;
       }
     
       public void setRollbackErrorCode(int errorCode) {
@@ -1397,6 +1505,7 @@ public class AppTest extends TestCase {
       public void commit(Xid xid, boolean onePhase) throws XAException{
         // test goes here
         System.out.println("in XA commit");
+        commit_status = getStatus("COMMIT");
         if (commitErrorCode != 9999) {
           System.out.println("throwing XAException." + commitErrorCode + " during commit of " + (onePhase? "1" : "2") + "pc");
           throw new XAException(commitErrorCode);
@@ -1412,6 +1521,7 @@ public class AppTest extends TestCase {
       public void rollback(Xid xid)
             throws XAException {
           System.out.println("in XA rollback");
+        rollback_status = getStatus("ROLLBACK");
         if (rollbackErrorCode != 9999) {
           System.out.println("throwing XAException." + rollbackErrorCode + " during rollback" );
           throw new XAException(rollbackErrorCode);
@@ -1421,6 +1531,7 @@ public class AppTest extends TestCase {
       public int prepare(Xid xid)
             throws XAException {
           System.out.println("in XA prepare");
+        prepare_status = getStatus("PREPARE");
         if (prepareErrorCode != 9999) {
           System.out.println("throwing XAException." + prepareErrorCode + " during prepare" );
           throw new XAException(prepareErrorCode);
@@ -1448,6 +1559,10 @@ public class AppTest extends TestCase {
               if (inUse)
                 throw new XAException(XAException.XAER_NOTA);
               inUse = true;
+              if (startErrorCode != 9999) {
+                System.out.println("throwing XAException." + startErrorCode + " during start" );
+                throw new XAException(startErrorCode);
+              }
        }
     
     
@@ -1466,6 +1581,31 @@ public class AppTest extends TestCase {
             return !_isHeuristic || _forgetCalled;
        }
 
+       public boolean commitStatusOK() {
+            return commit_status==Status.STATUS_COMMITTING;
+       }
+
+       public boolean rollbackStatusOK() {
+            return rollback_status==Status.STATUS_ROLLING_BACK;
+       }
+
+       public boolean prepareStatusOK() {
+            return prepare_status==Status.STATUS_PREPARING;
+       }
+
+       private int getStatus(String name) {
+        int status = -1;
+        try {
+            if (tx != null) {
+                status = tx.getStatus();
+                System.out.println("Status in " + name + ": " + JavaEETransactionManagerSimplified.getStatusAsString(status));
+            }
+         } catch (Exception ex) {
+            ex.printStackTrace();
+         }
+
+         return status;
+       }
     
     }
   

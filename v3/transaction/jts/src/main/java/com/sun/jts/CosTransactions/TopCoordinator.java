@@ -847,10 +847,10 @@ public class TopCoordinator extends CoordinatorImpl {
                 result = Status.StatusNoTransaction;
                 break;
             case TransactionState.STATE_PREPARING :
-            case TransactionState.STATE_COMMITTING_ONE_PHASE :
                 result = Status.StatusPreparing;
                 break;
             case TransactionState.STATE_COMMITTING :
+            case TransactionState.STATE_COMMITTING_ONE_PHASE :
                 result = Status.StatusCommitting;
                 break;
             case TransactionState.STATE_COMMITTED :
