@@ -114,7 +114,7 @@ public class PropertiesBagResource {
 
         RestActionReporter ar = new RestActionReporter();
         ar.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        ar.setActionDescription("Property");
+        ar.setActionDescription("property");
         List properties = new ArrayList();
 
         for (Dom child : entities) {
@@ -179,7 +179,7 @@ public class PropertiesBagResource {
 
     protected ActionReportResult clearThenSaveProperties(List<Map<String, String>> properties) {
         RestActionReporter ar = new RestActionReporter();
-        ar.setActionDescription("Property");
+        ar.setActionDescription("property");
         try {
             Map<String, Property> existing = getExistingProperties();
             deleteMissingProperties(existing, properties);
