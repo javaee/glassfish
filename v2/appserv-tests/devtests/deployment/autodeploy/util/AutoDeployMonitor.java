@@ -197,7 +197,7 @@ public class AutoDeployMonitor {
                  */
                 matches = autodeployDir.listFiles(filter);
 
-            } while ( (matches.length == 0) && (iterationCount < ITERATION_LIMIT));
+            } while ( (matches.length == 0) && (iterationCount++ < ITERATION_LIMIT));
                 
             /*
              *Return 0 if the marker file found ends with _deployed, 1 if the marker ends with

@@ -4,7 +4,7 @@
    defines properties and tasks used by multiple auto-deploy tests.
 -->
  
-    <property name="dateFormat" value="yyyy-MM-dd-HH:mm:ss.SSS"/>
+    <property name="dateFormat" value="yyyy-MM-dd-HH:mm:ss"/>
     <property name="autodeploy.dir" value="${env.S1AS_HOME}/domains/domain1/autodeploy"/>
     <property name="autodeploy.util.build" value="${testsRoot}/build/autodeploy/util"/>
     
@@ -81,6 +81,9 @@
             <format property="NOW" pattern="${dateFormat}"/>
         </tstamp>
         
+        <!-- Pause; some file systems record file rev date/time to 2-second precision -->
+        <sleep seconds="2"/>
+
         <!--
             Trigger the auto-deploy.
         -->
@@ -112,7 +115,10 @@
         <tstamp prefix="undeploy">
             <format property="NOW" pattern="${dateFormat}"/>
         </tstamp>
-        
+
+        <!-- Pause; some file systems record file rev date/time to 2-second resolution -->
+        <sleep seconds="2"/>
+
         <!--
             Trigger auto-undeploy by deleting the file.
         -->
