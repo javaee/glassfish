@@ -59,6 +59,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.glassfish.admin.rest.clientutils.MarshallingUtils;
 import org.junit.Before;
 import static org.junit.Assert.*;
+
+import org.junit.BeforeClass;
 import org.w3c.dom.Document;
 
 public class RestTestBase {
@@ -66,15 +68,28 @@ public class RestTestBase {
     protected static final String RESPONSE_TYPE = MediaType.APPLICATION_JSON;//APPLICATION_XML;
     protected static final String AUTH_USER_NAME = "dummyuser";
     protected static final String AUTH_PASSWORD = "dummypass";
+    protected static final String CONTEXT_ROOT_MANAGEMENT = "management";
 
     protected Client client;
-    protected String adminPort;
-    protected String instancePort;
+    protected static String adminHost;
+    protected static String adminPort;
+    protected static String instancePort;
 
-    public RestTestBase() {
+
+    @BeforeClass
+    public static void initialize() {
         adminPort = getParameter("admin.port", "4848");
         instancePort = getParameter("instance.port", "8080");
-        baseUrl = "http://localhost:" + adminPort + "/management";
+        adminHost  = getParameter("instance.host", "localhost");
+        baseUrl =  "http://" + adminHost + ':'  + adminPort + '/';
+    }
+
+    protected static String getBaseUrl() {
+        return baseUrl;
+    }
+
+    protected String getContextRoot() {
+        return CONTEXT_ROOT_MANAGEMENT;
     }
 
     @Before
@@ -89,7 +104,7 @@ public class RestTestBase {
             return address;
         }
 
-        return baseUrl + address;
+        return baseUrl + getContextRoot() + address;
     }
 
     protected void resetClient() {

@@ -43,9 +43,12 @@ package org.glassfish.admin.rest.resources;
 import org.glassfish.admin.rest.utils.ProxyImpl;
 import org.jvnet.hk2.component.Habitat;
 
+import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Context;
+import static javax.ws.rs.core.Response.Status.*;
 import java.net.URL;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -75,6 +78,7 @@ import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 /**
  * @author rajeshwar patil
+ * @author Mitesh Meswani
  */
 //@Path("monitoring{path:.*}")
 @Path("domain{path:.*}")
@@ -82,8 +86,6 @@ import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
 public class MonitoringResource {
 
-    @PathParam("path")
-    String path;
     @Context
     protected UriInfo uriInfo;
 
@@ -95,130 +97,89 @@ public class MonitoringResource {
     
     @GET
     @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML,"text/html;qs=2"})
-    public ActionReportResult getChildNodes() {
-        List<TreeNode> list = new ArrayList<TreeNode>();
-
+    public Response getChildNodes(@PathParam("path")List<PathSegment> pathSegments) {
+        Response.ResponseBuilder responseBuilder = Response.status(OK);
         RestActionReporter ar = new RestActionReporter();
         ar.setActionDescription("Monitoring Data");
         ar.setMessage("");
         ar.setSuccess();
-        // ar.getExtraProperties().put("jmxServiceUrls", jmxUrls);
-        ActionReportResult result = new ActionReportResult(ar);
-        MonitoringRuntimeDataRegistry monitoringRegistry =habitat.getComponent(MonitoringRuntimeDataRegistry.class);
-
-        if (path == null) {
-            //FIXME - Return appropriate message to the user
-            //return Response.status(400).entity("match pattern is invalid or null").build();
-            return result;
-        }
-
-        if (monitoringRegistry == null) {
-            //FIXME - Return appropriate message to the user
-            //return Response.status(404).entity("monitoring facility not installed").build();
-            return result;
-        }
 
         String currentInstanceName = System.getProperty("com.sun.aas.instanceName");
-        if ((path.equals("")) || (path.equals("/"))) {
-            //Return the sub-resource list of root nodes
+        boolean isRunningOnDAS = "server".equals(currentInstanceName); //TODO this needs to come from an API. Check with admin team
+        MonitoringRuntimeDataRegistry monitoringRegistry =habitat.getComponent(MonitoringRuntimeDataRegistry.class);
+        TreeNode rootNode = monitoringRegistry.get(currentInstanceName);
 
-            TreeNode serverNode = monitoringRegistry.get(currentInstanceName);
-            if (serverNode != null) {
-                //check to make sure we do not display empty server resource
-                //    - http://host:port/monitoring/domain/server
-                //When you turn monitoring levels HIGH and then turn them OFF,
-                //you may see empty server resource. This is because server tree
-                //node has children (disabled) even when all the monitoring
-                //levels are turned OFF.
-                //Issue: 9921
-                if (!serverNode.getEnabledChildNodes().isEmpty()) {
-                    list.add(serverNode);                  
-                    constructEntity(list,  ar);                    
-                    Domain domain = habitat.getComponent(Domain.class);
-                    Map<String, String> links = (Map<String, String>) ar.getExtraProperties().get("childResources");
-                    for (Server s : domain.getServers().getServer()) {
-                        if (!s.getName().equals("server")) {// add all non 'server' instances
-                            links.put(s.getName(), getElementLink(uriInfo, s.getName()));
-                        }
-                    }                   
-                }
-                return result;
-            } else {
-                //No root node available, so nothing to list
-                //FIXME - Return appropriate message to the user
-                ///return Response.status(404).entity("No monitoring data. Please check monitoring levels are configured").build();
-                return result;
+        //The pathSegments will always contain "domain". Discard it
+        pathSegments = pathSegments.subList(1, pathSegments.size());
+        if(!pathSegments.isEmpty()) {
+            PathSegment lastSegment = pathSegments.get(pathSegments.size() - 1);
+            if(lastSegment.getPath().isEmpty()) { // if there is a trailing '/' (like monitroing/domain/), a spurious pathSegment is added. Discard it.
+                pathSegments = pathSegments.subList(0,pathSegments.size() - 1);
             }
         }
 
-        //ignore the starting slash
-        if (path.startsWith("/")) {
-            path = path.substring(1);
+        if(!pathSegments.isEmpty() ) {
+            String firstPathElement = pathSegments.get(0).getPath();
+            if(firstPathElement.equals(currentInstanceName)) { // Query for current instance. Execute it
+                //iterate over pathsegments and build a dotted name to look up in monitoring registry
+                StringBuilder pathInMonitoringRegistry = new StringBuilder();
+                for(PathSegment pathSegment : pathSegments.subList(1,pathSegments.size()) ) {
+                        if(pathInMonitoringRegistry.length() > 0 ) {
+                            pathInMonitoringRegistry.append('.');
+                        }
+                        pathInMonitoringRegistry.append(pathSegment.getPath().replaceAll("\\.", "\\\\.")); // Need to escape '.' before passing it to monitoring code
+                }
+
+                TreeNode resultNode = pathInMonitoringRegistry.length() > 0 ? rootNode.getNode(pathInMonitoringRegistry.toString()) : rootNode;
+                if (resultNode != null) {
+                    List<TreeNode> list = new ArrayList<TreeNode>();
+                    if (resultNode.hasChildNodes()) {
+                        list.addAll(resultNode.getEnabledChildNodes());
+                    } else {
+                        list.add(resultNode);
+                    }
+                    constructEntity(list, ar);
+                    responseBuilder.entity(new ActionReportResult(ar));
+                } else {
+                    //No monitoring data, so nothing to list
+                    responseBuilder.status(NOT_FOUND);
+                    responseBuilder.entity(new ActionReportResult(ar));
+                }
+
+            } else { //firstPathElement != currentInstanceName => A proxy request
+                if(isRunningOnDAS) { //Attempt to forward to instance if running on Das
+                    //TODO validate that firstPathElement corresponds to a valid server name
+                    Properties proxiedResponse = new MonitoringProxyImpl().proxyRequest(uriInfo, client, habitat);
+                    ar.setExtraProperties(proxiedResponse);
+                    responseBuilder.entity(new ActionReportResult(ar));
+                } else { // Not running on DAS and firstPathElement != currentInstanceName => Reject the request as invalid
+                    return Response.status(FORBIDDEN).build();
+                }
+            }
+        } else { // Called for /monitoring/domain/
+            List<TreeNode> list = new ArrayList<TreeNode>();
+            list.add(rootNode); //Add currentInstance to response
+            constructEntity(list,  ar);
+
+            if(isRunningOnDAS) { // Add links to instances from the cluster
+                Domain domain = habitat.getComponent(Domain.class);
+                Map<String, String> links = (Map<String, String>) ar.getExtraProperties().get("childResources");
+                for (Server s : domain.getServers().getServer()) {
+                    if (!s.getName().equals("server")) {// add all non 'server' instances
+                        links.put(s.getName(), getElementLink(uriInfo, s.getName()));
+                    }
+                }
+            }
+            responseBuilder.entity(new ActionReportResult(ar));
         }
 
-        if(!path.startsWith(currentInstanceName)) {
-            //TODO need to make sure we are actually running on DAS else do not try to forward.
-            // forward the request to instance
-            Properties proxiedResponse = new MonitoringProxyImpl().proxyRequest(uriInfo, client, habitat);
-
-            ar.setExtraProperties(proxiedResponse);
-            return result;
-        }
-
-        //replace all . with \. Monitoring code expects a '.' to be escaped to distinguish from normal field seperator
-        path = path.replaceAll("\\.", "\\\\.");
-
-        String dottedName = path.replace('/', '.');
-
-        String root;
-        int index =  dottedName.indexOf('.');
-        if (index != -1) {
-            root = dottedName.substring(0, index);
-            dottedName = dottedName.substring(index + 1 );
-        } else {
-            root = dottedName;
-            dottedName = "";
-        }
-
-        TreeNode rootNode = monitoringRegistry.get(root);
-        if (rootNode == null) {
-            //No monitoring data, so nothing to list
-            //FIXME - Return appropriate message to the user
-            ///return Response.status(404).entity("No monitoring data. Please check monitoring levels are configured").build();
-            return result;
-        }
-
-        TreeNode  currentNode;
-        if (dottedName.length() > 0) {
-            currentNode = rootNode.getNode(dottedName);
-        } else {
-            currentNode = rootNode;
-        }
-
-
-        if (currentNode == null) {
-            //No monitoring data, so nothing to list
-            return result;
-            ///return Response.status(404).entity("Monitoring object not found").build();
-        }
-
-        if (currentNode.hasChildNodes()) {
-            //print(currentNode.getChildNodes());
-            //TreeNode.getChildNodes() is returning disabled nodes too.
-            //Switching to new api TreeNode.getEnabledChildNodes() which returns
-            //only the enabled nodes. Reference Issue: 9921
-            list.addAll(currentNode.getEnabledChildNodes());
-        } else {
-            Object r = currentNode.getValue();
-            System.out.println("result: " + r);
-            list.add(currentNode);
-        }
-        constructEntity(list,  ar);
-        return result;
+        return responseBuilder.build();
     }
 
     private void constructEntity(List<TreeNode> nodeList, RestActionReporter ar) {
-        Map map = new TreeMap();
+        Map<String, Object> entity = new TreeMap<String, Object>();
+        Map<String, String> links = new TreeMap<String, String>();
+
         for (TreeNode node : nodeList) {
             //process only the leaf nodes, if any
             if (!node.hasChildNodes()) {
@@ -226,46 +187,35 @@ public class MonitoringResource {
                 //Statistic object, String object or the object for primitive type
                 Object value = node.getValue();
 
-                if (value == null) {
-                    return;
-                }
+                if (value != null) {
+                    try {
+                        if (value instanceof Statistic) {
+                            Statistic statisticObject = (Statistic) value;
+                            entity.put(node.getName(), getStatistic(statisticObject));
+                        } else if (value instanceof Stats) {
+                            Map<String, Map> subMap = new TreeMap<String, Map>();
+                            for (Statistic statistic : ((Stats) value).getStatistics()) {
+                                subMap.put(statistic.getName(), getStatistic(statistic));
+                            }
+                            entity.put(node.getName(), subMap);
 
-                try {
-                    if (value instanceof Statistic) {
-                        Statistic statisticObject = (Statistic) value;
-                        Map data = getStatistic(statisticObject);
-                        map.put(node.getName(), data);
-                    } else if (value instanceof Stats) {
-                        Map subMap = new TreeMap();
-                        for (Statistic statistic : ((Stats) value).getStatistics()) {
-                            Map data2 = getStatistic(statistic);
-                            subMap.put(statistic.getName(), data2);
+                        } else {
+                            entity.put(node.getName(), jsonValue(value));
                         }
-                        map.put(node.getName(), subMap);
-
-                    } else {
-                        map.put(node.getName(), jsonValue(value));
+                    } catch (Exception exception) {
+                        //log exception message as warning
                     }
-                } catch (Exception exception) {
-                    //log exception message as warning
                 }
 
-            }
-        }
-        ar.getExtraProperties().put("entity", map);
-        Map<String, String> links = new TreeMap<String, String>();
-        for (TreeNode node : nodeList) {
-            //process only the non-leaf nodes, if any
-            if (node.hasChildNodes()) {
+            } else {
                 String name = node.getName();
                 // Grizzly will barf if it sees backslash
                 name = name.replace("\\.", ".");
                 links.put(name, getElementLink(uriInfo, name));
             }
-
         }
+        ar.getExtraProperties().put("entity", entity);
         ar.getExtraProperties().put("childResources", links);
-
     }
 
     private static class MonitoringProxyImpl extends ProxyImpl {
