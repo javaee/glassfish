@@ -58,6 +58,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.Utility;
 import com.sun.appserv.connectors.internal.api.ResourceHandle;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
@@ -819,15 +820,15 @@ public final class MessageBeanContainer extends BaseContainer implements
 
 		ASyncClientShutdownTask task = new ASyncClientShutdownTask(appEJBName_,
 				messageBeanClient_, loader, messageBeanPool_);
-		int timeout = 0;
-/**
+		long timeout = 0;
 		try { 
-                    timeout = ConnectorsUtil.getShutdownTimeout();
+                    ConnectorRuntime cr = EjbContainerUtilImpl.getInstance().getDefaultHabitat()
+                            .getByContract(ConnectorRuntime.class);
+                    timeout = cr.getShutdownTimeout();
                 } catch (Throwable th) { 
                     _logger.log(Level.WARNING, "[MDBContainer] Got exception while trying " +
 		             " to get shutdown timeout", th); 
                 }
-**/
 		try {
 			boolean addedAsyncTask = false;
 			if (timeout > 0) {
@@ -855,8 +856,8 @@ public final class MessageBeanContainer extends BaseContainer implements
 					if (!task.isDone()) {
 						_logger.log(Level.FINE, "[MDBContainer] "
 								+ "Going to wait for a maximum of " + timeout
-								+ " seconds.");
-						long maxWaitTime = System.currentTimeMillis() + timeout * 1000L;
+								+ " mili-seconds.");
+						long maxWaitTime = System.currentTimeMillis() + timeout;
 						// wait in loop to guard against spurious wake-up
 						do {
 						    long timeTillTimeout = maxWaitTime - System.currentTimeMillis();
@@ -869,7 +870,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 						_logger.log(Level.WARNING,
 								"[MDBContainer] ASync task has not finished. "
 										+ "Giving up after " + timeout
-										+ " seconds.");
+										+ " mili-seconds.");
 					} else {
 						_logger.log(Level.FINE,
 								"[MDBContainer] ASync task has completed");
