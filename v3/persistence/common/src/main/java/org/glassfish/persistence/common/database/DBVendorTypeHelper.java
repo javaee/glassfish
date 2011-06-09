@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -133,7 +134,7 @@ public class DBVendorTypeHelper {
      * If vendorName does not match any of predefined vendor names, the database type
      * returned is generated using following logic.
      * <PRE>
-     *        detectedDbType = vendorName.toUpperCase();
+     *        detectedDbType = vendorName.toUpperCase(Locale.ENGLISH);
      *        int i = detectedDbType.indexOf('/');
      *        if (i > -1) {
      *           detectedDbType = detectedDbType.substring(0, i);
@@ -154,7 +155,7 @@ public class DBVendorTypeHelper {
             //If not able to detect dbType from properties, invent one by
             //manipulating input vendorName.
             if(detectedDbType == null) {
-                detectedDbType = vendorName.toUpperCase();
+                detectedDbType = vendorName.toUpperCase(Locale.ENGLISH);
                 int i = detectedDbType.indexOf('/');
                 if (i > -1) {
                     detectedDbType = detectedDbType.substring(0, i);

@@ -64,6 +64,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.Statement;
 import java.sql.SQLException;
 import javax.sql.DataSource;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -591,7 +592,7 @@ public class Java2DBProcessorHelper {
             conn = getConnection(resourceName);
             DatabaseMetaData dbMetaData = conn.getMetaData();
             String vendorName = DBVendorTypeHelper.getDBType(
-                    dbMetaData.getDatabaseProductName()).toLowerCase();
+                    dbMetaData.getDatabaseProductName()).toLowerCase(Locale.ENGLISH);
             file = new File(fileNamePrefix + vendorName + DatabaseConstants.SQL_FILE_EXTENSION);
             logger.fine("===> File to use: " + file);
         } catch (IOException e) {
