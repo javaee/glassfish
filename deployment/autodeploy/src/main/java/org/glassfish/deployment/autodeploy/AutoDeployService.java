@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -132,12 +132,6 @@ public class AutoDeployService implements PostStartup, PostConstruct, PreDestroy
                     true /* enabled when autodeployed */,
                     habitat
                     );
-             /*
-             * Also create the timer and the timer task, reusing them as needed as
-             * we need to stop and restart the task.
-             */
-            autoDeployerTimer = new Timer("AutoDeployer", true);
-
             boolean isEnabled = isAutoDeployEnabled();
             int pollingIntervalInSeconds = Integer.valueOf(DEFAULT_POLLING_INTERVAL_IN_SECONDS);
             try {
@@ -206,6 +200,7 @@ public class AutoDeployService implements PostStartup, PostConstruct, PreDestroy
     private void startAutoDeployer(int pollingIntervalInSeconds) {
         long pollingInterval = pollingIntervalInSeconds * 1000L;
         autoDeployer.init();
+        autoDeployerTimer = new Timer("AutoDeployer", true);
         autoDeployerTimer.schedule(
                 autoDeployerTimerTask = new TimerTask() {
                     @Override
@@ -237,6 +232,9 @@ public class AutoDeployService implements PostStartup, PostConstruct, PreDestroy
             autoDeployer.cancel(true);
         if (autoDeployerTimerTask!=null)
             autoDeployerTimerTask.cancel();
+        if (autoDeployerTimer != null) {
+            autoDeployerTimer.cancel();
+        }
     }
     
     /**

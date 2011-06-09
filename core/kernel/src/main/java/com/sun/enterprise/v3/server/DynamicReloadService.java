@@ -118,12 +118,6 @@ public class DynamicReloadService implements ConfigListener, PostStartup, PostCo
                     habitat
                     );
             
-             /*
-             * Also create the timer and the timer task, reusing them as needed as
-             * we need to stop and restart the task.
-             */
-            timer = new Timer("DynamicReloader", true);
-
             if (isEnabled(activeDasConfig)) {
                 start(getPollIntervalInSeconds(activeDasConfig));
             } else {
@@ -161,6 +155,7 @@ public class DynamicReloadService implements ConfigListener, PostStartup, PostCo
     private void start(int pollIntervalInSeconds) {
         long pollIntervalInMS = pollIntervalInSeconds * 1000L;
         reloader.init();
+        timer = new Timer("DynamicReloader", true);
         timer.schedule(
                 timerTask = new TimerTask() {
                     @Override
@@ -188,6 +183,9 @@ public class DynamicReloadService implements ConfigListener, PostStartup, PostCo
         reloader.cancel();
         if(timerTask != null) {
             timerTask.cancel();
+        }
+        if (timer != null) {
+            timer.cancel();
         }
     }
     
