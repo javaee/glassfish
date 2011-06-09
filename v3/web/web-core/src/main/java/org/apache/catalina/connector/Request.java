@@ -1159,8 +1159,7 @@ public class Request
         if (attr != null) {
             return attr;
         }
-        // XXX Should move to Globals
-        if (Constants.SSL_CERTIFICATE_ATTR.equals(name)) {
+        if (Globals.SSL_CERTIFICATE_ATTR.equals(name)) {
             // @TODO Implement SSL rehandshake
             RequestUtils.populateCertificateAttribute(coyoteRequest);
             attr = getAttribute(Globals.CERTIFICATES_ATTR);
@@ -1198,7 +1197,8 @@ public class Request
     static boolean isSSLAttribute(String name) {
         return Globals.CERTIFICATES_ATTR.equals(name) ||
                 Globals.CIPHER_SUITE_ATTR.equals(name) ||
-                Globals.KEY_SIZE_ATTR.equals(name);
+                Globals.KEY_SIZE_ATTR.equals(name) ||
+                Globals.SSL_SESSION_ID_ATTR.equals(name);
     }
 
     /**
@@ -4313,6 +4313,10 @@ public class Request
         attr = coyoteRequest.getAttribute(Globals.KEY_SIZE_ATTR);
         if (attr != null) {
             attributes.put(Globals.KEY_SIZE_ATTR, attr);
+        }
+        attr = coyoteRequest.getAttribute(Globals.SSL_SESSION_ID_ATTR);
+        if (attr != null) {
+            attributes.put(Globals.SSL_SESSION_ID_ATTR, attr);
         }
     }
     // END SJSAS 6419950

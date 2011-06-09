@@ -80,11 +80,6 @@ public final class Constants {
      */
     public static final String AUTHORIZATION_HEADER = "authorization";
 
-    /**
-     * SSL Certificate Request Attributite.
-     */
-    public static final String SSL_CERTIFICATE_ATTR = "org.apache.coyote.request.X509Certificate";
-
 
     // S1AS 4703023
     public static final int DEFAULT_MAX_DISPATCH_DEPTH = 20;
