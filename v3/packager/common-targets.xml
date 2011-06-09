@@ -128,6 +128,12 @@
        <fileset id="package.artifacts" dir="target/artifacts" />
                
        <echo file="target/artifacts.properties" append="true" message=";${toString:package.artifacts}"/>
+
+       <replace file="target/artifacts.properties" token=";">
+           <replacevalue><![CDATA[
+]]></replacevalue>
+       </replace>
+
        <attachArtifact file="target/artifacts.properties" classifier="artifacts" type="properties"/>             
    </target>
 
