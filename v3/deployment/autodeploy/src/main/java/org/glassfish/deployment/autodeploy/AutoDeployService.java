@@ -143,12 +143,6 @@ public class AutoDeployService implements PostStartup, PostConstruct, PreDestroy
                     true /* enabled when autodeployed */,
                     habitat
                     );
-             /*
-             * Also create the timer and the timer task, reusing them as needed as
-             * we need to stop and restart the task.
-             */
-            autoDeployerTimer = new Timer("AutoDeployer", true);
-
             boolean isEnabled = isAutoDeployEnabled();
             int pollingIntervalInSeconds = Integer.valueOf(DEFAULT_POLLING_INTERVAL_IN_SECONDS);
             try {
@@ -217,6 +211,7 @@ public class AutoDeployService implements PostStartup, PostConstruct, PreDestroy
     private void startAutoDeployer(int pollingIntervalInSeconds) {
         long pollingInterval = pollingIntervalInSeconds * 1000L;
         autoDeployer.init();
+        autoDeployerTimer = new Timer("AutoDeployer", true);
         autoDeployerTimer.schedule(
                 autoDeployerTimerTask = new TimerTask() {
                     @Override
@@ -248,6 +243,9 @@ public class AutoDeployService implements PostStartup, PostConstruct, PreDestroy
             autoDeployer.cancel(true);
         if (autoDeployerTimerTask!=null)
             autoDeployerTimerTask.cancel();
+        if (autoDeployerTimer != null) {
+            autoDeployerTimer.cancel();
+        }
     }
     
     /**
