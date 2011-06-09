@@ -165,6 +165,14 @@ public final class Globals {
 
 
     /**
+     * The request attribute under which we store the session id being used
+     * for this SSL connection (as an object of type java.lang.String).
+     */
+    public static final String SSL_SESSION_ID_ATTR =
+        "javax.servlet.request.ssl_session_id";
+
+
+    /**
      * The servlet context attribute under which the managed bean Registry
      * will be stored for privileged contexts (if enabled).
      */
