@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -120,14 +120,12 @@ public class ResourceReferenceDescriptor extends EnvironmentProperty
 					String type) {
 	super(name, "", description);
 	rType = type;
-        this.sharingScope = RESOURCE_SHAREABLE;
     }
     
     /**
      * Default constructor.
      */
     public ResourceReferenceDescriptor() {
-        this.sharingScope = RESOURCE_SHAREABLE;
     }
     
    // Create logger object per Java SDK 1.4 to log messages
@@ -181,7 +179,7 @@ public class ResourceReferenceDescriptor extends EnvironmentProperty
      */
     public String getSharingScope() {
 	if ( sharingScope == null ) {
-	    return "";
+	    return RESOURCE_SHAREABLE;
 	}
 	return sharingScope;
     }
