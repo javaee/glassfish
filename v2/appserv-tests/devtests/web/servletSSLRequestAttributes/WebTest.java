@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -74,6 +74,8 @@ public class WebTest {
         = "javax.servlet.request.key_size";
     private static final String SSL_CERTIFICATE
         = "javax.servlet.request.X509Certificate";
+    private static final String SSL_SESSION_ID
+        = "javax.servlet.request.ssl_session_id";
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
@@ -118,7 +120,8 @@ public class WebTest {
             if (line != null
                     && (line.indexOf(SSL_CIPHER_SUITE) >= 0)
                     && (line.indexOf(SSL_KEY_SIZE) >= 0)
-                    && (line.indexOf(SSL_CERTIFICATE) >= 0)) {
+                    && (line.indexOf(SSL_CERTIFICATE) >= 0)
+                    && (line.indexOf(SSL_SESSION_ID) >= 0)) {
                 stat.addStatus(TEST_NAME, stat.PASS);
             } else {
                 System.err.println("Wrong response");
