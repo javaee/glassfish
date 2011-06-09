@@ -2291,8 +2291,13 @@ public class WebappClassLoader
                     String msg = rb.getString("webappClassLoader.validationErrorJarPath");
                     msg = MessageFormat.format(msg, new Object[] {jarEntry2.getName(), ioe});
                     throw new IllegalArgumentException(msg);
-                } 
-                resourceFile.getParentFile().mkdirs();
+                }
+                if (!resourceFile.getParentFile().mkdirs()) {
+                    logger.log(Level.WARNING,
+                            "webcontainer.unableToCreate",
+                            resourceFile.getParentFile().toString());
+                }
+
                 FileOutputStream os = null;
                 InputStream is = null;
                 try {
@@ -2585,9 +2590,19 @@ public class WebappClassLoader
                 deleteDir(file);
             } else {
                 file.delete();
+                if (!file.delete()) {
+                    logger.log(Level.WARNING,
+                            "webcontainer.unableToDelete",
+                            file.toString());
+                }
+
             }
         }
-        dir.delete();
+        if (!dir.delete()) {
+            logger.log(Level.WARNING,
+                    "webcontainer.unableToDelete",
+                    dir.toString());
+        }
 
     }
 
