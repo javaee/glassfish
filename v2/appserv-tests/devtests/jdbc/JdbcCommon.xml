@@ -338,7 +338,16 @@
       <antcall target="start-derby"/>
    </target>
 
+   <condition property="aix">
+       <os name="AIX"/>
+   </condition>
+	       
    <target name="start-derby">
+       <antcall target="start-derby-aix"/>
+       <antcall target="start-derby-nonaix"/>
+   </target>
+
+   <target name="start-derby-aix" if="aix">
       <echo message="Starting Derby DB Server ..."/>
       <parallel>
           <java classname="org.apache.derby.drda.NetworkServerControl"
@@ -347,16 +356,42 @@
               <jvmarg value="-Dderby.system.home=${env.S1AS_HOME}/databases"/>
           </java>
       </parallel>
-      <sleep seconds="5"/>
       <antcall target="execute-sleep"/>
    </target>
 
+   <target name="start-derby-nonaix" unless="aix">
+      <echo message="Starting Derby DB Server ..."/>
+      <parallel>
+          <java classname="org.apache.derby.drda.NetworkServerControl"
+                classpath="${db.classpath}" fork="true" spawn="true">
+              <arg line="-h 0.0.0.0 -p 1527 start"/>
+              <jvmarg value="-Dderby.system.home=${env.S1AS_HOME}/databases"/>
+          </java>
+      </parallel>
+      <sleep seconds="5"/>
+   </target>
+
    <target name="stop-derby">
+      <antcall target="stop-derby-aix"/>
+      <antcall target="stop-derby-nonaix"/>
+  </target>
+
+  <target name="stop-derby-aix" if="aix">
       <echo message="Stopping Derby DB Server ..."/>
       <parallel>
            <java classname="org.apache.derby.drda.NetworkServerControl"
                  classpath="${db.classpath}" failonerror="true" fork="true">
 		 <arg line="-h localhost -p 1527 -user ${derby.user} -password ${derby.password} shutdown"/>
+           </java>
+      </parallel>
+   </target>
+
+  <target name="stop-derby-nonaix" unless="aix">
+      <echo message="Stopping Derby DB Server ..."/>
+      <parallel>
+           <java classname="org.apache.derby.drda.NetworkServerControl"
+                 classpath="${db.classpath}" failonerror="true" fork="true">
+		 <arg line="-h 0.0.0.0 -p 1527 -user ${derby.user} -password ${derby.password} shutdown"/>
            </java>
       </parallel>
    </target>

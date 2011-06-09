@@ -5,6 +5,8 @@
         <!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
         <!ENTITY testproperties SYSTEM "./build.properties">
         <!ENTITY run SYSTEM "./../../../config/run.xml">
+	<!ENTITY jdbcxml SYSTEM "./../JdbcCommon.xml">
+	<!ENTITY jdbcProps SYSTEM "./../JdbcCommon.properties">
         ]>
 
 <project name="mix" default="usage" basedir=".">
@@ -14,6 +16,8 @@
     &commonBuild;
     &run;
     &testproperties;
+    &jdbcxml;
+    &jdbcProps;
 
     <target name="all" depends="build,deploy, run,undeploy"/>
 
@@ -116,24 +120,5 @@
         <antcall target="delete-jdbc-connpool-common">
             <param name="jdbc.conpool.name" value="${poolname}"/>
         </antcall>
-    </target>
-
-    <target name="start-derby">
-        <echo message="Starting Derby DB Server ..."/>
-            <java classname="org.apache.derby.drda.NetworkServerControl"
-                  classpath="${db.classpath}" fork="true" spawn="true">
-                <arg line="-h localhost -p 1527 start"/>
-                <jvmarg value="-Dderby.system.home=${env.S1AS_HOME}/databases"/>
-            </java>
-        <echo message="Derby DB Server started..."/>
-        <antcall target="execute-sleep"/>
-    </target>
-
-    <target name="stop-derby">
-        <echo message="Stopping Derby DB Server ..."/>
-            <java classname="org.apache.derby.drda.NetworkServerControl"
-                  classpath="${db.classpath}" failonerror="true" fork="true">
-                <arg line="-h localhost -p 1527 shutdown"/>
-            </java>
     </target>
 </project>
