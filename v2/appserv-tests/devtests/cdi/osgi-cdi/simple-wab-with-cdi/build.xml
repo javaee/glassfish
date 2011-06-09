@@ -36,7 +36,10 @@
 -->
 <!DOCTYPE project [
 <!ENTITY commonSetup SYSTEM "./../../../../config/properties.xml">
+<!--
 <!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
+-->
+<!ENTITY commonBuild SYSTEM "./common.xml">
 <!ENTITY run SYSTEM "./../../../../config/run.xml">
 <!ENTITY testproperties SYSTEM "./build.properties">
 ]>
@@ -53,7 +56,7 @@
     <target name="clean" depends="init-common">
         <antcall target="clean-common"/>
         <delete>
-            <fileset dir="." includes="WebTest.class"/>
+            <fileset dir="." includes="*.class"/>
         </delete>
     </target>
        
@@ -65,7 +68,7 @@
 
     <target name="build" depends="compile">
         <property name="hasWebclient" value="yes"/> 
-        <antcall target="webclient-war-common">
+        <antcall target="webclient-wab-common">
             <param name="hasWebclient" value="yes"/>
             <param name="webclient.war.classes" value="**/*.class"/> 
         </antcall>
@@ -76,9 +79,12 @@
     </target> 
 
     <target name="build-publish-war" depends="build, publish-war-common" />
-    
+   
     <target name="deploy" depends="init-common">
-        <antcall target="deploy-war-common"/>
+        <antcall target="deploy-wab-common"/>
+        <echo message="sleeping for 10 seconds to allow the WAB deployment"/>
+        <sleep seconds="10"/>
+
     </target>
     
     <target name="run" depends="init-common">

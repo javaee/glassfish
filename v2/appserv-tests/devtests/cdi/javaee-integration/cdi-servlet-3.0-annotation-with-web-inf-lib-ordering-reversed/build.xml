@@ -53,18 +53,44 @@
     <target name="clean" depends="init-common">
         <antcall target="clean-common"/>
         <delete>
-            <fileset dir="." includes="WebTest.class"/>
+            <fileset dir="." includes="*.class"/>
         </delete>
+        <delete file="lib/alpha.jar"/>
+        <delete file="lib/bravo.jar"/>
     </target>
        
     <target name="compile" depends="clean">
-        <antcall target="compile-common">
-            <param name="src" value="servlet"/>
-        </antcall>
+        <!-- create WEB-INF/lib/bravo.jar -->
+        <mkdir dir="${build.classes.dir}"/>
+        <mkdir dir="${build.classes.dir}/META-INF"/>
+        <javac srcdir="util1" destdir="${build.classes.dir}" classpath="${s1astest.classpath}" debug="on" source="1.6"/>
+        <copy file="descriptor/beans.xml" tofile="${build.classes.dir}/META-INF/beans.xml"/>
+        <jar destfile="lib/bravo.jar">
+            <fileset dir="${build.classes.dir}"/>
+        </jar>
+        <delete dir="${build.classes.dir}"/>
+
+         <!-- create WEB-INF/lib/alpha.jar -->
+        <mkdir dir="${build.classes.dir}"/>
+        <mkdir dir="${build.classes.dir}/META-INF"/>
+        <javac srcdir="util1" destdir="${build.classes.dir}" classpath="${s1astest.classpath}" debug="on" source="1.6"/>
+        <javac srcdir="util2" destdir="${build.classes.dir}" classpath="${s1astest.classpath}" debug="on" source="1.6"/>
+        <delete file="${build.classes.dir}/Foo.class"/>
+        <copy file="descriptor/beans.xml" tofile="${build.classes.dir}/META-INF/beans.xml"/>
+        <jar destfile="lib/alpha.jar">
+            <fileset dir="${build.classes.dir}"/>
+        </jar>
+        <delete dir="${build.classes.dir}"/>
+
+        <!-- compile test servlet -->     
+        <mkdir dir="${build.classes.dir}"/>
+        <echo message="common.xml: Compiling test source files" level="verbose"/>
+        <mkdir dir="servlet"/>
+        <javac srcdir="servlet" destdir="${build.classes.dir}" classpath="${s1astest.classpath}:lib/alpha.jar:lib/bravo.jar" debug="on" failonerror="true"/>
     </target>
 
     <target name="build" depends="compile">
-        <property name="hasWebclient" value="yes"/> 
+       <property name="hasWebclient" value="yes"/> 
         <antcall target="webclient-war-common">
             <param name="hasWebclient" value="yes"/>
             <param name="webclient.war.classes" value="**/*.class"/> 

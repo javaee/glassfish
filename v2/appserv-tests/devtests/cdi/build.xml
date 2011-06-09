@@ -199,6 +199,7 @@
         <ant dir="stereotypes" target="${cdi-target}"/>
         <ant dir="unproxyable-deps" target="${cdi-target}"/>
         <ant dir="unsatisfied-deps" target="${cdi-target}"/>
+        <ant dir="osgi-cdi" target="${cdi-target}"/>
 
         <!-- now generate report -->
         <antcall target="report"/>

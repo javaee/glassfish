@@ -17,8 +17,8 @@ public class TestBeanInWebInfLib {
         if (bm == null)
             return "Bean Manager not injected into the TestBean in WEB-INF/lib";
         System.out.println("BeanManager in WEB-INF/lib bean is " + bm);
-//        if (tb == null) return
-//            "Injection of WAR's TestBean into the TestBean in WEB-INF/lib failed";
+        if (tb == null) return
+            "Injection of WAR's TestBean into the TestBean in WEB-INF/lib failed";
 
         // Set warBeans = bm.getBeans(TestBean.class,new
         // AnnotationLiteral<Any>() {});
