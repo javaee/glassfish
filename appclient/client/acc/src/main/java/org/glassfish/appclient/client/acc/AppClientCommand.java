@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,32 +40,17 @@
 
 package org.glassfish.appclient.client.acc;
 
-import com.sun.enterprise.glassfish.bootstrap.ProxyModule;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.enterprise.module.ModuleMetadata;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.bootstrap.BootException;
-import com.sun.enterprise.module.bootstrap.Main;
-import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.module.impl.HK2Factory;
-import com.sun.enterprise.module.impl.ModulesRegistryImpl;
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
-import com.sun.hk2.component.Holder;
-import com.sun.hk2.component.InhabitantsParser;
+
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -79,7 +64,6 @@ import org.glassfish.appclient.client.acc.config.Property;
 import org.glassfish.appclient.client.acc.config.Security;
 import org.glassfish.appclient.client.acc.config.TargetServer;
 import org.glassfish.enterprise.iiop.api.IIOPConstants;
-import org.jvnet.hk2.component.Habitat;
 
 /**
  * Implements the appclient command.
