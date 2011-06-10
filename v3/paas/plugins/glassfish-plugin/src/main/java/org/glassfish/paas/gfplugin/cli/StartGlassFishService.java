@@ -152,7 +152,7 @@ public class StartGlassFishService implements AdminCommand {
             startDomain(domainName);
         }
 
-        String instanceName = serviceUtil.getStandaloneInstanceName(serviceName);
+        //String instanceName = serviceUtil.getStandaloneInstanceName(serviceName);
         String instanceState = serviceUtil.getServiceState(serviceName, ServiceUtil.SERVICE_TYPE.APPLICATION_SERVER);
         if (isInvalidServiceState(report, instanceState)) {
             return;
@@ -173,7 +173,7 @@ public class StartGlassFishService implements AdminCommand {
             startDomain(domainName);
         }
 
-        String instanceName = serviceUtil.getClusteredInstanceName(serviceName);
+        //String instanceName = serviceUtil.getClusteredInstanceName(serviceName);
         String instanceState = serviceUtil.getServiceState(serviceName, ServiceUtil.SERVICE_TYPE.APPLICATION_SERVER);
         if (isInvalidServiceState(report, instanceState)) {
             return;
@@ -195,7 +195,7 @@ public class StartGlassFishService implements AdminCommand {
             startDomain(domainName);
         }
 
-        String clusterName = serviceUtil.getClusterName(serviceName);
+        //String clusterName = serviceUtil.getClusterName(serviceName);
         String clusterState = serviceUtil.getServiceState(serviceName, ServiceUtil.SERVICE_TYPE.APPLICATION_SERVER);
 
         if (isInvalidServiceState(report, clusterState)) {
@@ -310,7 +310,7 @@ public class StartGlassFishService implements AdminCommand {
 
         if (serviceUtil.isInstance(serviceName)) {
             String instanceName = serviceUtil.getInstanceName(serviceName);
-            String instanceIPAddress = serviceUtil.getIPAddress(serviceName, ServiceUtil.SERVICE_TYPE.APPLICATION_SERVER);
+            //String instanceIPAddress = serviceUtil.getIPAddress(serviceName, ServiceUtil.SERVICE_TYPE.APPLICATION_SERVER);
 
             String domainName = serviceUtil.getDomainName(serviceName);
             String dasIPAddress = serviceUtil.getIPAddress(domainName, ServiceUtil.SERVICE_TYPE.APPLICATION_SERVER);

@@ -81,7 +81,7 @@ public class LBPlugin implements Plugin<HTTPLoadBalancerServiceType> {
     @Inject
     private ServiceUtil serviceUtil;
 
-    private final String LB = "HTTP_LOAD_BALANCER";
+    private static final String LB = "HTTP_LOAD_BALANCER";
 
     public static final String GLASSFISH_LB = "GLASSFISH_LB";
     public static final String LB_SERVICE_TYPE = "LB";

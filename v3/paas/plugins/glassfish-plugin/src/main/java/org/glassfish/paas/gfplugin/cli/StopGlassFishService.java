@@ -152,7 +152,7 @@ public class StopGlassFishService implements AdminCommand {
             return;
         }
 
-        String instanceName = serviceUtil.getStandaloneInstanceName(serviceName);
+        //String instanceName = serviceUtil.getStandaloneInstanceName(serviceName);
         String instanceState = getState(serviceName);
         if (isInvalidServiceState(report, instanceState)) {
             return;
@@ -167,7 +167,7 @@ public class StopGlassFishService implements AdminCommand {
             return;
         }
 
-        String instanceName = serviceUtil.getClusteredInstanceName(serviceName);
+        //String instanceName = serviceUtil.getClusteredInstanceName(serviceName);
         String instanceState = getState(serviceName);
         if (isInvalidServiceState(report, instanceState)) {
             return;
@@ -182,7 +182,7 @@ public class StopGlassFishService implements AdminCommand {
             return;
         }
 
-        String clusterName = serviceUtil.getClusterName(serviceName);
+        //String clusterName = serviceUtil.getClusterName(serviceName);
         String clusterState = getState(serviceName);
 
         if (isInvalidServiceState(report, clusterState)) {
@@ -325,7 +325,7 @@ public class StopGlassFishService implements AdminCommand {
 
         if (serviceUtil.isInstance(serviceName)) {
             String instanceName = serviceUtil.getInstanceName(serviceName);
-            String instanceIPAddress = getIPAddress(serviceName);
+            //String instanceIPAddress = getIPAddress(serviceName);
 
             String domainName = serviceUtil.getDomainName(serviceName);
             String dasIPAddress = getIPAddress(domainName);

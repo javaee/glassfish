@@ -80,7 +80,7 @@ public class DerbyPlugin implements Plugin<RDBMSServiceType> {
     @Inject
     private ServiceUtil serviceUtil;
 
-    private final String DATASOURCE = "javax.sql.DataSource";
+    private static final String DATASOURCE = "javax.sql.DataSource";
 
     public static final String GLASSFISH_DERBY = "GLASSFISH_DERBY";
     public static final String RDBMS_SERVICE_TYPE = "RDBMS";
