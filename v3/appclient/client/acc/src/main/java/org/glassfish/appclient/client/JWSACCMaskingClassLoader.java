@@ -40,7 +40,6 @@
 
 package org.glassfish.appclient.client;
 
-import com.sun.enterprise.glassfish.bootstrap.MaskingClassLoader;
 import java.util.Collection;
 import java.util.Collections;
 

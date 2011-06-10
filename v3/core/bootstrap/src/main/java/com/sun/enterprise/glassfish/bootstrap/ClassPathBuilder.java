@@ -40,8 +40,6 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
-import com.sun.enterprise.module.Repository;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -142,15 +140,5 @@ public final class ClassPathBuilder {
             }
         });
     }
-
-    public ClassLoader createExtensible(final List<Repository> repositories) {
-        return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-            @Override
-            public ClassLoader run() {
-                return new ExtensibleClassLoader(urls.toArray(new URL[urls.size()]),parent,repositories);
-            }
-        });
-    }
-
 
 }
