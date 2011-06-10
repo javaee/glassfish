@@ -111,6 +111,7 @@
 
             </sun:propertySheetSection>
         </sun:propertySheet>
+        <sun:hidden id="helpKey" value="$resource{help_common.securityAdmin}" />
     </sun:form>
 </define>
 </composition>
