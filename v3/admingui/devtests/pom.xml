@@ -64,7 +64,7 @@
     </developers>
 
     <properties>
-        <selenium.version>2.0b3</selenium.version>
+        <selenium.version>2.0rc2</selenium.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
