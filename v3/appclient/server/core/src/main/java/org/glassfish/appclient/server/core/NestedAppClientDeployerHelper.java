@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -897,7 +897,11 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                 final Collection<FullAndPartURIs> downloadsForThisArtifact,
                 final Collection<FullAndPartURIs> downloadsForReferencedArtifacts) throws IOException {
 
-            artifactURIsProcessed.add(canonicalURIWithinEAR());
+            final URI uriWithinEAR = canonicalURIWithinEAR();
+            if (artifactURIsProcessed.contains(uriWithinEAR)) {
+                return;
+            }
+            artifactURIsProcessed.add(uriWithinEAR);
 
             /*
              * Iterate through this directory and its subdirectories, marking
@@ -931,11 +935,12 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                     if (f.getName().endsWith(".jar")) {
                         fileURI = signedJARManager.addJAR(fileURI);
                     }
+                    final URI fileURIWithinEAR = earDirUserURI(dc()).resolve(earURI.relativize(fileURI));
                     Artifacts.FullAndPartURIs fileDependency =
-                            new FullAndPartURIs(fileURI,
-                                earDirUserURI(dc()).resolve(earURI.relativize(fileURI)));
+                            new FullAndPartURIs(fileURI, fileURIWithinEAR);
 //                                earURI.relativize(fileURI));
                     downloadsForReferencedArtifacts.add(fileDependency);
+                    artifactURIsProcessed.add(fileURIWithinEAR);
                 }
             }
         }
@@ -964,7 +969,11 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
              * granting it the necessary permissions.
              */
             final URI fileURI = physicalFile().toURI();
-            final URI uriWithinAnchor = earDirUserURI(dc()).resolve(canonicalURIWithinEAR());
+            final URI uriWithinEAR = canonicalURIWithinEAR();
+            if (artifactURIsProcessed.contains(uriWithinEAR)) {
+                return;
+            }
+            final URI uriWithinAnchor = earDirUserURI(dc()).resolve(uriWithinEAR);
             Artifacts.FullAndPartURIs fileDependency =
                     new FullAndPartURIs(fileURI, uriWithinAnchor);
             downloadsForReferencedArtifacts.add(fileDependency);
