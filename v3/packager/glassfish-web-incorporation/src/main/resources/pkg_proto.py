@@ -66,8 +66,6 @@ pkg = {
 		 	"pkg:/shoal@" + conf.shoal_version : {"type" : "incorporate" },
 			"pkg:/glassfish-cluster@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-ha@" + conf.glassfish_version : {"type" : "incorporate" },
-			"pkg:/glassfish-javahelp@" + conf.javahelp_version : {"type" : "incorporate" },
-			"pkg:/glassfish-upgrade@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-registration@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/jersey@1" : {"type" : "incorporate" },
 			"pkg:/glassfish-management@" + conf.glassfish_version : {"type" : "incorporate" },

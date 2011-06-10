@@ -50,20 +50,11 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>web</artifactId>
-    <name>Glassfish v3 Web Distribution</name>
+    <name>Glassfish Web Distribution</name>
     <packaging>distribution-base-zip</packaging>
-    <description>This pom describes how to assemble the GlassFish v3 Web Distribution</description>
+    <description>This pom describes how to assemble the GlassFish Web Distribution</description>
 
     <developers>
-        <developer>
-            <id>rajeshwar</id>
-            <name>Rajeshwar Patil</name>
-            <url>http://blogs.sun.com/aquatic</url>
-            <organization>Oracle, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
         <developer>
             <id>snjezana</id>
             <name>Snjezana Sevo-Zenzerovic</name>
@@ -195,18 +186,6 @@
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-ha</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-javahelp</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-upgrade</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>

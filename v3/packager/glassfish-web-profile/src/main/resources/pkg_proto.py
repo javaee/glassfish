@@ -66,8 +66,6 @@ pkg = {
 			"pkg:/shoal" : {"type" : "require" },
 			"pkg:/glassfish-cluster" : {"type" : "require" },
 			"pkg:/glassfish-ha" : {"type" : "require" },
-			"pkg:/glassfish-javahelp" : {"type" : "require" },
-			"pkg:/glassfish-upgrade" : {"type" : "require" },
 			"pkg:/glassfish-registration" : {"type" : "require" },
 			"pkg:/jersey@1.5" : {"type" : "require" },
 			"pkg:/glassfish-management" : {"type" : "require" },

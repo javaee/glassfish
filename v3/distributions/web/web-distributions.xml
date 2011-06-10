@@ -82,12 +82,10 @@
         <property name="package.name" value="glassfish-common"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>
-	 <!-- TODO:  re-enable once shaol is on grizzly 2.0
     <ant antfile="../distributions.xml" target="install-package">
         <property name="package.name" value="shoal"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>
-	 -->
     <ant antfile="../distributions.xml" target="install-package">
         <property name="package.name" value="glassfish-cluster"/>
         <property name="image.dir" value="${image.dir}"/>
@@ -98,14 +96,6 @@
     </ant>
     <ant antfile="../distributions.xml" target="install-package">
         <property name="package.name" value="glassfish-ha"/>
-        <property name="image.dir" value="${image.dir}"/>
-    </ant>
-    <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-javahelp"/>
-        <property name="image.dir" value="${image.dir}"/>
-    </ant>
-    <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-upgrade"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>
     <ant antfile="../distributions.xml" target="install-package">
@@ -212,10 +202,6 @@
     </ant>
     <ant antfile="../distributions.xml" target="install-package">
         <property name="package.name" value="glassfish-cluster-l10n"/>
-        <property name="image.dir" value="${image.dir}"/>
-    </ant>
-    <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-upgrade-l10n"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>
     <ant antfile="../distributions.xml" target="install-package">

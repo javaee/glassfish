@@ -93,7 +93,6 @@
 	<module>glassfish-cluster</module>
         <module>glassfish-ha</module>
 	<module>glassfish-javahelp</module>
-	<module>glassfish-upgrade</module>
 	<module>glassfish-registration</module>
 	<module>glassfish-management</module>
 	<module>glassfish-jca</module>

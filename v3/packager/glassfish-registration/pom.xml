@@ -117,7 +117,7 @@
 	<!-- package level dependency -->
        <dependency>        
            <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-upgrade</artifactId>
+           <artifactId>glassfish-javahelp</artifactId>
            <version>${project.version}</version>
            <classifier>artifacts</classifier>
 	   <type>properties</type>
