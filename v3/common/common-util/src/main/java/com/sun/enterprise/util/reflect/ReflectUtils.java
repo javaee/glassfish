@@ -78,6 +78,8 @@ public final class ReflectUtils {
         if (sb.length() == 0)
             return null;
 
+        sb.append('\n').append(m1.toGenericString());
+        sb.append('\n').append(m2.toGenericString());
         return sb.toString();
     }
 }
