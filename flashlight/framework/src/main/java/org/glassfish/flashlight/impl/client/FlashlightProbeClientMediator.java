@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.flashlight.impl.client;
 
 //import org.glassfish.external.probe.provider.annotations.ProbeListener;
@@ -78,19 +77,14 @@ import org.glassfish.flashlight.FlashlightUtils;
 @Service
 public class FlashlightProbeClientMediator
         implements ProbeClientMediator, PostConstruct {
-
     private static final ProbeRegistry probeRegistry = ProbeRegistry.getInstance();
-
     private static final Logger logger =
-        LogDomains.getLogger(FlashlightProbeClientMediator.class, LogDomains.MONITORING_LOGGER);
+            LogDomains.getLogger(FlashlightProbeClientMediator.class, LogDomains.MONITORING_LOGGER);
     public final static LocalStringManagerImpl localStrings =
-                            new LocalStringManagerImpl(FlashlightProbeClientMediator.class);
-
+            new LocalStringManagerImpl(FlashlightProbeClientMediator.class);
     private static FlashlightProbeClientMediator _me = new FlashlightProbeClientMediator();
-
     private AtomicInteger clientIdGenerator =
             new AtomicInteger(0);
-
     private static ConcurrentHashMap<Integer, Object> clients =
             new ConcurrentHashMap<Integer, Object>();
 
@@ -114,11 +108,10 @@ public class FlashlightProbeClientMediator
         return (registerListener(listener, null));
     }
 
-    public Collection<ProbeClientMethodHandle> 
-        registerListener(Object listener, String invokerId) {
+    public Collection<ProbeClientMethodHandle> registerListener(Object listener, String invokerId) {
 
-        List<ProbeClientMethodHandle>   pcms                                = new ArrayList<ProbeClientMethodHandle>();
-        List<FlashlightProbe>           probesRequiringClassTransformation  = new ArrayList<FlashlightProbe>();
+        List<ProbeClientMethodHandle> pcms = new ArrayList<ProbeClientMethodHandle>();
+        List<FlashlightProbe> probesRequiringClassTransformation = new ArrayList<FlashlightProbe>();
         if (invokerId != null) {
             invokerId = FlashlightUtils.getUniqueInvokerId(invokerId);
         }
@@ -130,8 +123,8 @@ public class FlashlightProbeClientMediator
 
     public Collection<ProbeClientMethodHandle> registerDTraceListener(FlashlightProbeProvider propro) {
 
-        List<ProbeClientMethodHandle>   pcms                                = new ArrayList<ProbeClientMethodHandle>();
-        List<FlashlightProbe>           probesRequiringClassTransformation  = new ArrayList<FlashlightProbe>();
+        List<ProbeClientMethodHandle> pcms = new ArrayList<ProbeClientMethodHandle>();
+        List<FlashlightProbe> probesRequiringClassTransformation = new ArrayList<FlashlightProbe>();
 
         Object listener = registerDTraceListener(propro, pcms, probesRequiringClassTransformation);
         transformProbes(listener, probesRequiringClassTransformation);
@@ -145,14 +138,14 @@ public class FlashlightProbeClientMediator
             List<FlashlightProbe> probesRequiringClassTransformation,
             String invokerId) {
 
-        List<MethodProbe> methodProbePairs = 
-            handleListenerAnnotations(listener.getClass(), invokerId);
+        List<MethodProbe> methodProbePairs =
+                handleListenerAnnotations(listener.getClass(), invokerId);
 
-        if(methodProbePairs.isEmpty()) {
+        if (methodProbePairs.isEmpty()) {
             return;
         }
 
-        for(MethodProbe mp : methodProbePairs) {
+        for (MethodProbe mp : methodProbePairs) {
             FlashlightProbe probe = mp.probe;
             ProbeClientInvoker invoker = ProbeClientInvokerFactory.createInvoker(listener, mp.method, probe);
             ProbeClientMethodHandleImpl hi = new ProbeClientMethodHandleImpl(invoker.getId(), invoker, probe);
@@ -163,7 +156,7 @@ public class FlashlightProbeClientMediator
         }
     }
 
-    private Object  registerDTraceListener(
+    private Object registerDTraceListener(
             FlashlightProbeProvider propro,
             List<ProbeClientMethodHandle> pcms,
             List<FlashlightProbe> probesRequiringClassTransformation) {
@@ -173,7 +166,7 @@ public class FlashlightProbeClientMediator
         Collection<FlashlightProbe> probes = propro.getProbes();
         Object listener = null;
 
-        for(FlashlightProbe probe : probes) {
+        for (FlashlightProbe probe : probes) {
             ProbeClientInvoker invoker = ProbeClientInvokerFactory.createDTraceInvoker(probe);
             ProbeClientMethodHandleImpl hi = new ProbeClientMethodHandleImpl(invoker.getId(), invoker, probe);
             pcms.add(hi);
@@ -181,7 +174,7 @@ public class FlashlightProbeClientMediator
             if (probe.addInvoker(invoker))
                 probesRequiringClassTransformation.add(probe);
 
-            if(listener == null)
+            if (listener == null)
                 listener = probe.getDTraceProviderImpl();    // all the probes in propro have the same "listener"
         }
 
@@ -189,14 +182,13 @@ public class FlashlightProbeClientMediator
     }
 
     public void transformProbes(Object listener, List<FlashlightProbe> probes) {
-        if(probes.isEmpty())
+        if (probes.isEmpty())
             return;
 
         int clientID = clientIdGenerator.incrementAndGet();
         clients.put(clientID, listener);
 
-        HashMap<Class, ProbeProviderClassFileTransformer> transformers
-                = new HashMap<Class, ProbeProviderClassFileTransformer>();
+        HashMap<Class, ProbeProviderClassFileTransformer> transformers = new HashMap<Class, ProbeProviderClassFileTransformer>();
 
         for (FlashlightProbe probe : probes) {
             Class clz = probe.getProviderClazz();
@@ -210,7 +202,7 @@ public class FlashlightProbeClientMediator
             }
             catch (NoSuchMethodException ex) {
                 logger.severe(localStrings.getLocalString("bad.transform",
-                    "MNTG0505:Error transforming Probe: {0}", ex));
+                        "MNTG0505:Error transforming Probe: {0}", ex));
             }
         }
 
@@ -223,12 +215,11 @@ public class FlashlightProbeClientMediator
      * Pick out all methods in the listener with the correct annotation, look
      * up the referenced Probe and return a list of all such pairs.
      * @param listenerClass
-     * @return 
+     * @return
      */
-    private List<MethodProbe> 
-        handleListenerAnnotations(Class listenerClass, String invokerId) {
+    private List<MethodProbe> handleListenerAnnotations(Class listenerClass, String invokerId) {
 
-        List<MethodProbe> mp = new LinkedList<MethodProbe> ();
+        List<MethodProbe> mp = new LinkedList<MethodProbe>();
 
         for (Method method : listenerClass.getMethods()) {
             Annotation[] anns = method.getAnnotations();
@@ -240,21 +231,21 @@ public class FlashlightProbeClientMediator
             String probeString = probeAnn.value();
             if ((probeString != null) && (invokerId != null)) {
                 String[] strArr = probeString.split(":");
-                probeString = strArr[0] + ":" +
-                              strArr[1] + ":" +
-                              strArr[2] + invokerId + ":" +
-                              strArr[3];
+                probeString = strArr[0] + ":"
+                        + strArr[1] + ":"
+                        + strArr[2] + invokerId + ":"
+                        + strArr[3];
             }
             FlashlightProbe probe = probeRegistry.getProbe(probeString);
             if (probe == null) {
                 String errStr = localStrings.getLocalString("probeNotRegistered",
-                                    "Probe is not registered: {0}", probeString);
+                        "Probe is not registered: {0}", probeString);
                 throw new RuntimeException(errStr);
             }
-            
+
             mp.add(new MethodProbe(method, probe));
         }
-        
+
         return mp;
     }
 
@@ -264,8 +255,7 @@ public class FlashlightProbeClientMediator
             method = m;
             probe = p;
         }
-        Method          method;
+        Method method;
         FlashlightProbe probe;
     }
-
 }
