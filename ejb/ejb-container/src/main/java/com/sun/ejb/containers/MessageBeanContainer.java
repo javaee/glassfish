@@ -58,6 +58,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.Utility;
 import com.sun.appserv.connectors.internal.api.ResourceHandle;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
@@ -228,7 +229,7 @@ public final class MessageBeanContainer extends BaseContainer implements
                         getContainerId(), containerInfo.appName, containerInfo.modName,
                         containerInfo.ejbName);
                 poolProbeListener.register();
-		// TODO registryMediator.registerProvider(messageBeanPool_);
+		// registryMediator.registerProvider(messageBeanPool_);
 		// super.setMonitorOn(mdbc.isMonitoringEnabled());
 		_logger.log(Level.FINE, "[MessageBeanContainer] registered monitorable");
 	}
@@ -819,14 +820,15 @@ public final class MessageBeanContainer extends BaseContainer implements
 
 		ASyncClientShutdownTask task = new ASyncClientShutdownTask(appEJBName_,
 				messageBeanClient_, loader, messageBeanPool_);
-		int timeout = 0;
-		/*
-		 * TODO try { timeout =
-		 * ResourcesUtil.createInstance().getShutdownTimeout(); } catch
-		 * (Throwable th) { _logger.log(Level.WARNING,
-		 * "[MDBContainer] Got exception while trying " +
-		 * " to get shutdown timeout", th); }
-		 */
+		long timeout = 0;
+		try { 
+                    ConnectorRuntime cr = EjbContainerUtilImpl.getInstance().getDefaultHabitat()
+                            .getByContract(ConnectorRuntime.class);
+                    timeout = cr.getShutdownTimeout();
+                } catch (Throwable th) { 
+                    _logger.log(Level.WARNING, "[MDBContainer] Got exception while trying " +
+		             " to get shutdown timeout", th); 
+                }
 		try {
 			boolean addedAsyncTask = false;
 			if (timeout > 0) {
@@ -854,15 +856,15 @@ public final class MessageBeanContainer extends BaseContainer implements
 					if (!task.isDone()) {
 						_logger.log(Level.FINE, "[MDBContainer] "
 								+ "Going to wait for a maximum of " + timeout
-								+ " seconds.");
-						task.wait(timeout * 1000L);
+								+ " milli-seconds.");
+						task.wait(timeout);
 					}
 
 					if (!task.isDone()) {
 						_logger.log(Level.WARNING,
 								"[MDBContainer] ASync task has not finished. "
 										+ "Giving up after " + timeout
-										+ " seconds.");
+										+ " mili-seconds.");
 					} else {
 						_logger.log(Level.FINE,
 								"[MDBContainer] ASync task has completed");
@@ -874,7 +876,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 						.log(Level.FINE,
 								"[MDBContainer] Attempting to do cleanup()in current thread...");
 				task.run();
-				_logger.log(Level.WARNING,
+				_logger.log(Level.FINE,
 						"[MDBContainer] Current thread done cleanup()... ");
 			}
 		} catch (InterruptedException inEx) {
