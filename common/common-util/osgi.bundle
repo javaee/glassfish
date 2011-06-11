@@ -63,6 +63,7 @@
                         com.sun.enterprise.util.i18n; \
                         com.sun.enterprise.util.io; \
                         com.sun.enterprise.util.net; \
+                        com.sun.enterprise.util.reflect; \
                         com.sun.enterprise.util.shared; \
                         com.sun.enterprise.util.uuid; \
                         com.sun.enterprise.util.zip; \
