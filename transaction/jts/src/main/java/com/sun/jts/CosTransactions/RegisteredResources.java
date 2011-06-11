@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -485,7 +485,6 @@ class RegisteredResources {
      * @see
      */
     Vote distributePrepare() throws HeuristicMixed, HeuristicHazard {
-        boolean isProxy = false;
         Vote result = Vote.VoteReadOnly;
         int laoIndex = -1;
          boolean rmErr = false;
@@ -499,7 +498,7 @@ class RegisteredResources {
         for (int i = 0;
                 i < nRes && result != Vote.VoteRollback;
                 i++) {
-
+            boolean isProxy = false;
             Resource currResource = (Resource) resourceObjects.get(i);
             
 
@@ -727,7 +726,6 @@ class RegisteredResources {
      */
     void distributeCommit() throws HeuristicMixed, HeuristicHazard, NotPrepared {
         boolean infiniteRetry = true;
-        boolean isProxy = false;
 
         boolean heuristicException = false;
         boolean heuristicMixed = false;
@@ -755,7 +753,7 @@ class RegisteredResources {
         boolean transactionCompleted = true;
         String msg = null;
         for (int i = 0; i < nRes; i++) {
-
+            boolean isProxy = false;
             Resource currResource = (Resource) resourceObjects.get(i);
 
             // If the current Resource in the browse is not in the registered
@@ -994,7 +992,6 @@ class RegisteredResources {
 
         boolean infiniteRetry = true;
         boolean heuristicMixed = false;
-        boolean isProxy = false;
 
         // First, get the retry count.
 
@@ -1020,7 +1017,7 @@ class RegisteredResources {
         boolean transactionCompleted = true;
         String msg  = null;
         for (int i = 0; i < nRes; i++) {
-
+            boolean isProxy = false;
             Resource currResource = (Resource)resourceObjects.get(i);
 
             // If the current Resource in the browse is not in the registered
@@ -1232,8 +1229,6 @@ class RegisteredResources {
     private void distributeForget(int retries, boolean infinite,
             boolean heuristicMixed) throws HeuristicMixed, HeuristicHazard {
 
-        boolean isProxy = false;
-
         // Force the log record to ensure that all
         // heuristic Resources are logged.
 
@@ -1245,7 +1240,7 @@ class RegisteredResources {
         // may forget the heuristic information at this point
 
         for (int i = 0; i < nRes; i++) {
-
+            boolean isProxy = false;
             // If the current Resource in the browse is not in the heuristic
             // state, skip over it.
 
@@ -1360,13 +1355,12 @@ class RegisteredResources {
             throws TRANSACTION_ROLLEDBACK {
 
         boolean exceptionRaised = false;
-        boolean isProxy = false;
 
         // Browse through the participants, committing them. The following is
         // intended to be done asynchronously as a group of operations.
 
         for (int i = 0; i < nRes; i++) {
-
+            boolean isProxy = false;
             SubtransactionAwareResource currResource =
                 (SubtransactionAwareResource)resourceObjects.get(i);
 
@@ -1422,13 +1416,12 @@ class RegisteredResources {
      * @see
      */
     void distributeSubrollback() {
-        boolean isProxy = false;
-
         // Browse through the participants, rolling them back. The following is
         // intended to be done asynchronously as a group of operations.
 
 
         for (int i = 0; i < nRes; i++) {
+            boolean isProxy = false;
             SubtransactionAwareResource currResource =
                 (SubtransactionAwareResource) resourceObjects.get(i);
 
