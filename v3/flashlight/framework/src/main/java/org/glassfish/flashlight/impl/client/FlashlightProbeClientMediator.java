@@ -58,17 +58,15 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.reflect.ReflectUtils;
 
-import java.lang.instrument.Instrumentation;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.lang.reflect.Method;
 import java.util.logging.Logger;
-import java.io.PrintWriter;
 import org.glassfish.flashlight.impl.core.FlashlightProbeProvider;
 import org.glassfish.flashlight.FlashlightUtils;
-
 /**
  * @author Mahesh Kannan
  *         Date: Jan 27, 2008
@@ -214,6 +212,8 @@ public class FlashlightProbeClientMediator
     /**
      * Pick out all methods in the listener with the correct annotation, look
      * up the referenced Probe and return a list of all such pairs.
+     * Validate that the methods really do matchup properly.
+     * @throws RuntimeException if there is any serious problem.
      * @param listenerClass
      * @return
      */
@@ -229,6 +229,7 @@ public class FlashlightProbeClientMediator
                 continue;
 
             String probeString = probeAnn.value();
+
             if ((probeString != null) && (invokerId != null)) {
                 String[] strArr = probeString.split(":");
                 probeString = strArr[0] + ":"
@@ -236,13 +237,13 @@ public class FlashlightProbeClientMediator
                         + strArr[2] + invokerId + ":"
                         + strArr[3];
             }
+
             FlashlightProbe probe = probeRegistry.getProbe(probeString);
             if (probe == null) {
                 String errStr = localStrings.getLocalString("probeNotRegistered",
                         "Probe is not registered: {0}", probeString);
                 throw new RuntimeException(errStr);
             }
-
             mp.add(new MethodProbe(method, probe));
         }
 
@@ -250,11 +251,18 @@ public class FlashlightProbeClientMediator
     }
 
     // this is just used internally for cleanly organizing the code.
+    // It throws RuntimeException because this module was specifically architected
+    // to *not* use the Java Exception mechanism for errors.
     private static class MethodProbe {
         MethodProbe(Method m, FlashlightProbe p) {
             method = m;
             probe = p;
+            String err = ReflectUtils.equalSignatures(method, p.getProbeMethod());
+
+            if(err != null)
+                throw new RuntimeException(Strings.get("method_mismatch", err));
         }
+
         Method method;
         FlashlightProbe probe;
     }
