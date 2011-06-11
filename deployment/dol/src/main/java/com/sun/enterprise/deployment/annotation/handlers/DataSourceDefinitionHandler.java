@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -318,7 +318,7 @@ public class DataSourceDefinitionHandler extends AbstractResourceHandler {
                 }
 
                 if (desc.getPassword() == null) {
-                    if (defn.password() != null && !defn.password().equals("")) {
+                    if (defn.password() != null /*ALLOW EMPTY PASSWORDS && !defn.password().equals("")*/) {
                         desc.setPassword(defn.password());
                     }
                 }
@@ -434,7 +434,7 @@ public class DataSourceDefinitionHandler extends AbstractResourceHandler {
             desc.setUser(defn.user());
         }
 
-        if (defn.password() != null && !defn.password().equals("")) {
+        if (defn.password() != null /*ALLOW EMPTY PASSWORDS && !defn.password().equals("")*/) {
             desc.setPassword(defn.password());
         }
 
