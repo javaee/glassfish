@@ -86,6 +86,7 @@
                     <name>jsftest</name>
                     <serverID>embedded</serverID>
                 </configuration>
+<!--
                 <dependencies>
                     <dependency>
                         <groupId>org.glassfish.extras</groupId>
@@ -93,6 +94,7 @@
                         <version>${project.version}</version>
                     </dependency>
                 </dependencies>
+-->
                 <executions>
                     <execution>
                         <goals>
@@ -147,11 +149,25 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.servlet</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.faces</groupId>
+            <artifactId>jsf-api</artifactId>
+            <version>2.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+<!--
+        <dependency>
             <groupId>org.glassfish.extras</groupId>
             <artifactId>glassfish-embedded-web</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -164,6 +180,10 @@
         <repository>
             <id>glassfish-releases</id>
             <url>http://download.java.net/maven/glassfish</url>
+        </repository>
+        <repository>
+            <id>glassfish-maven2</id>
+            <url>http://download.java.net/maven/2</url>
         </repository>
     </repositories>
 
