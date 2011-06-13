@@ -49,10 +49,10 @@
         <version>3.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>web</artifactId>
-    <name>Glassfish Web Distribution</name>
+    <artifactId>core</artifactId>
+    <name>Glassfish Core Distribution</name>
     <packaging>distribution-base-zip</packaging>
-    <description>This pom describes how to assemble the GlassFish Web Distribution</description>
+    <description>This pom describes how to assemble the GlassFish Core Distribution</description>
 
     <developers>
         <developer>
@@ -145,7 +145,15 @@
         <!-- nucleus distribution -->
         <dependency>
             <groupId>org.glassfish.distributions</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>nucleus</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+
+        <!-- additional grizzly modules package -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-grizzly-full</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
@@ -153,102 +161,46 @@
 	<!-- all previous web-nb distribution packages -->
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-virtualization</artifactId>
+            <artifactId>glassfish-common</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-ha</artifactId>
+            <artifactId>shoal</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-registration</artifactId>
+            <artifactId>glassfish-cluster</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-jca</artifactId>
+            <artifactId>jersey</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-jpa</artifactId>
+            <artifactId>glassfish-management</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
-      <dependency>
+       <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-jts</artifactId>
+            <artifactId>glassfish-corba-base</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
        </dependency>
-       <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-ejb-lite</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>    
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-jsf</artifactId>
+            <artifactId>glassfish-jta</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
-        </dependency>     
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-web</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>    
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-jcdi</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>     
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-jdbc</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency> 
-
-
-        <!-- admin ui package -->
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-gui</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>     
-
-        <!-- javadb package -->
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>javadb</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>   
-
-	<!-- additional servicetag registry dependency -->
-        <dependency>
-            <groupId>org.glassfish.registration</groupId>
-            <artifactId>servicetag-registry</artifactId>
-            <version>${project.version}</version>
-            <type>distribution-fragment</type>
-        </dependency>
-        <!-- additional legal content dependency -->
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>legal-fragment</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>
+      </dependency>
     </dependencies>
 </project>
 
