@@ -94,10 +94,16 @@ public class LBCommandsTest extends AdminBaseDevTest {
 
         runTest(i++ + ".re-create-http-lb-config", !asadmin("create-http-lb-config", LB_CONFIG));
 
+        //deleting cluster-ref when lb doesn't reference it should fail
+        runTest(i++ + ".delete-http-lb-cluster-ref", !asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
+        
         //create/delete cluster-ref for LB
         runTest(i++ + ".create-http-lb-cluster-ref", asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
         runTest(i++ + ".re-create-http-lb-cluster-ref", !asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
 
+        //creating server-ref when cluster-ref entry is already present should fail
+        runTest(i++ + ".create-http-lb-server-ref", !asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE1));
+        
         //enable/disable clusters for LB
         runTest(i++ + ".enable-http-lb-server-for-cluster", asadmin("enable-http-lb-server", CLUSTER));
         runTest(i++ + ".disable-http-lb-server-for-cluster", asadmin("disable-http-lb-server", CLUSTER));
@@ -126,6 +132,9 @@ public class LBCommandsTest extends AdminBaseDevTest {
         runTest(i++ + ".create-http-lb-server-ref", asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
         runTest(i++ + ".create-http-lb-server-ref", asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE1));
 
+        //creating cluster-ref when server-ref already exists should fail
+        runTest(i++ + ".create-http-lb-cluster-ref", !asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
+        
         ret = asadminWithOutput("list-http-lb-configs", LB_CONFIG);
         success = ret.out.indexOf(STANDALONE_INSTANCE1) >= 0;
         runTest(i++ + ".list-http-lb-configs", success);
