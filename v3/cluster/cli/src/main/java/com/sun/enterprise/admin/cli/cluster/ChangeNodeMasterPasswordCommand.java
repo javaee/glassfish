@@ -103,7 +103,10 @@ public  class ChangeNodeMasterPasswordCommand extends LocalInstanceCommand {
                 throw new CommandException(strings.get("instance.is.running",
                         serverName));
 
-            oldPassword = super.readPassword(strings.get("old.mp"));
+            oldPassword = passwords.get("AS_ADMIN_MASTERPASSWORD");
+            if (oldPassword == null) {
+                oldPassword = super.readPassword(strings.get("old.mp"));
+            }
             if (oldPassword == null)
                 throw new CommandException(strings.get("no.console"));
 
@@ -117,7 +120,7 @@ public  class ChangeNodeMasterPasswordCommand extends LocalInstanceCommand {
            if (!valid) {
                throw new CommandException(strings.get("incorrect.old.mp"));
            }
-            ParamModelData nmpo = new ParamModelData("New_Master_Password",
+            ParamModelData nmpo = new ParamModelData("AS_ADMIN_NEWMASTERPASSWORD",
                     String.class, false, null);
             nmpo.description = strings.get("new.mp");
             nmpo.param._password = true;
