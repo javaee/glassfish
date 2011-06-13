@@ -59,4 +59,6 @@ public class Constants {
     public static final String NAME_REGEX =        "[A-Za-z0-9_][A-Za-z0-9\\-_\\./;#]*";
     public static final String NAME_SERVER_REGEX = "[A-Za-z0-9_][A-Za-z0-9\\-_\\.;]*";
     public static final String NAME_APP_REGEX =    "[A-Za-z0-9_][A-Za-z0-9\\-_\\./;:#]*";
+    public static final String DEFAULT_MAX_POOL_SIZE = "32";
+    public static final String DEFAULT_STEADY_POOL_SIZE = "8";
 }
