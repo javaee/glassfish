@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,6 +47,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import org.glassfish.config.support.Constants;
 
 /**
  * Implementation for Connection Pool validation.
@@ -73,15 +74,31 @@ public class ConnectionPoolValidator
         if(poolFaults == ConnectionPoolErrorMessages.MAX_STEADY_INVALID) {
             if(pool instanceof JdbcConnectionPool) {
                 JdbcConnectionPool jdbcPool = (JdbcConnectionPool) pool;
-                if (Integer.parseInt(jdbcPool.getMaxPoolSize()) <
-                        (Integer.parseInt(jdbcPool.getSteadyPoolSize()))) {
+                String maxPoolSize = jdbcPool.getMaxPoolSize();
+                String steadyPoolSize = jdbcPool.getSteadyPoolSize();
+                if(steadyPoolSize == null) {
+                    steadyPoolSize = Constants.DEFAULT_STEADY_POOL_SIZE;
+                }
+                if (maxPoolSize == null) {
+                    maxPoolSize = Constants.DEFAULT_MAX_POOL_SIZE;
+                }
+                if (Integer.parseInt(maxPoolSize) <
+                        (Integer.parseInt(steadyPoolSize))) {
                     //max pool size fault
                     return false;
                 }
             } else if(pool instanceof ConnectorConnectionPool) {
                 ConnectorConnectionPool connPool = (ConnectorConnectionPool) pool;
-                if (Integer.parseInt(connPool.getMaxPoolSize()) <
-                        (Integer.parseInt(connPool.getSteadyPoolSize()))) {
+                String maxPoolSize = connPool.getMaxPoolSize();
+                String steadyPoolSize = connPool.getSteadyPoolSize();
+                if(steadyPoolSize == null) {
+                    steadyPoolSize = Constants.DEFAULT_STEADY_POOL_SIZE;
+                }
+                if (maxPoolSize == null) {
+                    maxPoolSize = Constants.DEFAULT_MAX_POOL_SIZE;
+                }
+                if (Integer.parseInt(maxPoolSize) <
+                        (Integer.parseInt(steadyPoolSize))) {
                     //max pool size fault
                     return false;
                 }                
@@ -91,17 +108,19 @@ public class ConnectionPoolValidator
         if(poolFaults == ConnectionPoolErrorMessages.STMT_WRAPPING_DISABLED) {
             if(pool instanceof JdbcConnectionPool) {
                 JdbcConnectionPool jdbcPool = (JdbcConnectionPool) pool;
+                String stmtCacheSize = jdbcPool.getStatementCacheSize();
+                String stmtLeakTimeout = jdbcPool.getStatementLeakTimeoutInSeconds();
                 if (jdbcPool.getSqlTraceListeners() != null) {
                     if (!Boolean.valueOf(jdbcPool.getWrapJdbcObjects())) {
                         return false;
                     }
                 }
-                if (Integer.valueOf(jdbcPool.getStatementCacheSize()) != 0) {
+                if (stmtCacheSize != null && Integer.valueOf(stmtCacheSize) != 0) {
                     if (!Boolean.valueOf(jdbcPool.getWrapJdbcObjects())) {
                         return false;
                     }
                 }
-                if (Integer.valueOf(jdbcPool.getStatementLeakTimeoutInSeconds()) != 0) {
+                if (stmtLeakTimeout != null && Integer.valueOf(stmtLeakTimeout) != 0) {
                     if (!Boolean.valueOf(jdbcPool.getWrapJdbcObjects())) {
                         return false;
                     }
