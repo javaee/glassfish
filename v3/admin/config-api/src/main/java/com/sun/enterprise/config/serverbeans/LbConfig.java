@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import com.sun.enterprise.config.serverbeans.customvalidators.RefConstraint;
+import com.sun.enterprise.config.serverbeans.customvalidators.RefValidator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -80,6 +82,7 @@ import javax.validation.constraints.Min;
 }) */
 
 @Configured
+@RefConstraint(message="{ref.invalid}", payload= RefValidator.class)
 public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**

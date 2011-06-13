@@ -220,12 +220,8 @@ public final class CreateHTTPLBRefCommand extends LBCommandsBase
         }
 
         // create lb ref
-        try {
-            createLBRef(target, config);
-        } catch (CommandException ce) {
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(ce.getMessage());
-            report.setFailureCause(ce);
+        createLBRef(target, config);
+        if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
             return;
         }
         
@@ -244,11 +240,12 @@ public final class CreateHTTPLBRefCommand extends LBCommandsBase
             } catch (CommandException e) {
                 String msg = e.getLocalizedMessage();
                 logger.warning(msg);
-//                    report.setActionExitCode(ExitCode.FAILURE);
-//                    report.setMessage(msg);
-//                    return;
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(msg);
+                return;
             }
         }
+        
         if(Boolean.parseBoolean(lbenableallinstances)) {
             try {
                 final EnableHTTPLBServerCommand command = (EnableHTTPLBServerCommand)runner
@@ -279,7 +276,7 @@ public final class CreateHTTPLBRefCommand extends LBCommandsBase
         }
     }
 
-    public void createLBRef(String target, String configName) throws CommandException {
+    public void createLBRef(String target, String configName) {
         logger.fine("[LB-ADMIN] createLBRef called for target " + target);
 
         // target is a cluster
@@ -303,15 +300,16 @@ public final class CreateHTTPLBRefCommand extends LBCommandsBase
         }
     }
 
-    private void addServerToLBConfig(final String configName, final String serverName)
-                throws CommandException {
+    private void addServerToLBConfig(final String configName, final String serverName) {
         LbConfig lbConfig = lbconfigs.getLbConfig(configName);
 
         ServerRef sRef = lbConfig.getRefByRef(ServerRef.class, serverName);
         if (sRef != null) {
             String msg = localStrings.getLocalString("LBServerRefExists",
                    "LB config already contains a server-ref for target {0}", target);
-            throw new CommandException(msg);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            return;
         }
 
         Server server = domain.getServerNamed(serverName);
@@ -341,20 +339,19 @@ public final class CreateHTTPLBRefCommand extends LBCommandsBase
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
             report.setFailureCause(ex);
-            return;
         }
-
     }
 
-    private void addClusterToLbConfig(final String configName, final String clusterName)
-                throws CommandException {
+    private void addClusterToLbConfig(final String configName, final String clusterName) {
         LbConfig lbConfig = lbconfigs.getLbConfig(configName);
 
         ClusterRef cRef = lbConfig.getRefByRef(ClusterRef.class, clusterName);
         if (cRef != null) {
             String msg = localStrings.getLocalString("LBClusterRefExists",
                    "LB config already contains a cluster-ref for target {0}", target);
-            throw new CommandException(msg);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            return;
         }
 
         try {
@@ -379,7 +376,6 @@ public final class CreateHTTPLBRefCommand extends LBCommandsBase
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
             report.setFailureCause(ex);
-            return;
         }
     }
 

@@ -166,7 +166,7 @@ public final class DeleteHTTPLBRefCommand extends LBCommandsBase
             // does not exist, just return from here
             String msg = localStrings.getLocalString("ServerNotDefined",
                         "Server {0} cannot be used as target", target);
-            logger.finest(" server " + serverName +
+            logger.finest("Server " + serverName +
                     " does not exist in any cluster in the domain");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
@@ -226,6 +226,11 @@ public final class DeleteHTTPLBRefCommand extends LBCommandsBase
         ClusterRef cRef = lbConfig.getRefByRef(ClusterRef.class, clusterName);
         if (cRef == null) {
             // does not exist, just return from here
+            String msg = localStrings.getLocalString("ClusterNotDefined",
+                        "Cluster {0} cannot be used as target", target);
+            logger.finest("Cluster " + clusterName + " does not exist.");
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
             return;
         }
 
