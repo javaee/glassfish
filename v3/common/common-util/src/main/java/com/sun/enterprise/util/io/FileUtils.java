@@ -73,6 +73,17 @@ public class FileUtils {
         return f != null && (f.isDirectory() || f.mkdirs());
     }
 
+    /**
+     * Wrapper for File.delete
+     * This version will return true if the directory does not exist when the method returns.
+     * Unlike File.delete which returns false if the directory does not exist.
+     * @param f The file pointing to the directory to be deleted
+     * @return
+     */
+    public static boolean deleteFileMaybe(File f) {
+        return f != null && (!f.exists() || f.delete());
+    }
+
     /*
     * Wrapper for File.listFiles
     * Guaranteed to return an array in all cases.

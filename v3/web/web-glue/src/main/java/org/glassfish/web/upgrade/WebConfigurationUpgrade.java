@@ -44,12 +44,14 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+
 
 /**
  * This class implements the contract for services want to perform some upgrade
@@ -77,12 +79,13 @@ public class WebConfigurationUpgrade implements ConfigurationUpgrade, PostConstr
                 if (f.isDirectory()) {
                     removeSerializedSessions(f);
                 } else if (f.getName().endsWith("SESSIONS.ser")) {
-                    if (!f.delete()) {
+                    if (!FileUtils.deleteFileMaybe(f)) {
                         _logger.log(Level.WARNING,
                                 "webcontainer.unableToDelete",
                                 f.toString());
                     }
                 }
+
             }
         }
     }

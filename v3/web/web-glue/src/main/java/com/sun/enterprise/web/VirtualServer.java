@@ -54,6 +54,7 @@ import com.sun.enterprise.deployment.archivist.WebArchivist;
 import com.sun.enterprise.security.web.GlassFishSingleSignOn;
 import com.sun.enterprise.server.logging.GFFileHandler;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.web.logger.CatalinaLogger;
 import com.sun.enterprise.web.logger.FileLoggerHandler;
 import com.sun.enterprise.web.logger.FileLoggerHandlerFactory;
@@ -1958,7 +1959,7 @@ public class VirtualServer extends StandardHost
             }
 
             if (delete) {
-                if (!file.delete()) {
+                if (!FileUtils.deleteFileMaybe(file)) {
                     _logger.log(Level.WARNING,
                             "webcontainer.unableToDelete",
                             file.toString());

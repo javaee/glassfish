@@ -61,6 +61,7 @@ package org.glassfish.web.loader;
 import com.sun.appserv.BytecodePreprocessor;
 import com.sun.appserv.ClassLoaderUtil;
 import com.sun.appserv.server.util.PreprocessorUtil;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import org.apache.naming.JndiPermission;
 import org.apache.naming.resources.DirContextURLStreamHandler;
@@ -2292,7 +2293,7 @@ public class WebappClassLoader
                     msg = MessageFormat.format(msg, new Object[] {jarEntry2.getName(), ioe});
                     throw new IllegalArgumentException(msg);
                 }
-                if (!resourceFile.getParentFile().mkdirs()) {
+                if (!FileUtils.mkdirsMaybe(resourceFile.getParentFile())) {
                     logger.log(Level.WARNING,
                             "webcontainer.unableToCreate",
                             resourceFile.getParentFile().toString());
@@ -2589,8 +2590,7 @@ public class WebappClassLoader
             if (file.isDirectory()) {
                 deleteDir(file);
             } else {
-                file.delete();
-                if (!file.delete()) {
+                if (!FileUtils.deleteFileMaybe(file)) {
                     logger.log(Level.WARNING,
                             "webcontainer.unableToDelete",
                             file.toString());
@@ -2598,7 +2598,7 @@ public class WebappClassLoader
 
             }
         }
-        if (!dir.delete()) {
+        if (!FileUtils.deleteFileMaybe(dir)) {
             logger.log(Level.WARNING,
                     "webcontainer.unableToDelete",
                     dir.toString());

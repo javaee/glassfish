@@ -47,6 +47,7 @@ import com.sun.enterprise.web.accesslog.CombinedAccessLogFormatterImpl;
 import com.sun.enterprise.web.accesslog.CommonAccessLogFormatterImpl;
 import com.sun.enterprise.web.accesslog.DefaultAccessLogFormatterImpl;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.*;
 import org.apache.catalina.valves.ValveBase;
@@ -929,7 +930,7 @@ public final class PEAccessLogValve
         File dir = new File(directory);
         if (!dir.isAbsolute())
             dir = new File(System.getProperty("catalina.base"), directory);
-        if (!dir.mkdirs()) {
+        if (!FileUtils.mkdirsMaybe(dir)) {
             _logger.log(Level.WARNING,
                     "webcontainer.unableToCreate",
                     dir.toString());
