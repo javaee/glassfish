@@ -138,12 +138,12 @@
         </dependency>
     </dependencies>
 
-    <repositories>
-        <repository>
+    <pluginRepositories>
+        <pluginRepository>
             <id>glassfish-releases</id>
             <url>http://download.java.net/maven/glassfish</url>
-        </repository>
-    </repositories>
+        </pluginRepository>
+    </pluginRepositories>
 
 </project>
 
