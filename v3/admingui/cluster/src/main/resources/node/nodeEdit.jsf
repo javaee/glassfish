@@ -68,6 +68,8 @@
 
         if ("#{pageSession.attrMap['type']}=SSH"){
             mapPut(map="#{pageSession.valueMap}"  key="installdir",  value="#{pageSession.attrMap['installDir']}");
+            //for edit, we don't want to clear install dir when switching from ssh to config node. GLASSFISH-15605
+            mapPut(map="#{pageSession.valueMap}"  key="installdirConfig",  value="#{pageSession.attrMap['installDir']}");
             setPageSessionAttribute(key="showInstalldirSSH" value="#{true}");
             setPageSessionAttribute(key="showInstalldirConfig" value="#{false}");
         }
