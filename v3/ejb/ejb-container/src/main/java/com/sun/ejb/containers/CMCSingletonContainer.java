@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -67,8 +67,8 @@ public class CMCSingletonContainer
 
     private final ReentrantReadWriteLock.WriteLock writeLock = rwLock.writeLock();
 
-    private final long NO_BLOCKING = 0;
-    private final long BLOCK_INDEFINITELY = -1;
+    private final static long NO_BLOCKING = 0;
+    private final static long BLOCK_INDEFINITELY = -1;
 
     private final MethodLockInfo defaultMethodLockInfo;
 

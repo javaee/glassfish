@@ -138,8 +138,8 @@ public final class StatefulSessionContainer
     // We do not want too many ORB task for passivation
     public static final int MIN_PASSIVATION_BATCH_COUNT = 8;
 
-    private final long CONCURRENCY_NOT_ALLOWED = 0;
-    private final long BLOCK_INDEFINITELY = -1;
+    private final static long CONCURRENCY_NOT_ALLOWED = 0;
+    private final static long BLOCK_INDEFINITELY = -1;
 
     private long instanceCount = 1;
 
