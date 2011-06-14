@@ -43,7 +43,7 @@
 
 <project name="glassfish nucleus distribution creation" default="create.distribution" basedir=".">
     <import file="../distributions.xml"/>
-    <property name="source.distribution.name" value="GlassFish Open Source Edition 3.1 Nucleus"/>
+    <property name="source.distribution.name" value="GlassFish Open Source Edition 3.1.1 Nucleus"/>
     <target name="init">
         <condition property="windows">
             <os family="windows" />
