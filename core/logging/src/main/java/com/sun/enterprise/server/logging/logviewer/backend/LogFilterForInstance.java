@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -53,7 +53,6 @@ import org.glassfish.cluster.ssh.sftp.SFTPClient;
 import org.jvnet.hk2.component.Habitat;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.Vector;
 import java.util.logging.Logger;
 
@@ -85,35 +84,41 @@ public class LogFilterForInstance {
 
         SFTPClient sftpClient = sshL.getSFTPClient();
 
-        File logFileDirectoryOnServer = new File(domainRoot + File.separator + "logs"
+        File logFileDirectoryOnServer = makingDirectory(domainRoot + File.separator + "logs"
                 + File.separator + instanceName);
-        if (!logFileDirectoryOnServer.exists())
-            logFileDirectoryOnServer.mkdirs();
 
-        String loggingFile = "";
+        boolean noFileFound = true;
 
-        if (instanceLogFileName.contains("${com.sun.aas.instanceRoot}/logs")) {
-            // this code is used if no changes made to log file name under logging.properties file
-            loggingFile = node.getInstallDir() + File.separator + "glassfish" + File.separator + "nodes"
-                    + File.separator + sNode + File.separator + instanceName + File.separator + "logs"
-                    + File.separator + logFileName;
+        String loggingDir = getLoggingDirectoryForNode(instanceLogFileName, node, sNode, instanceName);
 
-            // verifying loggingFile presents or not if not then changing logFileName value to server.log. It means wrong name is coming
-            // from GUI to back end code.
-            if (!sftpClient.exists(loggingFile)) {
-                loggingFile = node.getInstallDir() + File.separator + "glassfish" + File.separator + "nodes"
-                        + File.separator + sNode + File.separator + instanceName + File.separator + "logs"
-                        + File.separator + "server.log";
+        try {
+            Vector instanceLogFileNames = sftpClient.ls(loggingDir);
+
+            for (int i = 0; i < instanceLogFileNames.size(); i++) {
+                SFTPv3DirectoryEntry file = (SFTPv3DirectoryEntry) instanceLogFileNames.get(i);
+                String fileName = file.filename;
+                // code to remove . and .. file which is return from sftpclient ls method
+                if (!file.attributes.isDirectory() && !fileName.equals(".") && !fileName.equals("..")
+                        && fileName.contains(".log") && !fileName.contains(".log.")) {
+                    noFileFound = false;
+                    break;
+                }
             }
+        } catch (Exception e) {
+            // if directory doesn't present or missing on remote machine. It happens due to bug 16451
+            noFileFound = true;
+        }
 
-        } else {
-            // this code is used when user changes the attributes value(com.sun.enterprise.server.logging.GFFileHandler.file) in
-            // logging.properties file to something else.
-            loggingFile = instanceLogFileName.substring(0, instanceLogFileName.lastIndexOf(File.separator))
-                    + File.separator + logFileName;
-            if (!sftpClient.exists(loggingFile)) {
-                loggingFile = instanceLogFileName;
-            }
+        if (noFileFound) {
+            // this loop is used when user has changed value for server.log but not restarted the server.
+            loggingDir = getLoggingDirectoryForNodeWhenNoFilesFound(instanceLogFileName, node, sNode, instanceName);
+        }
+
+        String loggingFile = loggingDir + File.separator + logFileName;
+        if (!sftpClient.exists(loggingFile)) {
+            loggingFile = loggingDir + File.separator + "server.log";
+        } else if (!sftpClient.exists(loggingFile)) {
+            loggingFile = instanceLogFileName;
         }
 
         // creating local file name on DAS
@@ -132,12 +137,13 @@ public class LogFilterForInstance {
 
         // if differ both size then downloading
         if (instanceLogFileSize != fileSizeOnNode) {
-
+            BufferedInputStream in = null;
+            FileOutputStream file = null;
+            BufferedOutputStream out = null;
             InputStream inputStream = sftpClient.read(loggingFile);
-
-            BufferedInputStream in = new BufferedInputStream(inputStream);
-            FileOutputStream file = new FileOutputStream(instanceLogFile);
-            BufferedOutputStream out = new BufferedOutputStream(file);
+            in = new BufferedInputStream(inputStream);
+            file = new FileOutputStream(instanceLogFile);
+            out = new BufferedOutputStream(file);
             int i;
             while ((i = in.read()) != -1) {
                 out.write(i);
@@ -164,24 +170,33 @@ public class LogFilterForInstance {
         Node node = nodes.getNode(sNode);
         sshL.init(node, logger);
 
-        SCPClient scpClient = sshL.getSCPClient();
         Vector allInstanceLogFileName = getInstanceLogFileNames(habitat, targetServer, domain, logger, instanceName, instanceLogFileDirectory);
 
-        File logFileDirectoryOnServer = new File(tempDirectoryOnServer + File.separator + "logs"
-                + File.separator + instanceName);
-        if (logFileDirectoryOnServer.exists())
-            logFileDirectoryOnServer.delete();
+        boolean noFileFound = true;
+        String sourceDir = getLoggingDirectoryForNode(instanceLogFileDirectory, node, sNode, instanceName);
+        SFTPClient sftpClient = sshL.getSFTPClient();
 
-        logFileDirectoryOnServer.mkdirs();
+        try {
+            Vector instanceLogFileNames = sftpClient.ls(sourceDir);
 
-        String sourceDir = "";
-        if (instanceLogFileDirectory.contains("${com.sun.aas.instanceRoot}/logs")) {
-            sourceDir = node.getInstallDir() + File.separator +
-                    "glassfish" + File.separator + "nodes" + File.separator +
-                    sNode + File.separator + instanceName + File.separator +
-                    "logs" + File.separator;
-        } else {
-            sourceDir = instanceLogFileDirectory.substring(0, instanceLogFileDirectory.lastIndexOf(File.separator));
+            for (int i = 0; i < instanceLogFileNames.size(); i++) {
+                SFTPv3DirectoryEntry file = (SFTPv3DirectoryEntry) instanceLogFileNames.get(i);
+                String fileName = file.filename;
+                // code to remove . and .. file which is return from sftpclient ls method
+                if (!file.attributes.isDirectory() && !fileName.equals(".") && !fileName.equals("..")
+                        && fileName.contains(".log") && !fileName.contains(".log.")) {
+                    noFileFound = false;
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            // if directory doesn't present or missing on remote machine. It happens due to bug 16451
+            noFileFound = true;
+        }
+
+        if (noFileFound) {
+            // this loop is used when user has changed value for server.log but not restarted the server.
+            sourceDir = getLoggingDirectoryForNodeWhenNoFilesFound(instanceLogFileDirectory, node, sNode, instanceName);
         }
 
         String[] remoteFileNames = new String[allInstanceLogFileName.size()];
@@ -189,8 +204,10 @@ public class LogFilterForInstance {
             remoteFileNames[i] = sourceDir + File.separator + allInstanceLogFileName.get(i);
         }
 
-        scpClient.get(remoteFileNames, logFileDirectoryOnServer.getAbsolutePath());
+        sftpClient.close();
 
+        SCPClient scpClient = sshL.getSCPClient();                
+        scpClient.get(remoteFileNames, tempDirectoryOnServer);
     }
 
     public Vector getInstanceLogFileNames(Habitat habitat, Server targetServer, Domain domain, Logger logger,
@@ -204,32 +221,40 @@ public class LogFilterForInstance {
 
         // this code is used when DAS and instances are running on the same machine
         if (node.isLocal()) {
-            String loggingDir = "";
-
-            if (instanceLogFileDirectory.contains("${com.sun.aas.instanceRoot}/logs")) {
-                // this code is used if no changes made in logging.properties file
-                loggingDir = System.getProperty("com.sun.aas.instanceRoot") + File.separator + ".." + File.separator + ".."
-                        + File.separator + "nodes" + File.separator + sNode
-                        + File.separator + instanceName + File.separator + "logs";
-            } else {
-                // this code is used when user changes the attributes value(com.sun.enterprise.server.logging.GFFileHandler.file) in
-                // logging.properties file to something else.
-                loggingDir = instanceLogFileDirectory.substring(0, instanceLogFileDirectory.lastIndexOf(File.separator));
-            }
+            String loggingDir = getLoggingDirectoryForNode(instanceLogFileDirectory, node, sNode, instanceName);
 
             File logsDir = new File(loggingDir);
             File allLogFileNames[] = logsDir.listFiles();
-            if (allLogFileNames != null) {
-                instanceLogFileNames = new Vector(Arrays.asList(allLogFileNames));
+
+            boolean noFileFound = true;
+
+            if (allLogFileNames != null) { // This check for,  if directory doesn't present or missing on machine. It happens due to bug 16451
+                for (int i = 0; i < allLogFileNames.length; i++) {
+                    File file = allLogFileNames[i];
+                    String fileName = file.getName();
+                    // code to remove . and .. file which is return
+                    if (file.isFile() && !fileName.equals(".") && !fileName.equals("..") && fileName.contains(".log")
+                            && !fileName.contains(".log.")) {
+                        instanceLogFileNamesAsString.add(fileName);
+                        noFileFound = false;
+                    }
+                }
             }
 
-            for (int i = 0; i < instanceLogFileNames.size(); i++) {
-                File file = (File) instanceLogFileNames.get(i);
-                String fileName = file.getName();
-                // code to remove . and .. file which is return
-                if (file.isFile() && !fileName.equals(".") && !fileName.equals("..") && fileName.contains(".log")
-                        && !fileName.contains(".log.")) {
-                    instanceLogFileNamesAsString.add(fileName);
+            if (noFileFound) {
+                // this loop is used when user has changed value for server.log but not restarted the server.
+                loggingDir = getLoggingDirectoryForNodeWhenNoFilesFound(instanceLogFileDirectory, node, sNode, instanceName);
+                logsDir = new File(loggingDir);
+                allLogFileNames = logsDir.listFiles();
+
+                for (int i = 0; i < allLogFileNames.length; i++) {
+                    File file = allLogFileNames[i];
+                    String fileName = file.getName();
+                    // code to remove . and .. file which is return
+                    if (file.isFile() && !fileName.equals(".") && !fileName.equals("..") && fileName.contains(".log")
+                            && !fileName.contains(".log.")) {
+                        instanceLogFileNamesAsString.add(fileName);
+                    }
                 }
             }
         } else {
@@ -238,31 +263,45 @@ public class LogFilterForInstance {
             sshL.init(node, logger);
             SFTPClient sftpClient = sshL.getSFTPClient();
 
-            String loggingDir = "";
+            boolean noFileFound = true;
 
-            if (instanceLogFileDirectory.contains("${com.sun.aas.instanceRoot}/logs")) {
-                // this code is used if no changes made in logging.properties file
-                loggingDir = node.getInstallDir() +
-                        File.separator + "glassfish" + File.separator + "nodes" +
-                        File.separator + sNode + File.separator + instanceName +
-                        File.separator + "logs";
-            } else {
-                // this code is used when user changes the attributes value(com.sun.enterprise.server.logging.GFFileHandler.file) in
-                // logging.properties file to something else.
-                loggingDir = instanceLogFileDirectory.substring(0, instanceLogFileDirectory.lastIndexOf(File.separator));
+            String loggingDir = getLoggingDirectoryForNode(instanceLogFileDirectory, node, sNode, instanceName);
+
+            try {
+                instanceLogFileNames = sftpClient.ls(loggingDir);
+                for (int i = 0; i < instanceLogFileNames.size(); i++) {
+                    SFTPv3DirectoryEntry file = (SFTPv3DirectoryEntry) instanceLogFileNames.get(i);
+                    String fileName = file.filename;
+                    // code to remove . and .. file which is return from sftpclient ls method
+                    if (!file.attributes.isDirectory() && !fileName.equals(".") && !fileName.equals("..")
+                            && fileName.contains(".log") && !fileName.contains(".log.")) {
+                        instanceLogFileNamesAsString.add(fileName);
+                        noFileFound = false;
+                    }
+                }
+            } catch (Exception ex) {
+                // if directory doesn't present or missing on remote machine. It happens due to bug 16451
+                noFileFound = true;
             }
 
-            instanceLogFileNames = sftpClient.ls(loggingDir);
+            if (noFileFound) {
+                // this loop is used when user has changed value for server.log but not restarted the server.
+                loggingDir = getLoggingDirectoryForNodeWhenNoFilesFound(instanceLogFileDirectory, node, sNode, instanceName);
+                instanceLogFileNames = sftpClient.ls(loggingDir);
 
-            for (int i = 0; i < instanceLogFileNames.size(); i++) {
-                SFTPv3DirectoryEntry file = (SFTPv3DirectoryEntry) instanceLogFileNames.get(i);
-                String fileName = file.filename;
-                // code to remove . and .. file which is return from sftpclient ls method
-                if (!file.attributes.isDirectory() && !fileName.equals(".") && !fileName.equals("..")
-                        && fileName.contains(".log") && !fileName.contains(".log.")) {
-                    instanceLogFileNamesAsString.add(fileName);
+
+                for (int i = 0; i < instanceLogFileNames.size(); i++) {
+                    SFTPv3DirectoryEntry file = (SFTPv3DirectoryEntry) instanceLogFileNames.get(i);
+                    String fileName = file.filename;
+                    // code to remove . and .. file which is return from sftpclient ls method
+                    if (!file.attributes.isDirectory() && !fileName.equals(".") && !fileName.equals("..")
+                            && fileName.contains(".log") && !fileName.contains(".log.")) {
+                        instanceLogFileNamesAsString.add(fileName);
+                    }
                 }
             }
+
+            sftpClient.close();
         }
 
         return instanceLogFileNamesAsString;
@@ -279,4 +318,65 @@ public class LogFilterForInstance {
         }
         return sshL;
     }
+
+    private File makingDirectory(String path) {
+        File targetDir = new File(path);
+        boolean created = false;
+        boolean deleted = false;
+        if (targetDir.exists()) {
+            deleted = targetDir.delete();
+            if (!deleted) {
+                return targetDir;
+            }
+
+        }
+        created = targetDir.mkdir();
+        if (!created) {
+            return null;
+        } else {
+            return targetDir;
+        }
+
+    }
+
+    public String getLoggingDirectoryForNode(String instanceLogFileDirectory, Node node, String sNode, String instanceName) {
+        String loggingDir = "";
+
+        if (instanceLogFileDirectory.contains("${com.sun.aas.instanceRoot}/logs") && node.getNodeDir() != null) {
+            // this code is used if no changes made in logging.properties file
+            loggingDir = node.getNodeDir() + File.separator + sNode
+                    + File.separator + instanceName + File.separator + "logs";
+        } else if (instanceLogFileDirectory.contains("${com.sun.aas.instanceRoot}/logs") && node.getInstallDir() != null) {
+            loggingDir = node.getInstallDir() + File.separator + "glassfish" + File.separator + "nodes"
+                    + File.separator + sNode + File.separator + instanceName + File.separator + "logs";
+        } else {
+            // this code is used when user changes the attributes value(com.sun.enterprise.server.logging.GFFileHandler.file) in
+            // logging.properties file to something else.
+            loggingDir = instanceLogFileDirectory.substring(0, instanceLogFileDirectory.lastIndexOf(File.separator));
+        }
+
+        return loggingDir;
+    }
+
+    public String getLoggingDirectoryForNodeWhenNoFilesFound(String instanceLogFileDirectory, Node node, String sNode, String instanceName) {
+        String loggingDir = "";
+
+        if (node.getNodeDir() != null) {
+            // this code is used if no changes made in logging.properties file
+            loggingDir = node.getNodeDir() + File.separator + sNode
+                    + File.separator + instanceName + File.separator + "logs";
+        } else if (node.getInstallDir() != null) {
+            loggingDir = node.getInstallDir() + File.separator + "glassfish" + File.separator + "nodes"
+                    + File.separator + sNode + File.separator + instanceName + File.separator + "logs";
+        } else {
+            // this code is used when user changes the attributes value(com.sun.enterprise.server.logging.GFFileHandler.file) in
+            // logging.properties file to something else.
+            loggingDir = instanceLogFileDirectory.substring(0, instanceLogFileDirectory.lastIndexOf(File.separator));
+        }
+
+        return loggingDir;
+
+    }
+
+
 }
