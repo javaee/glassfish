@@ -131,13 +131,14 @@ public class Jdbc extends MonTest {
 
 
 
-		/* bnevins -- commented-out in order to get weekly hudson working.  TM says it returns 7 now.  TM changed it from 5 to 6.
+		/* After grizzly 2.0 integration numconfree changed from 5 to 7.  The onlygetconnectionservlet is being invoked
+                 in the *same* thread and com.sun.enterprise.resource.pool.AssocWithThreadResourcePool in this case doesn't allocate
+                 new resource, but uses the one already associated with the thread. So the numconnfree is decremented by 1 to 7*/
         report(checkForString(
                 asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.numconnfree-current"),
-                "server.resources.jdbc-onlygetconnectionservlet-pool.numconnfree-current = 6"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.numconnfree-current = 7"),
                 "jdbc-check-getm-numconnfree-count");
-		*/
-
+		
 
 
         report(checkForString(
