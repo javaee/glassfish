@@ -1086,12 +1086,30 @@ public class AppTest extends TestCase {
         _testCommitOnePhaseWithExc(XAException.XAER_RMFAIL, RollbackException.class, true, false);
     }
 
-/**
     public void testCommitOnePhaseWithRlbExc6() {
         System.out.println("================= **Testing XA Exception on start ===>");
-        _testCommitOnePhaseWithExc(XAException.XA_RBROLLBACK, RollbackException.class, false, false, true);
+        int falures[] = {XAException.XAER_RMFAIL, 
+                XAException.XAER_RMERR, 
+                XAException.XAER_NOTA, 
+                XAException.XAER_INVAL, 
+                XAException.XAER_PROTO, 
+                XAException.XAER_DUPID};
+        boolean result = true;
+        for (int failure : falures) {
+            try {
+                boolean rc = _testCommitOnePhaseWithExc(failure, SystemException.class, false, false, true, true);
+                result &= rc;
+                if (rc) {
+                    System.out.println("================= **Testing code " + failure + " OK");
+                } else {
+                    System.out.println("================= **ERROR Testing code " + failure);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        assert (result);
     }
-**/
 
     public void testCommitOnePhaseWithXAExc1() {
         System.out.println("**Testing TM with failed 1PC commit ===>");
@@ -1134,11 +1152,13 @@ public class AppTest extends TestCase {
     }
 
     private void _testCommitOnePhaseWithExc(int errorCode, Class exType, boolean setRollbackOnly, boolean isHeuristic) {
-        _testCommitOnePhaseWithExc(errorCode, exType, setRollbackOnly, isHeuristic, false);
+        _testCommitOnePhaseWithExc(errorCode, exType, setRollbackOnly, isHeuristic, false, false);
     }
 
-    private void _testCommitOnePhaseWithExc(int errorCode, Class exType, 
-            boolean setRollbackOnly, boolean isHeuristic, boolean failAtStart) {
+    private boolean _testCommitOnePhaseWithExc(int errorCode, Class exType, 
+            boolean setRollbackOnly, boolean isHeuristic, boolean failAtEnlist, boolean returnStatus) {
+        boolean rc = true;
+
         System.out.println("**Testing TM with " + ((exType == null)? "success" : exType.getName()) + " during 1PC commit ===>");
         ((JavaEETransactionManagerSimplified)t).getLogger().setLevel(Level.SEVERE);
         LogDomains.getLogger(OTSResourceImpl.class, LogDomains.TRANSACTION_LOGGER).setLevel(Level.SEVERE);
@@ -1155,7 +1175,7 @@ public class AppTest extends TestCase {
             Transaction tx = t.getTransaction();
             if (setRollbackOnly) {
                 theResource.setRollbackErrorCode(errorCode);
-            } else if (failAtStart) {
+            } else if (failAtEnlist) {
                 theResource.setStartErrorCode(errorCode);
             } else {
                 theResource.setCommitErrorCode(errorCode);
@@ -1164,7 +1184,7 @@ public class AppTest extends TestCase {
             try {
                 t.enlistResource(tx, new TestResourceHandle(theResource));
             } catch (Exception ex) {
-                if (failAtStart && exType != null && exType.isInstance(ex)) {
+                if (failAtEnlist && exType != null && exType.isInstance(ex)) {
                     System.out.println("**Caught expected " + exType.getName() + " ...");
                 } else {
                     System.out.println("**Caught unexpected exception" );
@@ -1183,12 +1203,20 @@ public class AppTest extends TestCase {
             System.out.println("**Calling TM commit ===>");
             t.commit();
             String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
-            if (exType != null) {
+            if (!failAtEnlist && exType != null) {
                 System.out.println("**Error - successful commit - Status after commit: " + status + " <===");
-                assert (false);
+                if (returnStatus) {
+                    rc = false;
+                } else {
+                    assert (false);
+                }
             } else {
                 System.out.println("**Successful commit - Status after commit: " + status + " <===");
-                assert (enlist_status & true);
+                if (returnStatus) {
+                    rc = rc && enlist_status;
+                } else {
+                    assert (enlist_status);
+                }
             }
         } catch (Exception ex) {
             if (exType != null && exType.isInstance(ex)) {
@@ -1206,13 +1234,22 @@ public class AppTest extends TestCase {
                    System.out.println("**Forget was called: " + status);
                 }
 
-                assert (enlist_status & status);
+                if (returnStatus) {
+                    rc = rc && enlist_status && status;
+                } else {
+                    assert (enlist_status && status);
+                }
             } else {
                 System.out.println("**Caught " + ((exType == null)? " unexpected " : " NOT a " + exType.getName()) + " during 2PC...");
                 ex.printStackTrace();
-                assert (false);
+                if (returnStatus) {
+                    rc = false;
+                } else {
+                    assert (false);
+                }
             }
         }
+        return rc;
     }
 
     private void _testXARollback(int... errorCode) {
