@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,21 +38,30 @@
  * holder.
  */
 
-/*
- * StringManager.java
- * 
- * Delegate to Strings.
- */
-
 package com.sun.enterprise.registration.impl;
 
-/**
- *
- * @author tjquinn
- */
-public class StringManager {
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
-    public static String getString(String messageKey, Object... args) {
-        return Strings.get(messageKey, args);
+/**
+ * Strings -- Get your Strings here.
+ * One file with Strings
+ * So one class for messing with them!
+ * Nothing in here is public protected.  Only for use by this one java package.
+ * @author Byron Nevins
+ */
+
+final class Strings {
+    private Strings() {
+        // no instances allowed!
     }
+
+    final static String get(String indexString) {
+        return strings.get(indexString);
+    }
+
+    final static String get(String indexString, Object... objects) {
+        return strings.get(indexString, objects);
+    }
+
+    final private static LocalStringsImpl strings = new LocalStringsImpl(Strings.class);
 }
