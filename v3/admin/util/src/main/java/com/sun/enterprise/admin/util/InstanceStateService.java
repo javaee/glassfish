@@ -97,7 +97,7 @@ public class InstanceStateService implements Startup {
             stateProcessor = new InstanceStateFileProcessor(instanceStates,
                         stateFile);
         } catch (IOException ioe) {
-            logger.log(Level.INFO, "ISS.cannotread", stateFile);
+            logger.log(Level.FINE, "ISS.cannotread", stateFile);
             instanceStates = new HashMap<String, InstanceState>();
             // Even though instances may already exist, do not populate the
             // instancesStates array because it will be repopulated as it is
