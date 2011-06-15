@@ -80,6 +80,13 @@
     </antcall>
 </target>
 
+<target name="create-core-distributions"> 
+    <ant antfile="../core/core-distributions.xml"/>
+    <antcall target="create-distributions"> 
+         <param name="image.name" value="core"/>
+    </antcall>
+</target>
+
 <target name="create-web-distributions" depends="create-nucleus-distributions"> 
     <ant antfile="../web/web-distributions.xml"/>
     <mkdir dir="${image.root}"/>

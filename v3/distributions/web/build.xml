@@ -44,6 +44,7 @@
 <project name="glassfish web distribution creation" default="create.distribution" basedir=".">
     <import file="../distributions.xml"/>
     <property name="source.distribution.name" value="GlassFish Open Source Edition 3.2 Web Profile"/>
+
     <target name="create.distribution">
         <echo message="Creating distribution: web"/>
         <unzip dest="target/stage">

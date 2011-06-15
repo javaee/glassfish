@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -41,8 +41,8 @@
 
 -->
 
-<project name="Web Distribution (ips) Creation" default="create-image" basedir=".">
-<property name="source.distribution.name" value="GlassFish Open Source Edition 3.2 Web Profile"/>
+<project name="Core Distribution (ips) Creation" default="create-image" basedir=".">
+<property name="source.distribution.name" value="GlassFish Open Source Edition 3.2 Core"/>
 <target name="create-image" depends="create-installer-image, create-glassfish-image">
     <mkdir dir="${installer.image.dir}"/>
     <mkdir dir="${installer.image.dir}/${install.dir.name}"/>
@@ -74,76 +74,36 @@
 </target>
 
 <target name="create-common-image" description="Creating IPS Image">
-    <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-virtualization"/>
+   <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-grizzly-full"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>
     <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-ha"/>
+        <property name="package.name" value="glassfish-common"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>
     <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-registration"/>
+        <property name="package.name" value="shoal"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>
     <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-jca"/>
+        <property name="package.name" value="glassfish-cluster"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>
     <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-jpa"/>
+        <property name="package.name" value="jersey"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>
     <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-jts"/>
+        <property name="package.name" value="glassfish-management"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>
     <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-ejb-lite"/>
+        <property name="package.name" value="glassfish-jta"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>
     <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-jsf"/>
-        <property name="image.dir" value="${image.dir}"/>
-    </ant>
-    <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-web"/>
-        <property name="image.dir" value="${image.dir}"/>
-    </ant>
-    <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-osgi-http"/>
-        <property name="image.dir" value="${image.dir}"/>
-    </ant>
-    <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-jcdi"/>
-        <property name="image.dir" value="${image.dir}"/>
-    </ant>
-    <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-jdbc"/>
-        <property name="image.dir" value="${image.dir}"/>
-    </ant>
-    <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-gui"/>
-        <property name="image.dir" value="${image.dir}"/>
-    </ant>
-    <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="javadb-common"/>
-        <property name="image.dir" value="${image.dir}"/>
-    </ant>
-    <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="javadb-core"/>
-        <property name="image.dir" value="${image.dir}"/>
-    </ant>
-    <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="javadb-client"/>
-        <property name="image.dir" value="${image.dir}"/>
-    </ant>
-    <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-web-incorporation"/>
-        <property name="image.dir" value="${image.dir}"/>
-    </ant>
-    <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-web-profile"/>
+        <property name="package.name" value="glassfish-corba-base"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>
 
@@ -168,28 +128,12 @@
 </target>
 
 <target name="install-l10n-packages" description="Installing l10n packages">
-    <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-jca-l10n"/>
+   <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-common-l10n"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>
     <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-jts-l10n"/>
-        <property name="image.dir" value="${image.dir}"/>
-    </ant>
-    <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-ejb-lite-l10n"/>
-        <property name="image.dir" value="${image.dir}"/>
-    </ant>
-    <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-web-l10n"/>
-        <property name="image.dir" value="${image.dir}"/>
-    </ant>
-    <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-jdbc-l10n"/>
-        <property name="image.dir" value="${image.dir}"/>
-    </ant>
-    <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-gui-l10n"/>
+        <property name="package.name" value="glassfish-cluster-l10n"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>
      
