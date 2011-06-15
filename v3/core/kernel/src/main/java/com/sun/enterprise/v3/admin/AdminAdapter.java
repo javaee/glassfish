@@ -383,9 +383,10 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
             final String headerName,
             final String headerValue) throws IOException {
         report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-        report.setMessage(adminStrings.getLocalString(msgKey, msg));
+        final String messageForResponse = adminStrings.getLocalString(msgKey, msg);
+        report.setMessage(messageForResponse);
         report.setActionDescription("Authentication error");
-        res.setStatus(httpStatus);
+        res.setStatus(httpStatus, messageForResponse);
         if (headerName != null) {
             res.setHeader(headerName, headerValue);
         }
