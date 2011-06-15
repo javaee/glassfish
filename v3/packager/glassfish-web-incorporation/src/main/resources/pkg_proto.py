@@ -77,6 +77,7 @@ pkg = {
 			"pkg:/glassfish-ejb-lite@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-jsf@" + conf.jsf_version : {"type" : "incorporate" },
 			"pkg:/glassfish-web@" + conf.glassfish_version : {"type" : "incorporate" },
+                        "pkg:/glassfish-osgi-http@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-jcdi@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-jdbc@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-gui@" + conf.glassfish_version : {"type" : "incorporate" },	
