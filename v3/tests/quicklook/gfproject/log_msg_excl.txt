@@ -40,7 +40,9 @@
 
 # Lines in server.log that contain any of the following words
 # will be skipped.
-# When adding new words, please add a comment with the reason.
+# When adding new messages, please add a comment with the reason.
+# Note that the messages are treated as regular expressions:
+#  Escape symbols that have special meaning in regexs ("|"s, "["s, etc.)
 
 
 # Loggers of excluded third-party libraries
@@ -136,6 +138,7 @@ Stopping com.sun.enterprise.v3.server.AppServerStartup
 Metro monitoring rootname successfully
 Exception while processing 
 Grizzly 2.0 NetworkManager
+\|stopping\|
 
 # From QL Test - No need to fix this
 In SingletonBean::init()
@@ -231,6 +234,7 @@ Successfully caught EJBException after  accessing removed SFSB
 javax.ejb.NoSuchObjectLocalException: The EJB does not exist. session-key: 
 Sending message
 message sent
+javax.management.InstanceNotFoundException: amx:pp=/J2EEDomain/J2EEServer\[eein1-with-a-very-very-very-long-name
 
 
 # From LocalStrings.properties file - No need to fix this
@@ -257,7 +261,7 @@ TOTAL TIME INCLUDING CLI:
 # From common/common/util NetUtils.java - Only logged when env. var. AS_DEBUG is set to true
  --> FREE
 
-# Cloud relagted changes need to handle later on
+# Cloud related changes need to handle later on
 Interceptor called for
 
 # http://java.net/jira/browse/GLASSFISH-12251

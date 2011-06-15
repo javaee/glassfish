@@ -240,7 +240,8 @@ public final class ComplianceMonitor implements NotificationListener {
                         mLogger.log(Level.INFO,"amx.validatingMbean",result.toString());
                     }
                 } catch (final Throwable t) {
-                    ImplUtil.getLogger().log(Level.WARNING, "amx.exception.validatingMbean",new Object[] {next, t});
+                    ImplUtil.getLogger().log(Level.WARNING, "amx.exception.validatingMbean", next);
+                    ImplUtil.getLogger().log(Level.WARNING, null, t);
                 }
             }
         }

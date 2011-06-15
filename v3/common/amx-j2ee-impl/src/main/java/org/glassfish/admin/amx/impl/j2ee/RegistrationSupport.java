@@ -637,7 +637,8 @@ final class RegistrationSupport
                         }
                         catch (final Exception e)
                         {
-                            mLogger.log( Level.WARNING, "amx.unregister.mbean" , new Object[] { objectName, e});
+                            mLogger.log( Level.WARNING, "amx.unregister.mbean", objectName);
+                            mLogger.log( Level.WARNING, null, e);
                         }
                     }
                 }
