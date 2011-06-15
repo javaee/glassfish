@@ -6,6 +6,7 @@
 <!ENTITY testproperties SYSTEM "./build.properties">
 <!ENTITY run SYSTEM "./../../../config/run.xml">
 <!ENTITY jdbcCommon SYSTEM "./../JdbcCommon.xml">
+<!ENTITY reporting   SYSTEM "./report.xml">
 ]>
 
 <project name="mix" default="usage" basedir=".">
@@ -15,13 +16,20 @@
     &run;
     &testproperties;
     &jdbcCommon;
+    &reporting;
 
-    <target name="all" depends="build,deploy,run,undeploy"/>
+    <target name="all" depends="build,deploy,run,undeploy,report-41"/>
 
     <target name="clean" depends="init-common">
-      <antcall  target="clean-common"/>
+        <antcall  target="clean-common"/>
+        <delete>
+            <fileset dir="${env.APS_HOME}" includes="test_results*"/>
+        </delete>
+        <delete>
+	    <fileset dir="${env.APS_HOME}" includes="JDBC41test_results.html"/>
+        </delete>
     </target>
- 
+
     <target name="compile" depends="clean">
       <antcall target="compile-common">
         <param name="src" value="ejb"/>
@@ -78,6 +86,12 @@
       
       <antcall target="undeploy-common"/>
     </target>   
+
+    <target name="report-41">
+        <antcall target="report">
+            <param name="htmlfile" value="${env.APS_HOME}/JDBC41test_results.html"/>
+        </antcall>
+    </target>
 
     <target name="usage">
         <antcall target="usage-common"/>
