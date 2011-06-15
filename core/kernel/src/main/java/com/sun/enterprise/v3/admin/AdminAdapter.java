@@ -427,8 +427,14 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
 
         if (requestURI.length() > getContextRoot().length() + 1)
             command = requestURI.substring(getContextRoot().length() + 1);
+        
+        String qs = req.getQueryString();
+        String passwordOptions = req.getHeader("X-passwords");
+        if (passwordOptions != null) {
+            qs = qs + QUERY_STRING_SEPARATOR + passwordOptions;
+        }
 
-        final ParameterMap parameters = extractParameters(req.getQueryString());
+        final ParameterMap parameters = extractParameters(qs);
         try {
             Payload.Inbound inboundPayload = PayloadImpl.Inbound.newInstance(
                     req.getContentType(), req.getInputStream());
