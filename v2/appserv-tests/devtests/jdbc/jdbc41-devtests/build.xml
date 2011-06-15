@@ -53,6 +53,9 @@
       </antcall>
 
       <antcall target="deploy-common"/>
+      <antcall target="execute-sql-common">
+        <param name="sql.file" value="sql/create.sql"/>
+      </antcall>
     </target>
     
     <target name="run" depends="init-common">
@@ -60,6 +63,10 @@
     </target>
  
     <target name="undeploy" depends="init-common">
+
+      <antcall target="execute-sql-common">
+        <param name="sql.file" value="sql/drop.sql"/>
+      </antcall>
 
       <antcall target="delete-jdbc-resource-common">
         <param name="jdbc.resource.name" value="jdbc/41resource"/>
