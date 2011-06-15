@@ -65,10 +65,6 @@ public class SecurityTest extends BaseSeleniumTestClass {
     public static final String TRIGGER_EDIT_PROVIDER_CONFIGURATION = "i18nc.msgProvider.EditPageTitle";
     public static final String TRIGGER_PROVIDER_CONFIGURATION = "i18nc.msgSecProvider.TableTitle";
     public static final String TRIGGER_NEW_PROVIDER_CONFIGURATION = "i18nc.msgSecProvider.NewPageTitle";
-    public static final String TRIGGER_GENERAL_INFORMATION = "i18n.instance.GeneralTitle";
-    public static final String TRIGGER_SECURE_ADMINISTRATION = "i18nc.security.secureAdmin";
-    public static final String TRIGGER_ADMIN_ALIAS = "i18nc.security.secureAdmin.adminalias";
-    public static final String TRIGGER_RESTART_DOMAIN = "i18n.restart.RestartHeading";
     public static final String ADMIN_PWD_DOMAIN_ATTRIBUTES = "i18nc.domain.DomainAttrsPageTitle";
     public static final String ADMIN_PWD_NEW_ADMINPWD = "i18nc.domain.AdminPasswordTitle";
 
@@ -259,33 +255,6 @@ public class SecurityTest extends BaseSeleniumTestClass {
         } finally {
 
             sat.deleteStandAloneInstance(instanceName);
-        }
-    }
-
-    /*
-     * This test was added to test for GLASSFISH-16126
-     */
-    @Test
-    public void testSecureAdministration() {
-        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
-        clickAndWait("propertyForm:propertyContentPage:secureAdmin", TRIGGER_SECURE_ADMINISTRATION);
-        if (isTextPresent(TRIGGER_ADMIN_ALIAS)) {
-            selenium.click("form:propertyContentPage:topButtons:enableSecureAdminButton");
-            getConfirmation();
-            waitForPageLoad(TRIGGER_RESTART_DOMAIN, TIMEOUT);
-            sleep(10000);
-            clickAndWait("link=here", "Common Tasks");
-            clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
-            clickAndWait("propertyForm:propertyContentPage:secureAdmin", TRIGGER_SECURE_ADMINISTRATION);
-            selenium.click("form:propertyContentPage:topButtons:disableSecureAdminButton");
-            getConfirmation();
-            waitForPageLoad(TRIGGER_RESTART_DOMAIN, TIMEOUT);
-            sleep(10000);
-        } else {
-            selenium.click("form:propertyContentPage:topButtons:disableSecureAdminButton");
-            getConfirmation();
-            waitForPageLoad(TRIGGER_RESTART_DOMAIN, TIMEOUT);
-            sleep(10000);
         }
     }
 
