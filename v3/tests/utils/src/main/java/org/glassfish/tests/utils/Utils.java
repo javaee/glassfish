@@ -101,7 +101,7 @@ public class Utils {
                 if (url != null) {
                     try {
                         DomDocument document = parser.parse(url,  test.getDocument(habitat));
-                        habitat.addComponent("document", document);
+                        habitat.addComponent(document);
                     } catch(Exception e) {
                         e.printStackTrace();
                     }

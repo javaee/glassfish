@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,10 +40,11 @@
 
 package org.glassfish.config.support;
 
+import java.awt.*;
 import java.lang.reflect.Proxy;
 import javax.xml.stream.XMLStreamReader;
 
-import org.jvnet.hk2.component.CageBuilder;
+import org.glassfish.hk2.ComponentProvider;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -114,9 +115,8 @@ public final class GlassFishConfigBean extends ConfigBean {
     public void initializationCompleted() {
         super.initializationCompleted();
         //System.out.println( "GlassFishConfigBean.initializationCompleted() for " + getProxyType().getName() );
-        final CageBuilder cageBuilder = habitat.getComponent(CageBuilder.class, "PendingConfigBeans");
-        if (cageBuilder!=null) {
-            cageBuilder.onEntered( this );
+        for (ConfigBeanListener listener : habitat.getAllByContract(ConfigBeanListener.class)) {
+            listener.onEntered(this);
         }
     }
     

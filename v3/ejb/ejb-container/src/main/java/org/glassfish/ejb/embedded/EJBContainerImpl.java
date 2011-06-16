@@ -212,7 +212,7 @@ public class EJBContainerImpl extends EJBContainer {
         try {
             Inhabitant<TransactionManager> inhabitant =
                     habitat.getInhabitantByType(TransactionManager.class);
-            if (inhabitant != null && inhabitant.isInstantiated()) {
+            if (inhabitant != null && inhabitant.isActive()) {
                 TransactionManager txmgr = inhabitant.get();
                 txmgr.rollback();
             }
@@ -226,7 +226,7 @@ public class EJBContainerImpl extends EJBContainer {
         try {
             Inhabitant<ConnectorRuntime> inhabitant =
                     habitat.getInhabitantByType(ConnectorRuntime.class);
-            if (inhabitant != null && inhabitant.isInstantiated()) {
+            if (inhabitant != null && inhabitant.isActive()) {
                 ConnectorRuntime connectorRuntime = inhabitant.get();
                 connectorRuntime.cleanUpResourcesAndShutdownAllActiveRAs();
             }

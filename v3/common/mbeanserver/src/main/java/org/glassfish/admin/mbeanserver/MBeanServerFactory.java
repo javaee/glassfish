@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -85,7 +85,7 @@ public final class MBeanServerFactory implements Factory, PostStartup {
      *          If the factory failed to get/create an instance
      *          and would like to propagate the error to the caller.
      */
-    public Object getObject() throws ComponentException {
+    public Object get() throws ComponentException {
         return mMBeanServer;
     }
     

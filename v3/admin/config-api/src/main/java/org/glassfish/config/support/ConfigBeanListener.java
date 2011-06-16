@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,11 +38,26 @@
  * holder.
  */
 
-package net.munnangi.addon;
-import org.jvnet.hk2.annotations.CagedBy;
+package org.glassfish.config.support;
 
-@CagedBy(RuntimeMBeanCageBuilder.class)
-public interface Runtime {
-    public String getName();
-    public Object getParent();
+import org.glassfish.hk2.ComponentProvider;
+import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.config.ConfigBean;
+
+/**
+ * Listens to config bean creation.
+ *
+ * @author Jerome Dochez
+ */
+@Contract
+public interface ConfigBeanListener {
+
+    /**
+     * Notification that a new config beans has entered the configuration
+     * tree.
+     *
+     * @param bean the new config bean
+     */
+    public void onEntered(ComponentProvider<ConfigBean> bean);
+
 }

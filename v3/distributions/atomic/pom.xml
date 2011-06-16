@@ -48,10 +48,10 @@
         <version>3.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>nucleus</artifactId>
-    <name>Glassfish v3 Nucleus Distribution</name>
+    <artifactId>atomic</artifactId>
+    <name>Glassfish v3 Atomic Distribution</name>
     <packaging>distribution-base-zip</packaging>
-    <description>This pom describes how to assemble the GlassFish Nucleus Distribution</description>
+    <description>This pom describes how to assemble the GlassFish Atomic (single server) Distribution</description>
 
     <developers>
         <developer>

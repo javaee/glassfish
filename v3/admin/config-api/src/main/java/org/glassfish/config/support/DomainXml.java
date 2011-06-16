@@ -102,8 +102,7 @@ public abstract class DomainXml implements Populator {
         lr.setLoggerName(getClass().getName());
         EarlyLogHandler.earlyMessages.add(lr);
 
-        habitat.addComponent("parent-class-loader",
-                new ExistingSingletonInhabitant<ClassLoader>(ClassLoader.class, registry.getParentClassLoader()));
+        habitat.addComponent(new ExistingSingletonInhabitant<ClassLoader>(ClassLoader.class, registry.getParentClassLoader()));
 
         try {
             parseDomainXml(parser, getDomainXml(env), env.getInstanceName());

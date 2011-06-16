@@ -58,7 +58,7 @@ public class OsInterfaceFactory implements Factory {
     Habitat habitat;
 
     @Override
-    public Object getObject() throws ComponentException {
+    public Object get() throws ComponentException {
         OsInterface os = habitat.getComponent(OsInterface.class, System.getProperty("os.name").replaceAll(" ", "_"));
         if (os==null) {
             os = habitat.getComponent(OsInterface.class, "ubuntu");

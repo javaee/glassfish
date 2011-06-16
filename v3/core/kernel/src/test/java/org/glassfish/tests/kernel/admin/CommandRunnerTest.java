@@ -81,7 +81,7 @@ public class CommandRunnerTest {
          */
         h.addIndex(new ExistingSingletonInhabitant<Domain>(simpleDomain()),
                 Domain.class.getName(), null);
-        h.addComponent(null, new StartupContext());
+        h.addComponent(new StartupContext());
         h.addIndex(new ExistingSingletonInhabitant<ModulesRegistry>(new SingleModulesRegistry(CommandRunnerTest.class.getClassLoader()))
                 , ModulesRegistry.class.getName(), null);
     }

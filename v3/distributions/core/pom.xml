@@ -145,7 +145,7 @@
         <!-- nucleus distribution -->
         <dependency>
             <groupId>org.glassfish.distributions</groupId>
-            <artifactId>nucleus</artifactId>
+            <artifactId>atomic</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>

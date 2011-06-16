@@ -221,7 +221,7 @@ public class MultimodeCommand extends CLICommand {
                 // remove the old one and replace it
                 habitat.remove(
                     habitat.getInhabitantByType(ProgramOptions.class));
-                habitat.addComponent("program-options", po);
+                habitat.addComponent(po);
                 cmd = CLICommand.getCommand(habitat, command);
                 rc = cmd.execute(args);
             } catch (CommandValidationException cve) {
@@ -258,7 +258,7 @@ public class MultimodeCommand extends CLICommand {
                 // XXX - is this necessary?
                 habitat.remove(
                     habitat.getInhabitantByType(ProgramOptions.class));
-                habitat.addComponent("program-options", programOpts);
+                habitat.addComponent(programOpts);
             }
 
             // XXX - this duplicates code in AsadminMain, refactor it

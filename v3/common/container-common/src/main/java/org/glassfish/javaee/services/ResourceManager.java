@@ -284,7 +284,7 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
                 connectorRuntimeHabitat.getInhabitants(ConnectorRuntime.class);
         for(Inhabitant inhabitant : inhabitants){
             // there will be only one implementation of connector-runtime
-            return inhabitant.isInstantiated();
+            return inhabitant.isActive();
         }
         return true; // to be safe
     }
@@ -311,7 +311,9 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
             ClassLoader contextCL = Thread.currentThread().getContextClassLoader();
             try {
                 //use connector-classloader so as to get access to classes from resource-adapters
-                ClassLoader ccl = getConnectorRuntime().getConnectorClassLoader();
+                ConnectorRuntime cc = getConnectorRuntime();
+                if (cc==null) return null;
+                ClassLoader ccl = cc.getConnectorClassLoader();
                 Thread.currentThread().setContextClassLoader(ccl);
                 switch (type) {
                     case ADD:

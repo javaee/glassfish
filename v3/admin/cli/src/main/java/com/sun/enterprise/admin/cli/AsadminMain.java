@@ -293,8 +293,8 @@ public class AsadminMain {
             }
             command = argv[0];
 
-            habitat.addComponent("environment", env);
-            habitat.addComponent("program-options", po);
+            habitat.addComponent(env);
+            habitat.addComponent(po);
             cmd = CLICommand.getCommand(habitat, command);
             return cmd.execute(argv);
         } catch (CommandValidationException cve) {

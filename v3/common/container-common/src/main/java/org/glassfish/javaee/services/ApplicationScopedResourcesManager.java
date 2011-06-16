@@ -187,7 +187,7 @@ public class ApplicationScopedResourcesManager implements PostStartup, PostConst
                 connectorRuntimeHabitat.getInhabitants(ConnectorRuntime.class);
         for(Inhabitant inhabitant : inhabitants){
             // there will be only one implementation of connector-runtime
-            return inhabitant.isInstantiated();
+            return inhabitant.isActive();
         }
         return true; // to be safe
     }

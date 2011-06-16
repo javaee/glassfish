@@ -81,7 +81,7 @@
     <name>Glassfish distributions</name>
 
     <modules>
-	<module>nucleus</module>
+	<module>atomic</module>
 	<module>core</module>
 	<module>web</module>
 	<module>glassfish</module>
