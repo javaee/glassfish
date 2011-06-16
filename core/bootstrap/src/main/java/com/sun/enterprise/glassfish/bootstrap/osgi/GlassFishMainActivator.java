@@ -39,18 +39,25 @@
  */
 
 
-package com.sun.enterprise.glassfish.bootstrap;
+package com.sun.enterprise.glassfish.bootstrap.osgi;
 
-import org.glassfish.embeddable.*;
+import com.sun.enterprise.glassfish.bootstrap.Constants;
+import org.glassfish.embeddable.BootstrapProperties;
+import org.glassfish.embeddable.GlassFish;
+import org.glassfish.embeddable.GlassFishProperties;
+import org.glassfish.embeddable.GlassFishRuntime;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.launch.Framework;
 
 import java.io.File;
 import java.net.URI;
 import java.util.Properties;
 
+import static com.sun.enterprise.glassfish.bootstrap.osgi.Constants.AUTO_INSTALL_PROP;
+import static com.sun.enterprise.glassfish.bootstrap.osgi.Constants.AUTO_START_PROP;
+
 /**
- *
  * This activator is used when glassfish.jar is installed and started
  * in an existing OSGi runtime. It expects install root and instance root
  * to be set via framework context properties called com.sun.aas.installRoot and com.sun.aas.instanceRoot
@@ -59,28 +66,61 @@ import java.util.Properties;
  * The latter one refers to the domain directory - this is a directory containing
  * configuration information and deployed applications, etc.
  * If instance root is not set, it defaults to $installRoot/domains/domain1/.
- *
- * @see #prepareStartupContext(org.osgi.framework.BundleContext)
+ * <p/>
+ * Depending on the two context, it either builds a new GlassFishRuntime from scratch (i.e., by installing
+ * necessary GlassFish bundles) or it just makes a new GlassFishRuntime and registers it in service registry.
+ * Former is the case when user installs and starts just this bundle, where as latter is the case when this
+ * bundle is invoked as part of GlassFish launching code as found in {@link OSGiGlassFishRuntimeBuilder}.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
+ * @see #prepareStartupContext(org.osgi.framework.BundleContext)
  */
 public class GlassFishMainActivator implements BundleActivator {
+    private BundleContext context;
+    private String installRoot;
     private static volatile GlassFishRuntime gfr;
     private GlassFish gf;
 
+    private static final String[] DEFAULT_INSTALLATION_LOCATIONS_RELATIVE = new String[]{
+            "modules/endorsed/",
+            "modules/",
+            "modules/autostart/"
+    };
+
+    private static final String[] DEFAULT_START_LOCATIONS_RELATIVE = new String[]{
+            "modules/endorsed/",
+            "modules/osgi-adapter.jar",
+            "modules/osgi-resource-locator.jar",
+            "modules/org.apache.felix.configadmin.jar",
+            "modules/org.apache.felix.fileinstall.jar",
+            "modules/autostart/"
+    };
+
     public void start(BundleContext context) throws Exception {
-        Properties properties = prepareStartupContext(context);
-        if (gfr == null) {
-            // Should we do the following in a separate thread?
-            gfr = GlassFishRuntime.bootstrap(new BootstrapProperties(properties), getClass().getClassLoader());
+        this.context = context;
+        if (nonEmbedded()) {
+            Framework framework = (Framework) context.getBundle(0);
+            gfr = new OSGiGlassFishRuntime(framework);
+            context.registerService(GlassFishRuntime.class.getName(), gfr, null);
+        } else {
+            Properties properties = prepareStartupContext(context);
+            final BootstrapProperties bsProperties = new BootstrapProperties(properties);
+            if (gfr == null) {
+                // Should we do the following in a separate thread?
+                gfr = GlassFishRuntime.bootstrap(bsProperties, getClass().getClassLoader());
+            }
+            gf = gfr.newGlassFish(new GlassFishProperties(properties));
+            gf.start();
         }
-        gf = gfr.newGlassFish(new GlassFishProperties(properties));
-        gf.start();
+    }
+
+    private boolean nonEmbedded() {
+        return context.getProperty(Constants.BUILDER_NAME_PROPERTY) != null;
     }
 
     private Properties prepareStartupContext(BundleContext context) {
         Properties properties = new Properties();
-        String installRoot = context.getProperty(Constants.INSTALL_ROOT_PROP_NAME);
+        installRoot = context.getProperty(Constants.INSTALL_ROOT_PROP_NAME);
 
         if (installRoot == null) {
             installRoot = guessInstallRoot(context);
@@ -89,7 +129,7 @@ public class GlassFishMainActivator implements BundleActivator {
             } else {
                 System.out.println("Deduced install root as : " + installRoot + " from location of bundle. " +
                         "If this is not correct, set correct value in a property called " +
-                       Constants.INSTALL_ROOT_PROP_NAME);
+                        Constants.INSTALL_ROOT_PROP_NAME);
             }
         }
         if (!new File(installRoot).exists()) {
@@ -103,6 +143,8 @@ public class GlassFishMainActivator implements BundleActivator {
         }
         properties.setProperty(Constants.INSTANCE_ROOT_PROP_NAME,
                 instanceRoot);
+
+        properties.putAll(makeProvisioningOptions());
 
         // This property is understood by our corresponding builder.
         properties.setProperty(Constants.BUILDER_NAME_PROPERTY, EmbeddedOSGiGlassFishRuntimeBuilder.class.getName());
@@ -130,9 +172,41 @@ public class GlassFishMainActivator implements BundleActivator {
         return null;
     }
 
-    public void stop(BundleContext context) throws Exception {
-        gf.stop();
-        gf.dispose();
-        gf = null;
+    private Properties makeProvisioningOptions() {
+        Properties provisioningOptions = new Properties();
+        URI installURI = new File(installRoot).toURI();
+        String installLocations = getBundleContext().getProperty(AUTO_INSTALL_PROP);
+        if (installLocations == null) {
+            StringBuilder defaultInstallLocations = new StringBuilder();
+            for (String entry : DEFAULT_INSTALLATION_LOCATIONS_RELATIVE) {
+                defaultInstallLocations.append(installURI.resolve(entry).toString()).append(" ");
+            }
+            installLocations = defaultInstallLocations.toString();
+        }
+        provisioningOptions.setProperty(AUTO_INSTALL_PROP, installLocations);
+        String startLocations = getBundleContext().getProperty(AUTO_START_PROP);
+        if (startLocations == null) {
+            StringBuilder deafultStartLocations = new StringBuilder();
+            for (String entry : DEFAULT_START_LOCATIONS_RELATIVE) {
+                deafultStartLocations.append(installURI.resolve(entry).toString()).append(" ");
+            }
+            startLocations = deafultStartLocations.toString();
+        }
+        provisioningOptions.setProperty(AUTO_START_PROP, startLocations);
+        System.out.println("Provisioning options are " + provisioningOptions);
+        return provisioningOptions;
     }
+
+    public void stop(BundleContext context) throws Exception {
+        if (gf != null) {
+            gf.stop();
+            gf.dispose();
+            gf = null;
+        }
+    }
+
+    public BundleContext getBundleContext() {
+        return context;
+    }
+
 }
