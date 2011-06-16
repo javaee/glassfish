@@ -134,6 +134,7 @@ public class LazyJerseyInit implements LazyJerseyInterface {
         rc.getSingletons().add(new SingletonTypeInjectableProvider<Context, ServerContext>(ServerContext.class, sc) {});
         rc.getSingletons().add(new SingletonTypeInjectableProvider<Context, Habitat>(Habitat.class, habitat) {});
         rc.getSingletons().add(new SingletonTypeInjectableProvider<Context, Client>(Client.class, Client.create()) {});
+        rc.getSingletons().add(new SingletonTypeInjectableProvider<Context, SessionManager>(SessionManager.class, habitat.getComponent(SessionManager.class)) {});
 
         //Use common classloader. Jersey artifacts are not visible through
         //module classloader

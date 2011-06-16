@@ -61,9 +61,10 @@ public class SessionResource {
     private HttpHeaders requestHeaders;
     private UriInfo uriInfo;
 
-    SessionManager sessionManager = SessionManager.getSessionManager();
+    SessionManager sessionManager;
 
-    public SessionResource(String sessionId, HttpHeaders requestHeaders, UriInfo uriInfo) {
+    public SessionResource(SessionManager sessionManager, String sessionId, HttpHeaders requestHeaders, UriInfo uriInfo) {
+        this.sessionManager = sessionManager;
         this.sessionId = sessionId;
         this.requestHeaders = requestHeaders;
         this.uriInfo = uriInfo;

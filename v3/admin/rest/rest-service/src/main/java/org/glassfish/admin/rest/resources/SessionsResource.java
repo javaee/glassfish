@@ -62,7 +62,8 @@ import org.glassfish.grizzly.http.server.Request;
  */
 @Path("/sessions")
 public class SessionsResource {
-    SessionManager sessionManager = SessionManager.getSessionManager(); //TODO move this to look up from injected app properties
+    @Context
+    SessionManager sessionManager;
 
     @Context
     protected HttpHeaders requestHeaders;
@@ -97,7 +98,7 @@ public class SessionsResource {
 
     @Path("{sessionId}/")
     public SessionResource getSessionResource(@PathParam("sessionId")String sessionId) {
-        return new SessionResource(sessionId, requestHeaders, uriInfo);
+        return new SessionResource(sessionManager, sessionId, requestHeaders, uriInfo);
     }
 
 }

@@ -108,7 +108,7 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
 
     @Inject
     Events events;
-    
+
     @Inject
     Habitat habitat;
 
@@ -122,7 +122,10 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
 
     @Inject
     ServerEnvironment serverEnvironment;
-    
+
+    @Inject
+    SessionManager sessionManager;
+
     private volatile LazyJerseyInterface lazyJerseyInterface =null;
 
     @Inject
@@ -152,7 +155,7 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
     @Override
     public void service(Request req, Response res) {
         LogHelper.getDefaultLogger().finer("Rest adapter !");
-        LogHelper.getDefaultLogger().finer("Received resource request: " + req.getRequestURI());
+        LogHelper.getDefaultLogger().log(Level.FINER, "Received resource request: {0}", req.getRequestURI());
 
         try {
             res.setCharacterEncoding(Constants.ENCODING);
@@ -260,7 +263,7 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
 // FIXME: Implement according to JavaDoc above...
 	/*
 	if (anonymousUser) {
-	    String anonUser = 
+	    String anonUser =
 	    req.setAttribute("restUser", anonUser);
 	    return true;
 	}
@@ -268,7 +271,7 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
 	return false;
     }
 
-    private boolean authenticateViaRestToken(Request req) { 
+    private boolean authenticateViaRestToken(Request req) {
         boolean authenticated = false;
         Cookie[] cookies = req.getCookies();
         String restToken = null;
@@ -281,7 +284,7 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
         }
 
         if(restToken != null) {
-            authenticated  = SessionManager.getSessionManager().authenticate(restToken, req);
+            authenticated  = sessionManager.authenticate(restToken, req);
         }
         return authenticated;
     }
@@ -399,7 +402,7 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
         return epd.getListenAddress();
     }
 
-    
+
     @Override
     public List<String> getVirtualServers() {
         return epd.getAsadminHosts();
@@ -487,7 +490,7 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
             Set<Class<?>> classes = getResourcesConfig();
             adapter = lazyJerseyInterface.exposeContext(classes, sc, habitat);
 //            ((HttpHandler) adapter).setResourcesContextPath(context);
-            
+
             logger.info("Listening to REST requests at context: " + context + "/domain");
         }
     }

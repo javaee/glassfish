@@ -40,27 +40,36 @@
 
 package org.glassfish.admin.rest;
 
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.glassfish.grizzly.http.server.Request;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Singleton;
 
 /**
- * Manages Rest Sessions. 
+ * Manages Rest Sessions.
  * @author Mitesh Meswani
  */
+@Service
+@Scoped(Singleton.class)
 public class SessionManager {
-
-    //TODO Singleton pattern. Get rid of it in next checkin. Put SessionManager at application level in ResourceConfig
-    private static SessionManager theSessionManager = new SessionManager();
-    private SessionManager() {}
-    public static SessionManager getSessionManager() { return theSessionManager;}
-
+    @Inject
+    private Habitat habitat;
+    private RestConfig restConfig = null;
     private final SecureRandom randomGenerator = new SecureRandom();
-
     private Map<String, SessionData> activeSessions = new ConcurrentHashMap<String, SessionData>(); //To guard against parallel mutation corrupting the map
+
+    // package/private to help minimize the chances of someone instantiating this directly
+    SessionManager() {
+    }
 
     //TODO createSession is public. this package should not be exported
     public String createSession(Request req) {
@@ -75,6 +84,7 @@ public class SessionManager {
 
     public boolean authenticate(String sessionId, Request req) {
         boolean authenticated = false;
+        purgeInactiveSessions();
 
         if(sessionId != null) {
             SessionData sessionData = activeSessions.get(sessionId);
@@ -113,27 +123,39 @@ public class SessionManager {
     private void purgeInactiveSessions() {
         Set<Map.Entry<String, SessionData>> activeSessionsSet = activeSessions.entrySet();
         for (Map.Entry<String, SessionData> entry : activeSessionsSet) {
-            if(!entry.getValue().isSessionActive() ) {
+            if (!entry.getValue().isSessionActive()) {
                 activeSessionsSet.remove(entry);
             }
         }
     }
 
+    private RestConfig getRestConfig() {
+        if (restConfig == null) {
+            Domain domain = habitat.getComponent(Domain.class);
+            if (domain != null) {
+                Config config = domain.getConfigNamed("server-config");
+                if (config != null) {
+                    restConfig = config.getExtensionByType(RestConfig.class);
+
+                }
+            }
+        }
+        return restConfig;
+    }
+
+
     private boolean isSessionExist(String sessionId) {
         return activeSessions.containsKey(sessionId);
     }
 
-    private static class SessionData{
-        private static long INACTIVE_SESSION_DEFAULT_LIFETIME_IN_MILIS = 30 /*mins*/ * 60 /*secs/min*/ * 1000 /*milis/seconds*/;
-        private String sessionId;
+    private class SessionData{
         /** IP address of client as obtained from Grizzly request */
         private String clientAddress;
-        private long creationTime = System.currentTimeMillis();
-        private long lassAccessedTime = creationTime;
-        private long inactiveSessionLifeTime = INACTIVE_SESSION_DEFAULT_LIFETIME_IN_MILIS;
+        private long lastAccessedTime = System.currentTimeMillis();
+        private final String DISABLE_REMOTE_ADDRESS_VALIDATION_PROPERTY_NAME = "org.glassfish.admin.rest.disable.remote.address.validation";
+        private final boolean disableRemoteAddressValidation = Boolean.getBoolean(DISABLE_REMOTE_ADDRESS_VALIDATION_PROPERTY_NAME);
 
         public SessionData(String sessionId, Request req) {
-            this.sessionId = sessionId;
             this.clientAddress = req.getRemoteAddr();
         }
 
@@ -141,18 +163,20 @@ public class SessionManager {
          * @return true if the session has not timed out. false otherwise
          */
         public boolean isSessionActive() {
-            return lassAccessedTime + inactiveSessionLifeTime > System.currentTimeMillis();
+            long inactiveSessionLifeTime = 30 /*mins*/ * 60 /*secs/min*/ * 1000 /*milis/seconds*/;
+            RestConfig restConfig = getRestConfig();
+            if (restConfig != null) {
+                inactiveSessionLifeTime = Integer.parseInt(restConfig.getSessionTokenTimeout()) * 60000; // minutes * 60 seconds * 1000 millis
+            }
+            return lastAccessedTime + inactiveSessionLifeTime > System.currentTimeMillis();
         }
 
         /**
          * Update the last accessed time to current time
          */
         public void updateLastAccessTime() {
-            lassAccessedTime = System.currentTimeMillis();
+            lastAccessedTime = System.currentTimeMillis();
         }
-
-        private static final String DISABLE_REMOTE_ADDRESS_VALIDATION_PROPERTY_NAME = "org.glassfish.admin.rest.disable.remote.address.validation";
-        private static final boolean disableRemoteAddressValidation = Boolean.getBoolean(DISABLE_REMOTE_ADDRESS_VALIDATION_PROPERTY_NAME);
 
         /**
          * @return true if session is still active and the request is from same remote address as the one session was

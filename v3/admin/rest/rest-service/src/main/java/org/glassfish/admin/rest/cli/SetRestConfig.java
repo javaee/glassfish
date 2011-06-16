@@ -91,6 +91,8 @@ public class SetRestConfig implements AdminCommand {
     private String logOutput;
     @Param(optional = true)
     private String logInput;
+    @Param(optional = true)
+    private String sessionTokenTimeout;
 
     @Override
     public void execute(AdminCommandContext context) {
@@ -163,6 +165,9 @@ public class SetRestConfig implements AdminCommand {
                     }
                     if (logInput != null) {
                         param.setLogInput(logInput);
+                    }
+                    if (sessionTokenTimeout != null) {
+                        param.setSessionTokenTimeout(sessionTokenTimeout);
                     }
 
 
