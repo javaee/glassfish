@@ -111,7 +111,7 @@ class RegisteredResources {
     private java.lang.Object heuristicLogSection = null;
     private Resource laoResource = null;
     private CoordinatorImpl coord = null;
-    private static boolean lastXAResCommit = false;
+    private static boolean lastXAResCommit = Boolean.getBoolean("com.sun.jts.lastagentcommit");
     // START IASRI 4662745
     //private int commitRetries = -1;
     // private static int commitRetries = -1;
@@ -127,13 +127,6 @@ class RegisteredResources {
     private final static String LOG_SECTION_NAME = "RR"/*#Frozen*/;
     private final static String HEURISTIC_LOG_SECTION_NAME = "RRH"/*#Frozen*/;
 
-    static {
-        String lastXAResCommitProp = System.getProperty("com.sun.jts.lastagentcommit");
-        if (lastXAResCommitProp != null && "true".equals(lastXAResCommitProp.toLowerCase())) {
-            lastXAResCommit = true;
-        }
-    }
-	
 	/*
 		Logger to log transaction messages
 	*/  
@@ -165,7 +158,7 @@ class RegisteredResources {
 
         logRecord = log;
 
-        if (log != null) {
+        //if (log != null) {
 
             // Create section for Resources registered as part of transaction
 
@@ -174,7 +167,7 @@ class RegisteredResources {
             // Create section for Resources with heuristic actions taken
 
           // heuristicLogSection = log.createSection(HEURISTIC_LOG_SECTION_NAME);
-        }
+        //}
         this.coord = coord;
     }
 
@@ -188,30 +181,6 @@ class RegisteredResources {
      * @see
      */
     RegisteredResources(CoordinatorImpl coord) { this.coord = coord;}
-
-    /**
-     * Cleans up RegisteredResources state.
-     *
-     * @param
-     *
-     * @return
-     *
-     * @see
-     */
-    /*
-    public void finalize() {
-
-        if (resourceObjects != null) {
-          empty();
-        }
-
-        resourceObjects = null;
-        resourceStates = null;
-        logRecord = null;
-        logSection = null;
-        heuristicLogSection = null;
-    }
-    */
 
     /**
      * Directs the RegisteredResources to recover its state after a failure.
@@ -296,14 +265,12 @@ class RegisteredResources {
 
                              // If the retry limit has been exceeded,
                              // end the process with a fatal error.
-							 _logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
-	                                 new java.lang.Object[] {
-									 new Integer(commitRetries), "commit"});
-							 String msg = LogFormatter.getLocalizedMessage(_logger,
-							 							"jts.retry_limit_exceeded",
-						                                 new java.lang.Object[] {
-														 new Integer(commitRetries), "commit"});
-							  throw  new org.omg.CORBA.INTERNAL(msg);
+                             _logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
+	                                 new java.lang.Object[] {commitRetries, "commit"});
+                             String msg = LogFormatter.getLocalizedMessage(_logger,
+					"jts.retry_limit_exceeded",
+			                 new java.lang.Object[] {commitRetries, "commit"});
+			    throw  new org.omg.CORBA.INTERNAL(msg);
                             //exceptionThrown=false;
 								//Commented out code as this statement is not
 								//reachable
@@ -358,16 +325,13 @@ class RegisteredResources {
 
                              // If the retry limit has been exceeded,
                              // end the process with a fatal error.
-							 _logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
-	                                 new java.lang.Object[] {new Integer(commitRetries),
-									 						"commit"});
-							 String msg = LogFormatter.getLocalizedMessage(_logger,
-							 							"jts.retry_limit_exceeded",
-						                                 new java.lang.Object[] {
-														 new Integer(commitRetries),
-									 						"commit"});
+			     _logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
+	                                 new java.lang.Object[] {commitRetries, "commit"});
+			     String msg = LogFormatter.getLocalizedMessage(_logger,
+					"jts.retry_limit_exceeded",
+			                 new java.lang.Object[] {commitRetries, "commit"});
 							 		
-							  throw  new org.omg.CORBA.INTERNAL(msg);
+			    throw  new org.omg.CORBA.INTERNAL(msg);
                            // exceptionThrown=false;
 						   //Commented out as this will not be executed 
                         }
@@ -487,7 +451,7 @@ class RegisteredResources {
     Vote distributePrepare() throws HeuristicMixed, HeuristicHazard {
         Vote result = Vote.VoteReadOnly;
         int laoIndex = -1;
-         boolean rmErr = false;
+        boolean rmErr = false;
 
         // Browse through the participants, preparing them, and obtain
         // a consolidated result.  The following is intended to be done
@@ -730,6 +694,8 @@ class RegisteredResources {
         boolean heuristicException = false;
         boolean heuristicMixed = false;
         int heuristicRollback = 0;
+        int heuristicCommit = 0;
+        int success = 0;
 
         // First, get the retry count.
 
@@ -817,6 +783,7 @@ class RegisteredResources {
                             heuristicRaised = true;
                             heuristicMixed = true;
                             exceptionThrown = false;
+                            heuristicCommit++;
 
                         } else if (exc instanceof HeuristicRollback ||
                                    exc instanceof HeuristicHazard ||
@@ -896,16 +863,14 @@ class RegisteredResources {
 
                             // If the retry limit has been exceeded,
                             // end the process with a fatal error.
-							_logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
-	                               new java.lang.Object[] { 
-								   new Integer(commitRetries), "commit"});
+			    _logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
+	                               new java.lang.Object[] {commitRetries, "commit"});
 
                              exceptionThrown = false;
                              transactionCompleted = false;
-							 msg = LogFormatter.getLocalizedMessage(_logger,
-													"jts.retry_limit_exceeded",
-	                        						new java.lang.Object[] {
-													new Integer(commitRetries), "commit"});
+			     msg = LogFormatter.getLocalizedMessage(_logger,
+					"jts.retry_limit_exceeded",
+	                       		new java.lang.Object[] {commitRetries, "commit"});
                         }
                     }
                 }
@@ -932,6 +897,7 @@ class RegisteredResources {
                     // release the proxy now.
 
                     resourceStates.set(i,ResourceStatus.Completed);
+                    success++;
                     if (isProxy) {
                         currResource._release();
                     }
@@ -945,8 +911,16 @@ class RegisteredResources {
         // Note that HeuristicHazard exception with be converted to the HeuristicRolledbackException
         // by the caller
 
-        if (heuristicException)
-          distributeForget(commitRetries, infiniteRetry, (heuristicRollback == nRes) ? false : heuristicMixed);
+        if (heuristicException) {
+          boolean heuristicHazard = true;
+          if ((heuristicCommit + success) == nRes) {
+              heuristicMixed = false;
+              heuristicHazard = false;
+          } else if (heuristicRollback == nRes) {
+              heuristicMixed = false;
+          }
+          distributeForget(commitRetries, infiniteRetry, heuristicHazard, heuristicMixed);
+        }
 
         if (!transactionCompleted) {
             if (coord != null)
@@ -992,6 +966,9 @@ class RegisteredResources {
 
         boolean infiniteRetry = true;
         boolean heuristicMixed = false;
+        int heuristicRollback = 0;
+        int success = 0;
+        int processed = 0;
 
         // First, get the retry count.
 
@@ -1025,6 +1002,7 @@ class RegisteredResources {
 
             if (resourceStates.get(i).equals(
                     ResourceStatus.Registered)) {
+                processed++;
                 boolean heuristicRaised = false;
 
                 // We determine here whether the object is a proxy because
@@ -1082,6 +1060,7 @@ class RegisteredResources {
                             heuristicException = true;
                             heuristicRaised = true;
                             exceptionThrown = false;
+                            heuristicRollback++;
 
                         } else if (exc instanceof HeuristicCommit ||
                                    exc instanceof HeuristicHazard ||
@@ -1095,6 +1074,13 @@ class RegisteredResources {
                             heuristicMixed = !(exc instanceof HeuristicHazard);
                             heuristicRaised = true;
                             exceptionThrown = false;
+
+                            // Work around the fact that org.omg.CosTransactions.ResourceOperations#rollback
+                            // does not declare HeuristicRollback exception
+                            if (exc instanceof HeuristicHazard && exc.getCause() instanceof XAException && 
+                                    ((XAException)exc.getCause()).errorCode == XAException.XA_HEURRB) {
+                                heuristicRollback++;
+                            }
 
                         } else if (exc instanceof INV_OBJREF ||
                                    exc instanceof OBJECT_NOT_EXIST){
@@ -1139,14 +1125,12 @@ class RegisteredResources {
 
                             // If the retry limit has been exceeded, end the
                             // process with a fatal error.
-							_logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
-	                                new java.lang.Object[]
-                                    { new Integer(commitRetries), "rollback"});
+			    _logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
+	                                new java.lang.Object[] {commitRetries, "rollback"});
 
-							msg = LogFormatter.getLocalizedMessage(_logger,
-							 					"jts.retry_limit_exceeded",
-	                                			new java.lang.Object[]
-			                                    { new Integer(commitRetries), "rollback"});
+			    msg = LogFormatter.getLocalizedMessage(_logger,
+					"jts.retry_limit_exceeded",
+	                       		new java.lang.Object[] {commitRetries, "rollback"});
 												
                             exceptionThrown = false;
                             transactionCompleted = false;
@@ -1172,6 +1156,7 @@ class RegisteredResources {
 
                 } else {
 
+                    success++;
                     // If completed, and the object is a proxy,
                     // release the proxy now.
 
@@ -1190,7 +1175,8 @@ class RegisteredResources {
         // to the caller.
 
         if (heuristicException)
-            distributeForget(commitRetries, infiniteRetry, heuristicMixed);
+            distributeForget(commitRetries, infiniteRetry, 
+                    (((heuristicRollback + success) == processed)? false : true), heuristicMixed);
 
         if (!transactionCompleted) {
             if (coord != null)
@@ -1227,7 +1213,7 @@ class RegisteredResources {
      * @see
      */
     private void distributeForget(int retries, boolean infinite,
-            boolean heuristicMixed) throws HeuristicMixed, HeuristicHazard {
+            boolean heuristicHazard, boolean heuristicMixed) throws HeuristicMixed, HeuristicHazard {
 
         // Force the log record to ensure that all
         // heuristic Resources are logged.
@@ -1302,14 +1288,12 @@ class RegisteredResources {
 
                             // If the retry limit has been exceeded,
                             // end the process with a fatal error.
-							_logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
-	                                new java.lang.Object[] { new Integer(retries),
-									"forget"});
-							 String msg = LogFormatter.getLocalizedMessage(_logger,
-							 						"jts.retry_limit_exceeded",
-	                                				new java.lang.Object[]
-													{ new Integer(retries), "forget"});
-							  throw  new org.omg.CORBA.INTERNAL(msg);
+			    _logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
+	                                new java.lang.Object[] { retries, "forget"});
+			    String msg = LogFormatter.getLocalizedMessage(_logger,
+					"jts.retry_limit_exceeded",
+	                       		new java.lang.Object[] {retries, "forget"});
+			    throw  new org.omg.CORBA.INTERNAL(msg);
                         }
                     }
                 }
@@ -1331,7 +1315,7 @@ class RegisteredResources {
         if (heuristicMixed) {
             HeuristicMixed exc = new HeuristicMixed();
             throw exc;
-        } else {
+        } else if (heuristicHazard) {
             HeuristicHazard exc = new HeuristicHazard();
             throw exc;
         }
@@ -1612,21 +1596,24 @@ class RegisteredResources {
                     	exceptionThrownTryAgain = false;
                     	heuristicMixed = false;
 						**/
-				   		XAException e = (XAException) ((Throwable)exc).getCause();
-            			if ((e!= null) && (e.errorCode >= XAException.XA_RBBASE && e.errorCode <= XAException.XA_RBEND)) {
+	   		XAException e = (XAException) ((Throwable)exc).getCause();
+       			if ((e!= null) && (e.errorCode >= XAException.XA_RBBASE && e.errorCode <= XAException.XA_RBEND)) {
                     		rollback_occurred = true;
                     		resourceStates.set(0,ResourceStatus.Completed);
                     		exceptionThrownTryAgain = false;
-						} 
-						else {
+			} else {
                     		heuristicExceptionFlowForget = true;
                     		heuristicRaisedSetStatus = true;
                     		exceptionThrownTryAgain = false;
+            			if ((e!= null) && (e.errorCode == XAException.XA_HEURCOM)) 
+                    		    heuristicHazard = false;
+                                else
+                    		    heuristicHazard = true;
             			if ((e!= null) && (e.errorCode == XAException.XA_HEURMIX)) 
                     		    heuristicMixed = true;
                                 else
                     		    heuristicMixed = false;
-						}
+			}
 						//IASRI END 4722883
 		
 
@@ -1701,14 +1688,12 @@ class RegisteredResources {
                     // toolkit for standalone apps) then we would replace
                     // all the FATAL_ERROR actions such as the one below
                     // with the actino required by the application server.
-					_logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
-	                        new java.lang.Object[] { new Integer(commitRetries), 
-							"commitOnePhase"});
-					 String msg = LogFormatter.getLocalizedMessage(_logger,
-					 						"jts.retry_limit_exceeded",
-											 new java.lang.Object[] {
-											 new Integer(commitRetries),"commitOnePhase"});
-					  throw  new org.omg.CORBA.INTERNAL(msg);
+		    _logger.log(Level.SEVERE,"jts.retry_limit_exceeded",
+	                        new java.lang.Object[] { commitRetries, "commitOnePhase"});
+		    String msg = LogFormatter.getLocalizedMessage(_logger,
+				"jts.retry_limit_exceeded",
+				 new java.lang.Object[] {commitRetries,"commitOnePhase"});
+		    throw  new org.omg.CORBA.INTERNAL(msg);
                 }
             } // end of catch block for exceptions
         } // end while exception being raised (GDH)
@@ -1742,7 +1727,7 @@ class RegisteredResources {
         // to the caller.
 
         if (heuristicExceptionFlowForget) {
-          distributeForget(commitRetries, infiniteRetry, heuristicMixed);
+          distributeForget(commitRetries, infiniteRetry, heuristicHazard, heuristicMixed);
           // throw is done in method above
         }
 

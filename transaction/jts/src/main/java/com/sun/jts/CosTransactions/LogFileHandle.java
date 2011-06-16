@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -211,7 +211,7 @@ class LogFileHandle {
      *
      * @see
      */
-    public void finalize()
+    void destroy()
         throws LogException {
 
         // Ensure that the file is closed.
@@ -220,11 +220,12 @@ class LogFileHandle {
 
         if( fhandle != null )
             fileClose();
+    }
 
-        // Discard the buffer.
+    protected void finalize()
+        throws LogException {
 
-        bufferData = null;
-
+        destroy();
     }
 
     /**Reads from the file.

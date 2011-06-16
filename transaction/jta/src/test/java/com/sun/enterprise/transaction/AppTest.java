@@ -116,6 +116,59 @@ public class AppTest extends TestCase {
         }
     }
 
+    public void testWrongResume() {
+        try {
+            System.out.println("**Null resume ....");
+            t.resume(null);
+            System.out.println("**WRONG: TM resume null successful <===");
+            assert (false);
+        } catch (InvalidTransactionException ex) {
+            System.out.println("**Caught InvalidTransactionException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+
+        Transaction tx = null;
+        try {
+            System.out.println("**Null resume on active tx....");
+            t.begin();
+            tx = t.getTransaction();
+            t.resume(null);
+            System.out.println("**WRONG: TM resume null on active tx successful <===");
+            assert (false);
+        } catch (IllegalStateException ex) {
+            System.out.println("**Caught IllegalStateException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+        
+        try {
+            t.rollback();
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+
+        try {
+            System.out.println("**Wrong resume ....");
+            t.resume(tx);
+            System.out.println("**WRONG: TM resume successful <===");
+            assert (false);
+        } catch (InvalidTransactionException ex) {
+            System.out.println("**Caught InvalidTransactionException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+        
+    }
+
     public void testWrongTMOperationsAfterCommit() {
         System.out.println("**Testing Wrong TM Operations After Commit ===>");
         try {

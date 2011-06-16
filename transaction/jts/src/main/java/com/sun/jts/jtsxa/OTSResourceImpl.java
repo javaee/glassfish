@@ -361,6 +361,13 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
                 _logger.log(Level.WARNING, "jts.unexpected_error_occurred_twopc_rollback", ex);
                 throw new TRANSACTION_ROLLEDBACK(0, CompletionStatus.COMPLETED_MAYBE);
             }
+            if (e.errorCode == XAException.XA_HEURRB) {
+                // Can't throw HeuristicRollback exception because org.omg.CosTransactions.ResourceOperations#rollback
+                // doesn't declare it
+                HeuristicHazard hh = new HeuristicHazard(ex.getMessage());
+                hh.initCause(ex);
+                throw hh;
+            }
             INTERNAL internal =  new INTERNAL(0,CompletionStatus.COMPLETED_MAYBE);
             internal.initCause(ex);
             _logger.log(Level.WARNING, "jts.unexpected_error_occurred_twopc_rollback", ex);
@@ -422,8 +429,7 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
     }
 
     public final String toString() {
-        return new String ("OTSResource : XAResource " +
-                           xaRes + " XID " + xid);
+        return "OTSResource : XAResource " + xaRes + " XID " + xid;
     }
 
 
@@ -443,7 +449,6 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
 				_logger.log(Level.WARNING,"jts.object_destroy_error","OTSResource");
             }
         }
-        //  finalize();
     }
 
     /**
@@ -461,9 +466,8 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
      * is about to complete. This permits any database specific action to be
      * performed.prior to the actual xa operations marking completion.
      *
-     */
     private void ensureInitialized() {
-        /* COMMENT(Ram J) - we do not support native xa drivers.
+        // COMMENT(Ram J) - we do not support native xa drivers.
         if (this.xaRes instanceof NativeXAResourceImpl) {
             NativeXAResourceImpl xaResImpl = (NativeXAResourceImpl) xaRes;
 
@@ -476,8 +480,8 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
 
             xaResImpl.nativeXA.aboutToComplete(xaResImpl, (XID) xid);
         }
-        */
     }
+     */
 
     /*
      * These methods are there to satisy the compiler. At some point
