@@ -39,6 +39,7 @@
  */
 package org.jvnet.hk2.config;
 
+import org.glassfish.hk2.ComponentProvider;
 import org.jvnet.hk2.component.Habitat;
 
 import javax.xml.stream.XMLStreamReader;

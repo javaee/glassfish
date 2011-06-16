@@ -124,7 +124,7 @@ public class TracingUtilities {
                         StackTraceElement caller = stack[j];
                         Module m = null;
                         try {
-                            if (reason.isInstantiated()) {
+                            if (reason.isActive()) {
                                 m = registry.find(loader.loadClass(reason.typeName()));
                             }
                         } catch (ClassNotFoundException e) {

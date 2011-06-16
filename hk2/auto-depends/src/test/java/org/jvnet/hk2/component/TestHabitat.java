@@ -53,7 +53,7 @@ public class TestHabitat extends Habitat {
   }
 
   public TestHabitat(boolean concurrencyControls) {
-    super(concurrencyControls);
+    super(null, null, concurrencyControls);
   }
   
 }

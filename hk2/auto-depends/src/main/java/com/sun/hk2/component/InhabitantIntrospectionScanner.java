@@ -356,6 +356,14 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
                             }
                           }
                         }
+
+                        // add all qualifiers.
+                        for (AnnotationModel annotationModel : ae.getAnnotations()) {
+                            if (annotationModel.getType().getAnnotation("javax.inject.Qualifier")!=null) {
+                                mm.add(InhabitantsFile.QUALIFIER_KEY, annotationModel.getType().getName());
+                            }
+                        }
+
                         
                         // append to this all metadata recovered from InhabitantMetadata annotation
                         populateExtraInhabitantMetaData(mm, ae);

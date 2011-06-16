@@ -295,7 +295,7 @@ public class ExtendedInjectTest {
       logger.removeHandler(handler);
     }
     assertFalse("shouldn't be instantiated - it's in a bad state", i
-        .isInstantiated());
+        .isActive());
 
     // TODO: do logging (in the dynamic work)
     // assertEquals("log records: " + handler.publishedRecords, 1,
@@ -316,13 +316,13 @@ public class ExtendedInjectTest {
   public void errorThrowingInDI() {
     Inhabitant<?> iets = h.getInhabitant(ErrorThrowingContract.class, null);
     assertNotNull(iets);
-    assertFalse(iets.isInstantiated());
+    assertFalse(iets.isActive());
 
     Inhabitant<?> ietds = h.getInhabitant(Simple.class,
         "ErrorThrowingDependentService");
     assertNotNull(ietds);
     assertNotSame(iets, ietds);
-    assertFalse(ietds.isInstantiated());
+    assertFalse(ietds.isActive());
 
     LogHandler handler = new LogHandler();
     Logger logger = Logger.getLogger(LazyInhabitant.class.getName());
@@ -348,8 +348,8 @@ public class ExtendedInjectTest {
           e2.getLocalizedMessage());
     }
 
-    assertFalse(iets.isInstantiated());
-    assertFalse(ietds.isInstantiated());
+    assertFalse(iets.isActive());
+    assertFalse(ietds.isActive());
 
     // TODO: do logging (in the dynamic work)
     // assertEquals("log records: " + handler.publishedRecords, 2,

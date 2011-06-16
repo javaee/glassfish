@@ -56,6 +56,7 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
  * @author Kohsuke Kawaguchi
  * @author Sanjeeb.Sahoo@Sun.COM
  * @goal compute-osgi-version
+ * @threadSafe
  * @phase validate
  * @requiresProject
  */

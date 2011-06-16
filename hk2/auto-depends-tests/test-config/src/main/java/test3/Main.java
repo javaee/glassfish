@@ -45,10 +45,7 @@ import junit.framework.Assert;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.config.Dom;
-import test3.cage.JmsCompanion;
-import test3.cage.TestCageBuilder;
 import test3.substitution.SecurityMap;
 
 import java.util.Collection;
@@ -63,19 +60,10 @@ public class Main extends Assert implements ModuleStartup {
     FooBean foo;
 
     @Inject
-    Bird bird;
-
-    @Inject
-    Lion lion;
-
-    @Inject
     Habitat habitat;
 
     @Inject
     ConfigWithDefaultValues defaults;
-
-    @Inject
-    TestCageBuilder testCageBuilder;
 
 //    private static final XMLOutputFactory xof = XMLOutputFactory.newInstance();
 
@@ -228,19 +216,9 @@ Caused by: java.lang.ClassCastException: com.sun.xml.stream.ZephyrWriterFactory
 //            }
 //        }
 
-        testJmsCompanion();
     }
     public void stop(){}
 
-    private void testJmsCompanion() {
-        JmsHost jms = find(foo.all, JmsHost.class);
-        Dom dom = Dom.unwrap(jms);
-        assertEquals(1,dom.companions().size());
-        Inhabitant i = (Inhabitant)dom.companions().iterator().next();
-        assertTrue(i.get() instanceof JmsCompanion);
-
-        assertEquals(1,testCageBuilder.inhabitants.size());
-    }
 
     private <T> T find(Collection<?> all, Class<T> type) {
         for (Object t : all) {

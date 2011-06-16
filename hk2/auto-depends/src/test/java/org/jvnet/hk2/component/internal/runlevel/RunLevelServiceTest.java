@@ -65,8 +65,6 @@ import org.jvnet.hk2.component.InhabitantSorter;
 import org.jvnet.hk2.component.RunLevelListener;
 import org.jvnet.hk2.component.RunLevelService;
 import org.jvnet.hk2.component.RunLevelState;
-import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
-import org.jvnet.hk2.component.internal.runlevel.Recorder;
 import org.jvnet.hk2.junit.Hk2Runner;
 import org.jvnet.hk2.junit.Hk2RunnerOptions;
 import org.jvnet.hk2.test.runlevel.ExceptionRunLevelManagedService;
@@ -150,7 +148,7 @@ public class RunLevelServiceTest {
     assertTrue(h.isInitialized());
     Inhabitant<RunLevelServiceNegOne> i = h.getInhabitantByType(RunLevelServiceNegOne.class);
     assertNotNull(i);
-    assertTrue(i.toString() + "expected to have been instantiated", i.isInstantiated());
+    assertTrue(i.toString() + "expected to have been instantiated", i.isActive());
   }
   
   /**
@@ -398,9 +396,9 @@ public class RunLevelServiceTest {
     Inhabitant<?> iA = h.getInhabitantByContract(ServiceA.class.getName(), null);
     Inhabitant<?> iC = h.getInhabitantByContract(ServiceC.class.getName(), null);
 
-    assertTrue(iB.isInstantiated());
-    assertTrue(iA.isInstantiated());
-    assertTrue(iC.isInstantiated());
+    assertTrue(iB.isActive());
+    assertTrue(iA.isActive());
+    assertTrue(iC.isActive());
     
     iter = activations.iterator();
     assertSame("order is important", iC, iter.next());
@@ -413,9 +411,9 @@ public class RunLevelServiceTest {
 
     RunLevelServiceBase.count = 0;
     defRLS.proceedTo(0);
-    assertFalse(iB.isInstantiated());
-    assertFalse(iA.isInstantiated());
-    assertFalse(iC.isInstantiated());
+    assertFalse(iB.isActive());
+    assertFalse(iA.isActive());
+    assertFalse(iC.isActive());
 
     assertEquals(recorders.toString(), 1, recorders.size());
     assertNotNull(recorders.toString(), recorders.get(10));
@@ -436,7 +434,7 @@ public class RunLevelServiceTest {
     Inhabitant<NonRunLevelWithRunLevelDepService> i = 
       h.getInhabitantByType(NonRunLevelWithRunLevelDepService.class);
     assertNotNull(i);
-    assertFalse(i.isInstantiated());
+    assertFalse(i.isActive());
     
     try {
       fail("Expected get() to fail, bad dependency to a RunLevel service: " + i.get());
@@ -444,7 +442,7 @@ public class RunLevelServiceTest {
       // expected
     }
 
-    assertFalse(i.isInstantiated());
+    assertFalse(i.isActive());
   }
   
   @Test
@@ -456,7 +454,7 @@ public class RunLevelServiceTest {
     Inhabitant<NonRunLevelWithRunLevelDepService> i = 
       h.getInhabitantByType(NonRunLevelWithRunLevelDepService.class);
     assertNotNull(i);
-    assertFalse(i.isInstantiated());
+    assertFalse(i.isActive());
     
     try {
       fail("Expected get() to fail, bad dependency to a RunLevel service: " + i.get());
@@ -464,7 +462,7 @@ public class RunLevelServiceTest {
       // expected
     }
 
-    assertFalse(i.isInstantiated());
+    assertFalse(i.isActive());
   }
   
   /**
@@ -731,7 +729,7 @@ public class RunLevelServiceTest {
       String typeName = i.typeName();
       if (typeName.contains("ExceptionRunLevelManagedService2")) {
         gotOne = true;
-        assertFalse("expected to be in released state: " + i, i.isInstantiated());
+        assertFalse("expected to be in released state: " + i, i.isActive());
       }
     }
     assertTrue(gotOne);
@@ -793,11 +791,11 @@ public class RunLevelServiceTest {
       String typeName = i.typeName();
       if (typeName.contains("InterruptRunLevelManagedService1")) {
         gotOne = true;
-        assertTrue("expected to be in active state: " + i, i.isInstantiated());
+        assertTrue("expected to be in active state: " + i, i.isActive());
       }
       if (typeName.contains("InterruptRunLevelManagedService2")) {
         gotTwo = true;
-        assertFalse("expected to be in released state: " + i, i.isInstantiated());
+        assertFalse("expected to be in released state: " + i, i.isActive());
       }
     }
     assertTrue(gotOne);
@@ -869,11 +867,11 @@ public class RunLevelServiceTest {
       String typeName = i.typeName();
       if (typeName.contains("InterruptRunLevelManagedService1")) {
         gotOne = true;
-        assertFalse("expected to be in released state: " + i, i.isInstantiated());
+        assertFalse("expected to be in released state: " + i, i.isActive());
       }
       if (typeName.contains("InterruptRunLevelManagedService2")) {
         gotTwo = true;
-        assertFalse("expected to be in released state: " + i, i.isInstantiated());
+        assertFalse("expected to be in released state: " + i, i.isActive());
       }
     }
     assertTrue(gotOne);
@@ -946,11 +944,11 @@ public class RunLevelServiceTest {
       String typeName = i.typeName();
       if (typeName.contains("InterruptRunLevelManagedService1")) {
         gotOne = true;
-        assertFalse("expected to be in released state: " + i, i.isInstantiated());
+        assertFalse("expected to be in released state: " + i, i.isActive());
       }
       if (typeName.contains("InterruptRunLevelManagedService2")) {
         gotTwo = true;
-        assertFalse("expected to be in released state: " + i, i.isInstantiated());
+        assertFalse("expected to be in released state: " + i, i.isActive());
       }
     }
     assertTrue(gotOne);
@@ -1100,11 +1098,11 @@ public class RunLevelServiceTest {
         String typeName = i.typeName();
         if (typeName.contains("InterruptRunLevelManagedService1")) {
           gotOne = true;
-          assertFalse("expected to be in released state: " + i, i.isInstantiated());
+          assertFalse("expected to be in released state: " + i, i.isActive());
         }
         if (typeName.contains("InterruptRunLevelManagedService2")) {
           gotTwo = true;
-          assertFalse("expected to be in released state: " + i, i.isInstantiated());
+          assertFalse("expected to be in released state: " + i, i.isActive());
         }
       }
       assertTrue(gotOne);
@@ -1220,7 +1218,7 @@ public class RunLevelServiceTest {
     Collection<Inhabitant<?>> coll = h.getAllInhabitantsByContract(ShouldBeActivateable1.class.getName());
     assertEquals("should be active count", 4, coll.size());
     for (Inhabitant<?> i : coll) {
-      assertTrue("expected active: " + i, i.isInstantiated());
+      assertTrue("expected active: " + i, i.isActive());
       ShouldBeActivateable1 service = (ShouldBeActivateable1) i.get();
       service.validateSelf();
     }
@@ -1230,7 +1228,7 @@ public class RunLevelServiceTest {
     coll = h.getAllInhabitantsByContract(ShouldNotBeActivateable1.class.getName());
     assertEquals("should not be active count", 5, coll.size());
     for (Inhabitant<?> i : coll) {
-      assertFalse("expected not active: " + i, i.isInstantiated());
+      assertFalse("expected not active: " + i, i.isActive());
     }
 
     // (4) if the onError is not called two times then fail.<br/>
@@ -1296,16 +1294,16 @@ public class RunLevelServiceTest {
       RunLevel rl = ai.getAnnotation(RunLevel.class);
       if (rl.value() <= runLevel) {
         if (ai.toString().contains("Invalid")) {
-          assertFalse("expect not instantiated: " + ai, ai.isInstantiated());
+          assertFalse("expect not instantiated: " + ai, ai.isActive());
         } else {
           if (Void.class == rl.environment()) {
-            assertTrue("expect instantiated: " + ai, ai.isInstantiated());
+            assertTrue("expect instantiated: " + ai, ai.isActive());
           } else {
-            assertFalse("expect instantiated: " + ai, ai.isInstantiated());
+            assertFalse("expect instantiated: " + ai, ai.isActive());
           }
         }
       } else {
-        assertFalse("expect not instantiated: " + ai, ai.isInstantiated());
+        assertFalse("expect not instantiated: " + ai, ai.isActive());
       }
     }
   }

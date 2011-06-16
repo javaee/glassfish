@@ -90,7 +90,7 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
     }
     
     @Override
-    public Class<T> type() {
+    public Class<? extends T> type() {
       // fetching is too heavy of an operation because it will activate/write the class
 //        fetch();
 

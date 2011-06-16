@@ -60,7 +60,7 @@ public class MultiThreadedInhabitantActivator implements InhabitantActivator {
 
   @Override
   public void activate(final Inhabitant<?> inhabitant) {
-    if (!inhabitant.isInstantiated()) {
+    if (!inhabitant.isActive()) {
       wm.execute(new Runnable() {
         @Override
         public void run() {
@@ -72,7 +72,7 @@ public class MultiThreadedInhabitantActivator implements InhabitantActivator {
 
   @Override
   public void deactivate(final Inhabitant<?> inhabitant) {
-//    if (inhabitant.isInstantiated()) {
+//    if (inhabitant.isActive()) {
 //      wm.execute(new Runnable() {
 //        @Override
 //        public void run() {

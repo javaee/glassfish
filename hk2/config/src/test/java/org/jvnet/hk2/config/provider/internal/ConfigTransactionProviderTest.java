@@ -286,12 +286,12 @@ public class ConfigTransactionProviderTest implements HabitatFactory {
     // verify name resolution
     jmsServer = habitat.getInhabitant(JmsServerService.class, "Moe");
     assertNotNull(jmsServer);
-    assertTrue(jmsServer.isInstantiated());
+    assertTrue(jmsServer.isActive());
     assertNotNull(jmsServer.get());
 
     jmsServer2 = habitat.getInhabitant(JmsServerService2.class, "Moe");
     assertNotNull(jmsServer2);
-    assertTrue(jmsServer2.isInstantiated());
+    assertTrue(jmsServer2.isActive());
     assertNotNull(jmsServer2.get());
     
     assertNotSame(jmsServer.get(), jmsServer2.get());

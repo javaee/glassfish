@@ -39,6 +39,8 @@
  */
 package org.jvnet.hk2.component;
 
+import org.glassfish.hk2.Provider;
+import org.jvnet.hk2.annotations.Builder;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -54,20 +56,6 @@ import org.jvnet.hk2.annotations.Service;
  * @see Service
  * @see ContextualFactory
  */
-public interface Factory<T> {
-    /**
-     * The system calls this method to obtain a reference
-     * to the component.
-     *
-     * @return
-     *      null is a valid return value. This is useful
-     *      when a factory primarily does a look-up and it fails
-     *      to find the specified component, yet you don't want that
-     *      by itself to be an error. If the injection wants
-     *      a non-null value (i.e., <tt>@Inject(optional=false)</tt>).
-     * @throws ComponentException
-     *      If the factory failed to get/create an instance
-     *      and would like to propagate the error to the caller.
-     */
-    T getObject() throws ComponentException;
+public interface Factory<T> extends Provider<T> {
+
 }

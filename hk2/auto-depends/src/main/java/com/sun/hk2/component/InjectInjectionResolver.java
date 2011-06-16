@@ -39,13 +39,16 @@
  */
 package com.sun.hk2.component;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
+import java.util.zip.Inflater;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.ComponentException;
@@ -54,20 +57,23 @@ import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InjectionPoint;
 import org.jvnet.tiger_types.Types;
 
+import javax.inject.Named;
+import javax.inject.Qualifier;
+
 /**
  * InjectInjectionResolver, handles all Inject annotations
  */
 public class InjectInjectionResolver extends InjectionResolver<Inject> {
 
 //    public static final boolean MANAGED_ENABLED = Habitat.MANAGED_INJECTION_POINTS_ENABLED;
-  
+
     final Habitat habitat;
 
     public InjectInjectionResolver(Habitat habitat) {
         super(Inject.class);
         this.habitat = habitat;
     }
-  
+
     public boolean isOptional(AnnotatedElement element, Inject annotation) {
         return annotation.optional();
     }
@@ -77,151 +83,191 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
      */
     @Override
     public <V> V getValue(final Object component,
-                final Inhabitant<?> onBehalfOf,
-                final AnnotatedElement target,
-                final Type genericType,
-                final Class<V> type) throws ComponentException {
-      final Inject inject = target.getAnnotation(Inject.class);
-      final Callable<V> callable = new Callable<V>() {
-        @Override
-        public V call() throws ComponentException {
-          V result;
+                          final Inhabitant<?> onBehalfOf,
+                          final AnnotatedElement target,
+                          final Type genericType,
+                          final Class<V> type) throws ComponentException {
+        final Inject inject = target.getAnnotation(Inject.class);
+        final Callable<V> callable = new Callable<V>() {
+            @Override
+            public V call() throws ComponentException {
+                V result;
 
-          if (type.isArray()) {
-            result = getArrayInjectValue(habitat, component, onBehalfOf, target, genericType, type);
-          } else {
-            if (Types.isSubClassOf(type, Holder.class)){
-              result = getHolderInjectValue(habitat, component, onBehalfOf, target, genericType, type, inject);
-            } else {
-              if (habitat.isContract(type)) {
-                  result = getServiceInjectValue(habitat, component, onBehalfOf, target, genericType, type, inject);
-              } else {
-                  result = getComponentInjectValue(habitat, component, onBehalfOf, target, genericType, type, inject);
-              }
+                if (type.isArray()) {
+                    result = getArrayInjectValue(habitat, component, onBehalfOf, target, genericType, type);
+                } else {
+                    if (Types.isSubClassOf(type, Holder.class)) {
+                        result = getHolderInjectValue(habitat, component, onBehalfOf, target, genericType, type, inject);
+                    } else {
+                        if (habitat.isContract(type)) {
+                            result = getServiceInjectValue(habitat, component, onBehalfOf, target, genericType, type, inject);
+                        } else {
+                            result = getComponentInjectValue(habitat, component, onBehalfOf, target, genericType, type, inject);
+                        }
+                    }
+                }
+
+                return validate(component, onBehalfOf, result);
             }
-          }
-      
-          return validate(component, onBehalfOf, result);
-        }
-      };
+        };
 
-      try {
-        if (habitat.isContextualFactoriesPresent()) {
-          InjectionPoint ip = new InjectionPointImpl(component, target, type, inject, onBehalfOf);
-          return Hk2ThreadContext.captureIPandRun(ip, callable);
-        } else {
-          return callable.call();
+        try {
+            if (habitat.isContextualFactoriesPresent()) {
+                InjectionPoint ip = new InjectionPointImpl(component, target, type, inject, onBehalfOf);
+                return Hk2ThreadContext.captureIPandRun(ip, callable);
+            } else {
+                return callable.call();
+            }
+        } catch (Exception e) {
+            if (e instanceof ComponentException) throw ComponentException.class.cast(e);
+            throw new ComponentException(e);
         }
-      } catch (Exception e) {
-        if (e instanceof ComponentException) throw ComponentException.class.cast(e);
-        throw new ComponentException(e);
-      }
     }
 
     protected <V> V getArrayInjectValue(Habitat habitat,
-              Object component,
-              Inhabitant<?> onBehalfOf,
-              AnnotatedElement target,
-              Type genericType,
-              Class<V> type) {
+                                        Object component,
+                                        Inhabitant<?> onBehalfOf,
+                                        AnnotatedElement target,
+                                        Type genericType,
+                                        Class<V> type) {
         V result;
         Class<?> ct = type.getComponentType();
-  
+
         Collection<?> instances;
         if (habitat.isContract(ct)) {
             instances = getAllByContract(onBehalfOf, habitat, ct);
         } else {
             instances = getAllByType(onBehalfOf, habitat, ct);
         }
-        
+
         result = type.cast(instances.toArray((Object[]) Array.newInstance(ct, instances.size())));
         // TODO: validate() here too
         return result;
     }
 
     protected <V> V getHolderInjectValue(final Habitat habitat,
-              final Object component,
-              final Inhabitant<?> onBehalfOf,
-              final AnnotatedElement target,
-              final Type genericType,
-              final Class<V> type,
-              final Inject inject) throws ComponentException {
-      final Type t = Types.getTypeArgument(((java.lang.reflect.Field) target).getGenericType(), 0);
-      final Class<?> finalType = Types.erasure(t);
+                                         final Object component,
+                                         final Inhabitant<?> onBehalfOf,
+                                         final AnnotatedElement target,
+                                         final Type genericType,
+                                         final Class<V> type,
+                                         final Inject inject) throws ComponentException {
+        final Type t = Types.getTypeArgument(((java.lang.reflect.Field) target).getGenericType(), 0);
+        final Class<?> finalType = Types.erasure(t);
 
-      if (habitat.isContract(finalType)) {
-          final Inhabitant<?> i = manage(onBehalfOf, habitat.getInhabitant(finalType, inject.name()));
-          return type.cast(i);
-      }
-      
-      try {
-          if (finalType.cast(component)!=null) {
-              return type.cast(onBehalfOf);
-          }
-      } catch (ClassCastException e) {
-          // ignore
-      }
-      
-      V result = type.cast(getInhabitantByType(onBehalfOf, habitat, finalType));
-      // TODO: validate() here too
-      return result;
+        if (habitat.isContract(finalType)) {
+            final Inhabitant<?> i = manage(onBehalfOf, habitat.getInhabitant(finalType, inject.name()));
+            return type.cast(i);
+        }
+
+        try {
+            if (finalType.cast(component) != null) {
+                return type.cast(onBehalfOf);
+            }
+        } catch (ClassCastException e) {
+            // ignore
+        }
+
+        V result = type.cast(getInhabitantByType(onBehalfOf, habitat, finalType));
+        // TODO: validate() here too
+        return result;
     }
 
     protected <V> V getServiceInjectValue(Habitat habitat,
-              Object component,
-              Inhabitant<?> onBehalfOf,
-              AnnotatedElement target,
-              Type genericType,
-              Class<V> type,
-              Inject inject) throws ComponentException {
-      V result = null;
-      Inhabitant<?> i = manage(onBehalfOf, habitat.getInhabitant(type, inject.name()));
-      if (null != i) {
-        Object service = i.get();
-        try {
-            result = type.cast(service);
-        } catch (ClassCastException e) {
-            Logger.getAnonymousLogger().severe("ClassCastException between contract " + type + " and service " + service);
-            Logger.getAnonymousLogger().severe("Contract class loader " + type.getClassLoader());
-            Logger.getAnonymousLogger().severe("Service class loader " + service.getClass().getClassLoader());
-            i.release();
-            throw e;
+                                          Object component,
+                                          Inhabitant<?> onBehalfOf,
+                                          AnnotatedElement target,
+                                          Type genericType,
+                                          Class<V> type,
+                                          Inject inject) throws ComponentException {
+
+        V result = null;
+
+        // named injection ?
+        String name = this.getTargetName(target, inject);
+
+        // first we need to obtain all qualifiers on the injection target so we narraw the search.
+        List<String> qualifiers = new ArrayList<String>();
+        Annotation[] targetAnnotations = target.getAnnotations();
+        Inhabitant<?> i = null;
+        // if there is only one annotation, it's @Inject, we can ignore qualifiers narrowing
+        if (name.isEmpty() && targetAnnotations.length > 1) {
+            for (Annotation annotation : target.getAnnotations()) {
+                for (Annotation annotationAnnotation : annotation.annotationType().getAnnotations()) {
+                    if (annotationAnnotation.annotationType()==Qualifier.class) {
+                        qualifiers.add(annotation.annotationType().getName());
+                    }
+                }
+            }
+            if (qualifiers.isEmpty()) {
+                i = manage(onBehalfOf, habitat.getInhabitant(type, name));
+            } else {
+                List<String> tmpQualifiers = new ArrayList<String>(qualifiers);
+                for (Inhabitant<? extends V> inh : habitat.getInhabitants(type)) {
+                    List<String> declaredQualifiers = inh.metadata().get(InhabitantsFile.QUALIFIER_KEY);
+                    for (String declaredQualifier : declaredQualifiers) {
+                        // todo : we need to look at the instances of the Annotations
+                        // rather than the type on both the injection target and the
+                        // candidate so we can ensure that annotation attribute matching is performed
+                        tmpQualifiers.remove(declaredQualifier);
+                    }
+
+                    // if the injection point qualifiers are all satisfied, stop the query
+                    if (tmpQualifiers.isEmpty()) {
+                        i = manage(onBehalfOf, inh);
+                        break;
+                    }
+                }
+            }
+        } else {
+            i = manage(onBehalfOf, habitat.getInhabitant(type, name));
         }
-      }
-      return result;
+        if (null != i) {
+            Object service = i.get();
+            try {
+                result = type.cast(service);
+            } catch (ClassCastException e) {
+                Logger.getAnonymousLogger().severe("ClassCastException between contract " + type + " and service " + service);
+                Logger.getAnonymousLogger().severe("Contract class loader " + type.getClassLoader());
+                Logger.getAnonymousLogger().severe("Service class loader " + service.getClass().getClassLoader());
+                i.release();
+                throw e;
+            }
+        }
+        return result;
     }
 
     @SuppressWarnings("unchecked")
     protected <V> V getComponentInjectValue(Habitat habitat,
-              Object component,
-              Inhabitant<?> onBehalfOf,
-              AnnotatedElement target,
-              Type genericType,
-              Class<V> type,
-              Inject inject) throws ComponentException {
+                                            Object component,
+                                            Inhabitant<?> onBehalfOf,
+                                            AnnotatedElement target,
+                                            Type genericType,
+                                            Class<V> type,
+                                            Inject inject) throws ComponentException {
         // ideally we should check if type has @Service or @Configured
-      Inhabitant<?> i = manage(onBehalfOf, habitat.getInhabitantByType(type));
-      if (null != i) {
-        return (V)i.get();
-      }
-      return null;
+        Inhabitant<?> i = manage(onBehalfOf, habitat.getInhabitantByType(type));
+        if (null != i) {
+            return (V) i.get();
+        }
+        return null;
     }
 
     /**
      * Verifies the injection does not violate any integrity rules.
-     * 
-     * @param component the target component to be injected
+     *
+     * @param component    the target component to be injected
      * @param toBeInjected the injected value
      */
     protected <V> V validate(Object component, Inhabitant<?> onBehalfOf, V toBeInjected) {
-      Inhabitants.validate(component, toBeInjected); // will toss exception if there is a problem
-      return toBeInjected;
+        Inhabitants.validate(component, toBeInjected); // will toss exception if there is a problem
+        return toBeInjected;
     }
 
     protected Inhabitant<?> manage(Inhabitant<?> onBehalfOf, Inhabitant<?> inhabitant) {
-      return inhabitant;
+        return inhabitant;
     }
-  
+
 //    /**
 //     * Manage the fact that the inhabitant represented by "onBehalfOf" is being injected with 
 //     * the component coming from "inhabitant".
@@ -242,35 +288,48 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
 
     @SuppressWarnings("unchecked")
     protected <V> Collection<V> manage(Inhabitant<?> onBehalfOf, Iterable<?> inhabitants) {
-      if (null == inhabitants) {
-        return null;
-      }
+        if (null == inhabitants) {
+            return null;
+        }
 
-      final ArrayList<V> managed = new ArrayList<V>();
-      for (Object iObj : inhabitants) {
-        Inhabitant<V> i = (Inhabitant<V>)iObj;
-        managed.add((V)manage(onBehalfOf, i).get());
-      }
-      
-      return managed;
+        final ArrayList<V> managed = new ArrayList<V>();
+        for (Object iObj : inhabitants) {
+            Inhabitant<V> i = (Inhabitant<V>) iObj;
+            managed.add((V) manage(onBehalfOf, i).get());
+        }
+
+        return managed;
     }
-    
+
     protected Inhabitant<?> getInhabitantByType(Inhabitant<?> onBehalfOf, Habitat habitat, Class<?> finalType) {
-      return manage(onBehalfOf, habitat.getInhabitantByType(finalType));
+        return manage(onBehalfOf, habitat.getInhabitantByType(finalType));
     }
 
     protected <V> Collection<V> getInhabitants(Inhabitant<?> onBehalfOf, Habitat habitat, Class<?> finalType, String name) {
-      return manage(onBehalfOf, habitat.getInhabitants(finalType, name));
+        return manage(onBehalfOf, habitat.getInhabitants(finalType, name));
     }
-    
+
     @SuppressWarnings("unchecked")
     protected <V> Collection<V> getAllByType(Inhabitant<?> onBehalfOf, Habitat habitat, Class<V> ct) {
-      return (Collection<V>) manage(onBehalfOf, habitat.getAllInhabitantsByType(ct));
+        return (Collection<V>) manage(onBehalfOf, habitat.getAllInhabitantsByType(ct));
     }
 
     @SuppressWarnings("unchecked")
     protected <V> Collection<V> getAllByContract(Inhabitant<?> onBehalfOf, Habitat habitat, Class<V> ct) {
-      return (Collection<V>) manage(onBehalfOf, habitat.getAllInhabitantsByContract(ct.getName()));
+        return (Collection<V>) manage(onBehalfOf, habitat.getAllInhabitantsByContract(ct.getName()));
     }
-    
+
+
+    String getTargetName(AnnotatedElement target, Inject inject) {
+        Named named = target.getAnnotation(Named.class);
+        String name = inject.name();
+        if (named!=null && !inject.name().isEmpty()) {
+            throw new RuntimeException("Field or method [" + target.toString() + "] is annotated with both a @Named" +
+                    " annotation as well as a @Inject.name() value, please choose");
+        }
+        if (named!=null) {
+            name = named.value();
+        }
+        return name;
+    }
 }

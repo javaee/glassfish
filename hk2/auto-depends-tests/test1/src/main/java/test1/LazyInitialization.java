@@ -65,13 +65,13 @@ public class LazyInitialization extends Test {
         // test injection access
         if (holder instanceof Inhabitant) {
             Inhabitant<HeavyBean> i = (Inhabitant<HeavyBean>) holder;
-            assertFalse(i.isInstantiated());
+            assertFalse(i.isActive());
         }
 
         // test API access.
         Inhabitant<HeavyBean> inhabitant = habitat.getInhabitantByType(HeavyBean.class);
-        assertFalse(inhabitant.isInstantiated());
-        System.out.println("Inhabitant isInitialized is " + inhabitant.isInstantiated());
+        assertFalse(inhabitant.isActive());
+        System.out.println("Inhabitant isInitialized is " + inhabitant.isActive());
 
         // instanciate the component.
         assertNotNull(holder.get());
@@ -80,12 +80,12 @@ public class LazyInitialization extends Test {
         assertTrue(holder.get()==inhabitant.get());
 
         // post-conditions testing
-        assertTrue(inhabitant.isInstantiated());
+        assertTrue(inhabitant.isActive());
 
         if (holder instanceof Inhabitant) {
             Inhabitant<HeavyBean> i = (Inhabitant<HeavyBean>) holder;
-            assertTrue(i.isInstantiated());
+            assertTrue(i.isActive());
         }
-        System.out.println("Inhabitant isInitialized is " + inhabitant.isInstantiated());
+        System.out.println("Inhabitant isInitialized is " + inhabitant.isActive());
     }
 }

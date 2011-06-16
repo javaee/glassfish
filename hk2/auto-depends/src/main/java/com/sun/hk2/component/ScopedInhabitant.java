@@ -39,8 +39,8 @@
  */
 package com.sun.hk2.component;
 
+import org.glassfish.hk2.Scope;
 import org.jvnet.hk2.component.Creator;
-import org.jvnet.hk2.component.Scope;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.tracing.TracingThreadLocal;
 import org.jvnet.hk2.tracing.TracingUtilities;
@@ -62,7 +62,7 @@ public class ScopedInhabitant<T> extends AbstractCreatorInhabitantImpl<T> {
             if (TracingUtilities.isEnabled())
                 TracingThreadLocal.get().push(this);
 
-            ScopeInstance store = scope.current();
+            org.glassfish.hk2.ScopeInstance store = scope.current();
             // scope is extension point, so beware for the broken implementation
             assert store!=null : scope+" returned null";
 
@@ -87,7 +87,7 @@ public class ScopedInhabitant<T> extends AbstractCreatorInhabitantImpl<T> {
         }
     }
 
-    public boolean isInstantiated() {
+    public boolean isActive() {
         return scope.current().get(this)!=null;
     }
 

@@ -89,7 +89,6 @@ public class MetainfServiceGenerator implements AnnotationProcessorFactory {
         list.loadExisting(env);
 
         return AnnotationProcessors.getCompositeAnnotationProcessor(
-                new CompanionSeedGenerator(env),
                 new InhabitantsGenerator(env,list));
         
     }

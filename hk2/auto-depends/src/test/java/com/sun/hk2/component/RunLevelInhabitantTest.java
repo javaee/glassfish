@@ -50,10 +50,6 @@ import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.hk2.component.RunLevelState;
 import org.jvnet.hk2.junit.Hk2Runner;
 
-import com.sun.hk2.component.Holder;
-import com.sun.hk2.component.LazyInhabitant;
-import com.sun.hk2.component.RunLevelInhabitant;
-
 @SuppressWarnings("unchecked")
 @RunWith(Hk2Runner.class)
 public class RunLevelInhabitantTest {
@@ -70,18 +66,18 @@ public class RunLevelInhabitantTest {
     RunLevelState state = new TestRunLevelState(5, 10);
 
     LazyInhabitant<?> i = new LazyInhabitant(h, clh, getClass().getName(), md);
-    assertFalse(i.isInstantiated());
+    assertFalse(i.isActive());
     RunLevelInhabitant rli = new RunLevelInhabitant(i, 5, state);
     assertEquals(getClass().getName(), rli.typeName());
-    assertFalse(rli.isInstantiated());
+    assertFalse(rli.isActive());
     assertNotNull(rli.get());
     assertSame(rli.get(), rli.get());
-    assertTrue(rli.isInstantiated());
-    assertTrue(i.isInstantiated());
+    assertTrue(rli.isActive());
+    assertTrue(i.isActive());
     assertEquals(getClass(), rli.type());
     rli.release();
-    assertFalse(rli.isInstantiated());
-    assertFalse(i.isInstantiated());
+    assertFalse(rli.isActive());
+    assertFalse(i.isActive());
     assertSame(i.metadata(), rli.metadata());
   }
 
@@ -90,22 +86,22 @@ public class RunLevelInhabitantTest {
     RunLevelState state = new TestRunLevelState(null, 10);
     
     LazyInhabitant<?> i = new LazyInhabitant(h, clh, getClass().getName(), md);
-    assertFalse(i.isInstantiated());
+    assertFalse(i.isActive());
     RunLevelInhabitant rli = new RunLevelInhabitant(i, 15, state);
     assertEquals(getClass().getName(), rli.typeName());
-    assertFalse(rli.isInstantiated());
+    assertFalse(rli.isActive());
     try {
       fail("expected exception but got: " + rli.get());
     } catch (ComponentException e) {
     }
-    assertFalse(rli.isInstantiated());
-    assertFalse(i.isInstantiated());
+    assertFalse(rli.isActive());
+    assertFalse(i.isActive());
     assertSame(i.type(), rli.type());
-    assertFalse(i.isInstantiated());
+    assertFalse(i.isActive());
     // should have no affect
     rli.release();
-    assertFalse(rli.isInstantiated());
-    assertFalse(i.isInstantiated());
+    assertFalse(rli.isActive());
+    assertFalse(i.isActive());
     assertSame(i.metadata(), rli.metadata());
   }
   

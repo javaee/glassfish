@@ -129,7 +129,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
               bestSr = sr;
             } else if (sr.equals(bestSr)) {
               // favor active inhabitants over inactive ones
-              if (!best.isInstantiated() && next.isInstantiated()) {
+              if (!best.isActive() && next.isActive()) {
                 best = next;
               }
             }

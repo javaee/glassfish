@@ -41,10 +41,8 @@ package org.jvnet.hk2.component;
 
 import com.sun.hk2.component.*;
 
-import static com.sun.hk2.component.CompanionSeed.Registerer.createCompanion;
-
-import static com.sun.hk2.component.InhabitantsFile.CAGE_BUILDER_KEY;
-
+import com.sun.hk2.component.ScopeInstance;
+import org.glassfish.hk2.*;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.FactoryFor;
@@ -57,8 +55,6 @@ import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.AnnotationTypeMismatchException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.security.InvalidParameterException;
 import java.util.Map.Entry;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -75,7 +71,7 @@ import java.util.logging.Logger;
  * @author Jerome Dochez
  */
 @SuppressWarnings("unchecked")
-public class Habitat implements Injector {
+public class Habitat implements Services, Injector {
 
     private static final Logger logger = Logger.getLogger(Habitat.class.getName());
   
@@ -134,12 +130,21 @@ public class Habitat implements Injector {
 
     private boolean initialized;
 
+    final private Services parent;
+    final private String name;
+
     
     public Habitat() {
-      this(null);
+      this(null, null, null);
     }
 
-    Habitat(Boolean concurrency_controls) {
+    Habitat(Services parent, String name) {
+        this(parent, name, null);
+    }
+
+    Habitat(Services parent, String name, Boolean concurrency_controls) {
+        this.parent = parent;
+        this.name = name;
         this.concurrencyControls = 
             (null == concurrency_controls) 
                 ? CONCURRENCY_CONTROLS_DEFAULT : concurrency_controls;
@@ -172,19 +177,17 @@ public class Habitat implements Injector {
                 injectresolver));
         addIndex(new ExistingSingletonInhabitant<InjectionResolver>(InjectionResolver.class,
                 injectresolver), InjectionResolver.class.getName(), null);
-        add(new ExistingSingletonInhabitant<InjectionResolver>(InjectionResolver.class,
-                new LeadInjectionResolver(this)));
         
         // make the habitat itself available
         Inhabitant<Habitat> habitatInh = new ExistingSingletonInhabitant<Habitat>(Habitat.class,this);
         add(habitatInh);
         addIndex(habitatInh, Injector.class.getName(), null);
-
-
-        add(new ExistingSingletonInhabitant<CompanionSeed.Registerer>(CompanionSeed.Registerer.class,
-                new CompanionSeed.Registerer(this)));
-        add(new ExistingSingletonInhabitant<CageBuilder.Registerer>(CageBuilder.Registerer.class,
-                new CageBuilder.Registerer(this)));
+        addIndex(habitatInh, Services.class.getName(), null);
+        if (parent!=null && name!=null) {
+            DynamicBinderFactory parentBinder = parent.bindDynamically();
+            parentBinder.bind(Services.class).named(name).toInstance(this);
+            parentBinder.commit();
+        }
 
         InhabitantProviderInterceptor interceptor = new RunLevelInhabitantProvider(this);
         addIndex(new ExistingSingletonInhabitant<InhabitantProviderInterceptor>(
@@ -198,7 +201,61 @@ public class Habitat implements Injector {
         add(rlsI);
         addIndex(rlsI, RunLevelService.class.getName(), DefaultRunLevelService.NAME);
     }
-    
+
+    @Override
+    public Services getDefault() {
+        if (parent==null) return this;
+        return parent.getDefault();
+    }
+
+    @Override
+    public Services getServices(String moduleName) {
+        // look up first.
+        if (parent!=null) {
+            Services parentServices = parent.forContract(Services.class).named(moduleName).get();
+            if (parentServices!=null) {
+                return parentServices;
+            }
+        }
+        // in our registry ?
+        return forContract(Services.class).named(moduleName).get();
+    }
+
+    @Override
+    public Providers<?> locate(Descriptor descriptor) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Collection<BindingEntry> getBindings(Descriptor descriptor) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public DynamicBinderFactory bindDynamically() {
+        return new DynamicBinderFactoryImpl(parent==null?null:parent.bindDynamically(), this);
+    }
+
+    @Override
+    public Collection<BindingEntry> getBindings() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public <U> ContractLocator<U> forContract(Class<U> contract) {
+        return new ContractLocatorImpl<U>(this, contract, true);
+    }
+
+    @Override
+    public <U> ServiceLocator<U> byType(Class<U> type) {
+        return new ContractLocatorImpl<U>(this, type, false);
+    }
+
+    @Override
+    public ServiceLocator<?> byType(String typeName) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     /**
      * Add a habitat listener with no contract-level filtering.
      * This API is primarily intended for internal cases within
@@ -267,8 +324,6 @@ public class Habitat implements Injector {
      * 
      * @param listener
      *      The habitat Listener to be removed
-     * @param typeNames
-     *      The contracts to filter on
      * 
      * @return true; if the listener was indeed removed
      * 
@@ -416,28 +471,6 @@ public class Habitat implements Injector {
         String name = i.typeName();
         byType.add(name,i);
 
-        // for each companion, create an inhabitant that goes with the lead and hook them up
-        List<Inhabitant> companions=null;
-        for(Inhabitant<?> c : getInhabitantsByAnnotation(CompanionSeed.class,name)) {
-            if (companions==null) {
-                companions = new ArrayList<Inhabitant>();
-            }
-            companions.add(createCompanion(this,i,c));
-        }
-        i.setCompanions(companions);
-
-        String cageBuilderName = i.metadata().getOne(CAGE_BUILDER_KEY);
-        if(cageBuilderName!=null) {
-            Inhabitant cageBuilder = byType.getOne(cageBuilderName);
-            if (cageBuilder!=null) {
-                ((CageBuilder)cageBuilder.get()).onEntered(i);
-            }
-            // if cageBuilder==null, we can't cage this component now, but
-            // we'll do that when cageBuilder comes into the habitat.
-            // that happens because every CageBuilder implementations are caged by
-            // CageBuilder.Registerer.
-        }
-        
         notify(i, EventType.INHABITANT_ADDED, null, null);
     }
 
@@ -561,14 +594,14 @@ public class Habitat implements Injector {
       if (serviceOrInhabitant instanceof Inhabitant) {
         matches = (serviceOrInhabitant == inhabitant);
       } else {
-        // call to isInstantiated is necessary to avoid loading of services that are not yet loaded.
-        matches = inhabitant.isInstantiated() && inhabitant.get()==serviceOrInhabitant;
+        // call to isActive is necessary to avoid loading of services that are not yet loaded.
+        matches = inhabitant.isActive() && inhabitant.get()==serviceOrInhabitant;
       }
       return matches;
     }
     
     protected Object service(Object serviceOrInhabitant) {
-      return (serviceOrInhabitant instanceof Inhabitant && ((Inhabitant)serviceOrInhabitant).isInstantiated()) 
+      return (serviceOrInhabitant instanceof Inhabitant && ((Inhabitant)serviceOrInhabitant).isActive())
         ? ((Inhabitant)serviceOrInhabitant).get() : serviceOrInhabitant;
     }
     
@@ -808,13 +841,12 @@ public class Habitat implements Injector {
      * invocation and dependency extraction will be performed on this instance before
      * it is store in the relevant scope's resource manager.
      *
-     * @param name name of the component, could be default name
      * @param component component instance
      * @throws ComponentException if the passed object is not an HK2 component or
      * injection/extraction failed.
      */
     // TODO: mutating Habitat after it's created poses synchronization issue
-    public <T> void addComponent(String name, T component) throws ComponentException {
+    public <T> void addComponent(T component) throws ComponentException {
         add(new ExistingSingletonInhabitant<T>(component));
     }
 
@@ -977,7 +1009,7 @@ public class Habitat implements Injector {
                     throw new ComponentException("Failed to create "+type,e);
                 } catch (IllegalAccessException e) {
                     try {
-                      Constructor<T> ctor = type.getDeclaredConstructor(null);
+                      Constructor<? extends T> ctor = type.getDeclaredConstructor(null);
                       ctor.setAccessible(true);
                       return ctor.newInstance(null);
                     } catch (Exception e1) {
@@ -1011,7 +1043,7 @@ public class Habitat implements Injector {
     /**
      * Get the first inhabitant by contract
      * 
-     * @param fullyQualifiedClassName
+     * @param typeName fullyQualifiedClassName
      * @return
      */
     public Inhabitant<?> getInhabitantByContract(String typeName) {

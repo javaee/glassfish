@@ -39,8 +39,8 @@
  */
 package org.jvnet.hk2.component;
 
+import org.glassfish.hk2.ScopeInstance;
 import org.jvnet.hk2.annotations.Scoped;
-import com.sun.hk2.component.ScopeInstance;
 
 /**
  * Singleton scope.

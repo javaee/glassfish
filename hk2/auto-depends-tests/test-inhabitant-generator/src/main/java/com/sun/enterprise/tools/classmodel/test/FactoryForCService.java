@@ -49,7 +49,7 @@ import org.jvnet.hk2.component.Factory;
 public class FactoryForCService implements Factory {
 
   @Override
-  public Object getObject() throws ComponentException {
+  public Object get() throws ComponentException {
     return new CService();
   }
 

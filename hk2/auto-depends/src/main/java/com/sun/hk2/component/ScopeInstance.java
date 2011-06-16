@@ -39,6 +39,7 @@
  */
 package com.sun.hk2.component;
 
+import org.glassfish.hk2.ComponentProvider;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.PreDestroy;
 
@@ -57,7 +58,7 @@ import java.util.logging.Logger;
  * @see org.jvnet.hk2.component.Scope#current()
  */
 @SuppressWarnings("unchecked")
-public final class ScopeInstance implements PreDestroy {
+public final class ScopeInstance implements org.glassfish.hk2.ScopeInstance, PreDestroy {
     private static final Logger logger = Logger.getLogger(ScopeInstance.class.getName());
     
     /**
@@ -81,11 +82,11 @@ public final class ScopeInstance implements PreDestroy {
         return name;
     }
 
-    public <T> T get(Inhabitant<T> inhabitant) {
+    public <T> T get(ComponentProvider<T> inhabitant) {
         return (T) backend.get(inhabitant);
     }
 
-    public <T> T put(Inhabitant<T> inhabitant, T value) {
+    public <T> T put(ComponentProvider<T> inhabitant, T value) {
         return (T) backend.put(inhabitant,value);
     }
 

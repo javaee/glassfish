@@ -55,7 +55,7 @@ import java.security.PrivilegedAction;
 @SuppressWarnings("unchecked")
 public class ConstructorCreator<T> extends AbstractCreatorImpl<T> {
 
-    public ConstructorCreator(Class<T> type, Habitat habitat, MultiMap<String,String> metadata) {
+    public ConstructorCreator(Class<? extends T> type, Habitat habitat, MultiMap<String,String> metadata) {
         super(type, habitat, metadata);
     }
 
@@ -66,7 +66,7 @@ public class ConstructorCreator<T> extends AbstractCreatorImpl<T> {
             throw new ComponentException("Failed to create "+type,e);
         } catch (IllegalAccessException e) {
             try {
-              Constructor<T> ctor = type.getDeclaredConstructor(null);
+              Constructor<? extends T> ctor = type.getDeclaredConstructor(null);
               ctor.setAccessible(true);
               return ctor.newInstance(null);
             } catch (Exception e1) {

@@ -39,6 +39,9 @@
  */
 package com.sun.hk2.component;
 
+import org.glassfish.hk2.Descriptor;
+import org.glassfish.hk2.MultiMap;
+import org.jvnet.hk2.component.Scope;
 import org.jvnet.hk2.tracing.TracingThreadLocal;
 import org.jvnet.hk2.tracing.TracingUtilities;
 import org.jvnet.hk2.component.Habitat;
@@ -52,6 +55,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.logging.Level;
@@ -71,6 +75,42 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T> {
     private Collection<Inhabitant> companions;
 
 //    private Collection<Inhabitant<?>> managed;
+
+
+    @Override
+    public Descriptor getDescriptor() {
+        return new Descriptor() {
+            @Override
+            public String getName() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public Scope getScope() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public MultiMap<String, String> metadata() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public Collection<Class<? extends Annotation>> getAnnotations() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public Collection<String> getContracts() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public String getTypeName() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        };
+    }
 
     @Override
     public String toString() {

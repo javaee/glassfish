@@ -53,7 +53,7 @@ import org.jvnet.hk2.component.InjectionPoint;
 @Service
 @FactoryFor(value={Pig.class, Piglet.class})
 public class PigFactory implements ContextualFactory<Object> {
-    public Object getObject() {
+    public Object get() {
         // they are getting a Pig
         System.out.println("\treturning a : " + Pig.class);
         return Pig.BABE;
@@ -67,6 +67,6 @@ public class PigFactory implements ContextualFactory<Object> {
         return Piglet.ROO;
       }
       
-      return getObject();
+      return get();
     }
 }

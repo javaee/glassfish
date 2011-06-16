@@ -74,7 +74,7 @@ public class RunLevelInhabitantProvider extends AbstractInhabitantProvider {
         Iterator<InhabitantProviderInterceptor> remainingInterceptors,
         InhabitantStore store) {
     if (contains(indicies, RunLevel.class.getName())) {
-      assert(!i.isInstantiated()) : "inhabitant should not be active yet: " + i;
+      assert(!i.isActive()) : "inhabitant should not be active yet: " + i;
       
       // we need to avoid loading the class to avoid unnecessary classloading!
 //      RunLevel rl = i.getAnnotation(RunLevel.class);

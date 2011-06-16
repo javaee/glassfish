@@ -44,7 +44,6 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hk2.test.contracts.Simple;
 import org.jvnet.hk2.test.impl.OneSimple;
@@ -108,7 +107,7 @@ public class InhabitantTest {
     
     Inhabitant i = h.getInhabitantByContract(PostConstruct.class.getName(), "test");
     assertSame(li, i);
-    assertFalse(i.isInstantiated());
+    assertFalse(i.isActive());
   }
   
   List<Inhabitant<?>> createTestInhabitants() {

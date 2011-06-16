@@ -83,7 +83,7 @@ import com.sun.hk2.component.InjectionResolverQuery;
   }
 
   @Override
-  public boolean isInstantiated() {
+  public boolean isActive() {
     return false;
   }
 

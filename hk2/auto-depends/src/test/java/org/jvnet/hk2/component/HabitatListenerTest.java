@@ -87,13 +87,13 @@ public class HabitatListenerTest extends TestCase {
   
   private void runTestHabitatListenerStdCase(TestHabitat h) {
     TestHabitatListener hl = new TestHabitatListener();
-    h.addComponent("test", this);
+    h.addComponent(this);
     assertTrue("sanity check", hl.calls.isEmpty());
     
     h.addHabitatListener(hl);
     assertEquals("calls: " + hl.calls, 0, hl.calls.size());
     
-    h.addComponent("test", this);
+    h.addComponent(this);
     assertEquals("calls: " + hl.calls, 1, hl.calls.size());
     assertCall(h, hl.calls.get(0), EventType.INHABITANT_ADDED, this, null, null);
     hl.calls.clear();
@@ -119,7 +119,7 @@ public class HabitatListenerTest extends TestCase {
     hl.calls.clear();
 
     h.release();
-    assertEquals("calls: " + hl.calls, 10, hl.calls.size());
+    assertEquals("calls: " + hl.calls, 7, hl.calls.size());
   }
 
   /**
@@ -135,13 +135,13 @@ public class HabitatListenerTest extends TestCase {
     TestHabitatListener hl_all = new TestHabitatListener();
     TestHabitatListener hl_filtered = new TestHabitatListener();
     TestHabitatListener hl_none = new TestHabitatListener();
-    h.addComponent("test", this);
+    h.addComponent(this);
     assertTrue("sanity check", hl_filtered.calls.isEmpty());
     
     h.addHabitatListener(hl_all);
     h.addHabitatListener(hl_filtered, "index");
     h.addHabitatListener(hl_none, "dummy");
-    h.addComponent("test", this);
+    h.addComponent(this);
     assertEquals("calls", 0, hl_none.calls.size());
     assertEquals("calls", 0, hl_filtered.calls.size());
     assertEquals("calls", 3, hl_all.calls.size());
@@ -169,7 +169,7 @@ public class HabitatListenerTest extends TestCase {
     h.release();
     assertEquals("calls", 0, hl_none.calls.size());
     assertEquals("calls", 0, hl_filtered.calls.size());
-    assertEquals("calls: " + hl_all.calls, 13, hl_all.calls.size());
+    assertEquals("calls: " + hl_all.calls, 10, hl_all.calls.size());
   }
 
   public void testForcedListenerRemoval() throws Exception {
@@ -180,7 +180,7 @@ public class HabitatListenerTest extends TestCase {
   private void runTestForcedListenerRemoval(TestHabitat h) {
     TestHabitatListener hl = new TestHabitatListener();
     h.addHabitatListener(hl);
-    h.addComponent("test", this);
+    h.addComponent(this);
     assertEquals("calls", 1, hl.calls.size());
     assertCall(h, hl.calls.get(0), EventType.INHABITANT_ADDED, this, null, null);
     hl.calls.clear();
@@ -215,7 +215,7 @@ public class HabitatListenerTest extends TestCase {
     hl.calls.clear();
     
     // no more listener calls expected by now...
-    h.addComponent("test", this);
+    h.addComponent(this);
     assertEquals("calls (after removing listener): " + hl.calls, 0, hl.calls.size());
     
     entry = new TestA(new Object());
@@ -268,7 +268,7 @@ public class HabitatListenerTest extends TestCase {
       @Override
       public void run() {
         try {
-          h.addComponent("test1", hl1);
+          h.addComponent(hl1);
         } catch (Throwable t) {
           errors.add(t);
         }
@@ -279,7 +279,7 @@ public class HabitatListenerTest extends TestCase {
       @Override
       public void run() {
         try {
-          h.addComponent("test2", hl2);
+          h.addComponent(hl2);
         } catch (Throwable t) {
           errors.add(t);
         }
@@ -323,9 +323,9 @@ public class HabitatListenerTest extends TestCase {
   
   private void runTestWeakProxyListener(TestHabitat h) {
     h.addHabitatListener(new HabitatListenerWeakProxy(new TestHabitatListener()));
-    h.addComponent("test", this);
+    h.addComponent(this);
     System.gc();
-    h.addComponent("test2", this);
+    h.addComponent(this);
   }
 
   /**
@@ -345,7 +345,7 @@ public class HabitatListenerTest extends TestCase {
       h.addHabitatListener(hl);
       hl.calls.clear();
       
-      h.addComponent("test", this);
+      h.addComponent(this);
       assertEquals("calls", 1, hl.calls.size());
       hl.calls.clear();
   
@@ -371,7 +371,7 @@ public class HabitatListenerTest extends TestCase {
         coll.contains(hl));
 
     // stimulate a removal
-    h.addComponent("test", this);
+    h.addComponent(this);
     
     coll = h.getAllByType(HabitatListener.class);
     assertFalse("expected to have been removed: " + coll, coll.contains(hl));
