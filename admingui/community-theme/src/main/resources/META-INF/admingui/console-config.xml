@@ -73,6 +73,12 @@
                 priority="100"
                 content="branding/loginform.inc"
         />          
+        <integration-point 
+                id="customtheme" 
+                type="org.glassfish.admingui:shutdownform"
+                priority="100"
+                content="branding/shutdown.inc"
+        />          
         <integration-point
                 id="customtheme"
                 type="org.glassfish.admingui:versioninfo"
