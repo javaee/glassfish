@@ -45,7 +45,7 @@
     <parent>
         <groupId>org.glassfish.docs.man</groupId>
         <artifactId>manpages</artifactId>
-        <version>3.2-SNAPSHOT</version>
+        <version>3.2-b01</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>    
     <artifactId>admin-util-manpage</artifactId>
