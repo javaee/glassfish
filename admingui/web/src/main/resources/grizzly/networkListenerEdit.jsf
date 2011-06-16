@@ -84,6 +84,10 @@
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
 
+        setPageSessionAttribute(key="readOnly" value="#{false}" );
+        if ("(#{pageSession.Name}=admin-listener)") {
+            setPageSessionAttribute(key="readOnly" value="#{true}" );
+        }
 
         //If secure admin is enabled, we will not show the other tabs since GUI doesn't have support for handling low level grizzly config yet.
         setPageSessionAttribute(key="showSSLTab" value="#{true}");
@@ -144,7 +148,11 @@
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />
         </sun:property>
 
-        <sun:property id="security"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.security}"  >
+        <sun:property id="securityWithHelp"  rendered="#{readOnly}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.security}" helpText="$resource{i18n_web.common.secureAdminHelp}"  >
+            <sun:checkbox disabled="#{readOnly}" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap2['securityEnabled']}" selectedValue="true" />
+        </sun:property>
+
+        <sun:property id="security"  rendered="#{!readOnly}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.security}"  >
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap2['securityEnabled']}" selectedValue="true" />
         </sun:property>
         
