@@ -71,13 +71,14 @@ public class TokenAuthenticationTest extends RestTestBase {
         assertTrue(isSuccess(response));
 
         //Delete the token
-        response = client.resource(getAddress(URL_DOMAIN_SESSIONS) + "/" + token).cookie(new Cookie(GF_REST_TOKEN_COOKIE_NAME, token)).delete(ClientResponse.class); delete(URL_DOMAIN_SESSIONS);
+        response = client.resource(getAddress(URL_DOMAIN_SESSIONS) + "/" + token).cookie(new Cookie(GF_REST_TOKEN_COOKIE_NAME, token)).delete(ClientResponse.class);
+        delete(URL_DOMAIN_SESSIONS);
         assertTrue(isSuccess(response));
     }
 
     @Test
     public void testAuthRequired() {
-            Map<String, String> newUser = new HashMap<String, String>() {{
+        Map<String, String> newUser = new HashMap<String, String>() {{
             put("id", AUTH_USER_NAME);
             put("groups", TEST_GROUP);
             put("AS_ADMIN_USERPASSWORD", AUTH_PASSWORD);
