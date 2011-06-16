@@ -46,7 +46,7 @@
     <parent>
         <groupId>com.sun.enterprise</groupId>
         <artifactId>hk2-parent</artifactId>
-        <version>1.6.5-SNAPSHOT</version>
+        <version>1.6.5</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <groupId>com.sun.enterprise.auto-depends-test</groupId>
@@ -71,7 +71,7 @@
             <plugin>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
-                <version>1.6.5-SNAPSHOT</version>
+                <version>1.6.5</version>
                 <extensions>true</extensions>
                 <executions>
                     <!-- Run the code as a test -->
