@@ -404,7 +404,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
    * @return
    */
   protected boolean accept(AbstractInhabitantImpl<?> i, int activeRunLevel) {
-    if (i.isInstantiated()) {
+    if (i.isActive()) {
       return false;
     }
     
@@ -899,7 +899,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
         
           try {
             ia.activate(rli);
-  //        assert(rli.isInstantiated());
+  //        assert(rli.isActive());
             
             // an escape hatch if we've been interrupted in some way
             checkInterrupt(null, rli, null);
@@ -949,7 +949,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
             
             try{
               ia.deactivate(i);
-//              assert(!i.isInstantiated());  <- this might happen asynchronously
+//              assert(!i.isActive());  <- this might happen asynchronously
               checkInterrupt(null, i, null);
             } catch (Exception e) {
               checkInterrupt(e, i, null);

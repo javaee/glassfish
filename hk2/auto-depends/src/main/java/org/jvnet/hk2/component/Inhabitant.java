@@ -41,6 +41,7 @@ package org.jvnet.hk2.component;
 
 import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.ScopeInstance;
+import org.glassfish.hk2.ComponentProvider;
 import org.jvnet.hk2.annotations.Service;
 
 import java.util.Collection;
@@ -66,7 +67,7 @@ import java.util.Collection;
  * @author Kohsuke Kawaguchi
  * @see Inhabitants
  */
-public interface Inhabitant<T> extends Holder<T> {
+public interface Inhabitant<T> extends ComponentProvider<T> , com.sun.hk2.component.Holder<T> {
     /**
      * The short-cut for {@code type().getName()}
      * but this allows us to defer loading the actual types.
@@ -95,7 +96,7 @@ public interface Inhabitant<T> extends Holder<T> {
      * @return
      *      Always non-null, same value.
      */
-    Class<T> type();
+    Class<? extends T> type();
 
     /**
      * Returns the instance of this inhabitant.
@@ -199,14 +200,6 @@ public interface Inhabitant<T> extends Holder<T> {
      * is invoked.
      */
     void release();
-
-    /**
-     * Returns true if the underlying object has been instantiated.
-     *
-     * @return true if the instance of this imhabitant has been created, false
-     * otherwise
-     */
-    boolean isInstantiated();
 
 //
 // methods below here are more or less used for book-keeping purpose by Habitat,

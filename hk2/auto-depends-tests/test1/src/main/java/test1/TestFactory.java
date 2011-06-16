@@ -48,7 +48,7 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Service
 public class TestFactory implements Factory {
-    public FactoryTest getObject() throws ComponentException {
+    public FactoryTest get() throws ComponentException {
         return new FactoryTest(5);
     }
 }

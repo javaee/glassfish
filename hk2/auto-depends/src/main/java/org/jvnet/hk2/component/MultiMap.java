@@ -57,7 +57,7 @@ import java.io.Serializable;
  * @author Kohsuke Kawaguchi
  * @author Jerome Dochez
  */
-public class MultiMap<K,V> implements Serializable, Cloneable {
+public class MultiMap<K,V> implements org.glassfish.hk2.MultiMap<K, V>, Serializable, Cloneable {
     private final Map<K,List<V>> store;
     private final boolean concurrencyControls;
 

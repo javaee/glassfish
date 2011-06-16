@@ -103,26 +103,26 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
 
   @Override
   public void release() {
-    final boolean wasActive = isInstantiated();
+    final boolean wasActive = isActive();
     if (null != real) {
       real.release();
     }
-    if (wasActive && !isInstantiated()) {
+    if (wasActive && !isActive()) {
       notify(InhabitantListener.EventType.INHABITANT_RELEASED);
     }
   }
 
   @Override
-  public boolean isInstantiated() {
-    return (null != real && real.isInstantiated());
+  public boolean isActive() {
+    return (null != real && real.isActive());
   }
 
   @Override
-  public Class<T> type() {
+  public Class<? extends T> type() {
     if (null == real) throw new IllegalStateException();
-    final boolean wasActive = real.isInstantiated();
-    Class<T> t = real.type();
-    if (!wasActive && real.isInstantiated()) {
+    final boolean wasActive = real.isActive();
+    Class<? extends T> t = real.type();
+    if (!wasActive && real.isActive()) {
       notify(InhabitantListener.EventType.INHABITANT_ACTIVATED);
     }
     return t;
@@ -135,10 +135,10 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
       fetch();
     }
     
-    final boolean wasActive = real.isInstantiated();
+    final boolean wasActive = real.isActive();
     T result = real.get(onBehalfOf);
     Inhabitant<T> real = this.real;
-    if (!wasActive && null != real && real.isInstantiated()) {
+    if (!wasActive && null != real && real.isActive()) {
       notify(InhabitantListener.EventType.INHABITANT_ACTIVATED);
     }
     

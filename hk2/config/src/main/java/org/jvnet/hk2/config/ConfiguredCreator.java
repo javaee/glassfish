@@ -60,7 +60,7 @@ class ConfiguredCreator<T> extends AbstractInhabitantImpl<T> implements Creator<
         this.dom = dom;
     }
 
-    public boolean isInstantiated() {
+    public boolean isActive() {
         return true;
     }
 
@@ -68,7 +68,7 @@ class ConfiguredCreator<T> extends AbstractInhabitantImpl<T> implements Creator<
         return core.typeName();
     }
 
-    public Class<T> type() {
+    public Class<? extends T> type() {
         return core.type();
     }
 

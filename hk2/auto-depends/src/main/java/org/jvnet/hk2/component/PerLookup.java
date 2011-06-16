@@ -39,8 +39,8 @@
  */
 package org.jvnet.hk2.component;
 
-import org.jvnet.hk2.annotations.Scoped;
 import com.sun.hk2.component.ScopeInstance;
+import org.jvnet.hk2.annotations.Scoped;
 
 import java.util.HashMap;
 

@@ -35,7 +35,7 @@ public class ServiceByContextualFactory implements ContextualFactory<TestingInfo
   
   
   @Override
-  public TestingInfoService2 getObject() throws ComponentException {
+  public TestingInfoService2 get() throws ComponentException {
     assert returnNullNextTime : "see ExtendedInjectTest";
     return null;
   }

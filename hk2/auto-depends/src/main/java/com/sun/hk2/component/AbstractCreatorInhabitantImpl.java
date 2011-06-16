@@ -67,7 +67,7 @@ abstract class AbstractCreatorInhabitantImpl<T> extends AbstractInhabitantImpl<T
         return creator.typeName();
     }
 
-    public final Class<T> type() {
+    public final Class<? extends T> type() {
         return creator.type();
     }
 

@@ -38,6 +38,7 @@ package org.jvnet.hk2.component;
 
 import java.security.AccessControlContext;
 
+import org.glassfish.hk2.Provider;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -53,7 +54,7 @@ import org.jvnet.hk2.annotations.Contract;
  * @see InjectionPoint
  */
 @Contract
-public interface ContextualFactory<T> extends Factory<T> {
+public interface ContextualFactory<T> extends Provider<T> {
   /**
    * The system calls this method to obtain a reference to the component when
    * injection point context information is available.

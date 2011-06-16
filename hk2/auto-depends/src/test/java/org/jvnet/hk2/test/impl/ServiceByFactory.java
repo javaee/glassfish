@@ -33,7 +33,7 @@ public class ServiceByFactory implements Factory<TestingInfoService>, PostConstr
   
   
   @Override
-  public TestingInfoService getObject() throws ComponentException {
+  public TestingInfoService get() throws ComponentException {
     if (returnNullNextTime) {
       returnNullNextTime = false;
       return null;

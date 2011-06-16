@@ -43,6 +43,7 @@ import java.security.AccessControlContext;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.glassfish.hk2.Provider;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.ContextualFactory;
 import org.jvnet.hk2.component.Factory;
@@ -60,13 +61,13 @@ import org.jvnet.hk2.component.MultiMap;
 public class FactoryCreator<T> extends AbstractCreatorImpl<T> {
     private final static Logger logger = Logger.getLogger(FactoryCreator.class.getName());
     
-    private final Inhabitant<? extends Factory> factory;
+    private final Inhabitant<? extends Provider> factory;
 
-    public FactoryCreator(Class<T> type, Class<? extends Factory> factory, Habitat habitat, MultiMap<String,String> metadata) {
+    public FactoryCreator(Class<T> type, Class<? extends Provider> factory, Habitat habitat, MultiMap<String,String> metadata) {
         this(type,habitat.getInhabitantByType(factory),habitat,metadata);
     }
 
-    public FactoryCreator(Class<T> type, Inhabitant<? extends Factory> factory, Habitat habitat, MultiMap<String,String> metadata) {
+    public FactoryCreator(Class<T> type, Inhabitant<? extends Provider> factory, Habitat habitat, MultiMap<String,String> metadata) {
         super(type, habitat, metadata);
         assert factory!=null;
         assert habitat!=null;
@@ -75,7 +76,7 @@ public class FactoryCreator<T> extends AbstractCreatorImpl<T> {
 
     public T create(Inhabitant onBehalfOf) throws ComponentException {
         logger.log(Level.FINER, "factory {0} invoked", factory);
-        Factory f = factory.get();
+        Provider<T> f = factory.get();
         T t;
         
         AccessControlContext acc = Hk2ThreadContext.getCallerACC();
@@ -86,7 +87,7 @@ public class FactoryCreator<T> extends AbstractCreatorImpl<T> {
         if (ContextualFactory.class.isInstance(f) && (null != ip || null != acc)) {
           t = type.cast(ContextualFactory.class.cast(f).getObject(ip, acc));
         } else {
-          t = type.cast(f.getObject());
+          t = type.cast(f.get());
         }
         // potential security issue here if logged
 //        logger.log(Level.FINER, "factory created object {0}", t);

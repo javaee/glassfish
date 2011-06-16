@@ -56,5 +56,6 @@
     <modules>
 	    <module>asm-all</module>
 	    <module>bean-validator</module>
+	    <module>jsr330</module>
     </modules>
 </project>

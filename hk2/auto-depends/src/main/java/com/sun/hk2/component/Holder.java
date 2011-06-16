@@ -50,8 +50,7 @@ package com.sun.hk2.component;
  *
  * @author Kohsuke Kawaguchi
  */
-public interface Holder<T> {
-    T get();
+public interface Holder<T> extends org.glassfish.hk2.Holder<T> {
 
     /**
      * {@link Holder} implementation that doesn't do any deferred computation,

@@ -86,12 +86,12 @@ public class RunLevelInhabitant<T, V> extends EventPublishingInhabitant<T> {
   }
   
   @Override
-  public Class<T> type() {
-    boolean wasInstantiated = isInstantiated();
+  public Class<? extends T> type() {
+    boolean wasInstantiated = isActive();
     try {
       return super.type();
     } finally {
-      if (isInstantiated() != wasInstantiated) {
+      if (isActive() != wasInstantiated) {
         // if we were inadvertently activated, better perform a latent check
         verifyState();
       }
@@ -116,7 +116,7 @@ public class RunLevelInhabitant<T, V> extends EventPublishingInhabitant<T> {
       return;
     }
     
-    if (!isInstantiated()) {
+    if (!isActive()) {
       Integer planned = state.getPlannedRunLevel();
       planned = (null == planned) ? DefaultRunLevelService.KERNEL_RUNLEVEL : planned;
       Integer current = state.getCurrentRunLevel();

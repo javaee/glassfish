@@ -60,6 +60,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.2</version>
                 <executions>
                     <execution>
                         <id>unpack</id>
@@ -70,11 +71,6 @@
                         <configuration>
                             <outputDirectory>${basedir}/target/classes</outputDirectory>
                             <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.glassfish.hk2</groupId>
-                                    <artifactId>class-model</artifactId>
-                                    <version>${project.version}</version>
-                                </artifactItem>
                                 <artifactItem>
                                     <groupId>org.jvnet</groupId>
                                     <artifactId>tiger-types</artifactId>
@@ -123,6 +119,11 @@
             <version>1.4</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2.external</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>${project.version}</version>
+        </dependency>
    		<dependency>
         	<groupId>org.glassfish.hk2</groupId>
             <artifactId>class-model</artifactId>
@@ -141,6 +142,11 @@
             <artifactId>asm-all-repackaged</artifactId>
             <version>${project.version}</version>
          </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>hk2-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     <profiles>
         <profile>

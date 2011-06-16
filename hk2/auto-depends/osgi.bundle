@@ -42,16 +42,17 @@
                             org.jvnet.hk2.component; \
                             org.jvnet.hk2.tracing; \
                             org.jvnet.hk2.component.matcher; \
-                            org.jvnet.hk2.annotations; \
                             org.glassfish.hk2.classmodel.reflect; \
                             org.glassfish.hk2.classmodel.reflect.util; \
                             org.jvnet.tiger_types; \
                             com.sun.hk2.component; version=${project.osgi.version}
 
 Import-Package: \
+                        org.jvnet.hk2.annotations; \
+                        javax.inject; \
                         org.junit;resolution:=optional, \
                         org.junit.runner;resolution:=optional, \
                         org.junit.runner.notification;resolution:=optional, \
                         org.objectweb.asm;password=GlassFish;resolution:=optional, \
-                        org.objectweb.asm.commons;password=GlassFish;resolution:=optional,
+                        org.objectweb.asm.commons;password=GlassFish;resolution:=optional, \
                         *

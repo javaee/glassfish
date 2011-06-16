@@ -81,8 +81,8 @@ public class RecursiveInjectTest {
     Inhabitant<?> b = h.getInhabitant(TestingInfoService.class, "RecursiveB2A");
     assertNotNull(b);
 
-    assertFalse(a.isInstantiated());
-    assertFalse(b.isInstantiated());
+    assertFalse(a.isActive());
+    assertFalse(b.isActive());
 
     try {
       fail("Expected exception, but got: " + a.get());
@@ -91,8 +91,8 @@ public class RecursiveInjectTest {
       e.printStackTrace();
     }
     
-    assertFalse(a.isInstantiated());
-    assertFalse(b.isInstantiated());
+    assertFalse(a.isActive());
+    assertFalse(b.isActive());
   }
   
   /**
@@ -105,8 +105,8 @@ public class RecursiveInjectTest {
     Inhabitant<?> b = h.getInhabitant(TestingInfoService.class, "RecursiveB2A");
     assertNotNull(b);
 
-    assertFalse(a.isInstantiated());
-    assertFalse(b.isInstantiated());
+    assertFalse(a.isActive());
+    assertFalse(b.isActive());
 
     try {
       fail("Expected exception, but got: " + b.get());
@@ -115,8 +115,8 @@ public class RecursiveInjectTest {
       e.printStackTrace();
     }
     
-    assertFalse(a.isInstantiated());
-    assertFalse(b.isInstantiated());
+    assertFalse(a.isActive());
+    assertFalse(b.isActive());
   }
   
   /**
@@ -129,15 +129,15 @@ public class RecursiveInjectTest {
     Inhabitant<?> b = h.getInhabitant(TestingInfoService.class, "RecursiveB2OptA");
     assertNotNull(b);
 
-    assertFalse(a.isInstantiated());
-    assertFalse(b.isInstantiated());
+    assertFalse(a.isActive());
+    assertFalse(b.isActive());
 
     assertNotNull(a.get());
     assertNotNull("A->B should be present", ((RecursiveA2B2OptA)a.get()).getB());
     assertNull("A->B->A should be null", ((RecursiveB2OptA)((RecursiveA2B2OptA)a.get()).getB()).getA());
     
-    assertTrue(a.isInstantiated());
-    assertTrue(b.isInstantiated());
+    assertTrue(a.isActive());
+    assertTrue(b.isActive());
   }
   
   /**
@@ -150,14 +150,14 @@ public class RecursiveInjectTest {
     Inhabitant<?> b = h.getInhabitant(TestingInfoService.class, "RecursiveB2OptA");
     assertNotNull(b);
 
-    assertFalse(a.isInstantiated());
-    assertFalse(b.isInstantiated());
+    assertFalse(a.isActive());
+    assertFalse(b.isActive());
 
     assertNotNull(b.get());
     assertNull("B->A should be null", ((RecursiveB2OptA)b.get()).getA());
     
-    assertFalse(a.isInstantiated());
-    assertTrue(b.isInstantiated());
+    assertFalse(a.isActive());
+    assertTrue(b.isActive());
     
     // now, this is where it gets strange ... if we create new demand for A, A can now be created!
     assertNotNull(a.get());
@@ -167,8 +167,8 @@ public class RecursiveInjectTest {
     assertNotNull("A->B should be present", ((RecursiveA2B2OptA)a.get()).getB());
     assertNull("A->B->A should be null", ((RecursiveB2OptA)((RecursiveA2B2OptA)a.get()).getB()).getA());
 
-    assertTrue(a.isInstantiated());
-    assertTrue(b.isInstantiated());
+    assertTrue(a.isActive());
+    assertTrue(b.isActive());
   }
 
 

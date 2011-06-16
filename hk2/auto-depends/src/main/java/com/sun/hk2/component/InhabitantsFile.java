@@ -41,7 +41,6 @@ package com.sun.hk2.component;
 
 import org.jvnet.hk2.annotations.InhabitantAnnotation;
 import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.component.CageBuilder;
 
 /**
  * Inhabitants file.
@@ -102,20 +101,9 @@ public class InhabitantsFile {
 
     public static final String CLASS_KEY = "class";
     public static final String INDEX_KEY = "index";
-    /**
-     * Used as a metadata for inhabitants of {@link CompanionSeed},
-     * to indicate what is the actual companion class. 
-     */
-    public static final String COMPANION_CLASS_KEY = "companionClass";
-    /**
-     * Used to point to {@link CageBuilder} for this component.
-     */
-    public static final String CAGE_BUILDER_KEY = "cageBuilder";
-    /**
-     * Used as metadafa for inhabitants of {@link CompanionSeed} to capture
-     * metadata of the actual companioin class.
-     */
-    public static final String COMPANION_CLASS_METADATA_KEY = "companionClassMetadata";
+
+    public static final String QUALIFIER_KEY = "qualifier";
+
 
     /**
      * Used as metadata for indentifying the type on which a {@link InhabitantAnnotation}

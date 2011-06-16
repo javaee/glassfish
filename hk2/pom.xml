@@ -291,6 +291,7 @@
         <module>config-types</module>
         <module>consolidatedbundle-maven-plugin</module>
         <module>hk2-jsr330</module>
+        <module>hk2-api</module>
   </modules>
 
     <dependencies>

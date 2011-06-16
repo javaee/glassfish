@@ -172,9 +172,9 @@ public class RlsTest implements ModuleStartup {
   private static void mustBeActive(Collection<Inhabitant<?>> coll, boolean expectActive) {
     for (Inhabitant<?> i : coll) {
       if (expectActive) {
-        assertTrue("DefaultRunLevelService should have activated: " + i, i.isInstantiated());
+        assertTrue("DefaultRunLevelService should have activated: " + i, i.isActive());
       } else {
-        assertFalse("should not be active: " + i, i.isInstantiated());
+        assertFalse("should not be active: " + i, i.isActive());
       }
     }
   }

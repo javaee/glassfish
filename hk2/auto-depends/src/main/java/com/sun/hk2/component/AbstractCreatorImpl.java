@@ -55,11 +55,11 @@ import org.jvnet.hk2.tracing.TracingUtilities;
 public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator<T> {
     private final static Logger logger = Logger.getLogger(AbstractCreatorImpl.class.getName());
   
-    protected final Class<T> type;
+    protected final Class<? extends T> type;
     protected final Habitat habitat; 
     private final MultiMap<String,String> metadata;
 
-    public AbstractCreatorImpl(Class<T> type, Habitat habitat, MultiMap<String,String> metadata) {
+    public AbstractCreatorImpl(Class<? extends T> type, Habitat habitat, MultiMap<String,String> metadata) {
         this.type = type;
         this.habitat = habitat;
         this.metadata = metadata;
@@ -69,7 +69,7 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
         return type.getName();
     }
 
-    public final Class<T> type() {
+    public final Class<? extends T> type() {
         return type;
     }
 
@@ -88,7 +88,7 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
         }
     }
 
-    public boolean isInstantiated() {
+    public boolean isActive() {
         return true;
     }
 

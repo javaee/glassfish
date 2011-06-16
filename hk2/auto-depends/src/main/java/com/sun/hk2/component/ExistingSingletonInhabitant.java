@@ -93,7 +93,7 @@ public class ExistingSingletonInhabitant<T> extends AbstractInhabitantImpl<T> {
     }
 
     @Override
-    public boolean isInstantiated() {
+    public boolean isActive() {
         return true;
     }
 

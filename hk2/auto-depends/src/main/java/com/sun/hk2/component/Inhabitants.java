@@ -45,6 +45,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.glassfish.hk2.Scope;
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.ComponentException;
@@ -53,7 +54,6 @@ import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantProviderInterceptor;
 import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.component.Scope;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.Creator;
 import org.jvnet.hk2.component.Creators;

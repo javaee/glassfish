@@ -226,9 +226,6 @@ public class InhabitantsGeneratorTest {
   public void testReducedScopeHabitatFileGeneration() throws IOException {
     ArrayList<File> testDir = getTestClassPathEntries(false);
 
-    for (File f : testDir) {
-        System.out.println(f.getAbsolutePath());
-    }
     InhabitantsDescriptor descriptor = new InhabitantsDescriptor();
     descriptor.enableDateOutput(false);
 
@@ -486,7 +483,6 @@ public class InhabitantsGeneratorTest {
       ClassPath classpath = ClassPath.create(null, false);
       Set<String> cpSet = classpath.getEntries();
       for (String entry : cpSet) {
-          System.out.println("Raw " + entry);
           if (worldView) {
               entries.add(new File(entry));
           } else {

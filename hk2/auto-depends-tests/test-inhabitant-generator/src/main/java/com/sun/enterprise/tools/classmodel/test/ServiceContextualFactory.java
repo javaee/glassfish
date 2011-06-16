@@ -15,7 +15,7 @@ import com.sun.enterprise.tools.classmodel.test.SomeRandomClass.Inner;
 public class ServiceContextualFactory implements ContextualFactory<Object> {
 
   @Override
-  public Object getObject() throws ComponentException {
+  public Object get() throws ComponentException {
     // TODO Auto-generated method stub
     return null;
   }

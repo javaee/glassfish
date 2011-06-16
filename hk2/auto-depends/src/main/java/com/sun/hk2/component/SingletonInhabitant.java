@@ -83,7 +83,7 @@ public class SingletonInhabitant<T> extends AbstractCreatorInhabitantImpl<T> {
       }
   }
 
-  public boolean isInstantiated() {
+  public boolean isActive() {
       return object!=null;
   }
 }

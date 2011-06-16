@@ -41,9 +41,9 @@ package com.sun.enterprise.tools.apt;
 
 import com.sun.enterprise.tools.InhabitantsDescriptor;
 import com.sun.hk2.component.InhabitantsFile;
-import com.sun.hk2.component.CompanionSeed;
-import static com.sun.hk2.component.InhabitantsFile.COMPANION_CLASS_METADATA_KEY;
+
 import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
+import static com.sun.hk2.component.InhabitantsFile.QUALIFIER_KEY;
 import static com.sun.hk2.component.InhabitantsFile.TARGET_TYPE;
 import com.sun.mirror.apt.AnnotationProcessor;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
@@ -57,6 +57,7 @@ import com.sun.mirror.util.SimpleDeclarationVisitor;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.MultiMap;
 
+import javax.inject.Qualifier;
 import java.util.*;
 import java.lang.annotation.Annotation;
 
@@ -110,6 +111,11 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
          * gets accumulated here.
          */
         private final LinkedHashSet<String> indices = new LinkedHashSet<String>();
+
+        /**
+         * Qualifiers gets accumulated here
+         */
+        private final LinkedHashSet<String> qualifiers = new LinkedHashSet<String>();
 
         /**
          * {@link InterfaceType}s whose contracts are already checked.
@@ -379,6 +385,7 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
         public String getInhabitantDeclaration(AnnotationMirror a, ClassDeclaration d) {
             indices.clear();
             checkedInterfaces.clear();
+            qualifiers.clear();
 
             // check for Contract supertypes.
             List<String> names = getIndexValues(a);
@@ -426,26 +433,24 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                         }
                     }
                 }
+
+                // check for JSR330 Qualifier
+                Qualifier qualifier = atd.getAnnotation(Qualifier.class);
+                if (qualifier!=null) {
+                    qualifiers.add(atd.getQualifiedName());
+                }
             }
 
             StringBuilder buf = new StringBuilder();
             buf.append(InhabitantsFile.CLASS_KEY).append('=').append(getClassName(d));
-            for (String contract : indices)
+            for (String contract : indices) {
                 addMetadata(buf, INDEX_KEY, contract);
+            }
+            for (String qualifier : qualifiers) {
+                addMetadata(buf, QUALIFIER_KEY, qualifier);
+            }
 
             findInhabitantMetadata(d, buf);
-
-            // for seed, capture the metadata for the actual companion object
-            CompanionSeed seed = d.getAnnotation(CompanionSeed.class);
-            if(seed!=null) {
-                try {
-                    seed.companion();
-                } catch (MirroredTypeException e) {
-                    ClassDeclaration companion = ((ClassType) e.getTypeMirror()).getDeclaration();
-                    addMetadata(buf, COMPANION_CLASS_METADATA_KEY,
-                        quote(getInhabitantDeclaration(find(companion, CompanionOf.class),companion)));
-                }
-            }
 
             // TODO: should be deprecated and replaced with InhabitantMetadata
             String metadata = getStringValue(a,"metadata");

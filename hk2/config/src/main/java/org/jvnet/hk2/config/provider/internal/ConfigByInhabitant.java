@@ -65,7 +65,7 @@ import com.sun.hk2.component.InhabitantStore;
   }
   
   @Override
-  public boolean isInstantiated() {
+  public boolean isActive() {
     return (null != managedService);
   }
 

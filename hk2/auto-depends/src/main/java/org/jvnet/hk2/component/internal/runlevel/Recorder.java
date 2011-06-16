@@ -122,7 +122,7 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
   @Override
   public synchronized boolean inhabitantChanged(EventType eventType, Inhabitant<?> inhabitant) {
     if (EventType.INHABITANT_ACTIVATED == eventType) {
-      assert(inhabitant.isInstantiated());
+      assert(inhabitant.isActive());
       assert(AbstractInhabitantImpl.class.isInstance(inhabitant));
    
       RunLevel rl = ((AbstractInhabitantImpl<?>)inhabitant).getAnnotation(RunLevel.class);
