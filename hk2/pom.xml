@@ -288,7 +288,6 @@
         <module>dependency-verifier</module>
         <module>dependency-visualizer</module>
         <module>osgiversion-maven-plugin</module>
-        <module>osgi-main</module>
         <module>config-types</module>
         <module>consolidatedbundle-maven-plugin</module>
         <module>hk2-jsr330</module>
