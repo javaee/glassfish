@@ -174,11 +174,12 @@ public abstract class GlassFishRuntime {
         while (runtimeBuilders.hasNext()) {
             try {
                 RuntimeBuilder builder = runtimeBuilders.next();
+                // System.out.println("builder = " + builder);
                 if (builder.handles(bootstrapProperties)) {
                     return builder;
                 }
             } catch (ServiceConfigurationError sce) {
-                // Ignore the exception and move ahead to the next builder.
+                sce.printStackTrace();
             }
         }
         throw new GlassFishException("No runtime builder available for this configuration: " + bootstrapProperties.getProperties(), null);
