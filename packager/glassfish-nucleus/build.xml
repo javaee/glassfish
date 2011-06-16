@@ -46,26 +46,15 @@
 
    <target name="create.package">
 	  <property name="package.name" value="glassfish-nucleus"/> 
-
+          <property name="previous.package.name" value="glassfish-grizzly" />
         <condition property="isAIX">  
             <os name="AIX" />  
         </condition>  
         
-	<graphDef id="all-modules" tolerateBrokenPOMs="true">
-		<scope level="compile,runtime">
-			<subtract>
-				    <fullGraph/>
-                                     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-grizzly">	
-	                                 <scope level="compile,runtime"/>
-				     </subGraph>
-			     </subtract>
-			    
-		</scope>					 
-       </graphDef>
-
+       <antcall target="filter-module-artifacts"/>
        
-       <stage-module-jars graphid="all-modules" />
-       <stage-distribution-fragments graphid="all-modules" />
+       <stage-module-jars/>
+       <stage-distribution-fragments/>
  
        <!-- explicitly moving flashlight-agent.jar to lib/monitor -->
 
@@ -98,6 +87,7 @@
        </if>
 
        <antcall target="create-zip-artifact"/>		
+       <antcall target="create-list-artifact"/>
 
    </target>
 

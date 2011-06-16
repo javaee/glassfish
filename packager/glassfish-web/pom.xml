@@ -68,9 +68,30 @@
                     </tasks>
                 </configuration>               
              </plugin>
+             <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/artifacts</outputDirectory>
+                            <useSubDirectoryPerType>true</useSubDirectoryPerType>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>                            
+                            <includeScope>compile</includeScope>
+                            <includeScope>runtime</includeScope>
+                            <excludeArtifactIds>${packager.artifact.excludes}</excludeArtifactIds>
+                            <stripVersion>true</stripVersion>
+                        </configuration>
+                   </execution>                  
+               </executions>
+           </plugin>
         </plugins>
     </build>
-
 
     <dependencies>
         <!--
@@ -81,35 +102,6 @@
             <artifactId>webtier-all</artifactId>
 	    <version>${project.version}</version>
 	    <type>pom</type>
-        <exclusions>
-            <!--
-	        <exclusion>
-		    <groupId>javax.servlet</groupId>
-		    <artifactId>servlet-api</artifactId>
-	        </exclusion>
-	        <exclusion>
-		    <groupId>javax.servlet.jsp</groupId>
-		    <artifactId>jsp-api</artifactId>
-	        </exclusion>
-	        <exclusion>
-		    <groupId>javax.servlet.jsp.jstl</groupId>
-		    <artifactId>jstl-api</artifactId>
-		     -->
-            <!--
-                'jersey' exclusions added to workaround an issue integrating
-                Grizzly 19.19.  These are test dependencies defined in the 
-                Grizzy POMs, however, if they aren't excluded, a StackOverflowError
-                occurs in the antrun-extended plugin.
-            -->
-            <exclusion>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-client</artifactId>
-            </exclusion>
-            <exclusion>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-server</artifactId>
-            </exclusion>
-        </exclusions>
         </dependency>
         <dependency>
             <groupId>org.glassfish.fighterfish</groupId>
@@ -120,21 +112,6 @@
                  This is needed by osgi-web-container to function correctly -->
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.eventadmin</artifactId>
-            <exclusions>
-                <!-- This is needed otherwise core and compendium jars become part of distribution unnecessarily. -->
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.compendium</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>concurrent</groupId>
-                    <artifactId>concurrent</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
     	<dependency>
             <groupId>org.glassfish.admingui</groupId>
@@ -153,7 +130,9 @@
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-jsf</artifactId>
            <version>${project.version}</version>
-           <type>zip</type>
+           <classifier>artifacts</classifier>
+	   <type>properties</type>
+           <scope>provided</scope>
        </dependency>	
     </dependencies>
 

@@ -68,8 +68,31 @@
                     </tasks>
                 </configuration>               
              </plugin>
+             <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/artifacts</outputDirectory>
+                            <useSubDirectoryPerType>true</useSubDirectoryPerType>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>                            
+                            <includeScope>compile</includeScope>
+                            <includeScope>runtime</includeScope>
+                            <excludeArtifactIds>${packager.artifact.excludes}</excludeArtifactIds>
+                            <stripVersion>true</stripVersion>
+                        </configuration>
+                   </execution>                  
+               </executions>
+           </plugin>
         </plugins>
     </build>
+
 
     <dependencies>
         <!--
@@ -108,20 +131,6 @@
                 <exclusion>
                     <groupId>stax</groupId>
                     <artifactId>stax</artifactId>
-                </exclusion>
-                <!--
-                    'jersey' exclusions added to workaround an issue integrating
-                    Grizzly 19.19.  These are test dependencies defined in the
-                    Grizzy POMs, however, if they aren't excluded, a StackOverflowError
-                    occurs in the antrun-extended plugin.
-                -->
-                <exclusion>
-                    <groupId>com.sun.jersey</groupId>
-                    <artifactId>jersey-client</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun.jersey</groupId>
-                    <artifactId>jersey-server</artifactId>
                 </exclusion>
             </exclusions>
   	</dependency>  
@@ -194,7 +203,9 @@
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-grizzly</artifactId>
            <version>${project.version}</version>
-           <type>zip</type>
+           <classifier>artifacts</classifier>
+	   <type>properties</type>
+           <scope>provided</scope>
         </dependency>
     </dependencies>
 
