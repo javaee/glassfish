@@ -196,7 +196,7 @@ public class RestUtil {
         // invalidate the session and force the the user to log back in.
         if (restResponse.getResponseCode() == 401) {
             FacesContext fc = FacesContext.getCurrentInstance();
-            HttpSession session = (HttpSession)fc.getExternalContext().getSession(true);
+            HttpSession session = (HttpSession)fc.getExternalContext().getSession(false);
 
             HttpServletRequest request = (HttpServletRequest)fc.getExternalContext().getRequest();
             HttpServletResponse response = (HttpServletResponse)fc.getExternalContext().getResponse();
