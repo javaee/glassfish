@@ -44,7 +44,6 @@ import com.sun.enterprise.container.common.spi.JCDIService;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
-import com.sun.enterprise.web.ServerConfigLookup;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.InjectionInfo;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
@@ -74,8 +73,7 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.hk2.classmodel.reflect.AnnotationModel;
 import org.glassfish.hk2.classmodel.reflect.Type;
 import org.glassfish.hk2.classmodel.reflect.Types;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.web.WebModule;
+import com.sun.enterprise.web.Constants;
 import com.sun.faces.config.WebConfiguration;
 import org.apache.catalina.core.StandardContext;
 /**
@@ -91,7 +89,6 @@ public class GlassFishInjectionProvider extends DiscoverableInjectionProvider im
     private InjectionManager injectionManager;
     private InvocationManager invokeMgr;
     private JCDIService jcdiService;
-    private ServerConfigLookup serverConfigLookup;
 
     /**
      * <p>Constructs a new <code>GlassFishInjectionProvider</code> instance.</p>
@@ -105,7 +102,6 @@ public class GlassFishInjectionProvider extends DiscoverableInjectionProvider im
         invokeMgr = defaultHabitat.getByContract(InvocationManager.class);
         injectionManager = defaultHabitat.getByContract(InjectionManager.class);
         jcdiService = defaultHabitat.getByContract(JCDIService.class);
-        serverConfigLookup = defaultHabitat.getComponent(ServerConfigLookup.class);
         
     }
 
@@ -113,7 +109,7 @@ public class GlassFishInjectionProvider extends DiscoverableInjectionProvider im
     public Map<String, List<ScannedAnnotation>> getAnnotatedClassesInCurrentModule(ServletContext servletContext)
     throws InjectionProviderException {
 
-        DeploymentContext dc = serverConfigLookup.getDeploymentContext(servletContext);
+        DeploymentContext dc = (DeploymentContext)servletContext.getAttribute(Constants.DEPLOYMENT_CONTEXT_ATTRIBUTE);
         Types types = dc.getTransientAppMetaData(Types.class.getName(), Types.class);
         Collection<Type> allTypes = types.getAllTypes();
         Collection<AnnotationModel> annotations = null;
@@ -438,13 +434,12 @@ public class GlassFishInjectionProvider extends DiscoverableInjectionProvider im
         //2> Was deployed with --availabilityenabled --target <clustername>
         WebConfiguration config = WebConfiguration.getInstance(ctx);
         if (!config.isSet(WebConfiguration.BooleanWebContextInitParameter.EnableAgressiveSessionDirtying)) {
-            if (ctx instanceof org.apache.catalina.core.ApplicationContextFacade) {
-                org.apache.catalina.core.ApplicationContext applicationContext =
-                        ((org.apache.catalina.core.ApplicationContextFacade) ctx).getApplicationContext();
-                StandardContext stdContext = applicationContext.getStandardContext();
-                WebBundleDescriptor desc = ((WebModule) stdContext).getWebModuleConfig().getDescriptor();
-                boolean isDistributable = desc.isDistributable();
-                boolean enableHA = serverConfigLookup.calculateWebAvailabilityEnabledFromConfig((WebModule) stdContext);
+            Object isDistributableObj = ctx.getAttribute(Constants.IS_DISTRIBUTABLE_ATTRIBUTE);
+            Object enableHAObj = ctx.getAttribute(Constants.ENABLE_HA_ATTRIBUTE);
+            if (isDistributableObj instanceof Boolean
+                    && enableHAObj instanceof Boolean) {
+                boolean isDistributable = ((Boolean)isDistributableObj).booleanValue();
+                boolean enableHA = ((Boolean)enableHAObj).booleanValue();
 
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE,

@@ -71,7 +71,7 @@ import javax.servlet.descriptor.JspConfigDescriptor;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.SecurityPermission;
+//import java.security.SecurityPermission;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -111,8 +111,10 @@ public class ApplicationContext implements ServletContext {
     // ----------------------------------------------------- Class Variables
 
     // START PWC 1.2
+    /*
     private static final SecurityPermission GET_UNWRAPPED_CONTEXT_PERMISSION =
         new SecurityPermission("getUnwrappedContext");
+    */
     // END PWC 1.2
 
 
@@ -945,6 +947,7 @@ public class ApplicationContext implements ServletContext {
      *
      * @return The underlying StandardContext
      */
+    /*
     public StandardContext getUnwrappedContext() {
 
         SecurityManager sm = System.getSecurityManager();
@@ -954,6 +957,7 @@ public class ApplicationContext implements ServletContext {
 
         return this.context;        
     }
+    */
     // END PWC 1.2
 
 

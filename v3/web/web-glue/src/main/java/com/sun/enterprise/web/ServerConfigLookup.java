@@ -347,13 +347,6 @@ public class ServerConfigLookup {
         return asyncReplication;
     }
 
-    public DeploymentContext getDeploymentContext(ServletContext ctx) {
-        org.apache.catalina.core.ApplicationContext applicationContext =
-                ((org.apache.catalina.core.ApplicationContextFacade)ctx).getApplicationContext();
-        DeploymentContext dc = ((WebModule)applicationContext.getStandardContext()).getWebModuleConfig().getDeploymentContext();
-        return dc;
-    }
-
     public PersistenceType getPersistenceTypeFromConfig() {
         String persistenceTypeString = null;      
         PersistenceType persistenceType = null;
