@@ -45,7 +45,11 @@
 
 package org.glassfish.admingui.common.util;
 
-import java.util.Locale;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.security.auth.message.AuthException;
+import javax.servlet.RequestDispatcher;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -119,7 +123,7 @@ public class RestUtil {
     public static String resolveToken(String endpoint, String token) {
         String tokenStartMarker = "${", tokenEndMarker = "}";
 
-        if (!token.trim().startsWith(tokenStartMarker)) 
+        if (!token.trim().startsWith(tokenStartMarker))
             return token;
         int start = token.indexOf(tokenStartMarker);
         if (start < 0)
@@ -167,27 +171,49 @@ public class RestUtil {
 
         Logger logger = GuiUtil.getLogger();
         if (logger.isLoggable(Level.FINEST)) {
-            logger.log(Level.FINEST, 
+            logger.log(Level.FINEST,
                     GuiUtil.getCommonMessage("LOG_REST_REQUEST_INFO", new Object[]{endpoint, (useData && "post".equals(method))? data: attrs, method}));
         }
 
         // Execute the request...
-        RestResponse response = null;
+        RestResponse restResponse = null;
         if ("post".equals(method)) {
             if (useData) {
-                response = post(endpoint, data, (String) handlerCtx.getInputValue("contentType"));
+                restResponse = post(endpoint, data, (String) handlerCtx.getInputValue("contentType"));
             } else {
-                response = post(endpoint, attrs);
+                restResponse = post(endpoint, attrs);
             }
         } else if ("put".equals(method)) {
-            response = put(endpoint, attrs);
+            restResponse = put(endpoint, attrs);
         } else if ("get".equals(method)) {
-            response = get(endpoint, attrs);
+            restResponse = get(endpoint, attrs);
         } else if ("delete".equals(method)) {
-            response = delete(endpoint, attrs);
+            restResponse = delete(endpoint, attrs);
         }
 
-        return parseResponse(response, handlerCtx, endpoint, (useData && "post".equals(method))? data: attrs, quiet, throwException);
+        // If the REST request returns a 401 (authz required), the REST "session"
+        // has likely expired.  If the requested console URL is NOT the login page,
+        // invalidate the session and force the the user to log back in.
+        if (restResponse.getResponseCode() == 401) {
+            FacesContext fc = FacesContext.getCurrentInstance();
+            HttpSession session = (HttpSession)fc.getExternalContext().getSession(true);
+
+            HttpServletRequest request = (HttpServletRequest)fc.getExternalContext().getRequest();
+            HttpServletResponse response = (HttpServletResponse)fc.getExternalContext().getResponse();
+            if (!"/login.jsf".equals(request.getServletPath())) {
+                try {
+                    response.sendRedirect("/");
+
+                    fc.responseComplete();
+                    initialize(null);
+                    session.invalidate();
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+
+        return parseResponse(restResponse, handlerCtx, endpoint, (useData && "post".equals(method))? data: attrs, quiet, throwException);
     }
 
     public static Map<String, String> buildDefaultValueMap(String endpoint) throws ParserConfigurationException, SAXException, IOException {
@@ -371,7 +397,7 @@ public class RestUtil {
         }
         return false;
     }
-    
+
     /**
      * This method will encode append segment to base, encoding it so that a correct URL is returned.
      * @param base
@@ -381,7 +407,7 @@ public class RestUtil {
     public static String appendEncodedSegment(String base, String segment) {
         String encodedUrl = JERSEY_CLIENT.resource(base).getUriBuilder().segment(segment).build().toASCIIString();
             //segment(elementName)
-        
+
         return encodedUrl;
     }
 
@@ -534,7 +560,7 @@ public class RestUtil {
 
         return children;
     }
-    
+
     /**
      * Given the parent URL and the desired childType, this method will build a List of Maps that
      * contains each child entities values.  In addition to the entity values, each row will
@@ -662,8 +688,11 @@ public class RestUtil {
     public static RestResponse get(String address) {
         return get(address, new HashMap<String, Object>());
     }
-    
+
     public static RestResponse get(String address, Map<String, Object> payload) {
+        if (address.startsWith("/")) {
+            address = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("REST_URL") + address;
+        }
         WebResource webResource = JERSEY_CLIENT.resource(address).queryParams(buildMultivalueMap(payload));
         ClientResponse resp = webResource
                 .cookie(new Cookie(REST_TOKEN_COOKIE, getRestToken()))
@@ -758,7 +787,7 @@ public class RestUtil {
         final HostnameVerifier defaultVerifier = javax.net.ssl.HttpsURLConnection.getDefaultHostnameVerifier();
         public BasicHostnameVerifier(){
         }
-        
+
         public boolean verify(String host, SSLSession sslSession) {
             if (host.equals("localhost")){
                 return true;
