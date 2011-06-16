@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -119,4 +119,11 @@ public final class Constants {
 
     // habitat attribute in ServletContext
     public static final String HABITAT_ATTRIBUTE = "org.glassfish.servlet.habitat";
+
+    // WebModule attributes in ServletContext
+    // available only during ServletContextListener.contextInitialized
+    public static final String DEPLOYMENT_CONTEXT_ATTRIBUTE =
+        "com.sun.enterprise.web.WebModule.DeploymentContext";
+    public static final String IS_DISTRIBUTABLE_ATTRIBUTE = "com.sun.enterprise.web.WebModule.isDistributable";
+    public static final String ENABLE_HA_ATTRIBUTE = "com.sun.enterprise.web.WebModule.enableHA";
 }

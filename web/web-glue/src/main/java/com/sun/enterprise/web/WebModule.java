@@ -528,7 +528,28 @@ public class WebModule extends PwcWebModule {
 
     @Override
     protected void contextListenerStart() {
-        super.contextListenerStart();
+        ServletContext servletContext = getServletContext();
+        try {
+            // for jsf injection
+            servletContext.setAttribute(
+                    Constants.DEPLOYMENT_CONTEXT_ATTRIBUTE,
+                    getWebModuleConfig().getDeploymentContext());
+            servletContext.setAttribute(
+                    Constants.IS_DISTRIBUTABLE_ATTRIBUTE,
+                    Boolean.valueOf(getWebBundleDescriptor().isDistributable()));
+            servletContext.setAttribute(
+                    Constants.ENABLE_HA_ATTRIBUTE,
+                    Boolean.valueOf(
+                        webContainer.getServerConfigLookup().calculateWebAvailabilityEnabledFromConfig(this)));
+            super.contextListenerStart();
+        } finally {
+            servletContext.removeAttribute(
+                    Constants.DEPLOYMENT_CONTEXT_ATTRIBUTE);
+            servletContext.removeAttribute(
+                    Constants.IS_DISTRIBUTABLE_ATTRIBUTE);
+            servletContext.removeAttribute(
+                    Constants.ENABLE_HA_ATTRIBUTE);
+        }
         for (ServletRegistrationImpl srImpl : servletRegisMap.values()) {
             if (srImpl instanceof DynamicWebServletRegistrationImpl) {
                 DynamicWebServletRegistrationImpl dwsrImpl =
