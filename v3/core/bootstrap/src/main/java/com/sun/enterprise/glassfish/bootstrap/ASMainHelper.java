@@ -395,7 +395,7 @@ public class ASMainHelper {
         return ctx;
     }
 
-    static void buildStartupContext(Properties ctx) {
+    public static void buildStartupContext(Properties ctx) {
         if (ctx.getProperty(StartupContext.TIME_ZERO_NAME) == null) {
             ctx.setProperty(StartupContext.TIME_ZERO_NAME, (new Long(System.currentTimeMillis())).toString());
         } else {

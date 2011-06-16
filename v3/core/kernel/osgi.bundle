@@ -38,8 +38,6 @@
 # holder.
 #
 
-Bundle-Activator: org.glassfish.kernel.GlassFishActivator
-
 -exportcontents: \
                         com.sun.enterprise.v3.admin; \
                         com.sun.enterprise.v3.admin.adapter; \

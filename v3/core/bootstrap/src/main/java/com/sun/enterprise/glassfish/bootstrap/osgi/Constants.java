@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,33 +38,35 @@
  * holder.
  */
 
-package com.sun.enterprise.glassfish.bootstrap;
+
+package com.sun.enterprise.glassfish.bootstrap.osgi;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public final class Constants {
-    public final static String PLATFORM_PROPERTY_KEY = "GlassFish_Platform";
-    // bundle containing module startup
-    public final static String GF_KERNEL = "org.glassfish.core.kernel";
-    public static final String ARGS_PROP = "com.sun.enterprise.glassfish.bootstrap.args";
-    public final static String DEFAULT_DOMAINS_DIR_PROPNAME = "AS_DEF_DOMAINS_PATH";
-    public static final String ORIGINAL_CP     = "-startup-classpath";
-    public static final String ORIGINAL_CN     = "-startup-classname";
-    public static final String ORIGINAL_ARGS   = "-startup-args";
-    public static final String ARG_SEP         = ",,,";
-
-    public final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
-    public static final String INSTALL_ROOT_PROP_NAME = "com.sun.aas.installRoot";
-    public static final String INSTALL_ROOT_URI_PROP_NAME = "com.sun.aas.installRootURI";
-    public static final String INSTANCE_ROOT_URI_PROP_NAME = "com.sun.aas.instanceRootURI";
-    public static final String HK2_CACHE_DIR = "com.sun.enterprise.hk2.cacheDir";
-    public static final String INHABITANTS_CACHE = "inhabitants";
-    public static final String BUILDER_NAME_PROPERTY = "GlassFish.BUILDER_NAME";
-
-    private Constants(){}
-
-
-    // Supported platform we know about, not limited to.
-    public enum Platform {Felix, Knopflerfish, Equinox, Static}
+public class Constants {
+    static final String BUNDLEIDS_FILENAME = "glassfish.bundleids";
+    static final String PROVISIONING_OPTIONS_FILENAME = "provisioning.properties";
+    /**
+     * The property name for the auto processor's auto-install property.
+     */
+    static final String AUTO_INSTALL_PROP = "glassfish.osgi.auto.install";
+    /**
+     * The property name for the auto processor's auto-start property.
+     */
+    static final String AUTO_START_PROP = "glassfish.osgi.auto.start";
+    /**
+     * The property name for auto processor's auto-start options property
+     * The value of this property is the integer argument to Bundle.start()
+     */
+    static final String AUTO_START_OPTIONS_PROP = "glassfish.osgi.auto.start.options";
+    /**
+     * Prefix for the property name to specify bundle's start level
+     */
+    static final String AUTO_START_LEVEL_PROP = "glassfish.osgi.auto.start.level";
+    /**
+     * The property name for final start level of framework
+     */
+    static final String FINAL_START_LEVEL_PROP = "glassfish.osgi.start.level.final";
+    static final int INITIAL_START_LEVEL = 1;
 }
