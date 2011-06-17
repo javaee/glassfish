@@ -46,12 +46,14 @@
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.lifecycleModule.newPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.security.secureAdmin}" >
 <!define name="content">
     <event>
     <!beforeCreate
         setPageSessionAttribute(key="parentPage" value="/common/appServer/serverInstGeneralPe.jsf");
         createMap(result="#{pageSession.valueMap}");
+        mapPut(map="#{pageSession.valueMap}"  key="adminalias" value="s1as");
+        mapPut(map="#{pageSession.valueMap}"  key="instancealias" value="glassfish-instance");
         setPageSessionAttribute(key="disableSecurityAdmin" value="#{false}");
         setPageSessionAttribute(key="enableSecurityAdmin" value="#{false}");
         if ("#{sessionScope.secureAdminEnabled}"){
@@ -75,7 +77,11 @@
                           { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
                             else {return false;} " >
                         <!command
-                            gf.restRequest(endpoint="#{sessionScope.REST_URL}/enable-secure-admin?adminalias=#{pageSession.valueMap['adminalias']}&instancealias=#{pageSession.valueMap['instancealias']}", method="POST");
+                            gf.restRequest(endpoint="#{sessionScope.REST_URL}/enable-secure-admin", attrs="#{pageSession.valueMap}", method="POST", result="#{pageSession.resultMap}", throwException="false");
+                            if ("#{pageSession.resultMap.data.exit_code}=FAILURE") {
+                                prepareAlertMsg(summary="$resource{i18nc.security.secureAdminEnableFailure}", type="error");
+                                gf.redirect("#{facesContext.externalContext.requestContextPath}/common/appServer/securityAdmin.jsf?&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                            }
                             gf.redirect("#{facesContext.externalContext.requestContextPath}/common/appServer/restart-2.jsf");
                         />
                     </sun:button>
