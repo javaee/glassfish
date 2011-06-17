@@ -49,10 +49,10 @@
         <version>3.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>core</artifactId>
-    <name>Glassfish Core Distribution</name>
+    <artifactId>nucleus</artifactId>
+    <name>Glassfish Nucleus Distribution</name>
     <packaging>distribution-base-zip</packaging>
-    <description>This pom describes how to assemble the GlassFish Core Distribution</description>
+    <description>This pom describes how to assemble the GlassFish Nucleus Distribution</description>
 
     <developers>
         <developer>

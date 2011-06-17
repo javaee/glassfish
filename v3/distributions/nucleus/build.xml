@@ -41,9 +41,9 @@
 
 -->
 
-<project name="glassfish core distribution creation" default="create.distribution" basedir=".">
+<project name="glassfish Nucleus distribution creation" default="create.distribution" basedir=".">
     <import file="../distributions.xml"/>
-    <property name="source.distribution.name" value="GlassFish Open Source Edition 3.2 Core"/>
+    <property name="source.distribution.name" value="GlassFish Open Source Edition 3.2 Nucleus"/>
     <target name="create.distribution">
         <echo message="Creating distribution: core"/>
         <unzip dest="target/stage">
@@ -58,7 +58,7 @@
 	<chmod file="target/stage/${install.dir.name}/glassfish/bin/*" perm="ugo+rx"/>
 
         <!-- create distribution zip-->
-       	<zip file="target/core.zip" duplicate="preserve">
+       	<zip file="target/nucleus.zip" duplicate="preserve">
             <zipfileset dir="target/stage" filemode="755"
 		    includes="${install.dir.name}/bin/*"
 		    excludes="${install.dir.name}/bin/*.bat" />
@@ -76,6 +76,6 @@
             </zipfileset>
         </zip> 
         <!-- deploy distribution artifact to maven repository" -->
-        <attachArtifact file="target/core.zip"/>
+        <attachArtifact file="target/nucleus.zip"/>
    </target>
 </project>

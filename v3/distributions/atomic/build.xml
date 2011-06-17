@@ -41,9 +41,9 @@
 
 -->
 
-<project name="glassfish nucleus distribution creation" default="create.distribution" basedir=".">
+<project name="glassfish atomic distribution creation" default="create.distribution" basedir=".">
     <import file="../distributions.xml"/>
-    <property name="source.distribution.name" value="GlassFish Open Source Edition 3.2 Nucleus"/>
+    <property name="source.distribution.name" value="GlassFish Open Source Edition 3.2 Atomic distribution"/>
     <target name="init">
         <condition property="windows">
             <os family="windows" />
@@ -54,7 +54,7 @@
     </target>
 
     <target name="create.distribution">
-        <echo message="Creating distribution: nucleus"/>
+        <echo message="Creating distribution: atomic"/>
         <unzip dest="target/stage">
             <fileset dir="target/stage">
                 <include name="*.zip"/>
@@ -77,7 +77,7 @@
         <antcall target="create-domain"/>
 
 
-        <!-- delete modules required to create default domain; these are not bundled as part of nucleus --> 
+        <!-- delete modules required to create default domain; these are not bundled as part of atomic --> 
         <ant antfile="../distributions.xml" target="delete-domain-creation-artifacts">
             <property name="modules.dir" value="${basedir}/target/stage/${install.dir.name}/glassfish/modules"/>
         </ant>
@@ -118,7 +118,7 @@
 
         <!-- create distribution zip -->
 
-	<zip file="target/nucleus.zip" duplicate="preserve">
+	<zip file="target/atomic.zip" duplicate="preserve">
             <zipfileset dir="target/stage" filemode="755"
 		    includes="${install.dir.name}/bin/*"
 		    excludes="${install.dir.name}/bin/*.bat" />
@@ -137,7 +137,7 @@
         </zip>
 
         <!-- Deploy distribution artifact to maven repository" -->
-        <attachArtifact file="target/nucleus.zip"/>
+        <attachArtifact file="target/atomic.zip"/>
    </target>
 
    <target name="create-domain" depends="create-domain-on-windows, create-domain-on-unix"/>

@@ -44,10 +44,7 @@ import org.glassfish.api.ExecutionContext;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
-import org.glassfish.hk2.classmodel.reflect.Types;
-
 import java.io.File;
-import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.util.Properties;
 import java.util.Collection;

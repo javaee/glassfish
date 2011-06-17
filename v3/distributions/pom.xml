@@ -82,7 +82,7 @@
 
     <modules>
 	<module>atomic</module>
-	<module>core</module>
+	<module>nucleus</module>
 	<module>web</module>
 	<module>glassfish</module>
 <!-- disable appclient distribution build since we're not using it yet -->
