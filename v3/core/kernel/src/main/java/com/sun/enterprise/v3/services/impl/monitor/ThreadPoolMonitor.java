@@ -64,17 +64,15 @@ public class ThreadPoolMonitor implements ThreadPoolProbe {
                     grizzlyMonitoring.getThreadPoolStatsProvider(monitoringId);
             if (threadPoolStatsProvider != null) {
                 threadPoolStatsProvider.setStatsObject(config);
+                threadPoolStatsProvider.reset();
             }
-
-            threadPoolStatsProvider.reset();
 
             final ConnectionQueueStatsProvider connectionQueueStatsProvider =
                     grizzlyMonitoring.getConnectionQueueStatsProvider(monitoringId);
             if (connectionQueueStatsProvider != null) {
                 connectionQueueStatsProvider.setStatsObject(config);
+                connectionQueueStatsProvider.reset();
             }
-
-            connectionQueueStatsProvider.reset();
         }
     }
 
