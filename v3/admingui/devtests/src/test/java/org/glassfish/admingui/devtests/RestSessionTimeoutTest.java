@@ -95,6 +95,8 @@ public class RestSessionTimeoutTest extends BaseSeleniumTestClass {
             // Click the home button. We should see the login screen. We do a manual loop
             // here rather than the base class methods as they assume Ajax navigation.
             open("/");
+            waitForLoginPageLoad(30);
+            /*
             for (int seconds = 0;; seconds++) {
                 if (seconds >= (30)) {
                     fail("The operation timed out waiting for the page to load.");
@@ -112,6 +114,7 @@ public class RestSessionTimeoutTest extends BaseSeleniumTestClass {
 
                 sleep(TIMEOUT_CALLBACK_LOOP);
             }
+             */
         } finally {
             // Authenticate so the REST call succeeds
             authenticate();

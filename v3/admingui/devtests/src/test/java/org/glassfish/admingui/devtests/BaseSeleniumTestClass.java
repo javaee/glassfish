@@ -72,7 +72,7 @@ public class BaseSeleniumTestClass {
     protected static final int TIMEOUT = 120;
     protected static final int BUTTON_TIMEOUT = 750;
     protected static final Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
-    
+
     protected static SeleniumWrapper selenium;
     protected static WebDriver driver;
     private static String currentTestClass = "";
@@ -103,7 +103,7 @@ public class BaseSeleniumTestClass {
     }};
     private static final SeleniumHelper helper = SeleniumHelper.getInstance();
     private ElementFinder elementFinder;
-    
+
     public BaseSeleniumTestClass() {
         driver = helper.getDriver();
         selenium = helper.getSeleniumInstance();
@@ -118,19 +118,23 @@ public class BaseSeleniumTestClass {
     @BeforeClass
     public static void setUp() throws Exception {
         if (!DEBUG) {
-            URL rotateLogUrl = new URL(helper.getBaseUrl() + "/management/domain/rotate-log");
-            URLConnection conn = rotateLogUrl.openConnection();
-            conn.setDoOutput(true);
-            OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-            wr.write("");
-            wr.flush();
-            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line = rd.readLine();
-            while (line  != null) {
-                line = rd.readLine();
+            try {
+                URL rotateLogUrl = new URL(helper.getBaseUrl() + "/management/domain/rotate-log");
+                URLConnection conn = rotateLogUrl.openConnection();
+                conn.setDoOutput(true);
+                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+                wr.write("");
+                wr.flush();
+                BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                String line = rd.readLine();
+                while (line != null) {
+                    line = rd.readLine();
+                }
+                wr.close();
+                rd.close();
+            } catch (IOException ioe) {
+
             }
-            wr.close();
-            rd.close();
         }
     }
 
@@ -154,6 +158,8 @@ public class BaseSeleniumTestClass {
             }
         } catch (FileNotFoundException fnfe) {
             //
+        } catch (IOException ioe) {
+            //
         } catch (Exception ex) {
             Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.INFO, null, ex);
         }
@@ -165,22 +171,22 @@ public class BaseSeleniumTestClass {
         currentTestClass = this.getClass().getName();
         openAndWait("/", TRIGGER_COMMON_TASKS);
     }
-    
+
     @After
     public void afterTest() {
         if (Boolean.parseBoolean(SeleniumHelper.getParameter("releaseAfter", "false"))) {
 //            helper.releaseSeleniumInstance();
         }
     }
-    
+
     // *************************************************************************
-    // Wrappers for Selenium API                                              
+    // Wrappers for Selenium API
     // *************************************************************************
     /**
      * Returns the current value for the specified field
      * @see DefaultSelenium.getValue(String)
      * @param elem
-     * @return 
+     * @return
      */
     public String getFieldValue(String elem) {
         return selenium.getValue(elem);
@@ -188,26 +194,26 @@ public class BaseSeleniumTestClass {
     /**
      * Types the specified text into the requested element
      * @param elem
-     * @param text 
+     * @param text
      */
     public void setFieldValue(String elem, String text) {
         selenium.type(elem, text);
     }
-    
+
     /**
      * Gets the text of an element.
      * @see DefaultSelenium.getText(String)
      * @param elem
-     * @return 
+     * @return
      */
     public String getText(String elem) {
         return selenium.getText(elem);
     }
-    
+
     /**
      * Deelects (unchecks) the specified checkbox.  After calling this method, the
      * checkbox will be unchecked regardless of its initial state.
-     * @param cb 
+     * @param cb
      */
     public void markCheckbox(String cb) {
         selenium.check(cb);
@@ -216,29 +222,29 @@ public class BaseSeleniumTestClass {
     /**
      * Selects (checks) the specified checkbox.  After calling this method, the
      * checkbox will be checked regardless of its initial state.
-     * @param cb 
+     * @param cb
      */
     public void clearCheckbox(String cb) {
         selenium.uncheck(cb);
     }
-    
+
     public void pressButton(String button) {
         selenium.click(button);
     }
-    
+
     /**
      * Return the selected value of the specified select element
      * @param elem
-     * @return 
+     * @return
      */
     public String getSelectedValue(String elem) {
         return selenium.getSelectedValue(elem);
     }
-    
+
     /**
      * Returns true is the specified element is present on the page
      * @param elem
-     * @return 
+     * @return
      */
     public boolean isElementPresent(String elem) {
         return selenium.isElementPresent(elem);
@@ -247,7 +253,7 @@ public class BaseSeleniumTestClass {
     /**
      * Select the option requested in the given select element
      * @param id
-     * @param label 
+     * @param label
      */
     protected void selectDropdownOption(String id, String label) {
         try {
@@ -261,11 +267,11 @@ public class BaseSeleniumTestClass {
             throw se;
         }
     }
-    
+
     /**
      * Add a selection to the given select element
      * @param elem
-     * @param label 
+     * @param label
      */
     protected void addSelectSelection(String elem, String label) {
         try {
@@ -279,36 +285,36 @@ public class BaseSeleniumTestClass {
             throw se;
         }
     }
-    
+
     /**
      * Returns true if the specified checkbox is selected
      * @param elem
-     * @return 
+     * @return
      */
     protected boolean isChecked(String elem) {
         return selenium.isChecked(elem);
     }
-    
+
     protected void selectFile(String uploadElement, String archivePath) {
         selenium.attachFile(uploadElement, archivePath);
     }
-    
+
     protected boolean isAlertPresent() {
         return selenium.isAlertPresent();
     }
-    
+
     protected boolean isConfirmationPresent() {
         return selenium.isConfirmationPresent();
     }
-    
+
     protected String getAlertText() {
         return selenium.getAlert();
     }
-    
+
     protected void chooseOkOnNextConfirmation() {
         selenium.chooseOkOnNextConfirmation();
     }
-    
+
     protected String getConfirmation() {
         String confirmation = null;
         if (isConfirmationPresent()) {
@@ -316,25 +322,25 @@ public class BaseSeleniumTestClass {
         }
         return confirmation;
     }
-    
+
     protected void waitForPopUp(String windowId, String timeout) {
         selenium.waitForPopUp(windowId, timeout);
     }
-    
+
     protected String getSelectedLabel(String elem) {
         return selenium.getSelectedLabel(elem);
     }
-    
+
     protected void open(String url) {
         selenium.open(url);
     }
-    
+
     protected void submitForm(String formId) {
         selenium.submit(formId);
     }
 
     // *************************************************************************
-    // Wrappers for Selenium API                                              
+    // Wrappers for Selenium API
     // *************************************************************************
 
     protected String generateRandomString() {
@@ -392,7 +398,7 @@ public class BaseSeleniumTestClass {
         pressButton(id);
         waitForPageLoad(triggerText, seconds);
     }
-    
+
     protected void clickAndWait(String id, WaitForLoadCallBack callback) {
         insureElementIsVisible(id);
         pressButton(id);
@@ -407,10 +413,10 @@ public class BaseSeleniumTestClass {
                 if (isElementPresent(elementId)) {
                     return true;
                 }
-                
+
                 return false;
             }
-            
+
         });
     }
 
@@ -442,9 +448,9 @@ public class BaseSeleniumTestClass {
     }
 
     protected void waitForPageLoad(final String triggerText, final int timeout, final boolean textShouldBeMissing) {
-        waitForLoad(timeout, new PageLoadCallBack(triggerText, textShouldBeMissing));        
+        waitForLoad(timeout, new PageLoadCallBack(triggerText, textShouldBeMissing));
     }
-    
+
     protected void waitForLoad(int timeoutInSeconds, WaitForLoadCallBack callback) {
         for (int seconds = 0;; seconds++) {
             if (seconds >= (timeoutInSeconds)) {
@@ -453,12 +459,12 @@ public class BaseSeleniumTestClass {
 
             RenderedWebElement ajaxPanel = null;
             boolean panelIsDisplayed = false;
-            
+
             try {
                 ajaxPanel = selenium.findElement(By.id(AJAX_INDICATOR));
                 panelIsDisplayed = ajaxPanel.isDisplayed();
             } catch (Exception ex) {
-                
+
             }
             if (!panelIsDisplayed) {
                 if (callback.executeTest()) {
@@ -470,11 +476,36 @@ public class BaseSeleniumTestClass {
         }
     }
 
+    // The login page doesn't have the ajax indicator, so we must treat it differently
+    protected void waitForLoginPageLoad(int timeoutInSeconds) {
+        for (int seconds = 0;; seconds++) {
+            if (seconds >= (30)) {
+                Assert.fail("The operation timed out waiting for the login page to load.");
+            }
+
+            boolean loginFormIsDisplayed = false;
+
+            try {
+                loginFormIsDisplayed = isElementPresent("j_username");
+            } catch (Exception ex) {
+            }
+            if (loginFormIsDisplayed) {
+                break;
+            }
+
+            sleep(TIMEOUT_CALLBACK_LOOP);
+        }
+    }
+
     protected void handleLogin() {
+        handleLogin("admin", "", TRIGGER_COMMON_TASKS);
+    }
+
+    protected void handleLogin(String userName, String password, String triggerText) {
         processingLogin = true;
-        setFieldValue("j_username", "admin");
-        setFieldValue("j_password", "");
-        clickAndWait("loginButton", TRIGGER_COMMON_TASKS);
+        setFieldValue("j_username", userName);
+        setFieldValue("j_password", password);
+        clickAndWait("loginButton", triggerText);
         processingLogin = false;
     }
 
@@ -544,11 +575,11 @@ public class BaseSeleniumTestClass {
                 //;
         return id;
     }
-    
+
     protected boolean isTextPresent(String text) {
         return selenium.isTextPresent(resolveTriggerText(text));
     }
-    
+
     protected void selectTableRowByValue(String tableId, String value) {
         selectTableRowByValue(tableId, value, "col0", "col1");
     }
@@ -586,7 +617,7 @@ public class BaseSeleniumTestClass {
 
         return rows.size();
     }
-    
+
     private void selectTableRow(String rowId, String colId) {
         boolean rowHighlighted = false;
 
@@ -615,7 +646,7 @@ public class BaseSeleniumTestClass {
         getConfirmation();
         this.waitForButtonDisabled(deleteButtonId);
     }
-    
+
     protected void selectAllTableRows(String tableId) {
         int count = getTableRowCount(tableId);
         for (int i = 0 ; i < count; i++) {
@@ -641,7 +672,7 @@ public class BaseSeleniumTestClass {
             return "";
         }
     }
-    
+
     protected List<String> getTableRowsByValue(String tableId, String value, String valueColId) {
         List<String> rows = new ArrayList<String>();
         try {
@@ -686,7 +717,7 @@ public class BaseSeleniumTestClass {
     protected int getTableRowCountByValue(String tableId, String value, String valueColId) {
         return getTableRowCountByValue(tableId, value, valueColId, true);
     }
-    
+
     protected List<String> getTableColumnValues(String tableId, String columnId) {
         List<String> values = new ArrayList<String>();
         int tableCount = getTableRowCount(tableId);
@@ -702,7 +733,7 @@ public class BaseSeleniumTestClass {
 
         return values;
     }
-    
+
     protected boolean tableContainsRow(String tableId, String columnId, String value) {
         return getTableRowCountByValue(tableId, value, columnId) > 0;
     }
@@ -876,7 +907,7 @@ public class BaseSeleniumTestClass {
         //Go Back to Resources Page
         clickAndWait(resourcesLinkId, resourcesTriggerText);
     }
-    
+
     protected void logDebugMessage(String message) {
         if (DEBUG) {
             logger.info(message);
@@ -902,7 +933,7 @@ public class BaseSeleniumTestClass {
         }
         return triggerText;
     }
-    
+
     protected void log(String message, String... args) {
         if (DEBUG) {
             String[] temp = new String[args.length];
@@ -912,21 +943,21 @@ public class BaseSeleniumTestClass {
             logger.log(Level.INFO, message, temp);
         }
     }
-    
+
     private void insureElementIsVisible (final String id) {
         if (!id.contains("treeForm:tree")) {
             return;
         }
-        
+
         try {
             RenderedWebElement element = (RenderedWebElement) selenium.findElement(By.id(id), TIMEOUT);
             if (element.isDisplayed()) {
                 return;
             }
         } catch (Exception ex) {
-            
+
         }
-        
+
         final String parentId = id.substring(0, id.lastIndexOf(":"));
         boolean parentIsDisplayed = false;
 
@@ -937,7 +968,7 @@ public class BaseSeleniumTestClass {
             sleep(1000);
             RenderedWebElement parentElement = (RenderedWebElement) selenium.findElement(By.id(parentId), TIMEOUT);
             parentIsDisplayed = parentElement.isDisplayed();
-            
+
         }
 
         if (!parentIsDisplayed) {
@@ -947,7 +978,7 @@ public class BaseSeleniumTestClass {
             pressButton(grandParentId + ":" + nodeId+"_turner");
         }
     }
-    
+
     class PageLoadCallBack implements WaitForLoadCallBack {
         boolean textShouldBeMissing;
         String triggerText;
@@ -957,7 +988,7 @@ public class BaseSeleniumTestClass {
             this.triggerText = resolveTriggerText(triggerText);
         }
 
-        
+
         @Override
         public boolean executeTest() {
             boolean found = false;
@@ -971,7 +1002,7 @@ public class BaseSeleniumTestClass {
                     }
                 } else if (!isTextPresent(triggerText)) {
                         found = true;
-                    
+
                 } else {
                     if (isTextPresent("RuntimeException")) {
                         throw new RuntimeException("Exception detected on page. Please check the logs for details");
@@ -987,7 +1018,7 @@ public class BaseSeleniumTestClass {
             return found;
         }
     };
-    
+
     class DeleteRowCallBack implements WaitForLoadCallBack {
         private String tableId;
         private String tableRowValue;
@@ -1008,9 +1039,9 @@ public class BaseSeleniumTestClass {
                 return false;
             }
         }
-        
+
     }
-    
+
     class AddTableRowCallBack implements WaitForLoadCallBack {
         private final String tableId;
         private final int initialCount;
@@ -1019,15 +1050,15 @@ public class BaseSeleniumTestClass {
             this.tableId = tableId;
             this.initialCount = initialCount;
         }
-        
+
         @Override
         public boolean executeTest() {
             int count = getTableRowCount(tableId);
             return count > initialCount;
         }
-        
+
     };
-    
+
     class ButtonDisabledStateCallBack implements WaitForLoadCallBack {
         private String buttonId;
         private boolean desiredState;
@@ -1041,7 +1072,7 @@ public class BaseSeleniumTestClass {
         public boolean executeTest() {
 //            String attr = selenium.getEval("this.browserbot.findElement('id=" + buttonId + "').disabled"); // "Classic" Selenium
             try {
-                String attr = 
+                String attr =
                         elementFinder.findElement(By.id(buttonId), TIMEOUT)
 //                        driver.findElement(By.id(buttonId))
                         .getAttribute("disabled"); // WebDriver-backed Selenium
@@ -1050,7 +1081,7 @@ public class BaseSeleniumTestClass {
                 return true;// ???
             }
         }
-        
-        
+
+
     }
 }

@@ -40,14 +40,12 @@
 package org.glassfish.admingui.devtests.util;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
-import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.admingui.devtests.BaseSeleniumTestClass;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 
@@ -80,13 +78,13 @@ public class SeleniumHelper {
             }
             String browser = getParameter("browser", "firefox");
 
-            if ("firefox".equals(browser)) {
+            if ("firefox".equalsIgnoreCase(browser)) {
                 driver = new FirefoxDriver();//new FirefoxProfile(new File("src/test/resources/firefoxProfile")));
-            } else if ("chrome".equals(browser)) {
+            } else if ("chrome".equalsIgnoreCase(browser)) {
                 driver = new ChromeDriver();
-            } else if ("ie".contains(browser)) {
+            } else if ("ie".equalsIgnoreCase(browser)) {
                 driver = new InternetExplorerDriver();
-            } else if ("htmlunit".equals(browser)) {
+            } else if ("htmlunit".equalsIgnoreCase(browser)) {
                 driver = new HtmlUnitDriver(BrowserVersion.FIREFOX_3_6);
             }
             elementFinder = new ElementFinder(driver);
