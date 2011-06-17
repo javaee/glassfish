@@ -66,7 +66,10 @@ public abstract class BasePersistenceStrategyBuilder
     protected static final ResourceBundle _rb = _logger.getResourceBundle();
 
     protected String directory = null;
-    protected String DEFAULT_SESSION_FILENAME = "SESSIONS.ser";
+    // START GLASSFISH-15745
+    //protected static final String DEFAULT_SESSION_FILENAME = "SESSIONS.ser";
+    protected static final String DEFAULT_SESSION_FILENAME = null;
+    // END GLASSFISH-15745
     protected String sessionFilename = DEFAULT_SESSION_FILENAME;
     // START CR 6275709
     protected String sessionIdGeneratorClassname = null;
@@ -75,12 +78,12 @@ public abstract class BasePersistenceStrategyBuilder
     protected String _persistenceScope = null;
     protected String _passedInPersistenceType = null;
     protected int maxSessions = -1;
-    protected final int DEFAULT_REAP_INTERVAL = 60;   // 1 minute
+    protected static final int DEFAULT_REAP_INTERVAL = 60;   // 1 minute
     protected int reapInterval = DEFAULT_REAP_INTERVAL;
     protected int storeReapInterval = DEFAULT_REAP_INTERVAL;
-    protected final int DEFAULT_MAX_IDLE_BACKUP = -1;   // never save
+    protected static final int DEFAULT_MAX_IDLE_BACKUP = -1;   // never save
     protected int maxIdleBackup = DEFAULT_MAX_IDLE_BACKUP;
-    protected final int DEFAULT_SESSION_TIMEOUT = 1800;   // 30 minute
+    protected static final int DEFAULT_SESSION_TIMEOUT = 1800;   // 30 minute
     protected int sessionMaxInactiveInterval = DEFAULT_SESSION_TIMEOUT;
     protected String persistentCookieName = "GLASSFISHCOOKIE";
     protected boolean relaxCacheVersionSemantics;

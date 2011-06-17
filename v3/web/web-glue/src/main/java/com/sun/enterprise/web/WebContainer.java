@@ -2193,7 +2193,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         wm.addAdHocSubtrees(context.getAdHocSubtrees());
                     }
                     // START GlassFish 141
-                    if (!dummy) {
+                    if (!dummy && !isShutdown) {
                         WebModuleConfig wmInfo =
                                 host.createSystemDefaultWebModuleIfNecessary(
                                         habitat.getComponent(
