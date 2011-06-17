@@ -40,7 +40,6 @@
 
 package com.sun.enterprise.admin.cli;
 
-import com.sun.enterprise.admin.remote.ServerRemoteAdminCommand;
 import java.io.Console;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -48,9 +47,6 @@ import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import org.glassfish.api.Param;
-import org.glassfish.config.support.CommandTarget;
-import org.glassfish.config.support.TargetType;
 
 /**
  * The change-admin-password command.
@@ -58,6 +54,14 @@ import org.glassfish.config.support.TargetType;
  * interface (set of options) than the local command.
  * This special local implementation adapts the local
  * interface to the requirements of the remote command.
+ * 
+ * The remote command is different in that it accepts the user name as 
+ * an operand.  This command accepts it via the --user parameter. If the --user
+ * option isn't specified, this command prompts for the user name.
+ * 
+ * Another difference is that the local command will prompt for the old 
+ * password only once.  The default behavior for @Param for passwords is to 
+ * prompt for the password twice.  *
  *
  * @author Bill Shannon
  */
@@ -70,8 +74,12 @@ public class ChangeAdminPasswordCommand extends CLICommand {
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ChangeAdminPasswordCommand.class);
 
+    private static final String oldpwName = Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD";
+    private static final String newpwName = Environment.AS_ADMIN_ENV_PREFIX + "NEWPASSWORD";
+    
     /**
-     * Require the user to actually type the passwords.
+     * Require the user to actually type the passwords unless they are in
+     * the file specified by the --passwordfile option.
      */
     @Override
     protected void validate()
@@ -115,10 +123,8 @@ public class ChangeAdminPasswordCommand extends CLICommand {
          */
         params = new ParameterMap();
         params.set("DEFAULT", programOpts.getUser());
-        params.set(Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD",
-                passwords.get(Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD"));
-        params.set(Environment.AS_ADMIN_ENV_PREFIX + "NEWPASSWORD",
-                passwords.get(Environment.AS_ADMIN_ENV_PREFIX + "NEWPASSWORD"));
+        params.set(oldpwName, passwords.get(oldpwName));
+        params.set(newpwName, passwords.get(newpwName));
     }
 
     /**
@@ -139,20 +145,24 @@ public class ChangeAdminPasswordCommand extends CLICommand {
      * Return the old password.
      */
     private String getPasswords() throws CommandValidationException {
-        String oldpassword = readPassword(strings.get("AdminPasswordPrompt"));
-        String newpassword =
-                readPassword(strings.get("AdminNewPasswordPrompt"));
-        String newpasswordAgain =
+        String oldpassword = passwords.get(oldpwName);
+        if (oldpassword == null) {
+            oldpassword = readPassword(strings.get("AdminPasswordPrompt"));
+        }
+        
+        String newpassword = passwords.get(newpwName);
+        if (newpassword == null) {
+            newpassword = readPassword(strings.get("AdminNewPasswordPrompt"));
+            String newpasswordAgain =
                 readPassword(strings.get("AdminNewPasswordConfirmationPrompt"));
-        if (!newpassword.equals(newpasswordAgain)) {
-            throw new CommandValidationException(
-                strings.get("OptionsDoNotMatch", "Admin Password"));
+            if (!newpassword.equals(newpasswordAgain)) {
+                throw new CommandValidationException(
+                    strings.get("OptionsDoNotMatch", "Admin Password"));
+            }
         }
 
-        passwords.put(Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD",
-                                oldpassword);
-        passwords.put(Environment.AS_ADMIN_ENV_PREFIX + "NEWPASSWORD",
-                                newpassword);
+        passwords.put(oldpwName, oldpassword);
+        passwords.put(newpwName, newpassword);
         return oldpassword;
     }
 }
