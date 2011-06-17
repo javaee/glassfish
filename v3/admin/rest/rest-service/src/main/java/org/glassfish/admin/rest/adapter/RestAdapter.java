@@ -47,6 +47,7 @@ import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.enterprise.v3.admin.adapter.AdminEndpointDecider;
+import com.sun.logging.LogDomains;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -128,8 +129,7 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
 
     private volatile LazyJerseyInterface lazyJerseyInterface =null;
 
-    @Inject
-    private Logger logger;
+    private static final Logger logger = LogDomains.getLogger(RestAdapter.class, LogDomains.ADMIN_LOGGER);
 
     private Map<Integer, String> httpStatus = new HashMap<Integer, String>() {{
         put(404, "Resource not found");
@@ -485,13 +485,13 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
     private void exposeContext()
             throws EndpointRegistrationException {
         String context = getContextRoot();
-        logger.fine("Exposing rest resource context root: " + context);
+        logger.log(Level.FINE, "Exposing rest resource context root: {0}", context);
         if ((context != null) || (!"".equals(context))) {
             Set<Class<?>> classes = getResourcesConfig();
             adapter = lazyJerseyInterface.exposeContext(classes, sc, habitat);
 //            ((HttpHandler) adapter).setResourcesContextPath(context);
 
-            logger.info("Listening to REST requests at context: " + context + "/domain");
+            logger.log(Level.INFO, "rest.rest_interface_initialized", context);
         }
     }
 
