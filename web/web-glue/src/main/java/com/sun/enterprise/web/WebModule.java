@@ -529,18 +529,23 @@ public class WebModule extends PwcWebModule {
     @Override
     protected void contextListenerStart() {
         ServletContext servletContext = getServletContext();
+        WebBundleDescriptor wbd = getWebBundleDescriptor();
         try {
             // for jsf injection
             servletContext.setAttribute(
                     Constants.DEPLOYMENT_CONTEXT_ATTRIBUTE,
                     getWebModuleConfig().getDeploymentContext());
-            servletContext.setAttribute(
-                    Constants.IS_DISTRIBUTABLE_ATTRIBUTE,
-                    Boolean.valueOf(getWebBundleDescriptor().isDistributable()));
+            // null check for OSGi/HTTP
+            if (wbd != null) {
+                servletContext.setAttribute(
+                        Constants.IS_DISTRIBUTABLE_ATTRIBUTE,
+                        Boolean.valueOf(wbd.isDistributable()));
+            }
             servletContext.setAttribute(
                     Constants.ENABLE_HA_ATTRIBUTE,
                     Boolean.valueOf(
                         webContainer.getServerConfigLookup().calculateWebAvailabilityEnabledFromConfig(this)));
+
             super.contextListenerStart();
         } finally {
             servletContext.removeAttribute(
@@ -557,8 +562,7 @@ public class WebModule extends PwcWebModule {
                 dwsrImpl.postProcessAnnotations();
             }
         }
-        webContainer.afterServletContextInitializedEvent(
-            getWebBundleDescriptor());
+        webContainer.afterServletContextInitializedEvent(wbd);
     }
 
     @Override
