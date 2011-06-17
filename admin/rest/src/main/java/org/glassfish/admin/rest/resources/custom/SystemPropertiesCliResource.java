@@ -145,7 +145,7 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
                 }
             }
         }
-        
+
         getSystemProperties(properties, getEntity(), false);
 
         actionReport.getExtraProperties().put("systemProperties", new ArrayList(properties.values()));
@@ -187,7 +187,7 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
 
         return deleteProperty(grandParent, id);
     }
-    
+
     protected void getSystemProperties(Map<String, Map<String, String>> properties, Dom dom, boolean getDefaults) {
         List<Dom> sysprops = dom.nodeElements("system-property");
         if ((sysprops != null) && (!sysprops.isEmpty())) {
@@ -211,7 +211,7 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
                 }
             }
         }
-        
+
         // Figure out how to recurse
         if (dom.getProxyType().equals(Server.class)) {
 //            Server server = (Server) spb;
@@ -226,7 +226,7 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
             getSystemProperties(properties, getConfig(dom.parent().parent(), dom.attribute("config-ref")), true);
         }
     }
-    
+
     protected Dom getCluster(Dom domain, String clusterName) {
         List<Dom> configs = domain.nodeElements("clusters").get(0).nodeElements("cluster");
         for(Dom config : configs) {
@@ -236,7 +236,7 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
         }
         return null;
     }
-    
+
     protected Dom getConfig(Dom domain, String configName) {
         List<Dom> configs = domain.nodeElements("configs").get(0).nodeElements("config");
         for(Dom config : configs) {
@@ -253,7 +253,10 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
         for (Map.Entry<String, String> entry : data.entrySet()) {
             final String value = entry.getValue();
             if ((value != null) && !value.isEmpty()) {
-                options.append(sep).append(entry.getKey()).append("=").append(value.replaceAll(":", "\\\\:"));
+                options.append(sep)
+                        .append(entry.getKey())
+                        .append("=")
+                        .append(value.replaceAll(":", "\\\\:").replaceAll("=", "\\\\="));
                 sep = ":";
             }
         }

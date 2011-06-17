@@ -475,11 +475,36 @@ public class BaseSeleniumTestClass {
         }
     }
 
+    // The login page doesn't have the ajax indicator, so we must treat it differently
+    protected void waitForLoginPageLoad(int timeoutInSeconds) {
+        for (int seconds = 0;; seconds++) {
+            if (seconds >= (30)) {
+                Assert.fail("The operation timed out waiting for the login page to load.");
+            }
+
+            boolean loginFormIsDisplayed = false;
+
+            try {
+                loginFormIsDisplayed = isElementPresent("j_username");
+            } catch (Exception ex) {
+            }
+            if (loginFormIsDisplayed) {
+                break;
+            }
+
+            sleep(TIMEOUT_CALLBACK_LOOP);
+        }
+    }
+
     protected void handleLogin() {
+        handleLogin("admin", "", TRIGGER_COMMON_TASKS);
+    }
+
+    protected void handleLogin(String userName, String password, String triggerText) {
         processingLogin = true;
-        setFieldValue("j_username", "admin");
-        setFieldValue("j_password", "");
-        clickAndWait("loginButton", TRIGGER_COMMON_TASKS);
+        setFieldValue("j_username", userName);
+        setFieldValue("j_password", password);
+        clickAndWait("loginButton", triggerText);
         processingLogin = false;
     }
 
