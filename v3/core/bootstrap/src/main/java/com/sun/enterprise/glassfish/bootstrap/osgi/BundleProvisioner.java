@@ -729,7 +729,6 @@ public class BundleProvisioner {
      * @param args
      */
     public static void main(String[] args) throws Exception {
-        Date date = new Date();
         logger.logp(Level.INFO, "BundleProvisioner", "main", "Starting");
         Properties props = new Properties();
         props.load(new FileInputStream(args[0]));
