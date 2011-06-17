@@ -49,6 +49,7 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
@@ -63,6 +64,8 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.util.logging.Logger;
+import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.RestResponse;
 import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -93,6 +96,8 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 
     private static final String USER_NAME = "userName";
 
+    private static final String ORIG_REQUEST_PATH = "origRequestPath";
+
     private static final String RESPONSE_TYPE = "application/json";
 
     /**
@@ -109,6 +114,8 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
      *	The Session key for the REST authentication token.
      */
     public static final String REST_TOKEN = "__rTkn__";
+
+    private static final Logger logger = GuiUtil.getLogger();
 
     /**
      *	<p> This method configures this AuthModule and makes sure all the
@@ -144,7 +151,7 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
             if (restURL.contains(TOKEN_ADMIN_LISTENER_PORT)) {
                 restURL = restURL.replace(TOKEN_ADMIN_LISTENER_PORT, adminListener.getPort());
             }
-            
+
 	    String host = adminListener.getAddress();
 	    if (! ("localhost".equals(host) || "0.0.0.0".equals(host))){
                 restURL = restURL.replace("localhost", adminListener.getAddress());
@@ -212,6 +219,12 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
         String password = request.getParameter("j_password");
         if ((username == null) || (password == null) || !request.getMethod().equalsIgnoreCase("post")) {
             // Not passed in, show the login page...
+            String origPath = request.getRequestURI();
+            String qs = request.getQueryString();
+            if ((qs != null) && (!qs.isEmpty())) {
+                origPath += "?" + qs;
+            }
+            session.setAttribute(ORIG_REQUEST_PATH, origPath);
             RequestDispatcher rd = request.getRequestDispatcher(loginPage);
             try {
                 RestUtil.initialize(null);
@@ -290,7 +303,14 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 
             try {
                 // Redirect...
-                response.sendRedirect(response.encodeRedirectURL("/index.jsf"));
+                String origRequest = (String)session.getAttribute(ORIG_REQUEST_PATH);
+                // Explicitly test for favicon.ico, as Firefox seems to ask for this on
+                // every page
+                if ((origRequest == null) || "/favicon.ico".equals(origRequest)) {
+                    origRequest = "/index.jsf";
+                }
+                logger.log(Level.INFO, "Redirecting to {0}", origRequest);
+                response.sendRedirect(response.encodeRedirectURL(origRequest));
             } catch (Exception ex) {
                 AuthException ae = new AuthException();
                 ae.initCause(ex);
