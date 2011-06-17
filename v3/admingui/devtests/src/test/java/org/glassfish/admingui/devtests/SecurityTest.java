@@ -79,7 +79,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_CONFIGURATION = "i18nc.configurations.PageTitleHelp";
     private static final String TRIGGER_NEW_CONFIGURATION = "i18nc.configurations.NewPageTitle";
     ArrayList<String> list = new ArrayList(); {list.add("server-config"); list.add("new-config");}
-    
+
 
 //    @Test
     // TODO: The page has a component without an explicit ID. Disabling the test for now.
@@ -100,7 +100,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         }
     }
 
-    @Test
+//    @Test
     public void testNewSecurityRealm() {
         final String realmName = "TestRealm" + generateRandomString();
         final String contextName = "Context" + generateRandomString();
@@ -112,7 +112,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         }
     }
 
-    @Test
+//    @Test
     public void testAddUserToFileRealm() {
         final String userId = "user" + generateRandomString();
         final String password = "password" + generateRandomString();
@@ -125,7 +125,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         }
     }
 
-    @Test
+//    @Test
     public void testAddAuditModule() {
         final String auditModuleName = "auditModule" + generateRandomString();
         final String className = "org.glassfish.NonexistentModule";
@@ -154,7 +154,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         }
     }
 
-    @Test
+//    @Test
     public void testAddJaccModule() {
         final String providerName = "testJaccProvider" + generateRandomString();
         final String policyConfig = "com.example.Foo";
@@ -194,7 +194,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         }
     }
 
-    @Test
+//    @Test
     public void testAddMessageSecurityConfiguration() {
         final String providerName = "provider" + generateRandomString();
         final String className = "com.example.Foo";
@@ -224,7 +224,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         }
     }
 
-    @Test
+//    @Test
     public void testNewAdminPassword() {
         final String userPassword = "";
 
@@ -234,11 +234,11 @@ public class SecurityTest extends BaseSeleniumTestClass {
         setFieldValue("propertyForm:propertySheet:propertSectionTextField:confirmPasswordProp:ConfirmPassword", userPassword);
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
     }
-    
+
     /*
      * This test was add to test for regressions of GLASSFISH-14797
      */
-    @Test
+//    @Test
     public void testAddUserToRealmInRunningStandaloneInstance() {
         final String instanceName = "server" + generateRandomString();
         final String configName = instanceName + "-config";
@@ -246,14 +246,14 @@ public class SecurityTest extends BaseSeleniumTestClass {
         final String realmName = "newRealm";
         final String userName = "user" + generateRandomNumber();
         final StandaloneTest sat = new StandaloneTest();
-        
+
         try {
             sat.createStandAloneInstance(instanceName);
             sat.startInstance(instanceName);
 
             createRealm(configName, realmName, contextName);
             addUserToRealm(configName, realmName, userName, "password");
-            
+
             // Delete the user for good measure
             deleteUserFromRealm(configName, realmName, userName);
         } finally {
@@ -265,7 +265,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
     /*
      * This test was added to test for GLASSFISH-16126
      */
-    @Test
+//    @Test
     public void testSecureAdministration() {
         clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
         clickAndWait("propertyForm:propertyContentPage:secureAdmin", TRIGGER_SECURE_ADMINISTRATION);
@@ -289,6 +289,29 @@ public class SecurityTest extends BaseSeleniumTestClass {
         }
     }
 
+    @Test
+    public void testRedirectAfterLogin() {
+        final String newUser = "user" + generateRandomString();
+        final String realmName = "admin-realm";
+        final String newPass = generateRandomString();
+
+        try {
+            addUserToRealm("server-config", realmName, newUser, newPass);
+            // http://localhost:4848/common/help/help.jsf?contextRef=/resource/common/en/help/ref-developercommontasks.html
+            reset();
+            pressButton("Masthead:logoutLink");
+            waitForLoginPageLoad(30);
+            open ("http://localhost:4848/common/help/help.jsf?contextRef=/resource/common/en/help/ref-developercommontasks.html");
+            handleLogin(newUser, newPass, "The Common Tasks page provides shortcuts for common Administration Console tasks.");
+        } finally {
+            reset();
+            pressButton("Masthead:logoutLink");
+            waitForLoginPageLoad(30);
+            handleLogin();
+            deleteUserFromRealm("server-config", realmName, newUser);
+        }
+    }
+
     public void createConfig(String configName) {
         clickAndWait("treeForm:tree:configurations:configurations_link", TRIGGER_CONFIGURATION);
         if (!isTextPresent("new-config")) {
@@ -298,7 +321,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
             assertTrue(isTextPresent(configName));
         }
     }
-    
+
     public void createRealm(String configName, String realmName, String contextName) {
             clickAndWait("treeForm:tree:configurations:" + configName + ":security:realms:realms_link", TRIGGER_SECURITY_REALMS);
             clickAndWait("propertyForm:realmsTable:topActionsGroup1:newButton", TRIGGER_NEW_REALM);
@@ -309,7 +332,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
             clickAndWait("form1:propertyContentPage:topButtons:newButton", TRIGGER_SECURITY_REALMS);
             assertTrue(isTextPresent(realmName));
     }
-    
+
     public void addUserToRealm(String configName, String realmName, String userName, String password) {
         reset();
         clickAndWait("treeForm:tree:configurations:" + configName + ":security:realms:realms_link", TRIGGER_SECURITY_REALMS);
@@ -325,7 +348,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         assertTrue(isTextPresent(userName));
 
     }
-    
+
     public void deleteUserFromRealm(String configName, String realmName, String userName) {
         reset();
         clickAndWait("treeForm:tree:configurations:" + configName + ":security:realms:realms_link", TRIGGER_SECURITY_REALMS);
