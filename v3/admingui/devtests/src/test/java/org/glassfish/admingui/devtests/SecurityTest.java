@@ -100,7 +100,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         }
     }
 
-//    @Test
+    @Test
     public void testNewSecurityRealm() {
         final String realmName = "TestRealm" + generateRandomString();
         final String contextName = "Context" + generateRandomString();
@@ -112,7 +112,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         }
     }
 
-//    @Test
+    @Test
     public void testAddUserToFileRealm() {
         final String userId = "user" + generateRandomString();
         final String password = "password" + generateRandomString();
@@ -125,7 +125,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         }
     }
 
-//    @Test
+    @Test
     public void testAddAuditModule() {
         final String auditModuleName = "auditModule" + generateRandomString();
         final String className = "org.glassfish.NonexistentModule";
@@ -154,7 +154,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         }
     }
 
-//    @Test
+    @Test
     public void testAddJaccModule() {
         final String providerName = "testJaccProvider" + generateRandomString();
         final String policyConfig = "com.example.Foo";
@@ -194,7 +194,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         }
     }
 
-//    @Test
+    @Test
     public void testAddMessageSecurityConfiguration() {
         final String providerName = "provider" + generateRandomString();
         final String className = "com.example.Foo";
@@ -224,7 +224,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         }
     }
 
-//    @Test
+    @Test
     public void testNewAdminPassword() {
         final String userPassword = "";
 
@@ -238,7 +238,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
     /*
      * This test was add to test for regressions of GLASSFISH-14797
      */
-//    @Test
+    @Test
     public void testAddUserToRealmInRunningStandaloneInstance() {
         final String instanceName = "server" + generateRandomString();
         final String configName = instanceName + "-config";
@@ -265,7 +265,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
     /*
      * This test was added to test for GLASSFISH-16126
      */
-//    @Test
+    @Test
     public void testSecureAdministration() {
         clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
         clickAndWait("propertyForm:propertyContentPage:secureAdmin", TRIGGER_SECURE_ADMINISTRATION);
