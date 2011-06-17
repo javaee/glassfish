@@ -116,7 +116,24 @@
 </sun:title>
     <sun:propertySheet id="propertySheet">
 #include "/common/shared/configNameSection.inc"
-#include "/web/grizzly/protocolAttr.inc"
+<sun:propertySheetSection id="propertSectionTextField">
+
+        <sun:property id="nameNew"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.name}" helpText="$resource{i18n_web.common.nameHelp}">
+            <sun:textField id="name"  styleClass="required" required="#{true}" columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.common.Name']}" text="#{pageSession.valueMap['Name']}" />
+        </sun:property>
+
+        <sun:property id="name"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.name}">
+            <sun:staticText id="name" text="#{pageSession.Name}"  rendered="#{Edit}" />
+        </sun:property>
+
+        <sun:property id="statusWithHelp"  rendered="#{readOnly}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.protocol.securityEnabled}" helpText="$resource{i18n_web.common.secureAdminHelp}" >
+            <sun:checkbox disabled="#{readOnly}" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['securityEnabled']}" selectedValue="true" />
+        </sun:property>
+
+        <sun:property id="status"  rendered="#{!readOnly}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.protocol.securityEnabled}"  >
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['securityEnabled']}" selectedValue="true" />
+        </sun:property>
+</sun:propertySheetSection>
     </sun:propertySheet>
 "<br><br>
      <sun:hidden id="helpKey" value="$resource{help_web.protocolEdit}" />
