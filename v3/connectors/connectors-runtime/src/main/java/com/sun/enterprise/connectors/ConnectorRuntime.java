@@ -77,7 +77,7 @@ import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
 import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.deployment.archivist.ArchivistFactory;
-import com.sun.enterprise.deployment.archivist.ConnectorArchivist;
+import com.sun.enterprise.connectors.deployment.util.ConnectorArchivist;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.resource.deployer.DataSourceDefinitionDeployer;

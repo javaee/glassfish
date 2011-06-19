@@ -42,12 +42,12 @@ package com.sun.enterprise.connectors.util;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.enterprise.connectors.deployment.util.ConnectorArchivist;
 import org.jvnet.hk2.config.types.Property;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.archivist.ConnectorArchivist;
 import com.sun.enterprise.deployment.deploy.shared.MemoryMappedArchive;
 import com.sun.logging.LogDomains;
 import org.xml.sax.SAXParseException;

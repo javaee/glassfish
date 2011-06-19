@@ -63,7 +63,7 @@ import org.glassfish.api.event.Events;
 import org.glassfish.internal.api.Target;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
-import org.glassfish.javaee.services.ApplicationScopedResourcesManager;
+import com.sun.enterprise.connectors.deployment.util.ApplicationScopedResourcesManager;
 import org.glassfish.javaee.services.ResourceManager;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.ConnectorClassFinder;

@@ -42,11 +42,11 @@ package com.sun.enterprise.connectors.module;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.connectors.deployment.util.ApplicationScopedResourcesManager;
 import com.sun.logging.LogDomains;
 import java.util.logging.Level;
 import org.glassfish.api.deployment.*;
 import org.glassfish.internal.data.ApplicationRegistry;
-import org.glassfish.javaee.services.ApplicationScopedResourcesManager;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
