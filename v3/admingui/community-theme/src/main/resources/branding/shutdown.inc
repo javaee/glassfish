@@ -69,7 +69,9 @@
                 <td>
  &nbsp 
 
+<div style=" padding-left: 20px;">
 </f:verbatim>
+
 "        </li><li>
 
                     <sun:staticText id="text2" text="$resource{i18n.shutdown.RestartStep1}" />
@@ -79,6 +81,7 @@
 "        </li><li>
                     <sun:staticText id="text4" text="$resource{i18n.shutdown.RestartStep3}" />
 <f:verbatim>
+</div>
 
                 </td>
             </tr>
@@ -86,6 +89,7 @@
             </ul>
             <tr>
                  <td><div class="logLbl"><span class="LblLev2Txt">
+<br/><br/>
 </f:verbatim>
                     <sun:staticText text="$resource{i18n.shutdown.RestartContinue}" />
 <f:verbatim>
