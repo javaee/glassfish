@@ -131,7 +131,7 @@ public class CommandResourceMetaData {
                     final Class<? extends AdminCommand> clazz = (Class<? extends AdminCommand>)inhab.type();
                     RestAttachments attachments = clazz.getAnnotation(RestAttachments.class);
                     if (attachments != null) {
-                        Logger.getLogger("CommandResourceMetaData").log(Level.FINE, "Found annotations on {0}", clazz.getName());
+                        //Logger.getLogger("CommandResourceMetaData").log(Level.FINE, "Found annotations on {0}", clazz.getName());
                         RestAttachment[] list = attachments.value();
                         if ((list != null) && (list.length > 0)) {
                             for (RestAttachment attachment : list) {
