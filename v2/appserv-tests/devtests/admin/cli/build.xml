@@ -62,10 +62,16 @@
     <property name="databases_dir" value="${env.S1AS_HOME}/databases"/>
     <property name="asinstall_dir" value="${env.S1AS_HOME}/../.."/>
     <!-- convert these paths to canonical form -->
-    <pathconvert property="aps_home"><path location="${env.APS_HOME}"/></pathconvert>
-    <pathconvert property="s1as_home"><path location="${env.S1AS_HOME}"/></pathconvert>
-    <pathconvert property="as_logfile"><path location="${env.AS_LOGFILE}"/></pathconvert>
-    
+    <pathconvert property="aps_home">
+        <path location="${env.APS_HOME}"/>
+    </pathconvert>
+    <pathconvert property="s1as_home">
+        <path location="${env.S1AS_HOME}"/>
+    </pathconvert>
+    <pathconvert property="as_logfile">
+        <path location="${env.AS_LOGFILE}"/>
+    </pathconvert>
+
     <macrodef name="runtest">
         <attribute name="classname"/>
         <element name="args" implicit="yes" optional="true"/>
@@ -78,7 +84,7 @@
                 <env key="AS_LOGFILE" value="${as_logfile}"/>
                 <args/>
             </java>
-        </sequential>    
+        </sequential>
     </macrodef>
 
     <target name="init-path">
@@ -100,45 +106,45 @@
     <target name="cluster" depends="init">
         <runtest classname="admin.ClusterTest"/>
     </target>
-    
+
     <target name="instance" depends="init">
         <runtest classname="admin.InstanceTest">
             <jvmarg value="-DNUM_TESTS=${num_tests}"/>
         </runtest>
     </target>
-    
+
     <target name="ports" depends="init">
         <runtest classname="admin.PortTests"/>
     </target>
-    
+
     <target name="validation" depends="init">
         <runtest classname="admin.ValidationTests"/>
     </target>
-    
+
     <target name="configs" depends="init">
         <runtest classname="admin.ConfigTests"/>
     </target>
-    
+
     <target name="sync" depends="init">
-	<runtest classname="admin.SyncTest"/>
+        <runtest classname="admin.SyncTest"/>
     </target>
-    
+
     <target name="domain" depends="init">
         <runtest classname="admin.DomainTest"/>
     </target>
-    
+
     <target name="backup" depends="init, cleanAS">
         <runtest classname="admin.BackupCommandsTest"/>
     </target>
-    
+
     <target name="tokens" depends="init">
         <runtest classname="admin.TokenTest"/>
     </target>
-    
+
     <target name="node" depends="init">
         <runtest classname="admin.NodeTest"/>
     </target>
-    
+
     <target name="load-balancer" depends="init">
         <runtest classname="admin.LBCommandsTest"/>
     </target>
@@ -226,11 +232,11 @@
     <target name="change-master-broker" depends="init">
         <runtest classname="admin.ChangeMasterBrokerTest"/>
     </target>
-    
+
     <target name="configure-jms-cluster" depends="init">
         <runtest classname="admin.ConfigureJmsClusterTest"/>
     </target>
-    
+
     <target name="dynamic-sync-broker-list" depends="init">
         <runtest classname="admin.DynamicSyncBrokerListTest"/>
     </target>
@@ -278,72 +284,72 @@
     <target name="monitoringverbose" depends="init,whacker,setup">
         <runtest classname="admin.monitoring.TestDriver">
             <jvmarg value="-Dverbose=true"/>
-        </runtest> 
+        </runtest>
     </target>
 
     <target name="mon" depends="monitoringverbose,teardown">
     </target>
 
-<target name="all" depends="init">
-    <record name="admin.output" action="start" />
-    <antcall target="${teststorun}"/>
-    <record name="admin.output" action="stop" />
-    <antcall target="dev-report"/>
-    <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
-</target>
+    <target name="all" depends="init">
+        <record name="admin.output" action="start" />
+        <antcall target="${teststorun}"/>
+        <record name="admin.output" action="stop" />
+        <antcall target="dev-report"/>
+        <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
+    </target>
 
-<target name="build" depends="init-path">
-    <mkdir dir="build"/>
-    <javac srcdir="src" destdir="build" debug="true"
+    <target name="build" depends="init-path">
+        <mkdir dir="build"/>
+        <javac srcdir="src" destdir="build" debug="true"
                classpath="${test}"
                includes="**/*.java"/>
-</target>
+    </target>
 
-<target name="setup" depends="startdb">
-</target>
+    <target name="setup" depends="startdb">
+    </target>
 
-<target name="teardown" depends="stopdb">
-</target>
+    <target name="teardown" depends="stopdb">
+    </target>
 
-<target name="init" depends="build, init-path">
-</target>
+    <target name="init" depends="build, init-path">
+    </target>
 
-<target name="clean">
-    <delete>
-        <fileset dir="${env.APS_HOME}" includes="test_results*"/>
-        <fileset dir="${env.APS_HOME}" includes="count.txt"/>
-        <fileset dir="." includes="*.output"/>
-        <fileset dir="." includes="*.txt"/>
-    </delete>
-    <delete failonerror="false" includeemptydirs="true" dir="build"/>
-</target>
+    <target name="clean">
+        <delete>
+            <fileset dir="${env.APS_HOME}" includes="test_results*"/>
+            <fileset dir="${env.APS_HOME}" includes="count.txt"/>
+            <fileset dir="." includes="*.output"/>
+            <fileset dir="." includes="*.txt"/>
+        </delete>
+        <delete failonerror="false" includeemptydirs="true" dir="build"/>
+    </target>
 
-<target name="startdb">
-    <mkdir dir="${databases_dir}"/>
-    <java jar="${derbyhome}/lib/derbyrun.jar" spawn="true" fork="true" dir="${databases_dir}">
-        <arg value="server"/>
-        <arg value="start"/>
-    </java>
-    <echo message="************   JavaDB Started **********"/>
-</target>
+    <target name="startdb">
+        <mkdir dir="${databases_dir}"/>
+        <java jar="${derbyhome}/lib/derbyrun.jar" spawn="true" fork="true" dir="${databases_dir}">
+            <arg value="server"/>
+            <arg value="start"/>
+        </java>
+        <echo message="************   JavaDB Started **********"/>
+    </target>
 
-<target name="stopdb">
-    <java jar="${derbyhome}/lib/derbyrun.jar" spawn="true" fork="true">
-        <arg value="server"/>
-        <arg value="shutdown"/>
-    </java>
-    <echo message="************   JavaDB Stopped **********"/>
-</target>
+    <target name="stopdb">
+        <java jar="${derbyhome}/lib/derbyrun.jar" spawn="true" fork="true">
+            <arg value="server"/>
+            <arg value="shutdown"/>
+        </java>
+        <echo message="************   JavaDB Stopped **********"/>
+    </target>
 
-<target name="download">
-    <get verbose="${verbose}" src="${gfurl}" dest="${asinstall_dir}/glassfish.zip"/>
-    <delete dir="${asinstall_dir}/glassfish3" includeemptydirs="true"/>
-    <unzip src="${asinstall_dir}/glassfish.zip" dest="${asinstall_dir}"/>
-    <chmod perm="a+x" file="${asinstall_dir}/glassfish3/bin/asadmin"/>
-    <chmod perm="a+x" file="${asinstall_dir}/glassfish3/glassfish/bin/asadmin"/>
-</target>
-    
-<target name="usage">
-    <echo>Usage: ant [-Dteststorun=instance|cluster|...] [-Dnum_tests=n] [-Dverbose=true/false] all (Executes the admin tests)</echo>
-</target>
+    <target name="download">
+        <get verbose="${verbose}" src="${gfurl}" dest="${asinstall_dir}/glassfish.zip"/>
+        <delete dir="${asinstall_dir}/glassfish3" includeemptydirs="true"/>
+        <unzip src="${asinstall_dir}/glassfish.zip" dest="${asinstall_dir}"/>
+        <chmod perm="a+x" file="${asinstall_dir}/glassfish3/bin/asadmin"/>
+        <chmod perm="a+x" file="${asinstall_dir}/glassfish3/glassfish/bin/asadmin"/>
+    </target>
+
+    <target name="usage">
+        <echo>Usage: ant [-Dteststorun=instance|cluster|...] [-Dnum_tests=n] [-Dverbose=true/false] all (Executes the admin tests)</echo>
+    </target>
 </project>
