@@ -171,6 +171,7 @@
             <jvmarg value="-Dssh.host=${ssh.host}"/>
             <jvmarg value="-Dssh.user=${ssh.user}"/>
             <jvmarg value="-Dssh.password=${ssh.password}"/>
+            <jvmarg value="-Dssh.configure=${ssh.configure}"/>
         </runtest>
     </target>
 

@@ -53,10 +53,15 @@ public class SetupSshTest extends AdminBaseDevTest {
     private static final String SSH_HOST_PROP = "ssh.host";
     private static final String SSH_USER_PROP = "ssh.user";
     private static final String SSH_PASSWORD = "ssh.password";
+    private static final String SSH_CONFIGURE = "ssh.configure";
+    
+    private static String backup = System.getProperty("user.home")
+                                + File.separator + ".ssh.bak";
 
     private String remoteHost = null;
     private String sshPass = null;
     private String sshUser = null;
+    private String sshConfigure = "false";
 
     public SetupSshTest() {
         String host0 = null;
@@ -93,6 +98,7 @@ public class SetupSshTest extends AdminBaseDevTest {
         remoteHost = System.getProperty(SSH_HOST_PROP);
         sshPass = System.getProperty(SSH_PASSWORD);
         sshUser = System.getProperty(SSH_USER_PROP);
+        sshConfigure = System.getProperty(SSH_CONFIGURE);
 
         if (remoteHost == null || remoteHost.length() == 0) {
             System.out.printf("%s requires you set the %s property\n",
@@ -118,13 +124,22 @@ public class SetupSshTest extends AdminBaseDevTest {
             System.out.printf("%s=%s\n", SSH_USER_PROP, sshUser);
         }
 
+        System.out.printf("%s=%s\n", SSH_CONFIGURE, sshConfigure);
+        
         addPasswords();
 
         updateCommonOptions();
 
-        String backup = System.getProperty("user.home")
-                                + File.separator + ".ssh.bak";
-
+        //setup key without running all the tests
+        if (sshConfigure.equals("true")) {
+            System.out.println("INFO: Configuring public key authentication on " + remoteHost);
+            boolean ret = asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost);
+            if (!ret) {
+                System.out.println("FAILURE: Unable to configure public key authentication on " + remoteHost);
+            }
+            return;
+        }
+        
         if (doesSSHDirectoryExist()) {
             if (getExistingKeyFile() != null) {
                 if(!testKeyDistributionWithoutKeyGeneration()) {
