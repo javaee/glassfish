@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.registration.glassfish;
 
+import java.util.logging.Level;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
@@ -48,6 +49,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.io.File;
 import com.sun.enterprise.registration.RegistrationException;
 import java.util.Date;
@@ -58,97 +60,76 @@ import com.sun.pkg.client.Fmri;
 import com.sun.pkg.client.SystemInfo;
 import org.glassfish.internal.api.PostStartup;
 
+import com.sun.appserv.server.util.Version;
+
 
 @Service(name = "PingService")
 public class PingService implements PostStartup, PostConstruct {
 
     @Inject
     Logger logger;
+
+    @Inject
+    Version version;
     
-    private static final long ONE_DAY =  24 * 60 * 60 * 1000;
+    private static final long ONE_WEEK =  7 * 24 * 60 * 60 * 1000;
     private static final String JVM_OPTION = 
             "com.sun.enterprise.registration.PING_TIMER_INTERVAL";
     private static final long TIMER_INTERVAL = 
-            Long.getLong(JVM_OPTION, 7 * 24 * 60) * 60 * 1000; 
+            Long.getLong(JVM_OPTION, 7 * 24 * 60) * 60 * 1000;
     private static final String UC_PING_TIME_STAMP_FILE = ".ping";
+    private static final String CONTEXT = "ping";
 
 
+    @Override
     public void postConstruct() {
+
         if (TIMER_INTERVAL <=0) {
-            logger.finer("Ping disabled : " + JVM_OPTION + " <= 0");
+            logger.fine("Domain Ping disabled : " + JVM_OPTION + " <= 0");
             return;                             
         }
 
         SystemInfo.UpdateCheckFrequency frequency =
                 SystemInfo.getUpdateCheckFrequency();
-        
+
         if (frequency.equals(SystemInfo.UpdateCheckFrequency.NEVER)) {
-            logger.finer("Ping disabled by Update Center option");
+            logger.fine("Domain Ping disabled by Update Center option");
             return;                             
         }
     
 
         try {
             RegistrationUtil.synchUUID();
-         } catch (RegistrationException ex) {
-            logger.fine("Ping disabled");
+        } catch (RegistrationException ex) {
+            logger.fine("Domain Ping disabled due to UUID exception.");
             logger.fine(ex.getMessage());
             return; 
-         }
-        
-        final Timer pingTimer = new Timer("ping", true); //Mark the timer as daemon so that it does not hold up appserver shutdown
+        }
+
+        final Timer pingTimer = new Timer("PingService", true); //Mark the timer as daemon so that it does not hold up appserver shutdown
 
         TimerTask pingTask = new TimerTask() {
             public void run() {
+                Image img = null;
                 try {
-                    Image img = RegistrationUtil.getUpdateCenterImage();
-                    img.refreshCatalogs(); // this gets the information from the server
+                    HashMap<String,String> map = new HashMap<String,String>();
 
-                    List<Image.FmriState> list = img.getInventory(null, false);  // get the list of packages that are installed
+                    map.put("product", version.getProductName().replace(";", ":"));
+                    map.put("version", getVersionNumber());
+                    map.put("context", CONTEXT);
 
-                    ArrayList<String> pkgs = 
-                            new ArrayList<String>();
-                    for (Image.FmriState fs : list) {
-                        if (fs.upgradable)
-                            pkgs.add(fs.fmri.getName());
-                    }
-                    Image.ImagePlan ip = img.makeInstallPlan(pkgs.toArray(new String[0]));
-                    int numUpdates = ip.getProposedFmris().length;
-                    int numNewUpdates = 0;
-                    long lastPing = getTimeStamp();
-                    Date lastPingDate = new Date(getTimeStamp());
-                    logger.info("Total number of available updates : " +
-                            numUpdates); // FIX i18n
-                    if (numUpdates > 0) {
-                        StringBuffer sb = new StringBuffer();
-                        for (Fmri fmri : ip.getProposedFmris()) {
-                            Date pkgDate = fmri.getVersion().getPublishDate();
-                            if (pkgDate.after(lastPingDate)) {
-                                sb.append(System.getProperty("line.separator"));
-                                sb.append(fmri.getName() + " " + fmri.getVersion() +
-                                        " " + fmri.getVersion().getPublishDate());
-                                numNewUpdates++;
-                            }
-                        }
-                        if (lastPing > 0) {
-                            logger.info("Number of available updates since " + 
-                                lastPingDate + " : "  + numNewUpdates);
-                        }
-                        if (numNewUpdates > 0) {
-                            if (lastPing > 0) {
-                                sb.insert(0, "Available updates since " + lastPingDate + " : " +
-                                        System.getProperty("line.separator"));
-                            }
-                            else {
-                                sb.insert(0, "Available updates : " + 
-                                        System.getProperty("line.separator"));
-                            }
-                            logger.info(sb.toString());
-                        }
-                    }
+                    img = RegistrationUtil.getUpdateCenterImage();
+                    img.setMetaData(map);
+                    img.refreshCatalog(img.getPreferredAuthorityName()); // this gets the information from the server
+                    logger.log(Level.INFO, "Domain Pinged: {0}", img.getPreferredAuthorityName());
+
                 } catch (Exception e) {
                     // should the timer schedule be changed in case of
                     // exception?
+                    if (img != null)
+                        logger.log(Level.FINE, "Domain Ping: Unable to refresh catalog: {0}", img.getPreferredAuthorityName());
+                    else
+                        logger.log(Level.FINE, "Domain Ping: Unable to refresh catalog.  Null image.");
                     logger.fine(e.getMessage());
                 }
                 // set the time stamp even in case of failure to ping, 
@@ -164,25 +145,27 @@ public class PingService implements PostStartup, PostConstruct {
         };
 
         // nextPing is the time after which an initial ping would
-        // be attempted during the current server run. A value of 0 means 
-        // no delay - i.e. attempt ping immediately.
-        long nextPing = 0L;
+        // be attempted during the current server run.  If we are due to
+        // ping now we delay the ping by 120 seconds to allow the domain
+        // to fully initialize.
+        long nextPing = 2 * 60 * 1000;
         try {
             long current = System.currentTimeMillis();
             long lastPing = getTimeStamp();
-            //This is to ensure that we do only one ping within a 24 hour 
+            // This is to ensure that we do only one ping within a 24 hour
             // period, regardless of server restarts.
-            if (current - lastPing <= ONE_DAY) 
-                nextPing = lastPing - current + ONE_DAY;
+            if (current - lastPing <= ONE_WEEK)
+                nextPing = lastPing - current + ONE_WEEK;
             if (nextPing < 0)
-                nextPing = 0L;
+                nextPing = 2 * 60 * 1000;
         } catch(Exception ex) {
+            logger.fine("Domain Ping: exception computing next ping time.");
             logger.fine(ex.getMessage());
-            nextPing = 0L;
+            nextPing = 2 * 60 * 1000L;
         }
         
 
-        logger.finer("next ping after : " + nextPing/(60 * 1000) + " minutes");
+        logger.fine("Domain Ping: next ping in " + nextPing/(60 * 1000) + " minutes");
         // ping after nextPing milliseconds and subsequenlty after TIMER_INTERVAL intervals
         pingTimer.schedule(pingTask, nextPing, TIMER_INTERVAL);
     }
@@ -200,6 +183,35 @@ public class PingService implements PostStartup, PostConstruct {
         if (!f.exists())
             return 0L;
         return f.lastModified();        
+    }
+
+    /*
+     * Construct a cononical version number.
+     */
+    private String getVersionNumber() {
+        StringBuilder versionNumber = new StringBuilder();
+
+        if (version.getMajorVersion() != null)
+            versionNumber.append(version.getMajorVersion()).append(".");
+        else
+            versionNumber.append("0.");
+
+        if (version.getMinorVersion() != null)
+            versionNumber.append(version.getMinorVersion()).append(".");
+        else
+            versionNumber.append("0.");
+
+        if (version.getUpdateVersion() != null)
+            versionNumber.append(version.getUpdateVersion()).append("-");
+        else
+            versionNumber.append("0-");
+
+        if (version.getBuildVersion() != null)
+            versionNumber.append(version.getBuildVersion());
+        else
+            versionNumber.append("0");
+
+        return versionNumber.toString();
     }
 }
 
