@@ -93,12 +93,24 @@ public class UpgradeTest extends AdminBaseDevTest {
         // quick check before upgrade to see if our data is there
         String xPath =
             "//cluster[@name='testUpgradeCluster']/@heartbeat-enabled";
-        Boolean heartbeatEnabled = (Boolean)
-            evalXPath(xPath, getDASDomainXML(), XPathConstants.BOOLEAN);
+        Boolean heartbeatEnabled = false;
+        try {
+            heartbeatEnabled = (Boolean)
+                evalXPath(xPath, getDASDomainXML(), XPathConstants.BOOLEAN);
+        } catch (Exception e) {
+            // e.g. unknown host exception
+            System.err.println(e);
+        }
         report("pre-upgrade-check", heartbeatEnabled);
 
         // now the upgrade (note: this leaves server in stopped state)
         report("run-upgrade", asadmin("start-domain", "--upgrade"));
+
+        /*
+             At this point, there should be no dtd left in
+             domain.xml, so we don't need to worry about
+             UnknownHostExceptions.
+         */
 
         // non-default values should be there
         xPath = "//config" +
