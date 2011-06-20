@@ -57,7 +57,7 @@ public class CLIUtil {
 
     private static final LocalStringsImpl strings =
                                 new LocalStringsImpl(CLIUtil.class);
-    
+
     /**
      *   Read passwords from the password file and save them in a java.util.Map.
      *   @param passwordFileName  password file name
@@ -65,7 +65,7 @@ public class CLIUtil {
      *   @return Map of the password name and value
      */
     public static Map<String, String> readPasswordFileOptions(
-                        final String passwordFileName, boolean withPrefix) 
+                        final String passwordFileName, boolean withPrefix)
                         throws CommandException {
 
         Map<String, String> passwordOptions = new HashMap<String, String>();
@@ -295,8 +295,17 @@ public class CLIUtil {
             out.write(" asadmin ");
 
             if (args != null) {
-               for (int i = 0; i < args.length; ++i) {
-                    out.write(args[i] + " ");
+                final int maxPath = 22;
+                for (int i = 0; i < args.length; ++i) {
+                   // bnevins June 20, 2012
+                   // Gigantic password file paths make it VERY hard to read the log
+                   // file so let's truncate them.
+                   String arg = args[i];
+
+                   if(i > 0 && arg.length() > maxPath && "--passwordfile".equals(args[i-1]))
+                       arg = truncate(arg, maxPath);
+
+                   out.write(arg + " ");
                }
             }
         } catch (IOException e) {
@@ -316,6 +325,14 @@ public class CLIUtil {
             }
         }
     }
+    private static String truncate(String arg, int max) {
+        int len = arg.length();
+
+        if(len < 20)
+            return arg;
+
+        return "....." + arg.substring(len - max);
+    }
 
     private static File getDebugLogfile() {
         // System Prop trumps environmental variable
@@ -334,4 +351,5 @@ public class CLIUtil {
         } catch (IOException e) { /* ignore */ }
         return null;
     }
+
 }
