@@ -187,5 +187,12 @@
         </repository>
     </repositories>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>glassfish-releases</id>
+            <url>http://download.java.net/maven/glassfish</url>
+        </pluginRepository>
+    </pluginRepositories>
+
 </project>
 
