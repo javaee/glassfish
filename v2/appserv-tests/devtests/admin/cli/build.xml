@@ -61,6 +61,14 @@
     <property name="derbyhome" value="${env.S1AS_HOME}/../javadb"/>
     <property name="databases_dir" value="${env.S1AS_HOME}/databases"/>
     <property name="asinstall_dir" value="${env.S1AS_HOME}/../.."/>
+
+	<!-- SSH defaults -->
+	<property name="ssh.host"       value="chandu.us.oracle.com"/>
+	<property name="ssh.user"       value="hudson"/>
+	<property name="ssh.password"   value="hudson"/>
+	<property name="ssh.installdir" value="/export/home/hudson/glassfish3"/>
+	<property name="ssh.configure"  value="true"/>
+
     <!-- convert these paths to canonical form -->
     <pathconvert property="aps_home">
         <path location="${env.APS_HOME}"/>
