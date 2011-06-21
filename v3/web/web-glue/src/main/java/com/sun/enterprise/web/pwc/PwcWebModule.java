@@ -258,6 +258,7 @@ public abstract class PwcWebModule extends StandardContext {
      * implementation.  The constructor of the instantiated Wrapper
      * will have been called, but no properties will have been set.
      */
+    @Override
     public Wrapper createWrapper() {
         Wrapper wrapper = super.createWrapper();
         ((StandardWrapper) wrapper).setMaxInstances(stmPoolSize);

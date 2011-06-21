@@ -891,6 +891,7 @@ public class StandardContext
      * of this application, in the order in which they have been specified
      * in the deployment descriptor
      */
+    @Override
     public List<EventListener> getApplicationEventListeners() {
         return eventListeners;
     }
@@ -902,6 +903,7 @@ public class StandardContext
     /**
      * Return the application available flag for this Context.
      */
+    @Override
     public boolean getAvailable() {
         return available;
     }
@@ -911,6 +913,7 @@ public class StandardContext
      *
      * @param available The new application available flag
      */
+    @Override
     public void setAvailable(boolean available) {
         boolean oldAvailable = this.available;
         this.available = available;
@@ -921,6 +924,7 @@ public class StandardContext
     /**
      * Return the Locale to character set mapper for this Context.
      */
+    @Override
     public CharsetMapper getCharsetMapper() {
 
         // Create a mapper the first time it is requested
@@ -942,6 +946,7 @@ public class StandardContext
      *
      * @param mapper The new mapper
      */
+    @Override
     public void setCharsetMapper(CharsetMapper mapper) {
         CharsetMapper oldCharsetMapper = this.charsetMapper;
         this.charsetMapper = mapper;
@@ -954,6 +959,7 @@ public class StandardContext
     /**
      * @return the path to a file to save this Context information
      */
+    @Override
     public String getConfigFile() {
         return configFile;
     }
@@ -963,6 +969,7 @@ public class StandardContext
      *
      * @param configFile The path to a file to save this Context information
      */
+    @Override
     public void setConfigFile(String configFile) {
         this.configFile = configFile;
     }
@@ -970,6 +977,7 @@ public class StandardContext
     /**
      * @return the "correctly configured" flag for this Context
      */
+    @Override
     public boolean getConfigured() {
         return configured;
     }
@@ -981,6 +989,7 @@ public class StandardContext
      *
      * @param configured The new correctly configured flag
      */
+    @Override
     public void setConfigured(boolean configured) {
         boolean oldConfigured = this.configured;
         this.configured = configured;
@@ -991,6 +1000,7 @@ public class StandardContext
     /**
      * @return the "use cookies for session ids" flag
      */
+    @Override
     public boolean getCookies() {
         return cookies;
     }
@@ -1000,6 +1010,7 @@ public class StandardContext
      *
      * @param cookies The new flag
      */
+    @Override
     public void setCookies(boolean cookies) {
         boolean oldCookies = this.cookies;
         this.cookies = cookies;
@@ -1015,6 +1026,7 @@ public class StandardContext
      * @return true if the rewriting of URLs with the jsessionids of HTTP
      * sessions belonging to this context is enabled, false otherwise
      */
+    @Override
     public boolean isEnableURLRewriting() {
         return enableURLRewriting;
     }
@@ -1027,6 +1039,7 @@ public class StandardContext
      * jsessionids of HTTP sessions belonging to this context should be
      * enabled, false otherwise
      */
+    @Override
     public void setEnableURLRewriting(boolean enableURLRewriting) {
         boolean oldEnableURLRewriting = this.enableURLRewriting;
         this.enableURLRewriting = enableURLRewriting;
@@ -1039,6 +1052,7 @@ public class StandardContext
     /**
      * @return the "allow crossing servlet contexts" flag
      */
+    @Override
     public boolean getCrossContext() {
         return (this.crossContext);
     }
@@ -1048,6 +1062,7 @@ public class StandardContext
      *
      * @param crossContext The new cross contexts flag
      */
+    @Override
     public void setCrossContext(boolean crossContext) {
 
         boolean oldCrossContext = this.crossContext;
@@ -1097,6 +1112,7 @@ public class StandardContext
     /**
      * Return the display name of this web application.
      */
+    @Override
     public String getDisplayName() {
 
         return (this.displayName);
@@ -1106,6 +1122,7 @@ public class StandardContext
     /**
      * Return the alternate Deployment Descriptor name.
      */
+    @Override
     public String getAltDDName(){
         return altDDName;
     }
@@ -1113,6 +1130,7 @@ public class StandardContext
     /**
      * Set an alternate Deployment Descriptor name.
      */
+    @Override
     public void setAltDDName(String altDDName) {
         this.altDDName = altDDName;
         if (context != null) {
@@ -1140,6 +1158,7 @@ public class StandardContext
      *
      * @param displayName The new display name
      */
+    @Override
     public void setDisplayName(String displayName) {
         String oldDisplayName = this.displayName;
         this.displayName = displayName;
@@ -1150,6 +1169,7 @@ public class StandardContext
     /**
      * Return the distributable flag for this web application.
      */
+    @Override
     public boolean getDistributable() {
         return distributable;
     }
@@ -1159,6 +1179,7 @@ public class StandardContext
      *
      * @param distributable The new distributable flag
      */
+    @Override
     public void setDistributable(boolean distributable) {
         boolean oldDistributable = this.distributable;
         this.distributable = distributable;
@@ -1180,6 +1201,7 @@ public class StandardContext
      * Return the document root for this Context.  This can be an absolute
      * pathname, a relative pathname, or a URL.
      */
+    @Override
     public String getDocBase() {
         return docBase;
     }
@@ -1190,6 +1212,7 @@ public class StandardContext
      *
      * @param docBase The new document root
      */
+    @Override
     public void setDocBase(String docBase) {
         this.docBase = docBase;
     }
@@ -1299,6 +1322,7 @@ public class StandardContext
     /**
      * Return the login configuration descriptor for this web application.
      */
+    @Override
     public LoginConfig getLoginConfig() {
         return (this.loginConfig);
     }
@@ -1308,6 +1332,7 @@ public class StandardContext
      *
      * @param config The new login configuration
      */
+    @Override
     public void setLoginConfig(LoginConfig config) {
 
         // Validate the incoming property value
@@ -1355,6 +1380,7 @@ public class StandardContext
     /**
      * Get the mapper associated with the context.
      */
+    @Override
     public Mapper getMapper() {
         return mapper;
     }
@@ -1371,6 +1397,7 @@ public class StandardContext
     /**
      * Return the naming resources associated with this web application.
      */
+    @Override
     public NamingResources getNamingResources() {
         return namingResources;
     }
@@ -1380,6 +1407,7 @@ public class StandardContext
      *
      * @param namingResources The new naming resources
      */
+    @Override
     public void setNamingResources(NamingResources namingResources) {
 
         // Process the property setting change
@@ -1392,6 +1420,7 @@ public class StandardContext
     /**
      * Return the context path for this Context.
      */
+    @Override
     public String getPath() {
         return (getName());
     }
@@ -1404,6 +1433,7 @@ public class StandardContext
      *
      * @param path The new context path
      */
+    @Override
     public void setPath(String path) {
         // XXX  Use host in name
         /* GlassFish Issue 2339
@@ -1418,6 +1448,7 @@ public class StandardContext
      * Return the public identifier of the deployment descriptor DTD that is
      * currently being parsed.
      */
+    @Override
     public String getPublicId() {
         return publicId;
     }
@@ -1428,6 +1459,7 @@ public class StandardContext
      *
      * @param publicId The public identifier
      */
+    @Override
     public void setPublicId(String publicId) {
         if (log.isLoggable(Level.FINEST))
             log.finest("Setting deployment descriptor public ID to '" +
@@ -1441,6 +1473,7 @@ public class StandardContext
     /**
      * Return the reloadable flag for this web application.
      */
+    @Override
     public boolean getReloadable() {
         return reloadable;
     }
@@ -1448,6 +1481,7 @@ public class StandardContext
     /**
      * Return the DefaultContext override flag for this web application.
      */
+    @Override
     public boolean getOverride() {
         return override;
     }
@@ -1475,6 +1509,7 @@ public class StandardContext
     /**
      * Return the privileged flag for this web application.
      */
+    @Override
     public boolean getPrivileged() {
         return (this.privileged);
     }
@@ -1484,6 +1519,7 @@ public class StandardContext
      *
      * @param privileged The new privileged flag
      */
+    @Override
     public void setPrivileged(boolean privileged) {
         boolean oldPrivileged = this.privileged;
         this.privileged = privileged;
@@ -1497,6 +1533,7 @@ public class StandardContext
      *
      * @param reloadable The new reloadable flag
      */
+    @Override
     public void setReloadable(boolean reloadable) {
         boolean oldReloadable = this.reloadable;
         this.reloadable = reloadable;
@@ -1510,6 +1547,7 @@ public class StandardContext
      *
      * @param override The new override flag
      */
+    @Override
     public void setOverride(boolean override) {
         boolean oldOverride = this.override;
         this.override = override;
@@ -1522,6 +1560,7 @@ public class StandardContext
     /**
      * Scan the parent when searching for TLD listeners.
      */
+    @Override
     public boolean isJsfApplication(){
         return isJsfApplication;
     }
@@ -1541,6 +1580,7 @@ public class StandardContext
      * @return true if this web module contains any ad-hoc paths, false
      * otherwise
      */
+    @Override
     public boolean hasAdHocPaths() {
         return false;
     }
@@ -1554,6 +1594,7 @@ public class StandardContext
      * @return The name of the ad-hoc servlet responsible for servicing the
      * given path, or null if the given path is not an ad-hoc path
      */
+    @Override
     public String getAdHocServletName(String path) {
         return null;
     }
@@ -1600,6 +1641,7 @@ public class StandardContext
      * are to be set to "No-cache" if proxy caching has been disabled, false
      * otherwise
      */
+    @Override
     public void setSecurePagesWithPragma(boolean securePagesWithPragma) {
 
         boolean oldSecurePagesWithPragma = this.securePagesWithPragma;
@@ -1620,6 +1662,7 @@ public class StandardContext
     /**
      * Return the servlet context for which this Context is a facade.
      */
+    @Override
     public ServletContext getServletContext() {
         if (context == null) {
             context = new ApplicationContext(this);
@@ -1637,6 +1680,7 @@ public class StandardContext
      * Return the default session timeout (in minutes) for this
      * web application.
      */
+    @Override
     public int getSessionTimeout() {
         return sessionTimeout;
     }
@@ -1656,6 +1700,7 @@ public class StandardContext
      *
      * @param timeout The new default session timeout
      */
+    @Override
     public void setSessionTimeout(int timeout) {
 
         int oldSessionTimeout = this.sessionTimeout;
@@ -1760,6 +1805,7 @@ public class StandardContext
     /**
      * Return the "reuse session IDs when creating sessions" flag
      */
+    @Override
     public boolean getReuseSessionID() {
         return reuseSessionID;
     }
@@ -1769,6 +1815,7 @@ public class StandardContext
      *
      * @param reuse The new value for the flag
      */
+    @Override
     public void setReuseSessionID(boolean reuse) {
         reuseSessionID = reuse;
     }
@@ -1783,6 +1830,7 @@ public class StandardContext
      *
      * The default value for this property is 'false'.
      */
+    @Override
     public boolean getAllowRelativeRedirect() {
 
         return allowRelativeRedirect;
@@ -1798,6 +1846,7 @@ public class StandardContext
      *                          The default value for this property is
      *                          'false'.
      */
+    @Override
     public void setAllowRelativeRedirect(boolean allowRelativeURLs) {
 
         allowRelativeRedirect = allowRelativeURLs;
@@ -1814,6 +1863,7 @@ public class StandardContext
      * @return array of Auditor objects, or null
      *
      */
+    @Override
     public Auditor[] getAuditors() {
         return auditors;
     }
@@ -1825,6 +1875,7 @@ public class StandardContext
      * @param auditor array of Auditor objects
      *
      */
+    @Override
     public void setAuditors(Auditor[] auditor) {
         this.auditors=auditor;
     }
@@ -2135,6 +2186,7 @@ public class StandardContext
     /**
      * Add a security constraint to the set for this web application.
      */
+    @Override
     public void addConstraint(SecurityConstraint constraint) {
 
         // Validate the proposed constraint
@@ -2204,6 +2256,7 @@ public class StandardContext
      *
      * @param errorPage The error page definition to be added
      */
+    @Override
     public void addErrorPage(ErrorPage errorPage) {
         // Validate the input parameters
         if (errorPage == null)
@@ -2326,6 +2379,7 @@ public class StandardContext
      *  does not match an existing filter definition, or the filter mapping
      *  is malformed
      */
+    @Override
     public void addFilterMap(FilterMap filterMap) {
         addFilterMap(filterMap, true);
     }
@@ -2465,6 +2519,7 @@ public class StandardContext
      * Registers the given filter instance with this ServletContext
      * under the given <tt>filterName</tt>.
      */
+    @Override
     public FilterRegistration.Dynamic addFilter(
             String filterName, Filter filter) {
 
@@ -2547,6 +2602,7 @@ public class StandardContext
      * Adds the filter with the given name and class type to this servlet
      * context.
      */
+    @Override
     public FilterRegistration.Dynamic addFilter(String filterName,
             Class <? extends Filter> filterClass) {
 
@@ -2590,6 +2646,7 @@ public class StandardContext
      * resource injection into the new Filter instance before returning
      * it.
      */
+    @Override
     public <T extends Filter> T createFilter(Class<T> clazz)
             throws ServletException {
         try {
@@ -2604,6 +2661,7 @@ public class StandardContext
      * Gets the FilterRegistration corresponding to the filter with the
      * given <tt>filterName</tt>.
      */
+    @Override
     public FilterRegistration getFilterRegistration(String filterName) {
         return filterRegisMap.get(filterName);
     }
@@ -2612,6 +2670,7 @@ public class StandardContext
      * Gets a Map of the FilterRegistration objects corresponding to all
      * currently registered filters.
      */
+    @Override
     public Map<String, ? extends FilterRegistration> getFilterRegistrations() {
         return Collections.unmodifiableMap(filterRegisMap);
     }
@@ -2620,6 +2679,7 @@ public class StandardContext
      * Gets the session tracking cookie configuration of this
      * <tt>ServletContext</tt>.
      */
+    @Override
     public synchronized SessionCookieConfig getSessionCookieConfig() {
         if (sessionCookieConfig == null) {
             sessionCookieConfig = new SessionCookieConfigImpl(this);
@@ -2640,6 +2700,7 @@ public class StandardContext
      * Gets the name that will be assigned to any session tracking
      * cookies created on behalf of this context
      */
+    @Override
     public String getSessionCookieName() {
         return sessionCookieName;
     }
@@ -2648,6 +2709,7 @@ public class StandardContext
      * @return the name that will be assigned to any session tracking
      * parameter created on behalf of this context
      */
+    @Override
     public String getSessionParameterName() {
         if (sessionCookieNameInitialized) {
             if (sessionCookieName != null && (!sessionCookieName.isEmpty())) {
@@ -2662,6 +2724,7 @@ public class StandardContext
      * Sets the session tracking modes that are to become effective for this
      * <tt>ServletContext</tt>.
      */
+    @Override
     public void setSessionTrackingModes(
             Set<SessionTrackingMode> sessionTrackingModes) {
 
@@ -2701,6 +2764,7 @@ public class StandardContext
      * @return set of the session tracking modes supported by default for
      * this <tt>ServletContext</tt>
      */
+    @Override
     public Set<SessionTrackingMode> getDefaultSessionTrackingModes() {
         return DEFAULT_SESSION_TRACKING_MODES;
     }
@@ -2712,6 +2776,7 @@ public class StandardContext
      * @return set of the session tracking modes in effect for this
      * <tt>ServletContext</tt>
      */
+    @Override
     public Set<SessionTrackingMode> getEffectiveSessionTrackingModes() {
         return (sessionTrackingModes != null ? sessionTrackingModes :
             DEFAULT_SESSION_TRACKING_MODES);
@@ -2722,6 +2787,7 @@ public class StandardContext
      *
      * @param className the fully qualified class name of the listener
      */
+    @Override
     public void addListener(String className) {
         addListener(className, true);
     }
@@ -2749,6 +2815,7 @@ public class StandardContext
      *
      * @param t the listener to be added
      */
+    @Override
     public <T extends EventListener> void addListener(T t) {
         addListener(t, true);
     }
@@ -2822,6 +2889,7 @@ public class StandardContext
     /**
      * Adds a listener of the given class type to this ServletContext.
      */
+    @Override
     public void addListener(Class <? extends EventListener> listenerClass) {
         try {
             addListener(createListenerInstance(listenerClass));
@@ -2835,6 +2903,7 @@ public class StandardContext
      * required resource injection into the new EventListener instance
      * before returning it.
      */
+    @Override
     public <T extends EventListener> T createListener(Class<T> clazz)
             throws ServletException {
         if (!ServletContextListener.class.isAssignableFrom(clazz) &&
@@ -2864,6 +2933,7 @@ public class StandardContext
      * <code>web-fragment.xml</code> resources of the web application
      * represented by this ServletContext.
      */
+    @Override
     public JspConfigDescriptor getJspConfigDescriptor() {
         return jspConfigDesc;
     }
@@ -2872,6 +2942,7 @@ public class StandardContext
      * Gets the class loader of the web application represented by this
      * ServletContext.
      */
+    @Override
     public ClassLoader getClassLoader() {
         ClassLoader webappLoader = (getLoader() != null) ?
             getLoader().getClassLoader() : null;
@@ -2884,6 +2955,7 @@ public class StandardContext
         return webappLoader;
     }
 
+    @Override
     public void declareRoles(String... roleNames) {
         if (isContextInitializedCalled) {
             throw new IllegalStateException(
@@ -2900,6 +2972,7 @@ public class StandardContext
         this.effectiveMajorVersion = effectiveMajorVersion;
     }
 
+    @Override
     public int getEffectiveMajorVersion() {
         return effectiveMajorVersion;
     }
@@ -2908,6 +2981,7 @@ public class StandardContext
         this.effectiveMinorVersion = effectiveMinorVersion;
     }
 
+    @Override
     public int getEffectiveMinorVersion() {
         return effectiveMinorVersion;
     }
@@ -2918,6 +2992,7 @@ public class StandardContext
      *
      * @param listener Java class name of an InstanceListener class
      */
+    @Override
     public void addInstanceListener(String listener) {
         instanceListeners.add(listener);
         if (notifyContainerListeners) {
@@ -2941,6 +3016,7 @@ public class StandardContext
      *
      * @param pattern URL pattern to be mapped
      */
+    @Override
     public void addJspMapping(String pattern) {
         String servletName = findServletMapping("*.jsp");
         if (servletName == null) {
@@ -2963,6 +3039,7 @@ public class StandardContext
      * @param locale locale to map an encoding for
      * @param encoding encoding to be used for a give locale
      */
+    @Override
     public void addLocaleEncodingMappingParameter(String locale, String encoding){
         getCharsetMapper().addCharsetMappingFromDeploymentDescriptor(locale, encoding);
     }
@@ -2972,6 +3049,7 @@ public class StandardContext
      *
      * @param ejb New EJB resource reference
      */
+    @Override
     public void addLocalEjb(ContextLocalEjb ejb) {
         namingResources.addLocalEjb(ejb);
         if (notifyContainerListeners) {
@@ -3200,6 +3278,7 @@ public class StandardContext
      * @exception IllegalArgumentException if the specified servlet name
      *  is not known to this Context
      */
+    @Override
     public void addServletMapping(String pattern, String name) {
         addServletMapping(pattern, name, false);
     }
@@ -3281,6 +3360,7 @@ public class StandardContext
      * Adds the servlet with the given name and class name to this servlet
      * context.
      */
+    @Override
     public ServletRegistration.Dynamic addServlet(
             String servletName, String className) {
 
@@ -3320,6 +3400,7 @@ public class StandardContext
      * Registers the given servlet instance with this ServletContext
      * under the given <tt>servletName</tt>.
      */
+    @Override
     public ServletRegistration.Dynamic addServlet(
             String servletName, Servlet servlet) {
         return addServlet(servletName, servlet, null, null);
@@ -3329,6 +3410,7 @@ public class StandardContext
      * Adds the servlet with the given name and class type to this servlet
      * context.
      */
+    @Override
     public ServletRegistration.Dynamic addServlet(String servletName,
             Class <? extends Servlet> servletClass) {
 
@@ -3381,6 +3463,7 @@ public class StandardContext
      *
      * @throws ServletException if the servlet fails to be initialized
      */
+    @Override
     public ServletRegistration.Dynamic addServlet(String servletName,
             Servlet instance, Map<String, String> initParams) {
         return addServlet(servletName, instance, initParams, null);
@@ -3399,6 +3482,7 @@ public class StandardContext
      * @return the ServletRegistration through which the servlet may be
      * further configured
      */
+    @Override
     public ServletRegistration.Dynamic addServlet(String servletName,
             Servlet servlet, Map<String, String> initParams,
             String... urlPatterns) {
@@ -3507,6 +3591,7 @@ public class StandardContext
      * resource injection into the new Servlet instance before returning
      * it.
      */
+    @Override
     public <T extends Servlet> T createServlet(Class<T> clazz)
             throws ServletException {
         try {
@@ -3521,6 +3606,7 @@ public class StandardContext
      * Gets the ServletRegistration corresponding to the servlet with the
      * given <tt>servletName</tt>.
      */
+    @Override
     public ServletRegistration getServletRegistration(String servletName) {
         return servletRegisMap.get(servletName);
     }
@@ -3529,6 +3615,7 @@ public class StandardContext
      * Gets a Map of the ServletRegistration objects corresponding to all
      * currently registered servlets.
      */
+    @Override
     public Map<String, ? extends ServletRegistration> getServletRegistrations() {
         return Collections.unmodifiableMap(servletRegisMap);
     }
@@ -3538,6 +3625,7 @@ public class StandardContext
      *
      * @param name New watched resource file name
      */
+    @Override
     public void addWatchedResource(String name) {
         watchedResources.add(name);
         fireContainerEvent("addWatchedResource", name);
@@ -3548,6 +3636,7 @@ public class StandardContext
      *
      * @param name New welcome file name
      */
+    @Override
     public void addWelcomeFile(String name) {
 
         // Welcome files from the application deployment descriptor
@@ -3573,6 +3662,7 @@ public class StandardContext
      *
      * @param listener Java class name of a LifecycleListener class
      */
+    @Override
     public void addWrapperLifecycle(String listener) {
         wrapperLifecycles.add(listener);
         if (notifyContainerListeners) {
@@ -3586,6 +3676,7 @@ public class StandardContext
      *
      * @param listener Java class name of a ContainerListener class
      */
+    @Override
     public void addWrapperListener(String listener) {
         wrapperListeners.add(listener);
         if (notifyContainerListeners) {
@@ -3599,6 +3690,7 @@ public class StandardContext
      * implementation.  The constructor of the instantiated Wrapper
      * will have been called, but no properties will have been set.
      */
+    @Override
     public Wrapper createWrapper() {
         Wrapper wrapper = new StandardWrapper();
 
@@ -3663,6 +3755,7 @@ public class StandardContext
     /**
      * Return the set of application parameters for this application.
      */
+    @Override
     public List<ApplicationParameter> findApplicationParameters() {
         return applicationParameters;
     }
@@ -3670,6 +3763,7 @@ public class StandardContext
     /**
      * Gets the security constraints defined for this web application.
      */
+    @Override
     public List<SecurityConstraint> getConstraints() {
         return constraints;
     }
@@ -3678,6 +3772,7 @@ public class StandardContext
      * Checks whether this web application has any security constraints
      * defined.
      */
+    @Override
     public boolean hasConstraints() {
         return !constraints.isEmpty();
     }
@@ -3688,6 +3783,7 @@ public class StandardContext
      *
      * @param name Name of the desired EJB resource reference
      */
+    @Override
     public ContextEjb findEjb(String name) {
         return namingResources.findEjb(name);
     }
@@ -3696,6 +3792,7 @@ public class StandardContext
      * Return the defined EJB resource references for this application.
      * If there are none, a zero-length array is returned.
      */
+    @Override
     public ContextEjb[] findEjbs() {
         return namingResources.findEjbs();
     }
@@ -3706,6 +3803,7 @@ public class StandardContext
      *
      * @param name Name of the desired environment entry
      */
+    @Override
     public ContextEnvironment findEnvironment(String name) {
         return namingResources.findEnvironment(name);
     }
@@ -3715,6 +3813,7 @@ public class StandardContext
      * application.  If none have been defined, a zero-length array
      * is returned.
      */
+    @Override
     public ContextEnvironment[] findEnvironments() {
         return namingResources.findEnvironments();
     }
@@ -3725,6 +3824,7 @@ public class StandardContext
      *
      * @param errorCode Error code to look up
      */
+    @Override
     public ErrorPage findErrorPage(int errorCode) {
         if ((errorCode >= 400) && (errorCode < 600)) {
             return statusPages.get(errorCode);
@@ -3739,6 +3839,7 @@ public class StandardContext
      *
      * @param exceptionType Exception type to look up
      */
+    @Override
     public ErrorPage findErrorPage(String exceptionType) {
         synchronized (exceptionPages) {
             return exceptionPages.get(exceptionType);
@@ -3754,6 +3855,7 @@ public class StandardContext
      * @return the default error page of this context, or null if this
      * context does not have any default error page
      */
+    @Override
     public ErrorPage getDefaultErrorPage() {
         return defaultErrorPage;
     }
@@ -3764,6 +3866,7 @@ public class StandardContext
      *
      * @param filterName Filter name to look up
      */
+    @Override
     public FilterDef findFilterDef(String filterName) {
         synchronized (filterDefs) {
             return filterDefs.get(filterName);
@@ -3773,6 +3876,7 @@ public class StandardContext
     /**
      * Return the set of defined filters for this Context.
      */
+    @Override
     public FilterDef[] findFilterDefs() {
         synchronized (filterDefs) {
             FilterDef results[] = new FilterDef[filterDefs.size()];
@@ -3783,6 +3887,7 @@ public class StandardContext
     /**
      * Return the list of filter mappings for this Context.
      */
+    @Override
     public List<FilterMap> findFilterMaps() {
         return filterMaps;
     }
@@ -3791,6 +3896,7 @@ public class StandardContext
      * Return the list of InstanceListener classes that will be added to
      * newly created Wrappers automatically.
      */
+    @Override
     public List<String> findInstanceListeners() {
         return instanceListeners;
     }
@@ -3801,6 +3907,7 @@ public class StandardContext
      *
      * @param name Name of the desired EJB resource reference
      */
+    @Override
     public ContextLocalEjb findLocalEjb(String name) {
         return namingResources.findLocalEjb(name);
     }
@@ -3809,6 +3916,7 @@ public class StandardContext
      * Return the defined local EJB resource references for this application.
      * If there are none, a zero-length array is returned.
      */
+    @Override
     public ContextLocalEjb[] findLocalEjbs() {
         return namingResources.findLocalEjbs();
     }
@@ -3869,6 +3977,7 @@ public class StandardContext
      *
      * @param extension Extension to map to a MIME type
      */
+    @Override
     public String findMimeMapping(String extension) {
 
         String mimeType = mimeMappings.get(extension);
@@ -3895,6 +4004,7 @@ public class StandardContext
      * Return the extensions for which MIME mappings are defined.  If there
      * are none, a zero-length array is returned.
      */
+    @Override
     public String[] findMimeMappings() {
         synchronized (mimeMappings) {
             return mimeMappings.keySet().toArray(
@@ -3908,6 +4018,7 @@ public class StandardContext
      *
      * @param name Name of the parameter to return
      */
+    @Override
     public String findParameter(String name) {
         synchronized (parameters) {
             return parameters.get(name);
@@ -3919,6 +4030,7 @@ public class StandardContext
      * for this Context.  If no parameters are defined, a zero-length
      * array is returned.
      */
+    @Override
     public String[] findParameters() {
         synchronized (parameters) {
             return parameters.keySet().toArray(new String[parameters.size()]);
@@ -3931,6 +4043,7 @@ public class StandardContext
      *
      * @param name Name of the desired resource reference
      */
+    @Override
     public ContextResource findResource(String name) {
         return namingResources.findResource(name);
     }
@@ -3941,6 +4054,7 @@ public class StandardContext
      *
      * @param name Name of the desired resource environment reference
      */
+    @Override
     public String findResourceEnvRef(String name) {
         return namingResources.findResourceEnvRef(name);
     }
@@ -3950,6 +4064,7 @@ public class StandardContext
      * web application.  If none have been specified, a zero-length
      * array is returned.
      */
+    @Override
     public String[] findResourceEnvRefs() {
         return namingResources.findResourceEnvRefs();
     }
@@ -3960,6 +4075,7 @@ public class StandardContext
      *
      * @param name Name of the desired resource link
      */
+    @Override
     public ContextResourceLink findResourceLink(String name) {
         return namingResources.findResourceLink(name);
     }
@@ -3968,6 +4084,7 @@ public class StandardContext
      * Return the defined resource links for this application.  If
      * none have been defined, a zero-length array is returned.
      */
+    @Override
     public ContextResourceLink[] findResourceLinks() {
         return namingResources.findResourceLinks();
     }
@@ -3976,6 +4093,7 @@ public class StandardContext
      * Return the defined resource references for this application.  If
      * none have been defined, a zero-length array is returned.
      */
+    @Override
     public ContextResource[] findResources() {
         return namingResources.findResources();
     }
@@ -3987,6 +4105,7 @@ public class StandardContext
      *
      * @param role Security role to map
      */
+    @Override
     public String findRoleMapping(String role) {
 
         String realRole = null;
@@ -4007,6 +4126,7 @@ public class StandardContext
      * @return true if the specified security role is defined
      * for this application, false otherwise
      */
+    @Override
     public boolean hasSecurityRole(String role) {
         return securityRoles.contains(role);
     }
@@ -4014,6 +4134,7 @@ public class StandardContext
     /**
      * Removes any security roles defined for this application.
      */
+    @Override
     public void removeSecurityRoles() {
         // Inform interested listeners
         if (notifyContainerListeners) {
@@ -4031,6 +4152,7 @@ public class StandardContext
      *
      * @param pattern Pattern for which a mapping is requested
      */
+    @Override
     public String findServletMapping(String pattern) {
         synchronized (servletMappings) {
             return servletMappings.get(pattern);
@@ -4041,6 +4163,7 @@ public class StandardContext
      * Return the patterns of all defined servlet mappings for this
      * Context.  If no mappings are defined, a zero-length array is returned.
      */
+    @Override
     public String[] findServletMappings() {
         synchronized (servletMappings) {
             String results[] = new String[servletMappings.size()];
@@ -4055,6 +4178,7 @@ public class StandardContext
      *
      * @param status HTTP status code to look up
      */
+    @Override
     public ErrorPage findStatusPage(int status) {
         return statusPages.get(status);
     }
@@ -4064,6 +4188,7 @@ public class StandardContext
      * been specified.  If none are specified, a zero-length array
      * is returned.
      */
+    @Override
     public int[] findStatusPages() {
         synchronized (statusPages) {
             int results[] = new int[statusPages.size()];
@@ -4081,6 +4206,7 @@ public class StandardContext
      *
      * @param name Welcome file to verify
      */
+    @Override
     public boolean findWelcomeFile(String name) {
         synchronized (welcomeFiles) {
             for(String welcomeFile : welcomeFiles) {
@@ -4095,6 +4221,7 @@ public class StandardContext
     /**
      * Gets the watched resources defined for this web application.
      */
+    @Override
     public List<String> getWatchedResources() {
         return watchedResources;
     }
@@ -4103,6 +4230,7 @@ public class StandardContext
      * Return the set of welcome files defined for this Context.  If none are
      * defined, a zero-length array is returned.
      */
+    @Override
     public String[] findWelcomeFiles() {
         return (welcomeFiles);
     }
@@ -4111,6 +4239,7 @@ public class StandardContext
      * Return the list of LifecycleListener classes that will be added to
      * newly created Wrappers automatically.
      */
+    @Override
     public List<String> findWrapperLifecycles() {
         return wrapperLifecycles;
     }
@@ -4119,6 +4248,7 @@ public class StandardContext
      * Return the list of ContainerListener classes that will be added to
      * newly created Wrappers automatically.
      */
+    @Override
     public List<String> findWrapperListeners() {
         return wrapperListeners;
     }
@@ -4128,6 +4258,7 @@ public class StandardContext
      *
      * @return the Authenticator of this Context
      */
+    @Override
     public Authenticator getAuthenticator() {
         Pipeline p = getPipeline();
         if (p != null) {
@@ -4152,6 +4283,7 @@ public class StandardContext
      * @exception IllegalStateException if the <code>reloadable</code>
      *  property is set to <code>false</code>.
      */
+    @Override
     public synchronized void reload() {
 
         // Validate our current component state
@@ -4196,6 +4328,7 @@ public class StandardContext
      *
      * @param name Name of the application parameter to remove
      */
+    @Override
     public void removeApplicationParameter(String name) {
         ApplicationParameter match = null;
         Iterator<ApplicationParameter> i =
@@ -4238,6 +4371,7 @@ public class StandardContext
     /**
      * Removes any security constraints from this web application.
      */
+    @Override
     public void removeConstraints() {
         // Inform interested listeners
         if (notifyContainerListeners) {
@@ -4268,6 +4402,7 @@ public class StandardContext
      *
      * @param name Name of the environment entry to remove
      */
+    @Override
     public void removeEnvironment(String name) {
         if (namingResources == null) {
             return;
@@ -4288,6 +4423,7 @@ public class StandardContext
     /**
      * Removes any error page declarations.
      */
+    @Override
     public void removeErrorPages() {
         synchronized (exceptionPages) {
             if (notifyContainerListeners) {
@@ -4313,6 +4449,7 @@ public class StandardContext
      *
      * @param filterDef Filter definition to be removed
      */
+    @Override
     public void removeFilterDef(FilterDef filterDef) {
 
         synchronized (filterDefs) {
@@ -4327,6 +4464,7 @@ public class StandardContext
     /**
      * Removes any filter mappings from this Context.
      */
+    @Override
     public void removeFilterMaps() {
         // Inform interested listeners
         if (notifyContainerListeners) {
@@ -4344,6 +4482,7 @@ public class StandardContext
      *
      * @param listener Class name of an InstanceListener class to be removed
      */
+    @Override
     public void removeInstanceListener(String listener) {
         instanceListeners.remove(listener);
         // Inform interested listeners
@@ -4357,6 +4496,7 @@ public class StandardContext
      *
      * @param name Name of the EJB resource reference to remove
      */
+    @Override
     public void removeLocalEjb(String name) {
 
         namingResources.removeLocalEjb(name);
@@ -4402,6 +4542,7 @@ public class StandardContext
      *
      * @param extension Extension to remove the mapping for
      */
+    @Override
     public void removeMimeMapping(String extension) {
 
         synchronized (mimeMappings) {
@@ -4419,6 +4560,7 @@ public class StandardContext
      *
      * @param name Name of the parameter to remove
      */
+    @Override
     public void removeParameter(String name) {
 
         synchronized (parameters) {
@@ -4435,6 +4577,7 @@ public class StandardContext
      *
      * @param resourceName Name of the resource reference to remove
      */
+    @Override
     public void removeResource(String resourceName) {
         String decoded = URLDecoder.decode(resourceName);
         if (namingResources == null) {
@@ -4458,6 +4601,7 @@ public class StandardContext
      *
      * @param name Name of the resource environment reference to remove
      */
+    @Override
     public void removeResourceEnvRef(String name) {
 
         namingResources.removeResourceEnvRef(name);
@@ -4472,6 +4616,7 @@ public class StandardContext
      *
      * @param link Name of the resource link to remove
      */
+    @Override
     public void removeResourceLink(String link) {
         String decoded = URLDecoder.decode(link);
         if (namingResources == null) {
@@ -4495,6 +4640,7 @@ public class StandardContext
      *
      * @param role Security role (as used in the application) to remove
      */
+    @Override
     public void removeRoleMapping(String role) {
         synchronized (roleMappings) {
             roleMappings.remove(role);
@@ -4511,6 +4657,7 @@ public class StandardContext
      *
      * @param pattern URL pattern of the mapping to remove
      */
+    @Override
     public void removeServletMapping(String pattern) {
 
         String name = null;
@@ -6599,6 +6746,7 @@ public class StandardContext
      * Return the value of the specified context attribute, if any;
      * otherwise return <code>null</code>.
      */
+    @Override
     public Object getAttribute(String name) {
         return context.getAttribute(name);
     }
@@ -6606,7 +6754,7 @@ public class StandardContext
     /**
      * Return an enumeration of the names of the context attributes
      * associated with this context.
-     */
+     */@Override
     public Enumeration<String> getAttributeNames() {
         return context.getAttributeNames();
     }

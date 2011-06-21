@@ -110,120 +110,149 @@ public class ContextFacade extends WebModule implements Context {
         return docRoot;
     }
 
+    @Override
     public String getContextRoot() {
         return contextRoot;
     }
 
     // ------------------------------------------------- ServletContext Methods
-
+    @Override
     public String getContextPath() {
         return context.getContextPath();
     }
 
+    @Override
     public ServletContext getContext(String uripath) {
         return context.getContext(uripath);
     }
 
+    @Override
     public int getMajorVersion() {
         return context.getMajorVersion();
     }
 
+    @Override
     public int getMinorVersion() {
         return context.getMinorVersion();
     }
 
+    @Override
     public int getEffectiveMajorVersion() {
         return context.getEffectiveMajorVersion();
     }
 
+    @Override
     public int getEffectiveMinorVersion() {
         return context.getEffectiveMinorVersion();
     }
 
+    @Override
     public String getMimeType(String file) {
         return context.getMimeType(file);
     }
 
+    @Override
     public Set<String> getResourcePaths(String path) {
         return context.getResourcePaths(path);
     }
 
+    @Override
     public URL getResource(String path)
         throws MalformedURLException {
         return context.getResource(path);
     }
 
+    @Override
     public InputStream getResourceAsStream(String path) {
         return context.getResourceAsStream(path);
     }
 
+    @Override
     public RequestDispatcher getRequestDispatcher(final String path) {
         return context.getRequestDispatcher(path);
     }
 
+    @Override
     public RequestDispatcher getNamedDispatcher(String name) {
         return context.getNamedDispatcher(name);
     }
 
+    @Override
     public Servlet getServlet(String name) {
         return context.getServlet(name);
     }
 
+    @Override
     public Enumeration<Servlet> getServlets() {
         return context.getServlets();
     }
 
+    @Override
     public Enumeration<String> getServletNames() {
         return context.getServletNames();
-   }
+    }
+
+    @Override
     public void log(String msg) {
         context.log(msg);
     }
 
+    @Override
     public void log(Exception exception, String msg) {
         context.log(exception, msg);
     }
 
+    @Override
     public void log(String message, Throwable throwable) {
         context.log(message, throwable);
     }
 
+    @Override
     public String getRealPath(String path) {
         return context.getRealPath(path);
     }
 
+    @Override
     public String getServerInfo() {
         return context.getServerInfo();
     }
 
+    @Override
     public String getInitParameter(String name) {
         return context.getInitParameter(name);
     }
 
+    @Override
     public Enumeration<String> getInitParameterNames() {
         return context.getInitParameterNames();
     }
 
+    @Override
     public boolean setInitParameter(String name, String value) {
         return context.setInitParameter(name, value);
     }
 
+    @Override
     public Object getAttribute(String name) {
         return context.getAttribute(name);
-     }
+    }
 
+    @Override
     public Enumeration<String> getAttributeNames() {
         return context.getAttributeNames();
     }
 
+    @Override
     public void setAttribute(String name, Object object) {
         context.setAttribute(name, object);
     }
 
+    @Override
     public void removeAttribute(String name) {
         context.removeAttribute(name);
     }
 
+    @Override
     public String getServletContextName() {
         return context.getServletContextName();
     }

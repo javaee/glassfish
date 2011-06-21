@@ -46,6 +46,7 @@ package com.sun.enterprise.web;
  */
 public class AdHocWebModule extends WebModule {
 
+    @Override
     public boolean getConfigured() {
         return true;
     }
