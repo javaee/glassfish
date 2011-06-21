@@ -593,7 +593,7 @@ public class BundleProvisioner {
                             if (startLevels.containsKey(uri)) {
                                 logger.logp(Level.WARNING, "BundleProvisioner$DefaultCustomizer",
                                         "processStartLevels",
-                                        "Start level for {0} is already set as {1}. Changing it to {2}.",
+                                        "Can not set the start level for {0} to {2} as it is already set to {1}.",
                                         new Object[]{uri, startLevels.get(uri), startLevel});
                             } else {
                                 startLevels.put(uri, startLevel);
