@@ -199,7 +199,7 @@ public class ProxyModuleDefinition implements ModuleDefinition {
             if (index > 0 && url.getPath().length() > 5) {
               String path = url.getPath()
                   .substring(5, url.getPath().indexOf("!"));
-              File f = new File(path);
+              File f = new File(URLDecoder.decode(path));
               if (f.exists()) {
                 f = f.getCanonicalFile();
                 if (processedFiles.contains(f)) {
