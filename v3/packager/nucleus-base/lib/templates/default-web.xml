@@ -324,6 +324,21 @@
         jsf-impl.jar
         jspcaching-connector.jar
         web-glue.jar
+        bean-validator.jar
+        javax.ejb.jar
+        javax.enterprise.deploy.jar
+        javax.jms.jar
+        javax.mail.jar
+        javax.management.j2ee.jar
+        javax.persistence.jar
+        javax.resource.jar
+        javax.security.auth.message.jar
+        javax.security.jacc.jar
+        javax.transaction.jar
+        jaxrpc-api-osgi.jar
+        jersey-core.jar
+        webservices-osgi.jar
+        weld-osgi-bundle.jar
       </param-value>
     </init-param>
     <load-on-startup>3</load-on-startup>
