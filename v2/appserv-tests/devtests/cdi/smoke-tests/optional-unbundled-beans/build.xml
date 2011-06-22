@@ -36,10 +36,7 @@
 -->
 <!DOCTYPE project [
 <!ENTITY commonSetup SYSTEM "./../../../../config/properties.xml">
-<!--
 <!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
--->
-<!ENTITY commonBuild SYSTEM "../common.xml">
 <!ENTITY run SYSTEM "./../../../../config/run.xml">
 <!ENTITY testproperties SYSTEM "./build.properties">
 ]>
@@ -64,11 +61,15 @@
         <antcall target="compile-common">
             <param name="src" value="servlet"/>
         </antcall>
+
+        <!-- remove the class that needs to be unavailable in the deployment archive -->
+        <delete file="${build.classes.dir}/ClassUnavailableAtRuntime.class"/>
+ 
     </target>
 
     <target name="build" depends="compile">
         <property name="hasWebclient" value="yes"/> 
-        <antcall target="webclient-wab-common">
+        <antcall target="webclient-war-common">
             <param name="hasWebclient" value="yes"/>
             <param name="webclient.war.classes" value="**/*.class"/> 
         </antcall>
@@ -79,12 +80,9 @@
     </target> 
 
     <target name="build-publish-war" depends="build, publish-war-common" />
-   
+    
     <target name="deploy" depends="init-common">
-        <antcall target="deploy-wab-common"/>
-        <echo message="sleeping for 10 seconds to allow the WAB deployment"/>
-        <sleep seconds="10"/>
-
+        <antcall target="deploy-war-common"/>
     </target>
     
     <target name="run" depends="init-common">

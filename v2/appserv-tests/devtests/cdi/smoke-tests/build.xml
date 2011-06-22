@@ -108,6 +108,7 @@
             <ant dir="simple-wab-with-cdi" target="${smoke-target}"/>
             <ant dir="simple-ear" target="${smoke-target}"/>
             <ant dir="slf4j-visibility" target="${smoke-target}"/>
+            <ant dir="optional-unbundled-beans" target="${smoke-target}"/>
         <record name="smoke.output" action="stop" />
     </target>
 
