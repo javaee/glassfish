@@ -37,29 +37,44 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.jvnet.hk2.component;
 
-import com.sun.hk2.component.ExistingSingletonInhabitant;
+import java.util.ArrayList;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
-/**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 5/31/11
- * Time: 1:17 PM
- * To change this template use File | Settings | File Templates.
- */
-class InstanceBasedBinder<T> extends AbstractResolvedBinder<T> {
+import org.junit.Assert;
 
-    final T instance;
+public class LogHandler extends Handler {
+    public final ArrayList<LogRecord> publishedRecords = new ArrayList<LogRecord>();
 
-    public InstanceBasedBinder(BinderImpl<T> metadata, T instance) {
-        super(metadata);
-        this.instance = instance;
+    @Override
+    public void close() throws SecurityException {
     }
 
     @Override
-    void registerIn(Habitat habitat) {
-        super.registerIn(habitat, new ExistingSingletonInhabitant<T>(instance));
+    public void flush() {
     }
-}
+
+    public void clear() {
+	publishedRecords.clear();
+    }
+    
+    @Override
+    public void publish(LogRecord lr) {
+      publishedRecords.add(lr);
+    }
+
+    public void assertIsEmpty() {
+	Assert.assertTrue("expected no log messages but instead had: " + publishedRecords, publishedRecords.isEmpty());
+    }
+    
+    public void assertMessage(int i, Level level, String msg) {
+	Assert.assertTrue("expected message " + i + " to be present in: " + publishedRecords, publishedRecords.size() > i);
+	LogRecord record = publishedRecords.get(i);
+	Assert.assertEquals("level", level, record.getLevel());
+	Assert.assertEquals("message", msg, record.getMessage());
+    }
+  }
+

@@ -71,7 +71,7 @@ import java.util.logging.Logger;
  * @author Jerome Dochez
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class Habitat implements Services, Injector {
+public class Habitat implements Services, Injector, SimpleServiceLocator {
 
     private static final Logger logger = Logger.getLogger(Habitat.class.getName());
 
@@ -268,14 +268,18 @@ public class Habitat implements Services, Injector {
     }
 
     @Override
+    public ContractLocator<?> forContract(String contractName) {
+	return new ContractLocatorImpl(this, contractName, true);
+    }
+    
+    @Override
     public <U> ServiceLocator<U> byType(Class<U> type) {
 	return new ContractLocatorImpl<U>(this, type, false);
     }
 
     @Override
     public ServiceLocator<?> byType(String typeName) {
-	return null; // To change body of implemented methods use File |
-		     // Settings | File Templates.
+	return new ContractLocatorImpl(this, typeName, false);
     }
 
     /**
@@ -929,21 +933,15 @@ public class Habitat implements Services, Injector {
 	}
     }
 
-    /**
-     * Loads a component that implements the given contract and has the given
-     * name.
-     * 
-     * @param name
-     *            can be null, in which case it'll only match to the unnamed
-     *            component.
-     * @return null if no such servce exists.
-     */
+    @Override
     public <T> T getComponent(Class<T> contract, String name)
 	    throws ComponentException {
-	if (name != null && name.length() == 0)
+	if (name != null && name.length() == 0) {
 	    name = null;
+	}
+	
 	Inhabitant i = getInhabitant(contract, name);
-	if (i != null)
+	if (i != null) {
 	    try {
 		return contract.cast(i.get());
 	    } catch (ClassCastException e) {
@@ -955,18 +953,20 @@ public class Habitat implements Services, Injector {
 			+ i.get().getClass().getClassLoader());
 		throw e;
 	    }
-	else
+	} else {
 	    return null;
+	}
     }
 
-    public Object getComponent(String fullQualifiedName, String name) {
+    @Override
+    public <T> T getComponent(String fullQualifiedName, String name) {
 	if (name != null && name.length() == 0) {
 	    name = null;
 	}
-	Inhabitant i = isContract(fullQualifiedName) ? getInhabitantByContract(
-		fullQualifiedName, name)
+	Inhabitant i = isContract(fullQualifiedName) ? 
+			getInhabitantByContract(fullQualifiedName, name)
 		: getInhabitantByType(fullQualifiedName);
-	return i == null ? null : i.get();
+	return (T) (i == null ? null : i.get());
     }
 
     /**
@@ -1279,15 +1279,16 @@ public class Habitat implements Services, Injector {
 	return a.equals(b);
     }
 
-    /**
-     * Gets the object of the given type.
-     * 
-     * @return null if not found.
-     */
+    @Override
     public <T> T getByType(Class<T> implType) {
-	return getBy(implType, byType);
+	return (T)getBy(implType.getName(), byType);
     }
 
+    @Override
+    public <T> T getByType(String implType) {
+	return (T)getBy(implType, byType);
+    }
+    
     /**
      * Gets the object that has the given contract.
      * 
@@ -1304,15 +1305,15 @@ public class Habitat implements Services, Injector {
 	}
     }
 
-    private <T> T getBy(Class<T> implType, MultiMap<String, Inhabitant> index) {
-	List<Inhabitant> l = index.get(implType.getName());
+    private Object getBy(String implTypeName, MultiMap<String, Inhabitant> index) {
+	List<Inhabitant> l = index.get(implTypeName);
 	if (l.isEmpty()) {
 	    return null;
 	} else {
-	    return (T) l.get(0).get();
+	    return l.get(0).get();
 	}
     }
-
+    
     /**
      * Releases all the components. Should be called for orderly shut-down of
      * the system.

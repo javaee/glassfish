@@ -130,7 +130,7 @@
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
-   		<dependency>
+        <dependency>
         	<groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.3.1</version>
@@ -141,11 +141,17 @@
         	<groupId>org.glassfish.hk2.external</groupId>
             <artifactId>asm-all-repackaged</artifactId>
             <version>${project.version}</version>
-         </dependency>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>3.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <profiles>

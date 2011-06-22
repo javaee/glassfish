@@ -51,7 +51,7 @@ import org.jvnet.hk2.tracing.TracingUtilities;
 /**
  * @author Kohsuke Kawaguchi
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator<T> {
     private final static Logger logger = Logger.getLogger(AbstractCreatorImpl.class.getName());
   
