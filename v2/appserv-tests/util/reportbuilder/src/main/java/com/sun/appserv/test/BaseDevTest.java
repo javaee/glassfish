@@ -91,9 +91,13 @@ public abstract class BaseDevTest {
      *
      * @return true if successful
      */
-    public boolean asadmin(final String... args) {
-        asadminWithOutput(args);
+    public boolean asadmin(int timeout, final String... args) {
+        asadminWithOutput(timeout, args);
         return lastAsadminReturn.returnValue;
+    }
+
+    public boolean asadmin(final String... args) {
+        return asadmin(DEFAULT_TIMEOUT_MSEC, args);
     }
 
     /**
