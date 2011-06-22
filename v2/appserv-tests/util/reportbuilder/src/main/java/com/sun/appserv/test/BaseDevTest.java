@@ -105,6 +105,9 @@ public abstract class BaseDevTest {
      * @return true if successful
      */
     public AsadminReturn asadminWithOutput(final String... args) {
+        return asadminWithOutput(DEFAULT_TIMEOUT_MSEC, args);
+    }
+    public AsadminReturn asadminWithOutput(final int timeout, final String... args) {
         AsadminReturn ret = new AsadminReturn();
         String cmd = isWindows() ? "/bin/asadmin.bat" : "/bin/asadmin";
         List<String> command = new ArrayList<String>();
@@ -115,7 +118,7 @@ public abstract class BaseDevTest {
         ProcessManager pm = new ProcessManager(command);
 
         // the tests may be running unattended -- don't wait forever!
-        pm.setTimeoutMsec(DEFAULT_TIMEOUT_MSEC);
+        pm.setTimeoutMsec(timeout);
 
         pm.setEcho(false);
         int exit;
@@ -124,7 +127,7 @@ public abstract class BaseDevTest {
             exit = pm.execute();
         }
         catch (ProcessManagerTimeoutException tex) {
-            myErr = "\nProcessManagerTimeoutException: command timed out after " + DEFAULT_TIMEOUT_MSEC + " ms.";
+            myErr = "\nProcessManagerTimeoutException: command timed out after " + timeout + " ms.";
             exit = 1;
         }
         catch (ProcessManagerException ex) {
