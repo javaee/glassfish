@@ -335,10 +335,19 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
                 while (entries.hasMoreElements()) {
                     String entry = entries.nextElement();
                     if (entry.endsWith(CLASS_SUFFIX)) {
-                        entry = entry.substring(WEB_INF_CLASSES.length()+1);
+                        if (entry.contains(WEB_INF_CLASSES)) { 
+                            //Workaround for incorrect WARs that bundle classes above WEB-INF/classes
+                            //[See. GLASSFISH-16706]
+                            entry = entry.substring(WEB_INF_CLASSES.length()+1);
+                        }
                         String className = filenameToClassname(entry);
-                        beanClasses.add(getClassLoader().loadClass(className));
-                        moduleClasses.add(getClassLoader().loadClass(className));
+                        try {
+                            beanClasses.add(getClassLoader().loadClass(className));
+                            moduleClasses.add(getClassLoader().loadClass(className));
+                        } catch (Throwable t) {
+                            logger.log(Level.WARNING, "Error while trying to " +
+                            		"load Bean Class" + className + " : " + t.toString());
+                        }
                     } else if (entry.endsWith("beans.xml")) {
                         URI uri = archive.getURI();
                         File file = new File(uri.getPath() + entry);
@@ -477,12 +486,18 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     private void handleEntry(String entry, boolean isBeanArchive) throws ClassNotFoundException {
         if (entry.endsWith(CLASS_SUFFIX)) {
             String className = filenameToClassname(entry);
-            if (isBeanArchive) {
-                //If the jar is a bean archive, add the class as Bean class also.
-                beanClasses.add(getClassLoader().loadClass(className));
-            } 
-            //add the class as a module class
-            moduleClasses.add(getClassLoader().loadClass(className));
+            try {
+                if (isBeanArchive) {
+                    //If the jar is a bean archive, add the class as Bean class also.
+                    beanClasses.add(getClassLoader().loadClass(className));
+                } 
+                //add the class as a module class
+                moduleClasses.add(getClassLoader().loadClass(className));
+            } catch (Throwable t) {
+                logger.log(Level.WARNING, 
+                        "Error while trying to load Bean Class " 
+                        + className + " : " + t.toString());
+            }
         } else if (entry.endsWith("beans.xml")) {
             try {
                 URL beansXmlUrl = Thread.currentThread().getContextClassLoader().getResource(entry);
