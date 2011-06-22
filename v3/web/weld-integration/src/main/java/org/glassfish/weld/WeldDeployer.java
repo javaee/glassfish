@@ -243,18 +243,56 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
      */
     private void fireProcessInjectionTargetEvents(WeldBootstrap bootstrap, DeploymentImpl impl) {
         List<BeanDeploymentArchive> bdaList = impl.getBeanDeploymentArchives();
+        boolean isFullProfile = false;
+        Class<?> messageListenerClass = null;
+        
+        //Web-Profile and other lighter distributions would not ship the JMS
+        //API and implementations. So, the weld-integration layer cannot
+        //have a direct dependency on the JMS API
+        try {
+            messageListenerClass = Thread.currentThread().getContextClassLoader().
+                                            loadClass("javax.jms.MessageListener");
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("javax.jms.MessageListener Class available, so " +
+                		"need to fire PIT events to MDBs");
+            }
+            isFullProfile = true;
+        } catch (ClassNotFoundException cnfe){
+            //ignore cnfe
+            isFullProfile = false;
+        }
+        
         for(BeanDeploymentArchive bda : bdaList) {
             Collection<Class<?>> bdaClasses = ((BeanDeploymentArchiveImpl)bda).getBeanClassObjects();
             for(Class<?> bdaClazz: bdaClasses) {
                 for(Class<?> nonClazz : NON_CONTEXT_CLASSES) {
                     if (nonClazz.isAssignableFrom(bdaClazz)) {
-                        AnnotatedType at = bootstrap.getManager(bda).createAnnotatedType(bdaClazz);
-                        InjectionTarget<?> it = bootstrap.getManager(bda).fireProcessInjectionTarget(at);
-                        ((BeanDeploymentArchiveImpl)bda).putInjectionTarget(at, it);
+                        firePITEvent(bootstrap, bda, bdaClazz);
+                    }
+                }
+                
+                //For distributions that have the JMS API, an MDB is a valid 
+                //non-contextual EE component to which we have to 
+                //fire <code>ProcessInjectionTarget</code>
+                //events (see GLASSFISH-16730)
+                if (isFullProfile) {
+                    if (messageListenerClass.isAssignableFrom(bdaClazz)) {
+                        if (_logger.isLoggable(Level.FINE)) {
+                            _logger.fine(bdaClazz + " is an MDB and so need " +
+                            		"to fire a PIT event to it");
+                        }
+                        firePITEvent(bootstrap, bda, bdaClazz);
                     }
                 }
             }
         }
+    }
+
+    private void firePITEvent(WeldBootstrap bootstrap,
+            BeanDeploymentArchive bda, Class<?> bdaClazz) {
+        AnnotatedType at = bootstrap.getManager(bda).createAnnotatedType(bdaClazz);
+        InjectionTarget<?> it = bootstrap.getManager(bda).fireProcessInjectionTarget(at);
+        ((BeanDeploymentArchiveImpl)bda).putInjectionTarget(at, it);
     }
 
     public BeanDeploymentArchive getBeanDeploymentArchiveForBundle(BundleDescriptor bundle) {
