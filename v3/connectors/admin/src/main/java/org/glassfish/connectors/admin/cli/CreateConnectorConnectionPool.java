@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -108,7 +108,7 @@ public class CreateConnectorConnectionPool implements AdminCommand {
     @Param(name=CCP_LEAK_TIMEOUT, alias="connectionLeakTimeoutInSeconds", optional=true, defaultValue="0")
     String leaktimeout = "0";
 
-    @Param(name=CCP_LEAK_RECLAIM, alias="connectioLeakReclaim", optional=true, defaultValue="false")
+    @Param(name=CCP_LEAK_RECLAIM, alias="connectionLeakReclaim", optional=true, defaultValue="false")
     Boolean leakreclaim;
 
     @Param(name=CCP_CON_CREATION_RETRY_ATTEMPTS, alias="connectionCreationRetryAttempts", optional=true, defaultValue="0")
@@ -138,7 +138,7 @@ public class CreateConnectorConnectionPool implements AdminCommand {
     @Param(name=CCP_POOLING, optional=true, defaultValue="true")
     Boolean pooling;
 
-    @Param(name=CCP_VALIDATE_ATMOST_PERIOD, alias="validateAtmostOncePeriodInSeconds", optional=true)
+    @Param(name=CCP_VALIDATE_ATMOST_PERIOD, alias="validateAtmostOncePeriodInSeconds", optional=true, defaultValue="0")
     String validateatmostonceperiod;
 
     @Param(name=CCP_TXN_SUPPORT, alias="transactionSupport", acceptableValues="XATransaction,LocalTransaction,NoTransaction", optional=true)
