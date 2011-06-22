@@ -128,11 +128,11 @@
         <uc-pkg-client.version>1.122-54.2834</uc-pkg-client.version>
         <uc-pkg-bootstrap.version>1.122-54.2834</uc-pkg-bootstrap.version>
 
-        <webservices.version>2.1.1-b06</webservices.version>
+        <webservices.version>2.1.1-b07</webservices.version>
         <woodstox.version>4.1.1</woodstox.version>
         <woodstox-stax2.version>3.1.1</woodstox-stax2.version>
         <jaxb-api.version>2.2.3</jaxb-api.version>
-        <jaxb.version>2.2.4</jaxb.version>
+        <jaxb.version>2.2.4-1</jaxb.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
         <jaxrpc-api-osgi.version>1.1-b01</jaxrpc-api-osgi.version>
 
