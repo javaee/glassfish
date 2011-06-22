@@ -40,12 +40,11 @@
 
 package org.jvnet.hk2.component;
 
-import com.sun.hk2.component.ExistingSingletonInhabitant;
-import org.glassfish.hk2.*;
-import org.glassfish.hk2.Scope;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.glassfish.hk2.ResolvedBinder;
+import org.glassfish.hk2.Scope;
 
 /**
  * Created by IntelliJ IDEA.

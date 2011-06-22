@@ -43,18 +43,50 @@ package org.glassfish.hk2;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 
+/**
+ * A Descriptor is a bean-like structure that describes a service
+ * declaration in HK2.
+ * 
+ * <p>
+ * Services have a number of optional attributes such as name and scope.
+ * A service is required to minimally have a type name representing the
+ * concrete (i.e., byType) definition.
+ * 
+ * @author Jerome Dochez
+ * @author Jeff Trent
+ * @author Mason Taube
+ */
 public interface Descriptor {
 
-  String getName();
+    /**
+     * The optional name for the service.
+     */
+    String getName();
 
-  Scope getScope();
+    /**
+     * The optional scoping for the service.
+     */
+    Scope getScope();
 
-  MultiMap<String, String> metadata();
+    /**
+     * The meta data attributes for the service. 
+     */
+    MultiMap<String, String> metadata();
   
-  Collection<Class<? extends Annotation>> getAnnotations();
+    /**
+     * The "extra" annotations on the service.
+     */
+    // TODO: this is the only exception to using classes instead of serializable string names.  Can we use String here instead for consistency?  Nothing that this is the way it will be serialized.  Would prefer not to assume a classloading model -- jtrent
+    Collection<Class<? extends Annotation>> getAnnotations();
   
-  Collection<String> getContracts();
-  
-  String getTypeName();
+    /**
+     * The contracts that are used to index the service definition.
+     */
+    Collection<String> getContracts();
+
+    /**
+     * The implementation definition type.
+     */
+    String getTypeName();
 
 }

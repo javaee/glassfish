@@ -39,12 +39,16 @@
  */
 package org.jvnet.hk2.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import org.junit.BeforeClass;
@@ -54,6 +58,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.LogHandler;
 import org.jvnet.hk2.junit.Hk2Runner;
 import org.jvnet.hk2.test.contracts.DummyContract;
 import org.jvnet.hk2.test.contracts.ErrorThrowingContract;
@@ -61,7 +66,16 @@ import org.jvnet.hk2.test.contracts.Simple;
 import org.jvnet.hk2.test.contracts.SimpleGetter;
 import org.jvnet.hk2.test.contracts.TestingInfoService;
 import org.jvnet.hk2.test.contracts.TestingInfoService2;
-import org.jvnet.hk2.test.impl.*;
+import org.jvnet.hk2.test.impl.OneSimple;
+import org.jvnet.hk2.test.impl.PerLookupService;
+import org.jvnet.hk2.test.impl.PerLookupServiceNested1;
+import org.jvnet.hk2.test.impl.PerLookupServiceNested2;
+import org.jvnet.hk2.test.impl.PerLookupServiceNested3;
+import org.jvnet.hk2.test.impl.RandomService;
+import org.jvnet.hk2.test.impl.RandomSimpleService;
+import org.jvnet.hk2.test.impl.ServiceByContextualFactory;
+import org.jvnet.hk2.test.impl.ServiceByFactory;
+import org.jvnet.hk2.test.impl.TwoSimple;
 
 import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.LazyInhabitant;
@@ -362,22 +376,4 @@ public class ExtendedInjectTest {
     // }
   }
   
-  
-  static class LogHandler extends Handler {
-    final ArrayList<LogRecord> publishedRecords = new ArrayList<LogRecord>();
-
-    @Override
-    public void close() throws SecurityException {
-    }
-
-    @Override
-    public void flush() {
-    }
-
-    @Override
-    public void publish(LogRecord lr) {
-      publishedRecords.add(lr);
-    }
-  }
-
 }

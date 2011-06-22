@@ -37,29 +37,53 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.jvnet.hk2.component;
 
-import com.sun.hk2.component.ExistingSingletonInhabitant;
-
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 5/31/11
- * Time: 1:17 PM
- * To change this template use File | Settings | File Templates.
+ * Provide a simple abstraction for getting services by contract or type.
+ *
+ * @author Jerome Dochez
+ * @author Jeff Trent
  */
-class InstanceBasedBinder<T> extends AbstractResolvedBinder<T> {
+public interface SimpleServiceLocator {
 
-    final T instance;
+    /**
+     * Loads a component that implements the given contract and has the given
+     * name.
+     * 
+     * @param name
+     *            can be null, in which case it'll only match to the unnamed
+     *            component.
+     * @return null if no such service exists.
+     */
+    <T> T getComponent(Class<T> contract, String name) throws ComponentException;
 
-    public InstanceBasedBinder(BinderImpl<T> metadata, T instance) {
-        super(metadata);
-        this.instance = instance;
-    }
+    /**
+     * Analogous to the following:
+     * <pre>
+     * getComponent(contractClass.getName(), name);
+     * </pre>
 
-    @Override
-    void registerIn(Habitat habitat) {
-        super.registerIn(habitat, new ExistingSingletonInhabitant<T>(instance));
-    }
+     * @param fullQualifiedName the contract class name
+     * @param name
+     *            can be null, in which case it'll only match to the unnamed
+     *            component.
+     * @return null if no such service exists.
+     */
+    <T> T getComponent(String fullQualifiedName, String name);
+    
+    /**
+     * Gets the object of the given type.
+     * 
+     * @return null if not found.
+     */
+    <T> T getByType(Class<T> implType);
+
+    /**
+     * Gets the object of the given type.
+     * 
+     * @return null if not found.
+     */
+    <T> T getByType(String implType);
+    
 }
