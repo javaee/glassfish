@@ -211,7 +211,8 @@ public class GlassFishNamingBuilder implements InitialContextFactoryBuilder, Sta
     {
         try
         {
-            Field f = NamingManager.class.getDeclaredField("initctx_factory_builder");
+            final String fieldName = ifIbmJava() ? "icfb" : "initctx_factory_builder";
+            Field f = NamingManager.class.getDeclaredField(fieldName);
             f.setAccessible(true);
             f.set(null, null);
         }
@@ -223,6 +224,10 @@ public class GlassFishNamingBuilder implements InitialContextFactoryBuilder, Sta
         {
             throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
         }
+    }
+
+    private boolean ifIbmJava() {
+        return System.getProperty("java.vendor", "").equals("IBM Corporation");
     }
 
     /**
