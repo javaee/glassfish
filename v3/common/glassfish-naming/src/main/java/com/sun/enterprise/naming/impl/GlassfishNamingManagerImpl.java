@@ -395,7 +395,11 @@ public final class  GlassfishNamingManagerImpl
         } else {
             if (o instanceof NamingObjectProxy) {
                 NamingObjectProxy namingProxy = (NamingObjectProxy) o;
-                o = namingProxy.create(initialContext);
+                InitialContext ic = initialContext;
+                if(env != null){
+                    ic = new InitialContext(env);
+                }
+                o = namingProxy.create(ic);
             } else if (o instanceof Reference) {
                 try {
                     o = getObjectInstance(name, o, env);
