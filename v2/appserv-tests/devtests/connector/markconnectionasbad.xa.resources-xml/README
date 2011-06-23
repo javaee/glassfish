@@ -1,6 +1,8 @@
 Copy of dev-test from jdbc-devtests, in order
 to have a monitoring test for application scoped connection pools
 
+Test case for issue : GLASSFISH-16898
+
 
 This devtest tries to test whether the appserver 
 destroys the connection when it is marked as bad.
