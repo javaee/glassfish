@@ -370,6 +370,9 @@
         <echo message="@@## ejb30mdb-resources-xml ##@@"/>
         <ant dir="./../mq/ejb30mdb-resources-xml" target="all"/>
 
+        <echo message="@@## markconnectionasbad.xa.resources-xml ##@@"/>
+        <ant dir="./../markconnectionasbad.xa.resources-xml" target="all"/>
+
         <record name="glassfish-resources-xml-tests.output" action="stop"/>
 
     </target>
