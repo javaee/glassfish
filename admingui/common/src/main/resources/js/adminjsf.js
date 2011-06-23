@@ -1904,21 +1904,21 @@ admingui.deploy = {
         }
 
         if (typeof(appName) != 'undefined' ) {
+            //appName should be up to the last dot. eg. tmpName of  hello.123.war should be hello.123
+            var ix = appName.lastIndexOf(".");
+            if (ix != -1){
+                appName = appName.substring(0, ix);
+            }
             admingui.deploy.setAppName(appNameId, appName, obj, appTypeString);
             //may as well set context root if it exist.
             var component = obj.document.getElementById(contextRootId);
             if (component != null){
-                component.value = getPrefix(appName);
+                component.value = appName;
             }
         }
     },
 
     setAppName : function (appNameId, appName, obj, appTypeString){
-
-        var pfex = getPrefix(appName);
-        var sfex = getSuffix(appName);
-
-        var sfex2 = sfex.substr(1);   //remove the '.'
         // Fill in application name
         if (appNameId==null || appNameId.length <=0){
         // shouldn't be.
@@ -1930,7 +1930,7 @@ admingui.deploy = {
             for( idx=0; idx < sheets.length; idx++){
                 var comp = obj.document.getElementById('form:'+sheets[idx]+str3);
                 if (comp != null){
-                    comp.value=pfex;
+                    comp.value=appName;
                 }
             }
         }
