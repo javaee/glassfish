@@ -103,6 +103,7 @@
         <property name="force" value="false"/>
         <exec executable="${ASADMIN}" failonerror="false">
         <arg line="deploy"/>
+        <arg line="${as.props}"/>
         <arg line="--contextroot &quot;/&quot;"/>
         <arg line="--name=test"/>
         <arg line="--precompilejsp=${precompilejsp}"/>
