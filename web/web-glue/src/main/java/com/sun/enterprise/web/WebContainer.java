@@ -1049,9 +1049,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     connector.setTcpNoDelay(ConfigBeansUtilities.toBoolean(propValue));
                 } else if ("traceEnabled".equals(propName)) {
                     connector.setAllowTrace(ConfigBeansUtilities.toBoolean(propValue));
-                } else if ("authPassthroughEnabled".equals(propName)) {
-                    connector.setAuthPassthroughEnabled(
-                            ConfigBeansUtilities.toBoolean(propValue));
                 } else if ("ssl-session-timeout".equals(propName)) {
                     connector.setSslSessionTimeout(propValue);
                 } else if ("ssl3-session-timeout".equals(propName)) {
