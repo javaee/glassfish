@@ -73,7 +73,7 @@ public class RestConfigChangeListener implements ConfigListener {
         this.habitat = habitat;
 
 
-        RestConfig target = getRestConfig(habitat);
+        RestConfig target = ResourceUtil.getRestConfig(habitat);
 
         if (target != null) {
             ((ObservableBean) ConfigSupport.getImpl(target)).addListener(this);
@@ -92,7 +92,7 @@ public class RestConfigChangeListener implements ConfigListener {
             rc.getContainerRequestFilters().clear();
             rc.getFeatures().put(ResourceConfig.FEATURE_DISABLE_WADL, Boolean.FALSE);
 
-            RestConfig restConf = getRestConfig(habitat);
+            RestConfig restConf = ResourceUtil.getRestConfig(habitat);
             if (restConf != null) {
                 if (restConf.getLogOutput().equalsIgnoreCase("true")) { //enable output logging
                     rc.getContainerResponseFilters().add(LoggingFilter.class);
@@ -111,21 +111,5 @@ public class RestConfigChangeListener implements ConfigListener {
             Thread.currentThread().setContextClassLoader(originalContextClassLoader);
         }
         return null;
-    }
-
-    static public RestConfig getRestConfig(Habitat habitat) {
-        if (habitat == null) {
-            return null;
-        }
-        Domain domain = habitat.getComponent(Domain.class);
-        if (domain != null) {
-            Config config = domain.getConfigNamed("server-config");
-            if (config != null) {
-                return config.getExtensionByType(RestConfig.class);
-
-            }
-        }
-        return null;
-
     }
 }

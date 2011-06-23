@@ -113,7 +113,7 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
     public abstract String getContent(T proxy);
 
     protected int getFormattingIndentLevel() {
-        RestConfig rg = getRestConfig();
+        RestConfig rg = ResourceUtil.getRestConfig(habitat);
         if (rg == null){
             return -1;
         }
@@ -123,15 +123,12 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
         
     }
     
-    protected RestConfig getRestConfig() {
-        return ResourceUtil.getRestConfig(habitat);
-    }
      /*
      * returns true if the HTML viewer displays the hidden CLI command links
      */   
     protected boolean canShowHiddenCommands() {
 
-        RestConfig rg = getRestConfig();
+        RestConfig rg = ResourceUtil.getRestConfig(habitat);
         if ((rg != null) && (rg.getShowHiddenCommands().equalsIgnoreCase("true"))) {
             return true;
         }
@@ -145,7 +142,7 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
         
     protected boolean canShowDeprecatedItems() {
 
-        RestConfig rg = getRestConfig();
+        RestConfig rg = ResourceUtil.getRestConfig(habitat);
         if ((rg != null) && (rg.getShowDeprecatedItems().equalsIgnoreCase("true"))) {
             return true;
         }
@@ -156,7 +153,7 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
      */
     protected boolean isDebug() {
 
-        RestConfig rg = getRestConfig();
+        RestConfig rg = ResourceUtil.getRestConfig(habitat);
         if ((rg != null) && (rg.getDebug().equalsIgnoreCase("true"))) {
             return true;
         }

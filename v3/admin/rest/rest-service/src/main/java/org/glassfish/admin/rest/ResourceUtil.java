@@ -100,6 +100,7 @@ import static org.glassfish.admin.rest.provider.ProviderUtil.getElementLink;
 public class ResourceUtil {
     private final static String QUERY_PARAMETERS = "queryParameters";
     private final static String MESSAGE_PARAMETERS = "messageParameters";
+    private static RestConfig restConfig = null;
 
     //TODO this is copied from org.jvnet.hk2.config.Dom. If we are not able to encapsulate the conversion in Dom, need to make sure that the method convertName is refactored into smaller methods such that trimming of prefixes stops. We will need a promotion of HK2 for this.
     static final Pattern TOKENIZER;
@@ -1023,19 +1024,21 @@ public class ResourceUtil {
     }
 
      public static RestConfig getRestConfig(Habitat habitat) {
-        if (habitat == null) {
-            return null;
-        }
-        Domain domain = habitat.getComponent(Domain.class);
-        if (domain != null) {
-            Config config = domain.getConfigNamed("server-config");
-            if (config != null) {
-                return config.getExtensionByType(RestConfig.class);
+        if (restConfig == null) {
+            if (habitat == null) {
+                return null;
+            }
+            Domain domain = habitat.getComponent(Domain.class);
+            if (domain != null) {
+                Config config = domain.getConfigNamed("server-config");
+                if (config != null) {
+                    restConfig = config.getExtensionByType(RestConfig.class);
 
+                }
             }
         }
-        return null;
 
+        return restConfig;
     }
     /*
      * returns true if the HTML viewer displays the deprecated elements or attributes

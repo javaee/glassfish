@@ -63,8 +63,6 @@ public interface LazyJerseyInterface {
     HttpHandler exposeContext(Set classes, ServerContext sc, Habitat habitat)
             throws EndpointRegistrationException;
 
-    RestConfig getRestConfig(Habitat habitat);
-
     void reportError(Request req, Response res, int statusCode, String msg);
 
     Set<Class<?>> getResourcesConfigForMonitoring(Habitat habitat);

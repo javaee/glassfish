@@ -40,8 +40,6 @@
 
 package org.glassfish.admin.rest;
 
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.Domain;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Map;
@@ -129,21 +127,6 @@ public class SessionManager {
         }
     }
 
-    private RestConfig getRestConfig() {
-        if (restConfig == null) {
-            Domain domain = habitat.getComponent(Domain.class);
-            if (domain != null) {
-                Config config = domain.getConfigNamed("server-config");
-                if (config != null) {
-                    restConfig = config.getExtensionByType(RestConfig.class);
-
-                }
-            }
-        }
-        return restConfig;
-    }
-
-
     private boolean isSessionExist(String sessionId) {
         return activeSessions.containsKey(sessionId);
     }
@@ -164,7 +147,7 @@ public class SessionManager {
          */
         public boolean isSessionActive() {
             long inactiveSessionLifeTime = 30 /*mins*/ * 60 /*secs/min*/ * 1000 /*milis/seconds*/;
-            RestConfig restConfig = getRestConfig();
+            RestConfig restConfig = ResourceUtil.getRestConfig(habitat);
             if (restConfig != null) {
                 inactiveSessionLifeTime = Integer.parseInt(restConfig.getSessionTokenTimeout()) * 60000; // minutes * 60 seconds * 1000 millis
             }

@@ -111,7 +111,7 @@ public class LazyJerseyInit implements LazyJerseyInterface {
         rc.getMediaTypeMappings().put("html", MediaType.TEXT_HTML_TYPE);
         rc.getMediaTypeMappings().put("js", new MediaType("application", "x-javascript"));
 
-        RestConfig restConf = getRestConfig(habitat);
+        RestConfig restConf = ResourceUtil.getRestConfig(habitat);
         if (restConf != null) {
             if (restConf.getLogOutput().equalsIgnoreCase("true")) { //enable output logging
                 rc.getContainerResponseFilters().add(LoggingFilter.class);
@@ -149,23 +149,6 @@ public class LazyJerseyInit implements LazyJerseyInterface {
         //add a rest config listener for possible reload of Jersey
         new RestConfigChangeListener(habitat, r, rc, sc);
         return httpHandler;
-    }
-
-    @Override
-    public RestConfig getRestConfig(Habitat habitat) {
-        if (habitat == null) {
-            return null;
-        }
-        Domain domain = habitat.getComponent(Domain.class);
-        if (domain != null) {
-            Config config = domain.getConfigNamed("server-config");
-            if (config != null) {
-                return config.getExtensionByType(RestConfig.class);
-
-            }
-        }
-        return null;
-
     }
 
     @Override
@@ -270,6 +253,7 @@ public class LazyJerseyInit implements LazyJerseyInterface {
         //r.add(ActionReportResource.class);
 
         r.add(domainResourceClass);
+//        r.add(DomainResource.class);
         r.add(ManagementProxyResource.class);
         r.add(org.glassfish.admin.rest.resources.SessionsResource.class); //TODO this needs to be added to all rest adapters that want to be secured. Decide on it after the discussion to unify RestAdapter is concluded
         r.add(org.glassfish.admin.rest.resources.StaticResource.class);
