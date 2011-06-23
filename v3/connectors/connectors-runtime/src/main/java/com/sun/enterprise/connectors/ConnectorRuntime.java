@@ -42,6 +42,7 @@ package com.sun.enterprise.connectors;
 
 import com.sun.appserv.connectors.internal.api.ResourceNamingService;
 import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.connectors.module.ResourcesDeployer;
 import com.sun.enterprise.connectors.util.*;
 
 import java.io.IOException;
@@ -1068,50 +1069,17 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
 
     public ResourcePool getConnectionPoolConfig(PoolInfo poolInfo) {
 
-/*        if(ConnectorsUtil.isApplicationScopedResource(poolInfo)){
-            String applicationName = ConnectorsUtil.getApplicationName(poolInfo);
-            Resources asc = getApplications().getApplication(applicationName).
-                    getResources();
-            poolInfo = ConnectorsUtil.getResourceNameFromApplicationScopedResourceName(poolInfo);
-            ResourcePool pool = ConnectorsUtil.getConnectionPoolConfig(poolInfo, asc);
-            if(pool == null && poolInfo.startsWith(JAVA_APP_SCOPE_PREFIX)){
-                String name = poolInfo.substring(poolInfo.indexOf(JAVA_APP_SCOPE_PREFIX) + JAVA_APP_SCOPE_PREFIX.length());
-                pool = ConnectorsUtil.getConnectionPoolConfig(name, asc);
-                if(pool == null){
-                    throw new RuntimeException("No pool by name ["+poolInfo+"] found for application ["+applicationName+"]");
-                }
+            ResourcePool pool  = ResourcesUtil.createInstance().getPoolConfig(poolInfo);
+            if(pool == null && (ConnectorsUtil.isApplicationScopedResource(poolInfo) ||
+                    ConnectorsUtil.isModuleScopedResource(poolInfo))){
+                //it is possible that the application scoped resources is being deployed
+                Resources asc = ResourcesDeployer.getResources(poolInfo.getApplicationName(), poolInfo.getModuleName());
+                pool = ConnectorsUtil.getConnectionPoolConfig(poolInfo, asc);
             }
-            return pool;
-        }*/
-        //TODO ASR use ResourcesUtil to get pool config ?
-        if(ConnectorsUtil.isApplicationScopedResource(poolInfo) || ConnectorsUtil.isModuleScopedResource(poolInfo)){
-            String applicationName = poolInfo.getApplicationName();
-            String moduleName = poolInfo.getModuleName();
-            Resources asc = null;
-            if(applicationName != null && moduleName != null){
-                asc = getApplications().getApplication(applicationName).getModule(moduleName).getResources(); 
-            }else if(applicationName != null){
-                asc = getApplications().getApplication(applicationName).getResources();
-            }
-            //poolInfo = ConnectorsUtil.getResourceNameFromApplicationScopedResourceName(poolInfo);
-            ResourcePool pool = ConnectorsUtil.getConnectionPoolConfig(poolInfo, asc);
-
-/*
-            if(pool == null && poolInfo.startsWith(JAVA_APP_SCOPE_PREFIX)){
-                String name = poolInfo.substring(poolInfo.indexOf(JAVA_APP_SCOPE_PREFIX) + JAVA_APP_SCOPE_PREFIX.length());
-                pool = ConnectorsUtil.getConnectionPoolConfig(name, asc);
-                if(pool == null){
-                    throw new RuntimeException("No pool by name ["+poolInfo+"] found for applicaton ["+applicationName+"]");
-                }
-            }
-*/
             if(pool == null){
-                throw new RuntimeException("No pool by name ["+poolInfo+"] found for applicaton ["+applicationName+"]");
+                throw new RuntimeException("No pool by name [ "+poolInfo+" ] found");
             }
             return pool;
-        }else{
-            return ConnectorsUtil.getConnectionPoolConfig(poolInfo, getResources());
-        }
     }
 
     public boolean pingConnectionPool(PoolInfo poolInfo) throws ResourceException {
