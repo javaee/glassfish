@@ -42,9 +42,6 @@ package com.sun.enterprise.tools.apt;
 import com.sun.enterprise.tools.InhabitantsDescriptor;
 import com.sun.hk2.component.InhabitantsFile;
 
-import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
-import static com.sun.hk2.component.InhabitantsFile.QUALIFIER_KEY;
-import static com.sun.hk2.component.InhabitantsFile.TARGET_TYPE;
 import com.sun.mirror.apt.AnnotationProcessor;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.apt.RoundCompleteEvent;
@@ -60,6 +57,8 @@ import org.jvnet.hk2.component.MultiMap;
 import javax.inject.Qualifier;
 import java.util.*;
 import java.lang.annotation.Annotation;
+
+import static com.sun.hk2.component.InhabitantsFile.*;
 
 /**
  * Generates <tt>/META-INF/inhabitants/*</tt>

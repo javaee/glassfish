@@ -92,6 +92,8 @@ public interface Locator {
      * @return a contract locator
      */
     ContractLocator<?> forContract(String contractName);
+
+    <U> ContractLocator<U> forContract(TypeLiteral<U> typeLiteral);
     
     /**
      * Retrieve a service locator via a concrete service class type.

@@ -107,6 +107,11 @@ public class TypesTest {
 
         TypeLiteral<Map<RoutesBuilder<Pattern, PathPattern>, String>> pathPatternRouteBuilderType2 = new TypeLiteral<Map<RoutesBuilder<Pattern, PathPattern>, String>>() {};
         explore(pathPatternRouteBuilderType2.getClass().getGenericSuperclass());
+        System.out.println("Second explore");
+        exploreType(pathPatternRouteBuilderType2);
+
+        exploreType(new TypeLiteral<Integer>() {});
+
 
         if (services!=null) {
             services.bindDynamically().bind(Pattern.class).to(PathPattern.class);
@@ -135,5 +140,9 @@ public class TypesTest {
         } else {
             System.out.print(TypeLiteral.getRawType(type).getName());
         }
+    }
+
+    private void exploreType(TypeLiteral<?> typeLiteral) {
+        explore(typeLiteral.getType());
     }
 }

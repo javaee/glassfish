@@ -95,7 +95,9 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
 
     @Override
     public <T extends V> ResolvedBinder<T> to(TypeLiteral<T> typeLiteral) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        AbstractResolvedBinder<T> resolvedBinder = new TypeLiteralBasedBinder<T>((BinderImpl<T>)  this, typeLiteral);
+        owner.add(resolvedBinder);
+        return resolvedBinder;
     }
 
     @Override

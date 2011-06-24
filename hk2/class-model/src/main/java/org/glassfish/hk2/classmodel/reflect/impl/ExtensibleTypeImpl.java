@@ -53,6 +53,8 @@ public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeI
     private TypeProxy<?> parent;
     private final List<FieldModel> staticFields = new ArrayList<FieldModel> ();
     private final List<TypeProxy<InterfaceModel>> implementedIntf = new ArrayList<TypeProxy<InterfaceModel>>();
+    private final List<ParameterizedInterfaceModel> implementedParameterizedIntf =
+            new ArrayList<ParameterizedInterfaceModel>();
     
     public ExtensibleTypeImpl(String name, TypeProxy<Type> sink, TypeProxy parent) {
         super(name, sink);
@@ -78,9 +80,19 @@ public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeI
         implementedIntf.add(intf);
     }
 
+    synchronized void isImplementing(ParameterizedInterfaceModelImpl pim) {
+        implementedIntf.add(pim.rawInterface);
+        implementedParameterizedIntf.add(pim);
+    }
+
     @Override
     public Collection<InterfaceModel> getInterfaces() {
         return TypeProxy.adapter(Collections.unmodifiableCollection(implementedIntf));
+    }
+
+    @Override
+    public Collection<ParameterizedInterfaceModel> getParameterizedInterfaces() {
+        return Collections.unmodifiableCollection(implementedParameterizedIntf);
     }
 
     @Override

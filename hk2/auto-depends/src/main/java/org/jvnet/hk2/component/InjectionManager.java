@@ -219,11 +219,12 @@ public class InjectionManager {
                         }
 
                         Class<?>[] paramTypes = setter.getParameterTypes();
+                        Type[] genericParamTypes = setter.getGenericParameterTypes();
 
                         if (allowInjection(method, paramTypes)) {
                             try {
                                 if (1 == paramTypes.length) {
-                                  Object value = target.getValue(component, onBehalfOf, method, null, paramTypes[0]);
+                                  Object value = target.getValue(component, onBehalfOf, method, genericParamTypes[0], paramTypes[0]);
                                   if (value != null) {
                                       setter.setAccessible(true);
                                       setter.invoke(component, value);
