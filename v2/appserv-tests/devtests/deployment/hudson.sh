@@ -7,17 +7,26 @@ export ROOT=`pwd`
 
 REHudson=gf-hudson.us.oracle.com
 
+# The first command-line argument is the (optional) predecessor job from which
+# to get the revision under test and the glassfish.zip file to expand.
+# Default: gf-trunk-build-continuous
+
 if [ -x "/usr/bin/cygpath" ]
 then
   ROOT=`cygpath -d $ROOT`
   echo "Windows ROOT: $ROOT"
   export CYGWIN=nontsec
 fi
+upstreamSource=gf-trunk-build-continuous
+if [ $1 ] 
+then
+  upstreamSource=$1
+fi
 rm -rf glassfishv3
 rm revision-under-test.html
-wget -q -O revision-under-test.html http://${REHudson}/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild
+wget -q -O revision-under-test.html http://${REHudson}/hudson/job/${upstreamSource}/lastSuccessfulBuild
 grep 'Build #' revision-under-test.html
-time wget -q -O glassfish.zip http://${REHudson}/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
+time wget -q -O glassfish.zip http://${REHudson}/hudson/job/${upstreamSource}/lastSuccessfulBuild/artifact/bundles/glassfish.zip
 rm -fR glassfish3
 unzip -q glassfish.zip
 if [ $? -ne 0 ]
