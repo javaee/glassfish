@@ -104,6 +104,8 @@ public class InhabitantsFile {
 
     public static final String QUALIFIER_KEY = "qualifier";
 
+    public static final String PARAMETERIZED_TYPE = "paramType";
+
 
     /**
      * Used as metadata for indentifying the type on which a {@link InhabitantAnnotation}

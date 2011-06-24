@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,57 +42,30 @@ package org.glassfish.hk2.classmodel.reflect;
 import java.util.Collection;
 
 /**
- * An extensible type is a type that can be subclassed like an interface
- * or a class.
- *
- * @param <T> parent type which is always the same as the child type
- * (classes extends classes, interfaces extends interfaces...)
- *  
+ * Representation of a parameterized type
  * @author Jerome Dochez
  */
-public interface ExtensibleType<T extends ExtensibleType> extends Type {
+public interface ParameterizedInterfaceModel {
 
     /**
-     * Return the parent type instance. If there are more than one parent
-     * with the same FQCN within the various URI we parsed, we return the
-     * one defined within the same URI (if it exists). If there is more
-     * than one parsed metadata with the same FQCN and none of them are
-     * defined within the same URI as this type, then null is returned.
+     * Returns the name where parameter types are enclosed in < >
+     * comma separated, like declaration in source java files.
      *
-     * @return the parent type instance or null
+     * @return a declaration for this type
      */
-    T getParent();
+    String getName();
 
     /**
-     * Returns the child subtypes of this type. A child subtype is a
-     * type which parent is this type.
+     * Returns the raw interface for this parameterized type
      *
-     * @return the immediate subtypes
+     * @return the interface model instance
      */
-    Collection<T> subTypes();
+    InterfaceModel getRawInterface();
 
     /**
-     * Returns all the children subtypes (including grand children) of
-     * this type. 
+     * Returns the type parameters in order.
      *
-     * @return all the children
+     * @return the type parameters in order.
      */
-    Collection<T> allSubTypes();
-
-    /**
-     * Returns an unmodifiable list of interfaces implemented or extended by
-     * this type.
-     *
-     * @return collection of implemented or extended interfaces
-     */
-    Collection<InterfaceModel> getInterfaces();
-
-    Collection<ParameterizedInterfaceModel> getParameterizedInterfaces();
-
-    /**
-     * Returns an unmodifiable list of static fields defined by this type
-     *
-     * @reutrn collection of defined static fields
-     */
-    Collection<FieldModel> getStaticFields();
+    Collection<ExtensibleType<?>> getParametizedTypes();
 }

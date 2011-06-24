@@ -45,8 +45,11 @@ import org.glassfish.hk2.BinderFactory;
 import org.glassfish.hk2.NamedBinder;
 import org.glassfish.hk2.TypeLiteral;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.StringWriter;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
+import java.util.*;
 
 /**
  * Implementation of the {@link org.glassfish.hk2.BinderFactory} interface.
@@ -95,7 +98,9 @@ class BinderFactoryImpl implements BinderFactory {
 
     @Override
     public <T> Binder<T> bind(TypeLiteral<T> typeLiteral) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        BinderImpl<T> binder = new BinderImpl<T>(this);
+        binder.addContract(exploreType(typeLiteral));
+        return binder;
     }
 
     @Override
@@ -113,5 +118,45 @@ class BinderFactoryImpl implements BinderFactory {
         }
         binders.clear();
 
+    }
+
+
+    private static void exploreType(Type type, StringBuilder builder) {
+        if (type instanceof ParameterizedType) {
+            builder.append(TypeLiteral.getRawType(type).getName());
+
+            // we ignore wildcard types.
+            Collection<Type> types = Arrays.asList(((ParameterizedType) type).getActualTypeArguments());
+            Iterator<Type> typesEnum = types.iterator();
+            List<Type> nonWildcards = new ArrayList<Type>();
+            while(typesEnum.hasNext()) {
+                Type genericType = typesEnum.next();
+                if (!(genericType instanceof WildcardType))
+                    nonWildcards.add(genericType);
+            }
+            if (!nonWildcards.isEmpty()) {
+                builder.append("<");
+                Iterator<Type> typesItr = nonWildcards.iterator();
+                while(typesItr.hasNext()) {
+                    exploreType(typesItr.next(), builder);
+                    if (typesItr.hasNext()) builder.append(",");
+                }
+                builder.append(">");
+            }
+        } else {
+            builder.append(TypeLiteral.getRawType(type).getName());
+        }
+    }
+
+    static String exploreType(Type type) {
+        StringBuilder builder = new StringBuilder();
+        exploreType(type, builder);
+        return builder.toString();
+    }
+
+    static String exploreType(TypeLiteral<?> typeLiteral) {
+        StringBuilder builder = new StringBuilder();
+        exploreType(typeLiteral.getType(), builder);
+        return builder.toString();
     }
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,62 +37,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.classmodel.reflect;
+package org.jvnet.hk2.test.parameterized;
 
-import java.util.Collection;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.junit.Hk2Runner;
 
 /**
- * An extensible type is a type that can be subclassed like an interface
- * or a class.
- *
- * @param <T> parent type which is always the same as the child type
- * (classes extends classes, interfaces extends interfaces...)
- *  
+ * JUnit test
  * @author Jerome Dochez
  */
-public interface ExtensibleType<T extends ExtensibleType> extends Type {
+@RunWith(Hk2Runner.class)
+@Ignore
+public class ParameterizedTest {
 
-    /**
-     * Return the parent type instance. If there are more than one parent
-     * with the same FQCN within the various URI we parsed, we return the
-     * one defined within the same URI (if it exists). If there is more
-     * than one parsed metadata with the same FQCN and none of them are
-     * defined within the same URI as this type, then null is returned.
-     *
-     * @return the parent type instance or null
-     */
-    T getParent();
+    @Inject
+    RouteBuilder<PathPattern> routeBuilder;
 
-    /**
-     * Returns the child subtypes of this type. A child subtype is a
-     * type which parent is this type.
-     *
-     * @return the immediate subtypes
-     */
-    Collection<T> subTypes();
+    @Inject
+    LocalizedRouteBuilder<PathPattern, French> frenchRB;
 
-    /**
-     * Returns all the children subtypes (including grand children) of
-     * this type. 
-     *
-     * @return all the children
-     */
-    Collection<T> allSubTypes();
-
-    /**
-     * Returns an unmodifiable list of interfaces implemented or extended by
-     * this type.
-     *
-     * @return collection of implemented or extended interfaces
-     */
-    Collection<InterfaceModel> getInterfaces();
-
-    Collection<ParameterizedInterfaceModel> getParameterizedInterfaces();
-
-    /**
-     * Returns an unmodifiable list of static fields defined by this type
-     *
-     * @reutrn collection of defined static fields
-     */
-    Collection<FieldModel> getStaticFields();
+    @Test
+    public void testInjection() {
+        System.out.println(routeBuilder.routeTest());
+        System.out.println(frenchRB.localizedRouteBuilderTest());
+    }
 }

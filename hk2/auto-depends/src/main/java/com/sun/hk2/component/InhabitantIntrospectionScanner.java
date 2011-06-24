@@ -173,6 +173,16 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
     }
 
     public void findContracts(ClassModel cm, Set<String> interfaces, Set<String> annotationTypeInterfaces) {
+
+        // It is questionable that the indexes will contain the fully qualified
+        // parameterized type as well as the raw type but it's safer for
+        // backward compatibility.
+        for (ParameterizedInterfaceModel pim : cm.getParameterizedInterfaces()) {
+            if (isContract(pim.getRawInterface())) {
+                interfaces.add(pim.getName());
+            }
+        }
+
         for (InterfaceModel im : cm.getInterfaces()) {
             getAllContractInterfaces(im, interfaces);
         }

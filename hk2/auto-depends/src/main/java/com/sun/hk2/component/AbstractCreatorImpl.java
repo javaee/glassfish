@@ -65,7 +65,7 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
         this.metadata = metadata;
     }
 
-    public final String typeName() {
+    public String typeName() {
         return type.getName();
     }
 

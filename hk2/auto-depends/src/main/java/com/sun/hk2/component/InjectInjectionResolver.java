@@ -40,9 +40,7 @@
 package com.sun.hk2.component;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Array;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -91,7 +89,7 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
         final Callable<V> callable = new Callable<V>() {
             @Override
             public V call() throws ComponentException {
-                V result;
+                V result=null;
 
                 if (type.isArray()) {
                     result = getArrayInjectValue(habitat, component, onBehalfOf, target, genericType, type);
@@ -99,15 +97,44 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
                     if (Types.isSubClassOf(type, Holder.class)) {
                         result = getHolderInjectValue(habitat, component, onBehalfOf, target, genericType, type, inject);
                     } else {
-                        if (habitat.isContract(type)) {
-                            result = getServiceInjectValue(habitat, component, onBehalfOf, target, genericType, type, inject);
+                        if (genericType instanceof TypeVariable) {
+                            // ok this is a bit more complicated, the user wants us to inject a parameterized type
+                            // so we need to look at the class declaration to find out in the index of the
+                            // declaration of that parameterized type and reconcile it with our inhabitant metadata.
+                            TypeVariable[] typeVariables = component.getClass().getTypeParameters();
+                            for (int i=0;i<typeVariables.length;i++) {
+                                if (typeVariables[i].getName().equals(((TypeVariable) genericType).getName())) {
+                                    // that's the parameterized type we are looking for.
+                                    String parameterizedType = onBehalfOf.metadata().get(InhabitantsFile.PARAMETERIZED_TYPE).get(i);
+                                    try {
+                                        Class<?> clazz = component.getClass().getClassLoader().loadClass(parameterizedType);
+                                        if (habitat.isContract(clazz)) {
+                                            result = (V) getServiceInjectValue(habitat, component, onBehalfOf, target, clazz, clazz, inject);
+                                        } else {
+                                            result = (V) getComponentInjectValue(habitat, component, onBehalfOf, target, clazz, clazz, inject);
+                                        }
+                                    } catch(ClassNotFoundException e) {
+                                        Logger.getAnonymousLogger().warning("Cannot load class " + parameterizedType);
+                                        return null;
+                                    }
+                                }
+                            }
                         } else {
-                            result = getComponentInjectValue(habitat, component, onBehalfOf, target, genericType, type, inject);
+                            if (genericType instanceof ParameterizedType) {
+                                // in this case, we try to inject a parametized type, the lookup will need
+                                // to ensure that the service can be looked up...
+
+                            }
+                            if (habitat.isContract(genericType)) {
+                                result = getServiceInjectValue(habitat, component, onBehalfOf, target, genericType, type, inject);
+                            } else {
+                                result = getComponentInjectValue(habitat, component, onBehalfOf, target, genericType, type, inject);
+                            }
                         }
                     }
                 }
 
-                return validate(component, onBehalfOf, result);
+                return result==null?null:validate(component, onBehalfOf, result);
             }
         };
 
@@ -200,7 +227,7 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
                 }
             }
             if (qualifiers.isEmpty()) {
-                i = manage(onBehalfOf, habitat.getInhabitant(type, name));
+                i = manage(onBehalfOf, habitat.getInhabitant(genericType, name));
             } else {
                 List<String> tmpQualifiers = new ArrayList<String>(qualifiers);
                 for (Inhabitant<? extends V> inh : habitat.getInhabitants(type)) {
@@ -220,7 +247,7 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
                 }
             }
         } else {
-            i = manage(onBehalfOf, habitat.getInhabitant(type, name));
+            i = manage(onBehalfOf, habitat.getInhabitant(genericType, name));
         }
         if (null != i) {
             Object service = i.get();
@@ -246,7 +273,7 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
                                             Class<V> type,
                                             Inject inject) throws ComponentException {
         // ideally we should check if type has @Service or @Configured
-        Inhabitant<?> i = manage(onBehalfOf, habitat.getInhabitantByType(type));
+        Inhabitant<?> i = manage(onBehalfOf, habitat.getInhabitantByType(genericType));
         if (null != i) {
             return (V) i.get();
         }

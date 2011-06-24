@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,62 +37,50 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.classmodel.reflect;
 
-import java.util.Collection;
+package org.jvnet.hk2.component;
+
+import com.sun.hk2.component.ConstructorCreator;
+import com.sun.hk2.component.InhabitantsFile;
+import org.glassfish.hk2.TypeLiteral;
+
+import java.lang.annotation.Annotation;
+import java.util.StringTokenizer;
 
 /**
- * An extensible type is a type that can be subclassed like an interface
- * or a class.
+ * Binder for a {@link TypeLiteral} binding
  *
- * @param <T> parent type which is always the same as the child type
- * (classes extends classes, interfaces extends interfaces...)
- *  
  * @author Jerome Dochez
  */
-public interface ExtensibleType<T extends ExtensibleType> extends Type {
+public class TypeLiteralBasedBinder<T> extends AbstractResolvedBinder<T> {
 
-    /**
-     * Return the parent type instance. If there are more than one parent
-     * with the same FQCN within the various URI we parsed, we return the
-     * one defined within the same URI (if it exists). If there is more
-     * than one parsed metadata with the same FQCN and none of them are
-     * defined within the same URI as this type, then null is returned.
-     *
-     * @return the parent type instance or null
-     */
-    T getParent();
+    final TypeLiteral<T> typeLiteral;
 
-    /**
-     * Returns the child subtypes of this type. A child subtype is a
-     * type which parent is this type.
-     *
-     * @return the immediate subtypes
-     */
-    Collection<T> subTypes();
+    protected TypeLiteralBasedBinder(BinderImpl<T> metadata, TypeLiteral<T> typeLiteral) {
+        super(metadata);
+        this.typeLiteral = typeLiteral;
+    }
 
-    /**
-     * Returns all the children subtypes (including grand children) of
-     * this type. 
-     *
-     * @return all the children
-     */
-    Collection<T> allSubTypes();
-
-    /**
-     * Returns an unmodifiable list of interfaces implemented or extended by
-     * this type.
-     *
-     * @return collection of implemented or extended interfaces
-     */
-    Collection<InterfaceModel> getInterfaces();
-
-    Collection<ParameterizedInterfaceModel> getParameterizedInterfaces();
-
-    /**
-     * Returns an unmodifiable list of static fields defined by this type
-     *
-     * @reutrn collection of defined static fields
-     */
-    Collection<FieldModel> getStaticFields();
+    @Override
+    void registerIn(Habitat habitat) {
+        // todo : more work needed to support all metadata entries
+        MultiMap<String, String> inhMetadata = new MultiMap<String, String>();
+        for (Class<? extends Annotation> annotation : metadata.annotations) {
+            inhMetadata.add(InhabitantsFile.QUALIFIER_KEY, annotation.getName());
+        }
+        final String parameterizedTypes = BinderFactoryImpl.exploreType(typeLiteral);
+        if (parameterizedTypes.contains("<")) {
+            String commaSeparatedTypes = parameterizedTypes.substring(parameterizedTypes.indexOf('<')+1, parameterizedTypes.length()-1);
+            StringTokenizer st = new StringTokenizer(commaSeparatedTypes, ",");
+            while(st.hasMoreTokens()) {
+                inhMetadata.add(InhabitantsFile.PARAMETERIZED_TYPE, st.nextToken());
+            }
+        }
+        // todo : scoping, we need to wrap the ConstructorCreator in a scoped inhabitant
+        super.registerIn(habitat, new ConstructorCreator<T>(typeLiteral.getRawType(), habitat, inhMetadata) {
+            public String typeName(){
+                return parameterizedTypes;
+            }
+        });
+    }
 }
