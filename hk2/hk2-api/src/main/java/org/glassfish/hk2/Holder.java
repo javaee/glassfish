@@ -37,11 +37,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.hk2;
 
+/**
+ * A holder, or reference to a Component/Service of type T.
+ * 
+ * @author Jerome Dochez
+ * @author Kohsuke Kawaguchi
+ */
 public interface Holder<T> {
 
-  T get() throws ComponentException;
+    /**
+     * Get or create the component/service, depending upon the
+     * implementation strategy.
+     * 
+     * @return null, or an instance of a component/service.
+     * @throws ComponentException when an error of some kind occurs
+     */
+    T get() throws ComponentException;
 
 }

@@ -40,7 +40,6 @@
 
 package org.glassfish.hk2.tests;
 
-import org.glassfish.hk2.Descriptor;
 import org.glassfish.hk2.DynamicBinderFactory;
 import org.glassfish.hk2.Services;
 import org.glassfish.hk2.inject.Creator;
@@ -59,15 +58,17 @@ import org.junit.Ignore;
 public class ServicesTest {
 
     public ServicesTest(Services services) {
-        services.locate(services.forContract(String.class).named("foo"));
+        // not supported any longer --- Descriptor is not a valid argument to locator
+//        services.locate(services.forContract(String.class).named("foo"));
 
         services.forContract(String.class).named("foo").get();
 
 //        services.bind(services.newBinder().named("foo").in(ThreadScope.class);
 
 
-        Descriptor t=null;
-        MyType myType = MyType.class.cast(services.locate(t).best().get());
+        // not supported any longer --- Descriptor is not a valid argument to locator
+//        Descriptor t = null;
+//        MyType myType = MyType.class.cast(services.locate(t).get());
 
         DynamicBinderFactory binder = services.bindDynamically();
         binder.bind(String.class).named("foo").to("Foo");

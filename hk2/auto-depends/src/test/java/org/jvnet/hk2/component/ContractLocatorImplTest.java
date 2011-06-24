@@ -39,11 +39,6 @@
  */
 package org.jvnet.hk2.component;
 
-import static org.junit.Assert.assertSame;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -52,101 +47,106 @@ import org.junit.Test;
 import org.jvnet.hk2.test.contracts.Simple;
 import org.jvnet.hk2.test.impl.OneSimple;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static org.junit.Assert.assertSame;
+
 public class ContractLocatorImplTest {
     static LogHandler logHandler = new LogHandler();
     static Level prevLogLevel;
-    
+
     @BeforeClass
     public static void setUp() {
-	Logger logger = Logger.getLogger(ContractLocatorImpl.class.getName());
-	prevLogLevel = logger.getLevel();
-	logger.setLevel(Level.FINEST);
-	logger.addHandler(logHandler);
+        Logger logger = Logger.getLogger(ContractLocatorImpl.class.getName());
+        prevLogLevel = logger.getLevel();
+        logger.setLevel(Level.FINEST);
+        logger.addHandler(logHandler);
     }
-    
+
     @AfterClass
     public static void tearDown() {
-	Logger logger = Logger.getLogger(ContractLocatorImpl.class.getName());
-	logger.removeHandler(logHandler);
-	logger.setLevel(prevLogLevel);
+        Logger logger = Logger.getLogger(ContractLocatorImpl.class.getName());
+        logger.removeHandler(logHandler);
+        logger.setLevel(prevLogLevel);
     }
-    
+
     @After
     public void resetLogger() {
-	logHandler.clear();
+        logHandler.clear();
     }
-    
+
     @Test
     public void resolution_byClassAndByContract() {
-	SimpleServiceLocator mock = EasyMock.createNiceMock(SimpleServiceLocator.class);
-	Simple simple = EasyMock.createMock(Simple.class);
-	EasyMock.expect(mock.getComponent(Simple.class, null)).andReturn(simple).atLeastOnce();
-	OneSimple oneSimple = new OneSimple();
-	EasyMock.expect(mock.getComponent(Simple.class, "one")).andReturn(oneSimple).atLeastOnce();
-	EasyMock.replay(mock);
-	
-	ContractLocatorImpl<Simple> locator = new ContractLocatorImpl<Simple>(mock, Simple.class, true);
-	runContractKind(mock, simple, oneSimple, locator);
+        SimpleServiceLocator mock = EasyMock.createNiceMock(SimpleServiceLocator.class);
+        Simple simple = EasyMock.createMock(Simple.class);
+        EasyMock.expect(mock.getComponent(Simple.class, null)).andReturn(simple).atLeastOnce();
+        OneSimple oneSimple = new OneSimple();
+        EasyMock.expect(mock.getComponent(Simple.class, "one")).andReturn(oneSimple).atLeastOnce();
+        EasyMock.replay(mock);
+
+        ContractLocatorImpl<Simple> locator = new ContractLocatorImpl<Simple>(mock, Simple.class, true);
+        runContractKind(mock, simple, oneSimple, locator);
     }
 
     private void runContractKind(SimpleServiceLocator mock, Simple simple,
-	    OneSimple oneSimple, ContractLocatorImpl<Simple> locator) {
-	assertSame(simple, locator.get());
-	
-	locator.named("one");
-	assertSame(oneSimple, locator.get());
-	
-	EasyMock.verify(mock);
-	
-	logHandler.assertIsEmpty();
+                                 OneSimple oneSimple, ContractLocatorImpl<Simple> locator) {
+        assertSame(simple, locator.get());
+
+        locator.named("one");
+        assertSame(oneSimple, locator.get());
+
+        EasyMock.verify(mock);
+
+        logHandler.assertIsEmpty();
     }
 
     @Test
     public void resolution_byClassAndByType() {
-	SimpleServiceLocator mock = EasyMock.createNiceMock(SimpleServiceLocator.class);
-	Simple simple = EasyMock.createMock(Simple.class);
-	EasyMock.expect(mock.getByType(Simple.class)).andReturn(simple).times(2);
-	EasyMock.replay(mock);
-	
-	ContractLocatorImpl<Simple> locator = new ContractLocatorImpl<Simple>(mock, Simple.class, false);
-	runTypeKind(mock, simple, locator);
+        SimpleServiceLocator mock = EasyMock.createNiceMock(SimpleServiceLocator.class);
+        Simple simple = EasyMock.createMock(Simple.class);
+        EasyMock.expect(mock.getByType(Simple.class)).andReturn(simple).times(2);
+        EasyMock.replay(mock);
+
+        ContractLocatorImpl<Simple> locator = new ContractLocatorImpl<Simple>(mock, Simple.class, false);
+        runTypeKind(mock, simple, locator);
     }
 
     private void runTypeKind(SimpleServiceLocator mock, Simple simple,
-	    ContractLocatorImpl<Simple> locator) {
-	assertSame(simple, locator.get());
-	
-	logHandler.assertIsEmpty();
-	
-	locator.named(Simple.class.getName());
-	assertSame(simple, locator.get());
-	
-	logHandler.assertMessage(0, Level.WARNING, "name and scope are currently only appropriate for byContract usage");
-	
-	EasyMock.verify(mock);
+                             ContractLocatorImpl<Simple> locator) {
+        assertSame(simple, locator.get());
+
+        logHandler.assertIsEmpty();
+
+        locator.named(Simple.class.getName());
+        assertSame(simple, locator.get());
+
+        logHandler.assertMessage(0, Level.WARNING, "name and scope are currently only appropriate for byContract usage");
+
+        EasyMock.verify(mock);
     }
 
     @Test
     public void resolution_byClassNameAndByContract() {
-	SimpleServiceLocator mock = EasyMock.createNiceMock(SimpleServiceLocator.class);
-	Simple simple = EasyMock.createMock(Simple.class);
-	EasyMock.expect(mock.getComponent(Simple.class.getName(), null)).andReturn(simple).atLeastOnce();
-	OneSimple oneSimple = new OneSimple();
-	EasyMock.expect(mock.getComponent(Simple.class.getName(), "one")).andReturn(oneSimple).atLeastOnce();
-	EasyMock.replay(mock);
-	
-	ContractLocatorImpl<Simple> locator = new ContractLocatorImpl<Simple>(mock, Simple.class.getName(), true);
-	runContractKind(mock, simple, oneSimple, locator);
+        SimpleServiceLocator mock = EasyMock.createNiceMock(SimpleServiceLocator.class);
+        Simple simple = EasyMock.createMock(Simple.class);
+        EasyMock.expect(mock.getComponent(Simple.class.getName(), null)).andReturn(simple).atLeastOnce();
+        OneSimple oneSimple = new OneSimple();
+        EasyMock.expect(mock.getComponent(Simple.class.getName(), "one")).andReturn(oneSimple).atLeastOnce();
+        EasyMock.replay(mock);
+
+        ContractLocatorImpl<Simple> locator = new ContractLocatorImpl<Simple>(mock, Simple.class.getName(), true);
+        runContractKind(mock, simple, oneSimple, locator);
     }
 
     @Test
     public void resolution_byClassNameAndByType() {
-	SimpleServiceLocator mock = EasyMock.createNiceMock(SimpleServiceLocator.class);
-	Simple simple = EasyMock.createMock(Simple.class);
-	EasyMock.expect(mock.getByType(Simple.class.getName())).andReturn(simple).times(2);
-	EasyMock.replay(mock);
-	
-	ContractLocatorImpl<Simple> locator = new ContractLocatorImpl<Simple>(mock, Simple.class.getName(), false);
-	runTypeKind(mock, simple, locator);
+        SimpleServiceLocator mock = EasyMock.createNiceMock(SimpleServiceLocator.class);
+        Simple simple = EasyMock.createMock(Simple.class);
+        EasyMock.expect(mock.getByType(Simple.class.getName())).andReturn(simple).times(2);
+        EasyMock.replay(mock);
+
+        ContractLocatorImpl<Simple> locator = new ContractLocatorImpl<Simple>(mock, Simple.class.getName(), false);
+        runTypeKind(mock, simple, locator);
     }
 }

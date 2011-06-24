@@ -37,10 +37,8 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.hk2;
 
-import java.lang.annotation.Annotation;
 import java.util.Collection;
 
 /**
@@ -63,10 +61,10 @@ public interface Descriptor {
      */
     String getName();
 
-    /**
-     * The optional scoping for the service.
-     */
-    Scope getScope();
+//    /**
+//     * The optional scoping for the service.
+//     */
+//    Scope getScope();
 
     /**
      * The meta data attributes for the service. 
@@ -74,10 +72,9 @@ public interface Descriptor {
     MultiMap<String, String> metadata();
   
     /**
-     * The "extra" annotations on the service.
+     * The qualifier type annotations on the service.
      */
-    // TODO: this is the only exception to using classes instead of serializable string names.  Can we use String here instead for consistency?  Nothing that this is the way it will be serialized.  Would prefer not to assume a classloading model -- jtrent
-    Collection<Class<? extends Annotation>> getAnnotations();
+    Collection<String> getQualifiers();
   
     /**
      * The contracts that are used to index the service definition.

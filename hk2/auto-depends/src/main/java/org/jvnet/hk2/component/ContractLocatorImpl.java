@@ -37,25 +37,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.jvnet.hk2.component;
 
-import org.glassfish.hk2.*;
-import org.glassfish.hk2.ComponentException;
-import org.glassfish.hk2.MultiMap;
-import org.glassfish.hk2.Scope;
-
 import java.lang.annotation.Annotation;
-import java.util.*;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.glassfish.hk2.ComponentException;
+import org.glassfish.hk2.ComponentProvider;
+import org.glassfish.hk2.ContractLocator;
+import org.glassfish.hk2.Provider;
+import org.glassfish.hk2.Scope;
 
 /**
  * Implementation of the {@link ContractLocator} interface.
  * 
- * <p>
+ * <p/>
  * This is used for location byType or byContract.
- * 
+ *
  * @author Jerome Dochez
  * @author Jeff Trent
  */
@@ -66,38 +66,33 @@ import java.util.logging.Logger;
 class ContractLocatorImpl<T> implements ContractLocator<T> {
 
     private final Logger logger = Logger.getLogger(ContractLocatorImpl.class.getName());
-    
+
     private final SimpleServiceLocator habitat;
     private String name;
 //    private Scope scope;
 //    private final List<Class<? extends Annotation>> annotations = new ArrayList<Class<? extends Annotation>>();
 
     private final Provider<T> getter;
-    
-    // either type or contract class name
-    private final String clazzName; 
-    
+
     // byContract, else byType
     private final boolean byContract;
 
     ContractLocatorImpl(SimpleServiceLocator habitat, Class<T> clazz, boolean byContract) {
         this.habitat = habitat;
-        this.clazzName = clazz.getName();
         this.byContract = byContract;
-        this.getter = (byContract) ? 
-        	getterByContract(clazz) :
-        	    getterByType(clazz);
+        this.getter = (byContract) ?
+                getterByContract(clazz) :
+                getterByType(clazz);
     }
 
     ContractLocatorImpl(SimpleServiceLocator habitat, String clazzName, boolean byContract) {
         this.habitat = habitat;
-        this.clazzName = clazzName;
         this.byContract = byContract;
-        this.getter = (byContract) ? 
-        	getterByContract(clazzName) :
-        	    getterByType(clazzName);
+        this.getter = (byContract) ?
+                getterByContract(clazzName) :
+                getterByType(clazzName);
     }
-    
+
     private Provider<T> getterByContract(final Class<T> clazz) {
         return new Provider<T>() {
             @Override
@@ -110,13 +105,13 @@ class ContractLocatorImpl<T> implements ContractLocator<T> {
     private Provider<T> getterByContract(final String clazzName) {
         return new Provider<T>() {
             @SuppressWarnings("unchecked")
-	    @Override
+            @Override
             public T get() throws ComponentException {
                 return (T) habitat.getComponent(clazzName, name);
             }
         };
     }
-    
+
     private Provider<T> getterByType(final Class<T> clazz) {
         return new Provider<T>() {
             @Override
@@ -125,19 +120,19 @@ class ContractLocatorImpl<T> implements ContractLocator<T> {
             }
         };
     }
-    
+
     private Provider<T> getterByType(final String clazzName) {
         return new Provider<T>() {
             @SuppressWarnings("unchecked")
-	    @Override
+            @Override
             public T get() throws ComponentException {
-                return (T)habitat.getByType(clazzName);
+                return (T) habitat.getByType(clazzName);
             }
         };
     }
-    
+
     private void warnOnUsage() {
-	logger.log(Level.WARNING, "name and scope are currently only appropriate for byContract usage");
+        logger.log(Level.WARNING, "name and scope are currently only appropriate for byContract usage");
     }
 
     @Override
@@ -151,26 +146,17 @@ class ContractLocatorImpl<T> implements ContractLocator<T> {
 
     @Override
     public ContractLocator<T> in(Scope scope) {
-//        this.scope = scope;
-//        return this;
-	throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public ContractLocator<T> annotatedWith(Class<? extends Annotation>... annotations) {
-//        this.annotations.addAll(Arrays.asList(annotations));
-//        return this;
-	throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Providers<T> getProviders() {
-	throw new UnsupportedOperationException();
-    }
-
-    @Override
+    //    @Override
     public Provider<T> getProvider() {
-	return getter;
+        return getter;
     }
 
     @Override
@@ -179,58 +165,15 @@ class ContractLocatorImpl<T> implements ContractLocator<T> {
     }
 
     @Override
-    public String getName() {
-        return name;
+    public Collection<ComponentProvider<T>> all() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Scope getScope() {
-	throw new UnsupportedOperationException();
-//        return scope;
+    public ComponentProvider<T> getComponentProvider() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
-    @Override
-    public MultiMap<String, String> metadata() {
-	// TODO: we should just return metadata here, and not off of runtime inhabitants --- check with Jerome
-//        return getInhabitant(getProvider()).metadata();
-	throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Collection<Class<? extends Annotation>> getAnnotations() {
-	// TODO: see comments in api interface --- check with Jerome about dropping the use of classes in favor of Strings.
-//        return Collections.unmodifiableList(annotations);
-	throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Collection<String> getContracts() {
-        List<String> cc = new ArrayList<String>();
-        // TODO: we should NOT have className returned when this is used byType --- check with Jerome
-        cc.add(clazzName);
-        // TODO: I believe the code should be this:
-//        if (byContract) {
-//            return Collections.singleton(clazz);
-//        } else {
-//            return Collections.emptySet();
-//        }
-        return cc;
-    }
-
-    @Override
-    public String getTypeName() {
-	// TODO: why not just return clazzName here? --- check with Jerome
-	// TODO: the issue with this is that inhabitants might not be fully populated.  The typeName is the typeName regardless of the runtime inhabitants.
-	// TODO: at a minimum this is inconsistent with how we handle name and scope here
-        return getInhabitant(getProvider()).typeName();
-    }
-
-    @SuppressWarnings("unchecked")
-    private Inhabitant<T> getInhabitant(Provider<T> provider) {
-        if (provider instanceof Inhabitant) {
-            return  (Inhabitant<T>) getProvider();
-        }
-        throw new IllegalArgumentException("Provider instance not an inhabitant");
-    }
-    
 }

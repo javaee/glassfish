@@ -39,12 +39,13 @@
  */
 package org.jvnet.hk2.component;
 
-import com.sun.hk2.component.Holder;
-import com.sun.hk2.component.ScopeInstance;
-import org.glassfish.hk2.ComponentProvider;
+import java.util.Collection;
+
+import org.glassfish.hk2.ManagedComponentProvider;
 import org.jvnet.hk2.annotations.Service;
 
-import java.util.Collection;
+import com.sun.hk2.component.Holder;
+import com.sun.hk2.component.ScopeInstance;
 
 /**
  * Represents a component in the world of {@link Habitat}.
@@ -67,7 +68,8 @@ import java.util.Collection;
  * @author Kohsuke Kawaguchi
  * @see Inhabitants
  */
-public interface Inhabitant<T> extends ComponentProvider<T> , com.sun.hk2.component.Holder<T> {
+// TODO: Eventually get rid of auto-depend's Holder
+public interface Inhabitant<T> extends ManagedComponentProvider<T>, Holder<T> {
     /**
      * The short-cut for {@code type().getName()}
      * but this allows us to defer loading the actual types.

@@ -50,14 +50,14 @@ import java.lang.annotation.Target;
 /**
  * Annotation to define a required resource for a component. 
  * The HK2 runtime inject all instance variables annotated with
- * @Inject as well as setter methods.
+ * &#064;Inject as well as setter methods.
  <p>
  * Examples:<br>
 <pre>
-        @Inject("GlassfishMBeanServer")
+        &#064;Inject("GlassfishMBeanServer")
         MBeanServer mbeanserver;
         
-        @Inject  // unnamed
+        &#064;Inject  // unnamed
         MBeanServer mbeanserver;
 </pre>
  *

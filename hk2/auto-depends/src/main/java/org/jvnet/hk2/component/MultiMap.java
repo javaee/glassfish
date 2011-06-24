@@ -39,33 +39,29 @@
  */
 package org.jvnet.hk2.component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.Serializable;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.Set;
-import java.util.Collection;
-import java.io.Serializable;
 
 /**
  * Map from a key to multiple values.
  * Order is significant among values, and null values are allowed, although null keys are not.
- * 
+ *
  * @author Kohsuke Kawaguchi
  * @author Jerome Dochez
  */
-public class MultiMap<K,V> implements org.glassfish.hk2.MultiMap<K, V>, Serializable, Cloneable {
-    private final Map<K,List<V>> store;
+public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Serializable, Cloneable {
+    private static final long serialVersionUID = 1L;
+
+    private final Map<K, List<V>> store;
     private final boolean concurrencyControls;
 
     /**
      * Creates an empty multi-map with default concurrency controls
      */
     public MultiMap() {
-       this(new LinkedHashMap<K, List<V>>(), Habitat.CONCURRENCY_CONTROLS_DEFAULT);
+        this(new LinkedHashMap<K, List<V>>(), Habitat.CONCURRENCY_CONTROLS_DEFAULT);
     }
 
     /**
@@ -74,43 +70,46 @@ public class MultiMap<K,V> implements org.glassfish.hk2.MultiMap<K, V>, Serializ
      * There are currently no concurrency controls around the Map portion of the data
      * structure.
      */
-    MultiMap(Map<K,List<V>> store) {
-      this(store, Habitat.CONCURRENCY_CONTROLS_DEFAULT);
+    MultiMap(Map<K, List<V>> store) {
+        this(store, Habitat.CONCURRENCY_CONTROLS_DEFAULT);
     }
 
     /**
      * Creates an empty multi-map with option to use concurrency controls
      */
     MultiMap(boolean concurrencyControls) {
-      this(new LinkedHashMap<K, List<V>>(), concurrencyControls);
+        this(new LinkedHashMap<K, List<V>>(), concurrencyControls);
     }
-    
-    
+
+
     /**
      * Creates a multi-map backed by the given store.
+     *
      * @param store map to copy
      */
-    protected MultiMap(Map<K,List<V>> store, boolean concurrencyControls) {
+    protected MultiMap(Map<K, List<V>> store, boolean concurrencyControls) {
         this.store = store;
         this.concurrencyControls = concurrencyControls;
     }
 
     /**
      * Copy constructor.
+     *
      * @param base map to copy
      */
-    public MultiMap(MultiMap<K,V> base) {
+    public MultiMap(MultiMap<K, V> base) {
         this();
-        for (Entry<K, List<V>> e : base.entrySet())
+        for (Entry<K, List<V>> e : base.entrySet()) {
             store.put(e.getKey(), newList(e.getValue()));
+        }
     }
 
     @Override
     public final String toString() {
         final StringBuilder builder = new StringBuilder();
-        final String newline = System.getProperty( "line.separator" );
+        final String newline = System.getProperty("line.separator");
         builder.append("{");
-        for ( final K key : store.keySet() ) {
+        for (final K key : store.keySet()) {
             builder.append(key).append(": ");
             builder.append(store.get(key));
             builder.append(newline);
@@ -118,42 +117,45 @@ public class MultiMap<K,V> implements org.glassfish.hk2.MultiMap<K, V>, Serializ
         builder.append("}");
         return builder.toString();
     }
-    
+
     /**
      * Creates an optionally populated list to be used as an entry in the map.
+     *
      * @param initialVal
      * @return
      */
     protected List<V> newList(Collection<? extends V> initialVals) {
-      if (concurrencyControls) {
-        if (null == initialVals) {
-          return new CopyOnWriteArrayList<V>();
+        if (concurrencyControls) {
+            if (null == initialVals) {
+                return new CopyOnWriteArrayList<V>();
+            } else {
+                return new CopyOnWriteArrayList<V>(initialVals);
+            }
         } else {
-          return new CopyOnWriteArrayList<V>(initialVals);
+            if (null == initialVals) {
+                return new ArrayList<V>(1);
+            } else {
+                return new ArrayList<V>(initialVals);
+            }
         }
-      } else {
-        if (null == initialVals) {
-          return new ArrayList<V>(1);
-        } else {
-          return new ArrayList<V>(initialVals);
-        }
-      }
     }
 
+    @Override
     public Set<K> keySet() {
-      return store.keySet();
+        return store.keySet();
     }
-    
+
     /**
      * Adds one more key-value pair.
+     *
      * @param k key to store the entry under
      * @param v value to store in the k's values.
      */
-    public final void add(K k,V v) {
+    public final void add(K k, V v) {
         List<V> l = store.get(k);
-        if (l==null) {
+        if (l == null) {
             l = newList(null);
-            store.put(k,l);
+            store.put(k, l);
         }
         l.add(v);
     }
@@ -163,8 +165,7 @@ public class MultiMap<K,V> implements org.glassfish.hk2.MultiMap<K, V>, Serializ
      * by the given value.
      *
      * @param k key for the values
-     * @param v
-     *      Can be null or empty.
+     * @param v Can be null or empty.
      */
     public void set(K k, Collection<? extends V> v) {
         store.put(k, newList(v));
@@ -176,8 +177,8 @@ public class MultiMap<K,V> implements org.glassfish.hk2.MultiMap<K, V>, Serializ
      *
      * @param k key for the values
      * @param v singleton value for k key
-     * <p>
-     * This is short for <tt>set(k,Collections.singleton(v))</tt>
+     *          <p/>
+     *          This is short for <tt>set(k,Collections.singleton(v))</tt>
      */
     public void set(K k, V v) {
         List<V> vlist = newList(null);
@@ -187,32 +188,40 @@ public class MultiMap<K,V> implements org.glassfish.hk2.MultiMap<K, V>, Serializ
 
     /**
      * Returns the elements indexed by the provided key
+     *
      * @param k key for the values
-     * @return
-     *      Can be empty but never null. Read-only.
+     * @return Can be empty but never null. Read-only.
      */
+    @Override
     public final List<V> get(K k) {
         List<V> l = store.get(k);
-        if (l==null) return Collections.emptyList();
+        if (l == null) {
+            return Collections.emptyList();
+        }
         return l;
     }
 
     /**
      * Package private (for getting the raw map for direct manipulation by the habitat)
+     *
      * @param k the key
      * @return
      */
     final List<V> _get(K k) {
-      List<V> l = store.get(k);
-      if (l==null) return Collections.emptyList();
-      return l;
+        List<V> l = store.get(k);
+        if (l == null) {
+            return Collections.emptyList();
+        }
+        return l;
     }
 
     /**
      * Checks if the map contains the given key.
+     *
      * @param k key to test
      * @return true if the map contains at least one element for this key
      */
+    @Override
     public boolean containsKey(K k) {
         return !get(k).isEmpty();
     }
@@ -220,19 +229,20 @@ public class MultiMap<K,V> implements org.glassfish.hk2.MultiMap<K, V>, Serializ
     /**
      * Checks if the map contains the given key(s), also extending the search
      * to including the sub collection.
-     * 
+     *
      * @param k1 key from top collection
      * @param k2 key (value) from inner collection
-     * 
      * @return true if the map contains at least one element for these keys
      */
+    @Override
     public boolean contains(K k1, V k2) {
-      List<V> list = _get(k1);
-      return list.contains(k2);
+        List<V> list = _get(k1);
+        return list.contains(k2);
     }
-    
+
     /**
      * Removes an key value from the map
+     *
      * @param key key to be removed
      * @return the value stored under this key or null if there was none
      */
@@ -242,37 +252,50 @@ public class MultiMap<K,V> implements org.glassfish.hk2.MultiMap<K, V>, Serializ
 
     /**
      * Removes an key value pair from the map
-     * @param key key to be removed
+     *
+     * @param key   key to be removed
      * @param entry the entry to be removed from the key'ed list
      * @return true if there was none that was deleted
      */
     public boolean remove(K key, V entry) {
-      List<V> list = store.get(key);
-      return (null == list) ? false : list.remove(entry);
+        List<V> list = store.get(key);
+        return (null == list) ? false : list.remove(entry);
     }
 
     /**
      * Gets the first value if any, or null.
-     * <p>
+     * <p/>
      * This is useful when you know the given key only has one value and you'd like
      * to get to that value.
      *
      * @param k key for the values
-     * @return
-     *      null if the key has no values or it has a value but the value is null.
+     * @return null if the key has no values or it has a value but the value is null.
      */
-    public final V getOne(K k) {
+    public V getOne(K k) {
+        return getFirst(k);
+    }
+
+    @Override
+    public V getFirst(K k) {
         List<V> lst = store.get(k);
-        if(lst ==null)  return null;
-        if(lst.isEmpty())   return null;
+        if (null == lst) {
+            return null;
+        }
+
+        if (lst.isEmpty()) {
+            return null;
+        }
+
         return lst.get(0);
     }
 
     /**
      * Lists up all entries.
+     *
      * @return a {@link java.util.Set} of {@link java.util.Map.Entry} of entries
      */
-    public Set<Entry<K,List<V>>> entrySet() {
+    @Override
+    public Set<Entry<K, List<V>>> entrySet() {
         return store.entrySet();
     }
 
@@ -281,9 +304,11 @@ public class MultiMap<K,V> implements org.glassfish.hk2.MultiMap<K, V>, Serializ
      */
     public String toCommaSeparatedString() {
         StringBuilder buf = new StringBuilder();
-        for (Entry<K,List<V>> e : entrySet()) {
+        for (Entry<K, List<V>> e : entrySet()) {
             for (V v : e.getValue()) {
-                if(buf.length()>0)  buf.append(',');
+                if (buf.length() > 0) {
+                    buf.append(',');
+                }
                 buf.append(e.getKey()).append('=').append(v);
             }
         }
@@ -294,18 +319,22 @@ public class MultiMap<K,V> implements org.glassfish.hk2.MultiMap<K, V>, Serializ
      * Creates a copy of the map that contains the exact same key and value set.
      * Keys and values won't cloned.
      */
-    public MultiMap<K,V> clone() {
-        return new MultiMap<K,V>(this);
+    @Override
+    public MultiMap<K, V> clone() {
+        return new MultiMap<K, V>(this);
     }
 
     /**
      * Returns the size of the map
+     *
      * @return integer or 0 if the map is empty
      */
+    @Override
     public int size() {
         return store.size();
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private static final MultiMap EMPTY = new MultiMap(Collections.emptyMap());
 
     /**
@@ -314,7 +343,8 @@ public class MultiMap<K,V> implements org.glassfish.hk2.MultiMap<K, V>, Serializ
      * @return an empty map
      * @see Collections#emptyMap()
      */
-    public static <K,V> MultiMap<K,V> emptyMap() {
+    @SuppressWarnings("unchecked")
+    public static <K, V> MultiMap<K, V> emptyMap() {
         return EMPTY;
     }
 

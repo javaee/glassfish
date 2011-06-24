@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,16 +37,42 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.component;
-
-import org.jvnet.hk2.annotations.Contract;
+package org.glassfish.hk2;
 
 /**
+ * A {@link ManagedComponentProvider} is one in which its backing
+ * component that it provides can either be in an active or inactive
+ * state.
  * 
+ * <p/>
+ * Lazy implies managed. However, managed does NOT imply lazy. Therefore,
+ * a {@link ManagedComponentProvider} might allow for {@link #release()}
+ * but it is not "lazy" meaning that it is active in its natural state.
  *
- * @author Kohsuke Kawaguchi
- * @see org.jvnet.hk2.annotations.Scoped#value() 
+ * <p/>
+ * {@link ManagedComponentProvider}s are usually lazy, Singleton scoped
+ * services (but not always).  Lazy, Singleton services exhibit the
+ * following characteristics:
+ * 	<li> (a) are initially not active,
+ * 	<li> (b) are made active by calling {@link #get()},
+ * 	<li> (c) once active will produce the same service each time
+ * 			(i.e., assert(get() == get())},
+ * 	<li> (d) once released, a call to get() will return a newly created
+ * 			instance.   
+ * 
+ * @author Jerome Dochez
+ * @author Jeff Trent
  */
-@Contract
-public abstract class Scope extends org.glassfish.hk2.Scope {
+public interface ManagedComponentProvider<T> extends ComponentProvider<T> {
+
+    /**
+     * @return true if the component/service is currently active 
+     */
+    boolean isActive();
+
+    /**
+     * Release the component/service if active.
+     */
+    void release();
+
 }
