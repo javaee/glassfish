@@ -43,11 +43,14 @@ package com.sun.enterprise.web;
 import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.runtime.web.SessionConfig;
+import com.sun.enterprise.deployment.runtime.web.SessionManager;
 import com.sun.enterprise.deployment.runtime.web.SessionProperties;
+import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.web.ContextParameter;
 import com.sun.enterprise.deployment.web.EnvironmentEntry;
 import com.sun.enterprise.util.Result;
+import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
@@ -60,13 +63,18 @@ import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.web.plugin.common.ContextParam;
 import org.glassfish.web.plugin.common.EnvEntry;
 
+import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class WebApplication implements ApplicationContainer<WebBundleDescriptor> {
 
-    final Logger logger = LogDomains.getLogger(WebApplication.class, LogDomains.WEB_LOGGER);
+    protected static final Logger logger = LogDomains.getLogger(
+            WebApplication.class, LogDomains.WEB_LOGGER);
+
+    protected static final ResourceBundle rb = logger.getResourceBundle();
 
     private final WebContainer container;
     private final WebModuleConfig wmInfo;
@@ -159,6 +167,8 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
                 }
             }
         }
+
+        stopCoherenceWeb();
 
         return true;
     }
@@ -593,6 +603,39 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
                     ", type=" + customization.getEnvEntryType() +
                     ", value=" + customization.getEnvEntryValue() +
                     ", desc=" + customization.getDescription();
+        }
+    }
+
+    private void stopCoherenceWeb() {
+        if (wmInfo.getDescriptor() != null && 
+                wmInfo.getDescriptor().getSunDescriptor() != null) {
+            SunWebApp sunWebApp = wmInfo.getDescriptor().getSunDescriptor();
+            if (sunWebApp.getSessionConfig() != null &&
+                    sunWebApp.getSessionConfig().getSessionManager() != null) {
+                SessionManager sessionManager =
+                    sunWebApp.getSessionConfig().getSessionManager();
+                String persistenceType = sessionManager.getAttributeValue(
+                    SessionManager.PERSISTENCE_TYPE);
+                if (PersistenceType.COHERENCE_WEB.getType().equals(persistenceType)) {
+                    ClassLoader cloader = wmInfo.getAppClassLoader();
+                    try {
+                        Class<?> cacheFactoryClass = cloader.loadClass(
+                                "com.tangosol.net.CacheFactory");
+                        if (cacheFactoryClass != null) {
+                            Method shutdownMethod = cacheFactoryClass.getMethod("shutdown");
+                            if (shutdownMethod != null) {
+                                shutdownMethod.invoke(null);
+                            }
+                        }
+                    } catch(Exception ex) {
+                        if (logger.isLoggable(Level.WARNING)) {
+                            String msg = rb.getString("webApplication.exceptionShutdownCoherenceWeb");
+                            msg = MessageFormat.format(msg, wmInfo.getDescriptor().getName());
+                            logger.log(Level.WARNING, msg, ex);
+                        }
+                    }
+                }
+            }
         }
     }
 }
