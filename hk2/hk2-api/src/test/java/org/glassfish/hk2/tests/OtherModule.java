@@ -63,7 +63,7 @@ public class OtherModule implements Module {
 
     public void configure(BinderFactory binderFactory) {
         // lookup module sip
-        MyType brotherType = services.forContract(MyType.class).getProvider().get();
+        MyType brotherType = services.forContract(MyType.class).get();
     }
 }
 

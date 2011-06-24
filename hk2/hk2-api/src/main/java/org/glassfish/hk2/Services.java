@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.hk2;
 
 import org.jvnet.hk2.annotations.Contract;
@@ -45,10 +44,20 @@ import org.jvnet.hk2.annotations.Contract;
 import java.util.Collection;
 
 /**
- * Services is the registry for hk2 services. Services can be dynamically added to this instance or looked up.
+ * Services is the registry for HK2 services. In earlier versions this was
+ * referred to as the Habitat.
+ * 
+ * <p/>
+ * Services can be dynamically added to this instance or looked up.
+ * 
+ * <p/>
+ * Services are organized in a parent-child structure.  Whenever services are being
+ * located, a search parent first algorithm is used.
+ *
  *
  *
  */
+// TODO: this currently jettisons Listeners and Trackers, found in Habitat but not here
 @Contract
 public interface Services extends Locator {
 
@@ -60,13 +69,6 @@ public interface Services extends Locator {
     Services getServices(String moduleName);
 
     
-    //
-    // Locator & Provider related
-    //
-    // TODO: should this be promoted into Locator?
-    // TODO: we need to reconcile / clarify "Providers" with "ComponentProviders" - they are too similar in name and function.
-    Providers<?> locate(Descriptor descriptor);
-
     //
     // Binding related
     //

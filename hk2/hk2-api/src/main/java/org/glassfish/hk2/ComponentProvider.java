@@ -37,24 +37,68 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.hk2;
 
+import java.lang.annotation.Annotation;
+import java.util.Collection;
+
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 4/13/11
- * Time: 9:58 PM
- * To change this template use File | Settings | File Templates.
+ * Extends the {@link Provider} contract, offering the ability to
+ * 
+ * 	<li> obtain the runtime {@link Descriptor} describing the
+ * 		attributes of the registered component/service, and
+ * 
+ * 	<li> provides a means to access the clazz type instance.  Note
+ * 		that the class instance might be managed in a context
+ * 		other than the current thread classloader context.
+ * 
+ * @author Jerome Dochez
+ * @author Jeff Trent
+ * @author Mason Taube
+ *  
+ * @see ManagedComponentProvider
  */
-public interface ComponentProvider<T> extends Holder<T> {
+public interface ComponentProvider<T> extends Provider<T> {
 
-  boolean isActive();
-
-  void release();
-
-  Descriptor getDescriptor();
+    /**
+     * The {@link Descriptor} fully characterizes the attributes
+     * of this {@link Provider}.
+     * 
+     * @return 
+     * 	a non-null Descriptor describing the complete set of
+     * 	attributes of the provider.
+     */
+    Descriptor getDescriptor();
   
-  Class<? extends T> type();
-  
+    /**
+     * The class type of the implementation. it is responsible also
+     * for determining how (i.e., which loader) to use.
+     * 
+     * <p/>
+     * The class type for what the {@link Provider} actually
+     * produces.
+     * 
+     * <p/>
+     * Note that there is some cost to this call during the first
+     * invocation since it needs to perform classloading.  Care
+     * should therefore be exercised accordingly.
+     * 
+     * @return
+     * 	the class type for what this Provider produces, or null
+     * 	only in the case where the Provider is a facade to a user
+     * 	defined factory that
+     * 
+     */
+    Class<? extends T> type();
+
+    /**
+     * The collection of annotations for this type.  Note that this
+     * may not be the same as the annotations on the {@link #type()}.
+     * 
+     * @return
+     * 	a non-null collection of annotation classes for
+     *  this provider type.
+     */
+    Collection<Annotation> getAnnotations();
+
 }

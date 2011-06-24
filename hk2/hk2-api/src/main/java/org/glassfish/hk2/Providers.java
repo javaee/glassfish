@@ -37,23 +37,40 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.hk2;
 
 import java.util.Collection;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 5/3/11
- * Time: 9:38 AM
- * To change this template use File | Settings | File Templates.
+ * This contract provides a means to access runtime component providers.
+ * 
+ * @author Jerome Dochez
+ * @author Jeff Trent
+ * @author Mason Taube
  */
 public interface Providers<T> {
 
-  
-    // TODO: these should always be non-null based on the way code is written to use them
-    ComponentProvider<T> best();
+    /**
+     * Return all applicable {@link ComponentProvider}s. Will always
+     * be a non-null return value. 
+     */
     Collection<ComponentProvider<T>> all();
 
+    /**
+     * Return the "best" {@link ComponentProvider} from the collection. If
+     * the collection {@link #all()} is not empty, this will return a non
+     * null value.  Otherwise the return value is null.
+     */
+    ComponentProvider<T> getComponentProvider();
+    
+    /**
+     * A shortcut for
+     * <pre>
+     *  if (getComponentProvider() != null)
+     *    return getComponentProvider().get();
+     *  return null;
+     * </pre> 
+     */
+    T get();
+    
 }

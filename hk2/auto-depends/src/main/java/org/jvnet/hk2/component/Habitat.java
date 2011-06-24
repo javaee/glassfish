@@ -240,12 +240,6 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
     }
 
     @Override
-    public Providers<?> locate(Descriptor descriptor) {
-        return null; // To change body of implemented methods use File |
-        // Settings | File Templates.
-    }
-
-    @Override
     public Collection<BindingEntry> getBindings(Descriptor descriptor) {
         return null; // To change body of implemented methods use File |
         // Settings | File Templates.
@@ -800,7 +794,7 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
      * contract by {@link ContractProvided}.
      */
     public boolean isContract(Class<?> type) {
-	return byContract.containsKey(type.getName());
+        return byContract.containsKey(type.getName());
     }
 
     public boolean isContract(java.lang.reflect.Type type) {

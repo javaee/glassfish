@@ -70,11 +70,11 @@ public interface Locator {
      * 
      * <pre>
      * // ExampleContract is an example of a contract type
-     * @Contract
+     * &#064;Contract
      * public interface ExampleContract {
      * }
      *  
-     * @Service
+     * &#064;Service
      * public class Example implements ExampleContract {
      * } 
      * </pre>
@@ -100,7 +100,7 @@ public interface Locator {
      * 
      * <pre>
      * // Example is an example of a service type
-     * @Service
+     * &#064;Service
      * public class Example ... {
      * } 
      * </pre>
@@ -118,5 +118,16 @@ public interface Locator {
      * @return a service locator
      */
     ServiceLocator<?> byType(String typeName);
+
+//    /**
+//     * Obtains the set of {@link Provider}s applicable for the
+//     * given descriptor.
+//     *  
+//     * @param descriptor the search criteria
+//     * @return a non null Providers instance
+//     */
+//    Providers<?> locate(Descriptor descriptor);
+
 }
 
+ 

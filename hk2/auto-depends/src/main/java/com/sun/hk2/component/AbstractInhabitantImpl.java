@@ -39,27 +39,25 @@
  */
 package com.sun.hk2.component;
 
-import org.glassfish.hk2.Descriptor;
-import org.glassfish.hk2.MultiMap;
-import org.jvnet.hk2.component.Scope;
-import org.jvnet.hk2.tracing.TracingThreadLocal;
-import org.jvnet.hk2.tracing.TracingUtilities;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.PreDestroy;
-
-import sun.misc.BASE64Decoder;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.glassfish.hk2.Descriptor;
+import org.glassfish.hk2.MultiMap;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.PreDestroy;
+import org.jvnet.hk2.tracing.TracingThreadLocal;
+import org.jvnet.hk2.tracing.TracingUtilities;
+
+import sun.misc.BASE64Decoder;
 
 /**
  * Partial implementation of {@link Inhabitant} that defines methods whose
@@ -85,10 +83,10 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T> {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
-            @Override
-            public Scope getScope() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
+//            @Override
+//            public Scope getScope() {
+//                return null;  //To change body of implemented methods use File | Settings | File Templates.
+//            }
 
             @Override
             public MultiMap<String, String> metadata() {
@@ -96,7 +94,7 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T> {
             }
 
             @Override
-            public Collection<Class<? extends Annotation>> getAnnotations() {
+            public Collection<String> getQualifiers() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
@@ -121,19 +119,23 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T> {
     @Override
     public final T get() {
         try {
-            if (TracingUtilities.isEnabled())
+            if (TracingUtilities.isEnabled()) {
                 TracingThreadLocal.get().push(this);
+            }
             return get(this);
         } finally {
-            if (TracingUtilities.isEnabled())
+            if (TracingUtilities.isEnabled()) {
                 TracingThreadLocal.get().pop();
+            }
         }
     }
 
     @Override
     public <T> T getSerializedMetadata(final Class<T> type, String key) {
         String v = metadata().getOne(key);
-        if(v==null)     return null;
+        if (v==null) {
+            return null;
+        }
 
         try {
             ObjectInputStream is = new ObjectInputStream(new ByteArrayInputStream(new BASE64Decoder().decodeBuffer(v))) {
@@ -173,8 +175,11 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T> {
 
     @Override
     public final Collection<Inhabitant> companions() {
-        if(companions==null)    return Collections.emptyList();
-        else                    return companions;
+        if (companions == null) {
+            return Collections.emptyList();
+        } else {
+            return companions;
+        }
     }
 
     @Override
@@ -298,6 +303,12 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T> {
       }
       
       return null;
+    }
+
+    @Override
+    public Collection<Annotation> getAnnotations() {
+        // TODO:
+        throw new UnsupportedOperationException();
     }
 
 }

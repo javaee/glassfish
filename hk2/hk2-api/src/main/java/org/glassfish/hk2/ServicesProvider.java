@@ -52,7 +52,7 @@ import java.lang.annotation.Annotation;
  * To change this template use File | Settings | File Templates.
  */
 @Contract
-public interface ServicesProvider extends ComponentProvider<Services> {
+public interface ServicesProvider extends Provider<Services> {
 
     Services get();
 

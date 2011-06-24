@@ -57,7 +57,4 @@ public interface ContractLocator<T> extends ServiceLocator<T> {
 
     ContractLocator<T> annotatedWith(Class<? extends Annotation>... annotations);
 
-    // TODO: this is still confusing, Providers provide access to "ComponentProviders" and our super class provides access to "Provider".
-    // TODO: we need to reconcile the two, or perhaps consider renaming one of them.
-    Providers<T> getProviders();
 }

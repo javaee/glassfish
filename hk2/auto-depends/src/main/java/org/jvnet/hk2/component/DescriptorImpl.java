@@ -37,59 +37,63 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.jvnet.hk2.component;
 
-
-import org.glassfish.hk2.*;
-import org.glassfish.hk2.MultiMap;
-import org.glassfish.hk2.Scope;
-
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.glassfish.hk2.Descriptor;
+import org.glassfish.hk2.MultiMap;
+
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 5/31/11
- * Time: 11:00 AM
- * To change this template use File | Settings | File Templates.
+ * A simple Descriptor Builder.
+ * 
+ * @author Jerome Dochez
+ * @author Jeff Trent
  */
-class DescriptorImpl implements Descriptor {
+/*public*/ class DescriptorImpl implements Descriptor {
 
-    final String name;
-    final org.jvnet.hk2.component.Scope scope;
-    final List<Class<? extends Annotation>> annotations = new ArrayList<Class<? extends Annotation>>();
-    final List<String> contracts = new ArrayList<String>();
-    final String typeName;
+    private final String name;
+    private final String typeName;
+    // TODO:
+//    private final Scope scope;
+    private final List<String> qualifiers = new ArrayList<String>();
+    private final List<String> contracts = new ArrayList<String>();
+    // TODO:
+//    private final MultiMap<String, String> metadata;
 
-    public DescriptorImpl(String name, org.jvnet.hk2.component.Scope scope, String typeName) {
+    public DescriptorImpl(String name, String typeName) {
         this.name = name;
-        this.scope = scope;
         this.typeName = typeName;
     }
-
+    
+    public DescriptorImpl(Descriptor other) {
+        this.name = other.getName();
+//        this.scope = other.getScope();
+        this.typeName = other.getTypeName();
+        this.qualifiers.addAll(other.getQualifiers());
+        this.contracts.addAll(other.getContracts());
+    }
+    
     void addContract(String contractFQCN) {
         contracts.add(contractFQCN);
     }
 
-    void addAnnotationType(Class<? extends Annotation> annotation) {
-        annotations.add(annotation);
+    void addQualifierType(String annotation) {
+        qualifiers.add(annotation);
     }
-
 
     @Override
     public String getName() {
         return name;
     }
 
-    @Override
-    public Scope getScope() {
-        return scope;
-    }
+//    @Override
+//    public Scope getScope() {
+//        return scope;
+//    }
 
     @Override
     public MultiMap<String, String> metadata() {
@@ -97,8 +101,8 @@ class DescriptorImpl implements Descriptor {
     }
 
     @Override
-    public Collection<Class<? extends Annotation>> getAnnotations() {
-        return Collections.unmodifiableList(annotations);
+    public Collection<String> getQualifiers() {
+        return Collections.unmodifiableList(qualifiers);
     }
 
     @Override
