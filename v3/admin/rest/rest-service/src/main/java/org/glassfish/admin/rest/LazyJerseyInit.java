@@ -124,6 +124,9 @@ public class LazyJerseyInit implements LazyJerseyInterface {
                 rc.getFeatures().put(ResourceConfig.FEATURE_DISABLE_WADL, Boolean.TRUE);
             }
         }
+        else {
+                 rc.getFeatures().put(ResourceConfig.FEATURE_DISABLE_WADL, Boolean.TRUE);          
+        }
 
         rc.getProperties().put(ResourceConfig.PROPERTY_CONTAINER_NOTIFIER, r);
         rc.getClasses().add(ReloadResource.class);
