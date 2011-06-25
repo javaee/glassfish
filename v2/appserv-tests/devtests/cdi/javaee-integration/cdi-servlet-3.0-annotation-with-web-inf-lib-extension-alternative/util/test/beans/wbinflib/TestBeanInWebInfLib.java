@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,6 +59,8 @@ public class TestBeanInWebInfLib {
     @PersistenceContext(unitName="pu1")  
     EntityManager emf_at_pu;
 
+    //This test injection method would be called in the context of the servlet in WAR
+    //which does not have the alternative bean enabled in it.
     public String testInjection() {
         if (bm == null)
             return "Bean Manager not injected into the TestBean in WEB-INF/lib";
@@ -73,31 +75,39 @@ public class TestBeanInWebInfLib {
         if (webinfLibBeans.size() != 2) //Bean and enabled Alternative
             return "TestBean in WEB-INF/lib is not available via the WEB-INF/lib "
                     + "Bean's BeanManager";
+        System.out.println("***********************************************************");
+        printBeans(webinfLibBeans, "BeanManager.getBeans(TestBeanInWebInfLib, Any):");
         
-        System.out.println("BeanManager.getBeans(TestBeanInWebInfLib, Any):" + webinfLibBeans);
-        for (Bean b: webinfLibBeans) {
-            debug(b);
-        }
+        Set<Bean<?>> webinfLibAltBeans = bm.getBeans(TestAlternativeBeanInWebInfLib.class, new AnnotationLiteral<Any>() {});
+        if (webinfLibBeans.size() != 1) //enabled Alternative
+            return "TestAlternativeBean in WEB-INF/lib is not available via the WEB-INF/lib "
+                    + "Bean's BeanManager";
+        printBeans(webinfLibAltBeans, "BeanManager.getBeans(TestAlternativeBeanInWebInfLib, Any):");
+        
         
         Iterable<Bean<?>> accessibleBeans = ((org.jboss.weld.manager.BeanManagerImpl) bm).getAccessibleBeans();
-        System.out.println("BeanManagerImpl.getAccessibleBeans:" + accessibleBeans);
-        for (Bean b : accessibleBeans) {
-            debug(b);
-        }
+        printBeans(accessibleBeans, "BeanManagerImpl.getAccessibleBeans:");
 
         Iterable<Bean<?>> beans = ((org.jboss.weld.manager.BeanManagerImpl) bm).getBeans();
-        System.out.println("BeanManagerImpl.getBeans:" + beans);
+        printBeans(beans, "BeanManagerImpl.getBeans");
+        System.out.println("***********************************************************");
+
+        // success
+        return "";
+    }
+
+    private void printBeans(Iterable<Bean<?>> beans, String msg) {
+        System.out.println(msg + ":");
         for (Bean b : beans) {
             debug(b);
         }
-        // success
-        return "";
+        System.out.println();
     }
 
     private void debug(Bean b) {
         String name = b.getBeanClass().getName();
         if (name.indexOf("Test") != -1) {
-            System.out.println(name);
+            System.out.print(name);
         }
 
     }

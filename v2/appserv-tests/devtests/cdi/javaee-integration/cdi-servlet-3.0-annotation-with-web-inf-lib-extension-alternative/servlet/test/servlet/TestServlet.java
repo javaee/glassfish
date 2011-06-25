@@ -2,7 +2,7 @@ package test.servlet;
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010-2011 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,9 +59,10 @@ import javax.transaction.UserTransaction;
 import test.beans.TestBean;
 import test.beans.TestBeanInterface;
 import test.beans.artifacts.Preferred;
-import test.util.JpaTest;
-
+import test.beans.wbinflib.AnotherTestBeanInWebInfLib;
+import test.beans.wbinflib.TestAlternativeBeanInWebInfLib;
 import test.beans.wbinflib.TestBeanInWebInfLib;
+import test.util.JpaTest;
 
 @WebServlet(name="mytest",
         urlPatterns={"/myurl"},
@@ -87,8 +88,17 @@ public class TestServlet extends HttpServlet {
     TestBeanInterface tbi;
     
     /* Injection of Beans from WEB-INF/lib */
-    @Inject TestBeanInWebInfLib tbiwil;
+    @Inject TestBeanInWebInfLib tbiwil; 
+    //We are injecting TestBeanInWebInfLib directly above. Since the alternative
+    //TestBean is not enabled in the WAR's BDA(beans.xml), 
+    //TestBeanInWebInfLib must be injected 
     
+    
+    @Inject AnotherTestBeanInWebInfLib atbiwil;
+    //However in this case, when AnotherTestBeanInWebInfLib tries to inject
+    //TestBeanInWebInfLib in its bean, it must inject TestAlternativeBeanInWebInfLib
+    //as the alternative bean is enabled in the WEB-INF/lib's BDA (beans.xml) 
+
     /* Test lookup of BeanManager*/
     BeanManager bm_lookup;
 
@@ -97,10 +107,7 @@ public class TestServlet extends HttpServlet {
             throws IOException, ServletException {
 
         PrintWriter writer = res.getWriter();
-        writer.write("Hello from Servlet 3.0. ");
-        String msg = "n1=" + getInitParameter("n1") +
-            ", n2=" + getInitParameter("n2");
-
+        String msg = "";
         if (tbi == null) msg += "Bean injection into Servlet failed";
         if (tbiwil == null) msg += "Bean injection of a TestBean in WEB-INF/lib into Servlet failed";
         System.out.println("Test Bean from WEB-INF/lib=" + tbiwil);
@@ -124,18 +131,53 @@ public class TestServlet extends HttpServlet {
         Set webinfLibBeans = bm_at_inj.getBeans(TestBeanInWebInfLib.class,new AnnotationLiteral<Any>() {});
         if (webinfLibBeans.size() != 1) msg += "TestBean in WEB-INF/lib is not available via the WAR BeanManager";
         System.out.println("Test Bean from WEB-INF/lib via BeanManager:" + webinfLibBeans);
+
+        //Ensure Alternative Beans enabled only in the context of web-inf/lib is
+        //not visible in WAR's BM
+        Set webinfLibAltBeans = bm_at_inj.getBeans(TestAlternativeBeanInWebInfLib.class,new AnnotationLiteral<Any>() {});
+        if (webinfLibAltBeans.size() != 0) msg += "TestAlternativeBean in WEB-INF/lib is available via the WAR BeanManager";
+        System.out.println("Test Bean from WEB-INF/lib via BeanManager:" + webinfLibAltBeans);
         
-        //Test injection into WEB-INF/lib beans
-        String injectionWithAlternative = tbiwil.testInjection();
-        if (injectionWithAlternative.equals ("Alternative")) {
+        //Test injection of a Bean in WEB-INF/lib beans into Servlet
+        //and check that the Alternative bean is not called.
+        //The alternative bean in web-inf/lib is not enabled in the WAR's beans.xml
+        //and hence must not be visible.
+        TestAlternativeBeanInWebInfLib.clearStatus(); //clear status
+        
+        String injectionOfBeanInWebInfLibResult = tbiwil.testInjection();
+        System.out.println("injectionWithAlternative returned: " + injectionOfBeanInWebInfLibResult);
+        if (injectionOfBeanInWebInfLibResult.equals ("Alternative")) {
+            msg += "Expected that the original TestBeanInWebInfLib is called, " +
+            		"but instead got " + injectionOfBeanInWebInfLibResult + " instead";
+        } 
+        
+        if(TestAlternativeBeanInWebInfLib.ALTERNATIVE_BEAN_HAS_BEEN_CALLED) {
+            msg += "Alternate Bean is called even though it is not enabled in the WAR's beans.xml";
+        }
+
+        //Test injection into a bean in web-inf/lib
+        //In this case the alternative bean must be called, as it is enabled
+        //in the library jar's beans.xml and the injection of the Bean
+        //happens in the context of the library jar
+        TestAlternativeBeanInWebInfLib.clearStatus(); //clear status
+        String injectionWithAlternative2 = atbiwil.testInjection();
+        System.out.println("injectionWithAlternative returned: " + injectionWithAlternative2);
+        if (injectionWithAlternative2.equals ("Alternative")) {
             //test injection successful
         } else {
-            msg += injectionWithAlternative;
+            msg += "Expected alternative, but got " + injectionWithAlternative2 + " instead";
         }
+
+        if (!TestAlternativeBeanInWebInfLib.ALTERNATIVE_BEAN_HAS_BEEN_CALLED) {
+            msg += "Alternative Bean enabled in WEB-INF/lib was not called " +
+            		"when the injection happened in the context of a " +
+            		"Bean in WEB-INF/lib where the alternative Bean was enabled";
+        }
+
         
         msg += testEMInjection(req);
         
-        writer.write("initParams: " + msg + "\n");
+        writer.write(msg + "\n");
     }
 
 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,23 +40,16 @@
 
 package test.beans.wbinflib;
 
-import javax.enterprise.inject.Alternative;
+import javax.inject.Inject;
 
-@Alternative
-public class TestAlternativeBeanInWebInfLib extends TestBeanInWebInfLib {
-    public static boolean ALTERNATIVE_BEAN_HAS_BEEN_CALLED = false;
-    public TestAlternativeBeanInWebInfLib(){
-        System.out.println("**************** Alternative Bean in web-inf/lib created");
-    }
+public class AnotherTestBeanInWebInfLib {
+    @Inject
+    TestBeanInWebInfLib twil; //Enabled alternative bean must be injected here, as this bean is within web-inf/lib BDA which has the enabled alternatives
 
-    @Override
+
     public String testInjection() {
-        ALTERNATIVE_BEAN_HAS_BEEN_CALLED = true;
-        System.out.println("*************** testinjection in alternative bean in web-inf/lib called");
-        return "Alternative";
+        String ret = twil.testInjection();
+        return ret; //"Alternative"
     }
-    
-    public static void clearStatus(){
-        ALTERNATIVE_BEAN_HAS_BEEN_CALLED = false;
-    }
+
 }

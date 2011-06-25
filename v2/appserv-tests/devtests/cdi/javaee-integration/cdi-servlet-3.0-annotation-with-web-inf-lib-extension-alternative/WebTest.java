@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010-2011 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,7 +46,7 @@ public class WebTest {
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
     private static final String TEST_NAME = "cdi-servlet-annotation-with-web-inf-lib-extension-alternative";
-    private static final String EXPECTED_RESPONSE = "Hello from Servlet 3.0. initParams: n1=v1, n2=v2";
+    private static final String EXPECTED_RESPONSE = "";
 
     private String host;
     private String port;
@@ -98,7 +98,9 @@ public class WebTest {
                 is = conn.getInputStream();
                 input = new BufferedReader(new InputStreamReader(is));
                 line = input.readLine();
-                System.out.println("line = " + line);
+                if (line.trim().length() != 0) {
+                    System.out.println("line = " + line);
+                }
             } finally {
                 try {
                     if (is != null) {
