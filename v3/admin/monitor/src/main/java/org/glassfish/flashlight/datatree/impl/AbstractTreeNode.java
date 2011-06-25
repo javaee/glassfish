@@ -60,6 +60,7 @@ import java.util.regex.Pattern;
 public abstract class AbstractTreeNode implements TreeNode, Comparable<TreeNode> {
     protected Map<String, TreeNode> children =
             new ConcurrentHashMap<String, TreeNode>();
+    // bnevins 6/25/2011  -- why is normalizedChildren static ?!?
     private static Map<String, TreeNode> normalizedChildren =
             new ConcurrentHashMap<String, TreeNode>();
     protected String name;    // The node object itself
@@ -218,14 +219,27 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable<TreeNode>
         this.description = description;
     }
 
+    // Byron Nevins 6/25/11
+    // JIRA 15964 -- what happened was that the childName was "xxx.yyy"
+    // there was a node that actually matched but it was not found because
+    // its name was "xxx\.yyy"
     @Override
     public TreeNode getChild(String childName) {
-        if (childName == null) {
+        if (childName == null)
             return null;
+
+        childName = normalizeDots(childName);
+        Set<Map.Entry<String, TreeNode>> entries = children.entrySet();
+
+        for (Map.Entry<String, TreeNode> entry : entries) {
+            String entryKey = entry.getKey();
+            String normalizedEntryKey = normalizeDots(entryKey);
+
+            if (childName.equals(entryKey) || childName.equals(normalizedEntryKey))
+                return entry.getValue();
         }
-        else {
-            return children.get(childName);
-        }
+
+        return null;
     }
 
     @Override
@@ -501,4 +515,30 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable<TreeNode>
         }
         return null;
     }
+
+    private static String normalizeDots(String s) {
+        // Normalized means a literal dot is "\."  (one 'real' backslash followed by dot
+        // in a java string in source code it would be:  "\\."  -- where one of the backslashes isn't 'real'
+
+        if(s == null || !hasDots(s)) // return quick for performance
+            return s;
+
+        // to avoid expensive regexp work I do it this way...
+        // it changes all occurences of "." with no preceding '\' with "\." and all
+        // MONDOTS also.
+        // I.e. all dots leave here with a backslash in front of them!
+
+        return s.replace("\\.", MONDOT).replace(".", MONDOT).replace(MONDOT, "\\.");
+    }
+
+    private static boolean hasDots(String s) {
+        if(s == null)
+            return false;
+        if(s.indexOf(MONDOT) >= 0)
+            return true;
+        if(s.indexOf(".") >= 0)
+            return true;
+        return false;
+    }
+
 }
