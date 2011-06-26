@@ -72,7 +72,7 @@ public interface RestConfig extends ConfigExtension {
 
     public void setIndentLevel(String indentLevel);
 
-    @Attribute(defaultValue = "true", dataType = Boolean.class)
+    @Attribute(defaultValue = "false", dataType = Boolean.class)
     public String getWadlGeneration();
 
     public void setWadlGeneration(String wadlGeneration);
