@@ -115,7 +115,7 @@ public class WoodstockHandler {
         if (uploadedFile != null) {
 
             String name = uploadedFile.getOriginalName();
-            logger.info("======= uploadFileName="+name);
+            logger.info("uploadFileName="+name);
             //see bug# 6498910, for IE, getOriginalName() returns the full path, including the drive.
             //for any other browser, it just returns the file name.
             int lastIndex = name.lastIndexOf("\\");
@@ -124,7 +124,7 @@ public class WoodstockHandler {
             }
             int index = name.indexOf(".");
             if (index <= 0) {
-                logger.info("======== name="+name + ",index="+index);
+                logger.info("name="+name + ",index="+index);
                 String mesg = GuiUtil.getMessage("msg.deploy.nullArchiveError");
                 GuiUtil.handleError(handlerCtx, mesg);
                 return;
@@ -274,7 +274,7 @@ public class WoodstockHandler {
             handlerCtx.setOutputValue("optionArray", new Option[0]);
             return;
         }
-        handlerCtx.setOutputValue("optionArray", SunOptionUtil.getOptionsArray(list.toArray( new String[list.size()])));
+        handlerCtx.setOutputValue("optionArray", SunOptionUtil.getOptionsArray( list.toArray(new String[0])));
     }
 
 
@@ -332,7 +332,7 @@ public class WoodstockHandler {
         if(nlMenuOptions != null){
             menuList.add(nlMenuOptions);
         }
-        
+
 
          // Menu for Garbage Collectors
         OptionGroup gcMenuOptions = getMenuOptions(gcList, "garbage-collector", "", false);
@@ -433,7 +433,7 @@ public class WoodstockHandler {
                     if (firstItem == null){
                         firstItem = (String)moduleList.get(0);
                     }
-                }                
+                }
           }
         }
 
@@ -463,7 +463,7 @@ public class WoodstockHandler {
         List vsList = (List) handlerCtx.getInputValue("VSList");
         ArrayList menuList = new ArrayList();
         menuList.add(new Option("", ""));
-        
+
         if (appname != null && !appname.isEmpty()) {
             //Servlet Instance Menu Options.
             List servletInstanceMenuOptions = getWebComponentMenuOptions(appname, moduleName, vsList, monitorURL, handlerCtx);
@@ -476,14 +476,14 @@ public class WoodstockHandler {
                         List compMenuOptions = getEJBComponentMenuOptions(appname, moduleName, e.getKey(), monitorURL, handlerCtx);
                         menuList.addAll(compMenuOptions);
                     }
-                }                               
+                }
             }
         }
         // Add Menu Options.
         jumpMenuOptions = (Option[]) menuList.toArray(new Option[menuList.size()]);
         handlerCtx.setOutputValue("ComponentList", jumpMenuOptions);
     }
-    
+
     private static List getEJBComponentMenuOptions(String appname, String modulename, String compName, String monitorURL, HandlerContext handlerCtx) {
         String endpoint = monitorURL + "/applications/" + appname + "/" + modulename + "/" + compName;
         List compMenuList = new ArrayList();

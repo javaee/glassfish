@@ -77,7 +77,7 @@ function submitAndDisable(button, msg, target) {
     var args = {};
     args[button.id] = button.id;
     admingui.ajax.postAjaxRequest(button, args);
-    return false; 
+    return false;
 }
 
 
@@ -94,7 +94,7 @@ function disableAllButtons() {
     for ( i=0; i < inputs.length; i++) {
         component = inputs[i];
         if (component.type == "submit"){
-            component.disabled=true; 
+            component.disabled=true;
         }
     }
 }
@@ -164,7 +164,7 @@ function disableComponent(componentName, type) {
  * at the calling time, refer to update.jsf
  * but just can't get this working.
  * saving the code for now.
- 
+
 function delayDisableComponent(componentName, type, timeouted) {
     var func = disableComponent[type] || getTextElement;
     var component = func(componentName);
@@ -175,7 +175,7 @@ function delayDisableComponent(componentName, type, timeouted) {
         window.console.log('component is NULL' + componentName);
         window.console.debug('component is NULL' + componentName);
     }
-    
+
     component.disabled = true;
     component.className='TxtFldDis_sun4';
     if(func == getTextElement) {
@@ -193,7 +193,7 @@ function disableBtnComponent(componentName) {
         el.setDisabled(true);
     } else if (el.setProps) {
         document.getElementById(componentName).setProps({
-            disabled: true, 
+            disabled: true,
             className: 'Btn1Dis_sun4'
         });
     } else {
@@ -208,7 +208,7 @@ function enableBtnComponent(componentName) {
         el.setDisabled(false);
     } else if (el.setProps) {
         document.getElementById(componentName).setProps({
-            disabled: false, 
+            disabled: false,
             className: 'Btn1_sun4'
         });
     } else {
@@ -243,8 +243,8 @@ function disableDOMComponent(componentName) {
         component.setDisabled(true);
     } else if (el.setProps) {
         document.getElementById(componentName).setProps({
-            disabled: true, 
-            className: 'TxtFldDis_sun4', 
+            disabled: true,
+            className: 'TxtFldDis_sun4',
             value: ' '
         });
     } else {
@@ -259,7 +259,7 @@ function enableDOMComponent(componentName) {
     var el = document.getElementById(componentName);
     if (el.setProps) {
         document.getElementById(componentName).setProps({
-            disabled: false, 
+            disabled: false,
             className: 'TxtFld_sun4'
         });
     } else {
@@ -281,7 +281,7 @@ function isChecked (elementName) {
     return false;
 }
 
-function checkForValue(formField) { 
+function checkForValue(formField) {
     if (!formField) {
         return false; // No field, so no value
     }
@@ -290,11 +290,11 @@ function checkForValue(formField) {
         // Use Woodstock's api to get correct value
         value = formField.getProps().value;
     }
-    var result = (value != '') && (isWhitespace(value) == false); 
+    var result = (value != '') && (isWhitespace(value) == false);
     if (!result) {
         formField.select();
     }
-    return result; 
+    return result;
 }
 
 //==========================================================
@@ -408,9 +408,9 @@ function showRestartReasons() {
         //toggle.src = "#{request.contextPath}/theme/woodstock4_3/suntheme/images/table/grouprow_collapsed.gif";
         toggle.className = "collapsed";
         el.style.visibility = "hidden";
-    }   
+    }
     reasonsHidden = !reasonsHidden;
-}   
+}
 
 //===========================================================================
 
@@ -486,8 +486,8 @@ admingui.util = {
     setPreference: function(root, key, value) {
         root = 'glassfish/' + root;
         admingui.ajax.invoke("setPreference", {
-            root:root, 
-            key:key, 
+            root:root,
+            key:key,
             value:value
         });
     },
@@ -505,7 +505,7 @@ admingui.util = {
  */
 admingui.nav = {
     TREE_ID: "treeForm:tree",
-    
+
     refreshCluster: function(hasCluster){
         var node1 = admingui.nav.getTreeFrameElementById(admingui.nav.TREE_ID + ':clusters');
         var node2 = admingui.nav.getTreeFrameElementById(admingui.nav.TREE_ID + ':clusters2');
@@ -519,7 +519,7 @@ admingui.nav = {
             node3.style.display='block';
             tree.selectTreeNode(admingui.nav.TREE_ID + ':clusters2');
         } else {
-            //there is a problem in hiding clusters2,  it doesn' hide it, maybe because of the 
+            //there is a problem in hiding clusters2,  it doesn' hide it, maybe because of the
             //dynamic treenode under it ? still need to figure this out.
             node3.style.display='none';
             node2.style.display='none';
@@ -527,7 +527,7 @@ admingui.nav = {
             tree.selectTreeNode(admingui.nav.TREE_ID + ':clusters');
         }
     },
-    
+
     /**
      *	<p> This function allows you to provide a clientId of a TreeNode in the
      *	    navigation frame to be "refreshed".  This means that it and its
@@ -593,7 +593,7 @@ admingui.nav = {
                 //
                 var mainNode = document.getElementById(nodeId);
                 var childNodes = document.getElementById(nodeId+"_children");
-                
+
                 try {
                     var oldNode = previousState.mainNode;
                     mainNode.className = oldNode.className;
@@ -630,7 +630,7 @@ admingui.nav = {
                     }
                 }
             }
-            
+
             admingui.ajax.processElement(window, document.getElementById(nodeId), true);
             admingui.ajax.processElement(window, document.getElementById(nodeId+"_children"), true);
         }
@@ -708,7 +708,7 @@ admingui.nav = {
                         dest.childNodes[cnt].style["display"] = src.childNodes[idx].style["display"];
                         dest.childNodes[cnt].className = src.childNodes[idx].className;
                         if (src.childNodes[idx].nodeName == 'IMG'){
-                            dest.childNodes[cnt].src = src.childNodes[idx].src; 
+                            dest.childNodes[cnt].src = src.childNodes[idx].src;
                         }
                         admingui.nav.copyStyleAndClass(src.childNodes[idx], dest.childNodes[cnt]);
                     }
@@ -842,7 +842,7 @@ admingui.nav = {
      */
     matchURL: function(node, url) {
         var result = null;
-        if ((node.nodeType == 1) && (node.nodeName == "A") && 
+        if ((node.nodeType == 1) && (node.nodeName == "A") &&
             (node.href.indexOf(url) > -1) & (node.id.indexOf("link") > -1)) {
             result = node;
         }
@@ -1036,8 +1036,8 @@ admingui.help = {
             "helpKey");
         if (helpKeys !== null) {
             admingui.ajax.invoke("calculateHelpUrl", {
-                pluginId: admingui.help.pluginId, 
-                helpKey: helpKeys[0].value, 
+                pluginId: admingui.help.pluginId,
+                helpKey: helpKeys[0].value,
                 url:"url"
             },
             function(result) {
@@ -1056,12 +1056,12 @@ admingui.help = {
     },
 
     switchTab: function(tabElement, toShow, toHide) {
-        // 
+        //
         // Perform an ajax request on the tab panel element
-        // 
+        //
 
         // set up the parameters to the ajax request
-        var props = {}; 
+        var props = {};
         var tabsetId = document.getElementById('tabForm:helpTabs').id;
         props.render = tabsetId;
         props.execute = tabElement.id + ', ' + tabsetId;
@@ -1071,9 +1071,9 @@ admingui.help = {
         // Note: in help window, don't ping -- only 1 JSF page
         jsf.ajax.request(tabElement, null, props);
 
-        // 
+        //
         // Use DOM to show/hide the proper tree
-        // 
+        //
 
         var tree = document.getElementById(toHide);
         tree.style.display = "none";
@@ -1094,7 +1094,7 @@ admingui.help = {
     nav: {
         TREE_ID: "tocTree",
         lastTreeNodeSelected: null,
-	
+
         /**
 	 *	This function selects a treeNode matching the given URL.
 	 */
@@ -1111,7 +1111,7 @@ admingui.help = {
                 // ignore this until we need to fix it...
                 // FIXME: This really should highlight the selected node.
                 admingui.help.nav.selectTreeNode(document.getElementById(matches[0].id));
-            } 
+            }
         },
 
         /**
@@ -1182,7 +1182,7 @@ function guiValidate(reqMsg, reqInt, reqPort) {
                 return showAlert(reqMsg + ' ' + getLabel(component));
             }
         }
-        
+
         if (styleClass.match("intAllowMinusOne")) {
             if (component.value =='' || component.value == '-1')
                 return true;
@@ -1227,7 +1227,7 @@ function guiValidate(reqMsg, reqInt, reqPort) {
 
 // FIXME: We should combine guiValidate() and guiValidateWithDropDown() these
 // FIXME: perform similar operations but b/c of testing reasons we
-// FIXME: added two methods.   We should combine these in the future. 
+// FIXME: added two methods.   We should combine these in the future.
 
 function guiValidateWithDropDown(reqMsg,reqInt, reqPort, reqMsgSelect){
     var selectFields = document.getElementsByTagName("select");
@@ -1406,20 +1406,20 @@ function checkRequired(componentId, reqMsg){
 }
 
 function isWhitespace(s) {
-    var i; 
-    var whitespace = " \t\n\r"; 
-    // Search through string's characters one by one 
-    // until we find a non-whitespace character. 
-    // When we do, return false; if we don't, return true. 
-    
-    for (i = 0; i < s.length; i++) { 
-        // Check that current character isn't whitespace. 
-        var c = s.charAt(i); 
-        if (whitespace.indexOf(c) == -1) return false; 
-    } 
+    var i;
+    var whitespace = " \t\n\r";
+    // Search through string's characters one by one
+    // until we find a non-whitespace character.
+    // When we do, return false; if we don't, return true.
 
-    // All characters are whitespace. 
-    return true; 
+    for (i = 0; i < s.length; i++) {
+        // Check that current character isn't whitespace.
+        var c = s.charAt(i);
+        if (whitespace.indexOf(c) == -1) return false;
+    }
+
+    // All characters are whitespace.
+    return true;
 }
 
 function compareDate(beginDate, endDate, pattern) {
@@ -1470,7 +1470,7 @@ function checkDatePattern(date, pattern, delim) {
     else {
         separatorChar = delim;
     }
-	
+
     if(pattern != '') {
         for(i = 0; i < separatorChar.length; i++) {
             if(pattern.indexOf(separatorChar[i]) != -1) {
@@ -1494,10 +1494,10 @@ function checkDatePattern(date, pattern, delim) {
             }
             if(format[i].toLowerCase == "yy") {
                 format[i] += format[i];
-            } 
-            pattern += format[i]; 
+            }
+            pattern += format[i];
         }
-    }	
+    }
     formatNumber = getDateFormat(pattern);
     if(!checkForValidDate(date, formatNumber, '')) {
         return false;
@@ -1818,7 +1818,7 @@ function getSelectedValueFromForm(theForm, field) {
             name = testField.name;
             if (name == null) {
                 continue;
-            }  
+            }
             name = name.substr(name.lastIndexOf(".")+1);
             if ((name == field) && testField.checked) {
                 selectedValue = testField.value;
@@ -1829,12 +1829,12 @@ function getSelectedValueFromForm(theForm, field) {
     return selectedValue;
 }
 
-function checkForSelectedValue(fieldId) { 
-    var field = document.getElementById(fieldId);  
-    if (field.value == '' || isWhitespace(field.value)) { 
-        return false; 
-    } 
-    return true; 
+function checkForSelectedValue(fieldId) {
+    var field = document.getElementById(fieldId);
+    if (field.value == '' || isWhitespace(field.value)) {
+        return false;
+    }
+    return true;
 }
 
 function reloadHeaderFrame() {
@@ -1904,21 +1904,21 @@ admingui.deploy = {
         }
 
         if (typeof(appName) != 'undefined' ) {
+            //appName should be up to the last dot. eg. tmpName of  hello.123.war should be hello.123
+            var ix = appName.lastIndexOf(".");
+            if (ix != -1){
+                appName = appName.substring(0, ix);
+            }
             admingui.deploy.setAppName(appNameId, appName, obj, appTypeString);
             //may as well set context root if it exist.
             var component = obj.document.getElementById(contextRootId);
             if (component != null){
-                component.value = getPrefix(appName);
+                component.value = appName;
             }
         }
     },
 
     setAppName : function (appNameId, appName, obj, appTypeString){
-
-        var pfex = getPrefix(appName);
-        var sfex = getSuffix(appName);
-
-        var sfex2 = sfex.substr(1);   //remove the '.'
         // Fill in application name
         if (appNameId==null || appNameId.length <=0){
         // shouldn't be.
@@ -1930,7 +1930,7 @@ admingui.deploy = {
             for( idx=0; idx < sheets.length; idx++){
                 var comp = obj.document.getElementById('form:'+sheets[idx]+str3);
                 if (comp != null){
-                    comp.value=pfex;
+                    comp.value=appName;
                 }
             }
         }
@@ -1952,7 +1952,7 @@ admingui.deploy = {
                 sfex2 = '';
             }
         }
-        
+
         //for redeploy, there is no dropdown type to choose from.
         if (typeId != ""){
             obj.document.getElementById(typeId).value = sfex2;
@@ -2122,39 +2122,39 @@ admingui.ajax = {
             req.send("");
         }
     },
-    
+
     ajaxStart : function() {
         admingui.ajax._setVisibility('ajaxIndicator', 'visible');
         admingui.ajax._clearAjaxTimer();
         admingui.ajax.ajaxTimer = setTimeout("admingui.ajax._displayAjaxLoadingPanel()", 2000);
     },
-    
+
     _displayAjaxLoadingPanel : function() {
         var ajaxPanel = document.getElementById('ajaxPanel');
         if (ajaxPanel != null) {
-            window.onscroll = function () { 
-                ajaxPanel.style.top = document.body.scrollTop; 
+            window.onscroll = function () {
+                ajaxPanel.style.top = document.body.scrollTop;
             };
             ajaxPanel.style.display = "block";
-            ajaxPanel.style.top = document.body.scrollTop;            
+            ajaxPanel.style.top = document.body.scrollTop;
             ajaxPanel.style.visibility = "visible";
         }
     },
-    
+
     _setVisibility : function (id, state) {
         var el = document.getElementById(id);
         if (el != null) {
             el.style.visibilty = state;
         }
     },
-    
+
     _clearAjaxTimer : function() {
         if (admingui.ajax.ajaxTimer != null) {
             clearTimeout(admingui.ajax.ajaxTimer);
             admingui.ajax.ajaxTimer = null;
         }
     },
-    
+
     ajaxComplete : function() {
         admingui.ajax._clearAjaxTimer();
         var ajaxPanel = document.getElementById('ajaxPanel');
@@ -2344,7 +2344,7 @@ admingui.ajax = {
         document.body.style.cursor = 'auto';
 
         // Tree select code??  FIXME: broken...
-        /* 
+        /*
         var node = o.argument.sourceNode;
         if (typeof node != 'undefined') {
             admingui.nav.selectTreeNodeById(node.parentNode.parentNode.id);
@@ -2465,7 +2465,7 @@ admingui.ajax = {
         if (url.indexOf('bare=') > -1) {
             return url;
         }
-        
+
         var insert = '?bare=true';
         var changed = url;
 
@@ -2549,7 +2549,7 @@ admingui.ajax = {
 
     getResource: function(path, callback) {
         admingui.ajax.invoke("gf.serveResource", {
-            path:path, 
+            path:path,
             content:content
         }, callback, 1, true);
     },

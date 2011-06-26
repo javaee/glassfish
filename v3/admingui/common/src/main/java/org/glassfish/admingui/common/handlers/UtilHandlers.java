@@ -939,6 +939,22 @@ public class UtilHandlers {
         handlerCtx.setOutputValue("out", "true".equals(str));
     }
 
+
+    @Handler(id="gf.logger",
+    input={
+        @HandlerInput(name="logString", type=String.class , defaultValue=""),
+        @HandlerInput(name="level", type=String.class , defaultValue="INFO")
+    },
+    output={
+        @HandlerOutput(name="string", type=String.class)
+    })
+    public static void logger(HandlerContext handlerCtx) {
+
+        GuiUtil.getLogger().log(
+                Level.parse((String)handlerCtx.getInputValue("level")),
+                "" +handlerCtx.getInputValue("logString"));
+    }
+
     /**
      *	<p> This method returns a new UIViewRoot with the basic JSFT settings
      *	    from the current ViewRoot.  If you intend to set this before the
