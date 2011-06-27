@@ -39,14 +39,68 @@
  */
 package org.jvnet.hk2.component;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.Arrays;
 
 import org.glassfish.hk2.Descriptor;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class DescriptorImplTest {
 
+    @Test
+    public void sanity() {
+        DescriptorImpl descriptor = new DescriptorImpl("name", "typeName");
+        descriptor.addContract("contract1");
+        descriptor.addContract("contract2");
+        descriptor.addQualifierType("qualifier1");
+        descriptor.addQualifierType("qualifier2");
+        descriptor.addMetadata("key", "val1");
+        descriptor.addMetadata("key", "val2");
+        
+        MultiMap<String, String> mm = new MultiMap<String, String>();
+        mm.add("key", "val1");
+        mm.add("key", "val2");
+        
+        assertEquals("name", descriptor.getName());
+        assertEquals("typeName", descriptor.getTypeName());
+        assertEquals(Arrays.asList(new String[] {"qualifier1", "qualifier2"}), descriptor.getQualifiers());
+        assertEquals(Arrays.asList(new String[] {"contract1", "contract2"}), descriptor.getContracts());
+        assertEquals(mm, descriptor.getMetadata());
+        
+        try {
+            descriptor.getContracts().add("whatever");
+            fail("expected to be read only");
+        } catch (Exception e) {
+            // expected
+        }
+        
+        try {
+            descriptor.getQualifiers().add("whatever");
+            fail("expected to be read only");
+        } catch (Exception e) {
+            // expected
+        }
+        
+        try {
+            descriptor.getMetadata().add("key", "whatever");
+            fail("expected to be read only");
+        } catch (Exception e) {
+            // expected
+        }
+        
+        Descriptor copy = new DescriptorImpl(descriptor);
+        assertEquals("name", copy.getName());
+        assertEquals("typeName", copy.getTypeName());
+        assertEquals(Arrays.asList(new String[] {"qualifier1", "qualifier2"}), copy.getQualifiers());
+        assertEquals(Arrays.asList(new String[] {"contract1", "contract2"}), copy.getContracts());
+        assertEquals(mm, copy.getMetadata());
+    }
+    
     @Test
     public void emptyDescriptor() {
         Descriptor descriptor = DescriptorImpl.EMPTY_DESCRIPTOR;
@@ -55,15 +109,40 @@ public class DescriptorImplTest {
         
         DescriptorImpl descriptor2 = new DescriptorImpl(null, null);
         assertTrue("match checking", descriptor2.matches(descriptor));
+
+        DescriptorImpl descriptor3 = new DescriptorImpl(descriptor2);
+        assertTrue("match checking", descriptor3.matches(descriptor));
+        assertTrue("match checking", descriptor3.matches(descriptor2));
+        assertTrue("match checking", descriptor2.matches(descriptor3));
     }
     
-    
-    @Ignore
     @Test
     public void matches() {
-        fail("todo");
+        DescriptorImpl descriptor = new DescriptorImpl("name", "typeName");
+        descriptor.addContract("contract1");
+        descriptor.addContract("contract2");
+        descriptor.addQualifierType("qualifier1");
+        descriptor.addQualifierType("qualifier2");
+        descriptor.addMetadata("key", "val1");
+        descriptor.addMetadata("key", "val2");
+        
+        DescriptorImpl copy = new DescriptorImpl(descriptor);
+        assertTrue(descriptor.matches(copy));
+        assertTrue(copy.matches(descriptor));
+        
+        copy.addContract("contract3");
+        assertTrue(descriptor.matches(copy));
+        assertFalse(copy.matches(descriptor));
+        
+        copy = new DescriptorImpl(descriptor);
+        copy.addQualifierType("qualifier3");
+        assertTrue(descriptor.matches(copy));
+        assertFalse(copy.matches(descriptor));
+
+        copy = new DescriptorImpl(descriptor);
+        copy.addMetadata("key2", "val");
+        assertTrue(descriptor.matches(copy));
+        assertFalse(copy.matches(descriptor));
     }
-    
-    
     
 }

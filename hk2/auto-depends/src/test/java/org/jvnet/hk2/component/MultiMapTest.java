@@ -157,6 +157,15 @@ public class MultiMapTest {
             // expected
         }
 
+        readOnly = mm.readOnly();
+        assertNotSame(mm, readOnly);
+        try {
+            readOnly.add("key", "val3");
+            fail("exception expected");
+        } catch (Exception e) {
+            // expected
+        }
+        
         assertEquals("size", 3, readOnly.size());
         assertEquals("keySet", new HashSet(Arrays.asList(new String[]{"key", "key2", "key3"})), readOnly.keySet());
     }

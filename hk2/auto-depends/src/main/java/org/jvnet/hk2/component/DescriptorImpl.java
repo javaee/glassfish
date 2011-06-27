@@ -61,19 +61,22 @@ import org.glassfish.hk2.Descriptor;
 //    private final Scope scope;
     private final List<String> qualifiers = new ArrayList<String>();
     private final List<String> contracts = new ArrayList<String>();
-    private final MultiMap<String, String> metadata = new MultiMap<String, String>();
+    private final MultiMap<String, String> metadata;
 
     public DescriptorImpl(String name, String typeName) {
         this.name = name;
         this.typeName = typeName;
+        this.metadata = new MultiMap<String, String>();
     }
     
     public DescriptorImpl(Descriptor other) {
         this.name = other.getName();
+        // TODO:
 //        this.scope = other.getScope();
         this.typeName = other.getTypeName();
         this.qualifiers.addAll(other.getQualifiers());
         this.contracts.addAll(other.getContracts());
+        this.metadata = new MultiMap<String, String>(other.getMetadata());
     }
     
     void addContract(String contractFQCN) {
@@ -84,11 +87,16 @@ import org.glassfish.hk2.Descriptor;
         qualifiers.add(annotation);
     }
 
+    void addMetadata(String key, String value) {
+        metadata.add(key, value);
+    }
+    
     @Override
     public String getName() {
         return name;
     }
 
+    // TODO:
 //    @Override
 //    public Scope getScope() {
 //        return scope;
@@ -128,7 +136,8 @@ import org.glassfish.hk2.Descriptor;
      * @param another the other Descriptor to compare against
      * @return true if all fields in this instance matches another
      */
-    public boolean matches(Descriptor another) {
+    boolean matches(Descriptor another) {
+        // TODO: Scope
         return matches(name, another.getName())
             && matches(typeName, another.getTypeName())
             && matches(qualifiers, another.getQualifiers())
@@ -142,10 +151,6 @@ import org.glassfish.hk2.Descriptor;
         }
         
         if (null == o1 || null == o2) {
-            return false;
-        }
-        
-        if (o1.getClass() != o2.getClass()) {
             return false;
         }
         
@@ -170,6 +175,7 @@ import org.glassfish.hk2.Descriptor;
         return o1.equals(o2);
     }
     
+    @SuppressWarnings("unchecked")
     private static boolean matches(Object o1, Object o2) {
         if (null == o1) {
             return true;
@@ -177,8 +183,8 @@ import org.glassfish.hk2.Descriptor;
         
         if (Collection.class.isInstance(o1)) {
             Collection<?> c1 = Collection.class.cast(o1);
-            if (c1.isEmpty()) {
-                return true;
+            if (Collection.class.isInstance(o2)) {
+                return matches(c1, Collection.class.cast(o2));
             }
         } else if (MultiMap.class.isInstance(o1)
                 && org.glassfish.hk2.MultiMap.class.isInstance(o2)) {
@@ -188,6 +194,28 @@ import org.glassfish.hk2.Descriptor;
         return equals(o1, o2);
     }
 
+    private static boolean matches(Collection<?> c1, Collection<?> c2) {
+        if (null == c1 && null == c2) {
+            return true;
+        }
+        
+        if (null == c1 || null == c2) {
+            return false;
+        }
+        
+        if (c1.size() > c2.size()) {
+            return false;
+        }
+
+        for (Object o : c1) {
+            if (!c2.contains(o)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
     final static Descriptor EMPTY_DESCRIPTOR = new Descriptor() {
         @Override
         public String getName() {

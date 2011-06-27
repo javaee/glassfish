@@ -56,6 +56,7 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
 
     private final Map<K, List<V>> store;
     private final boolean concurrencyControls;
+    private final boolean modifiable;
 
     /**
      * Creates an empty multi-map with default concurrency controls
@@ -82,6 +83,7 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
     }
 
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     MultiMap<K, V> readOnly() {
         return new MultiMap(Collections.unmodifiableMap(store));
     }
@@ -94,6 +96,9 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
     protected MultiMap(Map<K, List<V>> store, boolean concurrencyControls) {
         this.store = store;
         this.concurrencyControls = concurrencyControls;
+        
+        // ugly, but no other way unfortunately
+        this.modifiable = !store.getClass().getName().contains("Collections$UnmodifiableMap");
     }
 
     /**
@@ -101,7 +106,7 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
      *
      * @param base map to copy
      */
-    public MultiMap(MultiMap<K, V> base) {
+    public MultiMap(org.glassfish.hk2.MultiMap<K, V> base) {
         this();
         for (Entry<K, List<V>> e : base.entrySet()) {
             store.put(e.getKey(), newList(e.getValue()));
@@ -126,6 +131,7 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
         }
         
         for (Entry<K, List<V>> entry : store.entrySet()) {
+            @SuppressWarnings("unchecked")
             List<V> vColl = other.get(entry.getKey());
             if (!entry.getValue().equals(vColl)) {
                 return false;
@@ -198,6 +204,10 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
      * @param v value to store in the k's values.
      */
     public final void add(K k, V v) {
+        if (!modifiable) {
+            throw new UnsupportedOperationException("unmodifiable collection");
+        }
+        
         List<V> l = store.get(k);
         if (l == null) {
             l = newList(null);
