@@ -39,11 +39,34 @@
  */
 package org.jvnet.hk2.component;
 
-import com.sun.hk2.component.*;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.AnnotationTypeMismatchException;
+import java.lang.reflect.Constructor;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.sun.hk2.component.ScopeInstance;
-import org.glassfish.hk2.*;
-import org.glassfish.hk2.classmodel.reflect.Type;
+import org.glassfish.hk2.Binding;
+import org.glassfish.hk2.ContractLocator;
+import org.glassfish.hk2.Descriptor;
+import org.glassfish.hk2.DynamicBinderFactory;
+import org.glassfish.hk2.ServiceLocator;
+import org.glassfish.hk2.Services;
+import org.glassfish.hk2.TypeLiteral;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.FactoryFor;
@@ -53,17 +76,13 @@ import org.jvnet.hk2.component.concurrent.Hk2Executor;
 import org.jvnet.hk2.component.concurrent.SameThreadExecutor;
 import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.AnnotationTypeMismatchException;
-import java.lang.reflect.Constructor;
-import java.util.Map.Entry;
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.sun.hk2.component.ConstructorCreator;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
+import com.sun.hk2.component.FactoryCreator;
+import com.sun.hk2.component.InjectInjectionResolver;
+import com.sun.hk2.component.InjectionResolver;
+import com.sun.hk2.component.RunLevelInhabitantProvider;
+import com.sun.hk2.component.ScopeInstance;
 
 /**
  * A set of templates that constitute a world of objects.
@@ -240,21 +259,41 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
     }
 
     @Override
-    public Collection<BindingEntry> getBindings(Descriptor descriptor) {
-        return null; // To change body of implemented methods use File |
-        // Settings | File Templates.
+    public Collection<Binding<?>> getBindings() {
+        return getBindings(null);
     }
 
+    @Override
+    public Collection<Binding<?>> getBindings(Descriptor descriptor) {
+        if (null == descriptor) {
+            descriptor = DescriptorImpl.EMPTY_DESCRIPTOR;
+        }
+
+        // TODO:
+//        return null;
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Collection<Binding<?>> getCummulativeBindings() {
+        return getCummulativeBindings(null);
+    }
+
+    @Override
+    public Collection<Binding<?>> getCummulativeBindings(Descriptor descriptor) {
+        if (null == descriptor) {
+            descriptor = DescriptorImpl.EMPTY_DESCRIPTOR;
+        }
+
+        // TODO:
+//      return null;
+      throw new UnsupportedOperationException();
+    }
+    
     @Override
     public DynamicBinderFactory bindDynamically() {
         return new DynamicBinderFactoryImpl(parent == null ? null
                 : parent.bindDynamically(), this);
-    }
-
-    @Override
-    public Collection<BindingEntry> getBindings() {
-        return null; // To change body of implemented methods use File |
-        // Settings | File Templates.
     }
 
     @Override

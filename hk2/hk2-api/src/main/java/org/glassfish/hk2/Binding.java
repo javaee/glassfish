@@ -37,12 +37,33 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.hk2;
 
-public interface Binding<T> extends Descriptor {
+/**
+ * A Binding represents a registered entry in the HK2 {@link Services}
+ * registry.
+ *  
+ * @author Jerome Dochez
+ * @author Jeff Trent
+ * @author Mason Taube
+ */
+public interface Binding<T> {
 
-  ComponentProviderFactory<T> getProviderFactory();
-
+    /**
+     * Return a {@link ComponentProvider} optionally providing contextual
+     * information for how the component provider will be used (e.g., for
+     * contextual injection, etc).
+     * 
+     * <p/>
+     * The return value may be unique based on the provided contextual
+     * information. Caller's should therefore not assume identity equality
+     * in the return value.
+     *
+     * @param ctx
+     *      contextual information for how the provider will be used, or null
+     * 
+     * @return a non-null component provider instance
+     */
+    ComponentProvider<T> getProvider(Context ctx);
   
 }

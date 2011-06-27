@@ -139,4 +139,109 @@ public class MultiMapTest {
             // expected
         }
     }
+
+    @Test
+    public void testReadOnly() {
+        MultiMap<String, String> mm = new MultiMap<String, String>();
+        mm.add("key", "val");
+        mm.add("key", "val2");
+        mm.add("key2", "val");
+        mm.add("key3", "val2");
+        
+        MultiMap<String, String> readOnly = mm.readOnly();
+        assertNotSame(mm, readOnly);
+        try {
+            readOnly.add("key4", "val3");
+            fail("exception expected");
+        } catch (Exception e) {
+            // expected
+        }
+
+        assertEquals("size", 3, readOnly.size());
+        assertEquals("keySet", new HashSet(Arrays.asList(new String[]{"key", "key2", "key3"})), readOnly.keySet());
+    }
+    
+    @Test
+    public void testEqualsAndHashCode() {
+        MultiMap<String, String> mm = new MultiMap<String, String>();
+        mm.add("key", "val");
+        mm.add("key", "val2");
+        mm.add("key2", "val");
+        mm.add("key3", "val2");
+        
+        MultiMap<String, String> readOnly = mm.readOnly();
+        
+        MultiMap<String, String> mm2 = new MultiMap<String, String>();
+        mm2.add("key", "val");
+        mm2.add("key", "val2");
+        mm2.add("key2", "val");
+        mm2.add("key3", "val2");
+        
+        MultiMap<String, String> mm3 = new MultiMap<String, String>();
+        mm3.add("key", "other");
+        mm3.add("key2", "val");
+        mm3.add("key3", "val2");
+        
+        MultiMap<String, String> mm4 = new MultiMap<String, String>();
+        mm4.add("key", "val");
+        mm4.add("key", "val2");
+        mm4.add("key2", "val");
+        mm4.add("key3", "val2");
+        mm4.add("key4", "val4");
+        
+        assertEquals(mm.hashCode(), readOnly.hashCode());
+        assertEquals(mm, readOnly);
+        assertEquals(readOnly, mm);
+
+        assertEquals(mm.hashCode(), mm2.hashCode());
+        assertEquals(mm, mm2);
+        assertEquals(mm2, mm);
+
+        assertFalse(mm.equals(mm3));
+        assertFalse(mm3.equals(mm));
+
+        assertFalse(mm.equals(mm4));
+        assertFalse(mm4.equals(mm));
+    }
+
+    @Test
+    public void testMatches() {
+        MultiMap<String, String> mm = new MultiMap<String, String>();
+        mm.add("key", "val");
+        mm.add("key", "val2");
+        mm.add("key2", "val");
+        mm.add("key3", "val2");
+        
+        MultiMap<String, String> readOnly = mm.readOnly();
+        
+        MultiMap<String, String> mm2 = new MultiMap<String, String>();
+        mm2.add("key", "val");
+        mm2.add("key", "val2");
+        mm2.add("key2", "val");
+        mm2.add("key3", "val2");
+        
+        MultiMap<String, String> mm3 = new MultiMap<String, String>();
+        mm3.add("key", "other");
+        mm3.add("key2", "val");
+        mm3.add("key3", "val2");
+        
+        MultiMap<String, String> mm4 = new MultiMap<String, String>();
+        mm4.add("key", "val");
+        mm4.add("key", "val2");
+        mm4.add("key2", "val");
+        mm4.add("key3", "val2");
+        mm4.add("key4", "val4");
+        
+        assertTrue(mm.matches(readOnly));
+        assertTrue(readOnly.matches(mm));
+
+        assertTrue(mm.matches(mm2));
+        assertTrue(mm2.matches(mm));
+
+        assertFalse(mm.matches(mm3));
+        assertFalse(mm3.matches(mm));
+
+        assertTrue(mm.matches(mm4));
+        assertFalse(mm4.matches(mm));
+    }
 }

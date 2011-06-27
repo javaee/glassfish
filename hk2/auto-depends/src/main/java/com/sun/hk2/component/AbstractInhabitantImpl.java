@@ -89,7 +89,7 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T> {
 //            }
 
             @Override
-            public MultiMap<String, String> metadata() {
+            public MultiMap<String, String> getMetadata() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 

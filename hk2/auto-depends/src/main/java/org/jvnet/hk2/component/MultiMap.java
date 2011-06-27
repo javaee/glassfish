@@ -82,6 +82,10 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
     }
 
 
+    MultiMap<K, V> readOnly() {
+        return new MultiMap(Collections.unmodifiableMap(store));
+    }
+    
     /**
      * Creates a multi-map backed by the given store.
      *
@@ -103,9 +107,51 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
             store.put(e.getKey(), newList(e.getValue()));
         }
     }
+    
+    @Override
+    public int hashCode() {
+        return store.hashCode();
+    }
 
     @Override
-    public final String toString() {
+    public boolean equals(Object another) {
+        if (!MultiMap.class.isInstance(another)) {
+            return false;
+        }
+        
+        @SuppressWarnings("rawtypes")
+        MultiMap other = MultiMap.class.cast(another);
+        if (size() != other.size()) {
+            return false;
+        }
+        
+        for (Entry<K, List<V>> entry : store.entrySet()) {
+            List<V> vColl = other.get(entry.getKey());
+            if (!entry.getValue().equals(vColl)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    boolean matches(org.glassfish.hk2.MultiMap<K, V> other) {
+        if (size() > other.size()) {
+            return false;
+        }
+        
+        for (Entry<K, List<V>> entry : store.entrySet()) {
+            List<V> vColl = other.get(entry.getKey());
+            if (!entry.getValue().equals(vColl)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    @Override
+    public String toString() {
         final StringBuilder builder = new StringBuilder();
         final String newline = System.getProperty("line.separator");
         builder.append("{");

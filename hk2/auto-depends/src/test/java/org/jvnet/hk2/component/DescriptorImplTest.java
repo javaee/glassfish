@@ -37,17 +37,33 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.jvnet.hk2.component;
 
-package org.glassfish.hk2;
+import static org.junit.Assert.*;
 
-public interface ComponentProviderFactory<T> {
+import org.glassfish.hk2.Descriptor;
+import org.junit.Ignore;
+import org.junit.Test;
 
-    /**
-     * return a provider given an optional contextual information
-     * @param ctx contextual information about where the injection of T will
-     * result, null if not of interest.
-     * @return a provider of instance of T
-     */
-  ComponentProvider<T> getProvider(Context ctx);
-  
+public class DescriptorImplTest {
+
+    @Test
+    public void emptyDescriptor() {
+        Descriptor descriptor = DescriptorImpl.EMPTY_DESCRIPTOR;
+        assertNotNull(descriptor);
+        assertTrue("need to ensure empty descriptor is read-only", descriptor.getClass().isAnonymousClass());
+        
+        DescriptorImpl descriptor2 = new DescriptorImpl(null, null);
+        assertTrue("match checking", descriptor2.matches(descriptor));
+    }
+    
+    
+    @Ignore
+    @Test
+    public void matches() {
+        fail("todo");
+    }
+    
+    
+    
 }
