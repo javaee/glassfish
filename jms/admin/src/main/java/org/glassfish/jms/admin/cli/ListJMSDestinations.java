@@ -144,7 +144,7 @@ public class ListJMSDestinations extends JMSDestination implements AdminCommand 
 
         } catch (Exception e) {
             logger.throwing(getClass().getName(), "ListJMSDestination", e);
-            e.printStackTrace();//handleException(e);
+            //e.printStackTrace();//handleException(e);
             report.setMessage(localStrings.getLocalString("list.jms.dest.fail",
                     "Unable to list JMS Destinations. Please ensure that the Message Queue Brokers are running"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);

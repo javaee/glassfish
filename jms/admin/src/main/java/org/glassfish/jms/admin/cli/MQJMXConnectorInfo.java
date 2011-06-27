@@ -127,7 +127,7 @@ public class MQJMXConnectorInfo {
             MBeanServerConnection mbsc = connector.getMBeanServerConnection();
             return mbsc;
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             ConnectorRuntimeException cre = new ConnectorRuntimeException(e.getMessage());
             cre.initCause(e);
             throw cre;

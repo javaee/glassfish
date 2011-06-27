@@ -511,7 +511,8 @@ public abstract class JMSDestination {
             //log JMX Exception trace as WARNING
             StringWriter s = new StringWriter();
             e.getCause().printStackTrace(new PrintWriter(s));
-            logger.log(Level.WARNING, s.toString());
+            //logger.log(Level.WARNING, e.getMessage());//s.toString());
+            logger.throwing(e.getClass().getName(), "logAndHandleException", e);//s.toString());
             JMSAdminException je = new JMSAdminException(localStrings.getLocalString(errorMsg, ""));
         /* Cause will be InvocationTargetException, cause of that
            * wil be  MBeanException and cause of that will be the
@@ -521,7 +522,7 @@ public abstract class JMSDestination {
             (e.getCause().getCause() != null)) {
               je.initCause(e.getCause().getCause().getCause());
         }
-            handleException(je);
+            //handleException(je);
         }
 
 
