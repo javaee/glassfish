@@ -39,6 +39,8 @@
  */
 package com.sun.enterprise.universal.xml;
 
+import java.io.ByteArrayInputStream;
+import javax.xml.stream.XMLResolver;
 import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.common.util.logging.LoggingPropertyNames;
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
@@ -257,7 +259,21 @@ public class MiniXmlParser {
 
     private void createParser() throws FileNotFoundException, XMLStreamException {
         reader = new InputStreamReader(new FileInputStream(domainXml));
-        parser = getXmlInputFactory().createXMLStreamReader(
+        XMLInputFactory xif = getXmlInputFactory();
+        // Set the resolver so that any external entity references, such 
+        // as a reference to a DTD, return an empty file.  The domain.xml
+        // file doesn't support entity references.
+        xif.setXMLResolver(new XMLResolver() {
+                @Override
+                public Object resolveEntity(String publicID,
+                     String systemID,
+                     String baseURI,
+                     String namespace)
+                     throws XMLStreamException {
+                    return new ByteArrayInputStream(new byte[0]);
+                }
+            });
+        parser = xif.createXMLStreamReader(
                 domainXml.toURI().toString(), reader);
     }
 
