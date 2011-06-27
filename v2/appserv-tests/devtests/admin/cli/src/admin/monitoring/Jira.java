@@ -64,7 +64,7 @@ public class Jira extends MonTest {
         test14461();
         test13905();
         test13723();
-
+        test15964();
     }
 
     private void test16313() {
@@ -166,7 +166,7 @@ public class Jira extends MonTest {
 
     /**
      * This method is here in case you are looking through these methods and comparing
-     * against a query of issue numbers.  This issue is VERY HEAVILY tested in the 
+     * against a query of issue numbers.  This issue is VERY HEAVILY tested in the
      * Enabler class.  This method does nothing.  It's here so you don't waste time
      * investigating whether it needs tests.  It doesn't!!
      */
@@ -174,7 +174,7 @@ public class Jira extends MonTest {
         report(true, "Issue 15895 already tested in Enabler");
     }
 
-    /* 
+    /*
      * Bug:  running "get i1.*" produced different results than "get -m i1.*"
      * Namely an extra ".server" appeared in the latter's output
      */
@@ -216,7 +216,7 @@ public class Jira extends MonTest {
      */
     private void test13905() {
         LogListener listener = null;
-        
+
         try {
             final String prepend = "test13905::";
             listener = new LogListener(DOMAIN_NAME);
@@ -253,8 +253,8 @@ public class Jira extends MonTest {
             report(s.indexOf("monitor") >= 0, prepend + "yes-log-output");
 
             report(asadmin("enable-monitoring", "--modules", "web-container=HIGH"), prepend + "change-mon-level-yeslog-");
-            
-            
+
+
             // bnevins 5/31/11 -- I don't know why this test fails all the time.
             // it's very unimportant so I'm disabling the test...
             // s = listener.getLatest(2);
@@ -289,9 +289,9 @@ public class Jira extends MonTest {
         AsadminReturn ar3 = asadminWithOutput("get", "-m", get3);
 
         // "=" only appears if there is a valid data item
-        report(checkForString(ar1, "="), prepend + "monapp1-with-backslash");
-        report(checkForString(ar2, "="), prepend + "monapp1-without-backslash");
-        report(checkForString(ar3, "="), prepend + "monapp2");
+        report(checkForString(ar1, "= 0"), prepend + "monapp1-with-backslash");
+        report(checkForString(ar2, "= 0"), prepend + "monapp1-without-backslash");
+        report(checkForString(ar3, "= 0"), prepend + "monapp2");
     }
 
     /*
