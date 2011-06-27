@@ -45,7 +45,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.glassfish.hk2.ComponentException;
-import org.glassfish.hk2.ComponentProvider;
+import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.ContractLocator;
 import org.glassfish.hk2.Scope;
 
@@ -164,13 +164,13 @@ class ContractLocatorImpl<T> implements ContractLocator<T> {
     }
 
     @Override
-    public Collection<ComponentProvider<T>> all() {
+    public Collection<Provider<T>> all() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public ComponentProvider<T> getComponentProvider() {
+    public Provider<T> getComponentProvider() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

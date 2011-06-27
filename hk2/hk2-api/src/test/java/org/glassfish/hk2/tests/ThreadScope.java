@@ -40,7 +40,7 @@
 
 package org.glassfish.hk2.tests;
 
-import org.glassfish.hk2.ComponentProvider;
+import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.Scope;
 import org.glassfish.hk2.ScopeInstance;
 
@@ -57,12 +57,12 @@ public class ThreadScope extends Scope {
     public ScopeInstance current() {
         return new ScopeInstance() {
             @Override
-            public <T> T get(ComponentProvider<T> inhabitant) {
+            public <T> T get(Provider<T> inhabitant) {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
             @Override
-            public <T> T put(ComponentProvider<T> inhabitant, T value) {
+            public <T> T put(Provider<T> inhabitant, T value) {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 

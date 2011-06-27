@@ -58,7 +58,7 @@ package org.glassfish.hk2;
  * when asked to provide service instances to the consumer.
  *
  * <li>For services declared as "PerLookup", HK2 will create a
- * {@link ComponentProvider} that will behave by returning a new service
+ * {@link Provider} that will behave by returning a new service
  * for each and every call to {@link #get()} regardless of the
  * caller context.
  *
@@ -76,7 +76,7 @@ package org.glassfish.hk2;
  * JSR-330/299, on the other hand, will be released when its parent
  * component/service/bean is released (i.e., goes out of scope).
  *
- * <li>Is the super class for {@link ComponentProvider}.
+ * <li>Is the super class for {@link Provider}.
  *
  * @author Jerome Dochez
  * @author Jeff Trent

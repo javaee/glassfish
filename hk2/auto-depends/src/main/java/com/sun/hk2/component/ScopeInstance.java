@@ -39,8 +39,7 @@
  */
 package com.sun.hk2.component;
 
-import org.glassfish.hk2.ComponentProvider;
-import org.jvnet.hk2.component.Inhabitant;
+import org.glassfish.hk2.Provider;
 import org.jvnet.hk2.component.PreDestroy;
 
 import java.util.Map;
@@ -82,11 +81,11 @@ public final class ScopeInstance implements org.glassfish.hk2.ScopeInstance, Pre
         return name;
     }
 
-    public <T> T get(ComponentProvider<T> inhabitant) {
+    public <T> T get(Provider<T> inhabitant) {
         return (T) backend.get(inhabitant);
     }
 
-    public <T> T put(ComponentProvider<T> inhabitant, T value) {
+    public <T> T put(Provider<T> inhabitant, T value) {
         return (T) backend.put(inhabitant,value);
     }
 

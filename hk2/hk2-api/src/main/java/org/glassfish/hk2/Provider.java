@@ -43,7 +43,7 @@ import java.lang.annotation.Annotation;
 import java.util.Collection;
 
 /**
- * Extends the {@link Provider} contract, offering the ability to
+ * Extends the {@link Factory} contract, offering the ability to
  * 
  * 	<li> obtain the runtime {@link Descriptor} describing the
  * 		attributes of the registered component/service, and
@@ -58,7 +58,7 @@ import java.util.Collection;
  *  
  * @see ManagedComponentProvider
  */
-public interface ComponentProvider<T> {
+public interface Provider<T> {
 
     /**
      * The system calls this method to obtain a reference
@@ -78,7 +78,7 @@ public interface ComponentProvider<T> {
 
     /**
      * The {@link Descriptor} fully characterizes the attributes
-     * of this {@link Provider}.
+     * of this {@link Factory}.
      * 
      * @return 
      * 	a non-null Descriptor describing the complete set of
@@ -91,7 +91,7 @@ public interface ComponentProvider<T> {
      * for determining how (i.e., which loader) to use.
      * 
      * <p/>
-     * The class type for what the {@link Provider} actually
+     * The class type for what the {@link Factory} actually
      * produces.
      * 
      * <p/>
@@ -116,5 +116,12 @@ public interface ComponentProvider<T> {
      *  this provider type.
      */
     Collection<Annotation> getAnnotations();
+
+    /**
+     * Returns true if the component has been instantiated.
+     *
+     * @return true if the component is active.
+     */
+    boolean isActive();
 
 }

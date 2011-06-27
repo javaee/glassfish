@@ -80,20 +80,20 @@
 package org.glassfish.hk2;
 
 /**
- * A particular instanciation of a {@link org.jvnet.hk2.component.Scope}.
+ * A particular instanciation of a {@link Scope}.
  *
  * <p>
  * For example, for the "request scope", an instance
  * of {@link ScopeInstance} is created for each request.
  *
  * @author Jerome Dochez
- * @see org.jvnet.hk2.component.Scope#current()
+ * @see Scope#current()
  */
 public interface ScopeInstance {
 
-    public <T> T get(ComponentProvider<T> inhabitant);
+    public <T> T get(Provider<T> inhabitant);
 
-    public <T> T put(ComponentProvider<T> inhabitant, T value);
+    public <T> T put(Provider<T> inhabitant, T value);
 
     public void release();
 }

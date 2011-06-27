@@ -63,7 +63,7 @@ package org.glassfish.hk2;
  * @author Jerome Dochez
  * @author Jeff Trent
  */
-public interface ManagedComponentProvider<T> extends ComponentProvider<T> {
+public interface ManagedComponentProvider<T> extends Provider<T> {
 
     /**
      * @return true if the component/service is currently active 

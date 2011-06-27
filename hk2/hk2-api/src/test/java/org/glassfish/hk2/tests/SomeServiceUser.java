@@ -40,7 +40,7 @@
 
 package org.glassfish.hk2.tests;
 
-import org.glassfish.hk2.ComponentProvider;
+import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.tests.contracts.Latin;
 import org.glassfish.hk2.tests.contracts.SomeContract;
 import org.jvnet.hk2.annotations.Inject;
@@ -60,10 +60,10 @@ public class SomeServiceUser {
 
     // scoping is that you can get a different instance at each get() call.
     @Inject
-    ComponentProvider<SomeContract> contract;
+    Provider<SomeContract> contract;
 
     // more sophisticated provider to be able to release the component manually
     // you cannot get a different instance at each get(). different scoping.
     @Inject
-    ComponentProvider<SomeContract> ss2;
+    Provider<SomeContract> ss2;
 }

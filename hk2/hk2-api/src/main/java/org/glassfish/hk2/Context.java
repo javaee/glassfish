@@ -43,7 +43,7 @@ import org.glassfish.hk2.inject.InjectionPoint;
 
 /**
  * Used by {@link Binding} to describe how the Binding's {@link
- * ComponentProvider} will be used.
+ * Provider} will be used.
  * 
  * @author Jerome Dochez
  * @author Jeff Trent
