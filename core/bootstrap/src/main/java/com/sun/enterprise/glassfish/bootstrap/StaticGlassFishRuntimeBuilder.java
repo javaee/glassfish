@@ -53,6 +53,7 @@ import java.io.FileFilter;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -67,6 +68,7 @@ public class StaticGlassFishRuntimeBuilder implements RuntimeBuilder {
 
     private static Logger logger = Util.getLogger();
     private static final String JAR_EXT = ".jar";
+    final List<String> moduleExcludes = Arrays.asList("jsftemplating.jar");
 
     public GlassFishRuntime build(BootstrapProperties bsProps) throws GlassFishException {
         /* Step 1. Build the classloader. */
@@ -144,7 +146,8 @@ public class StaticGlassFishRuntimeBuilder implements RuntimeBuilder {
             public boolean accept(File pathname) {
                 if (pathname.isDirectory() && !pathname.equals(autostartModulesDir)) {
                     pathname.listFiles(this);
-                } else if (pathname.getName().endsWith(JAR_EXT)) {
+                } else if (pathname.getName().endsWith(JAR_EXT) &&
+                        !moduleExcludes.contains(pathname.getName())) {
                     try {
                         moduleJarURLs.add(pathname.toURI().toURL());
                     } catch (Exception ex) {

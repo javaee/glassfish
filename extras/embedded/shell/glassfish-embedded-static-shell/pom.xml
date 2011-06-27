@@ -90,6 +90,7 @@
                           <fileSeparator>/</fileSeparator>
                           <prefix>../../modules</prefix>
                           <stripVersion>true</stripVersion>
+                          <excludeArtifactIds>jsftemplating</excludeArtifactIds>
                       </configuration>
                   </execution>
               </executions>
