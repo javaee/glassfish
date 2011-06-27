@@ -175,6 +175,7 @@
                                <type>jar</type>
                                <outputDirectory>${glassfish.modulesdir}/autostart/</outputDirectory>
                              </artifactItem>
+                             <!-- We don't ship this, as it affects startup benchmark by 1%.
                              <artifactItem>
                                <groupId>org.apache.felix</groupId>
                                <artifactId>org.apache.felix.bundlerepository</artifactId>
@@ -182,6 +183,7 @@
                                <type>jar</type>
                                <outputDirectory>${glassfish.modulesdir}/autostart/</outputDirectory>
                              </artifactItem>
+                             -->
                            </artifactItems>
                          </configuration>
                     </execution>
