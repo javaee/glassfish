@@ -43,7 +43,6 @@ import java.security.AccessControlContext;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.glassfish.hk2.Provider;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.ContextualFactory;
 import org.jvnet.hk2.component.Factory;
@@ -61,13 +60,13 @@ import org.jvnet.hk2.component.MultiMap;
 public class FactoryCreator<T> extends AbstractCreatorImpl<T> {
     private final static Logger logger = Logger.getLogger(FactoryCreator.class.getName());
     
-    private final Inhabitant<? extends Provider> factory;
+    private final Inhabitant<? extends org.glassfish.hk2.Factory> factory;
 
-    public FactoryCreator(Class<T> type, Class<? extends Provider> factory, Habitat habitat, MultiMap<String,String> metadata) {
+    public FactoryCreator(Class<T> type, Class<? extends org.glassfish.hk2.Factory> factory, Habitat habitat, MultiMap<String,String> metadata) {
         this(type,habitat.getInhabitantByType(factory),habitat,metadata);
     }
 
-    public FactoryCreator(Class<T> type, Inhabitant<? extends Provider> factory, Habitat habitat, MultiMap<String,String> metadata) {
+    public FactoryCreator(Class<T> type, Inhabitant<? extends org.glassfish.hk2.Factory> factory, Habitat habitat, MultiMap<String,String> metadata) {
         super(type, habitat, metadata);
         assert factory!=null;
         assert habitat!=null;
@@ -76,7 +75,7 @@ public class FactoryCreator<T> extends AbstractCreatorImpl<T> {
 
     public T create(Inhabitant onBehalfOf) throws ComponentException {
         logger.log(Level.FINER, "factory {0} invoked", factory);
-        Provider<T> f = factory.get();
+        org.glassfish.hk2.Factory<T> f = factory.get();
         T t;
         
         AccessControlContext acc = Hk2ThreadContext.getCallerACC();

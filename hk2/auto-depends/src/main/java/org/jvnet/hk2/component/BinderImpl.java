@@ -45,7 +45,6 @@ import org.glassfish.hk2.Scope;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -108,17 +107,17 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
     }
 
     @Override
-    public <T extends V> ResolvedBinder<T> toProvider(Provider<T> provider) {
+    public <T extends V> ResolvedBinder<T> toProvider(org.glassfish.hk2.Factory<T> provider) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public <T extends V> ResolvedBinder<T> toProvider(Class<? extends Provider<? extends T>> providerType) {
+    public <T extends V> ResolvedBinder<T> toProvider(Class<? extends org.glassfish.hk2.Factory<? extends T>> providerType) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public <T extends V> ResolvedBinder<T> toProvider(TypeLiteral<? extends Provider<? extends T>> providerType) {
+    public <T extends V> ResolvedBinder<T> toProvider(TypeLiteral<? extends org.glassfish.hk2.Factory<? extends T>> providerType) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

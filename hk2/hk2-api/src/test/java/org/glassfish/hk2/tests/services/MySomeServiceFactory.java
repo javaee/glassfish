@@ -41,7 +41,7 @@
 package org.glassfish.hk2.tests.services;
 
 import org.glassfish.hk2.ComponentException;
-import org.glassfish.hk2.Provider;
+import org.glassfish.hk2.Factory;
 import org.glassfish.hk2.tests.contracts.SomeContract;
 
 /**
@@ -51,7 +51,7 @@ import org.glassfish.hk2.tests.contracts.SomeContract;
  * Time: 6:01 AM
  * To change this template use File | Settings | File Templates.
  */
-public class MySomeServiceFactory implements Provider<SomeContract> {
+public class MySomeServiceFactory implements Factory<SomeContract> {
     final SomeService singleton = new SomeService();
     @Override
     public SomeContract get() throws ComponentException {

@@ -39,8 +39,6 @@
  */
 package org.jvnet.hk2.annotations;
 
-import org.glassfish.hk2.Provider;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.annotation.Documented;
@@ -67,5 +65,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(TYPE)
 @Documented
 public @interface Factory {
-    Class<? extends Provider> value();
+    Class<? extends org.glassfish.hk2.Factory> value();
 }

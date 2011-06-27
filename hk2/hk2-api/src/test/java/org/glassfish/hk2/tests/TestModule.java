@@ -71,7 +71,7 @@ public class TestModule implements Module {
 
         binderFactory.bind(new TypeLiteral<RouteBuilder<PathPattern>>() {}).to(PathPatternRouteBuilder.class);
 
-        binderFactory.bind(SomeContract.class).toProvider(new Provider<SomeContract>() {
+        binderFactory.bind(SomeContract.class).toProvider(new Factory<SomeContract>() {
             @Override
             public SomeContract get() throws ComponentException {
                 return new SomeService();
