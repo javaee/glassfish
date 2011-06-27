@@ -2732,12 +2732,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         vs.clearAliases();
         vs.configureAliases();
 
-        vs.reconfigureAccessLog(globalAccessLogBufferSize,
-                globalAccessLogWriteInterval,
-                habitat,
-                domain,
-                globalAccessLoggingEnabled);
-
         // support both docroot property and attribute
         String docroot = vsBean.getPropertyValue("docroot");
         if (docroot == null) {
