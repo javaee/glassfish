@@ -321,6 +321,7 @@ class ClusterCommandHelper {
         }
 
         report.setMessage(output.toString());
+        threadPool.shutdown();
         return report;
     }
 
