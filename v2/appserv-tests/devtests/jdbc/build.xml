@@ -14,10 +14,10 @@
 <project name="jdbc" default="usage" basedir=".">
     &commonSetup;
     &commonBuild;
-    <!--
-        &jdbcCommon;
-        &jdbcCommonProperties;
-    &eeCommon;
+    
+    &jdbcCommon;
+    &jdbcCommonProperties;
+    <!--&eeCommon;
     &eeCommonProperties;
     -->
     &reporting;
