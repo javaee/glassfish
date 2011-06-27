@@ -238,7 +238,10 @@ public class CreateNodeSshCommand implements AdminCommand  {
         String firstErrorMessage = Strings.get("create.node.ssh.install.failed", nodehost);
         StringBuilder out = new StringBuilder();
         int exitCode = execCommand(command, launcher, out);
-                
+
+        //capture the output in server.log
+        logger.info(out.toString().trim());
+        
         ActionReport report = ctx.getActionReport();
         if (exitCode == 0) {
             // If it was successful say so and display the command output

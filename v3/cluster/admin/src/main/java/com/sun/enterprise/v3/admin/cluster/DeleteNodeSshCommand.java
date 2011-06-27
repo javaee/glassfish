@@ -220,7 +220,10 @@ public class DeleteNodeSshCommand implements AdminCommand, PostConstruct {
         String firstErrorMessage = Strings.get("delete.node.ssh.uninstall.failed", host);
         StringBuilder out = new StringBuilder();
         int exitCode = execCommand(command, out);
-                
+
+        //capture the output in server.log
+        logger.info(out.toString().trim());
+        
         ActionReport report = ctx.getActionReport();
         if (exitCode == 0) {
             // If it was successful say so and display the command output
