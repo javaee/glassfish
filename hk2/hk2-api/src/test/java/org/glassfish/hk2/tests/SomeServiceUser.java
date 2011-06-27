@@ -40,7 +40,6 @@
 
 package org.glassfish.hk2.tests;
 
-import org.glassfish.hk2.Holder;
 import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.tests.contracts.Latin;
 import org.glassfish.hk2.tests.contracts.SomeContract;
@@ -66,5 +65,5 @@ public class SomeServiceUser {
     // more sophisticated provider to be able to release the component manually
     // you cannot get a different instance at each get(). different scoping.
     @Inject
-    Holder<SomeContract> ss2;
+    Provider<SomeContract> ss2;
 }

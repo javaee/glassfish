@@ -39,6 +39,8 @@
  */
 package com.sun.hk2.component;
 
+import org.glassfish.hk2.Provider;
+
 /**
  * Indirection to a value. That is, instead of referring to the value itself,
  * this class allows you to obtain the value when you need it.
@@ -50,7 +52,7 @@ package com.sun.hk2.component;
  *
  * @author Kohsuke Kawaguchi
  */
-public interface Holder<T> extends org.glassfish.hk2.Holder<T> {
+public interface Holder<T> extends Provider<T> {
 
     /**
      * {@link Holder} implementation that doesn't do any deferred computation,

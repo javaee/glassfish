@@ -84,7 +84,7 @@ package org.glassfish.hk2;
  *
  * @see ComponentProvider
  */
-public interface Provider<T> extends Holder<T> {
+public interface Provider<T> {
 
     /**
      * The system calls this method to obtain a reference
@@ -100,7 +100,6 @@ public interface Provider<T> extends Holder<T> {
      *      If the factory failed to get/create an instance
      *      and would like to propagate the error to the caller.
      */
-    @Override
     T get() throws ComponentException;
 
 }
