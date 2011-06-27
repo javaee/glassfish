@@ -673,6 +673,17 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
         }
 
         try {
+            if(!absoluteFile.exists()) {
+                File creatingDeletedLogFile = new File(absoluteFile.getAbsolutePath());
+                openFile(creatingDeletedLogFile);
+                absoluteFile = creatingDeletedLogFile; 
+            }
+        } catch (IOException ie) {
+            publish(new LogRecord(Level.SEVERE,
+                                    "Error, could not create log : " + ie.getMessage()));
+        }
+
+        try {
             // set the thread id to be the current thread that is logging the message
 //            record.setThreadID((int)Thread.currentThread().getId());
             pendingRecords.add(record);
