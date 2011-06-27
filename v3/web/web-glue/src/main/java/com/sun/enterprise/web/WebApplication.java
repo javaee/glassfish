@@ -88,6 +88,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         this.appConfigCustomizations = extractCustomizations(appConfigInfo);
     }
 
+    @Override
     public boolean start(ApplicationContext appContext) throws Exception {
 
         webModules.clear();
@@ -145,6 +146,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         return true;
     }
 
+    @Override
     public boolean stop(ApplicationContext stopContext) {
 
         if (stopContext instanceof DeploymentContext) {
@@ -176,6 +178,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
     /**
      * Suspends this application on all virtual servers.
      */
+    @Override
     public boolean suspend() {
         return container.suspendWebModule(
             wmInfo.getDescriptor().getContextRoot(), "null", null);
@@ -184,6 +187,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
     /**
      * Resumes this application on all virtual servers.
      */
+    @Override
     public boolean resume() throws Exception {
         // WebContainer.loadWebModule(), which is called by start(),
         // already checks if the web module has been suspended, and if so,
@@ -196,12 +200,9 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
      *
      * @return ClassLoader for this app
      */
+    @Override
     public ClassLoader getClassLoader() {
         return wmInfo.getAppClassLoader();
-    }
-
-    WebContainer getContainer() {
-        return container;
     }
 
     /**
@@ -220,6 +221,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
      *
      * @return deployment descriptor if they exist or null if not
      */
+    @Override
     public WebBundleDescriptor getDescriptor() {
         return wmInfo.getDescriptor();
     }
