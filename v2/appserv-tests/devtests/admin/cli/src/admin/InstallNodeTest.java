@@ -43,8 +43,6 @@ package admin;
 import java.io.*;
 import java.net.*;
 
-import java.util.Arrays;
-
 /*
  * Dev tests for install/uninstall-node
  * @author Yamini K B
@@ -88,8 +86,6 @@ public class InstallNodeTest extends AdminBaseDevTest {
     }
 
     public void run() {
-
-        boolean failed = false;
         remoteHost = System.getProperty(SSH_HOST_PROP);
         sshPass = System.getProperty(SSH_PASSWORD);
         sshUser = System.getProperty(SSH_USER_PROP);
@@ -125,9 +121,20 @@ public class InstallNodeTest extends AdminBaseDevTest {
 
         asadmin("start-domain");
 
-        testInstallLocalNode();
-        testUnInstallLocalNode();
- 
+        if (remoteHost.equals(LOCALHOST)) {
+            System.out.println("------------------------------------------------");
+            System.out.println("INFO: Running install-node tests locally.");
+            System.out.println("------------------------------------------------");
+            testInstallLocalNode();
+            testUnInstallLocalNode();
+        } else {
+            System.out.println("------------------------------------------------");
+            System.out.println("INFO: Running install-node tests on remote host.");
+            System.out.println("------------------------------------------------");
+            testInstallRemoteNode();
+            testUnInstallRemoteNode();
+        }
+        
         asadmin("stop-domain");
         stat.printSummary();
     }
@@ -156,6 +163,28 @@ public class InstallNodeTest extends AdminBaseDevTest {
 
         //delete node with --uninstall
         report("delete-node-with-uninstall", asadmin("delete-node-ssh", UNINSTALL, "n1"));
+    }
+
+    private void testInstallRemoteNode() {
+        //create a ssh node with --install
+        report("create-node-ssh-with-install-remote", asadmin("create-node-ssh", "--nodehost", remoteHost, "--sshuser", sshUser, INSTALL, INSTALL_DIR, "gf-test-1", "n2"));
+
+        //cannot install if node already has an installation
+        report("install-again-remote", !asadmin("install-node", "--sshuser", sshUser, INSTALL_DIR, "gf-test-1", remoteHost));
+
+        //installing at different location on same host should work
+        report("install-at-different-location-remote", asadmin("install-node", "--sshuser", sshUser, INSTALL_DIR, "gf-test-2", remoteHost));
+    }
+    
+    private void testUnInstallRemoteNode() {
+        //should fail since there is an installation
+        report("uninstall-node-remote", !asadmin("uninstall-node", "--sshuser", sshUser, INSTALL_DIR, "gf-test-1", remoteHost));
+
+        //simple uninstall
+        report("uninstall-node-1-remote", asadmin("uninstall-node", "--sshuser", sshUser, INSTALL_DIR, "gf-test-2", remoteHost));
+
+        //delete node with --uninstall
+        report("delete-node-with-uninstall-remote", asadmin("delete-node-ssh", UNINSTALL, "n2"));
     }
 
     private void addPasswords() {

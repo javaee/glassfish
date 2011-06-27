@@ -196,17 +196,6 @@
         </java>
     </target>
 
-    <target name="install-node-remote" depends="init">
-        <java classname="admin.InstallNodeRemoteTest"  fork="true" classpath="${test}">
-            <jvmarg value="-Xdebug"/>
-            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9000"/>
-            <jvmarg value="-Dssh.host=${ssh.host}"/>
-            <jvmarg value="-Dssh.user=${ssh.user}"/>
-            <jvmarg value="-Dssh.password=${ssh.password}"/>
-            <jvmarg value="${javaprops}"/>
-        </java>
-    </target>
-
     <target name="portsonly" depends="init">
         <record name="admin.output" action="start" />
         <runtest classname="admin.PortTests"/>
