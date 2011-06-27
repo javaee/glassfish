@@ -88,10 +88,12 @@ public class WarHandler extends AbstractArchiveHandler {
     private static final Logger logger = LogDomains.getLogger(WarHandler.class, LogDomains.WEB_LOGGER);
     private static final ResourceBundle rb = logger.getResourceBundle();
 
+    @Override
     public String getArchiveType() {
         return "war";               
     }
 
+    @Override
     public String getVersionIdentifier(ReadableArchive archive) {
         String versionIdentifierValue = null;
         try {
@@ -105,6 +107,7 @@ public class WarHandler extends AbstractArchiveHandler {
         return versionIdentifierValue;
     }
 
+    @Override
     public boolean handles(ReadableArchive archive) {
         if (DeploymentUtils.isEAR(archive)) {
             // I should not handle ear, so ear support must not be available
@@ -116,6 +119,7 @@ public class WarHandler extends AbstractArchiveHandler {
         return DeploymentUtils.isWebArchive(archive);
     }
 
+    @Override
     public ClassLoader getClassLoader(final ClassLoader parent, DeploymentContext context) {
         WebappClassLoader cloader = AccessController.doPrivileged(new PrivilegedAction<WebappClassLoader>() {
             @Override
@@ -245,6 +249,7 @@ public class WarHandler extends AbstractArchiveHandler {
 
             for (File file : libDir.listFiles(
                     new FileFilter() {
+                        @Override
                         public boolean accept(File pathname) {
                             String fileName = pathname.getName();
                             return ((fileName.endsWith(".jar") ||
