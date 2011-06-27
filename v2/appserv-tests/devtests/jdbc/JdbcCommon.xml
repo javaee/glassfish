@@ -342,7 +342,7 @@
        <os name="AIX"/>
    </condition>
 	       
-   <target name="start-derby">
+   <target name="start-derby" depends="init-common">
        <antcall target="start-derby-aix"/>
        <antcall target="start-derby-nonaix"/>
    </target>
@@ -371,7 +371,7 @@
       <sleep seconds="5"/>
    </target>
 
-   <target name="stop-derby">
+   <target name="stop-derby" depends="init-common">
       <antcall target="stop-derby-aix"/>
       <antcall target="stop-derby-nonaix"/>
   </target>
