@@ -274,20 +274,27 @@ public abstract class GenericSniffer implements Sniffer {
 
     private String readDeploymentConfig(final InputStream is) throws IOException {
         String encoding = null;
+        XMLEventReader rdr = null;
         try {
             is.mark(Integer.MAX_VALUE);
-            XMLEventReader rdr = xmlInputFactory.createXMLEventReader(
+            rdr = xmlInputFactory.createXMLEventReader(
                     new InputStreamReader(is));
             while (rdr.hasNext()) {
                 final XMLEvent ev = rdr.nextEvent();
                 if (ev.isStartDocument()) {
                     final StartDocument sd = (StartDocument) ev;
                     encoding = sd.getCharacterEncodingScheme();
-                    rdr.close();
                     break;
                 }
             }
         } catch (XMLStreamException e) {
+            if (rdr != null) {
+                try {
+                    rdr.close();
+                } catch (XMLStreamException inner) {
+                    throw new IOException(e);
+                }
+            }
             throw new IOException(e);
         }
         if (encoding == null) {
@@ -299,6 +306,13 @@ public abstract class GenericSniffer implements Sniffer {
         final byte [] buffer = new byte[1024];
         while (( bytesRead = is.read(buffer)) != -1 ) {
             baos.write(buffer, 0, bytesRead);
+        }
+        if (rdr != null) {
+            try {
+                rdr.close();
+            } catch (XMLStreamException ex) {
+                throw new IOException(ex);
+            }
         }
         is.close();
         return new String(baos.toByteArray(), encoding);
