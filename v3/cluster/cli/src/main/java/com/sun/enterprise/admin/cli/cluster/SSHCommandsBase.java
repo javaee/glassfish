@@ -219,10 +219,15 @@ public abstract class SSHCommandsBase extends CLICommand {
                 //using force deletes all files on remote host
                 if(force) {
                     logger.fine("Force removing directory " + f1);
-                    sftpClient.rmdir(f1); 
+                    if (isRemoteDirectoryEmpty(sftpClient, f1)) {
+                        sftpClient.rmdir(f1); 
+                    }
                 } else {                    
-                    if (dasFiles.contains(f1))
-                        sftpClient.rmdir(f1);
+                    if (dasFiles.contains(f1)) {
+                        if (isRemoteDirectoryEmpty(sftpClient, f1)) {
+                            sftpClient.rmdir(f1); 
+                        }
+                    }
                 }
             } else {
                 String f2 = dir+"/"+directoryEntry.filename;
@@ -235,6 +240,21 @@ public abstract class SSHCommandsBase extends CLICommand {
                 }
             }
         }
+    }
+
+    /**
+     * Method to check if specified remote directory contains files
+     * 
+     * @param sftp SFTP client handle
+     * @param file path to remote directory
+     * @return true if empty, false otherwise
+     * @throws IOException
+     */
+    private boolean isRemoteDirectoryEmpty(SFTPClient sftp, String file) throws IOException {
+        List<SFTPv3DirectoryEntry> l = (List<SFTPv3DirectoryEntry>)sftp.ls(file);        
+        if (l.size() > 2)
+            return false;
+        return true;
     }
     
     /** 
