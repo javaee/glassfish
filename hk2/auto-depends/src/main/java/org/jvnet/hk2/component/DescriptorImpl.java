@@ -42,10 +42,10 @@ package org.jvnet.hk2.component;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.glassfish.hk2.Descriptor;
-import org.glassfish.hk2.MultiMap;
 
 /**
  * A simple Descriptor Builder.
@@ -57,12 +57,11 @@ import org.glassfish.hk2.MultiMap;
 
     private final String name;
     private final String typeName;
-    // TODO:
+    // TODO: handle scope
 //    private final Scope scope;
     private final List<String> qualifiers = new ArrayList<String>();
     private final List<String> contracts = new ArrayList<String>();
-    // TODO:
-//    private final MultiMap<String, String> metadata;
+    private final MultiMap<String, String> metadata = new MultiMap<String, String>();
 
     public DescriptorImpl(String name, String typeName) {
         this.name = name;
@@ -96,8 +95,8 @@ import org.glassfish.hk2.MultiMap;
 //    }
 
     @Override
-    public MultiMap<String, String> metadata() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public MultiMap<String, String> getMetadata() {
+        return metadata.readOnly();
     }
 
     @Override
@@ -114,4 +113,105 @@ import org.glassfish.hk2.MultiMap;
     public String getTypeName() {
         return typeName;
     }
+    
+    /**
+     * Returns true if this instance "matches" another instance.
+     * 
+     * <p/>
+     * Matching considers each attribute of the descriptor one by one.
+     * For non-null attributes, equality checks are made. If the this
+     * instance contains a null value (or empty for the case for collections)
+     * then the result for that field is true as well. For non-null and non-
+     * empty collections, this instance must be a proper subset of the
+     * other.
+     * 
+     * @param another the other Descriptor to compare against
+     * @return true if all fields in this instance matches another
+     */
+    public boolean matches(Descriptor another) {
+        return matches(name, another.getName())
+            && matches(typeName, another.getTypeName())
+            && matches(qualifiers, another.getQualifiers())
+            && matches(contracts, another.getContracts())
+            && matches(metadata, another.getMetadata());
+    }
+
+    private static boolean equals(Object o1, Object o2) {
+        if (null == o1 && null == o2) {
+            return true;
+        }
+        
+        if (null == o1 || null == o2) {
+            return false;
+        }
+        
+        if (o1.getClass() != o2.getClass()) {
+            return false;
+        }
+        
+        if (Collection.class.isInstance(o1)) {
+            Collection<?> c1 = Collection.class.cast(o1);
+            Collection<?> c2 = Collection.class.cast(o2);
+            if (c1.size() != c2.size()) {
+                return false;
+            }
+            
+            Iterator<?> it1 = c1.iterator();
+            Iterator<?> it2 = c2.iterator();
+            while (it1.hasNext()) {
+                if (!it1.next().equals(it2.next())) {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        return o1.equals(o2);
+    }
+    
+    private static boolean matches(Object o1, Object o2) {
+        if (null == o1) {
+            return true;
+        }
+        
+        if (Collection.class.isInstance(o1)) {
+            Collection<?> c1 = Collection.class.cast(o1);
+            if (c1.isEmpty()) {
+                return true;
+            }
+        } else if (MultiMap.class.isInstance(o1)
+                && org.glassfish.hk2.MultiMap.class.isInstance(o2)) {
+            return MultiMap.class.cast(o1).matches(org.glassfish.hk2.MultiMap.class.cast(o2));
+        }
+        
+        return equals(o1, o2);
+    }
+
+    final static Descriptor EMPTY_DESCRIPTOR = new Descriptor() {
+        @Override
+        public String getName() {
+            return null;
+        }
+
+        @Override
+        public MultiMap<String, String> getMetadata() {
+            return org.jvnet.hk2.component.MultiMap.emptyMap();
+        }
+
+        @Override
+        public Collection<String> getQualifiers() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public Collection<String> getContracts() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public String getTypeName() {
+            return null;
+        }
+    };
 }

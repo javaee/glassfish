@@ -54,34 +54,75 @@ import java.util.Collection;
  * Services are organized in a parent-child structure.  Whenever services are being
  * located, a search parent first algorithm is used.
  *
- *
- *
  */
 // TODO: this currently jettisons Listeners and Trackers, found in Habitat but not here
 @Contract
 public interface Services extends Locator {
 
-    //
-    // Module Related
-    //
-
+    /**
+     * Retrieves the default Services registry. This can be thought of as the root.
+     * 
+     * @return the default, root service registry
+     */
     Services getDefault();
+    
+    /**
+     * Retrieves the service registry given a module name.
+     * 
+     * @param moduleName the module name, or null for the default services registry
+     * @return the service registry, or null if the service registry does not exist
+     */
     Services getServices(String moduleName);
 
-    
-    //
-    // Binding related
-    //
-    
+    /**
+     * Allow dynamic additions to this service registry.
+     */
     DynamicBinderFactory bindDynamically();
-    Collection<BindingEntry> getBindings();
-    Collection<BindingEntry> getBindings(Descriptor descriptor);
-
     
-    //
-    // Helper methods
-    //
+    /**
+     * Retrieve the collection of all existing bindings in this, and only this, service
+     * registry.
+     * 
+     * @return a non-null collection of service bindings
+     */
+    Collection<Binding<?>> getBindings();
+    
+    /**
+     * Retrieve the collection of existing bindings in this, and only this, service
+     * registry that matches the {@link Descriptor}.
+     * 
+     * <p/>
+     * A {@link Descriptor} matches if it's attributes are equal, or specified as null.
+     * A Descriptor with all null attributes will therefore match all services in this
+     * services registry.
+     * 
+     * @param descriptor the descriptor used for matching, or null for all
+     * @return a non-null collection of service bindings matching the argument
+     */
+    Collection<Binding<?>> getBindings(Descriptor descriptor);
 
+    /**
+     * Retrieve the collection of all existing bindings in this as well as in parent
+     * service registries.
+     * 
+     * @return a non-null collection of service bindings
+     */
+    Collection<Binding<?>> getCummulativeBindings();
+
+    /**
+     * Retrieve the collection of existing bindings in this as well as in parent
+     * service registries that matches the {@link Descriptor}.
+     * 
+     * <p/>
+     * A {@link Descriptor} matches if it's attributes are equal, or specified as null.
+     * A Descriptor with all null attributes will therefore match all services in this
+     * services registry.
+     * 
+     * @param descriptor the descriptor used for matching, or null for all
+     * @return a non-null collection of service bindings matching the argument
+     */
+    Collection<Binding<?>> getCummulativeBindings(Descriptor descriptor);
+    
 }
 
 

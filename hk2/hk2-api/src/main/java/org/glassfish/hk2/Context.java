@@ -37,14 +37,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.hk2;
 
 import org.glassfish.hk2.inject.InjectionPoint;
 
+/**
+ * Used by {@link Binding} to describe how the Binding's {@link
+ * ComponentProvider} will be used.
+ * 
+ * @author Jerome Dochez
+ * @author Jeff Trent
+ * @author Mason Taube
+ */
 public interface Context {
 
-  // TODO: should injectionpoint extend context instead?
-  InjectionPoint getInjectionPoint();
+    /**
+     * The injection point information.  If non-null, the
+     * Binding's ComponentProvider will be used to satisfy
+     * injection resolution.
+     */
+    InjectionPoint getInjectionPoint();
 
 }

@@ -69,7 +69,7 @@ public interface Descriptor {
     /**
      * The meta data attributes for the service. 
      */
-    MultiMap<String, String> metadata();
+    MultiMap<String, String> getMetadata();
   
     /**
      * The qualifier type annotations on the service.
