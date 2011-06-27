@@ -1,0 +1,69 @@
+<!--
+  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ 
+  Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+  
+  Use is subject to License Terms
+--> 
+
+<!ENTITY % boolean "(yes | no | on | off | 1 | 0 | true | false)">
+
+<!-- Each deployed Resource Adapter (RAR) Module, will have ias-ra.xml 
+     associated with it, which specifies several dynamic configuration 
+     properties. Key aspects are pool sizing and security role maps.
+ -->
+<!ELEMENT sun-connector (resource-adapter, role-map?)>
+
+<!-- Resource adapter configuration 
+
+     jndi-name          name by which, this adapter will appear in JNDI tree
+     max-pool-size      maximum size of connection to EIS
+     steady-pool-size   initial and minimum number of connections to be maintained
+     max-wait-in-millis if a connection is not readily found, caller will have to 
+                        wait this long, before a connection is created. A value of
+                        0 implies, wait till a connection becomes available. If the
+                        pool is completely utilized and the timer expires, an 
+                        exception will be delivered to the application.
+
+     idle-timeout-in-seconds A timer thread periodically removed unused connections.
+                             The interval at which this thread runs. All idle 
+                             connections will be removed, while mainataining
+                             the configured steady-pool-size.
+-->
+<!ELEMENT resource-adapter (description?, property*)>
+<!ATTLIST resource-adapter jndi-name                        CDATA     #REQUIRED
+                           max-pool-size                    CDATA     "32"
+                           steady-pool-size                 CDATA     "4" 
+                           max-wait-time-in-millis          CDATA     "10000" 
+                           idle-timeout-in-seconds          CDATA     "1000">
+
+<!-- Perform mapping from principal received during Servlet/EJB 
+     authentication, to credentials accepted by the EIS. This 
+     mapping is optional. The map consists of several 2-tuples
+     map-id is the name of the mapping
+ -->
+<!ELEMENT role-map (description?, map-element*)>
+<!ATTLIST role-map map-id   CDATA  #REQUIRED>
+                
+
+<!-- It is possible to map multiple (server) principal to the 
+     same backend principal. 
+-->
+<!ELEMENT map-element (principal+, backend-principal)>
+
+<!-- Principal of the Servlet and EJB client -->
+<!ELEMENT principal (description?)>
+<!ATTLIST principal user-name CDATA #REQUIRED>
+ 
+<!-- Backend EIS principal -->
+<!ELEMENT backend-principal EMPTY> 
+<!ATTLIST backend-principal user-name  CDATA #REQUIRED
+                            password   CDATA #REQUIRED
+                            credential CDATA #REQUIRED>
+
+<!ELEMENT description (#PCDATA)>
+
+<!-- Syntax for supplying properties as name value pairs -->
+<!ELEMENT property EMPTY>
+<!ATTLIST property name  CDATA  #REQUIRED
+                   value CDATA  #REQUIRED>

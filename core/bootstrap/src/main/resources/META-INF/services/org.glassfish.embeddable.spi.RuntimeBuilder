@@ -1,0 +1,3 @@
+com.sun.enterprise.glassfish.bootstrap.OSGiGlassFishRuntimeBuilder
+com.sun.enterprise.glassfish.bootstrap.StaticGlassFishRuntimeBuilder
+com.sun.enterprise.glassfish.bootstrap.EmbeddedOSGiGlassFishRuntimeBuilder

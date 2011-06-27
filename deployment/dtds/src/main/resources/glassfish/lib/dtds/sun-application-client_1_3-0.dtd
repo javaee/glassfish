@@ -1,0 +1,64 @@
+<!--
+  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ 
+  Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+  
+  Use is subject to License Terms
+--> 
+
+<!--
+application-client is the root element describing all the runtime bindings 
+of a single application client
+-->
+<!ELEMENT sun-application-client (resource-ref*, ejb-ref*, resource-env-ref*)>
+
+<!--
+name of a resource reference.
+-->
+<!ELEMENT res-ref-name (#PCDATA)>
+
+<!--
+resource-env-ref holds all the runtime bindings of a resource env reference.
+-->
+<!ELEMENT resource-env-ref ( resource-env-ref-name, jndi-name )>
+
+<!--
+name of a resource env reference.
+-->
+<!ELEMENT resource-env-ref-name (#PCDATA)>
+
+<!--
+resource-ref holds the runtime bindings of a resource reference.
+-->
+<!ELEMENT resource-ref  ( res-ref-name, jndi-name,  default-resource-principal?)>
+
+<!--
+default-resource-principal specifies the default principal that the container 
+will use to access a resource.
+-->
+<!ELEMENT default-resource-principal ( name,  password)>
+
+<!--
+name element holds the user name
+-->
+<!ELEMENT name (#PCDATA)>
+
+<!--
+password element holds a password string.
+-->
+<!ELEMENT password (#PCDATA)>
+
+<!--
+ejb-ref element which binds an ejb reference to a jndi name.
+-->
+<!ELEMENT ejb-ref (ejb-ref-name, jndi-name)>
+
+<!--
+ejb-ref-name locates the name of the ejb reference in the application.
+-->
+<!ELEMENT ejb-ref-name (#PCDATA)>
+
+<!--
+jndi name of the associated entity
+-->
+<!ELEMENT  jndi-name (#PCDATA)>
