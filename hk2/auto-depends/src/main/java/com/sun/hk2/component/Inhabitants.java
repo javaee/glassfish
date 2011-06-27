@@ -138,7 +138,7 @@ public class Inhabitants {
       if (scopeClass== PerLookup.class) {
           return creator;
       }
-      if (scopeClass== Singleton.class) {
+      if (scopeClass==null || scopeClass== Singleton.class) {
           return new SingletonInhabitant<T>(creator);
       }
   

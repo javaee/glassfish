@@ -40,12 +40,13 @@
 
 package org.jvnet.hk2.component;
 
-import com.sun.hk2.component.ConstructorCreator;
-import com.sun.hk2.component.InhabitantsFile;
+import com.sun.hk2.component.*;
 
+import javax.xml.bind.Binder;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Binds a typed binding to the habitat
@@ -62,12 +63,10 @@ class TypeBasedBinder<T> extends AbstractResolvedBinder<T> {
 
     @Override
     void registerIn(Habitat habitat) {
-        // todo : more work needed to support all metadata entries
-        MultiMap<String, String> inhMetadata = new MultiMap<String, String>();
-        for (Class<? extends Annotation> annotation : metadata.annotations) {
-            inhMetadata.add(InhabitantsFile.QUALIFIER_KEY, annotation.getName());
-        }
-        // todo : scoping, we need to wrap the ConstructorCreator in a scoped inhabitant
-        super.registerIn(habitat,new ConstructorCreator<T>(type, habitat, inhMetadata));
+        MultiMap<String, String> inhMetadata = super.populateMetadata();
+        super.registerIn(habitat, com.sun.hk2.component.Inhabitants.wrapByScope(
+                new ConstructorCreator<T>(type, habitat, inhMetadata),
+                habitat,
+                metadata.scope));
     }
 }

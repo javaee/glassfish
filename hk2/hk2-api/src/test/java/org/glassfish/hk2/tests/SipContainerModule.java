@@ -60,7 +60,7 @@ public class SipContainerModule implements Module {
 
     public void configure(BinderFactory binders) {
         // lookup module other
-        binders.bind(Object.class).to(MyType.class).in(ThreadScope.scope);
+        binders.bind(Object.class).to(MyType.class).in(ThreadScope.class);
 
         MyType wrapped = new MyType();
         binders.inParent().bind(MyType.class).toInstance(wrapped);

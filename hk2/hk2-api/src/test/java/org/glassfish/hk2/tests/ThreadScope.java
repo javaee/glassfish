@@ -53,8 +53,6 @@ import org.glassfish.hk2.ScopeInstance;
  */
 public class ThreadScope extends Scope {
 
-    public static ThreadScope scope = new ThreadScope();
-
     @Override
     public ScopeInstance current() {
         return new ScopeInstance() {
