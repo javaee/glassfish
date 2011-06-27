@@ -246,7 +246,7 @@ class Assembler {
             if (!entry.isDirectory() && !exclude(entry)) {
                 InputStream in = jarFile.getInputStream(entry);
                 try {
-                    jos.putNextEntry(entry);
+                    jos.putNextEntry(new ZipEntry(entry.getName()));
                 } catch (ZipException ex) {
                     continue;
                 }
