@@ -284,14 +284,19 @@ public class Jira extends MonTest {
         String get2 = "server.applications.xxx.yyy.server.ProbeServlet.errorcount-count";
         String get3 = "server.applications.zzzzz.server.ProbeServlet.errorcount-count";
 
+		// YES! This should work too!!
+        String get4 = "server.applications.xxx___MONDOT___yyy.server.ProbeServlet.errorcount-count";  
+
         AsadminReturn ar1 = asadminWithOutput("get", "-m", get1);
         AsadminReturn ar2 = asadminWithOutput("get", "-m", get2);
         AsadminReturn ar3 = asadminWithOutput("get", "-m", get3);
+        AsadminReturn ar4 = asadminWithOutput("get", "-m", get4);
 
         // "=" only appears if there is a valid data item
         report(checkForString(ar1, "= 0"), prepend + "monapp1-with-backslash");
         report(checkForString(ar2, "= 0"), prepend + "monapp1-without-backslash");
         report(checkForString(ar3, "= 0"), prepend + "monapp2");
+        report(checkForString(ar4, "= 0"), prepend + "monapp1-with-MONDOT");
     }
 
     /*
