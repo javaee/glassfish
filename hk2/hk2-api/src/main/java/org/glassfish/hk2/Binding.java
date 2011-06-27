@@ -50,7 +50,7 @@ package org.glassfish.hk2;
 public interface Binding<T> {
 
     /**
-     * Return a {@link ComponentProvider} optionally providing contextual
+     * Return a {@link Provider} optionally providing contextual
      * information for how the component provider will be used (e.g., for
      * contextual injection, etc).
      * 
@@ -64,6 +64,6 @@ public interface Binding<T> {
      * 
      * @return a non-null component provider instance
      */
-    ComponentProvider<T> getProvider(Context ctx);
+    Provider<T> getProvider(Context ctx);
   
 }

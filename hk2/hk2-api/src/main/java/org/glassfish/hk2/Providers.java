@@ -51,17 +51,17 @@ import java.util.Collection;
 public interface Providers<T> {
 
     /**
-     * Return all applicable {@link ComponentProvider}s. Will always
+     * Return all applicable {@link Provider}s. Will always
      * be a non-null return value. 
      */
-    Collection<ComponentProvider<T>> all();
+    Collection<Provider<T>> all();
 
     /**
-     * Return the "best" {@link ComponentProvider} from the collection. If
+     * Return the "best" {@link Provider} from the collection. If
      * the collection {@link #all()} is not empty, this will return a non
      * null value.  Otherwise the return value is null.
      */
-    ComponentProvider<T> getComponentProvider();
+    Provider<T> getComponentProvider();
     
     /**
      * A shortcut for
