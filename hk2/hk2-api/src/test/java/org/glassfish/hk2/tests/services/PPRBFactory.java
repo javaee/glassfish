@@ -41,7 +41,7 @@
 package org.glassfish.hk2.tests.services;
 
 import org.glassfish.hk2.ComponentException;
-import org.glassfish.hk2.Provider;
+import org.glassfish.hk2.Factory;
 import org.glassfish.hk2.tests.contracts.PathPattern;
 import org.glassfish.hk2.tests.contracts.RouteBuilder;
 
@@ -52,7 +52,7 @@ import org.glassfish.hk2.tests.contracts.RouteBuilder;
  * Time: 6:04 AM
  * To change this template use File | Settings | File Templates.
  */
-public class PPRBFactory implements Provider<RouteBuilder<PathPattern>> {
+public class PPRBFactory implements Factory<RouteBuilder<PathPattern>> {
     @Override
     public RouteBuilder<PathPattern> get() throws ComponentException {
         return new PathPatternRouteBuilder();

@@ -61,8 +61,8 @@ public interface NamedBinder<U>  {
 
     <T extends U> ResolvedBinder<T> toInstance(T instance);
 
-    <T extends U> ResolvedBinder<T> toProvider(Provider<T> provider);
-    <T extends U> ResolvedBinder<T> toProvider(Class<? extends Provider<? extends T>> providerType);
-    <T extends U> ResolvedBinder<T> toProvider(TypeLiteral<? extends Provider<? extends T>> providerType);
+    <T extends U> ResolvedBinder<T> toProvider(Factory<T> provider);
+    <T extends U> ResolvedBinder<T> toProvider(Class<? extends Factory<? extends T>> providerType);
+    <T extends U> ResolvedBinder<T> toProvider(TypeLiteral<? extends Factory<? extends T>> providerType);
 
 }

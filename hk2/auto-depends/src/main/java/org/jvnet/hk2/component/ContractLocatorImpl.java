@@ -47,7 +47,6 @@ import java.util.logging.Logger;
 import org.glassfish.hk2.ComponentException;
 import org.glassfish.hk2.ComponentProvider;
 import org.glassfish.hk2.ContractLocator;
-import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.Scope;
 
 /**
@@ -72,7 +71,7 @@ class ContractLocatorImpl<T> implements ContractLocator<T> {
 //    private Scope scope;
 //    private final List<Class<? extends Annotation>> annotations = new ArrayList<Class<? extends Annotation>>();
 
-    private final Provider<T> getter;
+    private final org.glassfish.hk2.Factory<T> getter;
 
     // byContract, else byType
     private final boolean byContract;
@@ -93,8 +92,8 @@ class ContractLocatorImpl<T> implements ContractLocator<T> {
                 getterByType(clazzName);
     }
 
-    private Provider<T> getterByContract(final Class<T> clazz) {
-        return new Provider<T>() {
+    private org.glassfish.hk2.Factory<T> getterByContract(final Class<T> clazz) {
+        return new org.glassfish.hk2.Factory<T>() {
             @Override
             public T get() throws ComponentException {
                 return habitat.getComponent(clazz, name);
@@ -102,8 +101,8 @@ class ContractLocatorImpl<T> implements ContractLocator<T> {
         };
     }
 
-    private Provider<T> getterByContract(final String clazzName) {
-        return new Provider<T>() {
+    private org.glassfish.hk2.Factory<T> getterByContract(final String clazzName) {
+        return new org.glassfish.hk2.Factory<T>() {
             @SuppressWarnings("unchecked")
             @Override
             public T get() throws ComponentException {
@@ -112,8 +111,8 @@ class ContractLocatorImpl<T> implements ContractLocator<T> {
         };
     }
 
-    private Provider<T> getterByType(final Class<T> clazz) {
-        return new Provider<T>() {
+    private org.glassfish.hk2.Factory<T> getterByType(final Class<T> clazz) {
+        return new org.glassfish.hk2.Factory<T>() {
             @Override
             public T get() throws ComponentException {
                 return habitat.getByType(clazz);
@@ -121,8 +120,8 @@ class ContractLocatorImpl<T> implements ContractLocator<T> {
         };
     }
 
-    private Provider<T> getterByType(final String clazzName) {
-        return new Provider<T>() {
+    private org.glassfish.hk2.Factory<T> getterByType(final String clazzName) {
+        return new org.glassfish.hk2.Factory<T>() {
             @SuppressWarnings("unchecked")
             @Override
             public T get() throws ComponentException {
@@ -155,7 +154,7 @@ class ContractLocatorImpl<T> implements ContractLocator<T> {
     }
 
     //    @Override
-    public Provider<T> getProvider() {
+    public org.glassfish.hk2.Factory<T> getProvider() {
         return getter;
     }
 

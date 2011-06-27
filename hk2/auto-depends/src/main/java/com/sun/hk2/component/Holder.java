@@ -39,7 +39,7 @@
  */
 package com.sun.hk2.component;
 
-import org.glassfish.hk2.Provider;
+import org.glassfish.hk2.Factory;
 
 /**
  * Indirection to a value. That is, instead of referring to the value itself,
@@ -52,7 +52,7 @@ import org.glassfish.hk2.Provider;
  *
  * @author Kohsuke Kawaguchi
  */
-public interface Holder<T> extends Provider<T> {
+public interface Holder<T> extends Factory<T> {
 
     /**
      * {@link Holder} implementation that doesn't do any deferred computation,

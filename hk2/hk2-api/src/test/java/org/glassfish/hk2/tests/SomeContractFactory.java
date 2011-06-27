@@ -41,7 +41,7 @@
 package org.glassfish.hk2.tests;
 
 import org.glassfish.hk2.ComponentException;
-import org.glassfish.hk2.Provider;
+import org.glassfish.hk2.Factory;
 import org.glassfish.hk2.tests.contracts.SomeContract;
 import org.jvnet.hk2.annotations.FactoryFor;
 import org.jvnet.hk2.annotations.Inject;
@@ -56,7 +56,7 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Service
 @FactoryFor(SomeContract.class)
-public class SomeContractFactory implements Provider<SomeContract> {
+public class SomeContractFactory implements Factory<SomeContract> {
 
 
     @Inject(name="sync")

@@ -39,8 +39,6 @@
  */
 package org.jvnet.hk2.component;
 
-import org.glassfish.hk2.Provider;
-import org.jvnet.hk2.annotations.Builder;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -56,6 +54,6 @@ import org.jvnet.hk2.annotations.Service;
  * @see Service
  * @see ContextualFactory
  */
-public interface Factory<T> extends Provider<T> {
+public interface Factory<T> extends org.glassfish.hk2.Factory<T> {
 
 }
