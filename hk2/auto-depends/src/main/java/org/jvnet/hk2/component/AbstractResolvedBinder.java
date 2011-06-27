@@ -40,9 +40,12 @@
 
 package org.jvnet.hk2.component;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sun.hk2.component.InhabitantsFile;
+import com.sun.hk2.component.ScopedInhabitant;
 import org.glassfish.hk2.ResolvedBinder;
 import org.glassfish.hk2.Scope;
 
@@ -55,15 +58,23 @@ import org.glassfish.hk2.Scope;
  */
 abstract class AbstractResolvedBinder<T> implements ResolvedBinder<T> {
     final BinderImpl<T> metadata;
-    Scope scope;
 
     protected AbstractResolvedBinder(BinderImpl<T> metadata) {
         this.metadata = metadata;
     }
 
     @Override
-    public void in(Scope scope) {
-        this.scope = scope;
+    public void in(Class<? extends Scope> scope) {
+        metadata.scope = scope;
+    }
+
+    protected MultiMap<String, String> populateMetadata() {
+        // todo : more work needed to support all metadata entries
+        MultiMap<String, String> inhMetadata = new MultiMap<String, String>();
+        for (Class<? extends Annotation> annotation : metadata.annotations) {
+            inhMetadata.add(InhabitantsFile.QUALIFIER_KEY, annotation.getName());
+        }
+        return inhMetadata;
     }
 
     protected void registerIn(Habitat habitat, Inhabitant<T> inhabitant) {

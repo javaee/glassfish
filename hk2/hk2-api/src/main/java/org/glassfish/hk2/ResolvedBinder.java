@@ -49,5 +49,5 @@ package org.glassfish.hk2;
  */
 public interface ResolvedBinder<T> {
 
-    void in(Scope scope);
+    void in(Class<? extends Scope> scope);
 }

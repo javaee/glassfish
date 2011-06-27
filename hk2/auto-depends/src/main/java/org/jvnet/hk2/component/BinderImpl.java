@@ -59,7 +59,7 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
 
     String name;
     String typeName;
-    Scope scope;
+    Class<? extends Scope> scope;
     final List<Class<? extends Annotation>> annotations = new ArrayList<Class<? extends Annotation>>();
     final List<String> contracts = new ArrayList<String>();
     final BinderFactoryImpl owner;
@@ -123,7 +123,7 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
     }
 
     @Override
-    public void in(Scope scope) {
+    public void in(Class<? extends Scope> scope) {
         this.scope = scope;
     }
 

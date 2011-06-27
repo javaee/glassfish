@@ -40,12 +40,12 @@
 
 package org.jvnet.hk2.component;
 
-import com.sun.hk2.component.ConstructorCreator;
-import com.sun.hk2.component.InhabitantsFile;
+import com.sun.hk2.component.*;
 import org.glassfish.hk2.TypeLiteral;
 
 import java.lang.annotation.Annotation;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
 
 /**
  * Binder for a {@link TypeLiteral} binding
@@ -63,11 +63,7 @@ public class TypeLiteralBasedBinder<T> extends AbstractResolvedBinder<T> {
 
     @Override
     void registerIn(Habitat habitat) {
-        // todo : more work needed to support all metadata entries
-        MultiMap<String, String> inhMetadata = new MultiMap<String, String>();
-        for (Class<? extends Annotation> annotation : metadata.annotations) {
-            inhMetadata.add(InhabitantsFile.QUALIFIER_KEY, annotation.getName());
-        }
+        MultiMap<String, String> inhMetadata = super.populateMetadata();
         final String parameterizedTypes = BinderFactoryImpl.exploreType(typeLiteral);
         if (parameterizedTypes.contains("<")) {
             String commaSeparatedTypes = parameterizedTypes.substring(parameterizedTypes.indexOf('<')+1, parameterizedTypes.length()-1);
@@ -76,11 +72,14 @@ public class TypeLiteralBasedBinder<T> extends AbstractResolvedBinder<T> {
                 inhMetadata.add(InhabitantsFile.PARAMETERIZED_TYPE, st.nextToken());
             }
         }
-        // todo : scoping, we need to wrap the ConstructorCreator in a scoped inhabitant
-        super.registerIn(habitat, new ConstructorCreator<T>(typeLiteral.getRawType(), habitat, inhMetadata) {
-            public String typeName(){
-                return parameterizedTypes;
-            }
-        });
+
+        super.registerIn(habitat, com.sun.hk2.component.Inhabitants.wrapByScope(
+                new ConstructorCreator<T>(typeLiteral.getRawType(), habitat, inhMetadata) {
+                    public String typeName(){
+                        return parameterizedTypes;
+                    }
+                },
+                habitat,
+                metadata.scope));
     }
 }

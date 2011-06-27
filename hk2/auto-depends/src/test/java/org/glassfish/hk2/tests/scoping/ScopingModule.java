@@ -37,47 +37,21 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.hk2.tests.scoping;
 
-package org.glassfish.hk2.tests;
-
-import org.glassfish.hk2.DynamicBinderFactory;
-import org.glassfish.hk2.Services;
-import org.glassfish.hk2.inject.Creator;
-import org.glassfish.hk2.tests.contracts.SomeContract;
-import org.glassfish.hk2.tests.services.SomeService;
-import org.junit.Ignore;
+import org.glassfish.hk2.BinderFactory;
+import org.glassfish.hk2.Module;
+import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.Singleton;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 5/3/11
- * Time: 10:13 AM
- * To change this template use File | Settings | File Templates.
+ * Scoping test module, responsible for binding.
+ * @author Jerome Dochez
  */
-@Ignore
-public class ServicesTest {
-
-    public ServicesTest(Services services) {
-        // not supported any longer --- Descriptor is not a valid argument to locator
-//        services.locate(services.forContract(String.class).named("foo"));
-
-        services.forContract(String.class).named("foo").get();
-
-//        services.bind(services.newBinder().named("foo").in(ThreadScope.class);
-
-
-        // not supported any longer --- Descriptor is not a valid argument to locator
-//        Descriptor t = null;
-//        MyType myType = MyType.class.cast(services.locate(t).get());
-
-        DynamicBinderFactory binder = services.bindDynamically();
-        binder.bind(String.class).named("foo").to("Foo");
-        binder.bind(SomeContract.class).toInstance(new SomeService());
-        binder.bind(SomeContract.class).to(SomeService.class).in(ThreadScope.class);
-
-        binder.commit();
-
-        services.forContract(Creator.class).get().newValueObject(String.class);
-
+public class ScopingModule implements Module {
+    @Override
+    public void configure(BinderFactory binderFactory) {
+        binderFactory.bind(ToBeScopedContract.class).named("perlookup").to(PerLookupService.class).in(PerLookup.class);
+        binderFactory.bind(ToBeScopedContract.class).named("singleton").to(SingletonService.class).in(Singleton.class);
     }
 }

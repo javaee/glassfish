@@ -37,47 +37,51 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.hk2.tests.scoping;
 
-package org.glassfish.hk2.tests;
-
-import org.glassfish.hk2.DynamicBinderFactory;
+import org.glassfish.hk2.HK2;
 import org.glassfish.hk2.Services;
-import org.glassfish.hk2.inject.Creator;
-import org.glassfish.hk2.tests.contracts.SomeContract;
-import org.glassfish.hk2.tests.services.SomeService;
-import org.junit.Ignore;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.jvnet.hk2.junit.Hk2Runner;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 5/3/11
- * Time: 10:13 AM
- * To change this template use File | Settings | File Templates.
+ * Scoping junit test
+ * @author Jerome Dochez
  */
-@Ignore
-public class ServicesTest {
+@RunWith(Hk2Runner.class)
+public class ScopingTest {
 
-    public ServicesTest(Services services) {
-        // not supported any longer --- Descriptor is not a valid argument to locator
-//        services.locate(services.forContract(String.class).named("foo"));
+    static Services services;
 
-        services.forContract(String.class).named("foo").get();
+    @BeforeClass
+    public static void setup() {
+        HK2 hk2 = HK2.get();
+        services = hk2.create(null, ScopingModule.class);
+    }
 
-//        services.bind(services.newBinder().named("foo").in(ThreadScope.class);
+    @Test
+    public void perLookup() {
+        ToBeScopedContract perLookup = services.forContract(ToBeScopedContract.class).named("perlookup").get();
+        Assert.assertNotNull(perLookup);
+        Assert.assertTrue(perLookup.instanceCount()==1);
+        ToBeScopedContract perLookup2 = services.forContract(ToBeScopedContract.class).named("perlookup").get();
+        Assert.assertNotNull(perLookup2);
+        Assert.assertTrue(perLookup2.instanceCount() == 2);
+        Assert.assertNotSame(perLookup, perLookup2);
+    }
 
 
-        // not supported any longer --- Descriptor is not a valid argument to locator
-//        Descriptor t = null;
-//        MyType myType = MyType.class.cast(services.locate(t).get());
-
-        DynamicBinderFactory binder = services.bindDynamically();
-        binder.bind(String.class).named("foo").to("Foo");
-        binder.bind(SomeContract.class).toInstance(new SomeService());
-        binder.bind(SomeContract.class).to(SomeService.class).in(ThreadScope.class);
-
-        binder.commit();
-
-        services.forContract(Creator.class).get().newValueObject(String.class);
-
+    @Test
+    public void singleton() {
+        ToBeScopedContract singleton = services.forContract(ToBeScopedContract.class).named("singleton").get();
+        Assert.assertNotNull(singleton);
+        Assert.assertTrue(singleton.instanceCount()==1);
+        ToBeScopedContract singleton2 = services.forContract(ToBeScopedContract.class).named("singleton").get();
+        Assert.assertNotNull(singleton2);
+        Assert.assertTrue(singleton2.instanceCount()==1);
+        Assert.assertSame(singleton, singleton2);
     }
 }
