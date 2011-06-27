@@ -310,17 +310,28 @@ abstract class MonTest {
     }
 
     final void deploy(File f) {
-        deploy("server", f);
+        deploy("server", f, null);
     }
 
     final void deploy(String target, File f) {
-        String prepend = f.getName() + " "; // if you send in a null pointer -- tough!!
-        report(f.isFile() && f.canRead(), prepend + "exists");
-        report(asadmin("deploy", "--target", target, f.getAbsolutePath()),
-                prepend + "deployed OK to " + target);
+        deploy(target, f, null);
     }
 
-    /*
+    final void deploy(String target, File f, String name) {
+         String prepend = f.getName() + " "; // if you send in a null pointer -- tough!!
+         report(f.isFile() && f.canRead(), prepend + "exists");
+
+        boolean success;
+
+        if(name != null)
+            success = asadmin("deploy", "--target", target, "--name", name, f.getAbsolutePath());
+        else
+            success = asadmin("deploy", "--target", target, f.getAbsolutePath());
+
+        report(success, prepend + "deployed OK to " + target);
+     }
+ 
+     /*
      * this implementaion sucks.  please improve it!
      */
     static boolean wget(int port, String uri) {

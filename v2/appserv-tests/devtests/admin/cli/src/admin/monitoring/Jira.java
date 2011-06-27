@@ -161,6 +161,8 @@ public class Jira extends MonTest {
     private static final File earFile = new File(RESOURCES_DIR, "webapp2.ear");
     private static final String MAGIC_NAME_IN_APP = "webapp2webmod1_Servlet2";
     private static final String RESOURCE_NAME_WITH_SLASH = "jdbc/test";
+    private static final File monapp1 = new File(RESOURCES_DIR, "MonApp.war");
+    private static final File monapp2 = new File(RESOURCES_DIR, "MonApp2.war");
 
     /**
      * This method is here in case you are looking through these methods and comparing
@@ -266,6 +268,30 @@ public class Jira extends MonTest {
         finally { //
             listener.close();
         }
+    }
+    /*
+     * Byron Nevins
+     * Big Bug in monitoring -- it could not find sub-nodes properly when they contained
+     * a literal "."
+     * Issue fixed June 25, 2011
+     */
+    private void test15964() {
+        final String prepend = "test15964::";
+        deploy("server", monapp1, "zzzzz");
+        deploy("server", monapp2, "xxx.yyy");
+
+        String get1 = "server.applications.xxx\\.yyy.server.ProbeServlet.errorcount-count";
+        String get2 = "server.applications.xxx.yyy.server.ProbeServlet.errorcount-count";
+        String get3 = "server.applications.zzzzz.server.ProbeServlet.errorcount-count";
+
+        AsadminReturn ar1 = asadminWithOutput("get", "-m", get1);
+        AsadminReturn ar2 = asadminWithOutput("get", "-m", get2);
+        AsadminReturn ar3 = asadminWithOutput("get", "-m", get3);
+
+        // "=" only appears if there is a valid data item
+        report(checkForString(ar1, "="), prepend + "monapp1-with-backslash");
+        report(checkForString(ar2, "="), prepend + "monapp1-without-backslash");
+        report(checkForString(ar3, "="), prepend + "monapp2");
     }
 
     /*
