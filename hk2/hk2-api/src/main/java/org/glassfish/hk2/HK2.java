@@ -45,6 +45,7 @@ import org.glassfish.hk2.spi.HK2Provider;
 import sun.misc.Service;
 
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 /**
  * Entry point to the HK2 services runtime
@@ -54,7 +55,20 @@ public class HK2 {
 
     final HK2Provider provider;
 
+    private HK2(HK2Provider provider) {
+        this.provider = provider;
+    }
 
+    /**
+     * Entry point to the HK2 public APIs, will initialize the implementation and return
+     * a valid instance that can be used to configure modules bindings.
+     *
+     * @return a HK2 instance to configure {@link Module} types or instances with or null if
+     * an implementation cannot be found using the META-INF/services and {@link java.util.ServiceLoader}
+     * mechanism.
+     *
+     * @throws RuntimeException if an implementation cannot be located.
+     */
     public static HK2 get() {
         try {
             HK2Provider provider=null;
@@ -71,13 +85,8 @@ public class HK2 {
                 if (providers!=null && providers.hasNext()) {
                     provider = providers.next();
                 } else {
-                    // last ditch attempt in case we are loaded in the same classloader.
-                    Class<? extends HK2Provider> providerType = (Class<? extends HK2Provider>)
-                            Class.forName("org.jvnet.hk2.component.HK2ProviderImpl");
-                    if (providerType==null) {
-                        throw new RuntimeException("Cannot find HK2Provider implementation");
-                    }
-                    provider = providerType.newInstance();
+                    Logger.getLogger(HK2.class.getName()).severe("Cannot find an implementation of the HK2 public API.");
+                    return null;
                 }
             }
             return new HK2(provider);
@@ -87,18 +96,35 @@ public class HK2 {
         }
     }
 
-    public static HK2 get(HK2Provider provider) {
-        return new HK2(provider);
-    }
-
-    public HK2(HK2Provider provider) {
-        this.provider = provider;
-    }
-
+    /**
+     * Creates a new {@link Services} instances to register and lookup services to and from.
+     *
+     * {@link Module} will be instantiated in the order of the their declaration unless some
+     * modules have explicit dependencies on other modules through a {@link org.jvnet.hk2.annotations.Inject}
+     * annotation.
+     *
+     * {@link Module} are components and will follow normal HK2 activation and injection
+     * procedure prior to the {@link Module#configure(BinderFactory)} call.
+     *
+     * @param parent the parent {@link Services} instances to delegate lookup to.
+     * @param moduleTypes array of {@link Module} types that will be configured with in the
+     * returned {@link Services} instance.
+     * @return a {@link Services} instance configured with all the {@link Module} services
+     */
     public Services create(Services parent, Class<? extends Module>... moduleTypes) {
         return provider.create(parent, moduleTypes);
     }
 
+    /**
+     * Creates a new {@link Services} instances to register and lookup services to and from.
+     *
+     * Module instances will not be injected before the {@link Module#configure(BinderFactory)} call.
+     *
+     * @param parent the parent {@link Services} instances to delegate lookup to.
+     * @param modules array of {@link Module} that will be configured with in the
+     * returned {@link Services} instance.
+     * @return a {@link Services} instance configured with all the {@link Module} services
+     */
     public Services create(Services parent, Module... modules) {
         return provider.create(parent, modules);
     }
