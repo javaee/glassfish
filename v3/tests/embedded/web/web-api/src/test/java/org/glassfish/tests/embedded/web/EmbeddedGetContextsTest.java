@@ -73,7 +73,7 @@ public class EmbeddedGetContextsTest {
         glassfish = GlassFishRuntime.bootstrap().newGlassFish();
         glassfish.start();
         embedded = glassfish.getService(WebContainer.class);
-        System.out.println("================ EmbeddedAddContext Test");
+        System.out.println("================ EmbeddedGetContexts Test");
         System.out.println("Starting Web "+embedded);
         embedded.setLogLevel(Level.INFO);
     }
@@ -109,7 +109,7 @@ public class EmbeddedGetContextsTest {
 
         System.out.println("Deploying " + path + ", name = " + name);
 
-        String appName = deployer.deploy(path.toURI(), "--name=" + name);
+        String appName = deployer.deploy(path.toURI(), "--contextroot", contextRoot, "--name=" + name);
 
         System.out.println("Deployed " + appName);
 
@@ -117,13 +117,17 @@ public class EmbeddedGetContextsTest {
 
         VirtualServer vs = embedded.getVirtualServer("server");
         Assert.assertEquals("server", vs.getID());
-        if (vs != null) {
-            for (Context ctx : vs.getContexts()) {
-                System.out.println("ctx "+ctx.getPath());
+        Assert.assertEquals("/"+contextRoot, vs.getContext(contextRoot).getPath());
+        boolean containsContext = false;
+        for (Context ctx : vs.getContexts()) {
+            System.out.println("Context found "+ctx.getPath());
+            if (ctx.getPath().endsWith(contextRoot)) {
+                containsContext = true;
             }
         }
+        Assert.assertTrue(containsContext);
 
-        URL servlet = new URL("http://localhost:8080/classes/hello");
+        URL servlet = new URL("http://localhost:8080/"+contextRoot+"/hello");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
         StringBuilder sb = new StringBuilder();
