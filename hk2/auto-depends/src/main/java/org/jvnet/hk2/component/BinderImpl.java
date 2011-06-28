@@ -41,6 +41,7 @@
 package org.jvnet.hk2.component;
 
 import com.sun.hk2.component.AbstractCreatorImpl;
+import com.sun.hk2.component.ConstructorCreator;
 import org.glassfish.hk2.*;
 import org.glassfish.hk2.Factory;
 import org.glassfish.hk2.Scope;
@@ -139,7 +140,12 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
                 Inhabitant<T> inh = new AbstractCreatorImpl<T>(null, habitat, metadata) {
                     @Override
                     public T create(Inhabitant onBehalfOf) throws ComponentException {
-                        Factory<? extends T> f = habitat.getInhabitantByType(factoryType).get();
+                        Inhabitant<? extends org.glassfish.hk2.Factory<? extends T>> factoryInhabitant =
+                                habitat.getInhabitantByType(factoryType);
+                        if (factoryInhabitant==null) {
+                            factoryInhabitant = new ConstructorCreator<Factory<? extends T>>(factoryType, habitat, null);
+                        }
+                        Factory<? extends T> f = factoryInhabitant.get();
                         T t = f.get();
                         inject(habitat, t, onBehalfOf);
                         return t;
