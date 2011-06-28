@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,18 +47,33 @@ import com.trilead.ssh2.SFTPv3FileAttributes;
 import com.trilead.ssh2.SFTPv3FileHandle;
 import com.trilead.ssh2.sftp.ErrorCodes;
 
-
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import org.glassfish.cluster.ssh.util.SSHUtil;
 
 public class SFTPClient extends SFTPv3Client {
-    
+
+    private Connection connection = null;
 
     public SFTPClient(Connection conn) throws IOException {
         super(conn);
+        this.connection = conn;
+        SSHUtil.register(connection);
     }
 
+    /**
+     * Close the SFTP connection and free any resources associated with it.
+     * close() should be called when you are done using the SFTPClient
+     */
+    @Override
+    public void close() {
+        if (connection != null) {
+            SSHUtil.unregister(connection);
+            connection = null;
+        }
+        super.close();
+    }
 
     /**
      * Checks if the given path exists.

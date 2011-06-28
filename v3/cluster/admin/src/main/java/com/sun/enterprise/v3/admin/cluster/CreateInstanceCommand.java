@@ -174,12 +174,6 @@ public class CreateInstanceCommand implements AdminCommand {
         nodeDir = theNode.getNodeDirAbsolute();
         installDir = theNode.getInstallDir();
 
-        if (!StringUtils.ok(nodeHost)) {
-        }
-        if (!StringUtils.ok(installDir)) {
-
-        }
-
         // First, update domain.xml by calling _register-instance
         CommandInvocation ci = cr.getCommandInvocation("_register-instance", report);
         ParameterMap map = new ParameterMap();
@@ -282,6 +276,7 @@ public class CreateInstanceCommand implements AdminCommand {
                         env.getInstanceRoot(),
                         getLocalInstanceDir());
             bootHelper.bootstrapInstance();
+            bootHelper.close();
             return 0;
         } catch (Exception ex) {
             String msg = Strings.get("create.instance.local.boot.failed", instance, node, nodeHost);
@@ -314,6 +309,7 @@ public class CreateInstanceCommand implements AdminCommand {
                     instance,
                     theNode, logger);
             bootHelper.bootstrapInstance();
+            bootHelper.close();
             return 0;
         } catch (Exception ex) {
             String exmsg = ex.getMessage();

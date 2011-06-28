@@ -126,6 +126,11 @@ public abstract class SecureAdminBootstrapHelper {
         return new LocalHelper(existingInstanceDir, newInstanceDir);
     }
 
+    /**
+     * Cleans up any allocated resources.
+     */
+    protected abstract void close();
+
     protected abstract void mkdirs(String dirURI) throws IOException;
 
     /**
@@ -274,6 +279,12 @@ public abstract class SecureAdminBootstrapHelper {
             }
         }
 
+        @Override
+        protected void close() {
+            if (ftpClient != null) {
+                ftpClient.close();
+            }
+        }
 
         @Override
         protected void copyBootstrapFiles() throws FileNotFoundException, IOException {
@@ -363,6 +374,12 @@ public abstract class SecureAdminBootstrapHelper {
             if ( ! newDir.exists() && ! newDir.mkdirs()) {
                 throw new RuntimeException(Strings.get("secure.admin.boot.errCreDir", newDir.getAbsolutePath()));
             }
+        }
+
+        @Override
+        protected void close() {
+            // Nothing to do for local provider
+            return;
         }
 
 
