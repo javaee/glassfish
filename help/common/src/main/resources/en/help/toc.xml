@@ -109,6 +109,7 @@
     <tocitem target="ref-group-appservsettings" text="server (Admin Server)" expand="false">
         <tocitem target="ref-generaltab" text="General Information" expand="false"></tocitem>
         <tocitem target="ref-logviewer" text="Log Viewer" expand="false"></tocitem>
+        <tocitem target="ref-recovertransactions" text="Recover Transactions " expand="false"></tocitem>
         <tocitem target="ref-serverinstresources" text="Resources" expand="false"></tocitem>
         <tocitem target="ref-systemproperties" text="System Properties" expand="false"></tocitem>
         <tocitem target="ref-preconfiguredprops" text="Predefined System Properties" expand="false"></tocitem>

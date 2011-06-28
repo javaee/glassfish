@@ -1,11 +1,11 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
+Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
 
-<a name="task-setkeyptinterval"></a><h4>To Set the Keypoint Interval</h4><a name="indexterm-6"></a><a name="indexterm-7"></a><p>Keypoint operations compress the transaction log file. The keypoint interval is the number
+<a name="task-setkeyptinterval"></a><h3>To Set the Keypoint Interval</h3><a name="indexterm-6"></a><a name="indexterm-7"></a><p>Keypoint operations compress the transaction log file. The keypoint interval is the number
 of transactions between keypoint operations on the log. Keypoint operations can reduce the
 size of the transaction log files. A larger number of keypoint intervals results
 in larger transaction log files, but fewer keypoint operations, and potentially better performance. A
@@ -20,7 +20,7 @@ default instance, <tt>server</tt>, select the <tt>server-config</tt> node.</b></
 <li><b>To configure the default settings for all instances, select the <tt>default-config</tt> node.</b></li></ul></li>
 <li><b>Select the Transaction Service node.</b><p>The Transaction Service page opens.</p></li>
 <li><b>In the Keypoint Interval field, type the number of transactions between keypoint operations.</b><p>The default value is 65,536.</p></li>
-<li><b>Click Save.</b></li></ol><h6>See Also</h6>
+<li><b>Click Save.</b></li></ol><p></b>See Also</b></p>
 <ul><li><p><a href="task-configtransservice.html">To Configure the Transaction Service</a></p>
 
 </li>
@@ -35,4 +35,4 @@ default instance, <tt>server</tt>, select the <tt>server-config</tt> node.</b></
 </li></ul>
 
 
-<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

@@ -1,11 +1,11 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
+Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
 
-<a name="task-create-cluster"></a><h4>To Create a Cluster</h4><a name="indexterm-1"></a><p>A <b>cluster</b> is a named collection of GlassFish Server instances that share
+<a name="task-create-cluster"></a><h3>To Create a Cluster</h3><a name="indexterm-1"></a><p>A <b>cluster</b> is a named collection of GlassFish Server instances that share
 the same applications, resources, and configuration information.</p>
 
 <p>A cluster to provides high availability through scalability, load balancing, and failure
@@ -19,7 +19,7 @@ fail over to any other instance in the cluster.</p>
 as a single unit from a single host, regardless of whether the
 instances reside on the same host or different hosts.</p>
 
-<h6>Before You Begin</h6><p>If you plan to add GlassFish Server instances to the cluster that
+<p><b>Before You Begin</b></p><p>If you plan to add GlassFish Server instances to the cluster that
 you are creating, ensure that the nodes on which the instances are
 to reside already exist.</p>
 
@@ -27,7 +27,10 @@ to reside already exist.</p>
 <li><b>In the navigation tree, select the Clusters node.</b><p>The Clusters page opens.</p></li>
 <li><b>On the Clusters page, click New. </b><p>The New Cluster page opens.</p></li>
 <li><b>In the Cluster Name field, type a name for the cluster.</b><p>The name must meet the following requirements:</p>
-<ul><li><p>The name must start with a letter, a number, or an underscore.</p>
+<ul><li><p>The name may contain only ASCII characters.</p>
+
+</li>
+<li><p>The name must start with a letter, a number, or an underscore.</p>
 
 </li>
 <li><p>The name may contain only the following characters:</p>
@@ -94,7 +97,7 @@ percentages, set the weights of the instances to 25 and 75 respectively.</p><p>T
 <li><b>From the Node drop-down list, select the node where the instance is
 to reside.</b></li></ol></li>
 <li><b>Click OK.</b><p>You are returned to the Clusters page. The cluster is added to
-the table of clusters on the page.</p></li></ol><h6>See Also</h6>
+the table of clusters on the page.</p></li></ol><p></b>See Also</b></p>
 <ul><li><p><a href="task-delete-cluster.html">To Delete a Cluster</a></p>
 
 </li>
@@ -148,4 +151,4 @@ the table of clusters on the page.</p></li></ol><h6>See Also</h6>
 </li></ul>
 
 
-<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

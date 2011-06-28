@@ -1,6 +1,6 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
+Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-webcontaineravailability"></a><h4>Web Container Availability</h4>
@@ -10,7 +10,7 @@ container.</p>
 <p>The Web Container Availability page contains the following options.</p>
 
 <dl><dt>Load Defaults</dt>
-<dd><p>Button to restore the default values of all the settings.</p>
+<dd><p>Button to restore settings that have default values to their default values. Settings that do not have default values are not changed.</p>
 
 </dd>
 <dt>Configuration Name</dt>
@@ -44,11 +44,6 @@ container.</p>
 
 
 <ul><li><p><tt>web-method</tt> &#8212; The session state is stored at the end of each web request prior to sending a response back to the client. This mode provides the best guarantee that the session state is fully updated in case of failure. This is the default.</p>
-
-</li>
-<li><p><tt>time-based</tt> &#8212; The session state is stored in the background at the frequency set by the Reap Interval setting. For more information about this setting, see <a href="task-webcontainermanagerprops.html">To Configure Manager Properties for the Web Container</a>.</p>
-
-<p>This mode provides less of a guarantee that the session state is fully updated. However, it can provide a significant performance improvement because the state is not stored after each request.</p>
 
 </li></ul>
 </dd>
@@ -106,4 +101,4 @@ container.</p>
 </li></ul>
 
 
-<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

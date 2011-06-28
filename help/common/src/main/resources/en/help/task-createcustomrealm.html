@@ -1,11 +1,11 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
+Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
 
-<a name="task-createcustomrealm"></a><h4>To Create a Custom Realm</h4><a name="indexterm-85"></a><a name="indexterm-86"></a><p>In addition to the three built-in realms, you can also create custom realms
+<a name="task-createcustomrealm"></a><h3>To Create a Custom Realm</h3><a name="indexterm-85"></a><a name="indexterm-86"></a><p>In addition to the three built-in realms, you can also create custom realms
 that store user data in some other way, such as in a
 relational database. Development of a custom realm is outside the scope of this
 document. For more information, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2418&id=beabg">Chapter 4, Securing Applications, in <i>Oracle GlassFish Server 3.1 Application Development Guide</i></a>.</p>
@@ -27,7 +27,7 @@ as follows:</b><pre><i>realmName</i> {
 <li><b>Copy the <tt>LoginModule</tt> class and all dependent classes into the directory <tt></tt><i>domain-dir</i><tt>/lib/classes</tt>.</b></li>
 <li><b>Restart the server if Restart Required appears in the Administration Console.</b></li>
 <li><b>Ensure that the realm is properly loaded.</b><p>Check <tt></tt><i>domain-dir</i><tt>/logs/server.log</tt> to ensure that the server loaded the realm. The server
-should invoke the realm&#8217;s <tt>init</tt> method.</p></li></ol><h6>See Also</h6>
+should invoke the realm&#8217;s <tt>init</tt> method.</p></li></ol><p></b>See Also</b></p>
 <ul><li><p><a href="task-realmnew.html">To Create a Realm</a></p>
 
 </li>
@@ -39,4 +39,4 @@ should invoke the realm&#8217;s <tt>init</tt> method.</p></li></ol><h6>See Also<
 </li></ul>
 
 
-<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

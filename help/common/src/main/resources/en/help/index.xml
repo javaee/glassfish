@@ -291,6 +291,7 @@
     <indexitem target="ref-sysinstancevalues" text="standalone instances (reference)"></indexitem></indexitem>
  <indexitem target="ref-systemproperties" text="system properties (reference)"></indexitem>
  <indexitem target="task-systemproperties" text="system properties (task)"></indexitem>
+ <indexitem target="ref-recovertransactions" text="transactions, recovering (reference)"></indexitem>
  <indexitem text="Update Tool">
     <indexitem target="ref-uc-concepts" text="concepts"></indexitem>
     <indexitem target="ref-uc-config" text="configuring"></indexitem>

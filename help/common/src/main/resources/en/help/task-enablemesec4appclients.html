@@ -1,11 +1,11 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
+Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
 
-<a name="task-enablemesec4appclients"></a><h4>To Enable Message Security for Application Clients</h4><a name="indexterm-113"></a><p>Client providers must have the same message protection policies as the server-side providers
+<a name="task-enablemesec4appclients"></a><h3>To Enable Message Security for Application Clients</h3><a name="indexterm-113"></a><p>Client providers must have the same message protection policies as the server-side providers
 with which they interact. This is already the case for the providers configured
 (but not enabled) when GlassFish Server is installed.</p>
 
@@ -35,7 +35,7 @@ installation. Do not change it.</p><pre>&#60;client-container>
   &#60;/message-security-config>
 &#60;/client-container></pre><p>The message security provider configured in the client container must have access to
 private keys and trusted certificates. To provide it access, set the values for
-the following system properties in the application client startup script:</p><pre>-Djavax.net.ssl.keyStore</pre><pre>-Djavax.net.ssl.trustStore</pre></li></ol><h6>See Also</h6>
+the following system properties in the application client startup script:</p><pre>-Djavax.net.ssl.keyStore</pre><pre>-Djavax.net.ssl.trustStore</pre></li></ol><p></b>See Also</b></p>
 <ul><li><p><a href="task-configmsgsecproviders.html">To Configure GlassFish Server Facilities for Use by Message Security Providers</a></p>
 
 </li>
@@ -59,4 +59,4 @@ the following system properties in the application client startup script:</p><pr
 </li></ul>
 
 
-<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

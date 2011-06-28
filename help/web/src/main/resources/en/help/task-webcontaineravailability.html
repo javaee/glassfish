@@ -1,11 +1,11 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
+Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
 
-<a name="task-webcontaineravailability"></a><h4>To Configure Availability Settings for the Web Container</h4><a name="indexterm-12"></a><a name="indexterm-13"></a><a name="indexterm-14"></a><a name="indexterm-15"></a><ol>
+<a name="task-webcontaineravailability"></a><h3>To Configure Availability Settings for the Web Container</h3><a name="indexterm-12"></a><a name="indexterm-13"></a><a name="indexterm-14"></a><a name="indexterm-15"></a><ol>
 <li><b>In the navigation tree, expand the Configuration node.</b></li>
 <li><b>Select the configuration that you are changing.</b></li>
 <li><b>Under the configuration's node, select the Availability Service node.</b><p>The Availability Service page opens.</p></li>
@@ -26,11 +26,6 @@ on cluster failover that is highly available.</b></li></ul></li>
 <li><b>From the Persistence Frequency drop-down list, select the frequency at which the HTTP
 session is stored:</b>
 <ul><li><p><tt>web-method</tt> &#8212; The session state is stored at the end of each web request prior to sending a response back to the client. This mode provides the best guarantee that the session state is fully updated in case of failure. This is the default.</p>
-
-</li>
-<li><p><tt>time-based</tt> &#8212; The session state is stored in the background at the frequency set by the Reap Interval setting. For more information about this setting, see <a href="task-webcontainermanagerprops.html">To Configure Manager Properties for the Web Container</a>.</p>
-
-<p>This mode provides less of a guarantee that the session state is fully updated. However, it can provide a significant performance improvement because the state is not stored after each request.</p>
 
 </li></ul>
 <p>Persistence Frequency is only applicable if the Persistence Type is <tt>replicated</tt>.</p></li>
@@ -69,7 +64,7 @@ the property value in the Value field.</b></li>
 <li><b>To delete a property, select the checkbox to the left of the
 Name field of the property that you are deleting, then click the Delete
 Properties button.</b></li></ul></li>
-<li><b>Click Save.</b></li></ol><h6>See Also</h6>
+<li><b>Click Save.</b></li></ol><p></b>See Also</b></p>
 <ul><li><p><a href="task-webcontainergeneral.html">To Configure General Properties for the Web Container</a></p>
 
 </li>
@@ -84,4 +79,4 @@ Properties button.</b></li></ul></li>
 </li></ul>
 
 
-<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

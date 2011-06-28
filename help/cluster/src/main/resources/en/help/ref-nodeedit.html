@@ -1,6 +1,6 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
+Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-nodeedit"></a><h4>Edit Node</h4>
@@ -56,10 +56,28 @@ left empty:</p>
 <dt>Node Directory</dt>
 <dd><p>The path to the directory that is to contain GlassFish Server instances that are created on the node. If a relative path is specified, the path is relative to the <i>as-install</i> directory, where <i>as-install</i> is the base installation directory of the GlassFish Server software on the host.</p>
 
+<p>If this field is left empty, the configuration of the node is updated as follows:</p>
+
+
+<ul><li><p>If the type of the node is CONFIG, no directory for instances is specified for the node in the domain administration server (DAS) configuration. The node directory can be determined when instances that reside on the node are created.</p>
+
+</li>
+<li><p>If the type of the node is SSH, the node directory is <tt></tt><i>as-install</i><tt>/nodes</tt>, where <i>as-install</i> is the base installation directory of the GlassFish Server software on the host.</p>
+
+</li></ul>
 </dd>
 <dt>Installation Directory</dt>
 <dd><p>The full path to the parent of the base installation directory of the GlassFish Server software on the host, for example, <tt>/export/glassfish3/</tt>. </p>
 
+<p>If this field is left empty, the configuration of the node is updated as follows:</p>
+
+
+<ul><li><p>If the type of the node is CONFIG, no installation directory is specified for the node in the DAS configuration. The installation directory can be determined when instances that reside on the node are created.</p>
+
+</li>
+<li><p>If the type of the node is SSH, the installation directory is the parent of the default base installation directory of the GlassFish Server software for the DAS. This setting is useful only if GlassFish Server is installed in the same location on all hosts.</p>
+
+</li></ul>
 </dd>
 <dt>Force</dt>
 <dd><p>If the Enabled option is selected, the node is updated in the domain administration server (DAS) configuration even if validation of the node's parameters fails. To validate a node's parameters, the DAS must be able to contact the node's host through SSH.</p>
@@ -160,4 +178,4 @@ left empty:</p>
 </li></ul>
 
 
-<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
