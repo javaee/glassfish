@@ -69,7 +69,6 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.RetryableException;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.Transaction;
 import org.jvnet.hk2.config.TransactionFailure;
@@ -832,40 +831,35 @@ public abstract class SecureAdminCommand implements AdminCommand {
                         new TopLevelContext(t, domain_w);
                 if (t!=null) {
 
-                    try {
-                        /*
-                         * Do the work on just the secure-admin element.
-                         */
-                        for (Iterator<Work<TopLevelContext>> it = secureAdminSteps(); it.hasNext();) {
-                            final Work<TopLevelContext> step = it.next();
-                            if ( ! step.run(topLevelContext) ) {
+                    /*
+                     * Do the work on just the secure-admin element.
+                     */
+                    for (Iterator<Work<TopLevelContext>> it = secureAdminSteps(); it.hasNext();) {
+                        final Work<TopLevelContext> step = it.next();
+                        if ( ! step.run(topLevelContext) ) {
+                            t.rollback();
+                            return Boolean.FALSE;
+                        }
+                    }
+
+                    /*
+                     * Now apply the required changes to the admin listener
+                     * to all configurations in the domain.
+                     */
+                    final Configs configs = domain_w.getConfigs();
+                    for (Config c : configs.getConfig()) {
+                        final Config c_w = t.enroll(c);
+                        ConfigLevelContext configLevelContext = 
+                                new ConfigLevelContext(topLevelContext, c_w);
+                        for (Iterator<Work<ConfigLevelContext>> it = perConfigSteps(); it.hasNext();) {
+                            final Work<ConfigLevelContext> step = it.next();
+                            if ( ! step.run(configLevelContext)) {
                                 t.rollback();
                                 return Boolean.FALSE;
                             }
                         }
-
-                        /*
-                         * Now apply the required changes to the admin listener
-                         * to all configurations in the domain.
-                         */
-                        final Configs configs = domain_w.getConfigs();
-                        for (Config c : configs.getConfig()) {
-                            final Config c_w = t.enroll(c);
-                            ConfigLevelContext configLevelContext = 
-                                    new ConfigLevelContext(topLevelContext, c_w);
-                            for (Iterator<Work<ConfigLevelContext>> it = perConfigSteps(); it.hasNext();) {
-                                final Work<ConfigLevelContext> step = it.next();
-                                if ( ! step.run(configLevelContext)) {
-                                    t.rollback();
-                                    return Boolean.FALSE;
-                                }
-                            }
-                        }
-
-                        t.commit();
-                    } catch (RetryableException ex) {
-                        throw new RuntimeException(ex);
                     }
+
                 }
 
                 return Boolean.TRUE;

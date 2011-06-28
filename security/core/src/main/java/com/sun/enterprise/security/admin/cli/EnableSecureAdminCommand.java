@@ -41,13 +41,17 @@
 package com.sun.enterprise.security.admin.cli;
 
 import com.sun.enterprise.config.serverbeans.SecureAdmin;
+import com.sun.enterprise.config.serverbeans.SecureAdminHelper;
+import com.sun.enterprise.config.serverbeans.SecureAdminPrincipal;
 import com.sun.enterprise.security.ssl.SSLUtils;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.ExecuteOn;
@@ -60,6 +64,11 @@ import org.jvnet.hk2.component.PerLookup;
 /**
  * Records that secure admin is to be used and adjusts each admin listener
  * configuration in the domain to use secure admin.
+ * 
+ * Note that this command is executed only on the DAS.  We rely on
+ * synchronization to get this information to the instances.  This is
+ * primarily because, currently, the changes to the Grizzly configuration
+ * require that all affected servers be restarted to become effective.  
  *
  * The command changes the admin-listener set-up within each separate
  * configuration as if by running
@@ -100,7 +109,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "enable-secure-admin")
 @Scoped(PerLookup.class)
 @I18n("enable.secure.admin.command")
-@ExecuteOn(RuntimeType.ALL)
+@ExecuteOn(RuntimeType.DAS)
 public class EnableSecureAdminCommand extends SecureAdminCommand {
 
     @Param(optional = true)
@@ -111,6 +120,9 @@ public class EnableSecureAdminCommand extends SecureAdminCommand {
 
     @Inject
     private SSLUtils sslUtils;
+    
+    @Inject
+    private SecureAdminHelper secureAdminHelper;
 
     private KeyStore keystore = null;
 
@@ -163,25 +175,22 @@ public class EnableSecureAdminCommand extends SecureAdminCommand {
     protected boolean updateSecureAdminSettings(
             final SecureAdmin secureAdmin_w) {
         /*
-         * Apply the values for the aliases, if the user provided them on the
-         * command invocation.
+         * Apply the values for the aliases.  We do this whether the user
+         * gave explicit values or not, because we need to do some work
+         * even for the default aliases.
          */
         try {
             final List<String> badAliases = new ArrayList<String>();
-            if (adminalias != null) {
-                if ( ! validateAlias(adminalias)) {
-                    badAliases.add(adminalias);
-                } else {
-                    secureAdmin_w.setDasAlias(adminalias);
-                }
-            }
-            if (instancealias != null) {
-                if ( ! validateAlias(instancealias)) {
-                    badAliases.add(instancealias);
-                } else {
-                    secureAdmin_w.setInstanceAlias(instancealias);
-                }
-            }
+            
+            secureAdmin_w.setDasAlias(processAlias(adminalias, 
+                    SecureAdmin.Duck.DEFAULT_ADMIN_ALIAS, 
+                    secureAdmin_w, badAliases));
+            secureAdmin_w.setInstanceAlias(processAlias(instancealias, 
+                    SecureAdmin.Duck.DEFAULT_INSTANCE_ALIAS,
+                    secureAdmin_w, badAliases));
+            
+            ensureSpecialAdminIndicatorIsUnique(secureAdmin_w);
+            
             if (badAliases.size() > 0) {
                 throw new SecureAdminCommandException(
                         Strings.get("enable.secure.admin.badAlias",
@@ -192,12 +201,82 @@ public class EnableSecureAdminCommand extends SecureAdminCommand {
             throw new RuntimeException(ex);
         }
     }
+    
+    private String processAlias(String alias, final String defaultAlias, final SecureAdmin secureAdmin_w,
+            Collection<String> badAliases) throws IOException, KeyStoreException {
+        if (alias == null) {
+            alias = defaultAlias;
+        }
+        if ( ! validateAlias(alias)) {
+            badAliases.add(alias);
+        } else {
+            /*
+             * If there is no SecureAdminPrincipal for the DN corresponding
+             * to the specified alias then add one now.
+             */
+            ensureSecureAdminPrincipalForAlias(alias, 
+                    secureAdmin_w);
+        }
+        return alias;   
+    }
 
     @Override
     protected String transactionErrorMessageKey() {
         return "enable.secure.admin.errenable";
     }
 
+    private void ensureSpecialAdminIndicatorIsUnique(final SecureAdmin secureAdmin_w) {
+        if (secureAdmin_w.getSpecialAdminIndicator().equals(SecureAdmin.Util.ADMIN_INDICATOR_DEFAULT_VALUE)) {
+            /*
+             * Set the special admin indicator to a unique identifier.
+             */
+             final UUID uuid = UUID.randomUUID();
+             secureAdmin_w.setSpecialAdminIndicator(uuid.toString());
+        }
+    }
+    
+    /**
+     * Makes sure there is a SecureAdminPrincipal entry for the specified
+     * alias.  If not, one is added in the context of the current
+     * transaction.
+     * 
+     * @param alias the alias to check for
+     * @param secureAdmin_w SecureAdmin instance (already in a transaction)
+     */
+    private void ensureSecureAdminPrincipalForAlias(final String alias,
+            final SecureAdmin secureAdmin_w) {
+        SecureAdminPrincipal p = getSecureAdminPrincipalForAlias(alias, secureAdmin_w);
+        if (p != null) {
+            return;
+        }
+        try {
+            /*
+             * Create a new SecureAdminPrincipal.
+             */
+            final String dn = secureAdminHelper.getDN(alias, true);
+            p = secureAdmin_w.createChild(SecureAdminPrincipal.class);
+            p.setDn(dn);
+            secureAdmin_w.getSecureAdminPrincipal().add(p);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    private SecureAdminPrincipal getSecureAdminPrincipalForAlias(final String alias,
+            final SecureAdmin secureAdmin_w) {
+        try {
+            final String dnForAlias = secureAdminHelper.getDN(alias, true);
+            for (SecureAdminPrincipal p : secureAdmin_w.getSecureAdminPrincipal()) {
+                if (p.getDn().equals(dnForAlias)) {
+                    return p;
+                }
+            }
+            return null;
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
     private synchronized KeyStore keyStore() throws IOException {
         if (keystore == null) {
             keystore = sslUtils.getKeyStore();

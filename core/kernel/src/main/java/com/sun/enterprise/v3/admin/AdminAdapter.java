@@ -145,8 +145,6 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
     @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private volatile Server server;
    
-    private SecureAdmin secureAdmin;
-
     final Class<? extends Privacy> privacyClass;
 
     private boolean isRegistered = false;
@@ -164,7 +162,6 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         epd = new AdminEndpointDecider(config, aalogger);
         this.setHandleStaticResources(true);
         this.addRootFolder(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/asadmindocroot/");
-        secureAdmin = habitat.getComponent(SecureAdmin.class);
     }
 
     /**
