@@ -40,7 +40,11 @@
 
 package org.glassfish.hk2;
 
+import org.glassfish.hk2.osgiresourcelocator.ServiceLoader;
 import org.glassfish.hk2.spi.HK2Provider;
+import sun.misc.Service;
+
+import java.util.Iterator;
 
 /**
  * Entry point to the HK2 services runtime
@@ -52,11 +56,31 @@ public class HK2 {
 
 
     public static HK2 get() {
-        // JD : we need to find a better way to do this.
         try {
-            Class<HK2Provider> defaultProviderType = (Class<HK2Provider>) Class.forName("org.jvnet.hk2.component.HK2ProviderImpl");
-            HK2Provider defaultProvider = defaultProviderType.newInstance();
-            return new HK2(defaultProvider);
+            HK2Provider provider=null;
+            Iterable<? extends HK2Provider> loader = ServiceLoader.lookupProviderInstances(HK2Provider.class);
+            if (loader!=null) {
+                Iterator<? extends HK2Provider> iterator = loader.iterator();
+                if (iterator!=null && iterator.hasNext()) {
+                    provider=iterator.next();
+                }
+            }
+            // todo : we need to revisit when ServiceLoader can take care of META-INF/Services in non OSGi env.
+            if (provider==null) {
+                Iterator<HK2Provider> providers = java.util.ServiceLoader.load(HK2Provider.class).iterator();
+                if (providers!=null && providers.hasNext()) {
+                    provider = providers.next();
+                } else {
+                    // last ditch attempt in case we are loaded in the same classloader.
+                    Class<? extends HK2Provider> providerType = (Class<? extends HK2Provider>)
+                            Class.forName("org.jvnet.hk2.component.HK2ProviderImpl");
+                    if (providerType==null) {
+                        throw new RuntimeException("Cannot find HK2Provider implementation");
+                    }
+                    provider = providerType.newInstance();
+                }
+            }
+            return new HK2(provider);
         } catch (Exception e) {
             // todo : better handling
             throw new RuntimeException(e);
@@ -71,7 +95,11 @@ public class HK2 {
         this.provider = provider;
     }
 
-    public Services create(Services parent, Class<? extends Module>... modules) {
+    public Services create(Services parent, Class<? extends Module>... moduleTypes) {
+        return provider.create(parent, moduleTypes);
+    }
+
+    public Services create(Services parent, Module... modules) {
         return provider.create(parent, modules);
     }
 }
