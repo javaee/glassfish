@@ -42,13 +42,15 @@ package org.glassfish.hk2;
 
 import org.glassfish.hk2.osgiresourcelocator.ServiceLoader;
 import org.glassfish.hk2.spi.HK2Provider;
-import sun.misc.Service;
 
 import java.util.Iterator;
 import java.util.logging.Logger;
 
 /**
- * Entry point to the HK2 services runtime
+ * Entry point to the HK2 services runtime. Users should start with {@link org.glassfish.hk2.HK2#get()}
+ * to get an implementation of the HK2 runtime.
+ *
+ * @author Jerome Dochez
  */
 public class HK2 {
 
