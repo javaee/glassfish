@@ -410,10 +410,12 @@ public class ClusterHandler {
             Map extraPropertiesMap = (Map)((Map)responseMap.get("data")).get("extraProperties");
             if (extraPropertiesMap != null){
                 List<Map> instanceList = (List)extraPropertiesMap.get("instanceList");
-                for(Map oneInstance : instanceList){
-                    instances.add(oneInstance.get("name"));
-                    statusMap.put(oneInstance.get("name"), oneInstance.get("status"));
-                    uptimeMap.put(oneInstance.get("name"), oneInstance.get("uptime"));
+                if (instanceList != null){
+                    for(Map oneInstance : instanceList){
+                        instances.add(oneInstance.get("name"));
+                        statusMap.put(oneInstance.get("name"), oneInstance.get("status"));
+                        uptimeMap.put(oneInstance.get("name"), oneInstance.get("uptime"));
+                    }
                 }
             }
         }catch (Exception ex){
