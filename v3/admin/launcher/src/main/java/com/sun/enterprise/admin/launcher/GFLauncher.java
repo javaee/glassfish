@@ -475,6 +475,13 @@ public abstract class GFLauncher {
                 handleDeadProcess();
                 bw.close();
             }
+            else if (os != null)
+                try {
+                    os.close();
+                }
+                catch (IOException ioe) {
+                    // nothing to do
+                }
         }
     }
 
