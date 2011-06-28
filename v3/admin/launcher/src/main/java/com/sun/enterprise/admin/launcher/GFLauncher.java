@@ -69,7 +69,7 @@ public abstract class GFLauncher {
     //////     PUBLIC api area starts here             ////////////////////////
     ///////////////////////////////////////////////////////////////////////////
     /**
-     * 
+     *
      * @return The info object that contains startup info
      */
     public final GFLauncherInfo getInfo() {
@@ -79,8 +79,8 @@ public abstract class GFLauncher {
     /**
      * Launches the server.  Any fatal error results in a GFLauncherException
      * No unchecked Throwables of any kind will be thrown.
-     * 
-     * @throws com.sun.enterprise.admin.launcher.GFLauncherException 
+     *
+     * @throws com.sun.enterprise.admin.launcher.GFLauncherException
      */
     public final void launch() throws GFLauncherException {
         try {
@@ -198,7 +198,7 @@ public abstract class GFLauncher {
     }
 
     /**
-     * You don't want to call this before calling launch because it would not 
+     * You don't want to call this before calling launch because it would not
      * make sense.
      * @return The Process object of the launched Server process. you will either get
      * a valid Process object or an Exceptio will be thrown.  You are guaranteed not to get a null.
@@ -441,7 +441,7 @@ public abstract class GFLauncher {
             if (getInfo().isVerbose()) {
                 psd = ProcessStreamDrainer.redirect(name, process);
             }
-             else if (getInfo().isWatchdog()) {
+            else if (getInfo().isWatchdog()) {
                 psd = ProcessStreamDrainer.dispose(name, process);
             }
             else {
@@ -864,12 +864,12 @@ public abstract class GFLauncher {
 
     private void closeStandardStreamsMaybe() {
         // see issue 12832
-        // Windows bug/feature --> 
+        // Windows bug/feature -->
         // Say process A (ssh) creates Process B (asadmin start-instance )
         // which then fires up Process C (the instance).
-        // Process B exits but Process A does NOT.  Process A is waiting for 
-        // Process C to exit.  
-        // The solution is to close down the standard streams BEFORE creating 
+        // Process B exits but Process A does NOT.  Process A is waiting for
+        // Process C to exit.
+        // The solution is to close down the standard streams BEFORE creating
         // Process C.  Then Process A becomes convinced that the process it created
         // has finished.
         // If there is a console that means the user is sitting at the terminal
@@ -878,7 +878,7 @@ public abstract class GFLauncher {
         // Process B absolutely positively does exit whether or not this code runs...
         // don't run this unless we have to because our "..." messages disappear.
 
-        if (System.console() == null && OS.isWindows() && !(info.isVerboseOrWatchdog()) ) {
+        if (System.console() == null && OS.isWindows() && !(info.isVerboseOrWatchdog())) {
             String sname;
 
             if (info.isDomain())
