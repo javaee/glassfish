@@ -43,19 +43,22 @@ import java.io.Serializable;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 
 /**
- * Supports inline instantiation of objects that represent parameterized types with actual
- * type parameters.
+ * Supports inline instantiation of objects that represent parameterized
+ * types with actual type parameters.
  *
- * An object that represents any parameterized type may be obtained by subclassing {@code TypeLiteral}.
+ * An object that represents any parameterized type may be obtained by
+ * subclassing {@code TypeLiteral}.
+ * 
  * <pre>
  *  TypeLiteral&lt;List&lt;String>> stringListType = new TypeLiteral&lt;List&lt;String>>() {};
  * </pre>
  *
  */
 public abstract class TypeLiteral<T> implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * Store the actual type (direct subclass of TypeLiteral).

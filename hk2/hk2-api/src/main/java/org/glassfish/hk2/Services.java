@@ -48,11 +48,13 @@ import java.util.Collection;
  * referred to as the Habitat.
  * 
  * <p/>
- * Services can be dynamically added to this instance or looked up.
+ * Services can be dynamically added to this instance or looked up. Services can also
+ * be implicitly added to HK2 by annotating the class with the &#064;Service
+ * annotation.
  * 
  * <p/>
  * Services are organized in a parent-child structure.  Whenever services are being
- * located, a search parent first algorithm is used.
+ * located, a parent search first algorithm is used.
  *
  */
 // TODO: this currently jettisons Listeners and Trackers, found in Habitat but not here

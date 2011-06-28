@@ -37,17 +37,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.hk2;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 5/16/11
- * Time: 1:01 PM
- * To change this template use File | Settings | File Templates.
+ * This contract is used to apply scope to an otherwise described / resolved
+ * {@link Binder}.
+ * 
+ * @see NamedBinder
+ * 
+ * @author Jerome Dochez
+ * @author Jeff Trent
  */
 public interface ResolvedBinder<T> {
 
+    /**
+     * Ascribe a scope to this Binder, terminating the builder-like process.
+     * 
+     * @param scope the scope to apply
+     */
     void in(Class<? extends Scope> scope);
+
 }

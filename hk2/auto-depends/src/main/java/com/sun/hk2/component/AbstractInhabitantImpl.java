@@ -80,7 +80,8 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T> {
         return new Descriptor() {
             @Override
             public String getName() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                // TODO Auto-generated method stub
+                throw new UnsupportedOperationException();
             }
 
 //            @Override
@@ -90,22 +91,26 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T> {
 
             @Override
             public MultiMap<String, String> getMetadata() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                // TODO Auto-generated method stub
+                throw new UnsupportedOperationException();
             }
 
             @Override
             public Collection<String> getQualifiers() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                // TODO Auto-generated method stub
+                throw new UnsupportedOperationException();
             }
 
             @Override
             public Collection<String> getContracts() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                // TODO Auto-generated method stub
+                throw new UnsupportedOperationException();
             }
 
             @Override
             public String getTypeName() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                // TODO Auto-generated method stub
+                throw new UnsupportedOperationException();
             }
         };
     }

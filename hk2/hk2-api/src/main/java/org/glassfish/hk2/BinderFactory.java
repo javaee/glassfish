@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.hk2;
 
 /**
@@ -51,10 +50,10 @@ package org.glassfish.hk2;
  * necessary to use the HK2 annotations. Optional presence of such
  * annotations will be ignored when registering servics.
  *
- * @author Jerome Dochez, Jeff Trent
+ * @author Jerome Dochez
+ * @auhor Jeff Trent
  */
 public interface BinderFactory {
-
 
     /**
      * Return the parent binder factory instance which can be used to

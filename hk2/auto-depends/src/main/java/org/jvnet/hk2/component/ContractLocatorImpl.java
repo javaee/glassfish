@@ -153,14 +153,13 @@ class ContractLocatorImpl<T> implements ContractLocator<T> {
         throw new UnsupportedOperationException();
     }
 
-    //    @Override
-    public org.glassfish.hk2.Factory<T> getProvider() {
+    public org.glassfish.hk2.Factory<T> getFactory() {
         return getter;
     }
 
     @Override
     public T get() {
-        return getProvider().get();
+        return getFactory().get();
     }
 
     @Override
@@ -170,7 +169,7 @@ class ContractLocatorImpl<T> implements ContractLocator<T> {
     }
 
     @Override
-    public Provider<T> getComponentProvider() {
+    public Provider<T> getProvider() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

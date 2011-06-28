@@ -49,9 +49,9 @@ import org.jvnet.hk2.annotations.Contract;
  * (e.g., classes annotated with @{@link Service}). 
  *
  * <p>
- * Typically, DI is used to wire services together.  Hk2 internals
- * uses the {@link Locator} to resolve services used with @Inject
- * during normal dependency injection.
+ * Typically, DI is used to wire services together. Hk2 internals
+ * uses the {@link Locator} to resolve services used with 
+ * &#064;Inject during normal dependency injection.
  * 
  * <p>
  * The {@link Locator} interface can also be used for programmatic
@@ -93,6 +93,13 @@ public interface Locator {
      */
     ContractLocator<?> forContract(String contractName);
 
+    /**
+     * See {@link #forContract(Class)}, with the exception that the
+     * type is a {@link TypeLiteral}, a parameterized type.
+     * 
+     * @param typeLiteral the parameterized contract type literal name
+     * @return a contract locator
+     */
     <U> ContractLocator<U> forContract(TypeLiteral<U> typeLiteral);
     
     /**
@@ -118,15 +125,6 @@ public interface Locator {
      * @return a service locator
      */
     ServiceLocator<?> byType(String typeName);
-
-//    /**
-//     * Obtains the set of {@link Provider}s applicable for the
-//     * given descriptor.
-//     *  
-//     * @param descriptor the search criteria
-//     * @return a non null Providers instance
-//     */
-//    Providers<?> locate(Descriptor descriptor);
 
 }
 

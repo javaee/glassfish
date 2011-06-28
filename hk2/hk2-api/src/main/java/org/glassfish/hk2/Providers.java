@@ -44,6 +44,10 @@ import java.util.Collection;
 /**
  * This contract provides a means to access runtime component providers.
  * 
+ * <p/>
+ * This is often times produced by {@link ContractLocator} and {@link
+ * ServiceLocator}.
+ * 
  * @author Jerome Dochez
  * @author Jeff Trent
  * @author Mason Taube
@@ -57,17 +61,18 @@ public interface Providers<T> {
     Collection<Provider<T>> all();
 
     /**
-     * Return the "best" {@link Provider} from the collection. If
-     * the collection {@link #all()} is not empty, this will return a non
-     * null value.  Otherwise the return value is null.
+     * Return the "best" {@link Provider} from the collection that matches
+     * current criteria. If the collection {@link #all()} is not empty,
+     * this will return a non null value.  Otherwise the return value is
+     * null.
      */
-    Provider<T> getComponentProvider();
+    Provider<T> getProvider();
     
     /**
      * A shortcut for
      * <pre>
-     *  if (getComponentProvider() != null)
-     *    return getComponentProvider().get();
+     *  if (getProvider() != null)
+     *    return getProvider().get();
      *  return null;
      * </pre> 
      */
