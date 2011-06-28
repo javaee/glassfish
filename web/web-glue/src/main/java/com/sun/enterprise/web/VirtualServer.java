@@ -1867,8 +1867,6 @@ public class VirtualServer extends StandardHost
     
     private List<WebListener> listeners = new ArrayList<WebListener>();
 
-    protected Map<String, Context> contexts = new LinkedHashMap<String, Context>();
-
     /**
      * Sets the docroot of this <tt>VirtualServer</tt>.
      *
@@ -1974,7 +1972,6 @@ public class VirtualServer extends StandardHost
                 }
                 facade.setUnwrappedContext(wm);
                 wm.setEmbedded(true);
-                contexts.put(contextName, facade);
                 if (config != null) {
                     wm.setDefaultWebXml(config.getDefaultWebXml());
                 }
@@ -1994,7 +1991,6 @@ public class VirtualServer extends StandardHost
         try {
             Deployer deployer = Globals.getDefaultHabitat().getComponent(Deployer.class);
             deployer.undeploy(context.getContextPath());
-            contexts.remove(context.getContextPath());
         } catch (Exception ex) {
             throw new GlassFishException(new ConfigException(
                     "Context with context path " + context.getContextPath() +
@@ -2006,7 +2002,10 @@ public class VirtualServer extends StandardHost
      * Finds the <tt>Context</tt> registered at the given context root.
      */
     public Context getContext(String contextRoot) {
-        return contexts.get(contextRoot);
+        if (!contextRoot.startsWith("/")) {
+            contextRoot = "/"+contextRoot;
+        }
+        return (Context)findChild(contextRoot);
     }
 
     /**
@@ -2014,7 +2013,13 @@ public class VirtualServer extends StandardHost
      * this <tt>VirtualServer</tt>.
      */
     public Collection<Context> getContexts() {
-        return contexts.values();
+        Collection<Context> ctxs = new ArrayList<Context>();
+        for (Container container : findChildren()) {
+            if (container instanceof Context) {
+                ctxs.add((Context)container);
+            }
+        }
+        return ctxs;
     }
 
     /**
