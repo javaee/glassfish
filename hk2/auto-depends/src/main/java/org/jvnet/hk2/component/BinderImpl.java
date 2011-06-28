@@ -40,7 +40,9 @@
 
 package org.jvnet.hk2.component;
 
+import com.sun.hk2.component.AbstractCreatorImpl;
 import org.glassfish.hk2.*;
+import org.glassfish.hk2.Factory;
 import org.glassfish.hk2.Scope;
 
 import java.lang.annotation.Annotation;
@@ -107,18 +109,50 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
     }
 
     @Override
-    public <T extends V> ResolvedBinder<T> toProvider(org.glassfish.hk2.Factory<T> provider) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public <T extends V> ResolvedBinder<T> toFactory(final org.glassfish.hk2.Factory<T> provider) {
+
+        return new AbstractResolvedBinder<T>((BinderImpl<T>) this) {
+            @Override
+            void registerIn(Habitat habitat) {
+                MultiMap<String, String> metadata = super.populateMetadata();
+                // todo : we need to reconcile the fact we don't have the type and passing null below.
+                Inhabitant<T> inh = new AbstractCreatorImpl<T>(null, habitat, metadata) {
+                    @Override
+                    public T create(Inhabitant onBehalfOf) throws ComponentException {
+                        T t = provider.get();
+                        inject(habitat, t, onBehalfOf);
+                        return t;
+                    }
+                };
+                super.registerIn(habitat, inh);
+            }
+        };
     }
 
     @Override
-    public <T extends V> ResolvedBinder<T> toProvider(Class<? extends org.glassfish.hk2.Factory<? extends T>> providerType) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public <T extends V> ResolvedBinder<T> toFactory(final Class<? extends org.glassfish.hk2.Factory<? extends T>> factoryType) {
+        return new AbstractResolvedBinder<T>((BinderImpl<T>) this) {
+            @Override
+            void registerIn(Habitat habitat) {
+                MultiMap<String, String> metadata = super.populateMetadata();
+                // todo : we need to reconcile the fact we don't have the type and passing null below.
+                Inhabitant<T> inh = new AbstractCreatorImpl<T>(null, habitat, metadata) {
+                    @Override
+                    public T create(Inhabitant onBehalfOf) throws ComponentException {
+                        Factory<? extends T> f = habitat.getInhabitantByType(factoryType).get();
+                        T t = f.get();
+                        inject(habitat, t, onBehalfOf);
+                        return t;
+                    }
+                };
+                super.registerIn(habitat, inh);
+            }
+        };
     }
 
     @Override
-    public <T extends V> ResolvedBinder<T> toProvider(TypeLiteral<? extends org.glassfish.hk2.Factory<? extends T>> providerType) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public <T extends V> ResolvedBinder<T> toFactory(TypeLiteral<? extends org.glassfish.hk2.Factory<? extends T>> providerType) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
