@@ -152,12 +152,21 @@ public class InstallNodeTest extends AdminBaseDevTest {
 
         //try using host name alias
         report("install-same-host", asadmin("install-node", INSTALL_DIR, "/tmp/b", LOCALHOST));
+        
+        //create a sample instance
+        asadmin("create-local-instance", "--nodedir", "/tmp/b/glassfish/nodes", "i1");
+        asadmin("create-local-instance", "--nodedir", "/tmp/b/glassfish/servers", "i2");
     }       
 
     private void testUnInstallLocalNode() {
         //should fail since there is an installation
         report("uninstall-node", !asadmin("uninstall-node", INSTALL_DIR, "/tmp/a", LOCALHOST));
 
+        //delete the sample instances, nodedir will remain
+        //this is to test JIRA-16889
+        asadmin("delete-local-instance", "--nodedir", "/tmp/b/glassfish/nodes", "i1");
+        asadmin("delete-local-instance", "--nodedir", "/tmp/b/glassfish/servers", "i2");
+        
         //simple uninstall
         report("uninstall-node-1", asadmin("uninstall-node", INSTALL_DIR, "/tmp/b", LOCALHOST));
 
