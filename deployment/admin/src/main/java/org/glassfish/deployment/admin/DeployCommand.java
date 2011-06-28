@@ -407,6 +407,17 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                     // register application information in domain.xml
                     deployment.registerAppInDomainXML(appInfo, deploymentContext, t);
                     suppInfo.setDeploymentContext(deploymentContext);
+                    //Fix for issue 14442
+                    //We want to report the worst subreport value. 
+                    ActionReport.ExitCode worstExitCode = ExitCode.SUCCESS;
+                    for (ActionReport subReport : report.getSubActionsReport()) {
+                        ActionReport.ExitCode actionExitCode = subReport.getActionExitCode();
+
+                        if ( actionExitCode.isWorse(worstExitCode) ){
+                           worstExitCode = actionExitCode;
+                       }
+                    }
+                    report.setActionExitCode(worstExitCode);
                 } catch (Exception e) {
                     // roll back the deployment and re-throw the exception
                     deployment.undeploy(name, deploymentContext);
