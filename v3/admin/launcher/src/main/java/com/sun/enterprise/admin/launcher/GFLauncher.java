@@ -356,13 +356,6 @@ public abstract class GFLauncher {
         logFilenameWasFixed = true;
     }
 
-    private void move(File from, File to) throws IOException {
-        FileUtils.copy(from, to);
-
-        if (!from.delete())
-            from.deleteOnExit();
-    }
-
     // unit tests will want 'fake' so that the process is not really started.
     enum LaunchType {
         normal, debug, trace, fake
