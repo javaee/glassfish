@@ -53,16 +53,14 @@ public interface NamedBinder<U>  {
 
     NamedBinder<U> annotatedWith(Class<? extends Annotation> annotation);
 
-    // TODO: should these be a different type, like ResolvedBinder?
-
     ResolvedBinder<U> to(String className);
     <T extends U> ResolvedBinder<T> to(Class<? extends T> serviceClass);
     <T extends U> ResolvedBinder<T> to(TypeLiteral<T> typeLiteral);
 
     <T extends U> ResolvedBinder<T> toInstance(T instance);
 
-    <T extends U> ResolvedBinder<T> toProvider(Factory<T> provider);
-    <T extends U> ResolvedBinder<T> toProvider(Class<? extends Factory<? extends T>> providerType);
-    <T extends U> ResolvedBinder<T> toProvider(TypeLiteral<? extends Factory<? extends T>> providerType);
+    <T extends U> ResolvedBinder<T> toFactory(Factory<T> factory);
+    <T extends U> ResolvedBinder<T> toFactory(Class<? extends Factory<? extends T>> factoryType);
+    <T extends U> ResolvedBinder<T> toFactory(TypeLiteral<? extends Factory<? extends T>> factoryType);
 
 }

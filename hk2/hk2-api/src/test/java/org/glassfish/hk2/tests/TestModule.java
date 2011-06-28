@@ -71,7 +71,7 @@ public class TestModule implements Module {
 
         binderFactory.bind(new TypeLiteral<RouteBuilder<PathPattern>>() {}).to(PathPatternRouteBuilder.class);
 
-        binderFactory.bind(SomeContract.class).toProvider(new Factory<SomeContract>() {
+        binderFactory.bind(SomeContract.class).toFactory(new Factory<SomeContract>() {
             @Override
             public SomeContract get() throws ComponentException {
                 return new SomeService();
@@ -80,14 +80,15 @@ public class TestModule implements Module {
 
 
         binderFactory.bind("org.glassfish.hk2.tests.contracts.SomeContract").to(SomeService.class);
-        binderFactory.bind(new TypeLiteral<RouteBuilder<PathPattern>>() {}).toProvider(PPRBFactory.class);
+        binderFactory.bind(new TypeLiteral<RouteBuilder<PathPattern>>() {}).toFactory(PPRBFactory.class);
         binderFactory.bind(new TypeLiteral<Map<String, SomeContract>>() {}).to(
                 new TypeLiteral<HashMap<String, SomeContract>>() {});
 
 
-        binderFactory.bind().toProvider(PPRBFactory.class); // get type info from class
-        binderFactory.bind().toProvider(new TypeLiteral<PPRBFactory>() {}); // with type info
-        binderFactory.bind(SomeContract.class).toProvider(new MySomeServiceFactory());
+        binderFactory.bind().toFactory(PPRBFactory.class); // get type info from class
+        binderFactory.bind().toFactory(new TypeLiteral<PPRBFactory>() {
+        }); // with type info
+        binderFactory.bind(SomeContract.class).toFactory(new MySomeServiceFactory());
 
 
 
