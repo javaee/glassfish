@@ -49,5 +49,7 @@ import org.glassfish.hk2.Services;
  */
 public interface HK2Provider {
 
-    public Services create(Services parent, Class<? extends Module>... modules);
+    Services create(Services parent, Class<? extends Module>... moduleTypes);
+
+    Services create(Services parent, Module... modules);
 }

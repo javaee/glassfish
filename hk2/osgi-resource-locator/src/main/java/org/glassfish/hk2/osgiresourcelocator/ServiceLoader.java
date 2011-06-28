@@ -128,11 +128,11 @@ public abstract class ServiceLoader {
      * @param <T>
      * @return classes corresponding to entries in META-INF/services file for the service class.
      */
-    public static <T> Iterable<Class> lookupProviderClasses(Class<T> serviceClass) {
+    public static <T> Iterable<Class<? extends T>> lookupProviderClasses(Class<T> serviceClass) {
         return _me.lookupProviderClasses1(serviceClass);
     }
 
     /*package*/ abstract <T> Iterable<? extends T> lookupProviderInstances1(Class<T> serviceType, ProviderFactory<T> factory);
-    /*package*/ abstract <T> Iterable<Class> lookupProviderClasses1(Class<T> serviceType);
+    /*package*/ abstract <T> Iterable<Class<? extends T>> lookupProviderClasses1(Class<T> serviceType);
 
 }

@@ -55,6 +55,11 @@
     <description>${project.name}</description>
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
         <testSourceDirectory>src/test/java</testSourceDirectory>
         <plugins>
             <plugin>

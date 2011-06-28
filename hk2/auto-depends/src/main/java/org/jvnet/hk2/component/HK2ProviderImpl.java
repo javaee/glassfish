@@ -43,10 +43,7 @@ package org.jvnet.hk2.component;
 import com.sun.hk2.component.ConstructorCreator;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.ScopedInhabitant;
-import org.glassfish.hk2.DynamicBinderFactory;
-import org.glassfish.hk2.Module;
-import org.glassfish.hk2.ScopeInstance;
-import org.glassfish.hk2.Services;
+import org.glassfish.hk2.*;
 import org.glassfish.hk2.spi.HK2Provider;
 import org.jvnet.hk2.annotations.Service;
 
@@ -61,9 +58,9 @@ import java.util.List;
 public class HK2ProviderImpl implements HK2Provider {
 
     @Override
-    public Services create(Services parent, Class<? extends Module>... modules) {
+    public Services create(Services parent, Class<? extends Module>... moduleTypes) {
 
-        final Habitat habitat = new Habitat(parent, modules.length>0?getModuleName(modules[0]):null);
+        final Habitat habitat = new Habitat(parent, moduleTypes.length>0?getModuleName(moduleTypes[0]):null);
         final DynamicBinderFactory parentBinder = (parent==null?null:parent.bindDynamically());
         final BinderFactoryImpl binderFactory = new BinderFactoryImpl(parentBinder);
 
@@ -71,7 +68,7 @@ public class HK2ProviderImpl implements HK2Provider {
         // we need to run the corresponding Module configuration.
         List<Inhabitant<Services>> inhabitants = new ArrayList<Inhabitant<Services>>();
 
-        for (Class<? extends Module> moduleType : modules) {
+        for (Class<? extends Module> moduleType : moduleTypes) {
 
             // We create an inhabitant for the Module service, this will allow us to use normal HK2
             // dependency resolution between modules.
@@ -126,6 +123,22 @@ public class HK2ProviderImpl implements HK2Provider {
             serviceInhabitant.get();
         }
 
+        return habitat;
+    }
+
+    public Services create(Services parent, Module... modules) {
+
+        Habitat habitat = new Habitat(parent, modules.length>0?getModuleName(modules[0].getClass()):null);
+        DynamicBinderFactory parentBinder = (parent==null?null:parent.bindDynamically());
+        BinderFactoryImpl binderFactory = new BinderFactoryImpl(parentBinder);
+
+        for (Module module : modules) {
+            module.configure(binderFactory);
+            if (parentBinder!=null) {
+                parentBinder.commit();
+            }
+            binderFactory.registerIn(habitat);
+        }
         return habitat;
     }
 

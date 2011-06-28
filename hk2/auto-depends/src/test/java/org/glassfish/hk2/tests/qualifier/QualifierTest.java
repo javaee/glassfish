@@ -40,7 +40,9 @@
 
 package org.glassfish.hk2.tests.qualifier;
 
+import org.glassfish.hk2.BinderFactory;
 import org.glassfish.hk2.HK2;
+import org.glassfish.hk2.Module;
 import org.glassfish.hk2.Services;
 import org.junit.Assert;
 import org.junit.Test;
@@ -56,7 +58,14 @@ public class QualifierTest {
 
     @Test
     public void assertInjections() {
-        Services services = HK2.get().create(null, QualifierModule.class);
+        Services services = HK2.get().create(null, new Module() {
+            @Override
+            public void configure(BinderFactory binderFactory) {
+                binderFactory.bind().to(QualifierInjectionTarget.class);
+                binderFactory.bind(ToBeQualified.class).annotatedWith(SomeQualifier.class).to(QualifiedService.class);
+                binderFactory.bind(ToBeQualified.class).named("named").to(NamedService.class);
+            }
+        });
         QualifierInjectionTarget tests = services.byType(QualifierInjectionTarget.class).get();
         Assert.assertNotNull(tests.qualified);
         Assert.assertNotNull(tests.namedQualified);
