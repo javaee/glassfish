@@ -41,6 +41,7 @@
 package admin;
 
 import java.io.*;
+import admin.util.FileUtils;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -128,6 +129,15 @@ public class RestartDomainTest extends AdminBaseDevTest {
     }
 
     private void deletePasswordDomain(boolean errorOK) {
+        if (!errorOK) {
+            try {
+                FileUtils.copy(PW_DOMAIN_LOGFILE_FROM, PW_DOMAIN_LOGFILE_TO);
+            }
+            catch (IOException ex) {
+                report(false, "Cant-copy-pw-logfile: " + ex);
+            }
+        }
+
         boolean ret = asadmin("delete-domain", PW_DOMAIN_NAME);
 
         if (errorOK)
@@ -226,6 +236,9 @@ public class RestartDomainTest extends AdminBaseDevTest {
         "--nopassword=false",
         PW_DOMAIN_NAME
     };
+    private static final File GF_HOME = new File(System.getProperty("S1AS_HOME"));
+    private static final File PW_DOMAIN_LOGFILE_FROM = new File(GF_HOME, "domains/" + PW_DOMAIN_NAME + "/logs/server.log");
+    private static final File PW_DOMAIN_LOGFILE_TO = new File(GF_HOME, PW_DOMAIN_NAME + ".log");
 }
 
 /*
