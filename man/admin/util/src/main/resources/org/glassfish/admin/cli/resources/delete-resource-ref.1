@@ -8,8 +8,8 @@ SYNOPSIS
      delete-resource-ref [--help] [--target target] reference_name
 
 DESCRIPTION
-     The delete-resource-ref subcommand removes a reference  from
-     a  cluster  or  an unclustered server instance to a resource
+     The delete-resource-ref subcommand removes from a cluster or
+     an  unclustered  server  instance  a reference to a resource
      (for example, a JDBC resource). This effectively results  in
      the  removal  of the resource from the JNDI tree of the tar-
      geted instance or cluster.
@@ -46,7 +46,7 @@ OPTIONS
              Removes the resource  reference  from  every  server
              instance in the cluster.
 
-Java EE 6           Last change: 22 Dec 2010                    1
+Java EE 6           Last change: 20 Jun 2011                    1
 
 asadmin Utility Subcommands                delete-resource-ref(1)
 
@@ -60,14 +60,13 @@ OPERANDS
          The name or JNDI name of the resource.
 
 EXAMPLES
-     Example 1 Using the delete-resource-ref subcommand
+     Example 1 Removing a Reference to a Resource
 
-     The following subcommand removes a reference to the JMS des-
-     tination   resource  jms/Topic  on  the  unclustered  server
-     instance NewServer.
+     This example removes a  reference  to  the  JMS  destination
+     resource jms/Topic on the cluster cluster1.
 
-       asadmin> delete-resource-ref --user admin2
-       --passwordfile passwords.txt --target NewServer jms/Topic
+       asadmin> delete-resource-ref --target cluster1 jms/Topic
+       resource-ref jms/Topic deleted successfully.
        Command delete-resource-ref executed successfully.
 
 EXIT STATUS
@@ -81,5 +80,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 22 Dec 2010                    2
+Java EE 6           Last change: 20 Jun 2011                    2
 

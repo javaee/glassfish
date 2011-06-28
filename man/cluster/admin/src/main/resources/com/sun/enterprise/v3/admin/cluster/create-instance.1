@@ -50,7 +50,7 @@ DESCRIPTION
               the  subcommand  creates  a  configuration  for the
               instance. An instance that  is  joining  a  cluster
 
-Java EE 6           Last change: 16 Dec 2010                    1
+Java EE 6           Last change: 14 Jun 2011                    1
 
 asadmin Utility Subcommands                    create-instance(1)
 
@@ -103,7 +103,7 @@ asadmin Utility Subcommands                    create-instance(1)
      subcommand also assigns ports that are currently not in  use
      and  not  already  assigned  to  other instances on the same
 
-Java EE 6           Last change: 16 Dec 2010                    2
+Java EE 6           Last change: 14 Jun 2011                    2
 
 asadmin Utility Subcommands                    create-instance(1)
 
@@ -134,10 +134,8 @@ OPTIONS
 
          Specifies the  named  configuration  that  the  instance
          references. The configuration must exist and must not be
-         named default-config or server-config. If the configura-
-         tion name specifies a standalone configuration, an error
-         occurs. Specifying the --config option creates a  shared
-         instance.
+         named default-config or  server-config.  Specifying  the
+         --config option creates a shared instance.
 
          The --config option and the --cluster option  are  mutu-
          ally  exclusive.  If  both  options are omitted, a stan-
@@ -155,12 +153,11 @@ OPTIONS
      --lbenabled
 
          Specifies whether  the  instance  is  enabled  for  load
+         balancing. Possible values are as follows:
 
-Java EE 6           Last change: 16 Dec 2010                    3
+Java EE 6           Last change: 14 Jun 2011                    3
 
 asadmin Utility Subcommands                    create-instance(1)
-
-         balancing. Possible values are as follows:
 
          true
 
@@ -209,7 +206,7 @@ asadmin Utility Subcommands                    create-instance(1)
          When the --portbase option is specified, the  output  of
          this subcommand includes a complete list of used ports.
 
-Java EE 6           Last change: 16 Dec 2010                    4
+Java EE 6           Last change: 14 Jun 2011                    4
 
 asadmin Utility Subcommands                    create-instance(1)
 
@@ -233,12 +230,10 @@ asadmin Utility Subcommands                    create-instance(1)
          ASADMIN_LISTENER_PORT
 
              This property specifies the port number of the  HTTP
-             port or the HTTPS port for administration. This port
-             is the port in the URL that you specify in your  web
-             browser   to   manage  the  instance,  for  example,
-             http://localhost:4949. Valid values are 1-65535.  On
-             UNIX,  creating  sockets that listen on ports 1-1024
-             requires superuser privileges.
+             port or HTTPS port through which the DAS connects to
+             the instance to manage the  instance.  Valid  values
+             are  1-65535.  On UNIX, creating sockets that listen
+             on ports 1-1024 requires superuser privileges.
 
          HTTP_LISTENER_PORT
              This property specifies the port number of the  port
@@ -261,7 +256,7 @@ asadmin Utility Subcommands                    create-instance(1)
              1-65535. On UNIX, creating sockets  that  listen  on
              ports 1-1024 requires superuser privileges.
 
-Java EE 6           Last change: 16 Dec 2010                    5
+Java EE 6           Last change: 14 Jun 2011                    5
 
 asadmin Utility Subcommands                    create-instance(1)
 
@@ -310,7 +305,7 @@ asadmin Utility Subcommands                    create-instance(1)
              ing  sockets  that  listen  on ports 1-1024 requires
              superuser privileges.
 
-Java EE 6           Last change: 16 Dec 2010                    6
+Java EE 6           Last change: 14 Jun 2011                    6
 
 asadmin Utility Subcommands                    create-instance(1)
 
@@ -320,6 +315,8 @@ OPERANDS
          The name of the instance that is being created.
 
          The name must meet the following requirements:
+
+             o    The name may contain only ASCII characters.
 
              o    The name must start with a letter, a number, or
                   an underscore.
@@ -362,12 +359,13 @@ EXAMPLES
        HTTP_LISTENER_PORT=28082
        IIOP_LISTENER_PORT=23702
        IIOP_SSL_LISTENER_PORT=23822
-       HTTP_SSL_LISTENER_PORT=28183
-       IIOP_SSL_MUTUALAUTH_PORT=23922
 
-Java EE 6           Last change: 16 Dec 2010                    7
+Java EE 6           Last change: 14 Jun 2011                    7
 
 asadmin Utility Subcommands                    create-instance(1)
+
+       HTTP_SSL_LISTENER_PORT=28183
+       IIOP_SSL_MUTUALAUTH_PORT=23922
 
        Command create-instance executed successfully.
 
@@ -410,14 +408,13 @@ asadmin Utility Subcommands                    create-instance(1)
      pmdsharedinst1  in the domain domain1 on the local host. The
      shared configuration of this instance is pmdsharedconfig.
 
-       asadmin create-instance --node localhost-domain1 --config pmdsharedconfig
-       pmdsharedinst1
-       Port Assignments for server instance pmdsharedinst1:
-
-Java EE 6           Last change: 16 Dec 2010                    8
+Java EE 6           Last change: 14 Jun 2011                    8
 
 asadmin Utility Subcommands                    create-instance(1)
 
+       asadmin create-instance --node localhost-domain1 --config pmdsharedconfig
+       pmdsharedinst1
+       Port Assignments for server instance pmdsharedinst1:
        JMX_SYSTEM_CONNECTOR_PORT=28687
        JMS_PROVIDER_PORT=27677
        ASADMIN_LISTENER_PORT=24849
@@ -459,7 +456,11 @@ SEE ALSO
      instance(1),  delete-system-property(1),  list-instances(1),
      setup-ssh(1), start-instance(1), stop-instance(1)
 
+Java EE 6           Last change: 14 Jun 2011                    9
+
+asadmin Utility Subcommands                    create-instance(1)
+
      asadmin(1M)
 
-Java EE 6           Last change: 16 Dec 2010                    9
+Java EE 6           Last change: 14 Jun 2011                   10
 

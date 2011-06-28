@@ -18,6 +18,11 @@ DESCRIPTION
      auth_realm_name  is  specified,  an  entry is created in the
      keyfile using the auth_realm_name.
 
+     You can use the --passwordfile  option  of  the  asadmin(1M)
+     command  to  specify the password for the user. The password
+     file entry must be of the  form  AS_ADMIN_USERPASSWORD=user-
+     password.
+
      This subcommand is supported in remote mode only.
 
 OPTIONS
@@ -40,15 +45,18 @@ OPTIONS
          This is the group associated with this file user.
 
      --authrealmname
-         This is the file where the file users are stored.
+         The name of the realm in which the new user is  created.
+         If  you  do not specify this option, the user is created
+
+Java EE 6           Last change: 03 June 2011                   1
+
+asadmin Utility Subcommands                   create-file-user(1)
+
+         in the "file" realm.
 
 OPERANDS
      user_name                   This is the name of file user to
                                  be created.
-
-Java EE 6         Last change: 01 December 2010                 1
-
-asadmin Utility Subcommands                   create-file-user(1)
 
 EXAMPLES
      Example 1 Creating a User in the File Realm
@@ -74,5 +82,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6         Last change: 01 December 2010                 2
+Java EE 6           Last change: 03 June 2011                   2
 

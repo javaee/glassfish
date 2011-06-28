@@ -52,7 +52,7 @@ DESCRIPTION
               subcommand. If asadmin utility options  are  speci-
               fied both before and after the subcommand, an error
 
-Java EE 6            Last change: 9 Dec 2010                    1
+Java EE 6           Last change: 13 Jun 2011                    1
 
 Utility Commands                                      asadmin(1M)
 
@@ -105,7 +105,7 @@ Utility Commands                                      asadmin(1M)
               Meta  characters  in  the  UNIX  operating   system
               include: \/,.!$%^&*|{}[]"'`~;.
 
-Java EE 6            Last change: 9 Dec 2010                    2
+Java EE 6           Last change: 13 Jun 2011                    2
 
 Utility Commands                                      asadmin(1M)
 
@@ -155,7 +155,7 @@ Utility Commands                                      asadmin(1M)
              Virtual Machine for the Java platform.
          For example, the operand of the  subcommand  create-jvm-
 
-Java EE 6            Last change: 9 Dec 2010                    3
+Java EE 6           Last change: 13 Jun 2011                    3
 
 Utility Commands                                      asadmin(1M)
 
@@ -205,7 +205,7 @@ Utility Commands                                      asadmin(1M)
 
                 Test\Escape\Character
 
-Java EE 6            Last change: 9 Dec 2010                    4
+Java EE 6           Last change: 13 Jun 2011                    4
 
 Utility Commands                                      asadmin(1M)
 
@@ -256,7 +256,7 @@ OPTIONS
          browser to  manage  the  domain.  For  example,  in  the
          URLhttp://localhost:4949, the port is 4949.
 
-Java EE 6            Last change: 9 Dec 2010                    5
+Java EE 6           Last change: 13 Jun 2011                    5
 
 Utility Commands                                      asadmin(1M)
 
@@ -274,8 +274,8 @@ Utility Commands                                      asadmin(1M)
 
      --passwordfile
      -W
-         Specifies the name of a file that contains the  password
-         entries in a specific format.
+         Specifies the name, including the full path, of  a  file
+         that contains password entries in a specific format.
 
          The entry for a password must have the AS_ADMIN_  prefix
          followed  by  the password name in uppercase letters, an
@@ -311,7 +311,7 @@ Utility Commands                                      asadmin(1M)
              o    AS_ADMIN_JMSDBPASSWORD=      jdbc-user-password
                   (read     by    the    configure-jms-cluster(1)
 
-Java EE 6            Last change: 9 Dec 2010                    6
+Java EE 6           Last change: 13 Jun 2011                    6
 
 Utility Commands                                      asadmin(1M)
 
@@ -365,7 +365,7 @@ Utility Commands                                      asadmin(1M)
          The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
          changeit.
 
-Java EE 6            Last change: 9 Dec 2010                    7
+Java EE 6           Last change: 13 Jun 2011                    7
 
 Utility Commands                                      asadmin(1M)
 
@@ -417,7 +417,7 @@ EXAMPLES
      single  mode.  In  this  example, the default values for all
      options are used.
 
-Java EE 6            Last change: 9 Dec 2010                    8
+Java EE 6           Last change: 13 Jun 2011                    8
 
 Utility Commands                                      asadmin(1M)
 
@@ -463,7 +463,7 @@ Utility Commands                                      asadmin(1M)
        scrumtoys <web>
        ejb31-war <ejb, web>
 
-Java EE 6            Last change: 9 Dec 2010                    9
+Java EE 6           Last change: 13 Jun 2011                    9
 
 Utility Commands                                      asadmin(1M)
 
@@ -504,7 +504,7 @@ Utility Commands                                      asadmin(1M)
      and  for  all operating systems in multimode,  the backslash
      (\) is required to escape the  backslash (\) meta character:
 
-Java EE 6            Last change: 9 Dec 2010                   10
+Java EE 6           Last change: 13 Jun 2011                   10
 
 Utility Commands                                      asadmin(1M)
 
@@ -546,7 +546,7 @@ Utility Commands                                      asadmin(1M)
        --property user=dbuser:passwordfile=dbpasswordfile:
        DatabaseName=jdbc\\:derby:server=http\\://localhost\\:9092 javadb-pool
 
-Java EE 6            Last change: 9 Dec 2010                   11
+Java EE 6           Last change: 13 Jun 2011                   11
 
 Utility Commands                                      asadmin(1M)
 
@@ -556,7 +556,7 @@ Utility Commands                                      asadmin(1M)
        asadmin --user admin --passwordfile gfpass create-jdbc-connection-pool
        --datasourceclassname com.derby.jdbc.jdbcDataSource
        --property 'user=dbnuser:passwordfile=dbpasswordfile:
-       DatabaseName="jdbc:derby":server="http://locahost:9092"'
+       DatabaseName="jdbc:derby":server="http://localhost:9092"'
 
      For the Windows operating system in single mode, a backslash
      (\)  is  required  to escape only the colon (:), but not the
@@ -589,7 +589,7 @@ Utility Commands                                      asadmin(1M)
      For the UNIX operating system in single mode and  multimode,
      and for all operating systems in multimode, these characters
 
-Java EE 6            Last change: 9 Dec 2010                   12
+Java EE 6           Last change: 13 Jun 2011                   12
 
 Utility Commands                                      asadmin(1M)
 
@@ -632,7 +632,7 @@ Utility Commands                                      asadmin(1M)
      is required to escape the double quote character (") and the
      backslash (\):
 
-Java EE 6            Last change: 9 Dec 2010                   13
+Java EE 6           Last change: 13 Jun 2011                   13
 
 Utility Commands                                      asadmin(1M)
 
@@ -678,7 +678,7 @@ SEE ALSO
      alias(1),deploy(1),  install-node(1),  list-applications(1),
      list-commands(1),   login(1),   restart-domain(1),   set(1),
 
-Java EE 6            Last change: 9 Dec 2010                   14
+Java EE 6           Last change: 13 Jun 2011                   14
 
 Utility Commands                                      asadmin(1M)
 
@@ -687,5 +687,5 @@ Utility Commands                                      asadmin(1M)
 
      attributes(5)
 
-Java EE 6            Last change: 9 Dec 2010                   15
+Java EE 6           Last change: 13 Jun 2011                   15
 

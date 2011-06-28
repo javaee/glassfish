@@ -8,7 +8,7 @@ NAME
 SYNOPSIS
      set-web-env-entry [--help]
      --name=env-entry-name --type=env-entry-type
-     {--value=value|--ignoreDescriptorItem={true|false}}
+     {--value=value|--ignoredescriptoritem={true|false}}
      [--description=description] application-name[/module]
 
 DESCRIPTION
@@ -45,7 +45,7 @@ OPTIONS
          text. The name must be unique within a  deployment  com-
          ponent.
 
-Java EE 6           Last change: 30 Oct 2009                    1
+Java EE 6           Last change: 15 Jun 2011                    1
 
 asadmin Utility Subcommands                  set-web-env-entry(1)
 
@@ -80,10 +80,10 @@ asadmin Utility Subcommands                  set-web-env-entry(1)
          string  that  is valid for the constructor of the speci-
          fied type.
 
-         Either the --value option or the  --ignoreDescriptorItem
+         Either the --value option or the  --ignoredescriptoritem
          option must be set.
 
-     --ignoreDescriptorItem
+     --ignoredescriptoritem
 
          Specifies whether the environment entry is ignored if it
          is  set in the application's deployment descriptor. When
@@ -97,7 +97,7 @@ asadmin Utility Subcommands                  set-web-env-entry(1)
          false
              The value is not ignored (default).
 
-Java EE 6           Last change: 30 Oct 2009                    2
+Java EE 6           Last change: 15 Jun 2011                    2
 
 asadmin Utility Subcommands                  set-web-env-entry(1)
 
@@ -105,12 +105,12 @@ asadmin Utility Subcommands                  set-web-env-entry(1)
 
              The value is ignored.
 
-         Either the --value option or the  --ignoreDescriptorItem
+         Either the --value option or the  --ignoredescriptoritem
          option must be set.
 
          Note -
 
-           Do not use the --ignoreDescriptorItem option to  unset
+           Do not use the --ignoredescriptoritem option to  unset
            an  environment  entry that has previously been set by
            using the set-web-env-entry subcommand.  Instead,  use
            the  unset-web-env-entry(1)  subcommand  for this pur-
@@ -150,7 +150,7 @@ OPERANDS
                </web>
            </module>
 
-Java EE 6           Last change: 30 Oct 2009                    3
+Java EE 6           Last change: 15 Jun 2011                    3
 
 asadmin Utility Subcommands                  set-web-env-entry(1)
 
@@ -177,7 +177,7 @@ EXAMPLES
      web application hello.
 
        asadmin> set-web-env-entry --name="Hello Port"
-       --type=java.lang.Integer --ignoreDescriptorItem=true hello
+       --type=java.lang.Integer --ignoredescriptoritem=true hello
 
        Command set-web-env-entry executed successfully.
 
@@ -192,5 +192,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 30 Oct 2009                    4
+Java EE 6           Last change: 15 Jun 2011                    4
 

@@ -21,9 +21,15 @@ DESCRIPTION
      providers, named default and simple. These default providers
      should not be deleted.
 
-     Authorization modules that depend on the JACC provider to be
-     deleted  should  be  reconfigured  to work with an alternate
-     provider before the deletion.
+     The JACC provider used byGlassFish Server for  authorization
+     is  identified  by  the  jacc-provider  element of security-
+     service in domain.xml. Therefore, if you  delete  the  jacc-
+     provider provider, make sure you change jacc-provider to the
+     name  of  some  other  JACC  provider  that   exists   under
+     security-service.
+
+     If you change the jacc-provider element to point to  a  dif-
+     ferent JACC provider, you must restart GlassFish Server.
 
      This subcommand is supported in remote mode only.
 
@@ -41,31 +47,31 @@ OPTIONS
          Specifies the target from which  you  are  deleting  the
          JACC provider. The following values are valid:
 
+Java EE 6           Last change: 14 Jun 2011                    1
+
+asadmin Utility Subcommands               delete-jacc-provider(1)
+
          server
 
              Deletes the JACC  provider  on  the  default  server
              instance. This is the default value.
 
-Java EE 6           Last change: 29 Sep 2010                    1
-
-asadmin Utility Subcommands               delete-jacc-provider(1)
-
          configuration_name
-
              Deletes the JACC provider in  the  specified  confi-
              guration.
 
          cluster_name
+
              Deletes the JACC provider on all server instances in
              the specified cluster.
 
          instance_name
-
              Deletes the JACC  provider  on  a  specified  server
              instance.
 
 OPERANDS
      jacc-provider-name
+
          The name of the JACC provider to be deleted.
 
 EXAMPLES
@@ -84,10 +90,14 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
+Java EE 6           Last change: 14 Jun 2011                    2
+
+asadmin Utility Subcommands               delete-jacc-provider(1)
+
 SEE ALSO
      create-jacc-provider(1), list-jacc-providers(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 29 Sep 2010                    2
+Java EE 6           Last change: 14 Jun 2011                    3
 

@@ -2,16 +2,20 @@
 asadmin Utility Subcommands                 list-resource-refs(1)
 
 NAME
-     list-resource-refs - lists the existing resource references
+     list-resource-refs - lists existing resource references
 
 SYNOPSIS
      list-resource-refs [--help] [target]
 
 DESCRIPTION
      The list-resource-refs subcommand lists all resource  refer-
-     ences  in  a server instance. This effectively lists all the
-     resources (for example, JDBC  resources)  available  in  the
-     JNDI tree.
+     ences  in  a cluster or an unclustered server instance. This
+     effectively lists  all  the  resources  (for  example,  JDBC
+     resources)  available in the JNDI tree of the specified tar-
+     get.
+
+     The target instance or instances in the cluster need not  be
+     running or available for this subcommand to succeed.
 
      This subcommand is supported in remote mode only.
 
@@ -24,7 +28,7 @@ OPTIONS
 OPERANDS
      target
          The target for which you are listing the resource refer-
-         ences. Valid targets are:
+         ences. Valid targets are as follows:
 
          server
 
@@ -40,17 +44,17 @@ OPERANDS
              Lists  the  resource  references   for   the   named
              unclustered server instance.
 
-EXAMPLES
-     Example 1 Using the list-resource-refs subcommand
-
-     The following command lists resource references.
-
-Java EE 6           Last change: 22 Dec 2010                    1
+Java EE 6           Last change: 20 Jun 2011                    1
 
 asadmin Utility Subcommands                 list-resource-refs(1)
 
-       asadmin> list-resource-refs --user admin
-       --passwordfile passwords.txt
+EXAMPLES
+     Example 1 Listing Resource References for a Cluster
+
+     This example lists resource references for the cluster clus-
+     ter1.
+
+       asadmin> list-resource-refs cluster1
        jms/Topic
        Command list-resource-refs executed successfully.
 
@@ -65,5 +69,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 22 Dec 2010                    2
+Java EE 6           Last change: 20 Jun 2011                    2
 

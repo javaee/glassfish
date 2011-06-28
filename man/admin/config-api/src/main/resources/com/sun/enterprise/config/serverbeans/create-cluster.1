@@ -50,7 +50,7 @@ DESCRIPTION
 
          o    delete-local-instance(1)
 
-Java EE 6           Last change: 17 Nov 2010                    1
+Java EE 6           Last change: 14 Jun 2011                    1
 
 asadmin Utility Subcommands                     create-cluster(1)
 
@@ -83,11 +83,9 @@ OPTIONS
      --config
          Specifies  the  named  configuration  that  the  cluster
          references. The configuration must exist and must not be
-         named default-config or server-config. If the configura-
-         tion name specifies a standalone configuration, an error
-         occurs. Specifying the --config option creates a  shared
-         cluster.   If this option is omitted, a standalone clus-
-         ter is created.
+         named default-config or  server-config.  Specifying  the
+         --config  option  creates  a  shared  cluster.   If this
+         option is omitted, a standalone cluster is created.
 
      --systemproperties
 
@@ -98,17 +96,14 @@ OPTIONS
 
          ASADMIN_LISTENER_PORT
              This property specifies the port number of the  HTTP
-             port or the HTTPS port for administration. This port
-             is the port in the URL that you specify in your  web
-             browser   to   manage  the  instance,  for  example,
-             http://localhost:4949. Valid values are 1-65535.  On
-             UNIX,  creating  sockets that listen on ports 1-1024
+             port or HTTPS port through which the DAS connects to
+             the instance to manage the  instance.  Valid  values
+             are  1-65535.  On UNIX, creating sockets that listen
+             on ports 1-1024 requires superuser privileges.
 
-Java EE 6           Last change: 17 Nov 2010                    2
+Java EE 6           Last change: 14 Jun 2011                    2
 
 asadmin Utility Subcommands                     create-cluster(1)
-
-             requires superuser privileges.
 
          HTTP_LISTENER_PORT
 
@@ -154,25 +149,26 @@ asadmin Utility Subcommands                     create-cluster(1)
              are  1-65535.  On UNIX, creating sockets that listen
              on ports 1-1024 requires superuser privileges.
 
-Java EE 6           Last change: 17 Nov 2010                    3
-
-asadmin Utility Subcommands                     create-cluster(1)
-
          JMS_PROVIDER_PORT
 
              This property specifies the port number for the Java
+
+Java EE 6           Last change: 14 Jun 2011                    3
+
+asadmin Utility Subcommands                     create-cluster(1)
+
              Message  Service provider. Valid values are 1-65535.
              On UNIX,  creating  sockets  that  listen  on  ports
              1-1024 requires superuser privileges.
 
          JMX_SYSTEM_CONNECTOR_PORT
+
              This property specifies the port number on which the
              JMX  connector listens. Valid values are 1-65535. On
              UNIX, creating sockets that listen on  ports  1-1024
              requires superuser privileges.
 
          OSGI_SHELL_TELNET_PORT
-
              This property specifies the port number of the  port
              that  is  used  for  connections to the Apache Felix
              Remote Shell. This shell uses the Felix  shell  ser-
@@ -182,17 +178,18 @@ asadmin Utility Subcommands                     create-cluster(1)
              superuser privileges.
 
      --properties
+
          Defines properties for the cluster. The  following  pro-
          perties are available:
 
          GMS_LISTENER_PORT
-
              The port number of the port  on  which  the  cluster
              listens  for messages from the Group Management Ser-
              vice (GMS). The default value should suffice in most
              situations.
 
          GMS_LOOPBACK
+
              Specifies  whether  an  instance  may  receive  from
              itself  application-level messages that the instance
              broadcasts to the cluster.
@@ -200,21 +197,22 @@ asadmin Utility Subcommands                     create-cluster(1)
              Possible values are as follows:
 
              false
-
                  The  instance  may  not  receive  messages  from
                  itself (default).
-
-Java EE 6           Last change: 17 Nov 2010                    4
-
-asadmin Utility Subcommands                     create-cluster(1)
 
              true
 
                  The instance may receive messages  from  itself.
                  Use  this  setting  for testing an instance when
+
+Java EE 6           Last change: 14 Jun 2011                    4
+
+asadmin Utility Subcommands                     create-cluster(1)
+
                  the instance is the only instance in a cluster.
 
          GMS_MULTICAST_TIME_TO_LIVE
+
              The maximum number of  iterations  or  transmissions
              that  a multicast message for the following types of
              events can experience before  the  message  is  dis-
@@ -244,12 +242,12 @@ asadmin Utility Subcommands                     create-cluster(1)
              routers.
 
      --gmsenabled
-
          Specifies whether GMS is enabled for the cluster.
 
          Possible values are as follows:
 
          true
+
              GMS is enabled for the cluster (default).
 
              When GMS is enabled for a cluster, GMS is started in
@@ -257,7 +255,7 @@ asadmin Utility Subcommands                     create-cluster(1)
              The DAS participates in each cluster for which  this
              option is set to true.
 
-Java EE 6           Last change: 17 Nov 2010                    5
+Java EE 6           Last change: 14 Jun 2011                    5
 
 asadmin Utility Subcommands                     create-cluster(1)
 
@@ -310,7 +308,7 @@ asadmin Utility Subcommands                     create-cluster(1)
          option, a syntax error does not occur. Instead, the sub-
          command runs successfully and displays a warning message
 
-Java EE 6           Last change: 17 Nov 2010                    6
+Java EE 6           Last change: 14 Jun 2011                    6
 
 asadmin Utility Subcommands                     create-cluster(1)
 
@@ -361,7 +359,7 @@ asadmin Utility Subcommands                     create-cluster(1)
          command runs successfully and displays a warning message
          that the option is ignored.
 
-Java EE 6           Last change: 17 Nov 2010                    7
+Java EE 6           Last change: 14 Jun 2011                    7
 
 asadmin Utility Subcommands                     create-cluster(1)
 
@@ -378,6 +376,8 @@ OPERANDS
          The name of the cluster.
 
          The name must meet the following requirements:
+
+             o    The name may contain only ASCII characters.
 
              o    The name must start with a letter, a number, or
                   an underscore.
@@ -412,12 +412,13 @@ EXAMPLES
      This example creates a cluster that is named ltscluster  for
      which  port  1169 is to be used for secure IIOP connections.
      Because the --config option is not  specified,  the  cluster
-     references  a copy of the named configuration default-config
-     that is named ltscluster-config.
 
-Java EE 6           Last change: 17 Nov 2010                    8
+Java EE 6           Last change: 14 Jun 2011                    8
 
 asadmin Utility Subcommands                     create-cluster(1)
+
+     references  a copy of the named configuration default-config
+     that is named ltscluster-config.
 
        asadmin> create-cluster
        --systemproperties IIOP_SSL_LISTENER_PORT=1169
@@ -443,5 +444,5 @@ SEE ALSO
      shell.html),  Java  Platform  Debugger  Architecture  (JPDA)
      (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
 
-Java EE 6           Last change: 17 Nov 2010                    9
+Java EE 6           Last change: 14 Jun 2011                    9
 

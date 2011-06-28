@@ -2,30 +2,22 @@
 asadmin Utility Subcommands               disable-secure-admin(1)
 
 NAME
-     disable-secure-admin - Sets the secure-admin enabled  attri-
-     bute  to  false in domain.xml and adjusts all configurations
-     in the domain
+     disable-secure-admin  -  disables  secure  admin  if  it  is
+     already enabled.
 
 SYNOPSIS
      disable-secure-admin [--help]
 
 DESCRIPTION
-     The disable-secure-admin subcommand  sets  the  secure-admin
-     enabled  attribute to false in the domain.xml for the domain
-     and adjusts all configurations in  the  domain  accordingly.
-     Disabling  secure admin affects the entire domain, including
-     the DAS and all instances.
+     The disable-secure-admin subcommand disables secure admin if
+     it is already enabled.
 
-     As part of this action, the  enable-secure-admin  subcommand
-     performs the following functions:
+     Note -
 
-         o    Turns off Grizzly's use of SSL/TLS in  the  Grizzly
-              configuration.
-
-         o    Turns off Grizzly redirection from HTTP to HTTPS.
-
-         o    Turns off Grizzly port unification  for  the  admin
-              listener port.
+       You must restart any running servers in the  domain  after
+       you  enable  or  disable  secure  admin.  It is simpler to
+       enable or disable secure admin with only the DAS  running,
+       then restart the DAS, and then start any other instances.
 
 OPTIONS
      --help
@@ -45,10 +37,6 @@ EXAMPLES
 
        Command disable-secure-admin executed successfully.
 
-Java EE 6           Last change: 01 Oct 2010                    1
-
-asadmin Utility Subcommands               disable-secure-admin(1)
-
 EXIT STATUS
      0                           subcommand executed successfully
 
@@ -56,9 +44,14 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
+
+Java EE 6           Last change: 25 Jun 2011                    1
+
+asadmin Utility Subcommands               disable-secure-admin(1)
+
      enable-secure-admin(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 01 Oct 2010                    2
+Java EE 6           Last change: 25 Jun 2011                    2
 

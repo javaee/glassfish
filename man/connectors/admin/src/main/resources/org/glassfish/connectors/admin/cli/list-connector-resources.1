@@ -5,7 +5,7 @@ NAME
      list-connector-resources - lists all connector resources
 
 SYNOPSIS
-     list-connector-resources [--help] [--target target]
+     list-connector-resources [--help] [target]
 
 DESCRIPTION
      The list-connector-resources subcommand lists all  connector
@@ -19,40 +19,34 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-     --target
-         The name of the target for which the connector resources
-         are to be listed.
-
 OPERANDS
      target
-
-         The valid targets  for  this  subcommand  are  instance,
-         cluster,  domain,  and  server.  Server  is  the default
-         option. Valid values are:
+         The target for which the connector resources are  to  be
+         listed. Valid values are as follows:
 
          server
+
              Lists the connector resources on the default  server
              instance. This is the default value.
 
          domain
-
              Lists the connector resources for the domain.
 
-         cluster_name
+         cluster-name
+
              Lists  the  connector  resources   on   all   server
              instances in the specified cluster.
 
-         instance_name
-
+         instance-name
              Lists the connector resources on a specified  server
              instance.
 
-Java EE 6           Last change: 11 Feb 2011                    1
-
-asadmin Utility Subcommands           list-connector-resources(1)
-
 EXAMPLES
      Example 1 Listing Connector Resources
+
+Java EE 6           Last change: 21 Jun 2011                    1
+
+asadmin Utility Subcommands           list-connector-resources(1)
 
      This example lists all existing connector resources.
 
@@ -71,5 +65,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 11 Feb 2011                    2
+Java EE 6           Last change: 21 Jun 2011                    2
 

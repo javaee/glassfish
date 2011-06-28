@@ -10,11 +10,11 @@ SYNOPSIS
 
 DESCRIPTION
      The create-resource-ref subcommand creates a reference  from
-     a   cluster   or   an   unclustered  server  instance  to  a
-     previously-created resource, for example,  a  JDBC  resource
-     created  using  the  create-jdbc-resource  subcommand.  This
-     effectively results in the resource being made available  in
-     the JNDI tree of the instance or cluster.
+     a  cluster or an unclustered server instance to a previously
+     created resource, for example, a JDBC  resource  created  by
+     using  the create-jdbc-resource subcommand. This effectively
+     results in the resource being made  available  in  the  JNDI
+     tree of the instance or cluster.
 
      The target instance or instances making up the cluster  need
      not  be running or available for this subcommand to succeed.
@@ -43,14 +43,14 @@ OPTIONS
 
      --target
          Specifies the target for  which  you  are  creating  the
-         resource reference. Valid targets are
+         resource reference. Valid targets are as follows:
 
          server
 
              Creates  the  resource  reference  for  the  default
              server instance. This is the default target.
 
-Java EE 6           Last change: 22 Dec 2010                    1
+Java EE 6           Last change: 20 Jun 2011                    1
 
 asadmin Utility Subcommands                create-resource-ref(1)
 
@@ -74,13 +74,13 @@ OPERANDS
          The name or JNDI name of the resource.
 
 EXAMPLES
-     Example 1 Using the create-resource-ref subcommand
+     Example 1 Creating a Reference to a JMS Destination Resource
 
-     The following subcommand creates a reference to the JMS des-
-     tination resource jms/Topic on the cluster Cluster1.
+     This example creates a  reference  to  the  JMS  destination
+     resource jms/Topic on the cluster Cluster1.
 
-       asadmin> create-resource-ref --user admin
-       --passwordfile passwords.txt --target Cluster1 jms/Topic
+       asadmin> create-resource-ref --target Cluster1 jms/Topic
+       resource-ref jms/Topic created successfully.
        Command create-resource-ref executed successfully.
 
 EXIT STATUS
@@ -94,5 +94,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 22 Dec 2010                    2
+Java EE 6           Last change: 20 Jun 2011                    2
 

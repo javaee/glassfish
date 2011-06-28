@@ -50,7 +50,7 @@ DESCRIPTION
               more  than  one  node exists in the directory where
               files  for  nodes  are  stored.  If  no   node   is
 
-Java EE 6           Last change: 17 Dec 2010                    1
+Java EE 6           Last change: 14 Jun 2010                    1
 
 asadmin Utility Subcommands              create-local-instance(1)
 
@@ -105,7 +105,7 @@ asadmin Utility Subcommands              create-local-instance(1)
          instances or clusters. A shared instance is created if a
          configuration that is referenced by other  instances  or
 
-Java EE 6           Last change: 17 Dec 2010                    2
+Java EE 6           Last change: 14 Jun 2010                    2
 
 asadmin Utility Subcommands              create-local-instance(1)
 
@@ -158,7 +158,7 @@ OPTIONS
          If no node is specified, the behavior of the  subcommand
          depends on the number of existing nodes in the directory
 
-Java EE 6           Last change: 17 Dec 2010                    3
+Java EE 6           Last change: 14 Jun 2010                    3
 
 asadmin Utility Subcommands              create-local-instance(1)
 
@@ -184,10 +184,8 @@ asadmin Utility Subcommands              create-local-instance(1)
      --config
          Specifies the  named  configuration  that  the  instance
          references. The configuration must exist and must not be
-         named default-config or server-config. If the configura-
-         tion name specifies a standalone configuration, an error
-         occurs. Specifying the --config option creates a  shared
-         instance.
+         named default-config or  server-config.  Specifying  the
+         --config option creates a shared instance.
 
          The --config option and the --cluster option  are  mutu-
          ally  exclusive.  If  both  options are omitted, a stan-
@@ -212,11 +210,12 @@ asadmin Utility Subcommands              create-local-instance(1)
              The  instance  is   enabled   for   load   balancing
              (default).
 
-Java EE 6           Last change: 17 Dec 2010                    4
+             When an instance is enabled for  load  balancing,  a
+
+Java EE 6           Last change: 14 Jun 2010                    4
 
 asadmin Utility Subcommands              create-local-instance(1)
 
-             When an instance is enabled for  load  balancing,  a
              load balancer sends requests to the instance.
 
          false
@@ -264,7 +263,7 @@ asadmin Utility Subcommands              create-local-instance(1)
          administration,  HTTP,  JMS,  JMX,  and  IIOP ports. The
          default value is true.
 
-Java EE 6           Last change: 17 Dec 2010                    5
+Java EE 6           Last change: 14 Jun 2010                    5
 
 asadmin Utility Subcommands              create-local-instance(1)
 
@@ -320,19 +319,17 @@ asadmin Utility Subcommands              create-local-instance(1)
 
          The following properties are available:
 
-Java EE 6           Last change: 17 Dec 2010                    6
+Java EE 6           Last change: 14 Jun 2010                    6
 
 asadmin Utility Subcommands              create-local-instance(1)
 
          ASADMIN_LISTENER_PORT
 
              This property specifies the port number of the  HTTP
-             port or the HTTPS port for administration. This port
-             is the port in the URL that you specify in your  web
-             browser   to   manage  the  instance,  for  example,
-             http://localhost:4949. Valid values are 1-65535.  On
-             UNIX,  creating  sockets that listen on ports 1-1024
-             requires superuser privileges.
+             port or HTTPS port through which the DAS connects to
+             the instance to manage the  instance.  Valid  values
+             are  1-65535.  On UNIX, creating sockets that listen
+             on ports 1-1024 requires superuser privileges.
 
          HTTP_LISTENER_PORT
              This property specifies the port number of the  port
@@ -370,32 +367,34 @@ asadmin Utility Subcommands              create-local-instance(1)
              creating   sockets   that  listen  on  ports  1-1024
              requires superuser privileges.
 
-Java EE 6           Last change: 17 Dec 2010                    7
-
-asadmin Utility Subcommands              create-local-instance(1)
-
          JAVA_DEBUGGER_PORT
 
              This property specifies the port number of the  port
+
+Java EE 6           Last change: 14 Jun 2010                    7
+
+asadmin Utility Subcommands              create-local-instance(1)
+
              that  is  used  for connections to the Java Platform
              Debugger Architecture (JPDA) debugger. Valid  values
              are  1-65535.  On UNIX, creating sockets that listen
              on ports 1-1024 requires superuser privileges.
 
          JMS_PROVIDER_PORT
+
              This property specifies the port number for the Java
              Message  Service provider. Valid values are 1-65535.
              On UNIX,  creating  sockets  that  listen  on  ports
              1-1024 requires superuser privileges.
 
          JMX_SYSTEM_CONNECTOR_PORT
-
              This property specifies the port number on which the
              JMX  connector listens. Valid values are 1-65535. On
              UNIX, creating sockets that listen on  ports  1-1024
              requires superuser privileges.
 
          OSGI_SHELL_TELNET_PORT
+
              This property specifies the port number of the  port
              that  is  used  for  connections to the Apache Felix
              Remote Shell. This shell uses the Felix  shell  ser-
@@ -406,10 +405,11 @@ asadmin Utility Subcommands              create-local-instance(1)
 
 OPERANDS
      instance-name
-
          The name of the instance that is being created.
 
          The name must meet the following requirements:
+
+             o    The name may contain only ASCII characters.
 
              o    The name must start with a letter, a number, or
                   an underscore.
@@ -423,7 +423,7 @@ OPERANDS
 
                  o    Numbers
 
-Java EE 6           Last change: 17 Dec 2010                    8
+Java EE 6           Last change: 14 Jun 2010                    8
 
 asadmin Utility Subcommands              create-local-instance(1)
 
@@ -470,7 +470,7 @@ EXAMPLES
      This example creates the clustered instance  ymli2  on  node
      sj02. The instance is a member of the cluster ymlclust.
 
-Java EE 6           Last change: 17 Dec 2010                    9
+Java EE 6           Last change: 14 Jun 2010                    9
 
 asadmin Utility Subcommands              create-local-instance(1)
 
@@ -509,5 +509,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 17 Dec 2010                   10
+Java EE 6           Last change: 14 Jun 2010                   10
 

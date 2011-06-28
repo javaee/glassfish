@@ -2,18 +2,18 @@
 asadmin Utility Subcommands                  collect-log-files(1)
 
 NAME
-     collect-log-files - collects all  available  log  files  and
-     compiles them into a ZIP archive
+     collect-log-files - creates a ZIP archive of  all  available
+     log files
 
 SYNOPSIS
      collect-log-files [--help] [--target target]
-     [--retrieve [false|true] [retrievefilepath]]
+     [--retrieve={false|true}] [retrievefilepath]]
 
 DESCRIPTION
      The collect-log-files subcommand collects all available  log
-     files  for  a specified GlassFish Server server, cluster, or
-     server instance and compiles the log files into a single ZIP
-     archive.
+     files for the domain administration server (DAS), the speci-
+     fied cluster, or the specified GlassFishTM  Server  instance
+     and creates a single ZIP archive of the log files.
 
      This subcommand is supported in remote mode only.
 
@@ -24,67 +24,61 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --retrieve
-         Enables you to specify a directory path other  than  the
-         default  in  which  to  create  the ZIP archive. If this
-         option is omitted, the ZIP archive  is  created  in  the
-         default directory.
+         Specifies whether the ZIP archive is created in a direc-
+         tory other than the default directory.
 
-         By default, log file ZIP archives  are  created  in  the
-         as-install/domains/domain1/collected-logs directory. The
+         By default  the  ZIP  archive  is  created  in  the  as-
+         install/domains/domain1/collected-logs   directory.  The
          ZIP file names are constructed from the specified target
          and timestamp, as follows:
 
            log_yyyy-mm-dd_hh-min-sec.zip
 
-         This option takes the false (default) or true  retrieve-
-         filepath  operands,  described  in  the Operands section
-         below. To create the ZIP archive in  a  directory  other
-         than the default, the true operand must be used.
+         Possible values are as follows:
 
-     --target
+         false
 
-         The server, cluster, or server instance  for  which  log
-         files  will be collected. If this option is omitted, the
-         default server is used.
+             The ZIP archive  will  be  created  in  the  default
+             directory.   If   omitted,   the  --retrieve  option
+             defaults to false.
 
-Java EE 6           Last change: 12 Feb 2011                    1
+         true
+             The ZIP archive will be  created  in  the  directory
+             that  the  retrievefilepath  operand  specifies.  If
+             retrievefilepath is omitted, the ZIP archive will be
+             created in the default directory.
+
+Java EE 6           Last change: 16 June 2011                   1
 
 asadmin Utility Subcommands                  collect-log-files(1)
 
+     --target
+
+         Specifies the target for which log files  will  be  col-
+         lected.
+
+         Possible values are as follows:
+
+         server
+             The  log  files  will  be  collected  for  the   DAS
+             (default).
+
+         instance-name
+
+             The log files will be collected  for  the  specified
+             GlassFish Server instance.
+
+         cluster-name
+             The log files will be collected  for  the  specified
+             cluster.
+
 OPERANDS
-     false
-
-         Used with the --retrieve option, specifies that the  log
-         file  ZIP  archive will be created in the default direc-
-         tory. If omitted,  the  --retrieve  option  defaults  to
-         false.
-
-     true
-         Used with the --retrieve option, specifies that the  log
-         file ZIP archive will be created in the directory speci-
-         fied by retrievefilepath. If  retrievefilepath is  omit-
-         ted,  the  log  file  ZIP archive will be created in the
-         default directory.
-
      retrievefilepath
 
-         Used with --retrieve true, the name of the directory  in
-         which  the ZIP archive will be saved. If this operand is
-         omitted, the log file ZIP archive will be created in the
-         default  directory. This operand has no effect when used
-         with --retrieve false.
-
-     target
-         Valid values are:
-
-             o    server_name - Default target is server.  If  no
-                  target  is  specified  then  the  log  file ZIP
-                  archive is created for the server.
-
-             o    cluster_name - The name of a target cluster.
-
-             o    instance_name - The name  of  a  target  server
-                  instance.
+         The name of the directory in which the ZIP archive  will
+         be  created. If this operand is omitted, the ZIP archive
+         will be created in the  default  directory.  If  the  --
+         retrieve  option is false, this operand is ignored.
 
 EXAMPLES
      Example 1 Collecting Log Files for the Default Server
@@ -96,15 +90,15 @@ EXAMPLES
        Created Zip file under /space/gfv3/v3setup/glassfish3/glassfish/domains/domain1/collected-logs/log_2010-12-15_15-46-23.zip.
        Command collect-log-files executed successfully.
 
-Java EE 6           Last change: 12 Feb 2011                    2
-
-asadmin Utility Subcommands                  collect-log-files(1)
-
      Example 2 Collecting Log Files for a Cluster
 
      This example generates a ZIP archive from the log files  for
      a  cluster  named cluster1 and the two server instances run-
      ning in the cluster.
+
+Java EE 6           Last change: 16 June 2011                   2
+
+asadmin Utility Subcommands                  collect-log-files(1)
 
        asadmin> collect-log-files --target cluster1
        Log files are downloaded for instance1.
@@ -132,7 +126,7 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
-     list-log-attributes(1),  list-log-levels(1),  rotate-log(1),
+     list-log-attributes(1), list-log-levels(1),   rotate-log(1),
      set-log-attributes(1),  set-log-levels(1)
 
      asadmin(1M)
@@ -140,5 +134,5 @@ SEE ALSO
      Chapter 7, Administering  the  Logging  Service,  in  Oracle
      GlassFish Server 3.1 Administration Guide
 
-Java EE 6           Last change: 12 Feb 2011                    3
+Java EE 6           Last change: 16 June 2011                   3
 

@@ -5,10 +5,12 @@ NAME
      create-jndi-resource - registers a JNDI resource
 
 SYNOPSIS
-     create-jndi-resource [--help] [--target target] --restype restype
-     --factoryclass factoryclass --jndilookupname jndilookupname [--enabled={true|false}]
-     [--description description] [--property (property=value)[:name=value]*]
-      jndi_name
+     create-jndi-resource [--help] [--target target]
+     --restype restype --factoryclass factoryclass
+     --jndilookupname jndilookupname [--enabled={true|false}]
+     [--description description]
+     [--property (name=value)[:name=value]*]
+     jndi-name
 
 DESCRIPTION
      The  create-jndi-resource  subcommand   registers   a   JNDI
@@ -23,8 +25,9 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         This option  specifies  the  target  to  which  you  are
-         deploying. Valid values for target are described below.
+         This option specifies  the  target  for  which  you  are
+         registering a JNDI resource. Valid values for target are
+         described below.
 
          Note -
 
@@ -39,101 +42,75 @@ OPTIONS
          server
 
              Creates  the  resource  for   the   default   server
-             instance. This value is the default.
+             instance. This  value is the default.
 
          domain
              Creates the resource for the domain
 
-         cluster_name
+Java EE 6           Last change: 21 Jun 2011                    1
+
+asadmin Utility Subcommands               create-jndi-resource(1)
+
+         cluster-name
 
              Creates the resource for every  server  instance  in
              the cluster
 
-Java EE 6           Last change: 10 Feb 2011                    1
-
-asadmin Utility Subcommands               create-jndi-resource(1)
-
-         instance_name
-
+         instance-name
              Creates  the  resource  for  a   particular   server
              instance
 
      --restype
+
          The JNDI resource type. Valid values are topic or queue.
 
      --factoryclass
-
          The class that creates the JNDI resource.
 
      --jndilookupname
+
          The lookup name that the external container uses.
 
      --enabled
-
          Determines whether the resource is enabled  at  runtime.
          Default is true.
 
      --description
+
          The text that provides details about the JNDI resource.
 
      --property
+         Optional properties for configuring the  resource.  Each
+         property is specified as a name-value pair.
 
-         Optional attribute name/value pairs for configuring  the
-         resource. The following properties are available:
-
-         http-listener-1-port
-             Specifies the port number for http-listener-1. Valid
-             values  are  1-65535. On UNIX, creating sockets that
-             listen   on   ports   1-1024   requires    superuser
-             privileges.
-
-         http-listener-2-port
-
-             Specifies the port number for http-listener-2. Valid
-             values  are  1-65535. On UNIX, creating sockets that
-             listen   on   ports   1-1024   requires    superuser
-             privileges.
-
-         orb-listener-1-port
-             Specifies the ORB listener port for IIOP connections
-
-Java EE 6           Last change: 10 Feb 2011                    2
-
-asadmin Utility Subcommands               create-jndi-resource(1)
-
-             that orb-listener-1 listens on.
-
-         IIOP_SSL_LISTENER_PORT
-
-             Specifies the ORB listener port for IIOP connections
-             that the IIOP listener called SSL listens on.
-
-         IIOP_SSL_MUTUALAUTH_PORT
-             Specifies the ORB listener port for IIOP connections
-             that the IIOP listener called SSL_MUTUALAUTH listens
-             on.
-
-         JMX_SYSTEM_Connector-port
-
-             Specifies the port number on which the JMX connector
-             listens. Valid values are 1-65535. On UNIX, creating
-             sockets  that  listen  on  ports   1-1024   requires
-             superuser privileges.
+         The available properties are specific to the implementa-
+         tion  that is specified by the --factoryclass option and
+         are used by that implementation. GlassFish Server itself
+         does  not  define  any properties for configuring a JNDI
+         resource.
 
 OPERANDS
-     jndi_name
+     jndi-name
+
          The unique name of the JNDI resource to be created.
+
+Java EE 6           Last change: 21 Jun 2011                    2
+
+asadmin Utility Subcommands               create-jndi-resource(1)
 
 EXAMPLES
      Example 1 Creating a JNDI Resource
 
-     This  example   creates   a   new   JNDI   resource   called
-     sample_jndi_resource.
+     This example creates the JNDI resource my-jndi-resource  for
+     the default server instance.
 
-       asadmin> create-jndi-resource --restype queue \fR
-       --factoryclass sampleClass --jndilookupname sample_jndi \fR
-       --description "a sample JNDI resource" sample_jndi_resource
-       Command create-jndi-resource executed successfully
+       asadmin> create-jndi-resource
+       --restype com.example.jndi.MyResourceType
+       --factoryclass com.example.jndi.MyInitialContextFactoryClass
+       --jndilookupname remote-jndi-name
+       --description "sample JNDI resource" my-jndi-resource
+       JNDI resource my-jndi-resource created.
+       Command create-jndi-resource executed successfully.
 
 EXIT STATUS
      0                           subcommand executed successfully
@@ -141,15 +118,11 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
-Java EE 6           Last change: 10 Feb 2011                    3
-
-asadmin Utility Subcommands               create-jndi-resource(1)
-
 SEE ALSO
      delete-jndi-resource(1),   list-jndi-resources(1),   create-
      resource-ref(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 10 Feb 2011                    4
+Java EE 6           Last change: 21 Jun 2011                    3
 

@@ -6,11 +6,11 @@ NAME
      for a specified target in a domain
 
 SYNOPSIS
-     list-log-attributes [--help] [--target target]
+     list-log-attributes [--help] [target]
 
 DESCRIPTION
      The list-log-attributes subcommand lists all logging  attri-
-     butes currently defined for the specified GlassFishTM Server
+     butes  currently  defined for the specified GlassFish Server
      domain  or  target  within  a  domain.  The  values   listed
      correspond  to the values in the logging.properties file for
      the domain.
@@ -23,19 +23,15 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-     --target
-         The server domain, instance, or cluster for which logger
-         attributes  will  be  listed. If this option is omitted,
-         attributes are listed for the default domain.
-
 OPERANDS
      target
-
          Valid values are:
 
-             o    server_name - Default target is server.  If  no
-                  target  is  specified  then  log attributes are
-                  listed for the server.
+             o    server - The default server instance.  This  is
+                  the default value.
+
+             o    configuration_name - The  name  of  a  specific
+                  configuration.
 
              o    cluster_name - The name of a target cluster.
 
@@ -48,13 +44,14 @@ EXAMPLES
      This example lists all loggers attributes  for  the  default
      domain.
 
-Java EE 6           Last change: 12 Feb 2011                    1
-
-asadmin Utility Subcommands                list-log-attributes(1)
-
        asadmin> list-log-attributes
        com.sun.enterprise.server.logging.GFFileHandler.alarms <false>
        com.sun.enterprise.server.logging.GFFileHandler.file <${com.sun.aas.instanceRoot}/logs/server.log>
+
+Java EE 6           Last change: 21 Jun 2011                    1
+
+asadmin Utility Subcommands                list-log-attributes(1)
+
        com.sun.enterprise.server.logging.GFFileHandler.flushFrequency <1>
        com.sun.enterprise.server.logging.GFFileHandler.formatter <com.sun.enterprise.server.logging.UniformLogFormatter>
        com.sun.enterprise.server.logging.GFFileHandler.logtoConsole <false>
@@ -88,5 +85,5 @@ SEE ALSO
      Chapter 7, Administering  the  Logging  Service,  in  Oracle
      GlassFish Server 3.1 Administration Guide
 
-Java EE 6           Last change: 12 Feb 2011                    2
+Java EE 6           Last change: 21 Jun 2011                    2
 

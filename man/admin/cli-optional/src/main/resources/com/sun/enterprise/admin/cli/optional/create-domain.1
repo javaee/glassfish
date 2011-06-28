@@ -50,7 +50,7 @@ DESCRIPTION
      user, admin, is used.  If the --nopassword option is set  to
      false  (the  default), a username is required. In this case,
 
-Java EE 6           Last change: 16 Dec 2010                    1
+Java EE 6           Last change: 14 Jun 2011                    1
 
 asadmin Utility Subcommands                      create-domain(1)
 
@@ -73,6 +73,9 @@ OPTIONS
          used with the --portbase option. The  default  value  is
          4848.
 
+         The --adminport option  overrides  the  domain.adminPort
+         property of the --domainproperties option.
+
      --instanceport
 
          The  domain provides services so that  applications  can
@@ -82,6 +85,10 @@ OPTIONS
          and must be available at the time  of  domain  creation.
          The  --instanceport  option  cannot  be used with the --
          portbase option. The default value is 8080.
+
+         The     --instanceport     option     overrides      the
+         domain.instancePort  property  of the --domainproperties
+         option.
 
      --portbase
          Determines the number with which port assignments should
@@ -96,22 +103,22 @@ OPTIONS
 
              o    HTTPS listener port: portbase + 81
 
+Java EE 6           Last change: 14 Jun 2011                    2
+
+asadmin Utility Subcommands                      create-domain(1)
+
              o    JMS port: portbase + 76
 
              o    IIOP listener port: portbase + 37
 
              o    Secure IIOP listener port: portbase + 38
 
-Java EE 6           Last change: 16 Dec 2010                    2
-
-asadmin Utility Subcommands                      create-domain(1)
-
              o    Secure IIOP with  mutual  authentication  port:
                   portbase + 39
 
              o    JMX port: portbase + 86
 
-             o    JPA debugger port: portbase + 9
+             o    JPDA debugger port: portbase + 9
 
              o    Felix  shell  service  port  for  OSGi   module
                   management: portbase + 66
@@ -147,18 +154,18 @@ asadmin Utility Subcommands                      create-domain(1)
          The directory where the domain  is  to  be  created.  If
          specified,  the  path must be accessible in the filesys-
          tem. If not specified, the  domain  is  created  in  the
-         default domain directory, as-install/glassfish/domains.
+         default domain directory, as-install/domains.
+
+Java EE 6           Last change: 14 Jun 2011                    3
+
+asadmin Utility Subcommands                      create-domain(1)
 
      --savemasterpassword
+
          Setting this option to true allows the  master  password
          to  be  written  to  the  file system. If this option is
          true,  the  --usemasterpassword  option  is  also  true,
          regardless of the value that is specified on the command
-
-Java EE 6           Last change: 16 Dec 2010                    3
-
-asadmin Utility Subcommands                      create-domain(1)
-
          line. The default value is false.
 
          A master password is really a password  for  the  secure
@@ -192,7 +199,6 @@ asadmin Utility Subcommands                      create-domain(1)
          to the environment.
 
      --usemasterpassword
-
          Specifies whether the key store is encrypted with a mas-
          ter  password  that  is built into the system or a user-
          defined master password.
@@ -205,16 +211,17 @@ asadmin Utility Subcommands                      create-domain(1)
          If true, the subcommand obtains the master password from
          the  AS_ADMIN_MASTERPASSWORD  entry in the password file
          or prompts for the master password. The password file is
+
+Java EE 6           Last change: 14 Jun 2011                    4
+
+asadmin Utility Subcommands                      create-domain(1)
+
          specified   in   the   --passwordfile   option   of  the
          asadmin(1M)utility.
 
          If the --savemasterpassword option is true, this  option
          is  also true, regardless of the value that is specified
          on the command line.
-
-Java EE 6           Last change: 16 Dec 2010                    4
-
-asadmin Utility Subcommands                      create-domain(1)
 
      --domainproperties
 
@@ -234,6 +241,9 @@ asadmin Utility Subcommands                      create-domain(1)
              UNIX,  creating  sockets that listen on ports 1-1024
              requires superuser privileges.
 
+             The domain.adminPort property is overridden  by  the
+             --adminport option.
+
          domain.instancePort
 
              This property specifies the port number of the  port
@@ -241,6 +251,9 @@ asadmin Utility Subcommands                      create-domain(1)
              values are 1-65535. On UNIX, creating  sockets  that
              listen    on   ports   1-1024   requires   superuser
              privileges.
+
+             The domain.instancePort  property is  overridden  by
+             --instanceport option.
 
          domain.jmxPort
              This property specifies the port number on which the
@@ -252,36 +265,37 @@ asadmin Utility Subcommands                      create-domain(1)
 
              This property specifies the port number of the  port
              that  is  used  to listen for HTTPS requests.  Valid
+
+Java EE 6           Last change: 14 Jun 2011                    5
+
+asadmin Utility Subcommands                      create-domain(1)
+
              values are 1-65535. On UNIX, creating  sockets  that
              listen    on   ports   1-1024   requires   superuser
              privileges.
 
          java.debugger.port
+
              This property specifies the port number of the  port
              that  is  used  for connections to the Java Platform
              Debugger Architecture (JPDA) debugger. Valid  values
              are  1-65535.  On UNIX, creating sockets that listen
              on ports 1-1024 requires superuser privileges.
 
-Java EE 6           Last change: 16 Dec 2010                    5
-
-asadmin Utility Subcommands                      create-domain(1)
-
          jms.port
-
              This property specifies the port number for the Java
              Message  Service provider. Valid values are 1-65535.
              On UNIX,  creating  sockets  that  listen  on  ports
              1-1024 requires superuser privileges.
 
          orb.listener.port
+
              This property specifies the port number of the  port
              that  is used for IIOP connections. Valid values are
              1-65535. On UNIX, creating sockets  that  listen  on
              ports 1-1024 requires superuser privileges.
 
          orb.mutualauth.port
-
              This property specifies the port number of the  port
              that is used for secure IIOP connections with client
              authentication. Valid values are 1-65535.  On  UNIX,
@@ -289,6 +303,7 @@ asadmin Utility Subcommands                      create-domain(1)
              requires superuser privileges.
 
          orb.ssl.port
+
              This property specifies the port number of the  port
              that  is  used  for  secure  IIOP connections. Valid
              values are 1-65535. On UNIX, creating  sockets  that
@@ -296,16 +311,21 @@ asadmin Utility Subcommands                      create-domain(1)
              privileges.
 
          osgi.shell.telnet.port
-
              This property specifies the port number of the  port
              that  is  used  for  connections to the Apache Felix
              Remote Shell. This shell uses the Felix  shell  ser-
              vice  to  interact  with the OSGi  module management
-             subsystem. Valid values are 1-65535. On UNIX, creat-
-             ing  sockets  that  listen  on ports 1-1024 requires
-             superuser privileges.
+             subsystem.  Valid  values  are  1-65535.  On   UNIX,
+
+Java EE 6           Last change: 14 Jun 2011                    6
+
+asadmin Utility Subcommands                      create-domain(1)
+
+             creating   sockets   that  listen  on  ports  1-1024
+             requires superuser privileges.
 
      --keytooloptions
+
          Specifies an optional list of name-value pairs  of  key-
          tool  options  for a self-signed server certificate. The
          certificate is generated  during  the  creation  of  the
@@ -314,12 +334,7 @@ asadmin Utility Subcommands                      create-domain(1)
 
          Allowed options are as follows:
 
-Java EE 6           Last change: 16 Dec 2010                    6
-
-asadmin Utility Subcommands                      create-domain(1)
-
          CN
-
              Specifies the common name of the host that is to  be
              used  for  the  self-signed certificate. This option
              name is case insensitive.
@@ -328,6 +343,7 @@ asadmin Utility Subcommands                      create-domain(1)
              the host where the create-domain subcommand is run.
 
       --savelogin
+
          If set to true, this  option  saves  the  administration
          user  name  and  password.  Default  value is false. The
          username and password are  stored  in  the  .asadminpass
@@ -342,19 +358,25 @@ asadmin Utility Subcommands                      create-domain(1)
 
          Note -
 
-           When the same user creates multiple domains having the
-           same  administration  port  number on the same or dif-
-           ferent hots (where the home directory is NFS mounted),
-           the  subcommand does not ask if the password should be
-           overwritten. The password will always be overwritten.
+           When the same user creates multiple domains that  have
+           the  same  administration  port  number on the same or
+           different  host  (where  the  home  directory  is  NFS
+           mounted),  the subcommand does not ask if the password
+           should be overwritten. The  password  will  always  be
+           overwritten.
 
      --checkports
-
          Specifies whether to check for the availability  of  the
          administration,  HTTP,  JMS,  JMX,  and  IIOP ports. The
+
+Java EE 6           Last change: 14 Jun 2011                    7
+
+asadmin Utility Subcommands                      create-domain(1)
+
          default value is true.
 
      --nopassword
+
          Specifies whether the administrative user  will  have  a
          password. If false (the default), the password is speci-
          fied by the AS_ADMIN_PASSWORD entry in the asadmin pass-
@@ -362,23 +384,18 @@ asadmin Utility Subcommands                      create-domain(1)
          false and the AS_ADMIN_PASSWORD  is  not  set,  you  are
          prompted for the password.
 
-          If true, the administrative user is created  without  a
+         If true, the administrative user is  created  without  a
          password.   If  a user name for the domain is not speci-
          fied by using the --user option,  and  the  --nopassword
          option  is set to true, the default user name, admin, is
-
-Java EE 6           Last change: 16 Dec 2010                    7
-
-asadmin Utility Subcommands                      create-domain(1)
-
          used.
 
 OPERANDS
-     domain-name                 The name of  the  domain  to  be
-                                 created.  The  name  must  be  a
-                                 valid  directory  name  for  the
-                                 operating  system  on  the  host
-                                 where the domain is created.
+     domain-name
+         The name of the domain to be created. The name may  con-
+         tain only ASCII characters and must be a valid directory
+         name for the operating system  on  the  host  where  the
+         domain is created.
 
 EXAMPLES
      Example 1 Creating a Domain
@@ -404,6 +421,10 @@ EXAMPLES
        Domain domain4 allows admin login as user "admin" with no password.
        Command create-domain executed successfully.
 
+Java EE 6           Last change: 14 Jun 2011                    8
+
+asadmin Utility Subcommands                      create-domain(1)
+
      Example 2 Creating a Domain in an Alternate Directory
 
      This example creates a  domain  named  sampleDomain  in  the
@@ -415,11 +436,6 @@ EXAMPLES
        Using port 7070 for Admin.
        Using port 7071 for HTTP Instance.
        Using default port 7676 for JMS.
-
-Java EE 6           Last change: 16 Dec 2010                    8
-
-asadmin Utility Subcommands                      create-domain(1)
-
        Using default port 3700 for IIOP.
        Using default port 8181 for HTTP_SSL.
        Using default port 3820 for IIOP_SSL.
@@ -455,6 +471,11 @@ asadmin Utility Subcommands                      create-domain(1)
        Enterprise ServiceDistinguished Name of the self-signed X.509 Server Certificate is:
        [CN=sr1-usca-22,OU=GlassFish,O=Oracle Corp.,L=Redwood Shores,ST=California,C=US]
        No domain initializers found, bypassing customization step
+
+Java EE 6           Last change: 14 Jun 2011                    9
+
+asadmin Utility Subcommands                      create-domain(1)
+
        Domain myDomain created.
        Domain myDomain admin port is 8282.
        Domain myDomain allows admin login as user "admin" with no password.
@@ -465,10 +486,6 @@ asadmin Utility Subcommands                      create-domain(1)
        Information stored in this file will be used by
        asadmin commands to manage this domain.
        Command create-domain executed successfully.
-
-Java EE 6           Last change: 16 Dec 2010                    9
-
-asadmin Utility Subcommands                      create-domain(1)
 
      Example 4 Creating a Domain and Designating the  Certificate
      Host
@@ -503,6 +520,10 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
+Java EE 6           Last change: 14 Jun 2011                   10
+
+asadmin Utility Subcommands                      create-domain(1)
+
 SEE ALSO
      login(1), delete-domain(1), start-domain(1), stop-domain(1),
      list-domains(1)
@@ -514,5 +535,5 @@ SEE ALSO
      shell.html),  Java  Platform  Debugger  Architecture  (JPDA)
      (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
 
-Java EE 6           Last change: 16 Dec 2010                   10
+Java EE 6           Last change: 14 Jun 2011                   11
 

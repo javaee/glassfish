@@ -48,7 +48,7 @@ OPTIONS
          The name of the host that the node represents. The  name
          of  the  host  must  be  specified.  Otherwise, an error
 
-Java EE 6           Last change: 16 Dec 2010                    1
+Java EE 6           Last change: 14 Jun 2011                    1
 
 asadmin Utility Subcommands                    create-node-ssh(1)
 
@@ -101,7 +101,7 @@ asadmin Utility Subcommands                    create-node-ssh(1)
            file.  The  password  file  is  specified  in  the  --
            paswordfile option of the asadmin(1M) utility.
 
-Java EE 6           Last change: 16 Dec 2010                    2
+Java EE 6           Last change: 14 Jun 2011                    2
 
 asadmin Utility Subcommands                    create-node-ssh(1)
 
@@ -153,7 +153,7 @@ asadmin Utility Subcommands                    create-node-ssh(1)
          true
              The GlassFish Server software is  installed  on  the
 
-Java EE 6           Last change: 16 Dec 2010                    3
+Java EE 6           Last change: 14 Jun 2011                    3
 
 asadmin Utility Subcommands                    create-node-ssh(1)
 
@@ -174,6 +174,8 @@ OPERANDS
          The name of the node.
 
          The name must meet the following requirements:
+
+             o    The name may contain only ASCII characters.
 
              o    The name must start with a letter, a number, or
                   an underscore.
@@ -202,16 +204,14 @@ OPERANDS
                   other  keyword  that  is  reserved by GlassFish
                   Server.
 
-EXAMPLES
-     This  example  creates   the   node   adc   for   the   host
-     adc.example.com.   The   parent  of  the  base  installation
-
-Java EE 6           Last change: 16 Dec 2010                    4
+Java EE 6           Last change: 14 Jun 2011                    4
 
 asadmin Utility Subcommands                    create-node-ssh(1)
 
-     directory   of   the   GlassFish    Server    software    is
-     /export/glassfish3.
+EXAMPLES
+     This  example  creates   the   node   adc   for   the   host
+     adc.example.com.  The parent of the base installation direc-
+     tory of the GlassFish Server software is /export/glassfish3.
 
      Example 1 Creating a Node
 
@@ -249,5 +249,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 16 Dec 2010                    5
+Java EE 6           Last change: 14 Jun 2011                    5
 

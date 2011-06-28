@@ -5,7 +5,7 @@ NAME
      list-file-users - lists the file users
 
 SYNOPSIS
-     list-file-users [--help] [--authrealmname auth_realm_name] [--target target]
+     list-file-users [--help] [--authrealmname auth_realm_name] [target]
 
 DESCRIPTION
      The list-file-users subcommand displays a list of file users
@@ -21,37 +21,40 @@ OPTIONS
          Lists only the users  in  the  specified  authentication
          realm.
 
-     --target
+OPERANDS
+     target
 
-         Specifies the target for which you are creating the list
-         of file users. This option is valid only in domains that
-         are configured to support clusters, such as domains that
-         are  created  with the cluster profile or the enterprise
-         profile.Valid targets are:
+         Specifies the target for which you  want  to  list  file
+         users. The following values are valid:
 
          server
-             Lists the file users in the default server instance.
+             Lists the file users on the default server instance.
              This is the default value.
 
+         configuration_name
+
+             Lists the file users in the specified configuration.
+
          cluster_name
+             Lists the file users on all server instances in  the
+             specified cluster.
 
-             Lists the file users on every server instance in the
-             cluster.
+         instance_name
 
-         instance_nameinstance_name
-             Lists the file users on a particular sever instance.
+             Lists the file users on a specified server instance.
 
 EXAMPLES
-     Example 1 Listing Users in a Specific File Realm
 
-Java EE 6         Last change: 01 December 2010                 1
+Java EE 6           Last change: 21 Jun 2011                    1
 
 asadmin Utility Subcommands                    list-file-users(1)
+
+     Example 1 Listing Users in a Specific File Realm
 
      The following example lists the  users  in  the  file  realm
      named sample_file_realm.
 
-       asadmin> list-file-users sample_file_realm
+       asadmin> list-file-users --authrealmname sample_file_realm
        sample_user05
        sample_user08
        sample_user12
@@ -69,5 +72,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6         Last change: 01 December 2010                 2
+Java EE 6           Last change: 21 Jun 2011                    2
 

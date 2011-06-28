@@ -8,7 +8,7 @@ NAME
 
 SYNOPSIS
      set-web-context-param [--help] --name=context-param-name
-     {--value=value|--ignoreDescriptorItem={false|true}}
+     {--value=value|--ignoredescriptoritem={false|true}}
      [--description=description] application-name[/module]
 
 DESCRIPTION
@@ -46,14 +46,14 @@ OPTIONS
          The value to which  the  servlet  context-initialization
          parameter is to be set.
 
-         Either the --value option or the  --ignoreDescriptorItem
+         Either the --value option or the  --ignoredescriptoritem
          option must be set.
 
-Java EE 6           Last change: 30 Oct 2009                    1
+Java EE 6           Last change: 15 Jun 2011                    1
 
 asadmin Utility Subcommands              set-web-context-param(1)
 
-     --ignoreDescriptorItem
+     --ignoredescriptoritem
 
          Specifies  whether  the  servlet  context-initialization
          parameter  is  ignored if it is set in the application's
@@ -72,12 +72,12 @@ asadmin Utility Subcommands              set-web-context-param(1)
 
              The value is ignored.
 
-         Either the --value option or the  --ignoreDescriptorItem
+         Either the --value option or the  --ignoredescriptoritem
          option must be set.
 
          Note -
 
-           Do not use the --ignoreDescriptorItem option to  unset
+           Do not use the --ignoredescriptoritem option to  unset
            a  servlet  context-initialization  parameter that has
            previously been set by using the set-web-context-param
            subcommand.   Instead,   use   the  unset-web-context-
@@ -102,7 +102,7 @@ OPERANDS
          enterprise archive (EAR) file. The path to the module is
          specified in the module  element  of  the  application's
 
-Java EE 6           Last change: 30 Oct 2009                    2
+Java EE 6           Last change: 15 Jun 2011                    2
 
 asadmin Utility Subcommands              set-web-context-param(1)
 
@@ -149,10 +149,10 @@ EXAMPLES
      basic-ezcomp.
 
        asadmin> set-web-context-param --name=javax.faces.PROJECT_STAGE
-       --ignoreDescriptorItem=true
+       --ignoredescriptoritem=true
        basic-ezcomp
 
-Java EE 6           Last change: 30 Oct 2009                    3
+Java EE 6           Last change: 15 Jun 2011                    3
 
 asadmin Utility Subcommands              set-web-context-param(1)
 
@@ -168,5 +168,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 30 Oct 2009                    4
+Java EE 6           Last change: 15 Jun 2011                    4
 
