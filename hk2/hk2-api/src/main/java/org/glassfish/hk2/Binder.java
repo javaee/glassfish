@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.hk2;
 
 /**
@@ -50,7 +49,8 @@ package org.glassfish.hk2;
  * this interface name and this name, this binding will
  * replace the service in the registry.
  *
- * @author Jerome Dochez, Jeff Trent
+ * @author Jerome Dochez
+ * @author Jeff Trent
  */
 public interface Binder<T> extends NamedBinder<T> {
 
@@ -63,8 +63,5 @@ public interface Binder<T> extends NamedBinder<T> {
      * the binding request.
      */
     NamedBinder<T> named(String name);
-
-
-
 
 }

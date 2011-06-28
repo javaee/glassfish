@@ -72,7 +72,7 @@ package org.glassfish.hk2;
  * is being sought by its type.
  * 
  * <p/>
- * The methods {@link #getComponentProvider() and {@link #get()}
+ * The methods {@link #getProvider() and {@link #get()}
  * represent access to the singleton if the service "byType" exists in
  * the HK2 service registry. If the service component does not exist then
  * these methods will return null. In this situation, {@link #all()} will
@@ -89,7 +89,7 @@ package org.glassfish.hk2;
  * Unlike "byType" where there can either be zero or one manifestation of
  * a qualifying service, a {@link ContractLocator} can represent many
  * service instances in the HK2 service registry.  In this case, the
- * methods {@link #getComponentProvider()} and {@link #get()} represent
+ * methods {@link #getProvider()} and {@link #get()} represent
  * the "best qualifying" service matching the locator criteria.
  * 
  * <p>

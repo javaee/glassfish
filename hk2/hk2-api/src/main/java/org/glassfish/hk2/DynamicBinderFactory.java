@@ -37,14 +37,14 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.hk2;
 
 /**
  * Sub interfaces of the {@link BinderFactory} to allow dynamic registration
  * of services.
  *
- * @author Jerome Dochez, Jeff Trent
+ * @author Jerome Dochez
+ * @author Jeff Trent
  */
 public interface DynamicBinderFactory extends BinderFactory {
 

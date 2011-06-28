@@ -48,7 +48,7 @@ import java.util.Collection;
  * 	<li> obtain the runtime {@link Descriptor} describing the
  * 		attributes of the registered component/service, and
  * 
- * 	<li> provides a means to access the clazz type instance.  Note
+ * 	<li> provides a means to access the class type instance.  Note
  * 		that the class instance might be managed in a context
  * 		other than the current thread classloader context.
  * 
@@ -78,7 +78,7 @@ public interface Provider<T> {
 
     /**
      * The {@link Descriptor} fully characterizes the attributes
-     * of this {@link Factory}.
+     * of this Provider.
      * 
      * @return 
      * 	a non-null Descriptor describing the complete set of
@@ -117,11 +117,12 @@ public interface Provider<T> {
      */
     Collection<Annotation> getAnnotations();
 
-    /**
-     * Returns true if the component has been instantiated.
-     *
-     * @return true if the component is active.
-     */
-    boolean isActive();
+    // This is in ManagedComponentProvider
+//    /**
+//     * Returns true if the component has been instantiated.
+//     *
+//     * @return true if the component is active.
+//     */
+//    boolean isActive();
 
 }

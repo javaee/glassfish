@@ -37,24 +37,53 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.hk2;
 
 import java.lang.annotation.Annotation;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 5/3/11
- * Time: 10:15 AM
- * To change this template use File | Settings | File Templates.
+ * Provides a means to locate services in the HK2 services registry by
+ * contract.
+ * 
+ * <p/>
+ * ContractLocators are typically produced by calling one of the {@link
+ * Locator} forContract() methods.
+ * 
+ * <p/>
+ * This interface provides a builder like pattern that can be used to
+ * refine the criteria for the {@link Providers} it will return.
+ * 
+ * @author Jerome Dochez
+ * @author Jeff Trent
+ * @author Mason Taube
+ * 
+ * @see Locator
+ * @see Providers
  */
 public interface ContractLocator<T> extends ServiceLocator<T> {
-  
+
+    /**
+     * Qualify this ContractLocator to identify services that are named name.
+     * 
+     * @param name the name of the service
+     * @return the same ContractLocator instance, now additionally qualified by name
+     */
     ContractLocator<T> named(String name);
 
+    /**
+     * Qualify this ContractLocator to identify services that are scoped scope.
+     * 
+     * @param scope the scope of the service
+     * @return the same ContractLocator instance, now additionally qualified by scope
+     */
     ContractLocator<T> in(Scope scope);
 
+    /**
+     * Qualify this ContractLocator to identify services have the given annotations.
+     * 
+     * @param annotations the annotations that the service must have
+     * @return the same ContractLocator instance, now additionally qualified by annotations
+     */
     ContractLocator<T> annotatedWith(Class<? extends Annotation>... annotations);
 
 }

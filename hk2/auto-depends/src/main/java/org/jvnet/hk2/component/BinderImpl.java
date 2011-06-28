@@ -77,8 +77,10 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
     }
 
     @Override
-    public NamedBinder<V> annotatedWith(Class<? extends Annotation> annotation) {
-        this.annotations.add(annotation);
+    public NamedBinder<V> annotatedWith(Class<? extends Annotation>... annotations) {
+        for (Class<? extends Annotation> annotation : annotations) {
+            this.annotations.add(annotation);
+        }
         return this;
     }
 
@@ -103,12 +105,12 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
     }
 
     @Override
-    public <T extends V> ResolvedBinder<T> toInstance(T instance) {
+    public <T extends V> void toInstance(T instance) {
         AbstractResolvedBinder<T> resolvedBinder = new InstanceBasedBinder<T>((BinderImpl<T>) this, instance);
         owner.add(resolvedBinder);
-        return resolvedBinder;
+//        in(Singleton.class);
     }
-
+    
     @Override
     public <T extends V> ResolvedBinder<T> toFactory(final org.glassfish.hk2.Factory<T> provider) {
 

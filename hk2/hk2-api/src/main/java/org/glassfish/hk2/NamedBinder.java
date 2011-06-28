@@ -37,30 +37,97 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.hk2;
 
 import java.lang.annotation.Annotation;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 5/11/11
- * Time: 6:51 AM
- * To change this template use File | Settings | File Templates.
+ * Provides a means to more fully describe a binding that has already been
+ * named, or where the name has been assumed to be left blank.
+ * 
+ * <p/>
+ * This is a builder like pattern, where each method more fully builds up
+ * a binding description. The builder takes the caller through phases of
+ * the build process. This process actually begins in the {@link Binder}
+ * class. Once the Binder is bound to a name (or the name is assumed null),
+ * a NamedBinder provides a means to add annotations here. Once this phase
+ * is completed, a {@link ResolvedBinder} is produced once a target is
+ * provided - the target is the actual implementation strategy behing the
+ * binding (e.g., class name to load reflectively, a factory, etc.).
+ * 
+ * @author Jerome Dochez
+ * @author Jeff Trent
  */
 public interface NamedBinder<U>  {
 
-    NamedBinder<U> annotatedWith(Class<? extends Annotation> annotation);
+    /**
+     * Append annotations to the binding.
+     * 
+     * @param annotations the annotations to append
+     * @return this instances, with additional annotations appended to it
+     */
+    NamedBinder<U> annotatedWith(Class<? extends Annotation>... annotations);
 
+    /**
+     * Have this instance resolve to a particular target implementation
+     * class name.
+     * 
+     * @param className the class name target to resolve to
+     * @return a ResolvedBinder
+     */
     ResolvedBinder<U> to(String className);
+
+    /**
+     * Have this instance resolve to a particular target implementation
+     * class type.
+     * 
+     * @param className the class type target to resolve to
+     * @return a ResolvedBinder
+     */
     <T extends U> ResolvedBinder<T> to(Class<? extends T> serviceClass);
+
+    /**
+     * Have this instance resolve to a particular target implementation
+     * type literal.
+     * 
+     * @param typeLiteral the type literal target to resolve to
+     * @return a ResolvedBinder
+     */
     <T extends U> ResolvedBinder<T> to(TypeLiteral<T> typeLiteral);
 
-    <T extends U> ResolvedBinder<T> toInstance(T instance);
+    /**
+     * Have this instance resolve to a particular singleton implementation
+     * instance. In this case the {@link Scope} is assumed to be singleton. 
+     * 
+     * @param className the class type target to resolve to
+     * @return a ResolvedBinder
+     */
+    <T extends U> void toInstance(T instance);
 
+    /**
+     * Have this instance resolve to a particular target factory
+     * implementation.
+     * 
+     * @param factory the factory target to resolve to
+     * @return a ResolvedBinder
+     */
     <T extends U> ResolvedBinder<T> toFactory(Factory<T> factory);
+    
+    /**
+     * Have this instance resolve to a particular target factory
+     * class type.
+     * 
+     * @param factoryType the factory class type target to resolve to
+     * @return a ResolvedBinder
+     */
     <T extends U> ResolvedBinder<T> toFactory(Class<? extends Factory<? extends T>> factoryType);
+
+    /**
+     * Have this instance resolve to a particular target type literal factory.
+     * 
+     * @param factoryType the type literal factory to resolve to
+     * @return a ResolvedBinder
+     */
     <T extends U> ResolvedBinder<T> toFactory(TypeLiteral<? extends Factory<? extends T>> factoryType);
 
 }

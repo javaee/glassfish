@@ -44,23 +44,22 @@ package org.glassfish.hk2;
  * or by returning an existing one.
  *
  * <p/>
- * Providers are used in a wide variety of ways in HK2:
+ * Factories are used in a wide variety of ways in HK2:
  *
- * <li>Developers use Providers while programmatically binding services
- * via methods line {@link NamedBinder#toProvider(Provider)}. In this
- * scenario the {@link Provider} the developer provides is a logically
- * equivalent to a factory. The provider [factory] is eventually called
- * at runtime whenever a consumer locates this component provider and
- * attempts to use it.
+ * <li>Developers use Factories while programmatically binding services
+ * via methods line {@link NamedBinder#toFactory(Factory)}. this factory
+ * is called at runtime whenever a consumer locates this factory provider
+ * and attempts to use it.
  *
- * The {@link Scope} of services it produces is ultimately
- * determined by how the provider [factory] implementation behaves
- * when asked to provide service instances to the consumer.
+ * The {@link Scope} of services it produces is ultimately determined by
+ * how the implementation behaves when asked to provide service instances
+ * to the consumer (i.e., the factory methods are invoked on it).
  *
- * <li>For services declared as "PerLookup", HK2 will create a
- * {@link Provider} that will behave by returning a new service
- * for each and every call to {@link #get()} regardless of the
- * caller context.
+ * <p/>
+ * HK2 uses Factories internally:
+ * <li>For services declared as "PerLookup", HK2 will create a Factory
+ * that will return a new service for each and every call to {@link #get()}
+ * regardless of the caller context.
  *
  * <li>For services declared as Singleton {@link Scope}, HK2 will return
  * the same service globally for every request made.
@@ -76,8 +75,6 @@ package org.glassfish.hk2;
  * JSR-330/299, on the other hand, will be released when its parent
  * component/service/bean is released (i.e., goes out of scope).
  *
- * <li>Is the super class for {@link Provider}.
- *
  * @author Jerome Dochez
  * @author Jeff Trent
  * @author Mason Taube
@@ -85,8 +82,8 @@ package org.glassfish.hk2;
 public interface Factory<T> {
 
     /**
-     * The system calls this method to obtain a reference
-     * to the component/service.
+     * The system calls this method to obtain a reference to the 
+     * component/service.
      *
      * @return
      *      null is a valid return value. This is useful
