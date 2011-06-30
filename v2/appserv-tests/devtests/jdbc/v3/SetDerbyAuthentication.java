@@ -13,7 +13,7 @@ import java.sql.Statement;
  */
 public class SetDerbyAuthentication {
     
-    private static String DATABASES_HOME = "/home/shalini/glassfish/databases";
+    private static String DATABASES_HOME = "/tmp/jdbc_devtests/databases";
     private static String RECONFIG_DB_NAME = DATABASES_HOME + "/reconfig-db";
     private static String SAMPLE_DB_NAME = DATABASES_HOME + "/sample-db";
     private static String SUN_APPSERV_SAMPLES_DB = DATABASES_HOME + "/sun-appserv-samples";

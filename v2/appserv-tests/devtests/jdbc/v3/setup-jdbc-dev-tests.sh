@@ -1,22 +1,23 @@
 #!/bin/sh
 #set v3 home
-v3home=/space/connectors/v3/glassfish
+v3home=${S1AS_HOME}
 
 #set v3 jdbc devtests home
-v3jdbcdevtestshome=/home/shalini/v3/v3/v3
+v3jdbcdevtestshome=$APS_HOME/devtests/jdbc/v3
 
 #set war location
-war2deploy=/space/connectors/v3/Devtests/v3_jdbc_dev_tests/dist/v3_jdbc_dev_tests.war
+war2deploy=$v3jdbcdevtestshome/v3_jdbc_dev_tests/dist/v3_jdbc_dev_tests.war
 
 #set Derby location
-derbyhome=$v3home/javadb
+derbyhome=$v3home/../javadb
 
 #set databases home
-databaseshome=$v3home/databases
+databaseshome=/tmp/jdbc_devtests/databases
+mkdir -p $databaseshome
 
 #set Test Results Page
-testResult1=/space/connectors/tmp/jdbc-tests-result-1.html
-testResult2=/space/connectors/tmp/jdbc-tests-result-2.html
+testResult1=/tmp/jdbc_devtests/jdbc-tests-result-1.html
+testResult2=/tmp/jdbc_devtests/jdbc-tests-result-2.html
 
 echo Setting up Derby for Authentication...
 javac -classpath $derbyhome/lib/derby.jar SetDerbyAuthentication.java

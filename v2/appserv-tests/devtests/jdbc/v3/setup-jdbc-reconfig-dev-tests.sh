@@ -1,15 +1,18 @@
 #!/bin/sh
 #set v3 home
-v3home=/home/shalini/glassfish
+v3home=${S1AS_HOME}
 
 #set databases home
-databaseshome=$v3home/databases
+databaseshome=/tmp/jdbc_devtests/databases
+mkdir -p $databaseshome
+
+v3jdbcdevtestshome=$APS_HOME/devtests/jdbc/v3
 
 #set war location
-war2deploy=/home/shalini/v3/v3/v3/v3_jdbc_dev_tests/dist/v3_jdbc_dev_tests.war
+war2deploy=$v3jdbcdevtestshome/v3_jdbc_dev_tests/dist/v3_jdbc_dev_tests.war
 
 #set Test Results Page
-reconfigResult=/tmp/reconfig-results.html
+reconfigResult=/tmp/jdbc_devtests/reconfig-results.html
 
 cd $v3home
 echo "Starting domain..."
@@ -54,31 +57,31 @@ echo create resource jdbc/res2
 echo "\n\n****************************************************************************************************************\n"
 
 echo "\nExecuting TEST1 : JDBC Connection Pool Attribute (max-pool-size) Change \n"
-echo "\nasadmin set --value=40 resources.jdbc-connection-pool.jdbc-dev-test-pool.max-pool-size \n"
-./bin/asadmin set --value=40 resources.jdbc-connection-pool.jdbc-dev-test-pool.max-pool-size
+echo "\nasadmin set resources.jdbc-connection-pool.jdbc-dev-test-pool.max-pool-size=40 \n"
+./bin/asadmin set resources.jdbc-connection-pool.jdbc-dev-test-pool.max-pool-size=40
 
 #also set max-wait-time-in-millis to a smaller value so that tests run faster
-echo "\nasadmin set --value=1000 resources.jdbc-connection-pool.jdbc-dev-test-pool.max-wait-time-in-millis \n"
-./bin/asadmin set --value=1000 resources.jdbc-connection-pool.jdbc-dev-test-pool.max-wait-time-in-millis
+echo "\nasadmin set resources.jdbc-connection-pool.jdbc-dev-test-pool.max-wait-time-in-millis=1000 \n"
+./bin/asadmin set resources.jdbc-connection-pool.jdbc-dev-test-pool.max-wait-time-in-millis=1000
 
 echo "\nGET http://localhost:8080/v3_jdbc_dev_tests/ReconfigTestServlet?maxPoolSize=40\&throwException=true\&testId=1 \n"
 GET http://localhost:8080/v3_jdbc_dev_tests/ReconfigTestServlet?maxPoolSize=40\&throwException=true\&testId=1 > $reconfigResult 
 echo "\n"
 
 #asadmin set max-pool-size to 10 before running test for the second time
-echo "\nasadmin set --value=10 resources.jdbc-connection-pool.jdbc-dev-test-pool.max-pool-size \n"
-./bin/asadmin set --value=10 resources.jdbc-connection-pool.jdbc-dev-test-pool.max-pool-size
+echo "\nasadmin set resources.jdbc-connection-pool.jdbc-dev-test-pool.max-pool-size=10 \n"
+./bin/asadmin set resources.jdbc-connection-pool.jdbc-dev-test-pool.max-pool-size=10
 
-echo "\nasadmin set --value=1000 resources.jdbc-connection-pool.jdbc-dev-test-pool.max-wait-time-in-millis \n"
-./bin/asadmin set --value=1000 resources.jdbc-connection-pool.jdbc-dev-test-pool.max-wait-time-in-millis
+echo "\nasadmin set resources.jdbc-connection-pool.jdbc-dev-test-pool.max-wait-time-in-millis=1000 \n"
+./bin/asadmin set resources.jdbc-connection-pool.jdbc-dev-test-pool.max-wait-time-in-millis=1000
 
 echo "\nGET http://localhost:8080/v3_jdbc_dev_tests/ReconfigTestServlet?maxPoolSize=10\&throwException=true\&testId=1 \n"
 GET http://localhost:8080/v3_jdbc_dev_tests/ReconfigTestServlet?maxPoolSize=10\&throwException=true\&testId=1 >> $reconfigResult
 echo "\n"
 
 #asadmin set max-pool-size to 20 before running test for the second time
-echo "\nasadmin set --value=20 resources.jdbc-connection-pool.jdbc-dev-test-pool.max-pool-size \n"
-./bin/asadmin set --value=20 resources.jdbc-connection-pool.jdbc-dev-test-pool.max-pool-size
+echo "\nasadmin set resources.jdbc-connection-pool.jdbc-dev-test-pool.max-pool-size=20 \n"
+./bin/asadmin set resources.jdbc-connection-pool.jdbc-dev-test-pool.max-pool-size=20
 
 echo "\nGET http://localhost:8080/v3_jdbc_dev_tests/ReconfigTestServlet?maxPoolSize=19\&throwException=false\&testId=1 \n"
 GET http://localhost:8080/v3_jdbc_dev_tests/ReconfigTestServlet?maxPoolSize=19\&throwException=false\&testId=1 >> $reconfigResult
@@ -89,8 +92,8 @@ echo "\n************************************************************************
 
 echo "\nExecuting TEST2 : JDBC Connection Pool Property Change \n"
 #asadmin set property User to a wrong value and try to get a connection
-echo "\nasadmin set --value=APP2 resources.jdbc-connection-pool.jdbc-dev-test-pool.property.User \n"
-./bin/asadmin set --value=APP2 resources.jdbc-connection-pool.jdbc-dev-test-pool.property.User
+echo "\nasadmin set resources.jdbc-connection-pool.jdbc-dev-test-pool.property.User=APP2 \n"
+./bin/asadmin set resources.jdbc-connection-pool.jdbc-dev-test-pool.property.User=APP2
 
 echo "\nRedeploying war... \n"
 bin/asadmin deploy --force=true $war2deploy
@@ -116,8 +119,8 @@ GET http://localhost:8080/v3_jdbc_dev_tests/ReconfigTestServlet?throwException=f
 echo "\n"
 
 #asadmin change pool-name before running test for the second time
-echo "\nasadmin set --value=jdbc-reconfig-test-pool-1 resources.jdbc-resource.jdbc/jdbc-reconfig-test-resource-2.pool-name \n"
-./bin/asadmin set --value=jdbc-reconfig-test-pool-1 resources.jdbc-resource.jdbc/jdbc-reconfig-test-resource-2.pool-name
+echo "\nasadmin set resources.jdbc-resource.jdbc/jdbc-reconfig-test-resource-2.pool-name=jdbc-reconfig-test-pool-1 \n"
+./bin/asadmin set resources.jdbc-resource.jdbc/jdbc-reconfig-test-resource-2.pool-name=jdbc-reconfig-test-pool-1
 
 sleep 5
 ./bin/asadmin stop-domain
@@ -142,8 +145,8 @@ echo "\n************************************************************************
 
 echo "\nExecuting TEST4 : JDBC Resource reconfiguration\n"
 echo "\nTesting if First resource undergoes change in the pool-name with an asadmin set\n"
-echo "\nasadmin set --value=pool2 resources.jdbc-resource.jdbc/res1.pool-name\n"
-./bin/asadmin set --value=pool2 resources.jdbc-resource.jdbc/res1.pool-name
+echo "\nasadmin set resources.jdbc-resource.jdbc/res1.pool-name=pool2\n"
+./bin/asadmin set resources.jdbc-resource.jdbc/res1.pool-name=pool2
 
 sleep 5
 ./bin/asadmin stop-domain

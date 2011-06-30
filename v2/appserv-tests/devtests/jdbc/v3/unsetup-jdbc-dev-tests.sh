@@ -1,4 +1,6 @@
-v3home=/space/connectors/v3/glassfish
+v3home=${S1AS_HOME}
+databaseshome=/tmp/jdbc_devtests/databases
+
 cd $v3home
 
 echo Starting the domain ...
@@ -55,9 +57,10 @@ echo "\n"
 
 echo Deleting files...
 rm -f ./SetDerbyAuthentication.class
+rm -rf $databaseshome
 echo "\n"
 
 echo stopping domain .....
-bin/asadmin stop-domain
+./bin/asadmin stop-domain
 echo "\n"
 
