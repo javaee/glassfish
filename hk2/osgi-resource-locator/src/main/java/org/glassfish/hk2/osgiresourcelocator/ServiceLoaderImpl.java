@@ -127,8 +127,8 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
         return providers;
     }
 
-    /*package*/ <T> Iterable<Class<? extends T>> lookupProviderClasses1(Class<T> serviceClass) {
-        List<Class<? extends T>> providerClasses = new ArrayList<Class<? extends T>>();
+    /*package*/ <T> Iterable<Class> lookupProviderClasses1(Class<T> serviceClass) {
+        List<Class> providerClasses = new ArrayList<Class>();
         rwLock.readLock().lock();
         try {
             final String serviceName = serviceClass.getName();
