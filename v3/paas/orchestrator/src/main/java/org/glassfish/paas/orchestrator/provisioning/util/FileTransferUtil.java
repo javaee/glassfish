@@ -67,7 +67,7 @@ public class FileTransferUtil {
         sshLauncher.init(user, hostname, 0, null, keyfile, null, logger);
         try {
             SFTPClient ftpClient = sshLauncher.getSFTPClient();
-            writeToFile(ftpClient, remoteFileName, new FileInputStream(fileName));
+            writeToFile(ftpClient, remoteFileName, fileName);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -83,7 +83,7 @@ public class FileTransferUtil {
         }
     }
 
-    private void readFromFile(SFTPClient ftpClient, String remoteFileName, String localFileName) throws IOException {
+    public void readFromFile(SFTPClient ftpClient, String remoteFileName, String localFileName) throws IOException {
         InputStream content = ftpClient.read(remoteFileName);
         FileOutputStream os = new FileOutputStream(localFileName);
         int bytesRead;
@@ -97,16 +97,21 @@ public class FileTransferUtil {
         }
     }
 
-    private void writeToFile(SFTPClient ftpClient, final String path, final InputStream content) throws IOException {
+    public void writeToFile(SFTPClient ftpClient, final String path, String fileName) throws IOException {
         final OutputStream os = new BufferedOutputStream(ftpClient.writeToFile(path));
         int bytesRead;
+        FileInputStream content = null;
         try {
+            content = new FileInputStream(fileName);
             final byte[] buffer = new byte[1024];
             while ((bytesRead = content.read(buffer)) != -1) {
                 os.write(buffer, 0, bytesRead);
             }
         } finally {
             os.close();
+            if(content != null){
+                content.close();
+            }
         }
     }
 }

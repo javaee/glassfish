@@ -43,6 +43,7 @@ package org.glassfish.paas.orchestrator.service;
 import org.glassfish.paas.orchestrator.service.spi.ServiceDefinition;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -58,7 +59,7 @@ public class SimpleServiceDefinition implements ServiceDefinition {
 
     public SimpleServiceDefinition(String id, String type, Properties properties) {
         this.name = id;
-        this.serviceType = serviceTypeMap.get(type.toLowerCase());
+        this.serviceType = serviceTypeMap.get(type.toLowerCase(Locale.getDefault()));
         this.properties = properties;
     }
 
@@ -81,7 +82,7 @@ public class SimpleServiceDefinition implements ServiceDefinition {
     }
 
     // name to serviceType mapping.
-    private static Map<String, ServiceType> serviceTypeMap = new HashMap();
+    private static Map<String, ServiceType> serviceTypeMap = new HashMap<String, ServiceType>();
 
     static {
         serviceTypeMap.put("javaee", new JavaEEServiceType());

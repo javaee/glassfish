@@ -86,6 +86,9 @@ public class FileTransferCommand implements AdminCommand {
     private Boolean upload;
 
     @Inject
+    private FileTransferUtil fileTransferUtil;
+
+    @Inject
     private SSHLauncher sshLauncher;
 
     @Inject
@@ -98,40 +101,13 @@ public class FileTransferCommand implements AdminCommand {
         try {
             SFTPClient ftpClient = sshLauncher.getSFTPClient();
             if (upload) {
-                writeToFile(ftpClient, remoteFileName, new FileInputStream(fileName));
+                fileTransferUtil.writeToFile(ftpClient, remoteFileName, fileName);
             } else {
-                readFromFile(ftpClient, remoteFileName, fileName);
+                fileTransferUtil.readFromFile(ftpClient, remoteFileName, fileName);
             }
         } catch (IOException e) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
-        }
-    }
-
-    private void readFromFile(SFTPClient ftpClient, String remoteFileName, String localFileName) throws IOException {
-        InputStream content = ftpClient.read(remoteFileName);
-        FileOutputStream os = new FileOutputStream(localFileName);
-        int bytesRead;
-        try {
-            final byte[] buffer = new byte[1024];
-            while ((bytesRead = content.read(buffer)) != -1) {
-                os.write(buffer, 0, bytesRead);
-            }
-        } finally {
-            os.close();
-        }
-    }
-
-    private void writeToFile(SFTPClient ftpClient, final String path, final InputStream content) throws IOException {
-        final OutputStream os = new BufferedOutputStream(ftpClient.writeToFile(path));
-        int bytesRead;
-        try {
-            final byte[] buffer = new byte[1024];
-            while ((bytesRead = content.read(buffer)) != -1) {
-                os.write(buffer, 0, bytesRead);
-            }
-        } finally {
-            os.close();
         }
     }
 }

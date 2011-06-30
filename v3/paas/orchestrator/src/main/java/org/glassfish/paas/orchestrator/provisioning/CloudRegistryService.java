@@ -180,17 +180,29 @@ public class CloudRegistryService implements PostConstruct {
             File propertiesFile = new File(installRoot + File.separator + "config" + File.separator + "cloud-config.properties");
             if (propertiesFile.exists()) {
                 Properties properties = null;
+                FileInputStream fis = null;
                 try {
+                    fis = new FileInputStream(propertiesFile);
                     properties = new Properties();
-                    properties.load(new FileInputStream(propertiesFile));
+                    properties.load(fis);
+                    cloudConfig = properties;
                 } catch (IOException e) {
                     e.printStackTrace();
+                }finally{
+                    if(fis != null){
+                        try {
+                            fis.close();
+                        } catch (IOException e) {}
+                    }
                 }
-                cloudConfig = properties;
             }
         }
         //always provide the copy.
-        return (Properties) cloudConfig.clone();
+        if(cloudConfig != null){
+            return (Properties) cloudConfig.clone();
+        }else{
+            throw new RuntimeException("Unable to find cloud-config.properties file in 'config' directory");
+        }
     }
 
     public CloudProvisioner getCloudProvisioner() {

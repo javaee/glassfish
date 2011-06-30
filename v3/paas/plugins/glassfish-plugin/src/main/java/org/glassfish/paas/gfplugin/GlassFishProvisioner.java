@@ -525,17 +525,6 @@ public class GlassFishProvisioner implements ApplicationServerProvisioner {
         remoteCommandExecutor.executeCommand(args);
     }
 
-    private void testPool(String dasIPAddress) {
-        String args[] = new String[]
-                {
-                        "DerbyPool"
-                };
-        logCommand(args);
-        CommandResult commandResult = getCommandRunner().run("ping-connection-pool", args);
-        System.out.println(commandResult.getOutput());
-    }
-
-
     private void logCommand(String[] args) {
 /*
         if (args != null) {

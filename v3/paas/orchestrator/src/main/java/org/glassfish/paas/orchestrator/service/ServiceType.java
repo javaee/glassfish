@@ -52,6 +52,12 @@ public abstract class ServiceType {
         if(other == null){
             return false;
         }
-        return getClass().getName().equals(other.getClass().getName());
+        return getClass().equals(other.getClass());
+    }
+
+    @Override
+    public int hashCode() {
+        return ( 41 * 7 + (getClass().getName().hashCode()));
     }
 }
+
