@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -41,46 +41,26 @@
 
 -->
 
-<project name="nucleus-base bundle creation" basedir=".">
-    <target name="create.bundle">
-        <!-- force resource processing as version could change behind the scene without Ant ever noticing it -->
-	<delete dir="target/resources"/>
-        <mkdir dir="target/resources"/>
+<xsl:stylesheet version="1.0"
+xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <xsl:output method="xml"
+          indent="yes">
+  </xsl:output>
+  
+  <xsl:template match="/">
+      <xsl:apply-templates select="node()|@*"/>
+  </xsl:template>
+  <xsl:template match="node()|@*">
+    <xsl:copy>
+      <xsl:apply-templates select="node()|@*"/>
+    </xsl:copy>
+  </xsl:template> 
 
-        <copy todir="target/resources">
-            <fileset dir=".">
-                <include name="bin/*" />
-                <include name="lib/templates/domain.xml" />
-            </fileset>
-        </copy>
+  <xsl:template match="java-config">
+    <xsl:copy>                    
+      <xsl:apply-templates select="node()|@*"/>
+      <jvm-options>-Dcom.ibm.xml.xlxp.support.dtd.compat.mode=false</jvm-options>
+    </xsl:copy>
+  </xsl:template>
 
-        <antcall target="replace-domain.xml"/>
-
-        <zip file="target/nucleus-base.zip">
-            <zipfileset prefix="glassfish" dir="target/resources" filemode="755"
-                    includes="bin/*"
-                    excludes="bin/*.bat" />
-            <zipfileset prefix="glassfish" dir="target/resources">
-                <include name="bin/*.bat" />
-                <include name="lib/templates/*" />
-            </zipfileset>
-            <zipfileset prefix="glassfish" dir=".">
-                <include name="*.txt"/>
-                <include name="config/**"/>
-                <include name="lib/**"/>
-                <include name="domains/**"/>
-                <exclude name="lib/templates/domain.xml"/>
-            </zipfileset>
-        </zip>
-        <attachArtifact file="target/nucleus-base.zip"/>
-    </target>
-
-    <target name="generated-domain.xml-exists">
-        <available file="target/generated/domain.xml" property="domain.xml-exists"/>
-    </target>
-
-    <target name="replace-domain.xml" depends="generated-domain.xml-exists" if="domain.xml-exists">
-         <delete file="target/resources/lib/templates/domain.xml"/>
-         <copy file="target/generated/domain.xml" todir="target/resources/lib/templates"/>
-    </target>
-</project>
+</xsl:stylesheet>
