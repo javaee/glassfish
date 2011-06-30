@@ -66,7 +66,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Rajiv Mordani
@@ -126,7 +125,7 @@ public class InstallNodeCommand extends SSHCommandsBase {
                 sshkeyfile = existingKey;
             }
         } else {
-            validateKeyFile(sshkeyfile);
+            validateKey(sshkeyfile);
         }
         
         //we need the key passphrase if key is encrypted
@@ -141,10 +140,8 @@ public class InstallNodeCommand extends SSHCommandsBase {
 
         File zipFile = null;
         try {
-
-            String baseRootValue = getSystemProperty(SystemPropertyConstants.PRODUCT_ROOT_PROPERTY) ;
             ArrayList<String>  binDirFiles = new ArrayList<String>();
-            zipFile = createZipFileIfNeeded(baseRootValue, binDirFiles);
+            zipFile = createZipFileIfNeeded(binDirFiles);
             copyToHosts(zipFile, binDirFiles);            
         } catch (IOException ioe) {
             throw new CommandException(ioe);
@@ -199,28 +196,12 @@ public class InstallNodeCommand extends SSHCommandsBase {
             //delete the installDir contents if non-empty
             try {
                 //get list of file in DAS installdir
-                //File all = new File(resolver.resolve("${com.sun.aas.installRoot}"));
-                String ins = resolver.resolve("${com.sun.aas.installRoot}") + "/../";
-
-                File all = new File(ins);
-                Set files = FileUtils.getAllFilesAndDirectoriesUnder(all);
-
-                logger.finer("Total number of files under " + ins + " = " + files.size());
-                String remoteDir = installDir;
-                List<String> modList = new ArrayList<String>();
-                if (!installDir.endsWith("/"))
-                    remoteDir = remoteDir + "/";
-
-                for (Object f:files) {
-                    modList.add(remoteDir+FileUtils.makeForwardSlashes(((File)f).getPath()));
-                }
-            
-                deleteRemoteFiles(sftpClient, modList, installDir, force);
+                List<String> files = getListOfInstallFiles(installDir);                
+                deleteRemoteFiles(sftpClient, files, installDir, force);
             } catch (IOException ex) {
                 logger.finer("Failed to remove installDir contents");
                 throw new IOException (ex);
             }
-            
             
             String zip = zipFile.getCanonicalPath();
             try {
@@ -283,8 +264,8 @@ public class InstallNodeCommand extends SSHCommandsBase {
         }
     }
 
-    private File createZipFileIfNeeded(String baseRootValue, ArrayList<String> binDirFiles) throws IOException, ZipFileException {
-
+    private File createZipFileIfNeeded(ArrayList<String> binDirFiles) throws IOException, ZipFileException {
+        String baseRootValue = getSystemProperty(SystemPropertyConstants.PRODUCT_ROOT_PROPERTY) ;
         File installRoot = new File(baseRootValue); 
 
         File zipFileLocation = null;
@@ -348,13 +329,6 @@ public class InstallNodeCommand extends SSHCommandsBase {
         logger.info("Created installation zip " + glassFishZipFile.getCanonicalPath());
 
         return glassFishZipFile;
-    }
-    
-    private void validateKeyFile(String file) throws CommandException {
-        File f = new File(file);
-        if (!f.exists()) {
-            throw new CommandException(Strings.get("KeyDoesNotExist", file));
-        }
     }
     
     /**

@@ -40,11 +40,14 @@
 
 package com.sun.enterprise.admin.cli.cluster;
 
+import com.sun.enterprise.util.io.FileUtils;
 import java.io.*;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.glassfish.internal.api.Globals;
@@ -274,6 +277,10 @@ public abstract class SSHCommandsBase extends CLICommand {
                         }
                     });                    
 
+            //return if no domains exist
+            if (files == null || files.length == 0)
+                return false;
+                    
             for (File file: files) {
                 DomainDirs dir = new DomainDirs(file);
                 File domainXMLFile = dir.getServerDirs().getDomainXml();
@@ -400,5 +407,40 @@ public abstract class SSHCommandsBase extends CLICommand {
             }
         }
         return expandedPassword;
+    }
+
+    /**
+     * This method first obtains a list of files under the product installation
+     * directory. It then modifies each path by prepending it with remote install dir path.
+     * For ex. glassfish/lib/appserv-rt.jar becomes
+     * <remote-install-path>/glassfish/lib/appserv-rt.jar
+     * @return List of files and directories
+     * @throws IOException
+     */
+    protected List<String> getListOfInstallFiles(String installDir) throws IOException {
+        String ins = resolver.resolve("${com.sun.aas.productRoot}");
+        Set files = FileUtils.getAllFilesAndDirectoriesUnder(new File(ins));
+        logger.finer("Total number of files under " + ins + " = " + files.size());
+        String remoteDir = installDir;
+        if (!installDir.endsWith("/")) {
+            remoteDir = remoteDir + "/";
+        }
+        List<String> modList = new ArrayList<String>();
+        for (Object f : files) {
+            modList.add(remoteDir + FileUtils.makeForwardSlashes(((File) f).getPath()));
+        }
+        return modList;
+    }
+
+    /**
+     * Check for existence of key file.
+     * @param file
+     * @throws CommandException
+     */
+    protected void validateKey(String file) throws CommandException {
+        File f = new File(file);
+        if (!f.exists()) {
+            throw new CommandException(Strings.get("KeyDoesNotExist", file));
+        }
     }
 }

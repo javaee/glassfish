@@ -41,7 +41,6 @@
 
 package com.sun.enterprise.admin.cli.cluster;
 
-import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandException;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
@@ -54,11 +53,8 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.internal.api.Globals;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
 
 /**
  * @author Rajiv Mordani
@@ -102,7 +98,7 @@ public class UninstallNodeCommand extends SSHCommandsBase {
                 sshkeyfile = existingKey;
             }
         } else {
-            validateKeyFile(sshkeyfile);
+            validateKey(sshkeyfile);
         }
         
         //we need the key passphrase if key is encrypted
@@ -128,6 +124,8 @@ public class UninstallNodeCommand extends SSHCommandsBase {
 
     private void deleteFromHosts() throws CommandException, IOException, InterruptedException {
 
+        List<String> files = getListOfInstallFiles(installDir);
+        
         for (String host: hosts) {
             sshLauncher.init(sshuser, host, sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
 
@@ -144,39 +142,15 @@ public class UninstallNodeCommand extends SSHCommandsBase {
             
             SFTPClient sftpClient = sshLauncher.getSFTPClient();
 
-
             if (!sftpClient.exists(installDir)) {
                 throw new IOException (installDir + " Directory does not exist");
             }
             
-            //File all = new File(resolver.resolve("${com.sun.aas.productRoot}"));
-            String ins = resolver.resolve("${com.sun.aas.installRoot}") + "/../";
-
-            File all = new File(ins);
-            Set files = FileUtils.getAllFilesAndDirectoriesUnder(all);
-
-            logger.finer("Total number of files under " + ins + " = " + files.size());
-            String remoteDir = installDir;
-            List<String> modList = new ArrayList<String>();
-            if (!installDir.endsWith("/"))
-                remoteDir = remoteDir + "/";
-
-            for (Object f:files) {
-                modList.add(remoteDir+FileUtils.makeForwardSlashes(((File)f).getPath()));
-            }
-            
-            deleteRemoteFiles(sftpClient, modList, installDir, force);
+            deleteRemoteFiles(sftpClient, files, installDir, force);
             
             if(sftpClient.ls(installDir).isEmpty()) {
                 sftpClient.rmdir(installDir);
             }
-        }
-    }
-    
-    private void validateKeyFile(String file) throws CommandException {
-        File f = new File(file);
-        if (!f.exists()) {
-            throw new CommandException(Strings.get("KeyDoesNotExist", file));
         }
     }
 }
