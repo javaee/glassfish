@@ -66,6 +66,8 @@ public abstract class StatementWrapper implements Statement, StatementLeakListen
     private boolean markedForReclaim = false;
     protected final static Logger _logger;
     protected MethodExecutor executor = null;
+    private boolean closeOnCompletion = false;
+    protected int resultSetCount = 0;
 
 
     static {
@@ -867,17 +869,22 @@ public abstract class StatementWrapper implements Statement, StatementLeakListen
             throw new UnsupportedOperationException("Not supported yet.");
         }
         if (DataSourceObjectBuilder.isJDBC41()) {
-            try {
-                executor.invokeMethod(jdbcStatement, "closeOnCompletion", null);
-            } catch (ResourceException ex) {
-                _logger.log(Level.SEVERE, "jdbc.ex_stmt_wrapper", ex);
-                throw new SQLException(ex);
-            }
+            closeOnCompletion = true;
             return;
         }
         throw new UnsupportedOperationException("Operation not supported in this runtime.");
     }
-    
+
+    public void actualCloseOnCompletion() throws SQLException {
+        try {
+            executor.invokeMethod(jdbcStatement, "closeOnCompletion", null);
+        } catch (ResourceException ex) {
+            _logger.log(Level.SEVERE, "jdbc.ex_stmt_wrapper", ex);
+            throw new SQLException(ex);
+        }
+        return;
+    }
+
     public boolean isCloseOnCompletion() throws SQLException {
         if (DataSourceObjectBuilder.isJDBC41()) {
             try {
@@ -889,5 +896,21 @@ public abstract class StatementWrapper implements Statement, StatementLeakListen
             }
         }
         throw new UnsupportedOperationException("Operation not supported in this runtime.");
+    }
+
+    public boolean getCloseOnCompletion() {
+        return closeOnCompletion;
+    }
+
+    public synchronized void incrementResultSetCount() {
+        resultSetCount++;
+    }
+
+    public synchronized void decrementResultSetCount() {
+        resultSetCount--;
+    }
+
+    public int getResultSetCount() {
+        return resultSetCount;
     }
 }

@@ -41,6 +41,7 @@
 package com.sun.gjc.spi.base;
 
 import com.sun.gjc.util.MethodExecutor;
+import com.sun.gjc.util.ResultSetClosedEventListener;
 import com.sun.logging.LogDomains;
 import java.io.InputStream;
 import java.io.Reader;
@@ -61,6 +62,7 @@ public abstract class ResultSetWrapper implements ResultSet {
     protected Statement statement = null;
     protected MethodExecutor executor = null;
     protected final static Logger _logger;
+    private ResultSetClosedEventListener eventListener = null;
 
     static {
         _logger = LogDomains.getLogger(MethodExecutor.class, LogDomains.RSR_LOGGER);
@@ -76,6 +78,9 @@ public abstract class ResultSetWrapper implements ResultSet {
         resultSet = rs;
         statement = stmt;
         executor = new MethodExecutor();
+        if(stmt instanceof ResultSetClosedEventListener) {
+            eventListener = (ResultSetClosedEventListener) stmt;
+        }
     }
 
     /**
@@ -115,6 +120,9 @@ public abstract class ResultSetWrapper implements ResultSet {
      */
     public void close() throws SQLException {
         resultSet.close();
+        if (eventListener != null) {
+            eventListener.resultSetClosed();
+        }
     }
 
     /**
