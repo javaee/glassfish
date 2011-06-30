@@ -44,7 +44,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 
 import org.glassfish.config.support.ConfigBeanListener;
-import org.glassfish.hk2.ComponentProvider;
+import org.glassfish.hk2.Provider;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
@@ -113,7 +113,7 @@ public class PendingConfigBeans implements ConfigBeanListener, PostConstruct, Tr
         return (o instanceof ConfigBean) ? ConfigBean.class.cast(o) : null;
     }
 
-    public void onEntered(final ComponentProvider<ConfigBean> provider)
+    public void onEntered(final Provider<ConfigBean> provider)
     {
         //debug( "PendingConfigBeansNew.onEntered(): " + inhabitant);
 
