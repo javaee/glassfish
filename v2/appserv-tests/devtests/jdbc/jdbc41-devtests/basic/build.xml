@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+<!ENTITY commonSetup SYSTEM "./../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
 <!ENTITY testproperties SYSTEM "./build.properties">
-<!ENTITY run SYSTEM "./../../../config/run.xml">
-<!ENTITY jdbcCommon SYSTEM "./../JdbcCommon.xml">
-<!ENTITY reporting   SYSTEM "./report.xml">
+<!ENTITY run SYSTEM "./../../../../config/run.xml">
+<!ENTITY jdbcCommon SYSTEM "./../../JdbcCommon.xml">
 ]>
 
 <project name="mix" default="usage" basedir=".">
@@ -16,18 +15,11 @@
     &run;
     &testproperties;
     &jdbcCommon;
-    &reporting;
 
-    <target name="all" depends="build,deploy,run,undeploy,report-41"/>
+    <target name="all" depends="build,deploy,run,undeploy"/>
 
     <target name="clean" depends="init-common">
         <antcall  target="clean-common"/>
-        <delete>
-            <fileset dir="${env.APS_HOME}" includes="test_results*"/>
-        </delete>
-        <delete>
-	    <fileset dir="${env.APS_HOME}" includes="JDBC41test_results.html"/>
-        </delete>
     </target>
 
     <target name="compile" depends="clean">
@@ -86,12 +78,6 @@
       
       <antcall target="undeploy-common"/>
     </target>   
-
-    <target name="report-41">
-        <antcall target="report">
-            <param name="htmlfile" value="${env.APS_HOME}/JDBC41test_results.html"/>
-        </antcall>
-    </target>
 
     <target name="usage">
         <antcall target="usage-common"/>
