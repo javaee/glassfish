@@ -39,7 +39,13 @@
  */
 package org.glassfish.hk2.classmodel.reflect.impl;
 
+import org.glassfish.hk2.classmodel.reflect.InterfaceModel;
+import org.glassfish.hk2.classmodel.reflect.ParameterizedInterfaceModel;
 import org.objectweb.asm.signature.SignatureVisitor;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
 
 /**
  * Signature visitor to visit parameterized declarations
@@ -47,9 +53,25 @@ import org.objectweb.asm.signature.SignatureVisitor;
  * @author Jerome Dochez
  */
 public class SignatureVisitorImpl implements SignatureVisitor {
+
+    final TypeBuilder typeBuilder;
+    final Stack<ParameterizedInterfaceModelImpl> stack = new Stack<ParameterizedInterfaceModelImpl>();
+    final Map<String, ParameterizedInterfaceModelImpl> formalTypes = new HashMap<String, ParameterizedInterfaceModelImpl>();
+    final Stack<String> formalTypesNames = new Stack<String>();
+    ParameterizedInterfaceModel lastElement;
+
+    public SignatureVisitorImpl(TypeBuilder typeBuilder) {
+        this.typeBuilder = typeBuilder;
+    }
+
+    ParameterizedInterfaceModel getTopElement() {
+        return lastElement;
+    }
+
     @Override
     public void visitFormalTypeParameter(String s) {
                System.out.println("Visiting formal type " + s);
+        formalTypesNames.push(s);
     }
 
     @Override
@@ -94,7 +116,15 @@ public class SignatureVisitorImpl implements SignatureVisitor {
 
     @Override
     public void visitTypeVariable(String s) {
-        System.out.println("Visiting type variable" + s);
+        System.out.println("Visiting type variable" + s + " and its type is " +
+        formalTypes.get(s).getName());
+        if (formalTypes.containsKey(s)) {
+            String interfaceName = formalTypes.get(s).getName();
+            TypeProxy<InterfaceModel> interfaceTypeProxy = typeBuilder.getHolder(
+                    interfaceName, InterfaceModel.class);
+            ParameterizedInterfaceModelImpl childParameterized = new ParameterizedInterfaceModelImpl(interfaceTypeProxy);
+            stack.peek().addParameterizedType(childParameterized);
+        }
     }
 
     @Override
@@ -105,6 +135,19 @@ public class SignatureVisitorImpl implements SignatureVisitor {
     @Override
     public void visitClassType(String s) {
         System.out.println("Visiting class type " + s);
+
+        TypeProxy<InterfaceModel> interfaceTypeProxy = typeBuilder.getHolder(s, InterfaceModel.class);
+        ParameterizedInterfaceModelImpl childParameterized = new ParameterizedInterfaceModelImpl(interfaceTypeProxy);
+        if (!s.equals("java/lang/Object")) {
+            if (formalTypesNames.empty()) {
+                if (!stack.empty()) {
+                    stack.peek().addParameterizedType(childParameterized);
+                }
+            } else {
+                formalTypes.put(formalTypesNames.pop(), childParameterized);
+            }
+        }
+        stack.push(childParameterized);
     }
 
     @Override
@@ -125,5 +168,6 @@ public class SignatureVisitorImpl implements SignatureVisitor {
     @Override
     public void visitEnd() {
         System.out.println("Visit end");
+        lastElement = stack.pop();
     }
 }

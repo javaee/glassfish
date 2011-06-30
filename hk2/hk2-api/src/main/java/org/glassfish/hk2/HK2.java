@@ -57,7 +57,16 @@ public class HK2 {
 
     final HK2Provider provider;
 
-    private HK2(HK2Provider provider) {
+    /**
+     * Provides an {@link HK2} APIs implementation using the provided {@link HK2Provider}
+     * instance as the implementation backend.
+     *
+     * This is a very advanced usage pattern when {@link HK2Provider} implementations
+     * are customized to provide specific domain features.
+     *
+     * @param provider the HK2 public APIs implementation backend.
+     */
+    public HK2(HK2Provider provider) {
         this.provider = provider;
     }
 
@@ -65,11 +74,13 @@ public class HK2 {
      * Entry point to the HK2 public APIs, will initialize the implementation and return
      * a valid instance that can be used to configure modules bindings.
      *
-     * @return a HK2 instance to configure {@link Module} types or instances with or null if
-     * an implementation cannot be found using the META-INF/services and {@link java.util.ServiceLoader}
-     * mechanism.
+     * Implementation will be searched using the META-INF/services service location feature
+     * {@see java.util.ServiceLoader} for further reference.
      *
-     * @throws RuntimeException if an implementation cannot be located.
+     * @return a HK2 instance to configure {@link Module} types or instances with or null if
+     * an implementation cannot be found.
+     *
+     * @throws RuntimeException if an implementation cannot be instantiated.
      */
     public static HK2 get() {
         try {
@@ -108,6 +119,16 @@ public class HK2 {
      * {@link Module} are components and will follow normal HK2 activation and injection
      * procedure prior to the {@link Module#configure(BinderFactory)} call.
      *
+     * {@link Module} that are named using the {@link org.jvnet.hk2.annotations.Service#name()}
+     * annotation attribute will be added to the returned {@link Services} instance under
+     * the name + {@link Module} contract identity. The returned {@link Services} instance will
+     * also be registered using the optional {@link Module} name if present.
+     *
+     * Returned instance of {@link Services} is not automatically added to the parent (if not null)
+     * as an indexed {@link Services} instances. Users should use the parent's
+     * {@link org.glassfish.hk2.Services#bindDynamically()} method to register children
+     * services.
+     *
      * @param parent the parent {@link Services} instances to delegate lookup to.
      * @param moduleTypes array of {@link Module} types that will be configured with in the
      * returned {@link Services} instance.
@@ -121,6 +142,11 @@ public class HK2 {
      * Creates a new {@link Services} instances to register and lookup services to and from.
      *
      * Module instances will not be injected before the {@link Module#configure(BinderFactory)} call.
+     *
+     * Returned instance of {@link Services} is not automatically added to the parent (if not null)
+     * as an indexed {@link Services} instances. Users should use the parent's
+     * {@link org.glassfish.hk2.Services#bindDynamically()} method to register children
+     * services.
      *
      * @param parent the parent {@link Services} instances to delegate lookup to.
      * @param modules array of {@link Module} that will be configured with in the

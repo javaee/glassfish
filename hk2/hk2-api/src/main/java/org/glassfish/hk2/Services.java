@@ -78,6 +78,9 @@ public interface Services extends Locator {
 
     /**
      * Allow dynamic additions to this service registry.
+     *
+     * @return a {@link DynamicBinderFactory} instance to add services after
+     * this services has been initialized.
      */
     DynamicBinderFactory bindDynamically();
     
@@ -109,7 +112,7 @@ public interface Services extends Locator {
      * 
      * @return a non-null collection of service bindings
      */
-    Collection<Binding<?>> getCummulativeBindings();
+    Collection<Binding<?>> getAllBindings();
 
     /**
      * Retrieve the collection of existing bindings in this as well as in parent
@@ -123,7 +126,7 @@ public interface Services extends Locator {
      * @param descriptor the descriptor used for matching, or null for all
      * @return a non-null collection of service bindings matching the argument
      */
-    Collection<Binding<?>> getCummulativeBindings(Descriptor descriptor);
+    Collection<Binding<?>> getAllBindings(Descriptor descriptor);
     
 }
 

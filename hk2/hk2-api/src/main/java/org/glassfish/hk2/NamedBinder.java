@@ -61,7 +61,8 @@ import java.lang.annotation.Annotation;
 public interface NamedBinder<U>  {
 
     /**
-     * Append annotations to the binding.
+     * Append annotations to the binding. Those annotations should be
+     * annotated with {@link javax.inject.Qualifier} annotation
      * 
      * @param annotations the annotations to append
      * @return this instances, with additional annotations appended to it
@@ -78,17 +79,21 @@ public interface NamedBinder<U>  {
     ResolvedBinder<U> to(String className);
 
     /**
-     * Have this instance resolve to a particular target implementation
-     * class type.
+     * Resolve this binder to a particular target implementation
+     * class type. The implementation type will be instantiated
+     * depending on its {@kink Scope} when this binding is requested
+     * for injection or through explicit lookup.
      * 
-     * @param className the class type target to resolve to
+     * @param serviceClass the class type target to resolve to
      * @return a ResolvedBinder
      */
     <T extends U> ResolvedBinder<T> to(Class<? extends T> serviceClass);
 
     /**
-     * Have this instance resolve to a particular target implementation
-     * type literal.
+     * Resolve this binder to a particular parameterized type.
+     * The implementation type will be instantiated
+     * depending on its {@kink Scope} when this binding is requested
+     * for injection or through explicit lookup.
      * 
      * @param typeLiteral the type literal target to resolve to
      * @return a ResolvedBinder
@@ -99,7 +104,7 @@ public interface NamedBinder<U>  {
      * Have this instance resolve to a particular singleton implementation
      * instance. In this case the {@link Scope} is assumed to be singleton. 
      * 
-     * @param className the class type target to resolve to
+     * @param instance the instance used to satisfy this binding requests.
      * @return a ResolvedBinder
      */
     <T extends U> void toInstance(T instance);

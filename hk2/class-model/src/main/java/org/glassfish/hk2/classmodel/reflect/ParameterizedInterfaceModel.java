@@ -67,5 +67,5 @@ public interface ParameterizedInterfaceModel {
      *
      * @return the type parameters in order.
      */
-    Collection<ExtensibleType<?>> getParametizedTypes();
+    Collection<ParameterizedInterfaceModel> getParametizedTypes();
 }

@@ -53,13 +53,13 @@ import java.util.*;
 class ParameterizedInterfaceModelImpl implements ParameterizedInterfaceModel {
 
     final TypeProxy<InterfaceModel> rawInterface;
-    final List<TypeProxy<ExtensibleType<?>>> parameterizedTypes = new ArrayList<TypeProxy<ExtensibleType<?>>>();
+    final List<ParameterizedInterfaceModel> parameterizedTypes = new ArrayList<ParameterizedInterfaceModel>();
 
     ParameterizedInterfaceModelImpl(TypeProxy<InterfaceModel> rawInterface) {
         this.rawInterface = rawInterface;
     }
 
-    synchronized void addParameterizedType(TypeProxy<ExtensibleType<?>> type) {
+    synchronized void addParameterizedType(ParameterizedInterfaceModel type) {
         parameterizedTypes.add(type);
     }
 
@@ -67,13 +67,15 @@ class ParameterizedInterfaceModelImpl implements ParameterizedInterfaceModel {
     public String getName() {
         StringBuilder sb = new StringBuilder();
         sb.append(rawInterface.getName());
-        sb.append("<");
-        Iterator<TypeProxy<ExtensibleType<?>>> parameterizedTypeItr = parameterizedTypes.iterator();
-        while(parameterizedTypeItr.hasNext()) {
-            sb.append(parameterizedTypeItr.next().getName());
-            if (parameterizedTypeItr.hasNext()) sb.append(",");
+        if (!parameterizedTypes.isEmpty()) {
+            sb.append("<");
+            Iterator<ParameterizedInterfaceModel> parameterizedTypeItr = parameterizedTypes.iterator();
+            while(parameterizedTypeItr.hasNext()) {
+                sb.append(parameterizedTypeItr.next().getName());
+                if (parameterizedTypeItr.hasNext()) sb.append(",");
+            }
+            sb.append(">");
         }
-        sb.append(">");
         return sb.toString();
     }
 
@@ -83,7 +85,7 @@ class ParameterizedInterfaceModelImpl implements ParameterizedInterfaceModel {
     }
 
     @Override
-    public Collection<ExtensibleType<?>> getParametizedTypes() {
-        return TypeProxy.adapter(Collections.unmodifiableCollection(parameterizedTypes));
+    public Collection<ParameterizedInterfaceModel> getParametizedTypes() {
+        return Collections.unmodifiableCollection(parameterizedTypes);
     }
 }
