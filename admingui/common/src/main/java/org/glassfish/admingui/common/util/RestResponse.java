@@ -115,6 +115,8 @@ public abstract class RestResponse {
      * </p>
      */
     public abstract Map<String, Object> getResponse();
+
+    public abstract void close();
 }
 
 
@@ -472,5 +474,10 @@ class JerseyRestResponse extends RestResponse {
         }
         return list;
     }
+
+    @Override
+    public void close() {
+        response.close();
+}
 
 }

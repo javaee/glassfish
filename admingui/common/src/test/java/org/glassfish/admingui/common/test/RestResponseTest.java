@@ -90,4 +90,8 @@ class DummyRestResponse extends RestResponse {
     public Map<String, Object> getResponse() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public void close() {
+}
 }
