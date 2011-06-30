@@ -71,6 +71,7 @@ public class SecurityUtil{
     public static final String VENDOR_PRESENT = 
 	"com.sun.enterprise.security.provider.jaccvendorpresent";
     private static final boolean vendorPresent = Boolean.getBoolean(VENDOR_PRESENT);
+    private static final String EJB_TIMER_SERVICE = "ejb-timer-service-app/ejb-timer-service-app_internal";
     
      // set in PolicyLoader from domain.xml
     private static final String REPOSITORY_HOME_PROP =
@@ -332,7 +333,8 @@ public class SecurityUtil{
                     pc.linkConfiguration(linkPc);
                 }
             } else {
-                throw new IASSecurityException("Inconsistent Module State");
+                if(!EJB_TIMER_SERVICE.equals(name))
+                    throw new IASSecurityException("Inconsistent Module State");
             }
             
         } catch(java.lang.ClassNotFoundException cnfe){
