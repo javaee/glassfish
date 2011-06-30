@@ -284,7 +284,7 @@ ListLbConfig
             {"JavaConfig", "create-profiler", "POST", "create-profiler", "Create Profiler"},
             {"JavaConfig", "generate-jvm-report", "GET", "generate-jvm-report", "Generate Report", "target=$grandparent"},
             {"JmsService", "list-jms-hosts", "GET", "list-jms-hosts", "list-jms-hosts"},
-            {"JmsService", "list-jms-resources", "GET", "list-jms-resources", "list-jms-resources"},
+            {"Resources", "list-jms-resources", "GET", "list-jms-resources", "list-jms-resources"},
             {"JmsHost", "delete-jms-host", "DELETE", "delete-jms-host", "Delete JMS Host", "id=$parent"},
             {"LbConfig", "create-http-lb-ref", "POST", "create-http-lb-ref", "create-http-lb-ref", "config=$parent"},
             {"LbConfig", "create-http-listener", "POST", "create-http-listener", "create-http-listener"},

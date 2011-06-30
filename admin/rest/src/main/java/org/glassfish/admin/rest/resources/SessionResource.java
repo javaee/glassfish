@@ -44,7 +44,7 @@ package org.glassfish.admin.rest.resources;
 
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.SessionManager;
-import org.glassfish.admin.rest.results.ActionReportResult;
+import org.glassfish.api.ActionReport;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.core.HttpHeaders;
@@ -71,18 +71,21 @@ public class SessionResource {
     }
 
     @DELETE
-    public ActionReportResult delete() {
-        int statusCode;
+    public Response delete() {
+        Response.Status status;
+        ActionReport.ExitCode exitCode;
         String message;
         if(!sessionManager.deleteSession(sessionId)) {
-            statusCode = Response.Status.BAD_REQUEST.getStatusCode();
+            status = Response.Status.BAD_REQUEST;
+            exitCode = ActionReport.ExitCode.FAILURE;
             message = "Session with id " + sessionId + " does not exist";
         } else {
-            statusCode = Response.Status.OK.getStatusCode();
+            status = Response.Status.OK;
+            exitCode = ActionReport.ExitCode.SUCCESS;
             message = "Session with id " + sessionId + " deleted";
         }
 
-        return ResourceUtil.getActionReportResult(statusCode,message , requestHeaders, uriInfo);
+        return Response.status(status).entity(ResourceUtil.getActionReportResult(exitCode, message, requestHeaders, uriInfo) ).build();
 
     }
 
