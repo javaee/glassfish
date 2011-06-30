@@ -1016,7 +1016,8 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 
 <!-- deploy the standalone war in AppServ  -->
 <target name="deploy-war-common">
-    <antcall target ="glassfish-embedded-deploy"/>
+    <echo> === EMBEDDED DEPLOYING ${assemble.dir}/${appname}-web.war === </echo>
+    <glassfish-embedded-deploy app="${assemble.dir}/${appname}-web.war" name="${appname}-web" contextroot="${contextroot}" libraries="${libraries}"/>
 </target>
 
 <!-- CLASSPATH including embedded ant-tasks.jar and uber jar (or static-shell jar) should be set externally -->
@@ -1042,27 +1043,13 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <sleep seconds="5"/>
 </target>
 
-<target name="glassfish-embedded-deploy" >
-    <echo> === EMBEDDED DEPLOYING === </echo>
-    <glassfish-embedded-deploy app="${assemble.dir}/${appname}-web.war" name="${appname}" contextroot="${contextroot}" libraries="${libraries}"/>
-</target>
-
-<target name="glassfish-embedded-deploy-no-context-root" >
-    <echo> === EMBEDDED DEPLOYING === </echo>
-    <glassfish-embedded-deploy app="${assemble.dir}/${appname}-web.war" name="${appname}" libraries="${libraries}"/>
-</target>
-
-<target name="glassfish-embedded-undeploy" >
-    <echo> === Embedded UNDEPLOYING === </echo>
-    <glassfish-embedded-undeploy name="${appname}"/>
-</target>
-
 <!-- deploy the standalone war in AppServ without specifying any
      contextroot argument, so that the context-root specified in
      sun-web.xml takes effect
 -->
 <target name="deploy-war-no-context-root" depends="init-common">
-    <antcall target ="glassfish-embedded-deploy-no-context-root"/>
+    <echo> === EMBEDDED DEPLOYING ${assemble.dir}/${appname}-web.war with default contextroot=== </echo>
+    <glassfish-embedded-deploy app="${assemble.dir}/${appname}-web.war" name="${appname}-web" libraries="${libraries}"/>
 </target>
 
 <!-- deploy the standalone jar in AppServ  -->
@@ -1089,20 +1076,20 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 </target> 
 
 <target name="undeploy-war-name" depends="init-common">
-    <echo> === Embedded UNDEPLOYING === </echo>
+    <echo> === Embedded UNDEPLOYING ${warname} === </echo>
     <glassfish-embedded-undeploy name="${warname}"/>
 </target>
 
 <!--  undeploy the applications in AppServ  -->
 <target name="undeploy-common" depends="init-common">
-    <echo message="Undeploying embedded====" />
-    <antcall target="glassfish-embedded-undeploy"/>
+    <echo> === Embedded UNDEPLOYING ${appname} === </echo>
+    <glassfish-embedded-undeploy name="${appname}"/>
 </target>
 
 <!--  undeploy the standalone war in AppServ  -->
 <target name="undeploy-war-common" depends="init-common" >
-    <echo message="Undeploying embedded====" />
-    <antcall target="glassfish-embedded-undeploy"/>
+    <echo> === Embedded UNDEPLOYING ${appname}-web === </echo>
+    <glassfish-embedded-undeploy name="${appname}-web"/>
 </target>
 
 <!--  undeploy the standalone war in AppServ  -->
