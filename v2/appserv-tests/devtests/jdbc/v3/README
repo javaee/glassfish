@@ -1,24 +1,13 @@
-THIS README IS OBSOLETE : Refer ../README ($APS_HOME/devtests/jdbc/README)
+The tests under jdbc/v3 are run only on web profile (v3/distributions/web/target/web.zip).
 
+Set environment :
+export APS_HOME=<appserv-tests> directory
+export S1AS_HOME=<GlassFish Installation> directory
 
-Properties to be set in the file setup-jdbc-dev-tests.sh before running the devtests:
+$S1AS_HOME/bin/asadmin start-domain domain1
+cd $APS_HOME/devtests/jdbc/v3
 
-1. "v3home" - installation home of glassfish v3.
-2. "war2deploy" - Directory that would contain v3_jdbc_dev_tests.war after devtests are built.
-3. "derbyhome" - Derby home. Usually it is $v3home/javadb.
-4. "testResult1", "testResult2" - Path in which the output htmls should be generated.
-5. "v3jdbcdevtestshome" - JDBC Devtests home where script files and the v3_jdbc_dev_tests project are found.
-6. "databaseshome" - Databases home where databases should be referred from.
-
-Properties to be set in setup-jdbc-reconfig-dev-tests.sh before running the devtests : 
-
-1. "v3home" - installation home of glassfish v3.
-2. "databaseshome" - Databases home where databases should be referred from.
-3. "war2deploy" - Directory that would contain v3_jdbc_dev_tests.war after devtests are built.
-4. "reconfigResult" - Path in which the output htmls should be generated.
-
-Value to be set in SetDerbyAuthentication.java before running the devtests :
-1. DATABASES_HOME - DB home where the databases should be created
+Execute the script : setup-jdbc-dev-tests.sh
 
 Description of Components:
 
