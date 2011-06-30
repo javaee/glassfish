@@ -23,7 +23,9 @@ public class Client {
             con = DriverManager.getConnection("jdbc:derby://localhost/testdb","dbuser","dbpassword");
             stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery("select * from OSGI_RESOURCES_TEST_RESULTS");
+            boolean rowsFound = false;
             while(rs.next()){
+                rowsFound = true;
                 String testName = rs.getString(1);
                 String testResult = rs.getString(2);
                 System.out.println("testresult : " + testResult);
@@ -39,6 +41,10 @@ public class Client {
 
                 //System.out.println(testName + " : " + testResult);
             }
+            if(rowsFound == false){
+                    stat.addStatus("osgi-ee-resources-test : " ,  "DID NOT RUN");
+            }
+           System.out.println("rows found : " + rowsFound);
         }catch(Exception e){
             e.printStackTrace();
             stat.addStatus("osgi-ee-resources-test : ", "DID NOT RUN");
@@ -52,8 +58,12 @@ public class Client {
                  if(con != null){
                      con.close();
                  }
-            }catch(Exception e){}
+            }catch(Exception e){ e.printStackTrace();}
+            try{
             stat.printSummary();
+            }catch(Exception e){
+               e.printStackTrace();
+               }
         }
     }
 }

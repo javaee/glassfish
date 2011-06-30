@@ -63,7 +63,7 @@
     </target>
 
     <target name="deploy" >
-        <copy file="osgi-resources-test-bundle.jar" todir="${env.S1AS_HOME}/modules/autostart/"/>
+        <copy file="osgi-resources-test-bundle.jar" todir="${env.S1AS_HOME}/domains/domain1/autodeploy/bundles/"/>
     </target>
 
     <target name="wait" >
@@ -85,7 +85,7 @@
     </target>
 
     <target name="undeploy" >
-        <delete file="${env.S1AS_HOME}/modules/autostart/osgi-resources-test-bundle.jar"/>
+        <delete file="${env.S1AS_HOME}/domains/domain1/autodeploy/bundles/osgi-resources-test-bundle.jar"/>
         <delete file="osgi-resources-test-bundle.jar"/>
         <delete file="osgi-resources-client-bundle.jar"/>
     </target>
