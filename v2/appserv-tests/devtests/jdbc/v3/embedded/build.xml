@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "./../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
+]>
+
+<project name="jdbc_with_embedded_glassfish" default="runtests" basedir=".">
+
+&commonBuild;
+&commonSetup;
+
+<target name="runtests">
+    <antcall target="testset1"/>
+    <antcall target="unsetup"/>
+</target>
+
+<target name="testset1">
+    <antcall target="start-server"/>
+    <exec executable="./setup-jdbc-dev-tests-embedded.sh"/>
+    <antcall target="stop-server"/>
+</target>
+
+<target name="testset2">
+
+    <antcall target="start-server"/>
+    <exec executable="./setup-jdbc-reconfig-dev-tests_embedded.sh">
+        <arg line="test1_and_2"/>
+    </exec>
+
+    <antcall target="stop-server"/>
+    <antcall target="start-server"/>
+    <exec executable="./setup-jdbc-reconfig-dev-tests_embedded.sh">
+        <arg line="test3"/>
+    </exec>
+
+    <antcall target="stop-server"/>
+    <antcall target="start-server"/>
+    <exec executable="./setup-jdbc-reconfig-dev-tests_embedded.sh">
+        <arg line="test4"/>
+    </exec>
+
+    <antcall target="stop-server"/>
+
+</target>
+
+<target name="unsetup">
+    <antcall target="start-server"/>
+    <exec executable="./unsetup-jdbc-dev-tests_embedded.sh"/>
+    <antcall target="stop-server"/>
+</target>
+
+</project>
+
