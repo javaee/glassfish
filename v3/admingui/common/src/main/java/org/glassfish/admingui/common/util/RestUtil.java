@@ -243,11 +243,19 @@ public class RestUtil {
     }
 
     public static Map getAttributesMap(String endpoint) {
-        RestResponse response = get(endpoint);
-        if (!response.isSuccess()) {
-            return new HashMap();
+        RestResponse response = null;
+        try {
+            response = get(endpoint);
+
+            if (!response.isSuccess()) {
+                return new HashMap();
+            }
+            return getEntityAttrs(endpoint, "entity");
+        }finally {
+            if (response != null) {
+                response.close();
+            }
         }
-        return getEntityAttrs(endpoint, "entity");
     }
 
     public static Map<String, Object> getEntityAttrs(String endpoint, String key) {
@@ -654,12 +662,18 @@ public class RestUtil {
     }
 
     public static Boolean doesProxyExist(String endpoint) {
+        RestResponse response = null;
         try {
-            if (RestUtil.get(endpoint).isSuccess()) {
+            response = RestUtil.get(endpoint);
+            if (response.isSuccess()) {
                 return true;
             }
         } catch (Exception e) {
             return false;
+        } finally {
+            if (response != null) {
+                response.close();
+            }
         }
         return false;
     }
