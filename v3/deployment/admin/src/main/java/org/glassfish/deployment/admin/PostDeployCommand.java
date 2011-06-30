@@ -102,7 +102,7 @@ public class PostDeployCommand extends DeployCommandParameters implements AdminC
             if (!DeploymentUtils.isDomainTarget(params.target)) {
                 targets.add(params.target);
             } else {
-                targets = dc.getTransientAppMetaData("previousTargets", List.class);
+                targets = suppInfo.previousTargets();
             }
             ClusterOperationUtil.replicateCommand(
                 "_deploy",
