@@ -272,6 +272,12 @@
     </exec>
 </target>
 
+<target name="stage-updatetool-stubs" unless="isAIX">
+    <copy file="${image.dir}/pkg/lib/pkg-bootstub.bat" tofile="${image.dir}/bin/pkg.bat"/>
+    <copy file="${image.dir}/pkg/lib/pkg-bootstub.sh" tofile="${image.dir}/bin/updatetool"/>
+    <copy file="${image.dir}/pkg/lib/pkg-bootstub.bat" tofile="${image.dir}/bin/updatetool.bat"/>
+</target>
+
 
 <!-- Create Domain -->
 <target name="create-domain"

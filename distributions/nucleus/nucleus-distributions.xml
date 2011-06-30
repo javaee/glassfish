@@ -172,10 +172,16 @@
     <delete
         file="${image.dir}/.org.opensolaris,pkg/catalog/glassfish.org/pkg_names.pkl"/>
 
-    <copy file="${image.dir}/pkg/lib/pkg-bootstub.sh" tofile="${image.dir}/bin/updatetool"/>
-    <copy file="${image.dir}/pkg/lib/pkg-bootstub.bat" tofile="${image.dir}/bin/updatetool.bat"/>
+    <condition property="isAIX">
+            <os name="AIX" />
+    </condition>
+
+    <ant antfile="../distributions.xml" target="stage-updatetool-stubs">
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+
     <copy file="${image.dir}/pkg/lib/pkg-bootstub.sh" tofile="${image.dir}/bin/pkg"/>
-    <copy file="${image.dir}/pkg/lib/pkg-bootstub.bat" tofile="${image.dir}/bin/pkg.bat"/>
+
 
     <!-- stage servicetag registry file and set source value -->
 
