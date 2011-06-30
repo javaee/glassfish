@@ -62,7 +62,12 @@ import java.util.logging.Level;
 @Contract
 public abstract class ActionReport {
     
-    public enum ExitCode { SUCCESS, WARNING, FAILURE }
+    public enum ExitCode { SUCCESS, WARNING, FAILURE ;
+
+        public boolean isWorse(final ExitCode other) {
+            return (compareTo(other) > 0);
+        }
+    }
     
     public abstract void setActionDescription(String message);
     
@@ -91,6 +96,9 @@ public abstract class ActionReport {
     public abstract String getContentType();
 
     public abstract void setContentType(String s);
+
+    public abstract List<? extends ActionReport> getSubActionsReport();
+
 
     /**
      * Report a failure to the logger and {@link ActionReport}.
