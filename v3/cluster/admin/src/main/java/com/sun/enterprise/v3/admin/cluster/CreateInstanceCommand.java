@@ -203,6 +203,25 @@ public class CreateInstanceCommand implements AdminCommand {
 
         registerInstanceMessage = report.getMessage();
 
+        // if nodehost is localhost and installdir is null and config node, update config node
+        // so installdir is product root. see register-instance above
+        if (theNode.isLocal() && installDir ==null){
+            ci = cr.getCommandInvocation("_update-node", report);
+            map = new ParameterMap();
+            map.add("installdir", "${com.sun.aas.productRoot}");
+            map.add("type", "CONFIG");
+            map.add("DEFAULT", theNode.getName());
+            ci.parameters(map);
+            ci.execute();
+
+
+            if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS &&
+                report.getActionExitCode() != ActionReport.ExitCode.WARNING) {
+                // If we couldn't update domain.xml then stop!
+                return;
+            }
+        }
+
         if (!validateDasOptions(context)) {
             report.setActionExitCode(ActionReport.ExitCode.WARNING);
             return;
