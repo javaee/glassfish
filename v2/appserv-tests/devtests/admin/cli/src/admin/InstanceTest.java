@@ -109,6 +109,7 @@ public class InstanceTest extends AdminBaseDevTest {
         testRendezvous();
         testUpgrade();
         testNode();
+	testCreateInstanceConfigNode();
         testPortBase();
         invalidConfigRef();
         deleteDirectory(nodeDir);
@@ -398,6 +399,25 @@ public class InstanceTest extends AdminBaseDevTest {
         //clean up
         report("delete-node-config-n1", asadmin("delete-node-config", node ));
         deleteDirectory(new File(nodedir));
+    }
+
+    private void testCreateInstanceConfigNode() {
+        // see JIRA issue 16579
+        String node = "test-node";
+        String instance = "test-instance";
+	String testName = "create-node-config-offline";
+
+	// Creates config node without the installdir
+        report(testName + "0", asadmin("create-node-config",
+		"--nodehost", "localhost",node));
+	report(testName+"1", asadmin("create-instance", "--node", node, instance));
+	// check that installdir was set 
+        report(testName+"2",asadmin("get", "nodes.node." + node + ".install-dir"));
+	
+	//cleanup
+	report(testName +"3", asadmin("delete-instance", instance ));
+	report(testName +"4", asadmin("delete-node-config", node ));
+
     }
 
     private void testPortBase() {
