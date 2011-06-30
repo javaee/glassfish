@@ -33,6 +33,11 @@
 <property name="deploy.clusterinstance1.orbport" value="2201"/>
 <property name="deploy.serverinstance.orbport" value="2200"/>
 
+<property name="testDomain.dir" value="${s1as.home}/domains/${testDomain}"/>
+<property name="node.dir" value="localhost-${testDomain}"/>
+<property name="testServer.dir" value="${s1as.home}/nodes/${node.dir}/${testServer}"/>
+<property name="testClusterServer1.dir" value="${s1as.home}/nodes/${node.dir}/${testClusterServer1}"/>
+
 <!--
     Change the value to control
     whether deployment tests upload the file or not.
@@ -470,31 +475,6 @@ AS_ADMIN_MASTERPASSWORD=changeit
     <antcall target="common.run.asadmin">
         <param name="arg.list" 
                value="${deploy} ${ASADMIN-ARGS} --force=true ${arg.list}"/>
-    </antcall>
-    <antcall target="createAppRef">
-        <param name="testName" value="${testName}"/>
-    </antcall>
-</target>
-
-<!-- deploy using asadmin -->
-<!-- @param ${arg.list} (required) -->
-<target name="common.deploy.osgi.asadmin" depends="setAsadminArgs">
-    <antcall target="common.run.asadmin">
-        <param name="arg.list" 
-               value="${deploy} ${ASADMIN-ARGS} --type osgi ${arg.list}"/>
-    </antcall>
-    <antcall target="createAppRef">
-        <param name="testName" value="${testName}"/>
-    </antcall>
-</target>
-
-<target name="common.redeploy.osgi.asadmin" depends="setAsadminArgs">
-    <antcall target="delAppRef">
-        <param name="testName" value="${testName}"/>
-    </antcall>
-    <antcall target="common.run.asadmin">
-        <param name="arg.list" 
-               value="${deploy} ${ASADMIN-ARGS} --type osgi --force=true ${arg.list}"/>
     </antcall>
     <antcall target="createAppRef">
         <param name="testName" value="${testName}"/>
@@ -1131,6 +1111,20 @@ AS_ADMIN_MASTERPASSWORD=changeit
     <echo message="Cleaning up all the test setup"/>
     <antcall target="stopInstance"/>
     <antcall target="stopCluster"/>
+    <!-- Copy the server logs to preserve them (for error diagnosis) after we delete the instances and the domain. -->
+    <mkdir dir="server-logs"/>
+    <mkdir dir="server-logs/${testDomain}/logs"/>
+    <copy todir="server-logs/${testDomain}/logs">
+       <fileset dir="${testDomain.dir}/logs" includes="*.log *.log.*"/>
+    </copy>
+    <mkdir dir="server-logs/${testServer}/logs"/>
+    <copy todir="server-logs/${testServer}/logs">
+       <fileset dir="${testServer.dir}/logs" includes="*.log *.log.*"/>
+    </copy>
+    <mkdir dir="server-logs/${testClusterServer1}/logs"/>
+    <copy todir="server-logs/${testClusterServer1}/logs">
+       <fileset dir="${testClusterServer1.dir}/logs" includes="*.log *.log.*"/>
+    </copy>
     <antcall target="deleteInstance"/>
     <antcall target="deleteCluster"/>
     <delete dir="${s1as.home}/nodeagents"/>
