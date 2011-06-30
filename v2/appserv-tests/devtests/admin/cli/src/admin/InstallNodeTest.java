@@ -51,10 +51,12 @@ public class InstallNodeTest extends AdminBaseDevTest {
     private static final String SSH_HOST_PROP = "ssh.host";
     private static final String SSH_USER_PROP = "ssh.user";
     private static final String SSH_PASSWORD = "ssh.password";
+    private static final String SSH_CONFIGURE = "ssh.configure";
 
     private String remoteHost = null;
     private String sshPass = null;
     private String sshUser = null;
+    private String sshConfigure = "false";
 
     public InstallNodeTest() {
         String host0 = null;
@@ -89,6 +91,7 @@ public class InstallNodeTest extends AdminBaseDevTest {
         remoteHost = System.getProperty(SSH_HOST_PROP);
         sshPass = System.getProperty(SSH_PASSWORD);
         sshUser = System.getProperty(SSH_USER_PROP);
+        sshConfigure = System.getProperty(SSH_CONFIGURE);
 
         if (remoteHost == null || remoteHost.length() == 0) {
             System.out.printf("%s requires you set the %s property\n",
@@ -114,10 +117,13 @@ public class InstallNodeTest extends AdminBaseDevTest {
             System.out.printf("%s=%s\n", SSH_USER_PROP, sshUser);
         }
 
-        //will use password auth for the tests
-        addPasswords();
-
-        updateCommonOptions();
+        System.out.printf("%s=%s\n", SSH_CONFIGURE, sshConfigure);
+        
+        if (sshConfigure.equals("false")) {
+            //will use password auth for the tests
+            addPasswords();
+            updateCommonOptions();
+        }        
 
         asadmin("start-domain");
 
