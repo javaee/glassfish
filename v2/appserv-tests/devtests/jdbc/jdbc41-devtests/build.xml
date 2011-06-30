@@ -24,7 +24,8 @@
     </target>
 
     <target name="run-tests">
-	<ant dir="basic" target="all"/>
+        <ant dir="basic" target="all"/>
+	<ant dir="closeoncompletion.stmtcaching" target="all"/>
     </target>
 
     <target name="report-41">
