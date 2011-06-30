@@ -46,7 +46,7 @@ import org.jvnet.hk2.annotations.Contract;
  * This contract provides the starting point for querying HK2's
  * backing service registry either by contract (e.g., classes
  * annotated with @{@link Contract}) or by concrete service type
- * (e.g., classes annotated with @{@link Service}). 
+ * (e.g., classes annotated with @{@link org.jvnet.hk2.annotations.Service}).
  *
  * <p>
  * Typically, DI is used to wire services together. Hk2 internals
@@ -118,7 +118,7 @@ public interface Locator {
     <U> ServiceLocator<U> byType(Class<U> type);
 
     /**
-     * See {@link #forType(Class)}, with the exception that the
+     * See {@link #forContract(Class)}, with the exception that the
      * type is provided as a string instead of a class instance.
      * 
      * @param typeName the service class type name

@@ -69,7 +69,7 @@ public interface BinderFactory {
      *
      * @param contractName the interface fqcn.
      * @return a {@link Binder} instance that can be used to further
-     * qualifies the binding request.
+     * qualify the binding request.
      */
     Binder<Object> bind(String contractName);
 
@@ -79,7 +79,7 @@ public interface BinderFactory {
      *
      * @param contractNames the interfaces fully qualified class names.
      * @return a {@link Binder} instance that can be used to further
-     * qualifies the binding request.
+     * qualify the binding request.
      */
     Binder<Object> bind(String... contractNames);
 
@@ -98,17 +98,27 @@ public interface BinderFactory {
      * @param contracts supplemental contracts references
      * @param <T> the main contract type
      * @return a {@link Binder} instance for the main contract type type to further
-     * qualifies the binding request.
+     * qualify the binding request.
      */
     <T> Binder<T> bind(Class<T> contract, Class<?>... contracts);
 
-    // TODO: can we use an iface abstraction here instead of an abstract class TypeLiteral? 
+    /**
+     * Binds a parameterized type by forcing users to create a subclass of
+     * {@link TypeLiteral} which will allow HK2 to retrieve the parameterized
+     * type at runtime.
+     *
+     * @param typeLiteral a {@link TypeLiteral} subclass instance
+     * @param <T> the parameterized type to use as a contract definition. This
+     * will allow users to inject instances of the parameterized type. HK2
+     * cannot bind a generic type like Set<E> although it can injects it as
+     * long as E is specified at the injection point and the parameterized
+     * type can be looked up.
+     *
+     * @return a {@link Binder} instance for that parameterized type to further
+     * qualify the binding request.
+     */
     <T> Binder<T> bind(TypeLiteral<T> typeLiteral);
 
-    
-    // TODO: need a binder for factory types?
-    
-    
     /**
      * Binds a service which does not implement a contract or
      * interface that can be used to look it up. The bound service

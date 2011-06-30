@@ -275,12 +275,12 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
     }
 
     @Override
-    public Collection<Binding<?>> getCummulativeBindings() {
-        return getCummulativeBindings(null);
+    public Collection<Binding<?>> getAllBindings() {
+        return getAllBindings(null);
     }
 
     @Override
-    public Collection<Binding<?>> getCummulativeBindings(Descriptor descriptor) {
+    public Collection<Binding<?>> getAllBindings(Descriptor descriptor) {
         if (null == descriptor) {
             descriptor = DescriptorImpl.EMPTY_DESCRIPTOR;
         }

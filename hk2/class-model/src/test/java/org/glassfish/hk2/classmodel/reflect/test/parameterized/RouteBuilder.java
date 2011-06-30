@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,63 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2;
-
-import java.util.Collection;
+package org.glassfish.hk2.classmodel.reflect.test.parameterized;
 
 /**
- * A Descriptor is a bean-like structure that describes a service
- * declaration in HK2.
- * 
- * <p>
- * Services have a number of optional attributes such as name and scope.
- * A service is required to minimally have a type name representing the
- * concrete (i.e., byType) definition.
- * 
- * @author Jerome Dochez
- * @author Jeff Trent
- * @author Mason Taube
+ * Parameterized interface
  */
-public interface Descriptor {
+public interface RouteBuilder<T extends Pattern> {
 
-    /**
-     * The optional name for the service.
-     *
-     * @return service's name or null if none provided
-     */
-    String getName();
-
-//    /**
-//     * The optional scoping for the service.
-//     */
-//    Scope getScope();
-
-    /**
-     * The meta data attributes for the service.
-     *
-     * @return the service's metadata
-     */
-    MultiMap<String, String> getMetadata();
-  
-    /**
-     * Returns the qualifier annotations on the service.
-     *
-     * @return a collection of qualifiers for this service.
-     */
-    Collection<String> getQualifiers();
-  
-    /**
-     * The contracts that are used to index the service definition.
-     *
-     * @return the collection of contracts fqcn.
-     */
-    Collection<String> getContracts();
-
-    /**
-     * The implementation definition type.
-     *
-     * @return the fcqn of the implementation.
-     */
-    String getTypeName();
-
+    T pattern();
 }

@@ -88,7 +88,7 @@ public class HK2ProviderImpl implements HK2Provider {
             // At the end, all Services instances are the unique habitat, which is registered
             // multiple times under each Services names (obtained from the Module's Service
             // annotation)
-            Inhabitant<Services> servicesInhabitant = new ExistingSingletonInhabitant<Services>(habitat) {
+            final Inhabitant<Services> servicesInhabitant = new ExistingSingletonInhabitant<Services>(habitat) {
                     @Override
                     public Services get(Inhabitant onBehalfOf) throws ComponentException {
                         if (!scopedInhabitant.isActive()) {
@@ -108,7 +108,7 @@ public class HK2ProviderImpl implements HK2Provider {
             };
 
             // if the Module was registered with a module name, we should register the
-            // module instance and the Services instance under that name.
+            // module instance
             if (moduleName!=null) {
                 habitat.addIndex(servicesInhabitant, Module.class.getName(), moduleName);
                 habitat.addIndex(servicesInhabitant, Services.class.getName(), moduleName);

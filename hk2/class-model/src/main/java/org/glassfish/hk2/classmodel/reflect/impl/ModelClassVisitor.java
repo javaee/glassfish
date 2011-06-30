@@ -141,13 +141,22 @@ public class ModelClassVisitor implements ClassVisitor {
 
         try {
             ExtensibleTypeImpl classModel = (ExtensibleTypeImpl) type;
+            /*if (signature!=null) {
+                    SignatureReader reader = new SignatureReader(signature);
+                    System.out.println("Starting to visit " + className);
+                    SignatureVisitorImpl signatureVisitor = new SignatureVisitorImpl(typeBuilder);
+                    reader.accept(signatureVisitor);
+                    System.out.println("Done vising signature for " + className);
+                    System.out.println("And the signature is " + signatureVisitor.getTopElement().getName());
+                    System.out.println(className+"<" + signatureVisitor.getTopElement().getName()+">");
+            } */
             for (String intf : interfaces) {
                 String interfaceName = org.objectweb.asm.Type.getObjectType(intf).getClassName();
                 TypeProxy<InterfaceModel> typeProxy = typeBuilder.getHolder(interfaceName, InterfaceModel.class);
-                /*
-                ParameterizedInterfaceModelImpl pim = new ParameterizedInterfaceModelImpl(typeProxy);
-                if (signature!=null && className.contains("Builder")) {
 
+                ParameterizedInterfaceModelImpl pim = new ParameterizedInterfaceModelImpl(typeProxy);
+                if (signature!=null && className.contains("parameterized")) {
+                    /*
                     if (!signature.startsWith("<") && signature.indexOf('<')!=-1) {
                         Pattern pattern = Pattern.compile("L([^;]*);L?([^;]*);?L?([^;]*);?L?([^;]*);?");
                         if (!signature.contains(intf)) continue;
@@ -167,10 +176,12 @@ public class ModelClassVisitor implements ClassVisitor {
                         classModel.isImplementing(pim);
                     }
                     SignatureReader reader = new SignatureReader(signature);
-                    System.out.println("While visiting " + className);
-                    reader.accept(new SignatureVisitorImpl());
+                    System.out.println("Starting to visit " + className);
+                    reader.accept(new SignatureVisitorImpl(typeBuilder));
                     System.out.println("Done vising signature for " + className);
-                }      */
+                    System.out.println("And the signature is " + pim.getName());
+                    */
+                }
                 classModel.isImplementing(typeProxy);
                 if (classModel instanceof ClassModel)
                     typeProxy.addImplementation((ClassModel) classModel);
@@ -178,6 +189,8 @@ public class ModelClassVisitor implements ClassVisitor {
             }
         } catch(ClassCastException e) {
             // ignore
+        } catch(Exception ne) {
+            ne.printStackTrace();
         }
 
     }
