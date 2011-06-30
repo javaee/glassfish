@@ -96,7 +96,7 @@
     <macrodef name="stage-module-jars">
 	    <attribute name="graphid" />
 	    <sequential>
-                <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules" stripVersion="true">
+                <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules" tolerateBrokenPOMs="true" stripVersion="true">
 		    <graphRef refid="@{graphid}"/>
                 </resolveAll>
 
@@ -109,7 +109,7 @@
    <macrodef name="stage-lib-jars">
             <attribute name="graphid" />
             <sequential>
-                <resolveAll todir="target/stage/${install.dir.name}/glassfish/lib" stripVersion="true">
+                <resolveAll todir="target/stage/${install.dir.name}/glassfish/lib" tolerateBrokenPOMs="true" stripVersion="true">
                     <graphRef refid="@{graphid}"/>
                 </resolveAll>
 
@@ -122,7 +122,7 @@
    <macrodef name="stage-module-autostart-jars">
 	    <attribute name="graphid" />
 	    <sequential>
-		<resolveAll todir="target/stage/${install.dir.name}/glassfish/modules/autostart" stripVersion="true">
+		<resolveAll todir="target/stage/${install.dir.name}/glassfish/modules/autostart" tolerateBrokenPOMs="true" stripVersion="true">
 		    <graphRef refid="@{graphid}"/>
                 </resolveAll>
 

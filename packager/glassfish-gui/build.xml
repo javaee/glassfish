@@ -60,7 +60,7 @@
        </graphDef>
 
        
-       <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules" stripVersion="true">
+       <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules" tolerateBrokenPOMs="true" stripVersion="true">
            <graphRef refid="all-modules"/>
 	       <!--excludeArtifactsTransitively>
 	           <artifact groupID="com.sun.woodstock.dependlibs" artifactId="dataprovider" />
