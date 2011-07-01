@@ -77,35 +77,40 @@ public class Client {
         Map<String, Object> p = new HashMap<String, Object>();
         p.put(EJBContainer.MODULES, new String[] {"sample", "foo", "bar"});
 
-        System.out.println("-----------------------");
+        System.err.println("-----------------------");
+        System.err.println("-----------------------");
         try {
-            System.out.println("Requesting wrong set of modules....");
+            System.err.println("===> Requesting wrong set of modules....");
             EJBContainer c = EJBContainer.createEJBContainer(p);
+            System.err.println("==> ERROR - Did NOT get an exception");
             stat.addStatus("create container with errors in MODULES", stat.FAIL);
         } catch (EJBException e) {
             String msg = e.getMessage();
-            System.out.println("Caught expected: " + msg);
+            System.err.println("==> Caught expected: " + msg);
             stat.addStatus("create container with errors in MODULES", stat.PASS);
         }
-        System.out.println("-----------------------");
+        System.err.println("-----------------------");
+        System.err.println("-----------------------");
 
         p = new HashMap<String, Object>();
         p.put(EJBContainer.PROVIDER, "foo");
-        System.out.println("-----------------------");
+        System.err.println("-----------------------");
+        System.err.println("-----------------------");
         try {
-            System.out.println("Creating container with a wrong provider...");
+            System.err.println("==> Creating container with a wrong provider...");
             EJBContainer c1 = EJBContainer.createEJBContainer(p);
             if (c1 != null) {
                 stat.addStatus("create container with a wrong provider", stat.FAIL);
-                System.out.println("ERROR: Created container with a wrong provider...");
+                System.err.println("==> ERROR: Created container with a wrong provider...");
             } else {
                 stat.addStatus("create container with a wrong provider", stat.PASS);
             }
         } catch (EJBException e) { 
-            System.out.println("Caught expected: " + e.getMessage());
+            System.err.println("==> Caught expected: " + e.getMessage());
             stat.addStatus("create container with a wrong provider", stat.PASS);
         }
-        System.out.println("-----------------------");
+        System.err.println("-----------------------");
+        System.err.println("-----------------------");
 
     }
 
@@ -113,66 +118,69 @@ public class Client {
 
         Map<String, Object> p = new HashMap<String, Object>();
         p.put(EJBContainer.MODULES, "sample");
-        System.out.println("-----------------------");
+        System.err.println("-----------------------");
+        System.err.println("-----------------------");
 
         EJBContainer c = EJBContainer.createEJBContainer(p);
         // ok now let's look up the EJB...
         Context ic = c.getContext();
         try {
-            System.out.println("Looking up EJB...");
+            System.err.println("Looking up EJB...");
             SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/sample/SimpleEjb");
-            System.out.println("Invoking EJB...");
-            System.out.println("EJB said: " + ejb.saySomething());
-            System.out.println("JPA call returned: " + ejb.testJPA());
+            System.err.println("Invoking EJB...");
+            System.err.println("EJB said: " + ejb.saySomething());
+            System.err.println("JPA call returned: " + ejb.testJPA());
 
             stat.addStatus("EJB embedded with JPA", stat.PASS);
         } catch (Exception e) {
             stat.addStatus("EJB embedded with JPA", stat.FAIL);
-            System.out.println("ERROR calling EJB:");
+            System.err.println("==> ERROR calling EJB:");
             e.printStackTrace();
         }
-        System.out.println("Done calling EJB");
-        System.out.println("-----------------------");
+        System.err.println("Done calling EJB");
+        System.err.println("-----------------------");
+        System.err.println("-----------------------");
 
-        System.out.println("-----------------------");
         try {
-            System.out.println("Creating another container without closing...");
+            System.err.println("==> Creating another container without closing...");
             EJBContainer c0 = EJBContainer.createEJBContainer();
             if (c0 != null) {
                 stat.addStatus("create container without closing the current", stat.FAIL);
-                System.out.println("ERROR: Created another container without closing the current...");
+                System.err.println("==> ERROR: Created another container without closing the current...");
             }
         } catch (EJBException e) { 
-            System.out.println("Caught expected: " + e.getMessage());
+            System.err.println("==> Caught expected: " + e.getMessage());
             stat.addStatus("create container without closing the current", stat.PASS);
         }
-        System.out.println("-----------------------");
+        System.err.println("-----------------------");
+        System.err.println("-----------------------");
 
-        System.out.println("Closing container ...");
+        System.err.println("==> Closing container ...");
         try {
             c.close();
             stat.addStatus("EJB embedded close container", stat.PASS);
         } catch (Exception e) {
             stat.addStatus("EJB embedded close container", stat.FAIL);
-            System.out.println("ERROR Closing container:");
+            System.err.println("==> ERROR Closing container:");
             e.printStackTrace();
         }
-        System.out.println("Done Closing container");
-        System.out.println("-----------------------");
+        System.err.println("==> Done Closing container");
+        System.err.println("-----------------------");
+        System.err.println("-----------------------");
 
-        System.out.println("-----------------------");
-        System.out.println("Creating container after closing the previous...");
+        System.err.println("==> Creating container after closing the previous...");
         try {
             c = EJBContainer.createEJBContainer(p);
             c.close();
             stat.addStatus("EJB embedded create 2nd container", stat.PASS);
         } catch (Exception e) {
             stat.addStatus("EJB embedded create 2nd container", stat.FAIL);
-            System.out.println("ERROR in the 2nd container:");
+            System.err.println("==> ERROR in the 2nd container:");
             e.printStackTrace();
         }
 
-        System.out.println("..........FINISHED Embedded test");
-        System.out.println("-----------------------");
+        System.err.println("..........FINISHED Embedded test");
+        System.err.println("-----------------------");
+        System.err.println("-----------------------");
     }
 }
