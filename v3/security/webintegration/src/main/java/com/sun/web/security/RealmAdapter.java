@@ -299,6 +299,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     // helper are set until setVirtualServer is invoked
     } */
 
+    @Override
     public void destroy() {
         super.destroy();
         if (helper != null) {
@@ -312,6 +313,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
      *
      * @param container The virtual server
      */
+    @Override
     public void setVirtualServer(Object container) {
         this.virtualServer = (Container)container;
         //this was causing classloading failure.
@@ -1559,10 +1561,12 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         private Principal principal;
         private String authType;
 
+        @Override
         public boolean getCache() {
             return authBase.getCache();
         }
 
+        @Override
         public Container getContainer() {
             return authBase.getContainer();
         }
@@ -1580,6 +1584,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
             start(); //finds sso valve and sets its value in proxy
         }
 
+        @Override
         public boolean authenticate(HttpRequest request,
                 HttpResponse response,
                 LoginConfig config) throws IOException {
@@ -1604,27 +1609,33 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
             this.response = response;
         }
 
+        @Override
         public Object getRequestMessage() {
             return request;
         }
 
+        @Override
         public Object getResponseMessage() {
             return response;
         }
 
+        @Override
         public void setRequestMessage(Object request) {
             this.request = request;
         }
 
+        @Override
         public void setResponseMessage(Object response) {
             this.response = response;
         }
 
+        @Override
         public Map getMap() {
             return map;
         }
     }
 
+    @Override
     public void initializeRealm(Object descriptor, boolean isSystemApp, String realmName) {
 
         this.isSystemApp = isSystemApp;
@@ -1705,6 +1716,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         } else {
             return AccessController.doPrivileged(new PrivilegedAction<SecurityContext>() {
 
+                @Override
                 public SecurityContext run() {
                     Subject s = new Subject();
                     s.getPrincipals().add(p);
