@@ -60,7 +60,7 @@ import java.io.IOException;
  */
 @Service(name="jpa")
 @Scoped(Singleton.class)
-public class JPASniffer  extends GenericSniffer implements Sniffer, SecondarySniffer {
+public class JPASniffer  extends GenericSniffer implements  SecondarySniffer {
 
     private static final String[] containers = { "org.glassfish.persistence.jpa.JPAContainer" };
 
