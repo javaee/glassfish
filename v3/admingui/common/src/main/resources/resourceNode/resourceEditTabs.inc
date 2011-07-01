@@ -82,6 +82,9 @@
                     createMap(result="#{pageSession.valueMap2}");                    
                     mapPut(map="#{pageSession.valueMap2}", key="enabled", value="#{pageSession.valueMap.enabled}");
                 }
+                if(#{reload}) {
+                    mapPut(map="#{pageSession.valueMap2}", key="enabled", value="#{status}");
+                }
             }            
         }
     />
