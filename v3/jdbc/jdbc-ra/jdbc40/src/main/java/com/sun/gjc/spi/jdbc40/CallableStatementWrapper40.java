@@ -1405,6 +1405,7 @@ public class CallableStatementWrapper40 extends CallableStatementWrapper {
      */
     public java.sql.ResultSet executeQuery() throws java.sql.SQLException {
         ResultSet rs = callableStatement.executeQuery();
+        incrementResultSetReferenceCount();
         return new ResultSetWrapper40(this, rs);
     }
 
@@ -1424,6 +1425,7 @@ public class CallableStatementWrapper40 extends CallableStatementWrapper {
     public java.sql.ResultSet executeQuery(String sql) throws
             java.sql.SQLException {
         ResultSet rs = callableStatement.executeQuery(sql);
+        incrementResultSetReferenceCount();
         return new ResultSetWrapper40(this, rs);
     }
 
@@ -1448,6 +1450,7 @@ public class CallableStatementWrapper40 extends CallableStatementWrapper {
         ResultSet rs = callableStatement.getGeneratedKeys();
         if (rs == null)
             return null;
+        incrementResultSetReferenceCount();
         return new ResultSetWrapper40(this, rs);
     }
 
@@ -1465,6 +1468,7 @@ public class CallableStatementWrapper40 extends CallableStatementWrapper {
         ResultSet rs = callableStatement.getResultSet();
         if (rs == null)
             return null;
+        incrementResultSetReferenceCount();
         return new ResultSetWrapper40(this, rs);
     }
 

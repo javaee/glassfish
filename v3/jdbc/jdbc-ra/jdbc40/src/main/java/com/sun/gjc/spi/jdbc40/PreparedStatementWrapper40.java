@@ -640,6 +640,7 @@ public class PreparedStatementWrapper40 extends PreparedStatementWrapper {
      */
     public java.sql.ResultSet executeQuery() throws java.sql.SQLException {
         ResultSet rs = preparedStatement.executeQuery();
+        incrementResultSetReferenceCount();
         return new ResultSetWrapper40(this, rs);
     }
 
@@ -659,6 +660,7 @@ public class PreparedStatementWrapper40 extends PreparedStatementWrapper {
     public java.sql.ResultSet executeQuery(String sql) throws
             java.sql.SQLException {
         ResultSet rs = preparedStatement.executeQuery(sql);
+        incrementResultSetReferenceCount();
         return new ResultSetWrapper40(this, rs);
     }
 
@@ -683,6 +685,7 @@ public class PreparedStatementWrapper40 extends PreparedStatementWrapper {
         ResultSet rs = preparedStatement.getGeneratedKeys();
         if (rs == null)
             return null;
+        incrementResultSetReferenceCount();
         return new ResultSetWrapper40(this, rs);
     }
 
@@ -700,6 +703,7 @@ public class PreparedStatementWrapper40 extends PreparedStatementWrapper {
         ResultSet rs = preparedStatement.getResultSet();
         if (rs == null)
             return null;
+        incrementResultSetReferenceCount();
         return new ResultSetWrapper40(this, rs);
     }
 
