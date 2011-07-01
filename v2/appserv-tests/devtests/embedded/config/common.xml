@@ -117,8 +117,18 @@ Variables Used:
   <mkdir dir="${build.classes.dir}/tmp/WEB-INF/classes"/>
   <mkdir dir="${build.classes.dir}/tmp/WEB-INF/lib"/>
   <mkdir dir="lib"/>
+  <copy file="${glassfish-web.xml}" 
+      tofile="${build.classes.dir}/tmp/WEB-INF/glassfish-web.xml" failonerror="false"/>
   <copy file="${sun-web.xml}" 
       tofile="${build.classes.dir}/tmp/WEB-INF/sun-web.xml" failonerror="false"/>
+  <copy file="${glassfish-ejb-jar.xml}" 
+      tofile="${build.classes.dir}/tmp/WEB-INF/glassfish-ejb-jar.xml" failonerror="false"/>
+  <copy file="${sun-ejb-jar.xml}" 
+      tofile="${build.classes.dir}/tmp/WEB-INF/sun-ejb-jar.xml" failonerror="false"/>
+  <copy file="${weblogic.xml}" 
+      tofile="${build.classes.dir}/tmp/WEB-INF/weblogic.xml" failonerror="false"/>
+  <copy file="${glassfish-resources.xml}" 
+      tofile="${build.classes.dir}/tmp/WEB-INF/glassfish-resources.xml" failonerror="false"/>
   <copy todir="${build.classes.dir}/tmp/WEB-INF/lib" failonerror="false">
       <fileset dir="lib">
           <include name="**/*.jar"/>
@@ -140,8 +150,17 @@ Variables Used:
   <copy file="${web.xml}" 
       tofile="${build.classes.dir}/tmp/WEB-INF/web.xml"
         failonerror="false"/>
+    <copy file="${persistence.xml}" 
+      tofile="${build.classes.dir}/tmp/WEB-INF/classes/META-INF/persistence.xml"
+        failonerror="false"/>
+   <copy file="${beans.xml}" 
+      tofile="${build.classes.dir}/tmp/WEB-INF/beans.xml"
+        failonerror="false"/>
   <copy file="${context.xml}"
       tofile="${build.classes.dir}/tmp/META-INF/context.xml" failonerror="false"/>
+  <copy file="${cdi-extension.service}"
+      tofile="${build.classes.dir}/tmp/WEB-INF/classes/META-INF/services/javax.enterprise.inject.spi.Extension" failonerror="false"/>
+      
   <copy todir="${build.classes.dir}/tmp/WEB-INF/classes">
       <fileset dir="${war.classes}">
           <include name="**/*.class"/>
@@ -156,6 +175,7 @@ Variables Used:
     <fileset dir="${basedir}/docroot" casesensitive="yes">
       <include name="**/*.html"/>
       <include name="**/*.HTML"/>
+      <include name="**/*.xhtml"/>
       <include name="**/*.jsp"/>
       <include name="**/*.jspx"/>
       <include name="**/*.jspf"/>
@@ -168,7 +188,13 @@ Variables Used:
     </fileset>
     <fileset dir="${build.classes.dir}/tmp/" casesensitive="true">
       <include name="WEB-INF/web.xml"/>
+      <include name="WEB-INF/glassfish-web.xml"/>
+      <include name="WEB-INF/glassfish-ejb-jar.xml"/>
+      <include name="WEB-INF/glassfish-resources.xml"/>
       <include name="WEB-INF/sun-web.xml"/>
+      <include name="WEB-INF/sun-ejb-jar.xml"/>
+      <include name="WEB-INF/beans.xml"/>
+      <include name="WEB-INF/weblogic.xml"/>
       <include name="WEB-INF/webservices.xml"/>
       <include name="WEB-INF/tagPlugins.xml"/>
       <include name="WEB-INF/lib/*"/>
@@ -178,6 +204,8 @@ Variables Used:
       <include name="WEB-INF/wsdl/${wsdlfile.name}"/>
       <include name="${mappingfile.name}"/>
       <include name="META-INF/context.xml"/>
+      <include name="WEB-INF/classes/META-INF/services/javax.enterprise.inject.spi.Extension"/>
+      <include name="WEB-INF/classes/META-INF/persistence.xml"/>
     </fileset>
   </jar>       
   <echo message="created war file ${war.file}" level="verbose"/>
@@ -201,8 +229,10 @@ Variables Used:
     ${ejb.jar}
     ${build.classes.dir}
     ${ejb-jar.xml}    
+    ${beans.xml}
     ${persistence-orm.xml}    
     ${sun-ejb-jar.xml}    
+    ${glassfish-ejb-jar.xml}    
     ${sun-cmp-mappings.xml}    
     ${metainf.dir}    
     ${ejbjar.files}
@@ -226,8 +256,17 @@ Variables Used:
   <copy file="${sun-ejb-jar.xml}" 
     tofile="${build.classes.dir}/META-INF/sun-ejb-jar.xml"
     failonerror="false"/>
+  <copy file="${glassfish-ejb-jar.xml}" 
+    tofile="${build.classes.dir}/META-INF/glassfish-ejb-jar.xml"
+    failonerror="false"/>
+  <copy file="${glassfish-resources.xml}"
+    tofile="${build.classes.dir}/META-INF/glassfish-resources.xml"
+    failonerror="false"/>
   <copy file="${sun-cmp-mappings.xml}"
     tofile="${build.classes.dir}/META-INF/sun-cmp-mappings.xml"
+    failonerror="false"/>
+  <copy file="${beans.xml}"
+    tofile="${build.classes.dir}/META-INF/beans.xml"
     failonerror="false"/>
   <copy file="${dbschema}" todir="${build.classes.dir}" failonerror="false"/>
   <jar jarfile="${ejb.jar}" basedir="${ejbjar.files}" update="true"
@@ -237,7 +276,10 @@ Variables Used:
       <include name="persistence-orm.xml"/>
       <include name="webservices.xml"/>
       <include name="sun-ejb-jar.xml"/>
+      <include name="glassfish-resources.xml"/>
+      <include name="glassfish-ejb-jar.xml"/>
       <include name="sun-cmp-mappings.xml"/>
+      <include name="beans.xml"/>
     </metainf>
   </jar>       
   <delete dir="${build.classes.dir}/META-INF" failonerror="false"/>
@@ -327,6 +369,7 @@ Variables Used:
   <mkdir dir="${build.classes.dir}/META-INF"/>   
   <copy file="${sun-application.xml}" tofile="${build.classes.dir}/META-INF/sun-application.xml"  	failonerror="false"/> 
   <copy file="${application.xml}" tofile="${build.classes.dir}/META-INF/application.xml"  	failonerror="false"/> 
+  <copy file="${glassfish-resources-ear.xml}" tofile="${build.classes.dir}/META-INF/glassfish-resources.xml" failonerror="false"  filtering="true"/>
   <jar jarfile="${assemble.dir}/${appname}App.ear"> 
     <fileset dir="${assemble.dir}">
       <include name="*.jar"/>
@@ -335,6 +378,7 @@ Variables Used:
     <fileset dir="${build.classes.dir}">
 	<include name="META-INF/sun-application.xml"/>
 	<include name="META-INF/application.xml"/>
+        <include name="META-INF/glassfish-resources.xml"/>
     </fileset>
     <fileset dir="${env.APS_HOME}" includes="lib/reporter.jar"/>
   </jar>        
@@ -349,6 +393,7 @@ Variables Used:
   <mkdir dir="${assemble.dir}"/>
   <mkdir dir="${build.classes.dir}/META-INF"/>    
   <copy file="${sun-application.xml}" tofile="${build.classes.dir}/META-INF/sun-application.xml"  	failonerror="false"/> 
+  <copy file="${glassfish-resources-ear.xml}" tofile="${build.classes.dir}/META-INF/glassfish-resources.xml" failonerror="false"  filtering="true"/>
   <ear earfile="${assemble.dir}/${appname}App.ear" 
     appxml="${application.xml}">
     <fileset dir="${assemble.dir}">
@@ -357,6 +402,7 @@ Variables Used:
     </fileset>
     <fileset dir="${build.classes.dir}">
 	<include name="META-INF/sun-application.xml"/>
+        <include name="META-INF/glassfish-resources.xml"/>
     </fileset>
     <fileset dir="${env.APS_HOME}" includes="lib/reporter.jar"/>
   </ear>        
@@ -541,10 +587,12 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 <target name="create-jdbc-connpool-common" depends="init-common">
 <echo message="created jdbc connection pool ${jdbc.conpool.name}" 
     level="verbose"/>
+    <property name="extra-params" value=""/>
     <exec executable="${ASADMIN}" failonerror="false">
         <arg line="create-jdbc-connection-pool"/>
         <arg line="--datasourceclassname ${db.class}"/>
         <arg line="--restype ${jdbc.resource.type}"/>
+        <arg line="${extra-params}"/>
         <arg line="--target ${appserver.instance.name}"/>
         <arg line="${as.props}"/>
         <arg line="${jdbc.conpool.name}"/>
@@ -754,6 +802,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 <target name="execute-sql-common" depends="init-common">
 <echo message="Executing sql statement at ${basedir} from ${sql.file}" 
     level="verbose"/>
+  <echo message="${s1astest.classpath}"/>
   <sql
     driver="${db.driver}"
     url="${db.url}"
@@ -771,7 +820,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     level="verbose"/>
   <sql
     driver="${db.driver}"
-    url="jdbc:derby://localhost:1527/sun-appserv-samples;create=true;"
+    url="jdbc:derby://localhost:${db.port}/sun-appserv-samples;create=true;"
     userid="APP"
     password="APP"
     src="${sql.file}"
@@ -1225,46 +1274,46 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 </target>
 
 <target name="startDerbyNonMac" depends="init-common" unless="darwin">
-        <echo message="StaRTing Derby DB servers in the Network Mode"/>
+  <echo message="Starting Derby DB servers in the Network Mode on ports ${db.port} and ${db.port.2}"/>
   <parallel>
     <java classname="org.apache.derby.drda.NetworkServerControl"
       classpath="${db.classpath}" fork="true" spawn="true">
-      <arg line="-h localhost -p 1527 start"/>
+      <arg line="-h localhost -p ${db.port} start"/>
     </java>
     <java classname="org.apache.derby.drda.NetworkServerControl"
       classpath="${db.classpath}" fork="true" spawn="true">
-      <arg line="-h localhost -p 1528 start"/>
+      <arg line="-h localhost -p ${db.port.2} start"/>
     </java>
   </parallel>     
 </target>
 
 <target name="startDerbyMac" depends="init-common" if="darwin">
-        <echo message="StaRTing Derby DB servers in the Network Mode"/>
+  <echo message="Starting Derby DB servers in the Network Mode on ports ${db.port} and ${db.port.2}"/>
   <parallel>
     <java classname="org.apache.derby.drda.NetworkServerControl"
       classpath="${db.classpath}" fork="true" spawn="true">
        <sysproperty key="derby.storage.fileSyncTransactionLog" value="true"/>
-      <arg line="-h localhost -p 1527 start"/>
+       <arg line="-h localhost -p ${db.port} start"/>
     </java>
     <java classname="org.apache.derby.drda.NetworkServerControl"
       classpath="${db.classpath}" fork="true" spawn="true">
        <sysproperty key="derby.storage.fileSyncTransactionLog" value="true"/>     
-      <arg line="-h localhost -p 1528 start"/>
+      <arg line="-h localhost -p ${db.port.2} start"/>
     </java>
   </parallel>
 </target>
 
 <!--  start Derby Database -->
 <target name="stopDerby" depends="init-common">
-        <echo message="Stopping Derby DB servers ..."/>
+  <echo message="Stopping Derby DB servers on ports ${db.port} and ${db.port.2}"/>
   <parallel>
     <java classname="org.apache.derby.drda.NetworkServerControl"
       classpath="${db.classpath}" failonerror="true" fork="true">
-      <arg line="-h localhost -p 1527 shutdown"/>
+      <arg line="-h localhost -p ${db.port} shutdown"/>
     </java>
     <java classname="org.apache.derby.drda.NetworkServerControl"
       classpath="${db.classpath}" failonerror="true" fork="true">
-      <arg line="-h localhost -p 1528 shutdown"/>
+      <arg line="-h localhost -p ${db.port.2} shutdown"/>
     </java>
   </parallel>
 </target>
