@@ -261,11 +261,15 @@ public class DeploymentHandler {
              StringBuilder sb = new StringBuilder();
              String sep = "";
              if (deployMap.containsKey("java-web-start-enabled")){
-               sb.append("java-web-start-enabled").append(deployMap.get("java-web-start-enabled"));
-               sep = ":";
+                 if ("true".equals(deployMap.get("java-web-start-enabled"))){
+                    sb.append("java-web-start-enabled").append("=").append("true");
+                    sep = ":";
+                 }
              }
              if (deployMap.containsKey("preserveAppScopedResources")){
-                 sb.append(sep).append("preserveAppScopedResources").append(deployMap.get("preserveAppScopedResources"));
+                 if ("true".equals(deployMap.get("preserveAppScopedResources"))){
+                    sb.append(sep).append("preserveAppScopedResources").append("=").append("true");
+                 }
              }
              if (sb.length()> 0){
                 payload.put("properties", sb);
