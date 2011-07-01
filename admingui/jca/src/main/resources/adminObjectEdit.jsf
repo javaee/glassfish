@@ -56,10 +56,13 @@
          getRequestValue(key="resAdapter" value="#{resAdapter}");
          getRequestValue(key="resType" value="#{resType}");
          getRequestValue(key="className" value="#{className}");
+         getRequestValue(key="status" value="#{status}");
+         getRequestValue(key="description" value="#{desc}");
          mapPut(map="#{pageSession.tmpMap}" key="name" value="#{pageSession.Name}");
          mapPut(map="#{pageSession.tmpMap}" key="resAdapter" value="#{resAdapter}");
          mapPut(map="#{pageSession.tmpMap}" key="resType" value="#{resType}");
          mapPut(map="#{pageSession.tmpMap}" key="className" value="#{className}");
+         mapPut(map="#{pageSession.tmpMap}" key="description" value="#{desc}");
     }
     if(!#{reload}){
         getRequestValue(key="name" value="#{pageSession.Name}");

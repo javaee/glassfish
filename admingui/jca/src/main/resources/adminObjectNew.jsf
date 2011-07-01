@@ -54,12 +54,20 @@
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/adminObjectNew.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/adminObjectResources.jsf");
         setPageSessionAttribute(key="childType" value="admin-object-resource");
+        createMap(result="#{pageSession.valueMap2}")
         if(#{reload}){
             createMap(result="#{pageSession.tmpMap}")
             mapPut(map="#{pageSession.tmpMap}" key="name" value="$attribute{nameChosen}");
             mapPut(map="#{pageSession.tmpMap}" key="resAdapter" value="$attribute{resAdapter}");
             mapPut(map="#{pageSession.tmpMap}" key="resType" value="$attribute{resType}");
             mapPut(map="#{pageSession.tmpMap}" key="className" value="#{className}");
+            mapPut(map="#{pageSession.tmpMap}" key="description" value="$attribute{desc}");
+            if("#{status[0]}") {
+                mapPut(map="#{pageSession.valueMap2}" key="enabled" value="#{status[0]}");
+            }
+        }
+        if(!#{reload}) {
+            mapPut(map="#{pageSession.valueMap2}" key="enabled" value="true");
         }
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
         gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", valueMap="#{pageSession.valueMap}");
@@ -72,9 +80,7 @@
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
         setPageSessionAttribute(key="reload" value="#{false}" );
 
-        createMap(result="#{pageSession.valueMap2}")
         mapPut(map="#{pageSession.valueMap}" key="enabled" value="true");
-        mapPut(map="#{pageSession.valueMap2}" key="enabled" value="true");
         gf.getAdminObjectResourceWizard(
             reload="#{reload}"
             attrMap="#{pageSession.tmpMap}"

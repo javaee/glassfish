@@ -85,6 +85,12 @@
                     setAttribute(key="click" value="$this{component}");
                     setAttribute(key="resAdapter" value="#{click.selected}");
                     setAttribute(key="reload" value="#{true}" );
+                    if(#{statusId}) {
+                        getUIComponent(clientId="#{statusId}", component=>$attribute{statusComponent});
+                        getUIComponentProperty(component="$attribute{statusComponent}", name="submittedValue", value=>$attribute{status});
+                    }
+                    getUIComponent(clientId="#{descId}", component=>$attribute{descComponent});
+                    getUIComponentProperty(component="$attribute{descComponent}", name="submittedValue", value=>$attribute{desc});
                     //gf.navigate works only for new page & not for edit page
                     //conversely gf.redirect works only for edit page & not new page
                     //needs more investigation - same scenario in component below too
@@ -96,7 +102,12 @@
                     if(#{edit}){
                         getUIComponent(clientId="#{nameId}", component=>$attribute{nameComponent});
                         getUIComponentProperty(component="$attribute{nameComponent}", name="value", value=>$attribute{nameChosen});
-                        gf.redirect(page="#{selfPage}&reload=#{reload}&name=$attribute{nameChosen}&resAdapter=#{resAdapter}");
+                        if(#{statusId}) {
+                            gf.redirect(page="#{selfPage}&reload=#{reload}&name=$attribute{nameChosen}&resAdapter=#{resAdapter}&description=#{desc}&status=#{status[0]}");
+                        }
+                        if(!#{statusId}) {
+                            gf.redirect(page="#{selfPage}&reload=#{reload}&name=$attribute{nameChosen}&resAdapter=#{resAdapter}&description=#{desc}");
+                        }
                     }
                  />
            </sun:dropDown>
@@ -113,6 +124,12 @@
                     setAttribute(key="reload" value="#{true}" );
                     getUIComponent(clientId="#{resAdaptorPropId}", component=>$attribute{resAdaptorComponent});
                     getUIComponentProperty(component="$attribute{resAdaptorComponent}", name="selected", value=>$attribute{resAdapter});
+                    if(#{statusId}) {
+                        getUIComponent(clientId="#{statusId}", component=>$attribute{statusComponent});
+                        getUIComponentProperty(component="$attribute{statusComponent}", name="submittedValue", value=>$attribute{status});
+                    }
+                    getUIComponent(clientId="#{descId}", component=>$attribute{descComponent});
+                    getUIComponentProperty(component="$attribute{descComponent}", name="submittedValue", value=>$attribute{desc});
                     if(!#{edit}){
                         getUIComponent(clientId="#{resCompId}", component=>$attribute{nameComponent});
                         getUIComponentProperty(component="$attribute{nameComponent}", name="submittedValue", value=>$attribute{nameChosen});
@@ -121,7 +138,12 @@
                     if(#{edit}){
                         getUIComponent(clientId="#{nameId}", component=>$attribute{nameComponent});
                         getUIComponentProperty(component="$attribute{nameComponent}", name="value", value=>$attribute{nameChosen});
-                        gf.redirect(page="#{selfPage}&reload=#{reload}&name=$attribute{nameChosen}&resType=#{resType}&resAdapter=$attribute{resAdapter}");
+                        if(#{statusId}) {
+                            gf.redirect(page="#{selfPage}&reload=#{reload}&name=$attribute{nameChosen}&resType=#{resType}&resAdapter=$attribute{resAdapter}&description=#{desc}&status=#{status[0]}");
+                        }
+                        if(!#{statusId}) {
+                            gf.redirect(page="#{selfPage}&reload=#{reload}&name=$attribute{nameChosen}&resType=#{resType}&resAdapter=$attribute{resAdapter}&description=#{desc}");
+                        }
                     }
                 />
             </sun:dropDown>
@@ -137,6 +159,12 @@
                     getUIComponentProperty(component="$attribute{resAdaptorComponent}", name="selected", value=>$attribute{resAdapter});
                     getUIComponent(clientId="#{resTypePropId}", component=>$attribute{resTypeComponent});
                     getUIComponentProperty(component="$attribute{resTypeComponent}", name="selected", value=>$attribute{resType});
+                    if(#{statusId}) {
+                        getUIComponent(clientId="#{statusId}", component=>$attribute{statusComponent});
+                        getUIComponentProperty(component="$attribute{statusComponent}", name="submittedValue", value=>$attribute{status});
+                    }
+                    getUIComponent(clientId="#{descId}", component=>$attribute{descComponent});
+                    getUIComponentProperty(component="$attribute{descComponent}", name="submittedValue", value=>$attribute{desc});
                     if(!#{edit}){
                         getUIComponent(clientId="#{resCompId}", component=>$attribute{nameComponent});
                         getUIComponentProperty(component="$attribute{nameComponent}", name="submittedValue", value=>$attribute{nameChosen});
@@ -146,11 +174,19 @@
             </sun:dropDown>
         </sun:property>
         <sun:property id="descriptionProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">
-            <sun:textField id="descAdaptor" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.description']}" text="#{pageSession.valueMap['description']}" />      
+            <sun:textField id="descAdaptor" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.description']}" text="#{pageSession.valueMap['description']}" >
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{descId});
+                />
+            </sun:textField>
         </sun:property>
         <sun:property id="statusProp" rendered="#{useCheckBox}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}" >
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['enabled']}" selectedValue="true" visible="#{false}" />
-            <sun:checkbox id="enabled" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap2['enabled']}" selectedValue="true" />
+            <sun:checkbox id="enabled" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap2['enabled']}" selectedValue="true" >
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{statusId});                    
+                />
+            </sun:checkbox>
         </sun:property>
         <sun:property id="statusProp2" rendered="#{useString}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}"
             label="$resource{i18n.common.status}" helpText="$resource{i18n.application.EnableTargetHelp}">
