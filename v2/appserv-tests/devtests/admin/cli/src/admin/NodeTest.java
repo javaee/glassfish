@@ -122,6 +122,7 @@ public class NodeTest extends AdminBaseDevTest {
         testCreateNodeSsh();
         testCreateNodeConfig();
 	testCreateOfflineConfig();
+	testUpdateNodes();
 	testListNodes();
         testValidateNodeCommand();
         testBasicCluster();
@@ -294,6 +295,79 @@ public class NodeTest extends AdminBaseDevTest {
         // Make sure it is gone by trying to get its name
         testName = testNamePrefixValidateDelete + "0";
         report(testName, !asadmin("get", propPrefix + nodeName + "." + "name"));
+    }
+
+    private void testUpdateNodes() {
+        final String testNamePrefixCreate = "createUpdateNode-";
+        final String testNamePrefixUpdateConfig = "UpdateNodeConfig-";
+        final String testNamePrefixUpdateSsh = "UpdateNodeSsh-";
+        final String testNamePrefixDelete = "deleteNode-";
+        final String testNamePrefixValidate = "validateNode-";
+        final String testNamePrefixValidateDelete = "validateDeleteNode-";
+        final String nodeNamePrefix = "node";
+
+        String nodeName = String.format("%s%d", nodeNamePrefix, 0);
+
+        // Create a config node with no hostname or installdir
+        String testName = testNamePrefixCreate + "0";
+        report(testName, asadmin("create-node-config", nodeName));
+
+        // Make sure it is there by getting its name
+        testName = testNamePrefixValidate + "0";
+        report(testName, asadmin("get", propPrefix + nodeName + "." + "name"));
+
+	testName = testNamePrefixUpdateConfig + "0";
+	report(testName, asadmin("update-node-config", "--nodehost", "localhost", nodeName));
+
+	testName  = testNamePrefixUpdateConfig + "1";
+	AsadminReturn ret = asadminWithOutput("get", propPrefix+nodeName+"."+"node-host");
+        boolean success = ret.outAndErr.indexOf("localhost") >=0;
+        report(testName, success);
+
+        // Create an ssh node with no hostname or installdir
+        testName = testNamePrefixCreate + "1";
+	String nodeName1 = String.format("%s%d", nodeNamePrefix, 1);
+        report(testName, asadmin("create-node-ssh", "--nodehost", "acb", "--force", nodeName1));
+
+        // Make sure it is there by getting its name
+        testName = testNamePrefixValidate + "1";
+        report(testName, asadmin("get", propPrefix + nodeName1 + "." + "name"));
+
+        testName  = testNamePrefixUpdateConfig + "2";
+	report(testName, asadmin("update-node-config", "--nodehost", "abc", nodeName1));
+
+        testName  = testNamePrefixUpdateConfig + "3";
+        ret = asadminWithOutput("get", propPrefix+nodeName1+"."+"node-host");
+        success = ret.outAndErr.indexOf("abc") >=0;
+        report(testName, success);
+        
+        testName  = testNamePrefixUpdateConfig + "4";
+        ret = asadminWithOutput("get", propPrefix+nodeName1+"."+"type");
+        success = ret.outAndErr.indexOf("CONFIG") >=0;
+        report(testName, success);
+        
+        testName  = testNamePrefixUpdateSsh + "0";
+	report(testName, asadmin("update-node-ssh", "--nodehost", "abc", "--force", nodeName1));
+        testName  = testNamePrefixUpdateSsh + "1";
+        ret = asadminWithOutput("get", propPrefix+nodeName1+"."+"type");
+        success = ret.outAndErr.indexOf("SSH") >=0;
+        report(testName, success);
+
+        // Delete node
+        testName = testNamePrefixDelete + "0";
+        report(testName, asadmin("delete-node-config", nodeName));
+
+        // Make sure it is gone by trying to get its name
+        testName = testNamePrefixValidateDelete + "0";
+        report(testName, !asadmin("get", propPrefix + nodeName + "." + "name"));
+
+        // Delete node
+        testName = testNamePrefixDelete + "1";
+        report(testName, asadmin("delete-node-ssh", nodeName1));
+
+        // Make sure it is gone by trying to get its name
+        testName = testNamePrefixValidateDelete + "1";
+        report(testName, !asadmin("get", propPrefix + nodeName1 + "." + "name"));
     }
 
     /*
