@@ -465,7 +465,7 @@ public class NodeTest extends AdminBaseDevTest {
         report(testName, asadmin("delete-node-ssh", nodeName1));
 
         // Make sure it is gone by trying to get its name
-        testName = testNamePrefixValidateDelete + "0";
+        testName = testNamePrefixValidateDelete + "1";
         report(testName, !asadmin("get", propPrefix + nodeName1 + "." + "name"));
 
     }
