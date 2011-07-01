@@ -481,6 +481,31 @@ AS_ADMIN_MASTERPASSWORD=changeit
     </antcall>
 </target>
 
+<!-- deploy using asadmin -->
+<!-- @param ${arg.list} (required) -->
+<target name="common.deploy.osgi.asadmin" depends="setAsadminArgs">
+    <antcall target="common.run.asadmin">
+        <param name="arg.list" 
+               value="${deploy} ${ASADMIN-ARGS} --type osgi ${arg.list}"/>
+    </antcall>
+    <antcall target="createAppRef">
+        <param name="testName" value="${testName}"/>
+    </antcall>
+</target>
+
+<target name="common.redeploy.osgi.asadmin" depends="setAsadminArgs">
+    <antcall target="delAppRef">
+        <param name="testName" value="${testName}"/>
+    </antcall>
+    <antcall target="common.run.asadmin">
+        <param name="arg.list" 
+               value="${deploy} ${ASADMIN-ARGS} --type osgi --force=true ${arg.list}"/>
+    </antcall>
+    <antcall target="createAppRef">
+        <param name="testName" value="${testName}"/>
+    </antcall>
+</target>
+
 <!-- undeploy using asadmin -->
 <!-- @param ${arg.list} (required) -->
 <target name="common.undeploy.asadmin" depends="setAsadminArgs">
