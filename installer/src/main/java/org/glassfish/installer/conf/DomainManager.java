@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,6 +39,13 @@
  */
 package org.glassfish.installer.conf;
 
+import java.io.Writer;
+import java.io.BufferedWriter;
+import java.io.BufferedReader;
+import java.io.OutputStreamWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.installer.util.GlassFishUtils;
@@ -113,29 +120,35 @@ public class DomainManager {
 
 
         domainConfigSuccessful = true;
+        char[] masterPasswordArray = {'c','h','a','n','g','e','i','t'};
 
         /* Setup domain attributes. */
         Domain glassfishDomain = new Domain(domainName, domainRoot, instancePort,
-                adminPort, saveLogin, checkPorts, adminUser, adminPassword, "changeit");
+                adminPort, saveLogin, checkPorts, adminUser, adminPassword.toCharArray(), masterPasswordArray);
 
         /* Setup value for --domainproperties of create-domain command. */
         glassfishDomain.setDomainProperties(GlassFishUtils.getDomainProperties(adminPort, instancePort, glassfishDomain.getGlassfishPortBases()));
 
-        /* Create password file. */
+        /* Create password file content. */
         PasswordFile pFile = new PasswordFile(glassfishDomain.getAdminPassword(),
-                glassfishDomain.getMasterPassword(), "asadminTmp");
+                glassfishDomain.getMasterPassword());
 
-        /* Update the password file with actual passwords. */
+        /* Update the password file content with actual passwords. */
         pFile.setupPasswordFile();
-
+       
         /* Assemble the create-domain command line. */
-        ExecuteCommand asadminExecuteCommand =
-                GlassFishUtils.assembleCreateDomainCommand(productRef, glassfishDomain, pFile);
+        String[] asadminExecuteCommand =
+                GlassFishUtils.assembleCreateDomainCommand(productRef, glassfishDomain);
 
         outputFromRecentRun = "";
         if (asadminExecuteCommand != null) {
             LOGGER.log(Level.INFO, Msg.get("CREATE_DOMAIN", new String[]{domainName}));
-            outputFromRecentRun += asadminExecuteCommand.expandCommand(asadminExecuteCommand.getCommand());
+            String asadminExecuteCommandExpanded = "";
+            for(int i=0; i<asadminExecuteCommand.length; i++) {
+               asadminExecuteCommandExpanded += asadminExecuteCommand[i] + " ";
+            }
+
+            outputFromRecentRun += asadminExecuteCommandExpanded;
 
             if (runningMode.contains("DRYRUN")) {
                 /*
@@ -143,13 +156,45 @@ public class DomainManager {
                 wanted the actual commandline and not execute the command.*/
                 return glassfishDomain;
             }
+            
+            final long JOIN_TIMEOUT = 4000;
+            int exitValue = 0;
 
             try {
-                asadminExecuteCommand.setOutputType(ExecuteCommand.ERRORS | ExecuteCommand.NORMAL);
-                asadminExecuteCommand.setCollectOutput(true);
-                asadminExecuteCommand.execute();
-                outputFromRecentRun += asadminExecuteCommand.getAllOutput();
-                if (asadminExecuteCommand.getResult() == 1) {
+
+                //Use upgrade tool execute implementation instead of ExecuteCommand since latter
+                //does not properly process stdin 
+
+                // start process and threads to watch output
+                Process proc = Runtime.getRuntime().exec(asadminExecuteCommand);
+                StreamWatcher errWatcher =
+                    new StreamWatcher(proc.getErrorStream(), "ERR");
+                StreamWatcher outWatcher =
+                   new StreamWatcher(proc.getInputStream(), "OUT");
+                errWatcher.start();
+                outWatcher.start();
+
+                // pass password file content to asadmin
+
+                Writer writer = new BufferedWriter(
+                    new OutputStreamWriter(proc.getOutputStream()));
+                
+                for (char c : pFile.getFileContent()) {
+                    writer.write(c);
+                }
+                writer.close();
+                pFile.emptyPasswordArrays();
+
+                // wait for asadmin to finish
+
+                exitValue = proc.waitFor();
+                errWatcher.join(JOIN_TIMEOUT);
+                outWatcher.join(JOIN_TIMEOUT);
+
+                outputFromRecentRun += outWatcher.getOutput();
+                outputFromRecentRun += errWatcher.getOutput();
+
+                if (exitValue != 0) {
                     domainConfigSuccessful = false;
                     glassfishDomain = null;
                 }
@@ -164,8 +209,7 @@ public class DomainManager {
             domainConfigSuccessful = false;
             glassfishDomain = null;
         }
-        /* Delete the password, it is set to be deleted upon JVM exit. */
-        pFile.getPasswordFile().delete();
+        
         LOGGER.log(Level.INFO, outputFromRecentRun);
         return glassfishDomain;
     }
@@ -266,4 +310,44 @@ public class DomainManager {
     public boolean isConfigSuccessful() {
         return this.domainConfigSuccessful;
     }
+
+    private static class StreamWatcher extends Thread {
+
+        private final BufferedReader reader;
+
+        private String output;
+
+        public StreamWatcher(InputStream stream, String name) {
+            super(name);
+            reader = new BufferedReader(new InputStreamReader(stream));
+            output = "";
+        }
+
+       public String getOutput() {
+           return this.output;
+       }
+
+        public void run() {
+            try {
+                String line = reader.readLine();
+                if (line != null) {
+                    while (line != null) {                 
+                        output += line;
+                        line = reader.readLine();
+                        Thread.sleep(2);
+                    }
+                }
+            } catch (Throwable t) {               
+            } finally {
+                try {
+                    reader.close();
+                } catch (IOException ioe) {
+                    
+                }
+            }
+        }
+
+   }
+
+    
 }
