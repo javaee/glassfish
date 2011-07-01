@@ -194,7 +194,7 @@ public class DigestAuthenticator
     /**
      * Set the message digest algorithm for this Manager.
      *
-     * @param algorithm The new message digest algorithm
+     * @param alg The new message digest algorithm
      */
     public static synchronized void setAlgorithm(String alg) {
         algorithm = alg;
@@ -205,6 +205,7 @@ public class DigestAuthenticator
     /**
      * Return descriptive information about this Valve implementation.
      */
+    @Override
     public String getInfo() {
         return (info);
     }
@@ -273,6 +274,7 @@ public class DigestAuthenticator
      *
      * @exception IOException if an input/output error occurs
      */
+    @Override
     public boolean authenticate(HttpRequest request,
                                 HttpResponse response,
                                 LoginConfig config)

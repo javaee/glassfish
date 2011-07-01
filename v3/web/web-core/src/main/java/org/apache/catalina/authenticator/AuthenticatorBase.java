@@ -316,6 +316,7 @@ public abstract class AuthenticatorBase
     /**
      * Return descriptive information about this Valve implementation.
      */
+    @Override
     public String getInfo() {
         return (this.info);
     }
@@ -423,6 +424,7 @@ public abstract class AuthenticatorBase
      * @exception IOException if an input/output error occurs
      * @exception ServletException if thrown by a processing element
      */
+    @Override
     public int invoke(Request request, Response response)
     throws IOException, ServletException {
                 
@@ -624,6 +626,7 @@ public abstract class AuthenticatorBase
      * Very few Valves override this behaviour as most Valve logic
      * is used for request processing.
      */
+    @Override
     public void postInvoke(Request request, Response response) 
             throws IOException, ServletException {
         Realm realm = this.context.getRealm();
@@ -1048,6 +1051,7 @@ public abstract class AuthenticatorBase
      * @exception LifecycleException if this component detects a fatal error
      *  that needs to be reported
      */
+    @Override
     public void stop() throws LifecycleException {
         
         // Validate and update our current component state

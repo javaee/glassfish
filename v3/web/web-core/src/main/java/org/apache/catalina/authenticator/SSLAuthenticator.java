@@ -98,6 +98,7 @@ public class SSLAuthenticator
     /**
      * Return descriptive information about this Valve implementation.
      */
+    @Override
     public String getInfo() {
 
         return (this.info);
@@ -120,6 +121,7 @@ public class SSLAuthenticator
      *
      * @exception IOException if an input/output error occurs
      */
+    @Override
     public boolean authenticate(HttpRequest request,
                                 HttpResponse response,
                                 LoginConfig config)
@@ -187,37 +189,5 @@ public class SSLAuthenticator
         return (true);
 
     }
-
-
-    // ------------------------------------------------------ Lifecycle Methods
-
-
-    /**
-     * Initialize the database we will be using for client verification
-     * and certificate validation (if any).
-     *
-     * @exception LifecycleException if this component detects a fatal error
-     *  that prevents this component from being used
-     */
-    public void start() throws LifecycleException {
-
-        super.start();
-
-    }
-
-
-    /**
-     * Finalize the database we used for client verification and
-     * certificate validation (if any).
-     *
-     * @exception LifecycleException if this component detects a fatal error
-     *  that prevents this component from being used
-     */
-    public void stop() throws LifecycleException {
-
-        super.stop();
-
-    }
-
 
 }

@@ -111,6 +111,7 @@ public class FormAuthenticator
     /**
      * Return descriptive information about this Valve implementation.
      */
+    @Override
     public String getInfo() {
         return (this.info);
     }
@@ -132,6 +133,7 @@ public class FormAuthenticator
      *
      * @exception IOException if an input/output error occurs
      */
+    @Override
     public boolean authenticate(HttpRequest request,
                                 HttpResponse response,
                                 LoginConfig config)
