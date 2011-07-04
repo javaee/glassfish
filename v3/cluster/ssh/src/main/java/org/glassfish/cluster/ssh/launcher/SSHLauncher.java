@@ -675,20 +675,32 @@ public class SSHLauncher {
         return o;
     }
 
-    public boolean checkConnection() throws IOException {
+    public boolean checkConnection() {
         boolean status = false;
         Connection c = null;
         c = new Connection(host, port);
-        c.connect();
-        File f = new File(keyFile);
-        if(logger.isLoggable(Level.FINER)) {
-            logger.finer("Checking connection...");
+        try {
+            c.connect();
+            File f = new File(keyFile);
+            if(logger.isLoggable(Level.FINER)) {
+                logger.finer("Checking connection...");
+            }
+            status = c.authenticateWithPublicKey(userName, f, rawKeyPassPhrase);
+            if (status) {
+                logger.info("Successfully connected to " + userName + "@" + host + " using keyfile " + keyFile);
+            }
+        } catch(IOException ioe) {
+            Throwable t = ioe.getCause();
+            if (t != null) {
+                String msg = t.getMessage();
+                logger.warning("Failed to connect or authenticate: " + msg);
+            }
+            if (logger.isLoggable(Level.FINER)) {
+                logger.log(Level.FINER, "Failed to connect or autheticate: ", ioe);
+            }
+        } finally {
+            c.close();
         }
-        status = c.authenticateWithPublicKey(userName, f, rawKeyPassPhrase);
-        if (status) {
-            logger.info("Successfully connected to " + userName + "@" + host + " using keyfile " + keyFile);
-        }
-        c.close();
         return status;
     }
 
@@ -710,8 +722,9 @@ public class SSHLauncher {
             if (logger.isLoggable(Level.FINER)) {
                 ioe.printStackTrace();
             }
+        } finally {
+            c.close();
         }
-        c.close();
         return status;
     }
 

@@ -135,13 +135,9 @@ public final class SetupSshKey extends SSHCommandsBase {
             if (generatekey || promptPass) {
                 //prompt for password iff required
                 if (sshkeyfile != null || SSHUtil.getExistingKeyFile() != null) {
-                    try {
-                        if(sshL.checkConnection()) {
-                            logger.info(Strings.get("SSHAlreadySetup", sshuser, node));
-                            continue;
-                        }
-                    } catch (IOException ioe) {
-                        //ignore
+                    if(sshL.checkConnection()) {
+                        logger.info(Strings.get("SSHAlreadySetup", sshuser, node));
+                        continue;
                     }
                 }
                 if (previousPassword != null) {
@@ -152,6 +148,7 @@ public final class SetupSshKey extends SSHCommandsBase {
                     previousPassword=sshpassword;
                 }
             }
+            
             try {
                 sshL.setupKey(node, sshpublickeyfile, generatekey, sshpassword);
             } catch (IOException ce) {
@@ -159,17 +156,12 @@ public final class SetupSshKey extends SSHCommandsBase {
                 throw new CommandException(Strings.get("KeySetupFailed", ce.getMessage()));
             } catch (Exception e) {
                 //handle KeyStoreException
-            }
-
-            boolean res = false;
-            try {
-                res = sshL.checkConnection();
-            } catch (IOException ioe) {
-                if (logger.isLoggable(Level.FINER)) {
-                    ioe.printStackTrace();
+                if(logger.isLoggable(Level.FINER)) {
+                    logger.log(Level.FINER, "Keystore error: ", e);
                 }
             }
-            if (!res) {
+            
+            if (!sshL.checkConnection()) {
                 throw new CommandException(Strings.get("ConnFailed"));
             }
         }
