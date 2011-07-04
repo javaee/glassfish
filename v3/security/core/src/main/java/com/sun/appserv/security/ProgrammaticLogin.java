@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -93,7 +93,7 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
 {
     private WebProgrammaticLogin webProgrammaticLogin;
     
-    private static Logger logger =
+    private static final Logger logger =
         LogDomains.getLogger(ProgrammaticLogin.class, LogDomains.SECURITY_LOGGER);
 
     private static ProgrammaticLoginPermission plLogin =
@@ -165,9 +165,8 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
 
             // try to login. doPrivileged is used since application code does
             // not have permissions to process the jaas login.
-            authenticated = (Boolean)
-                AccessController.doPrivileged(new PrivilegedAction() {
-                    public java.lang.Object run() {
+            authenticated = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+                    public java.lang.Boolean run() {
                     // if realm is null, LCD will log into the default realm
                         if (((SecurityServicesUtil.getInstance() != null) && SecurityServicesUtil.getInstance().isServer()) 
                                 || Util.isEmbeddedServer()){
@@ -288,9 +287,8 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
             checkLoginPermission(user);
             // try to login. doPrivileged is used since application code does
             // not have permissions to process the jaas login.
-            authenticated = (Boolean)
-                AccessController.doPrivileged(new PrivilegedAction() {
-                    public java.lang.Object run() {
+            authenticated = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+                    public Boolean run() {
                         return webProgrammaticLogin.login(user, password, realm,
                                                           request, response);
                     }
@@ -381,7 +379,7 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
         // check logout permission
         try{
             checkLogoutPermission();
-            AccessController.doPrivileged(new PrivilegedAction() {
+            AccessController.doPrivileged(new PrivilegedAction<Object>() {
                 public java.lang.Object run() {
                     //V3:Commentedif (isServer) {
                     if (SecurityServicesUtil.getInstance() != null && 
@@ -452,9 +450,8 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
         Boolean loggedout = null;
         try{
             checkLogoutPermission();
-            loggedout = (Boolean)
-                AccessController.doPrivileged(new PrivilegedExceptionAction() {
-                public java.lang.Object run() throws Exception{
+            loggedout = AccessController.doPrivileged(new PrivilegedExceptionAction<Boolean>() {
+                public Boolean run() throws Exception{
                     return webProgrammaticLogin.logout(request, response);
                 }
             });

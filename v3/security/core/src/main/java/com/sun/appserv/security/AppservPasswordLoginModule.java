@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -94,7 +94,7 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
     protected PrincipalImpl _userPrincipal;
     protected String[] _groupsList = null;
 
-    protected Logger _logger =
+    protected static final Logger _logger =
         LogDomains.getLogger(AppservPasswordLoginModule.class, LogDomains.SECURITY_LOGGER);
 
     protected final static StringManager sm =
@@ -349,13 +349,7 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
             throw new LoginException(msg);
         }
 
-        if (_currentRealm == null) {
-            String msg = sm.getString("pwdlm.norealmavail", realm);
-            _logger.log(Level.SEVERE, msg);
-            throw new LoginException(msg);
-        }
-
-        // Get username and password data from credential (ignore callback)
+         // Get username and password data from credential (ignore callback)
 
         setUsername(pwdCred.getUser());
         setPasswordChar(pwdCred.getPassword());
@@ -430,7 +424,7 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
 
 
     public char[] getPasswordChar() {
-        return _passwd;
+        return Arrays.copyOf(_passwd, _passwd.length);
     }
     
   /**
@@ -475,6 +469,6 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
      * @return the groupList - for backward compatability
      */
     public String[] getGroupsList() {
-        return _groupsList;
+        return Arrays.copyOf(_groupsList, _groupsList.length);
     }
 }

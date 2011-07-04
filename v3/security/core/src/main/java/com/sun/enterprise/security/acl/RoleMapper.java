@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,9 +59,7 @@ import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import org.glassfish.security.common.PrincipalImpl;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.config.serverbeans.SecurityService;
-//import com.sun.enterprise.config.ConfigContext;
 import com.sun.enterprise.security.common.AppservAccessController;
-//import com.sun.enterprise.server.ApplicationServer;
 import com.sun.logging.*;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.security.common.Group;
@@ -77,6 +75,7 @@ import org.glassfish.security.common.Group;
 public class RoleMapper implements Serializable, SecurityRoleMapper {
 
     //private static Map ROLEMAPPER = new HashMap();
+    private static final long serialVersionUID = -4455830942007736853L;
     private static final String DEFAULT_ROLE_NAME = "ANYONE";
     private  Role defaultRole = null;
     private  String defaultRoleName = null;
@@ -114,7 +113,7 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
     // store roles that have a conflict so they are not re-mapped
     private Set<Role> conflictedRoles;
     /* End conflict detection objects */
-    private static Logger _logger =
+    private static final Logger _logger =
             LogDomains.getLogger(RoleMapper.class, LogDomains.SECURITY_LOGGER);
 
     private transient SecurityService secService = null;
@@ -149,43 +148,6 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
         }
     }
 
-    /** Returns a RoleMapper corresponding to the AppName.
-     * @param appName Application Name of this RoleMapper.
-     * @return SecurityRoleMapper for the application
-     
-    public static RoleMapper getRoleMapper(String appName) {
-        RoleMapper r = (RoleMapper) ROLEMAPPER.get(appName);
-        if (r == null) {
-            r = new RoleMapper(appName);
-            synchronized (RoleMapper.class) {
-                ROLEMAPPER.put(appName, r);
-            }
-        }
-        return r;
-    }
-*/
-    /** Set a RoleMapper for the application
-     * @param appName Application or module name
-     * @param rmap <I>SecurityRoleMapper</I> for the application or the module
-    
-    public static void setRoleMapper(String appName, SecurityRoleMapper rmap) {
-        synchronized (RoleMapper.class) {
-            ROLEMAPPER.put(appName, rmap);
-        }
-    } */
-
-    /**
-     * @param appName Application/module name.
-     
-    public static void removeRoleMapper(String appName) {
-
-        if (ROLEMAPPER.containsKey(appName)) {
-            synchronized (RoleMapper.class) {
-                ROLEMAPPER.remove(appName);
-            }
-        }
-    }*/
-
     /**
      * @return The application/module name for this RoleMapper
      */
@@ -208,7 +170,7 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
         assert roleToSubject != null;
         Subject subject = roleToSubject.get(role);
         final Subject sub = (subject == null) ? new Subject() : subject;
-        AppservAccessController.doPrivileged(new PrivilegedAction() {
+        AppservAccessController.doPrivileged(new PrivilegedAction<Object>() {
 
             public java.lang.Object run() {
                 sub.getPrincipals().add(principal);
@@ -229,7 +191,7 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
         final Subject sub = roleToSubject.get(mrole);
         final Principal p = principal;
         if (sub != null) {
-            AppservAccessController.doPrivileged(new PrivilegedAction() {
+            AppservAccessController.doPrivileged(new PrivilegedAction<Object>() {
 
                 public java.lang.Object run() {
                     sub.getPrincipals().remove(p);
@@ -263,7 +225,7 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
      * Returns the RoleToSubjectMapping for the RoleMapping
      * @return Map of role->subject mapping
      */
-    public Map getRoleToSubjectMapping() {
+    public Map<String, Subject> getRoleToSubjectMapping() {
         // this causes the last currentMapping information to be added
         checkAndAddMappings();
         assert roleToSubject != null;
@@ -337,7 +299,7 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
     /**
      * Returns an enumeration of roles for this rolemapper.
      */
-    public Iterator getRoles() {
+    public Iterator<String> getRoles() {
         assert roleToSubject != null;
         return roleToSubject.keySet().iterator(); // All the roles
     }
@@ -346,7 +308,7 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
      * Returns an enumeration of Groups assigned to the given role
      * @param The Role to which the groups are assigned to.
      */
-    public Enumeration getGroupsAssignedTo(Role r) {
+    public Enumeration<Group> getGroupsAssignedTo(Role r) {
         assert roleToGroup != null;
         Set<Group> s = roleToGroup.get(r.getName());
         if (s == null) {
@@ -359,7 +321,7 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
      * Returns an enumeration of Principals assigned to the given role
      * @param The Role to which the principals are assigned to.
      */
-    public Enumeration getUsersAssignedTo(Role r) {
+    public Enumeration<Principal> getUsersAssignedTo(Role r) {
         assert roleToPrincipal != null;
         Set<Principal> s = roleToPrincipal.get(r.getName());
         if (s == null) {
@@ -382,15 +344,15 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
      */
     public String toString() {
 
-        StringBuffer s = new StringBuffer("RoleMapper:");
-        for (Iterator e = this.getRoles(); e.hasNext();) {
-            String r = (String) e.next();
-            s.append("\n\tRole (" + r + ") has Principals(");
+        StringBuilder s = new StringBuilder("RoleMapper:");
+        for (Iterator<String> e = this.getRoles(); e.hasNext();) {
+            String r = e.next();
+            s.append("\n\tRole (").append(r).append(") has Principals(");
             Subject sub = roleToSubject.get(r);
-            Iterator it = sub.getPrincipals().iterator();
+            Iterator<Principal> it = sub.getPrincipals().iterator();
             for (; it.hasNext();) {
-                Principal p = (Principal) it.next();
-                s.append(p.getName() + " ");
+                Principal p = it.next();
+                s.append(p.getName()).append(" ");
             }
             s.append(")");
         }
@@ -405,20 +367,20 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
      */
     public RoleMapper(RoleMapper r) {
         this.appName = r.getName();
-        for (Iterator it = r.getRoles(); it.hasNext();) {
-            String role = (String) it.next();
+        for (Iterator<String> it = r.getRoles(); it.hasNext();) {
+            String role = it.next();
             // recover groups
-            Enumeration groups = r.getGroupsAssignedTo(new Role(role));
+            Enumeration<Group> groups = r.getGroupsAssignedTo(new Role(role));
             Set<Group> groupsToRole = new HashSet<Group>();
             for (; groups.hasMoreElements();) {
-                Group gp = (Group) groups.nextElement();
+                Group gp = groups.nextElement();
                 groupsToRole.add(new Group(gp.getName()));
                 addRoleToPrincipal(gp, role);
             }
             this.roleToGroup.put(role, groupsToRole);
 
             // recover principles
-            Enumeration users = r.getUsersAssignedTo(new Role(role));
+            Enumeration<Principal> users = r.getUsersAssignedTo(new Role(role));
             Set<Principal> usersToRole = new HashSet<Principal>();
             for (; users.hasMoreElements();) {
                 PrincipalImpl gp = (PrincipalImpl) users.nextElement();
@@ -446,10 +408,10 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
              if (className == null) {
                  return null;
              }
-             Class clazz = Class.forName(className);
-             Class[] argClasses = new Class[]{String.class};
+             Class<?> clazz = Class.forName(className);
+             Class<?>[] argClasses = new Class<?>[]{String.class};
              Object[] arg = new Object[]{"anystring"};
-             Constructor c = clazz.getConstructor(argClasses);
+             Constructor<?> c = clazz.getConstructor(argClasses);
              Principal principal = (Principal) c.newInstance(arg);
              //verify that this class is a Principal class and has a constructor(string)
              return className;
@@ -650,7 +612,7 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
      * descriptor file.
      */
     private static class Mapping implements Serializable {
-
+        private static final long serialVersionUID = 5863982599500877228L;
         private final String owner;
         private final Map<Role, Set<Principal>> roleMap;
 
@@ -677,9 +639,10 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
         }
     }
 
-    class DefaultRoleToSubjectMapping extends HashMap {
+    class DefaultRoleToSubjectMapping extends HashMap<String, Subject> {
+        private static final long serialVersionUID = 3074733840327132690L;
 
-        private final HashMap roleMap = new HashMap();
+        private final HashMap<String, Subject> roleMap = new HashMap<String, Subject>();
 
         DefaultRoleToSubjectMapping() {
             super();
@@ -687,10 +650,10 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
 
         Principal getSameNamedPrincipal(String roleName) {
             try {
-                Class clazz = Class.forName(defaultP2RMappingClassName);
-                Class[] argClasses = new Class[]{String.class};
+                Class<?> clazz = Class.forName(defaultP2RMappingClassName);
+                Class<?>[] argClasses = new Class<?>[]{String.class};
                 Object[] arg = new Object[]{roleName};
-                Constructor c = clazz.getConstructor(argClasses);
+                Constructor<?> c = clazz.getConstructor(argClasses);
                 Principal principal = (Principal) c.newInstance(arg);
                 return principal;
             } catch (Exception e) {
@@ -699,21 +662,20 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
             }
         }
 
-        public Object get(Object key) {
-            assert key instanceof String;
+        public Subject get(Object key) {
             synchronized (roleMap) {
-                Subject s = (Subject) roleMap.get(key);
+                Subject s = roleMap.get((String)key);
                 if (s == null && key instanceof String) {
                     final Subject fs = new Subject();
                     final String roleName = (String) key;
-                    AppservAccessController.doPrivileged(new PrivilegedAction() {
+                    AppservAccessController.doPrivileged(new PrivilegedAction<Object>() {
 
                         public java.lang.Object run() {
                             fs.getPrincipals().add(getSameNamedPrincipal(roleName));
                             return null;
                         }
                     });
-                    roleMap.put(key, fs);
+                    roleMap.put((String)key, fs);
                     s = fs;
                 }
                 return s;
@@ -721,7 +683,7 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
         }
     }
 
-    public void postConstruct() {
+    private void postConstruct() {
 //       initDefaultRole();
     }
 
