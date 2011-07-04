@@ -55,9 +55,15 @@ public class SetupSshTest extends AdminBaseDevTest {
     private static final String SSH_PASSWORD = "ssh.password";
     private static final String SSH_CONFIGURE = "ssh.configure";
     
-    private static String backup = System.getProperty("user.home")
+    private static final String backup = System.getProperty("user.home")
                                 + File.separator + ".ssh.bak";
+    private static final String pFile = System.getenv("APS_HOME") + File.separator + "config"
+                            + File.separator + "adminpassword.txt";
+    private static final String tmpFile = System.getenv("APS_HOME") + File.separator + "config"
+                            + File.separator + "adminpassword.txt";
 
+    private static enum PasswordType { EMPTY, RIGHT, WRONG };
+    
     private String remoteHost = null;
     private String sshPass = null;
     private String sshUser = null;
@@ -125,9 +131,11 @@ public class SetupSshTest extends AdminBaseDevTest {
         }
 
         System.out.printf("%s=%s\n", SSH_CONFIGURE, sshConfigure);
+        System.out.println("Password file = " +  pFile);
         
-        addPasswords();
+        addPasswords(PasswordType.RIGHT);
 
+        //to add --interactive=false;
         updateCommonOptions();
 
         //setup key without running all the tests
@@ -137,6 +145,8 @@ public class SetupSshTest extends AdminBaseDevTest {
             if (!ret) {
                 System.out.println("FAILURE: Unable to configure public key authentication on " + remoteHost);
             }
+            //clean up the password file
+            removePasswords();
             return;
         }
         
@@ -144,6 +154,8 @@ public class SetupSshTest extends AdminBaseDevTest {
             if (getExistingKeyFile() != null) {
                 if(!testKeyDistributionWithoutKeyGeneration()) {
                     System.out.println("FAILURE: Please remove the public key manually on " + remoteHost + " and re-run the tests");
+                    //clean up the password file
+                    removePasswords();
                     return;
                 }
             }
@@ -163,6 +175,9 @@ public class SetupSshTest extends AdminBaseDevTest {
                 System.out.println("Unable to restore .ssh.bak directory, please rename manually.");
             }
         }
+        
+        //clean up the password file
+        removePasswords();
 	stat.printSummary();
     }
     
@@ -187,8 +202,26 @@ public class SetupSshTest extends AdminBaseDevTest {
 
         //will fail since default value of generatekey=false
         report("setup-ssh-with-missing-key-pair", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, remoteHost));
+        
+        removePasswords();
+        report("setup-ssh-without-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost));
+        
+        addPasswords(PasswordType.EMPTY);
+        report("setup-ssh-with-empty-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost));
+        deleteDirectory(new File(SSH_DIRECTORY));
+        removePasswords();
+        
+        addPasswords(PasswordType.WRONG);
+        report("setup-ssh-with-wrong-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost));
+        deleteDirectory(new File(SSH_DIRECTORY));
+        removePasswords();
+        
+        //restore correct password
+        addPasswords(PasswordType.RIGHT);
 
         report("setup-ssh-with-key-generation", asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost));
+        
+        report("setup-ssh-with-invalid-key", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--sshkeyfile", "/tmp/foo", remoteHost));        
 
         //invalid host name
         report("setup-ssh-password-failure", !asadmin("setup-ssh", SSH_USER_OPTION, "foo", remoteHost));
@@ -207,31 +240,88 @@ public class SetupSshTest extends AdminBaseDevTest {
 
     }
 
-    private void addPasswords() {
+    private void addPasswords(PasswordType pass) {
         BufferedWriter out = null;
         try {
-            String pfile = System.getenv("APS_HOME") + File.separator + "config"
-                            + File.separator + "adminpassword.txt";
-            final File f = new File(pfile);
-            System.out.println("f = " + f.toString());
+            final File f = new File(pFile);
             out = new BufferedWriter(new FileWriter(f, true));
             out.newLine();
-            out.write("AS_ADMIN_SSHPASSWORD=" + sshPass + "\n");
-            out.write("AS_ADMIN_SSHKEYPASSPHRASE=\n");
+            switch (pass) {
+                case EMPTY: {
+                    out.write("AS_ADMIN_SSHPASSWORD=\n");
+                    out.write("AS_ADMIN_SSHKEYPASSPHRASE=\n");
+                    break;
+                }
+                case RIGHT: {
+                    out.write("AS_ADMIN_SSHPASSWORD=" + sshPass + "\n");
+                    out.write("AS_ADMIN_SSHKEYPASSPHRASE=\n");
+                    break;
+                }
+                case WRONG: {
+                    out.write("AS_ADMIN_SSHPASSWORD=xxx\n");
+                    out.write("AS_ADMIN_SSHKEYPASSPHRASE=\n");
+                    break;
+                }
+                default:
+                    //do nothing
+            }
         } catch (IOException ioe) {
             //ignore
         }
         finally {
             try {
-                if (out != null)
+                if (out != null) {
                     out.flush();
                     out.close();
+                }
             } catch(final Exception ignore){}
         }
 
         return;
     }
 
+    private void removePasswords() {
+        final File f = new File(pFile);        
+        final File tempFile = new File(tmpFile);
+
+        BufferedReader reader = null;
+        BufferedWriter writer = null;
+
+        try {
+            writer=new BufferedWriter(new FileWriter(tempFile));
+            reader = new BufferedReader(new FileReader(f));
+            
+            String currentLine;
+
+            while((currentLine = reader.readLine()) != null) {
+                if(currentLine.trim().startsWith("AS_ADMIN_SSH"))
+                    continue;
+                writer.write(currentLine);
+            }
+            
+            writer.close();
+            reader.close();
+            
+            if(!tempFile.renameTo(f)) {
+                System.out.println("Failed to restore password file.");
+            }            
+        } catch (IOException ioe) {
+            //ignore
+        }
+        finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch(final Exception ignore){}
+        }
+
+        return;
+    }
+    
     private void updateCommonOptions() {
         String s = antProp("as.props");
 
@@ -274,7 +364,7 @@ public class SetupSshTest extends AdminBaseDevTest {
             result = true;
         }
         return result;
-    }
+    }    
     private final String host;
     private final File glassFishHome;
     private static final String NON_INTERACTIVE = " --interactive=false";

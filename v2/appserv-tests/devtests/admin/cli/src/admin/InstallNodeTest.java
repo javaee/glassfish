@@ -122,8 +122,9 @@ public class InstallNodeTest extends AdminBaseDevTest {
         if (sshConfigure.equals("false")) {
             //will use password auth for the tests
             addPasswords();
-            updateCommonOptions();
-        }        
+        }
+        
+        updateCommonOptions();
 
         asadmin("start-domain");
 
