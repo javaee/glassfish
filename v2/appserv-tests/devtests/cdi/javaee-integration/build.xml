@@ -39,6 +39,12 @@
 
     <property name="javaee-int-target" value="all"/>
 
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+        <classpath>
+            <pathelement location="${env.APS_HOME}/devtests/cdi/lib/ant-contrib-1.0b3.jar"/>
+        </classpath>
+    </taskdef>
+
     <target name="run-test">
         <antcall target="javaee-int">
         <param name="javaee-int-target" value="run-test"/>
@@ -110,7 +116,15 @@
             <ant dir="cdi-servlet-3.0-annotation-with-web-inf-lib-ordering-reversed" target="${javaee-int-target}"/>
             <ant dir="cdi-servlet-3.0-annotation-with-web-inf-lib-extension-alternative" target="${javaee-int-target}"/>
             <ant dir="cdi-servlet-3.0-annotation-with-web-inf-lib" target="${javaee-int-target}"/>
-            <ant dir="embedded-resource-adapter-as-bean-archive" target="${javaee-int-target}"/>
+            <if>
+                <equals arg1="${test.embedded.mode}" arg2="true"/>
+                <then>
+                    <echo> Excluding testcase embedded-resource-adapter-as-bean-archive for embedded mode</echo>
+                </then>
+                <else>
+                    <ant dir="embedded-resource-adapter-as-bean-archive" target="${javaee-int-target}"/>
+                </else>
+            </if>
         <record name="javaee-int.output" action="stop" />
     </target>
 

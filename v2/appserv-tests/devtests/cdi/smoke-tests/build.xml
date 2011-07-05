@@ -34,10 +34,27 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "./../../../config/run.xml">
+<!ENTITY reporting   SYSTEM "../report.xml">
+]>
 
 <project name="smoke-test" default="usage" basedir=".">
 
+    &commonSetup;
+    &commonBuild;
+    &commonRun;
+    &reporting;
+    
     <property name="smoke-target" value="all"/>
+
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+        <classpath>
+            <pathelement location="${env.APS_HOME}/devtests/cdi/lib/ant-contrib-1.0b3.jar"/>
+        </classpath>
+    </taskdef>
 
     <target name="run-test">
         <antcall target="smoke">
@@ -95,19 +112,27 @@
 
     <target name="smoke">
         <record name="smoke.output" action="start" />
+            <if>
+                <equals arg1="${test.embedded.mode}" arg2="true"/>
+                <then>
+                    <echo> Excluding testcase simple-ejb-cdi, simple-mdb, simple-wab-with-cdi and slf4j-visibility for embedded mode</echo>
+                </then>
+                <else>
+                    <ant dir="simple-ejb-cdi" target="${smoke-target}"/>
+                    <ant dir="simple-mdb" target="${smoke-target}"/>
+                    <ant dir="simple-wab-with-cdi" target="${smoke-target}"/>
+                    <ant dir="slf4j-visibility" target="${smoke-target}"/>
+                </else>
+            </if>
             <ant dir="simple-ejb-singleton/hello" target="${smoke-target}"/>
 <!--
             <ant dir="singleton-startup/hello" target="${smoke-target}"/>
 -->
-            <ant dir="simple-ejb-cdi" target="${smoke-target}"/>
             <ant dir="simple-managed-bean" target="${smoke-target}"/>
-            <ant dir="simple-mdb" target="${smoke-target}"/>
             <ant dir="simple-managed-bean-interceptor-nonnull-package" target="${smoke-target}"/>
             <ant dir="cdi-servlet-3.0-annotation" target="${smoke-target}"/>
             <ant dir="cdi-servlet-filter-3.0-annotation" target="${smoke-target}"/>
-            <ant dir="simple-wab-with-cdi" target="${smoke-target}"/>
             <ant dir="simple-ear" target="${smoke-target}"/>
-            <ant dir="slf4j-visibility" target="${smoke-target}"/>
             <ant dir="optional-unbundled-beans" target="${smoke-target}"/>
         <record name="smoke.output" action="stop" />
     </target>

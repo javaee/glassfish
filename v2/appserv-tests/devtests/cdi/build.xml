@@ -51,6 +51,12 @@
     
     <property name="cdi-target" value="all"/>
 
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+        <classpath>
+            <pathelement location="${env.APS_HOME}/devtests/cdi/lib/ant-contrib-1.0b3.jar"/>
+        </classpath>
+    </taskdef>
+
     <target name="pe-all">
         <antcall target="backup-config-pe"/>
 	<echo message="NOTE: The file ${env.APS_HOME}/config.properties is being replaced with ${basedir}/config/pe-config.properties. The file will be reverted to its original state after the completion of these tests."/>
@@ -199,8 +205,15 @@
         <ant dir="stereotypes" target="${cdi-target}"/>
         <ant dir="unproxyable-deps" target="${cdi-target}"/>
         <ant dir="unsatisfied-deps" target="${cdi-target}"/>
-        <ant dir="osgi-cdi" target="${cdi-target}"/>
-
+        <if>
+            <equals arg1="${test.embedded.mode}" arg2="true"/>
+            <then>
+                <echo> Excluding testcase directory osgi-cdi for embedded mode</echo>
+            </then>
+            <else>
+                <ant dir="osgi-cdi" target="${cdi-target}"/>
+            </else>
+        </if>
         <!-- now generate report -->
         <antcall target="report"/>
 

@@ -39,6 +39,12 @@
 
     <property name="scopes-target" value="all"/>
 
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+        <classpath>
+            <pathelement location="${env.APS_HOME}/devtests/cdi/lib/ant-contrib-1.0b3.jar"/>
+        </classpath>
+    </taskdef>
+
     <target name="run-test">
         <antcall target="scopes">
         <param name="scopes-target" value="run-test"/>
@@ -97,7 +103,15 @@
         <record name="scopes.output" action="start" />
             <ant dir="dependent-scope" target="${scopes-target}"/>
             <ant dir="new-qualifier" target="${scopes-target}"/>
-            <ant dir="request-and-application-scope-ejb-mdb" target="${scopes-target}"/>
+            <if>
+                <equals arg1="${test.embedded.mode}" arg2="true"/>
+                <then>
+                    <echo> Excluding testcase request-and-application-scope-ejb-mdb for embedded mode</echo>
+                </then>
+                <else>
+                    <ant dir="request-and-application-scope-ejb-mdb" target="${scopes-target}"/>
+                </else>
+            </if>
             <ant dir="singleton-scope" target="${scopes-target}"/>
         <record name="scopes.output" action="stop" />
     </target>
