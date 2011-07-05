@@ -3,6 +3,8 @@
     imported into all the leaf level build files 
 -->
 
+<property name="test.embedded.mode" value="true"/>
+
 <!-- ================================================================ -->
 <!-- Targets to clean class files and jars files -->
 <!-- 
