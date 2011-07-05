@@ -148,6 +148,7 @@ public class LogFilter {
         try {
             logFileDetailsForServer = loggingConfig.getLoggingFileDetails();
             logFileDetailsForServer = TranslatedConfigView.getTranslatedValue(logFileDetailsForServer).toString();
+			logFileDetailsForServer = new File(logFileDetailsForServer).getAbsolutePath();
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "logging.backend.error.fetchrecord", ex);
             return new AttributeList();
