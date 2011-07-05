@@ -108,7 +108,9 @@ public class FileTransferUtil {
                 os.write(buffer, 0, bytesRead);
             }
         } finally {
-            os.close();
+            try{
+                os.close();
+            }catch(Exception e){}
             if(content != null){
                 content.close();
             }

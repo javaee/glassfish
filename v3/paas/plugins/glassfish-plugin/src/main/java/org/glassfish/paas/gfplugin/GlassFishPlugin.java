@@ -45,7 +45,6 @@ import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.paas.orchestrator.provisioning.ApplicationServerProvisioner;
 import org.glassfish.paas.orchestrator.provisioning.CloudRegistryService;
-import org.glassfish.paas.orchestrator.provisioning.GlassFishCloudArchiveProcessor;
 import org.glassfish.paas.orchestrator.provisioning.LBProvisioner;
 import org.glassfish.paas.orchestrator.provisioning.cli.ServiceUtil;
 import org.glassfish.paas.javadbplugin.DerbyProvisionedService;

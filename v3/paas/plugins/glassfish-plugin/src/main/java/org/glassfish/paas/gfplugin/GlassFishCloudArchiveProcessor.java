@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.paas.orchestrator.provisioning;
+package org.glassfish.paas.gfplugin;
 
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;

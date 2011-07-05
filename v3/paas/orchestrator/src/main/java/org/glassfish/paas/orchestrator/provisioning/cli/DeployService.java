@@ -79,7 +79,7 @@ public class DeployService implements AdminCommand {
     ArchiveFactory archiveFactory;
 
     public void execute(AdminCommandContext context) {
-        final ActionReport report = context.getActionReport();
+        //final ActionReport report = context.getActionReport();
 
         try {
             orchestrator.deployApplication(archiveFactory.openArchive(new File(application)));

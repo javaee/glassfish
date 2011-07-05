@@ -94,58 +94,6 @@ public class ServiceOrchestratorImpl implements ServiceOrchestrator {
                 appProvisionedSvcs, false /*before deployment*/);
     }
 
-    private void deployArchive(ReadableArchive cloudArchive,
-                               Set<Plugin> installedPlugins) {
-        for (Plugin<?> svcPlugin : installedPlugins) {
-            logger.log(Level.INFO, "Deploying Application Archive " + " through " + svcPlugin);
-            svcPlugin.deploy(cloudArchive);
-        }
-    }
-
-    private void associateProvisionedServices(Set<Plugin> installedPlugins,
-                                              ServiceMetadata appServiceMetadata,
-                                              Set<ProvisionedService> appProvisionedSvcs, boolean preDeployment) {
-        logger.entering(getClass().getName(), "associateProvisionedServices-beforeDeployment=" + preDeployment);
-        for (ProvisionedService ps : appProvisionedSvcs) {
-            for (Plugin<?> svcPlugin : installedPlugins) {
-                //associate the provisioned service only with plugins that handle other service types.
-                if (!ps.getServiceType().equals(svcPlugin.getServiceType())) {
-                    Set<ServiceReference> appSRs = appServiceMetadata.getServiceReferences();
-                    for (ServiceReference sr : appSRs) {
-                        logger.log(Level.INFO, "Associating ProvisionedService " + ps + " for ServiceReference " + sr + " through " + svcPlugin);
-                        svcPlugin.associateServices(ps, sr, preDeployment);
-                    }
-                }
-            }
-        }
-    }
-
-    private Set<ProvisionedService> provisionServices(Set<Plugin> installedPlugins,
-                                                      ServiceMetadata appServiceMetadata) {
-        logger.entering(getClass().getName(), "provisionServices");
-        Set<ProvisionedService> appPSs = new HashSet<ProvisionedService>();
-
-        Set<ServiceDefinition> appSDs = appServiceMetadata.getServiceDefinitions();
-        for (ServiceDefinition sd : appSDs) {
-            Plugin<?> chosenPlugin = getPluginForServiceType(installedPlugins, sd.getServiceType());
-            logger.log(Level.INFO, "Provisioning Service for " + sd + " through " + chosenPlugin);
-            ProvisionedService ps = chosenPlugin.provisionService(sd);
-            appPSs.add(ps);
-        }
-
-        return appPSs;
-    }
-
-    private Plugin getPluginForServiceType(Set<Plugin> installedPlugins, ServiceType serviceType) {
-        //XXX: for now assume that there is one plugin per servicetype
-        //and choose the first plugin that handles this service type.
-        //in the future, need to handle conflicts
-        for (Plugin svcPlugin : installedPlugins) {
-            if (svcPlugin.getServiceType().equals(serviceType)) return svcPlugin;
-        }
-        return null;
-    }
-
     private ServiceMetadata serviceDependencyDiscovery(ReadableArchive cloudArchive, Set<Plugin> installedPlugins) {
         logger.entering(getClass().getName(), "serviceDependencyDiscovery");
         //1. SERVICE DISCOVERY
@@ -200,7 +148,7 @@ public class ServiceOrchestratorImpl implements ServiceOrchestrator {
             boolean serviceDefinitionExists = false;
             for (ServiceDefinition sd : appSDs) {
                 //XXX: For now we assume all SRs are satisfied by app-scoped SDs
-                //In the future this has to be modified to search in global SDs 
+                //In the future this has to be modified to search in global SDs
                 //as well
                 if (sd.getName().equals(targetSD)) {
                     serviceDefinitionExists = true;
@@ -222,6 +170,58 @@ public class ServiceOrchestratorImpl implements ServiceOrchestrator {
         assertMetadataComplete(appSDs, appSRs);
         logger.log(Level.INFO, "Final Service Metadata = " + appServiceMetadata);
         return appServiceMetadata;
+    }
+
+    private void deployArchive(ReadableArchive cloudArchive,
+                               Set<Plugin> installedPlugins) {
+        for (Plugin<?> svcPlugin : installedPlugins) {
+            logger.log(Level.INFO, "Deploying Application Archive " + " through " + svcPlugin);
+            svcPlugin.deploy(cloudArchive);
+        }
+    }
+
+    private void associateProvisionedServices(Set<Plugin> installedPlugins,
+                                              ServiceMetadata appServiceMetadata,
+                                              Set<ProvisionedService> appProvisionedSvcs, boolean preDeployment) {
+        logger.entering(getClass().getName(), "associateProvisionedServices-beforeDeployment=" + preDeployment);
+        for (ProvisionedService ps : appProvisionedSvcs) {
+            for (Plugin<?> svcPlugin : installedPlugins) {
+                //associate the provisioned service only with plugins that handle other service types.
+                if (!ps.getServiceType().equals(svcPlugin.getServiceType())) {
+                    Set<ServiceReference> appSRs = appServiceMetadata.getServiceReferences();
+                    for (ServiceReference sr : appSRs) {
+                        logger.log(Level.INFO, "Associating ProvisionedService " + ps + " for ServiceReference " + sr + " through " + svcPlugin);
+                        svcPlugin.associateServices(ps, sr, preDeployment);
+                    }
+                }
+            }
+        }
+    }
+
+    private Set<ProvisionedService> provisionServices(Set<Plugin> installedPlugins,
+                                                      ServiceMetadata appServiceMetadata) {
+        logger.entering(getClass().getName(), "provisionServices");
+        Set<ProvisionedService> appPSs = new HashSet<ProvisionedService>();
+
+        Set<ServiceDefinition> appSDs = appServiceMetadata.getServiceDefinitions();
+        for (ServiceDefinition sd : appSDs) {
+            Plugin<?> chosenPlugin = getPluginForServiceType(installedPlugins, sd.getServiceType());
+            logger.log(Level.INFO, "Provisioning Service for " + sd + " through " + chosenPlugin);
+            ProvisionedService ps = chosenPlugin.provisionService(sd);
+            appPSs.add(ps);
+        }
+
+        return appPSs;
+    }
+
+    private Plugin getPluginForServiceType(Set<Plugin> installedPlugins, ServiceType serviceType) {
+        //XXX: for now assume that there is one plugin per servicetype
+        //and choose the first plugin that handles this service type.
+        //in the future, need to handle conflicts
+        for (Plugin svcPlugin : installedPlugins) {
+            if (svcPlugin.getServiceType().equals(serviceType)) return svcPlugin;
+        }
+        return null;
     }
 
     private boolean serviceDefinitionExistsForType(
