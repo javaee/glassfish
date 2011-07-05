@@ -119,9 +119,9 @@
         }
         return false;
     }
-    function isClassNamePresent(dsName, driverName, dsNameField, driverNameField, reqMsg) {
-        var datasource = dsNameField;
-        var driver = driverNameField;
+    function isClassNamePresent(dsName, driverName, dsNameFieldId, driverNameFieldId, reqMsg) {
+        var datasource = document.getElementById(dsNameFieldId).value;
+        var driver = document.getElementById(driverNameFieldId).value;
         if (!isEmpty(dsName) || !isEmpty(driverName)) {
             datasource = dsName;
             driver = driverName;
