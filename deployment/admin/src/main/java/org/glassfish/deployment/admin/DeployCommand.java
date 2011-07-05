@@ -418,6 +418,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                        }
                     }
                     report.setActionExitCode(worstExitCode);
+                    report.setResultType(String.class, name);
                 } catch (Exception e) {
                     // roll back the deployment and re-throw the exception
                     deployment.undeploy(name, deploymentContext);
