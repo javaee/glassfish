@@ -50,6 +50,13 @@ import java.util.Arrays;
  * @author Yamini K B
  */
 public class SetupSshTest extends AdminBaseDevTest {
+    private final String host;
+    private final File glassFishHome;
+    private static final String NON_INTERACTIVE = " --interactive=false";
+    private static final String SSH_USER_OPTION = "--sshuser";
+    private static final String SSH_DIRECTORY = System.getProperty("user.home")
+                                + File.separator + ".ssh" + File.separator;
+    
     private static final String SSH_HOST_PROP = "ssh.host";
     private static final String SSH_USER_PROP = "ssh.user";
     private static final String SSH_PASSWORD = "ssh.password";
@@ -60,9 +67,13 @@ public class SetupSshTest extends AdminBaseDevTest {
     private static final String pFile = System.getenv("APS_HOME") + File.separator + "config"
                             + File.separator + "adminpassword.txt";
     private static final String tmpFile = System.getenv("APS_HOME") + File.separator + "config"
-                            + File.separator + "adminpassword.txt";
+                            + File.separator + "adminpassword.tmp";
 
-    private static enum PasswordType { EMPTY, RIGHT, WRONG };
+    private static final String SSH_KEY = "resources/ssh/id_dsa";
+    private static final String SSH_KEY_PASSPHRASE = "Hello World!";
+    
+    private static enum PasswordType { SSH_PASS, KEY_PASS };
+    private static enum PasswordValue { EMPTY, RIGHT, WRONG };
     
     private String remoteHost = null;
     private String sshPass = null;
@@ -133,7 +144,7 @@ public class SetupSshTest extends AdminBaseDevTest {
         System.out.printf("%s=%s\n", SSH_CONFIGURE, sshConfigure);
         System.out.println("Password file = " +  pFile);
         
-        addPasswords(PasswordType.RIGHT);
+        addPassword(PasswordValue.RIGHT, PasswordType.SSH_PASS);
 
         //to add --interactive=false;
         updateCommonOptions();
@@ -169,6 +180,7 @@ public class SetupSshTest extends AdminBaseDevTest {
 
         if(!failed) {
             testKeyGeneration();
+            testEncryptedKey();
 
             //restore .ssh directory
             if(!renameSSHDirectory(backup, SSH_DIRECTORY)) {
@@ -192,7 +204,7 @@ public class SetupSshTest extends AdminBaseDevTest {
             //no point in running the tests if ssh already works, so bail out..
             return false;
         } else {
-            report("setup-ssh-key", ret.returnValue);
+            report("setup-ssh-key-with-existing-key", ret.returnValue);
         }
 
         return res;
@@ -206,18 +218,18 @@ public class SetupSshTest extends AdminBaseDevTest {
         removePasswords();
         report("setup-ssh-without-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost));
         
-        addPasswords(PasswordType.EMPTY);
+        addPassword(PasswordValue.EMPTY, PasswordType.SSH_PASS);
         report("setup-ssh-with-empty-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost));
         deleteDirectory(new File(SSH_DIRECTORY));
         removePasswords();
         
-        addPasswords(PasswordType.WRONG);
+        addPassword(PasswordValue.WRONG, PasswordType.SSH_PASS);
         report("setup-ssh-with-wrong-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost));
         deleteDirectory(new File(SSH_DIRECTORY));
         removePasswords();
         
         //restore correct password
-        addPasswords(PasswordType.RIGHT);
+        addPassword(PasswordValue.RIGHT, PasswordType.SSH_PASS);
 
         report("setup-ssh-with-key-generation", asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost));
         
@@ -232,15 +244,32 @@ public class SetupSshTest extends AdminBaseDevTest {
         //invalid public key file
         report("setup-ssh-invalid-public-keyfile", !asadmin("setup-ssh", "--sshpublickeyfile", "foo", remoteHost));
 
-        //without ssh password
-        //report("setup-ssh-without-password", !asadmin("setup-ssh", remoteHost));
-
         //should succeed second time as well
         report("setup-ssh-with-password", asadmin("setup-ssh", SSH_USER_OPTION, sshUser, remoteHost));
 
     }
 
-    private void addPasswords(PasswordType pass) {
+    private void testEncryptedKey() {
+        //pass correct ssh password for each test
+        addPassword(PasswordValue.RIGHT, PasswordType.SSH_PASS);
+        addPassword(PasswordValue.EMPTY, PasswordType.KEY_PASS);
+        report("setup-ssh-encrypted-key-with-empty-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", "--sshkeyfile", SSH_KEY, remoteHost));
+        deleteDirectory(new File(SSH_DIRECTORY));
+        removePasswords();
+        
+        addPassword(PasswordValue.RIGHT, PasswordType.SSH_PASS);
+        addPassword(PasswordValue.WRONG, PasswordType.KEY_PASS);
+        report("setup-ssh-encrypted-key-with-wrong-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", "--sshkeyfile", SSH_KEY, remoteHost));
+        deleteDirectory(new File(SSH_DIRECTORY));
+        removePasswords();
+        
+        addPassword(PasswordValue.RIGHT, PasswordType.SSH_PASS);
+        addPassword(PasswordValue.RIGHT, PasswordType.KEY_PASS);
+        report("setup-ssh-encrypted-key-with-key-generation", asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", "--sshkeyfile", SSH_KEY, remoteHost));
+        removePasswords();
+    }
+
+    private void addPassword(PasswordValue pass, PasswordType passType) {
         BufferedWriter out = null;
         try {
             final File f = new File(pFile);
@@ -248,18 +277,24 @@ public class SetupSshTest extends AdminBaseDevTest {
             out.newLine();
             switch (pass) {
                 case EMPTY: {
-                    out.write("AS_ADMIN_SSHPASSWORD=\n");
-                    out.write("AS_ADMIN_SSHKEYPASSPHRASE=\n");
+                    if (passType.equals(PasswordType.SSH_PASS))
+                        out.write("AS_ADMIN_SSHPASSWORD=");
+                    else if (passType.equals(PasswordType.KEY_PASS))
+                        out.write("AS_ADMIN_SSHKEYPASSPHRASE=");
                     break;
                 }
                 case RIGHT: {
-                    out.write("AS_ADMIN_SSHPASSWORD=" + sshPass + "\n");
-                    out.write("AS_ADMIN_SSHKEYPASSPHRASE=\n");
+                    if (passType.equals(PasswordType.SSH_PASS))
+                        out.write("AS_ADMIN_SSHPASSWORD=" + sshPass);
+                    else if (passType.equals(PasswordType.KEY_PASS))
+                        out.write("AS_ADMIN_SSHKEYPASSPHRASE=" + SSH_KEY_PASSPHRASE);
                     break;
                 }
                 case WRONG: {
-                    out.write("AS_ADMIN_SSHPASSWORD=xxx\n");
-                    out.write("AS_ADMIN_SSHKEYPASSPHRASE=\n");
+                    if (passType.equals(PasswordType.SSH_PASS))
+                        out.write("AS_ADMIN_SSHPASSWORD=xxx");
+                    else if (passType.equals(PasswordType.KEY_PASS))
+                        out.write("AS_ADMIN_SSHKEYPASSPHRASE=xxx");
                     break;
                 }
                 default:
@@ -293,14 +328,20 @@ public class SetupSshTest extends AdminBaseDevTest {
             
             String currentLine;
 
-            while((currentLine = reader.readLine()) != null) {
+            while((currentLine = reader.readLine()) != null && !currentLine.trim().isEmpty()) {
                 if(currentLine.trim().startsWith("AS_ADMIN_SSH"))
                     continue;
                 writer.write(currentLine);
+                writer.newLine();
             }
-            
-            writer.close();
+                
             reader.close();
+            writer.close();
+            
+            //On Windows, rename will fail if destination file already exists
+            if(!f.delete()) {
+                System.out.println("Failed to delete original file");
+            }
             
             if(!tempFile.renameTo(f)) {
                 System.out.println("Failed to restore password file.");
@@ -364,11 +405,5 @@ public class SetupSshTest extends AdminBaseDevTest {
             result = true;
         }
         return result;
-    }    
-    private final String host;
-    private final File glassFishHome;
-    private static final String NON_INTERACTIVE = " --interactive=false";
-    private static final String SSH_USER_OPTION = "--sshuser";
-    private static final String SSH_DIRECTORY = System.getProperty("user.home")
-                                + File.separator + ".ssh" + File.separator;
+    }
 }
