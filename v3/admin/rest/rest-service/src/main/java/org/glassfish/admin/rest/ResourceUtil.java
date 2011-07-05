@@ -550,36 +550,26 @@ public class ResourceUtil {
         return Response.status(status).entity(message).build();
     }
 
-    public static ActionReportResult getActionReportResult(Response.Status status, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
-        return getActionReportResult(status.getStatusCode(), null, message, requestHeaders, uriInfo);
+    public static ActionReportResult getActionReportResult(ActionReport parentActionReport, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
+        ActionReportResult result = getActionReportResult(parentActionReport.getActionExitCode(), message, requestHeaders, uriInfo);
+        result.getActionReport().getSubActionsReport().addAll(((ActionReporter)parentActionReport).getSubActionsReport());
+        return result;
     }
 
-    public static ActionReportResult getActionReportResult(int status, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
-        return getActionReportResult(status, null, message, requestHeaders, uriInfo);
-    }
-
-    public static ActionReportResult getActionReportResult(int status, ActionReport parentActionReport, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
+    public static ActionReportResult getActionReportResult(ActionReport.ExitCode status, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
         if (isBrowser(requestHeaders)) {
             message = getHtml(message, uriInfo, false);
         }
         RestActionReporter ar = new RestActionReporter();
-        if (parentActionReport != null) {
-            ar.getSubActionsReport().addAll(((ActionReporter)parentActionReport).getSubActionsReport());
-        }
-
         ActionReportResult result = new ActionReportResult(ar);
 
-        if ((status >= 200) && (status <= 299)) {
-            ar.setSuccess();
-        } else {
-            ar.setFailure();
+        if (status != ActionReport.ExitCode.SUCCESS && status != ActionReport.ExitCode.WARNING) {
             result.setErrorMessage(message);
             result.setIsError(true);
         }
 
+        ar.setActionExitCode(status);
         ar.setMessage(message);
-        result.setStatusCode(status);
-
         return result;
     }
 

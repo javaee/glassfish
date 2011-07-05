@@ -275,7 +275,7 @@ public abstract class CollectionLeafResource {
             if (data.containsKey("error")) {
                 String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
                         "Unable to parse the input entity. Please check the syntax.");
-                return Response.status(400).entity(ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo)).build();
+                return Response.status(400).entity(ResourceUtil.getActionReportResult(ActionReport.ExitCode.FAILURE, errorMessage, requestHeaders, uriInfo)).build();
             }
 
             ResourceUtil.purgeEmptyEntries(data);
@@ -293,16 +293,16 @@ public abstract class CollectionLeafResource {
                     String successMessage =
                         localStrings.getLocalString(successMsgKey,
                             successMsg, new Object[] {attributeName});
-                    return Response.ok(ResourceUtil.getActionReportResult(200, successMessage, requestHeaders, uriInfo)).build();
+                    return Response.ok(ResourceUtil.getActionReportResult(ActionReport.ExitCode.SUCCESS, successMessage, requestHeaders, uriInfo)).build();
                 }
 
                 String errorMessage = getErrorMessage(data, actionReport);
-                return Response.status(400).entity(ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo)).build();
+                return Response.status(400).entity(ResourceUtil.getActionReportResult(ActionReport.ExitCode.FAILURE, errorMessage, requestHeaders, uriInfo)).build();
             }
             String message =
                 localStrings.getLocalString(operationForbiddenMsgKey, 
                     operationForbiddenMsg, new Object[] {uriInfo.getAbsolutePath()});
-            return Response.status(403).entity(ResourceUtil.getActionReportResult(403, message, requestHeaders, uriInfo)).build();
+            return Response.status(403).entity(ResourceUtil.getActionReportResult(ActionReport.ExitCode.FAILURE, message, requestHeaders, uriInfo)).build();
 
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);

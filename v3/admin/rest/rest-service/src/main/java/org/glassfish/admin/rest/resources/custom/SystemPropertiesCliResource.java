@@ -283,7 +283,6 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
         if (exitCode == ActionReport.ExitCode.FAILURE) {
             status = HttpURLConnection.HTTP_INTERNAL_ERROR;
         }
-        results.setStatusCode(status);
 
         return Response.status(status).entity(results).build();
     }
@@ -301,8 +300,6 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
         if (exitCode == ActionReport.ExitCode.FAILURE) {
             status = HttpURLConnection.HTTP_INTERNAL_ERROR;
         }
-        results.setStatusCode(status);
-
         return Response.status(status).entity(results).build();
     }
 
