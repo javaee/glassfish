@@ -95,7 +95,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
 
     private static final Attributes.Name ATTRIBUTE_NAME_SKIP = new Attributes.Name("Bundle-SymbolicName");
     private static final String[] KNOWN_PACKAGES = 
-            {"org.glassfish.", "com.sun.enterprise.", "org.eclipse."};
+            {"org.glassfish.", "com.sun.enterprise.", "org.eclipse.", "org.jboss.weld."};
     private static final String[] ATTRIBUTE_VALUES_OK = {"sample", "test"};
 
 
