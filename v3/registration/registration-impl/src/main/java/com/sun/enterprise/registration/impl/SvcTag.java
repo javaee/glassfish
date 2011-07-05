@@ -96,7 +96,6 @@ class SvcTag {
     private int[] channelInstanceIDs;
     private String productDefinedInstID;
     private String productParentURN;
-    private String productParent;
     private String agentVersion;
     private String helperVersion;
     private String registrationClientURN;
@@ -443,76 +442,6 @@ class SvcTag {
 
         return df.format(timestamp);
     }
-
-    public Element toXMLElement() throws Exception {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-          .append("<st1:request xmlns:st1=\"http://www.sun.com/stv1/svctag\">\n")
-          .append(toXMLString()).append("</st1:request>\n");
-
-        InputSource is = new InputSource(new StringReader(sb.toString()));
-        Document doc = builder.parse(is);
-
-        return doc.getDocumentElement();
-    }
-
-    public String toXMLString() {
-        StringBuilder sb = new StringBuilder();
-        Formatter fmt = new Formatter(sb);
-
-        fmt.format("<service_tag>\n");
-        fmt.format("  <instance_urn>%s</instance_urn>\n", instanceURN);
-        fmt.format("  <sun_user_id>%s</sun_user_id>\n", encode(userID));
-        fmt.format("  <agent_urn>%s</agent_urn>\n", agentURN);
-        fmt.format("  <product_name>%s</product_name>\n", encode(productName));
-        fmt.format("  <product_version>%s</product_version>\n", encode(version));
-        fmt.format("  <product_vendor>%s</product_vendor>\n", encode(vendor));
-        fmt.format("  <product_urn>%s</product_urn>\n", productURN);
-        fmt.format("  <product_parent_urn>%s</product_parent_urn>\n",
-            productParentURN);
-        fmt.format("  <product_parent>%s</product_parent>\n", encode(productParent));
-        fmt.format("  <product_defined_inst_id>%s</product_defined_inst_id>\n",
-            encode(productDefinedInstID));
-        fmt.format("  <status>%s</status>\n", encode(status));
-        if (subStatus != null) {
-            fmt.format("  <sub_status>%s</sub_status>\n", encode(subStatus));
-        }
-        if (receivedIPAddress != null) {
-            fmt.format("  <received_ip_address>%s</received_ip_address>\n", receivedIPAddress);
-        }
-        fmt.format("  <timestamp>%s</timestamp>\n", getTimestampString());
-        fmt.format("  <customer_asset_tag>%s</customer_asset_tag>\n",
-            encode(customerAssetTag));
-
-        if (domainName != null) {
-            fmt.format("  <group_name>%s</group_name>\n", encode(domainName));
-        }
-
-        fmt.format("  <group_id>%d</group_id>\n", domainID);
-        if (channelInstanceIDs != null) {
-            for (int i=0; i<channelInstanceIDs.length; i++) {
-                fmt.format("  <channel_instance_id>%d</channel_instance_id>\n", channelInstanceIDs[i]);
-            }
-        }
-        fmt.format("  <container>%s</container>\n", encode(container));
-        fmt.format("  <source>%s</source>\n", encode(source));
-        if (agentVersion != null) {
-            fmt.format("  <agent_version>%s</agent_version>\n", agentVersion);
-        }
-        if (helperVersion != null) {
-            fmt.format("  <helper_version>%s</helper_version>\n", helperVersion);
-        }
-        if (registrationClientURN != null) {
-            fmt.format("  <registration_client_urn>%s</registration_client_urn>\n", registrationClientURN);
-        }
-        fmt.format("</service_tag>\n");
-
-        return sb.toString();
-    }
-
     public String encode(String s) {
         if (s == null) {
             return s;

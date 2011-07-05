@@ -174,7 +174,9 @@ public class PingService implements PostStartup, PostConstruct {
         File f = new File(RegistrationUtil.getRegistrationHome(), 
                 UC_PING_TIME_STAMP_FILE);
         if (!f.createNewFile())
-            f.setLastModified(System.currentTimeMillis());
+            if (!f.setLastModified(System.currentTimeMillis()))
+                logger.fine("Could not update timestamp for : " + f.getAbsolutePath());
+                
     }
 
     private long getTimeStamp() throws Exception {

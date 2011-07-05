@@ -210,16 +210,16 @@ class WindowsSystemEnvironment extends SystemEnvironment {
     private String getFullWmicResult(String alias, String verb, String property) {
         StringBuilder res = new StringBuilder();
         BufferedReader in = null;
+        BufferedWriter bw = null;
         try {
             ProcessBuilder pb = new ProcessBuilder("cmd", "/C", "WMIC", alias, verb, property);
             Process p = pb.start();
             // need this for executing windows commands (at least
             // needed for executing wmic command)
-            BufferedWriter bw = new BufferedWriter(
+            bw = new BufferedWriter(
                 new OutputStreamWriter(p.getOutputStream()));
             bw.write(13);
             bw.flush();
-            bw.close();
 
             p.waitFor();
             if (p.exitValue() == 0) {
@@ -247,6 +247,15 @@ class WindowsSystemEnvironment extends SystemEnvironment {
                     // ignore
                 }
             }
+            
+            if (bw != null) {
+                try {
+                    bw.close();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
+            
         }
         return res.toString();
     }
