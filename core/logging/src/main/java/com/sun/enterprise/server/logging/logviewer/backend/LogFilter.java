@@ -217,7 +217,8 @@ public class LogFilter {
             try {
                 // getting log file attribute value from logging.properties file
                 logFileDetailsForServer = loggingConfig.getLoggingFileDetails();
-                logFileDetailsForServer = TranslatedConfigView.getTranslatedValue(logFileDetailsForServer).toString();
+				logFileDetailsForServer = TranslatedConfigView.getTranslatedValue(logFileDetailsForServer).toString();
+				logFileDetailsForServer = new File(logFileDetailsForServer).getAbsolutePath();				
             } catch (Exception ex) {
                 logger.log(Level.SEVERE, "logging.backend.error.fetchrecord", ex);
                 return new Vector();
@@ -245,7 +246,7 @@ public class LogFilter {
         return allInstanceFileNames;
     }
 
-    /*
+	/*
         This function is used to get log file details from logging.properties file for given target.
      */
 
