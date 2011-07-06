@@ -333,6 +333,7 @@ public class DomainManager {
                 if (line != null) {
                     while (line != null) {                 
                         output += line;
+                        output += "\n";
                         line = reader.readLine();
                         Thread.sleep(2);
                     }
