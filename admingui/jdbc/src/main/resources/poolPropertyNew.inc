@@ -68,12 +68,20 @@
                 />
         </sun:dropDown>
         "<br/>
-        <sun:textField id="datasourceField"  columns="$int{60}" maxLength="#{sessionScope.fieldLengths['jdbcPool.datasource']}" text="#{wizardPoolExtra.DatasourceClassnameField}"  disabled="#{!wizardPoolExtra.dsClassname}" />
+        <sun:textField id="datasourceField"  columns="$int{60}" maxLength="#{sessionScope.fieldLengths['jdbcPool.datasource']}" text="#{wizardPoolExtra.DatasourceClassnameField}"  disabled="#{!wizardPoolExtra.dsClassname}" >
+            <!afterCreate
+                getClientId(component="$this{component}" clientId=>$page{datasourceClassNameFieldId});
+            />
+        </sun:textField>
     </sun:property>
     <sun:property id="ddsProp" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.driver}" helpText="$resource{i18njdbc.jdbcPool.driverHelpEnter}">
         <sun:dropDown id="ddatasource"  selected="#{wizardPoolExtra.driverClassname}" labels="$attribute{DList}"  disabled="#{wizardPoolExtra.dsClassname}" />
         "<br/>
-        <sun:textField id="ddatasourceField"  columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.driver']}" text="#{wizardPoolExtra.DriverClassnameField}"  disabled="#{wizardPoolExtra.dsClassname}" />
+        <sun:textField id="ddatasourceField"  columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.driver']}" text="#{wizardPoolExtra.DriverClassnameField}"  disabled="#{wizardPoolExtra.dsClassname}" >
+            <!afterCreate
+                getClientId(component="$this{component}" clientId=>$page{driverClassNameFieldId});
+            />
+        </sun:textField>
     </sun:property>
 
     <sun:property id="pingProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.ping}" helpText="$resource{i18njdbc.jdbcPool.pingHelp}">

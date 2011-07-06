@@ -57,7 +57,7 @@
 
     <sun:button id="finishButton" text="$resource{i18n.button.Finish}"
         onClick="document.getElementById('form2:validate').value='true';
-            if (isClassNamePresent('#{wizardPoolExtra.datasourceClassname}', '#{wizardPoolExtra.driverClassname}', '#{wizardPoolExtra.datasourceClassnameField}', '#{wizardPoolExtra.DriverClassnameField}', '$resource{i18njdbc.msg.Error.classNameCannotBeEmpty}')
+            if (isClassNamePresent('#{wizardPoolExtra.datasourceClassname}', '#{wizardPoolExtra.driverClassname}', '#{datasourceClassNameFieldId}', '#{driverClassNameFieldId}', '$resource{i18njdbc.msg.Error.classNameCannotBeEmpty}')
             && guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
        <!command
             updateJdbcConnectionPoolWizardStep2();

@@ -80,6 +80,26 @@ public class JdbcTest extends BaseSeleniumTestClass {
     }
 
     @Test
+    public void testCreatingJdbcPoolWithoutDatabaseVendor() {
+        final String poolName = "jdbcPool" + generateRandomString();
+        final String description = "devtest test connection pool - " + poolName;
+
+        clickAndWait("treeForm:tree:resources:JDBC:connectionPoolResources:connectionPoolResources_link", TRIGGER_JDBC_CONNECTION_POOLS);
+        clickAndWait("propertyForm:poolTable:topActionsGroup1:newButton", TRIGGER_NEW_JDBC_CONNECTION_POOL_STEP_1);
+
+        setFieldValue("propertyForm:propertyContentPage:propertySheet:generalPropertySheet:jndiProp:name", poolName);
+        selectDropdownOption("propertyForm:propertyContentPage:propertySheet:generalPropertySheet:resTypeProp:resType", "javax.sql.ConnectionPoolDataSource");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:nextButton", TRIGGER_NEW_JDBC_CONNECTION_POOL_STEP_2);
+
+        setFieldValue("form2:sheet:generalSheet:descProp:desc", description);
+        setFieldValue("form2:sheet:generalSheet:dsProp:datasourceField", poolName + "DataSource");
+        clickAndWait("form2:propertyContentPage:topButtons:finishButton", TRIGGER_JDBC_CONNECTION_POOLS);
+        assertTrue(isTextPresent(poolName) && isTextPresent(description));
+
+        deleteRow("propertyForm:poolTable:topActionsGroup1:button1", "propertyForm:poolTable", poolName);
+    }
+
+    @Test
     public void testJdbcResources() {
         final String jndiName = "jdbcResource" + generateRandomString();
         final String description = "devtest test jdbc resource - " + jndiName;
