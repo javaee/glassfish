@@ -50,11 +50,8 @@
         <copy todir="target/resources">
             <fileset dir=".">
                 <include name="bin/*" />
-                <include name="lib/templates/domain.xml" />
             </fileset>
         </copy>
-
-        <antcall target="replace-domain.xml"/>
 
         <zip file="target/nucleus-base.zip">
             <zipfileset prefix="glassfish" dir="target/resources" filemode="755"
@@ -69,18 +66,8 @@
                 <include name="config/**"/>
                 <include name="lib/**"/>
                 <include name="domains/**"/>
-                <exclude name="lib/templates/domain.xml"/>
             </zipfileset>
         </zip>
         <attachArtifact file="target/nucleus-base.zip"/>
-    </target>
-
-    <target name="generated-domain.xml-exists">
-        <available file="target/generated/domain.xml" property="domain.xml-exists"/>
-    </target>
-
-    <target name="replace-domain.xml" depends="generated-domain.xml-exists" if="domain.xml-exists">
-         <delete file="target/resources/lib/templates/domain.xml"/>
-         <copy file="target/generated/domain.xml" todir="target/resources/lib/templates"/>
     </target>
 </project>

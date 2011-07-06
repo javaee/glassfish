@@ -60,7 +60,6 @@ import java.util.logging.Level;
 import java.util.List;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import static javax.xml.stream.XMLStreamConstants.*;
@@ -72,12 +71,6 @@ import static javax.xml.stream.XMLStreamConstants.*;
  */
 @Service(name="DEFAULT")
 public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler {
-    private static XMLInputFactory xmlIf = null;
-
-    static {
-        xmlIf = XMLInputFactory.newInstance();
-        xmlIf.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-    }
 
     public String getArchiveType() {
         return "jar";
@@ -215,7 +208,7 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
                 if (input != null) {
 
                     // parse elements only from glassfish-web
-                    parser = xmlIf.createXMLStreamReader(input);
+                    parser = getXMLInputFactory().createXMLStreamReader(input);
 
                     int event = 0;
                     skipRoot(rootElement);
@@ -246,7 +239,7 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
         }
 
         private void read(InputStream input) throws XMLStreamException {
-            parser = xmlIf.createXMLStreamReader(input);
+            parser = getXMLInputFactory().createXMLStreamReader(input);
 
             int event = 0;
             boolean done = false;
@@ -325,7 +318,7 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
         }
 
         private void read(InputStream input) throws XMLStreamException {
-            parser = xmlIf.createXMLStreamReader(input);
+            parser = getXMLInputFactory().createXMLStreamReader(input);
 
             int event = 0;
             boolean done = false;

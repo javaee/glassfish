@@ -84,7 +84,6 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import static javax.xml.stream.XMLStreamConstants.*;
@@ -115,13 +114,6 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
     private static final String EMBEDDED_RAR = "embedded_rar";
 
     private static LocalStringsImpl strings = new LocalStringsImpl(EarHandler.class);;
-
-    private static XMLInputFactory xmlIf = null;
-
-    static {
-        xmlIf = XMLInputFactory.newInstance();
-        xmlIf.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-    }
 
 
     public String getArchiveType() {
@@ -564,7 +556,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                 if (input != null) {
 
                     // parse elements only from glassfish-web
-                    parser = xmlIf.createXMLStreamReader(input);
+                    parser = getXMLInputFactory().createXMLStreamReader(input);
 
                     int event = 0;
                     skipRoot("glassfish-application");
@@ -595,7 +587,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         }
 
         private void read(InputStream input) throws XMLStreamException {
-            parser = xmlIf.createXMLStreamReader(input);
+            parser = getXMLInputFactory().createXMLStreamReader(input);
 
             int event = 0;
             boolean done = false;
@@ -674,7 +666,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         }
 
         private void read(InputStream input) throws XMLStreamException {
-            parser = xmlIf.createXMLStreamReader(input);
+            parser = getXMLInputFactory().createXMLStreamReader(input);
 
             int event = 0;
             boolean done = false;

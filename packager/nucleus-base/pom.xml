@@ -77,45 +77,5 @@
     </build>
     <!-- Do not place any dependencies in this distribution, dependencies
     should go into other packager modules -->
-
-    <profiles>
-        <profile>
-            <id>aix-jdk</id>
-            <activation>
-                <os>
-                    <name>AIX</name>
-                </os>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>xml-maven-plugin</artifactId>
-                        <version>1.0-beta-2</version>
-                        <executions>
-                            <execution>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>transform</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <transformationSets>
-                                <transformationSet>
-                                    <dir>lib/templates</dir>
-                                    <includes>
-                                        <include>domain.xml</include>
-                                    </includes>
-                                    <stylesheet>lib/templates/domain.xml.aix.xsl</stylesheet>
-                                    <outputDir>target/generated</outputDir>
-                                </transformationSet>
-                            </transformationSets>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
 

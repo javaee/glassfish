@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,7 @@
 package com.sun.enterprise.deploy.shared;
 
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URI;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -53,6 +54,9 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.net.URL;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLResolver;
 
 import com.sun.logging.LogDomains;
 import org.glassfish.internal.deployment.GenericHandler;
@@ -64,8 +68,25 @@ import org.glassfish.internal.deployment.GenericHandler;
  */
 public abstract class AbstractArchiveHandler extends GenericHandler {
 
-    final protected Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+    static final protected Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
 
+    private static XMLInputFactory xmlInputFactory;
+
+    static {
+        xmlInputFactory = XMLInputFactory.newInstance();
+        xmlInputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        // set an zero-byte XMLResolver as IBM JDK does not take SUPPORT_DTD=false
+        // unless there is a jvm option com.ibm.xml.xlxp.support.dtd.compat.mode=false
+        xmlInputFactory.setXMLResolver(new XMLResolver() {
+                @Override
+                public Object resolveEntity(String publicID,
+                        String systemID, String baseURI, String namespace)
+                        throws XMLStreamException {
+
+                    return new ByteArrayInputStream(new byte[0]);
+                }
+            });
+    }
 
     public List<URL> getManifestLibraries(DeploymentContext context) {
         try {
@@ -76,5 +97,9 @@ public abstract class AbstractArchiveHandler extends GenericHandler {
                 "Exception while getting manifest classpath: ", ioe);
             return new ArrayList<URL>();
         }
+    }
+
+    protected static XMLInputFactory getXMLInputFactory() {
+        return xmlInputFactory;
     }
 }
