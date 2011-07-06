@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -62,6 +62,8 @@ import org.jvnet.hk2.component.PostConstruct;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 import static com.sun.enterprise.v3.admin.cluster.Constants.*;
 import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
@@ -129,26 +131,25 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
             sb.append(NONE);
         }
 
-
         int timeoutInMsec = 2000;
+        Map<String,ClusterInfo> clusterMap = new HashMap<String,ClusterInfo>();
 
-        //List the cluster and also the state
-        //A cluster is a three-state entity and
-        //list-cluster should return one of the following:
-
-        //running (all instances running)
-        //not running (no instance running)
-        //partially running (at least 1 instance is not running)
-
-
+        List<InstanceInfo> infos = new LinkedList<InstanceInfo>();
         for (Cluster cluster : clusterList) {
-            boolean atleastOneInstanceRunning = false;
-            boolean allInstancesRunning = true;
-            List<InstanceInfo> infos = new LinkedList<InstanceInfo>();
             String clusterName = cluster.getName();
-
             List<Server> servers = cluster.getInstances();
 
+            if (servers.isEmpty()) {
+                ClusterInfo ci = clusterMap.get(clusterName);
+                if (ci == null ) {
+                    ci = new ClusterInfo(clusterName);
+
+                }
+                ci.serversEmpty = true;
+                clusterMap.put(clusterName,ci);
+            }
+            //Fix for issue 16273 create all InstanceInfos which will ping the instances
+            //Then check the status for them
             for (Server server : servers) {
                 String name = server.getName();
 
@@ -160,24 +161,41 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
                     infos.add(ii);
                 }
             }
-            for(InstanceInfo ii : infos) {
-                InstanceState.StateType state = (ii.isRunning()) ?
-                        (stateService.setState(ii.getName(), InstanceState.StateType.RUNNING, false)) :
-                        (stateService.setState(ii.getName(), InstanceState.StateType.NO_RESPONSE, false));
-                allInstancesRunning &= ii.isRunning();
-                if (ii.isRunning()) {
-                    atleastOneInstanceRunning = true;
-                }
+        }
+
+        for(InstanceInfo ii : infos) {
+
+            String clusterforInstance = ii.getCluster();
+            ClusterInfo ci = clusterMap.get(clusterforInstance);
+            if (ci == null ) {
+                ci = new ClusterInfo(clusterforInstance);
+            }
+            ci.allInstancesRunning &= ii.isRunning();
+
+            if (ii.isRunning()) {
+                ci.atleastOneInstanceRunning = true;
             }
 
-            String display;
-            String value;
+            clusterMap.put(clusterforInstance,ci);
+        }
 
-            if (servers.isEmpty() || !atleastOneInstanceRunning) {
+        //List the cluster and also the state
+        //A cluster is a three-state entity and
+        //list-cluster should return one of the following:
+
+        //running (all instances running)
+        //not running (no instance running)
+        //partially running (at least 1 instance is not running)
+
+        String display;
+        String value ;
+        for(ClusterInfo ci : clusterMap.values()) {
+
+            if (ci.serversEmpty ||  !ci.atleastOneInstanceRunning) {
                 display = InstanceState.StateType.NOT_RUNNING.getDisplayString();
                 value = InstanceState.StateType.NOT_RUNNING.getDescription();
             }
-            else if (allInstancesRunning) {
+            else if (ci.allInstancesRunning) {
                 display = InstanceState.StateType.RUNNING.getDisplayString();
                 value = InstanceState.StateType.RUNNING.getDescription();
             }
@@ -185,10 +203,11 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
                 display = PARTIALLY_RUNNING_DISPLAY;
                 value = PARTIALLY_RUNNING;
             }
+            sb.append(ci.getName()).append(display).append(EOL);
+            top.addProperty(ci.getName(), value);
 
-            sb.append(clusterName).append(display).append(EOL);
-            top.addProperty(clusterName, value);
         }
+
         String output = sb.toString();
         //Fix for isue 12885
         report.setMessage(output.substring(0,output.length()-1 ));
@@ -276,4 +295,23 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
         report.setActionExitCode(ActionReport.ExitCode.FAILURE);
         report.setMessage(s);
     }
+
+    private class ClusterInfo {
+
+        private boolean atleastOneInstanceRunning = false;
+        private boolean allInstancesRunning = true;
+        private boolean serversEmpty = false;
+        private String name;
+
+        public String getName() {
+            return name;
+        }
+
+        private ClusterInfo (String name) {
+            this.name = name;
+        }
+
+    }
 }
+
+
