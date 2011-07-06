@@ -75,8 +75,6 @@ public class TimerWrapper
     private TimerPrimaryKey timerId_;
     private EJBTimerService timerService_;
 
-    private static EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
-
     TimerWrapper(TimerPrimaryKey timerId, EJBTimerService timerService) {
         timerId_      = timerId;
         timerService_ = timerService;   //TimerService passed in could be null
@@ -232,6 +230,9 @@ public class TimerWrapper
 
         boolean allowed = false;
 
+        // Can't store a static ref because in embedded container it can be 
+        // changed by server restart
+        EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
         EJBTimerService timerService = ejbContainerUtil.getEJBTimerService();
         if( timerService == null ) {
             throw new IllegalStateException 
@@ -303,6 +304,9 @@ public class TimerWrapper
          * Check if the record is valid only when making calls on the object.
          */
         public Object createObject() throws EJBException {
+            // Can't store a static ref because in embedded container it can be 
+            // changed by server restart
+            EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
             EJBTimerService timerService = ejbContainerUtil.getEJBTimerService();
             TimerWrapper timer = new TimerWrapper(timerId_, timerService);
 
@@ -327,11 +331,13 @@ public class TimerWrapper
             NoSuchObjectLocalException, EJBException {
             TimerWrapper timer = null;
 
-// XXX ??? Is this correct? WAS: Switch theSwitch   = Switch.getSwitch();
+            // Can't store a static ref because in embedded container it can be 
+            // changed by server restart
+            EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
             if( ejbContainerUtil != null ) {
                 
                 // Make sure use of timer service methods are allowed
-                TimerWrapper.checkCallPermission();
+                checkCallPermission();
 
                 timer = getTimerInternal(timerId_);
 
@@ -349,6 +355,9 @@ public class TimerWrapper
             throws NoSuchObjectLocalException, EJBException {
 
             TimerWrapper timer = null;
+            // Can't store a static ref because in embedded container it can be 
+            // changed by server restart
+            EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
             EJBTimerService timerService = ejbContainerUtil.getEJBTimerService();
 
             if( timerService != null ) {

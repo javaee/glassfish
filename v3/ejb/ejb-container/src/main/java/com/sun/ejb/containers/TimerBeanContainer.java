@@ -54,7 +54,7 @@ public class TimerBeanContainer
     
     private EJBTimerService ejbTimerService;
 
-    private static EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
+    private EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
 
     private static final Logger _logger = LogDomains.getLogger(
             TimerBeanContainer.class, LogDomains.EJB_LOGGER);
