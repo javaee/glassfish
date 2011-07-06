@@ -51,7 +51,6 @@ import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.web.loader.WebappClassLoader;
 import org.jvnet.hk2.annotations.Service;
 
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.*;
@@ -77,14 +76,6 @@ public class WarHandler extends AbstractArchiveHandler {
     private static final String GLASSFISH_WEB_XML = "WEB-INF/glassfish-web.xml";
     private static final String SUN_WEB_XML = "WEB-INF/sun-web.xml";
     private static final String WEBLOGIC_XML = "WEB-INF/weblogic.xml";
-
-    private static XMLInputFactory xmlIf = null;
-
-    static {
-        xmlIf = XMLInputFactory.newInstance();
-        xmlIf.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-    }
-
     private static final Logger logger = LogDomains.getLogger(WarHandler.class, LogDomains.WEB_LOGGER);
     private static final ResourceBundle rb = logger.getResourceBundle();
 
@@ -399,7 +390,7 @@ public class WarHandler extends AbstractArchiveHandler {
 
         @Override
         protected void read(InputStream input) throws XMLStreamException {
-            parser = xmlIf.createXMLStreamReader(input);
+            parser = getXMLInputFactory().createXMLStreamReader(input);
 
             int event = 0;
             boolean inClassLoader = false;
@@ -507,7 +498,7 @@ public class WarHandler extends AbstractArchiveHandler {
                 if (input != null) {
 
                     // parse elements only from glassfish-web
-                    parser = xmlIf.createXMLStreamReader(input);
+                    parser = getXMLInputFactory().createXMLStreamReader(input);
 
                     int event = 0;
                     skipRoot(getRootElementName());
@@ -560,7 +551,7 @@ public class WarHandler extends AbstractArchiveHandler {
 
         @Override
         protected void read(InputStream input) throws XMLStreamException {
-            parser = xmlIf.createXMLStreamReader(input);
+            parser = getXMLInputFactory().createXMLStreamReader(input);
 
             skipRoot("weblogic-web-app");
 
