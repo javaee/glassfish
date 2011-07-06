@@ -55,6 +55,7 @@ import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.util.SSHUtil;
 
 import com.sun.enterprise.universal.glassfish.TokenResolver;
+import com.sun.enterprise.util.io.FileUtils;
 
 /**
  *  This is a local command that distributes the SSH public key to remote node(s)
@@ -64,6 +65,8 @@ import com.sun.enterprise.universal.glassfish.TokenResolver;
 @Scoped(PerLookup.class)
 @ExecuteOn({RuntimeType.DAS})
 public final class SetupSshKey extends SSHCommandsBase {
+    private static final String NL = System.getProperty("line.separator");
+    
     @Param(optional = true)
     private String sshpublickeyfile;
 
@@ -176,6 +179,17 @@ public final class SetupSshKey extends SSHCommandsBase {
         //if key exists, set prompt flag
         File f = new File(file);
         if (f.exists()) {
+            if (!f.getName().endsWith(".pub")) {
+                String key = null;
+                try {
+                    key = FileUtils.readSmallFile(file);
+                } catch (IOException ioe) {
+                    throw new CommandException(Strings.get("UnableToReadKey", file, ioe.getMessage()));
+                }
+                if (!key.startsWith("-----BEGIN ") && !key.endsWith(" PRIVATE KEY-----" + NL)) {
+                    throw new CommandException(Strings.get("InvalidKeyFile", file));
+                }
+            }
             promptPass=true;
         } else {
             throw new CommandException(Strings.get("KeyDoesNotExist", file));
