@@ -179,6 +179,7 @@ public class SetupSshTest extends AdminBaseDevTest {
         }        
 
         if(!failed) {
+            testOptions();
             testKeyGeneration();
             testEncryptedKey();
 
@@ -210,6 +211,11 @@ public class SetupSshTest extends AdminBaseDevTest {
         return res;
     }       
 
+    private void testOptions() {
+        //invalid key file
+        report("setup-ssh-invalid-key", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--sshkeyfile", "resources/ssh/identity", remoteHost));
+    }
+    
     private void testKeyGeneration() {
 
         //will fail since default value of generatekey=false
