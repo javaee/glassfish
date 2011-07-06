@@ -61,6 +61,9 @@ public class Client {
         Client t = new Client();
         try {
             t.test(appName);
+            System.err.println("---------------------");
+            t.test(appName);
+            System.err.println("---------------------");
         } catch (Exception e) {
             e.printStackTrace();
             stat.addStatus("EJB embedded with remote", stat.FAIL);
