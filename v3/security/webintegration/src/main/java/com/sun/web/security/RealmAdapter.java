@@ -40,7 +40,9 @@
 
 package com.sun.web.security;
 
-import com.sun.enterprise.config.serverbeans.SecurityService;
+import org.glassfish.security.common.NonceInfo;
+import com.sun.enterprise.security.CNonceCacheFactory;
+import org.glassfish.security.common.CNonceCache;
 import com.sun.enterprise.security.auth.digest.impl.HttpAlgorithmParameterImpl;
 import com.sun.enterprise.security.web.integration.WebSecurityManager;
 import com.sun.enterprise.security.web.integration.WebSecurityManagerFactory;
@@ -92,6 +94,7 @@ import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 //import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
+import com.sun.enterprise.security.AppCNonceCacheMap;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.SecurityUtil;
 import com.sun.enterprise.security.WebSecurityDeployerProbeProvider;
@@ -117,6 +120,7 @@ import com.sun.enterprise.security.auth.digest.api.DigestParameterGenerator;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import static com.sun.enterprise.security.auth.digest.api.Constants.A1;
+import com.sun.enterprise.security.auth.digest.impl.NestedDigestAlgoParamImpl;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
 import com.sun.enterprise.util.net.NetUtils;
 import java.net.InetAddress;
@@ -215,8 +219,11 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     private ServerContext serverContext;
     @Inject 
     private Habitat habitat;
-    @Inject
-    private SecurityService secService;
+    
+    private CNonceCacheFactory cNonceCacheFactory;
+    private CNonceCache cnonces;
+    private AppCNonceCacheMap haCNonceCacheMap;
+   
     private NetworkListeners nwListeners;
     
 
@@ -416,13 +423,88 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
             DigestParameterGenerator generator = DigestParameterGenerator.getInstance(DigestParameterGenerator.HTTP_DIGEST);
             DigestAlgorithmParameter[] params = generator.generateParameters(new HttpAlgorithmParameterImpl(hreq));
             Key key = null;
-       
-            for(int i=0;i<params.length;i++){
-              DigestAlgorithmParameter dap = params[i];
-              if(A1.equals(dap.getName()) && (dap instanceof Key)){
-                key = (Key)dap;
-                break;
-              }
+
+            if (cnonces == null) {
+                String appName = webDesc.getApplication().getAppName();
+                synchronized (this) {
+                    if (this.haCNonceCacheMap == null) {
+                        this.haCNonceCacheMap = habitat.getComponent(AppCNonceCacheMap.class);
+                    }
+                    if (this.haCNonceCacheMap != null) {
+                        //get the initialized HA CNonceCache
+                        cnonces = haCNonceCacheMap.get(appName);
+                    }
+
+                    if (cnonces == null) {
+                        if (this.cNonceCacheFactory == null) {
+                            this.cNonceCacheFactory = habitat.getComponent(CNonceCacheFactory.class);
+                        }
+                        //create a Non-HA CNonce Cache
+                        cnonces =
+                                cNonceCacheFactory.createCNonceCache(
+                                webDesc.getApplication().getAppName(), null, null, null);
+                    }
+                }
+
+            }
+
+            String nc = null;
+            String cnonce = null;
+            for (DigestAlgorithmParameter p : params) {
+                if (p instanceof NestedDigestAlgoParamImpl) {
+                    NestedDigestAlgoParamImpl np = (NestedDigestAlgoParamImpl) p;
+                    DigestAlgorithmParameter[] nps = (DigestAlgorithmParameter[]) np.getNestedParams();
+                    for (DigestAlgorithmParameter p1 : nps) {
+                        if ("cnonce".equals(p1.getName())) {
+                            cnonce = new String(p1.getValue());
+                        } else if ("nc".equals(p1.getName())) {
+                            nc = new String(p1.getValue());
+                        }
+                        if (cnonce != null && nc != null) {
+                            break;
+                        }
+                    }
+                    if (cnonce != null && nc != null) {
+                        break;
+                    }
+                }
+                if ("cnonce".equals(p.getName())) {
+                    cnonce = new String(p.getValue());
+                } else if ("nc".equals(p.getName())) {
+                    nc = new String(p.getValue());
+                }
+            }
+            
+            long count;
+            long currentTime = System.currentTimeMillis();
+            try {
+                count = Long.parseLong(nc, 16);
+            } catch (NumberFormatException nfe) {
+                throw new RuntimeException(nfe);
+            }
+            NonceInfo info;
+            synchronized (cnonces) {
+                info = cnonces.get(cnonce);
+            }
+            if (info == null) {
+                info = new NonceInfo();
+            } else {
+                if (count <= info.getCount()) {
+                    throw new RuntimeException("Invalid Request : Possible Replay Attack detected ?");
+                }
+            }
+            info.setCount(count);
+            info.setTimestamp(currentTime);
+            synchronized (cnonces) {
+                cnonces.put(cnonce, info);
+            }
+
+            for (int i = 0; i < params.length; i++) {
+                DigestAlgorithmParameter dap = params[i];
+                if (A1.equals(dap.getName()) && (dap instanceof Key)) {
+                    key = (Key) dap;
+                    break;
+                }
             }
 
            DigestCredentials creds = new DigestCredentials(_realmName,key.getUsername(), params);     
@@ -1641,7 +1723,6 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         this.isSystemApp = isSystemApp;
         webDesc = (WebBundleDescriptor) descriptor;
         Application app = webDesc.getApplication();
-
        
 //        mapper = app.getRoleMapper();
         LoginConfiguration loginConfig = webDesc.getLoginConfiguration();

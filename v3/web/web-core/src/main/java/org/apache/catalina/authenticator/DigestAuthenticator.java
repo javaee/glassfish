@@ -71,9 +71,9 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
+
 
 
 
@@ -142,9 +142,9 @@ public class DigestAuthenticator
 
     /**
      * List of client nonce values currently being tracked
-     */
+     
     protected Map<String,NonceInfo> cnonces;
-
+    */
 
     /**
      * Maximum number of client nonces to keep in the cache. If not specified,
@@ -293,7 +293,7 @@ public class DigestAuthenticator
             (HttpServletResponse) response.getResponse();
         String authorization = request.getAuthorization();
         DigestInfo digestInfo = new DigestInfo(getOpaque(), getNonceValidity(),
-                getKey(), cnonces, isValidateUri());
+                getKey(), /*cnonces,*/ isValidateUri());
 
         if (authorization != null) {
             boolean validRequest = digestInfo.validate(hreq, authorization, config);
@@ -507,33 +507,6 @@ public class DigestAuthenticator
         if (getOpaque() == null) {
             setOpaque(generateSessionId());
         }
-
-        cnonces = new LinkedHashMap<String, DigestAuthenticator.NonceInfo>() {
-
-            private static final long serialVersionUID = 1L;
-            private static final long LOG_SUPPRESS_TIME = 5 * 60 * 1000;
-
-            private long lastLog = 0;
-
-            @Override
-            protected boolean removeEldestEntry(
-                    Map.Entry<String,NonceInfo> eldest) {
-                // This is called from a sync so keep it simple
-                long currentTime = System.currentTimeMillis();
-                if (size() > getCnonceCacheSize()) {
-                    if (lastLog < currentTime &&
-                            currentTime - eldest.getValue().getTimestamp() <
-                            getNonceValidity()) {
-                        // Replay attack is possible
-                        log.warning(sm.getString(
-                                "digestAuthenticator.cacheRemove"));
-                        lastLog = currentTime + LOG_SUPPRESS_TIME;
-                    }
-                    return true;
-                }
-                return false;
-            }
-        };
     }
 
     private static class DigestInfo {
@@ -541,7 +514,6 @@ public class DigestAuthenticator
         private String opaque;
         private long nonceValidity;
         private String key;
-        private final Map<String,NonceInfo> cnonces;
         private boolean validateUri = true;
 
         private String userName = null;
@@ -558,11 +530,10 @@ public class DigestAuthenticator
 
 
         public DigestInfo(String opaque, long nonceValidity, String key,
-                Map<String,NonceInfo> cnonces, boolean validateUri) {
+               boolean validateUri) {
             this.opaque = opaque;
             this.nonceValidity = nonceValidity;
             this.key = key;
-            this.cnonces = cnonces;
             this.validateUri = validateUri;
         }
 
@@ -699,22 +670,6 @@ public class DigestAuthenticator
                 } catch (NumberFormatException nfe) {
                     return false;
                 }
-                NonceInfo info;
-                synchronized (cnonces) {
-                    info = cnonces.get(cnonce);
-                }
-                if (info == null) {
-                    info = new NonceInfo();
-                } else {
-                    if (count <= info.getCount()) {
-                        return false;
-                    }
-                }
-                info.setCount(count);
-                info.setTimestamp(currentTime);
-                synchronized (cnonces) {
-                    cnonces.put(cnonce, info);
-                }
             }
             return true;
         }
@@ -723,26 +678,5 @@ public class DigestAuthenticator
             return nonceStale;
         }
 
-    }
-
-    public static class NonceInfo {
-        private volatile long count;
-        private volatile long timestamp;
-
-        public void setCount(long l) {
-            count = l;
-        }
-
-        public long getCount() {
-            return count;
-        }
-
-        public void setTimestamp(long l) {
-            timestamp = l;
-        }
-
-        public long getTimestamp() {
-            return timestamp;
-        }
     }
 }

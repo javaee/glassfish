@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.security;
 
+import org.glassfish.security.common.CNonceCache;
+import org.glassfish.security.common.HAUtil;
 import com.sun.enterprise.security.web.integration.WebSecurityManagerFactory;
 import com.sun.enterprise.security.web.integration.WebSecurityManager;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -54,11 +56,10 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.security.util.IASSecurityException;
 import org.glassfish.internal.api.ServerContext;
 import com.sun.logging.LogDomains;
-
-
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.event.EventListener.Event;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
@@ -69,9 +70,10 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.RegisteredComponentInvocationHandler;
 import org.glassfish.internal.data.ModuleInfo;
+import com.sun.enterprise.deployment.web.LoginConfiguration;
+
 
 /**
  * Security Deployer which generate and clean the security policies
@@ -87,6 +89,14 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     private Habitat habitat;
     @Inject
     private WebSecurityManagerFactory wsmf;
+
+    //required for HA Enabling CNonceCache for HTTPDigest Auth
+    private AppCNonceCacheMap appCnonceMap;
+    private HAUtil haUtil;
+    private CNonceCacheFactory cnonceCacheFactory;
+    private static final String HA_CNONCE_BS_NAME="HA-CNonceCache-Backingstore";
+
+
     private EventListener listener = null;
     private static WebSecurityDeployerProbeProvider websecurityProbeProvider = new WebSecurityDeployerProbeProvider();
     private static EjbSecurityPolicyProbeProvider ejbProbeProvider = new EjbSecurityPolicyProbeProvider();
@@ -120,7 +130,6 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
                         handler.register();
                     }
                 }
-
             } else if (WebBundleDescriptor.AFTER_SERVLET_CONTEXT_INITIALIZED_EVENT.equals(event.type())) {
                 commitPolicy((WebBundleDescriptor) event.hook());
             }
@@ -135,9 +144,7 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
         if (params.origin != OpsParams.Origin.deploy) {
             return;
         }
-
         String appName = params.name();
-
         try {
             Application app = dc.getModuleMetaData(Application.class);
             Set<WebBundleDescriptor> webDesc = app.getWebBundleDescriptors();
@@ -161,10 +168,21 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
             throws DeploymentException {
         removePolicy(dc);
         SecurityUtil.removeRoleMapper(dc);
+        OpsParams params = dc.getCommandParameters(OpsParams.class);
+        if (this.appCnonceMap != null) {
+            CNonceCache cache = appCnonceMap.remove(params.name());
+            if (cache != null) {
+                cache.destroy();
+            }
+        }
     }
 
     @Override
     public DummyApplication load(SecurityContainer container, DeploymentContext context) {
+        DeployCommandParameters dparams = context.getCommandParameters(DeployCommandParameters.class);
+        Application app = context.getModuleMetaData(Application.class);
+        handleCNonceCacheBSInit(app.getAppName(), app.getWebBundleDescriptors(), dparams.availabilityenabled);
+
         return new DummyApplication();
     }
 
@@ -369,15 +387,13 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
         for (int i = 0; managers !=
                 null && i < managers.size(); i++) {
             try {
-               
-                
                 websecurityProbeProvider.securityManagerDestructionStartedEvent(appName);
                 managers.get(i).destroy();
                 websecurityProbeProvider.securityManagerDestructionEndedEvent(appName);
                 websecurityProbeProvider.securityManagerDestructionEvent(appName);
                 cleanUpDone =
                         true;
-            } catch (javax.security.jacc.PolicyContextException pce) {
+            } catch (Exception pce) {
                 // log it and continue
                 _logger.log(Level.WARNING,
                         "Unable to destroy WebSecurityManager",
@@ -400,5 +416,55 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
         events.register(listener);
     }
 
-}
+    private boolean isHaEnabled() {
+        boolean haEnabled = false;
+        //lazily init the required services instead of
+        //eagerly injecting them.
+        synchronized (this) {
+            if (haUtil == null) {
+                haUtil = habitat.getComponent(HAUtil.class);
+            }
+        }
+        
+        if (haUtil != null && haUtil.isHAEnabled()) {
+            haEnabled = true;
+            synchronized (this) {
+                if (appCnonceMap == null) {
+                    appCnonceMap = habitat.getComponent(AppCNonceCacheMap.class);
+                }
+                if (cnonceCacheFactory == null) {
+                    cnonceCacheFactory = habitat.getComponent(CNonceCacheFactory.class);
+                }
+            }
+        }
 
+        return haEnabled;
+    }
+
+    private void handleCNonceCacheBSInit(String appName, Set<WebBundleDescriptor> webDesc, boolean isHA) {
+        boolean hasDigest = false;
+        for (WebBundleDescriptor webBD : webDesc) {
+            LoginConfiguration lc = webBD.getLoginConfiguration();
+            if (lc != null
+                    && LoginConfiguration.DIGEST_AUTHENTICATION.equals(
+                    lc.getAuthenticationMethod())) {
+                hasDigest = true;
+                break;
+            }
+        }
+        if (!hasDigest) {
+            return;
+        }
+        // initialize the backing stores as well for cnonce cache.
+        if (isHaEnabled() && isHA) {
+            final String clusterName = haUtil.getClusterName();
+            final String instanceName = haUtil.getInstanceName();
+            if (cnonceCacheFactory != null) {
+                CNonceCache cache = cnonceCacheFactory.createCNonceCache(
+                        appName, clusterName, instanceName, HA_CNONCE_BS_NAME);
+                this.appCnonceMap.put(appName, cache);
+            }
+
+        }
+    }
+}
