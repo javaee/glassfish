@@ -420,7 +420,7 @@ public class UpdateCenterHandlers {
         List result = new ArrayList();
         String[] pkgsName = nameList.toArray(new String[nameList.size()]);
         try{
-            Image.ImagePlan ip = image.makeInstallPlan(pkgsName);
+            Image.ImagePlan ip = image.makeInstallPlan(pkgsName, "list");
             Fmri[] proposed = ip.getProposedFmris();
             if (countOnly){
                 result.add(Integer.valueOf(proposed.length));

@@ -51,11 +51,13 @@ import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.grizzly.util.http.Cookie;
+import com.sun.logging.LogDomains;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import javax.security.auth.login.LoginException;
+import java.util.logging.Logger;
 
 import org.glassfish.admin.rest.LazyJerseyInterface;
 import org.glassfish.admin.rest.RestService;
@@ -100,7 +102,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
     @Inject
     Events events;
-    
+
     @Inject
     Habitat habitat;
 
@@ -114,7 +116,11 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
     @Inject
     ServerEnvironment serverEnvironment;
-    
+
+    @Inject
+    SessionManager sessionManager;
+
+    private static final Logger logger = LogDomains.getLogger(RestAdapter.class, LogDomains.ADMIN_LOGGER);
     private volatile LazyJerseyInterface lazyJerseyInterface =null;
 
     private Map<Integer, String> httpStatus = new HashMap<Integer, String>() {{
@@ -137,7 +143,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     @Override
     public void service(GrizzlyRequest req, GrizzlyResponse res) {
         LogHelper.getDefaultLogger().finer("Rest adapter !");
-        LogHelper.getDefaultLogger().finer("Received resource request: " + req.getRequestURI());
+        LogHelper.getDefaultLogger().log(Level.FINER, "Received resource request: {0}", req.getRequestURI());
 
         try {
             res.setCharacterEncoding(Constants.ENCODING);
@@ -245,7 +251,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 // FIXME: Implement according to JavaDoc above...
 	/*
 	if (anonymousUser) {
-	    String anonUser = 
+	    String anonUser =
 	    req.setAttribute("restUser", anonUser);
 	    return true;
 	}
@@ -266,7 +272,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         }
 
         if(restToken != null) {
-            authenticated  = SessionManager.getSessionManager().authenticate(restToken, req);
+            authenticated  = sessionManager.authenticate(restToken, req);
         }
         return authenticated;
     }
@@ -392,7 +398,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         return epd.getListenAddress();
     }
 
-    
+
     @Override
     public List<String> getVirtualServers() {
         return epd.getAsadminHosts();
@@ -451,7 +457,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
             adapter = getLazyJersey().exposeContext(classes, sc, habitat);
             ((GrizzlyAdapter) adapter).setResourcesContextPath(context);
             
-            logger.info("Listening to REST requests at context: " + context + "/domain");
+            logger.log(Level.INFO, "rest.rest_interface_initialized", context);
         }
     }
 

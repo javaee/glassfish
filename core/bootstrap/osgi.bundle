@@ -38,7 +38,7 @@
 # holder.
 #
 
-Bundle-Activator: com.sun.enterprise.glassfish.bootstrap.GlassFishMainActivator
+Bundle-Activator: com.sun.enterprise.glassfish.bootstrap.osgi.GlassFishMainActivator
 
 # Please note we don't everything that's required by every class in this module.
 # We only import packages required by GlassFishMainActivator and its dependencies

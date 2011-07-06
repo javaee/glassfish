@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,7 @@
 
 package org.glassfish.deployment.admin;
 
-import java.io.File;
+import java.util.List;
 import org.glassfish.api.deployment.DeploymentContext;
 
 /**
@@ -52,12 +52,25 @@ import org.glassfish.api.deployment.DeploymentContext;
 public class DeployCommandSupplementalInfo {
 
     private DeploymentContext dc = null;
+    private List<String> previousTargets = null;
     
     public void setDeploymentContext(final DeploymentContext dc) {
         this.dc = dc;
+        /*
+         * Save the previous targets (if any), because the deploy command
+         * processing will clear the transient app metadata which is
+         * where the previous targets are stored.  The previous targets are used
+         * during redeployment if the target is "domain" which means "to all
+         * targets where the app is already deployed."
+         */
+        previousTargets = dc.getTransientAppMetaData("previousTargets", List.class);
     }
 
     public DeploymentContext deploymentContext() {
         return dc;
+    }
+    
+    public List<String> previousTargets() {
+        return previousTargets;
     }
 }

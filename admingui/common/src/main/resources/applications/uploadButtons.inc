@@ -64,14 +64,14 @@
     <!command
         compare(obj1="#{uploadRdBtn}" obj2="client" objEqual=>$attribute{needUpload});
         if (${needUpload}){
-            println("===== GUI deployment: needUploadToTempfile ======");
+            gf.logger(logString="GUI deployment: uploadToTempfile", level="INFO");
             uploadFileToTempDir(file="#{uploadedFile}" uploadedTempFile="#{requestScope.filePath}", origPath="#{requestScope.origPath}");
-            println("===== filePath=#{requestScope.filePath} origPath=#{requestScope.origPath}");
+            gf.logger(logString="filePath=#{requestScope.filePath} origPath=#{requestScope.origPath}", level="FINE");
         }
         if (! ${needUpload}){
             setAttribute(key="origPath", value="#{dirPath}");
             setAttribute(key="filePath", value="#{dirPath}");
-            println("========= No upload needed. origPath=#{requestScope.origPath}, filePath=#{requestScope.filePath} ");
+            gf.logger(logString="No upload needed. origPath=#{requestScope.origPath}, filePath=#{requestScope.filePath} ",level="FINE");
 
         }
         deploy(filePath="$attribute{filePath}"
@@ -87,8 +87,4 @@
 
 <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}" immediate="true"
     onClick="top.admingui.ajax.loadPage({url:'#{request.contextPath}/#{pageSession.cancelPage}?#{pageSession.extraArgs}'}); return false;">
-//    <!command
-//        println("cancel");
-//        gf.navigate(page="#{request.contextPath}/#{cancelPage}?name=$pageSession{target}");
-//    />
 </sun:button>

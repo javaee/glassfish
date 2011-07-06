@@ -67,6 +67,7 @@ import org.apache.catalina.servlets.DefaultServlet;
 import org.apache.catalina.session.StandardManager;
 import org.apache.jasper.servlet.JspServlet;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.embeddable.web.Context;
 import org.glassfish.embeddable.web.config.FormLoginConfig;
 import org.glassfish.embeddable.web.config.LoginConfig;
 import org.glassfish.embeddable.web.config.SecurityConfig;
@@ -101,7 +102,7 @@ import java.util.logging.Logger;
  * Class representing a web module for use by the Application Server.
  */
 
-public class WebModule extends PwcWebModule {
+public class WebModule extends PwcWebModule implements Context {
 
     // ----------------------------------------------------- Class Variables
 
@@ -528,7 +529,33 @@ public class WebModule extends PwcWebModule {
 
     @Override
     protected void contextListenerStart() {
-        super.contextListenerStart();
+        ServletContext servletContext = getServletContext();
+        WebBundleDescriptor wbd = getWebBundleDescriptor();
+        try {
+            // for jsf injection
+            servletContext.setAttribute(
+                    Constants.DEPLOYMENT_CONTEXT_ATTRIBUTE,
+                    getWebModuleConfig().getDeploymentContext());
+            // null check for OSGi/HTTP
+            if (wbd != null) {
+                servletContext.setAttribute(
+                        Constants.IS_DISTRIBUTABLE_ATTRIBUTE,
+                        Boolean.valueOf(wbd.isDistributable()));
+            }
+            servletContext.setAttribute(
+                    Constants.ENABLE_HA_ATTRIBUTE,
+                    Boolean.valueOf(
+                        webContainer.getServerConfigLookup().calculateWebAvailabilityEnabledFromConfig(this)));
+
+            super.contextListenerStart();
+        } finally {
+            servletContext.removeAttribute(
+                    Constants.DEPLOYMENT_CONTEXT_ATTRIBUTE);
+            servletContext.removeAttribute(
+                    Constants.IS_DISTRIBUTABLE_ATTRIBUTE);
+            servletContext.removeAttribute(
+                    Constants.ENABLE_HA_ATTRIBUTE);
+        }
         for (ServletRegistrationImpl srImpl : servletRegisMap.values()) {
             if (srImpl instanceof DynamicWebServletRegistrationImpl) {
                 DynamicWebServletRegistrationImpl dwsrImpl =
@@ -536,8 +563,7 @@ public class WebModule extends PwcWebModule {
                 dwsrImpl.postProcessAnnotations();
             }
         }
-        webContainer.afterServletContextInitializedEvent(
-            getWebBundleDescriptor());
+        webContainer.afterServletContextInitializedEvent(wbd);
     }
 
     @Override
@@ -2101,11 +2127,18 @@ public class WebModule extends PwcWebModule {
         }
     }
 
+    private transient SecurityConfig config = null;
+
+    public SecurityConfig getSecurityConfig() {
+        return config;
+    }
+
     public void setSecurityConfig(SecurityConfig config) {
 
         if (config == null) {
             return;
         }
+        this.config = config;
 
         LoginConfig lc = config.getLoginConfig();
         if (lc != null) {

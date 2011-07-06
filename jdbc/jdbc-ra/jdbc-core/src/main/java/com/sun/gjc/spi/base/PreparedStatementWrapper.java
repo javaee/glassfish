@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,17 +40,22 @@
 
 package com.sun.gjc.spi.base;
 
+import com.sun.gjc.common.DataSourceObjectBuilder;
+import com.sun.gjc.util.ResultSetClosedEventListener;
+
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
 import java.util.Calendar;
+import java.util.logging.Level;
 
 /**
  * Abstract class for wrapping PreparedStatement<br>
  */
-public abstract class PreparedStatementWrapper extends StatementWrapper implements PreparedStatement {
+public abstract class PreparedStatementWrapper extends StatementWrapper implements
+        PreparedStatement, ResultSetClosedEventListener {
     protected PreparedStatement preparedStatement = null;
     private boolean busy = false;
     private boolean cached = false;
@@ -100,7 +105,7 @@ public abstract class PreparedStatementWrapper extends StatementWrapper implemen
             //Start Statement leak detection
             if(leakDetector != null) {
                 leakDetector.startStatementLeakTracing(preparedStatement, this);
-            }            
+            }
         }
     }
 
@@ -812,6 +817,30 @@ public abstract class PreparedStatementWrapper extends StatementWrapper implemen
         }
     }
 
+    public void closeOnCompletion() throws SQLException {
+        if (DataSourceObjectBuilder.isJDBC41()) {
+            if(!cached) {
+                //If statement caching is not turned on, call the driver implementation directly
+                if (leakDetector != null) {
+                    _logger.log(Level.INFO, "jdbc.invalid_operation.close_on_completion");
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+                actualCloseOnCompletion();
+            } else {
+                super.closeOnCompletion();
+            }
+        }
+    }
+
+    public boolean isCloseOnCompletion() throws SQLException {
+        if (DataSourceObjectBuilder.isJDBC41()) {
+            if(cached) {
+                return getCloseOnCompletion();
+            }
+        }
+        return super.isCloseOnCompletion();
+    }
+
     public void setMaxFieldSize(int max) throws SQLException {
         preparedStatement.setMaxFieldSize(max);
         if (cached)
@@ -852,5 +881,22 @@ public abstract class PreparedStatementWrapper extends StatementWrapper implemen
 
     public void setValid(boolean valid) {
         this.valid = valid;
+    }
+
+    public void incrementResultSetReferenceCount() {
+        //Update resultSetCount to be used in case of jdbc41 closeOnCompletion
+        if (DataSourceObjectBuilder.isJDBC41() && getCached()) {
+            incrementResultSetCount();
+        }
+    }
+
+    public void resultSetClosed() throws SQLException {
+        if (DataSourceObjectBuilder.isJDBC41() && getCached()) {
+            decrementResultSetCount();
+            if (getResultSetCount() == 0 && getCloseOnCompletion()) {
+                ConnectionHolder wrappedCon = (ConnectionHolder) getConnection();
+                wrappedCon.getManagedConnection().purgeStatementFromCache(this);
+            }
+        }
     }
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -73,10 +73,10 @@ public class Domain {
     private String adminUser;
 
     /* Password for domain. */
-    private String adminPassword;
+    private char[] adminPassword;
 
     /* Master password. */
-    private String masterPassword;
+    private char[] masterPassword;
 
     /* List of port numbers currently defaulted by asadmin command. Ports other
      * than http and admin ports.
@@ -158,23 +158,23 @@ public class Domain {
         this.instancePort = instancePort;
     }
 
-    /* @return String Domain Administrator password. */
-    public String getAdminPassword() {
+    /* @return char[] Domain Administrator password. */
+    public char[] getAdminPassword() {
         return adminPassword;
     }
 
     /* @param adminPassword, Domain Administrator password. */
-    public void setAdminPassword(String adminPassword) {
+    public void setAdminPassword(char[] adminPassword) {
         this.adminPassword = adminPassword;
     }
 
-    /* return String master password, currently hard-coded to "changeit". */
-    public String getMasterPassword() {
+    /* return char[] master password, currently hard-coded to "changeit". */
+    public char[] getMasterPassword() {
         return masterPassword;
     }
     /* @param masterPassword, master password to set. */
 
-    public void setMasterPassword(String masterPassword) {
+    public void setMasterPassword(char[] masterPassword) {
         this.masterPassword = masterPassword;
     }
 
@@ -201,7 +201,7 @@ public class Domain {
     public Domain() {
     }
 
-    public Domain(String domainName, String domainRoot, String instancePort, String adminPort, boolean saveLogin, boolean checkPorts, String adminUser, String adminPassword, String masterPassword) {
+    public Domain(String domainName, String domainRoot, String instancePort, String adminPort, boolean saveLogin, boolean checkPorts, String adminUser, char[] adminPassword, char[] masterPassword) {
         this.domainName = domainName;
         this.domainRoot = domainRoot;
         this.instancePort = instancePort;

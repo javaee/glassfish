@@ -87,7 +87,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
     public void testCreateStartStopAndDeleteStandaloneInstance() {
         String instanceName = INSTANCE_PREFIX + generateRandomString();
         createStandAloneInstance(instanceName);
-        
+
         String prefix = getTableRowByValue(ID_INSTANCE_TABLE, instanceName, "col1");
         assertTrue(isTextPresent(instanceName));
         assertEquals(instanceName, getText(prefix + "col1:link"));
@@ -114,7 +114,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         clickAndWait(ID_INSTANCE_PROP_TAB, TRIGGER_SYS_PROPS);
         int sysPropCount = addTableRow("propertyForm:sysPropsTable", "propertyForm:sysPropsTable:topActionsGroup1:addSharedTableButton");
         setFieldValue("propertyForm:sysPropsTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        setFieldValue("propertyForm:sysPropsTable:rowGroup1:0:overrideValCol:overrideVal", "value");
+        setFieldValue("propertyForm:sysPropsTable:rowGroup1:0:overrideValCol:overrideVal", "foo=bar");
         // FIXME: The app needs to be fixed here. should show success message
         clickAndWait("propertyForm:clusterSysPropsPage:topButtons:topButtons:saveButton", TRIGGER_SYS_PROPS);
         sleep(1000); // grr! FIXME
@@ -125,7 +125,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
 
         int instancePropCount = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
         setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", "foo=bar");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         // Verify that properties were persisted
@@ -174,7 +174,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
 
         jdbcTest.deleteJDBCResource(jndiName, target, MonitoringTest.TARGET_STANDALONE_TYPE);
     }
-    
+
     public void createStandAloneInstance(String instanceName){
         gotoStandaloneInstancesPage();
         clickAndWait(ID_INSTANCE_TABLE_NEW_BUTTON, TRIGGER_NEW_PAGE );
@@ -198,13 +198,13 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         if (getTableRowCount(ID_INSTANCE_TABLE) == 0) {
             return;
         }
-        
+
         this.selectAllTableRows(ID_INSTANCE_TABLE);
         chooseOkOnNextConfirmation();
         pressButton("propertyForm:instancesTable:topActionsGroup1:button3");
         waitForButtonDisabled("propertyForm:instancesTable:topActionsGroup1:button3");
         getConfirmation();
-        
+
 
         /*
         // Stop all instances

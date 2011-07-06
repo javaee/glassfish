@@ -225,7 +225,7 @@ public class IIOPSSLSocketFactory  implements ORBSocketFactory
         } else if (ssl2Enabled) {
             protocol = SSL2;
         } else { // default
-            protocol = "SSL";
+            protocol = "TLS";
         }
 
         String[] ssl3TlsCipherArr = null;
@@ -270,7 +270,6 @@ public class IIOPSSLSocketFactory  implements ORBSocketFactory
      */
     public ServerSocket createServerSocket(String type,
             InetSocketAddress inetSocketAddress) throws IOException {
-
 	if (_logger.isLoggable(Level.FINE)) {
 	    _logger.log(Level.FINE, "Creating server socket for type =" + type
                 + " inetSocketAddress =" + inetSocketAddress);
@@ -363,7 +362,6 @@ public class IIOPSSLSocketFactory  implements ORBSocketFactory
      */
     private ServerSocket createSSLServerSocket(String type,
             InetSocketAddress inetSocketAddress) throws IOException {
-        
         if (inetSocketAddress == null) {
             throw new IOException(getFormatMessage(
                 "iiop.invalid_sslserverport",

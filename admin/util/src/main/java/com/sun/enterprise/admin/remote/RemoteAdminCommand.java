@@ -121,6 +121,7 @@ public class RemoteAdminCommand {
     private Payload.Outbound    outboundPayload;
     private String              usage;
     private File                fileOutputDir;
+    private StringBuilder       passwordOptions;
 
     // constructor parameters
     protected String            name;
@@ -364,7 +365,6 @@ public class RemoteAdminCommand {
 
             StringBuilder uriString = new StringBuilder(ADMIN_URI_PATH).
                     append(name).append(QUERY_STRING_INTRODUCER);
-            GFBase64Encoder encoder = new GFBase64Encoder();
             ParamModel operandParam = null;
             for (ParamModel opt : commandModel.getParameters()) {
                 if (opt.getParam().primary()) {
@@ -401,8 +401,7 @@ public class RemoteAdminCommand {
                 if (opt.getType() == File.class) {
                     addFileOption(uriString, paramName, paramValue);
                 } else if (opt.getParam().password()) {
-                    addStringOption(uriString, paramName,
-                                encoder.encode(paramValue.getBytes()));
+                    addPasswordOption(uriString, paramName, paramValue);
                 } else
                     addStringOption(uriString, paramName, paramValue);
             }
@@ -614,19 +613,23 @@ public class RemoteAdminCommand {
              */
             shouldTryCommandAgain = false;
             try {
+                logger.log(Level.FINER, "URI: {0}", uriString);
+                logger.log(Level.FINER, "URL: {0}", url.toString());
+                logger.log(Level.FINER, "URL: {0}", url.toURL(uriString).toString());
+                logger.log(Level.FINER, "Password options: {0}", passwordOptions);
+                logger.log(Level.FINER, "Using auth info: User: {0}, Password: {1}", 
+                        new Object[]{user, ok(password) ? "<non-null>" : "<null>"});
 
-                logger.finer("URI: " + uriString);
-                logger.finer("URL: " + url.toString());
-                logger.finer("URL: " +
-                        url.toURL(uriString.toString()).toString());
-                logger.finer("Using auth info: User: " + user +
-                    ", Password: " + (ok(password) ? "<non-null>" : "<null>"));
-                if (user != null || password != null)
-                    url.setAuthenticationInfo(
-                        new AuthenticationInfo(user, password));
+                final AuthenticationInfo authInfo = authenticationInfo();
+                if (authInfo != null) {
+                    url.setAuthenticationInfo(authInfo);
+                }
                 urlConnection = (HttpURLConnection)
                         url.openConnection(uriString.toString());
                 urlConnection.setRequestProperty("User-Agent", responseFormatType);
+                if (passwordOptions != null) {
+                    urlConnection.setRequestProperty("X-passwords", passwordOptions.toString());
+                }
 
                 if (shouldSendCredentials) {
                     urlConnection.setRequestProperty(
@@ -875,6 +878,17 @@ public class RemoteAdminCommand {
          */
     }
 
+        /*
+     * Returns the username/password authenticaiton information to use
+     * in building the outbound HTTP connection.
+     * 
+     * @return the username/password auth. information to send with the request
+     */
+    protected AuthenticationInfo authenticationInfo() {
+        return ((user != null || password != null) ? new AuthenticationInfo(user, password) : null);
+    }
+    
+
     /**
      * Check that the connection was successful and handle any error responses,
      * turning them into exceptions.
@@ -949,6 +963,22 @@ public class RemoteAdminCommand {
         return uriString;
     }
 
+    /**
+     * Add a password option, passing it as a header in the request
+     */
+    private StringBuilder addPasswordOption(StringBuilder uriString, String name,
+            String option) throws IOException {
+        if (passwordOptions == null) {
+            passwordOptions = new StringBuilder();
+        } else {
+            passwordOptions.append(QUERY_STRING_SEPARATOR);
+        }
+        GFBase64Encoder encoder = new GFBase64Encoder();
+        passwordOptions.append(name).append('=').append(
+                URLEncoder.encode(encoder.encode(option.getBytes()), "UTF-8"));
+        return uriString;
+    }
+    
     /**
      * Adds an option for a file argument, passing the name (for uploads) or the
      * path (for no-upload) operations.
@@ -1256,8 +1286,9 @@ public class RemoteAdminCommand {
 
     /**
      * Search all the parameters that were actually specified to see
-     * if any of them are FILE type parameters.  If so, check for the
+     * if any of them are FILE or PASSWORD type parameters.  If so, check for the
      * "--upload" option.
+     * If we see any PASSWORD type parameters, doUpload has to be true.
      */
     private void initializeDoUpload() throws CommandException {
         boolean sawFile = false;
@@ -1266,6 +1297,7 @@ public class RemoteAdminCommand {
          * We don't upload directories, even when asked to upload.
          */
         boolean sawUploadableFile = false;
+        boolean sawPassword = false;
 
         for (Map.Entry<String, List<String>> param : options.entrySet()) {
             String paramName = param.getKey();
@@ -1277,6 +1309,9 @@ public class RemoteAdminCommand {
                 final File optionFile = new File(options.getOne(opt.getName()));
                 sawDirectory |= optionFile.isDirectory();
                 sawUploadableFile |= optionFile.isFile();
+            }
+            else if (opt != null && opt.getParam().password()) {
+                sawPassword = true;
             }
         }
 
@@ -1317,7 +1352,8 @@ public class RemoteAdminCommand {
             }
             options = noptions;
         }
-
+        if (sawPassword) doUpload = true;
+        
         logger.finer("doUpload set to " + doUpload);
     }
 

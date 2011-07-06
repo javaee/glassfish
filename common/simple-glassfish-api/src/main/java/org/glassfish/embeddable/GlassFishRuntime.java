@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,6 +45,8 @@ import org.glassfish.embeddable.spi.RuntimeBuilder;
 import java.util.Iterator;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This is the entry point API to bootstrap GlassFish.
@@ -65,6 +67,8 @@ import java.util.ServiceLoader;
  * @author bhavanishankar@dev.java.net
  */
 public abstract class GlassFishRuntime {
+
+    private static final Logger logger = Logger.getLogger(GlassFishRuntime.class.getPackage().getName());
 
     protected GlassFishRuntime() {
         // Empty protected constructor so that it does not show up in the javadoc.
@@ -174,11 +178,18 @@ public abstract class GlassFishRuntime {
         while (runtimeBuilders.hasNext()) {
             try {
                 RuntimeBuilder builder = runtimeBuilders.next();
+                logger.logp(Level.FINE, "GlassFishRuntime", "getRuntimeBuilder", "builder = {0}", new Object[]{builder});
                 if (builder.handles(bootstrapProperties)) {
                     return builder;
                 }
             } catch (ServiceConfigurationError sce) {
                 // Ignore the exception and move ahead to the next builder.
+                logger.logp(Level.FINE, "GlassFishRuntime", "getRuntimeBuilder", "Ignoring", sce);
+            } catch (NoClassDefFoundError ncdfe) {
+                // On IBM JDK, we seem to be getting NoClassDefFoundError instead of ServiceConfigurationError
+                // when OSgiRuntimeBuilder is not able to be loaded in non-OSGi mode because of absence of
+                // OSGi classes in classpath. So, we need to catch it and ignore.
+                logger.logp(Level.FINE, "GlassFishRuntime", "getRuntimeBuilder", "Ignoring", ncdfe);
             }
         }
         throw new GlassFishException("No runtime builder available for this configuration: " + bootstrapProperties.getProperties(), null);

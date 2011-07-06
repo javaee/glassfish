@@ -59,6 +59,7 @@ public final class Constants {
     public static final String INSTALL_ROOT_URI_PROP_NAME = "com.sun.aas.installRootURI";
     public static final String INSTANCE_ROOT_URI_PROP_NAME = "com.sun.aas.instanceRootURI";
     public static final String HK2_CACHE_DIR = "com.sun.enterprise.hk2.cacheDir";
+    public static final String INHABITANTS_CACHE = "inhabitants";
     public static final String BUILDER_NAME_PROPERTY = "GlassFish.BUILDER_NAME";
 
     private Constants(){}

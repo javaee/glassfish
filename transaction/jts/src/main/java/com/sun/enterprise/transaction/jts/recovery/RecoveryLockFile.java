@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,7 +42,7 @@
 //
 // Description: Recovery lock file handling
 // Author:      Marina Vatkina
-// Date:        Sep 20101
+// Date:        Sep 2010
 //
 //----------------------------------------------------------------------------
 
@@ -117,7 +117,7 @@ public class RecoveryLockFile implements TransactionRecoveryFence, DelegatedTran
         this.gmsCallBack = gmsCallBack;
         try {
             instance_name = Configuration.getPropertyValue(Configuration.INSTANCE_NAME);
-            log_path = RecoveryManager.getLogDirectory();
+            log_path = LogControl.getLogPath();
             // Create (if it doesn't exist) recoveryLockFile to hold info about instance and delegated recovery
             File recoveryLockFile = LogControl.recoveryLockFile(null, log_path);
             recoveryLockFile.createNewFile();

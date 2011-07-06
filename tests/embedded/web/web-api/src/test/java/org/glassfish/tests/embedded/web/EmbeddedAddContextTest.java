@@ -90,7 +90,19 @@ public class EmbeddedAddContextTest {
 
         Context context = embedded.createContext(root);
         embedded.addContext(context, contextRoot);
-        
+
+        VirtualServer vs = embedded.getVirtualServer("server");
+        Assert.assertEquals("server", vs.getID());
+        Assert.assertEquals("/"+contextRoot, vs.getContext(contextRoot).getPath());
+        boolean containsContext = false;
+        for (Context ctx : vs.getContexts()) {
+            System.out.println("Context found "+ctx.getPath());
+            if (ctx.getPath().endsWith(contextRoot)) {
+                containsContext = true;
+            }
+        }
+        Assert.assertTrue(containsContext);
+
         URL servlet = new URL("http://localhost:8080/"+contextRoot+"/hello");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -344,13 +344,6 @@ public class ServerConfigLookup {
 
         }
         return asyncReplication;
-    }
-
-    public DeploymentContext getDeploymentContext(ServletContext ctx) {
-        org.apache.catalina.core.ApplicationContext applicationContext =
-                ((org.apache.catalina.core.ApplicationContextFacade)ctx).getApplicationContext();
-        DeploymentContext dc = ((WebModule)applicationContext.getStandardContext()).getWebModuleConfig().getDeploymentContext();
-        return dc;
     }
 
     public PersistenceType getPersistenceTypeFromConfig() {

@@ -111,6 +111,9 @@ grant {
     permission java.lang.RuntimePermission    "getClassLoader";
     permission java.lang.RuntimePermission    "setContextClassLoader";
         permission javax.management.MBeanPermission "[com.sun.messaging.jms.*:*]", "*"; 
+    //needed by URLClassloader.close() on JDK7
+        permission java.lang.RuntimePermission "closeClassLoader";
+
 };
 
 

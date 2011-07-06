@@ -222,7 +222,11 @@ public final class InstallationConfigurator implements Configurator, Notificatio
                 props.setProperty("image.path", productRef.getInstallLocation());
             }
             props.setProperty("install.pkg", "true");
-            props.setProperty("install.updatetool", "true");
+            if (!OSUtils.isAix()) {
+                props.setProperty("install.updatetool", "true");
+            } else {
+                props.setProperty("install.updatetool", "false");
+            }
             props.setProperty("optin.update.notification",
                     allowUpdateCheck ? "true" : "false");
 

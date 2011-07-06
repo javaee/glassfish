@@ -76,6 +76,7 @@
        <echo message="replace webservices-osgi.jar"/>
        <delete file="target/stage/${install.dir.name}/glassfish/modules/webservices-osgi.jar"/>
        <move file="target/stage/${install.dir.name}/glassfish/modules/webservices-osgi-aix-aix.jar" tofile="target/stage/${install.dir.name}/glassfish/modules/webservices-osgi.jar" failonerror="false"/>
+       <delete file="target/stage/glassfish3/glassfish/modules/webservices-extra-jdk-packages.jar" />
    </target>
 
 </project>

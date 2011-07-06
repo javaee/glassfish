@@ -58,96 +58,46 @@
 		    execute:button.id,
 		    render: '@none'
 		};
+                
 		options[button.id] = button.id;
 		jsf.ajax.request(button, null, options);
+
 	    }
 	</f:verbatim>
     </sun:script>
 </sun:head>
 
-
-<sun:body id="body3" focus="loginform.j_username" onLoad="triggerShutdown();">
+<sun:body id="body" onLoad="triggerShutdown();">
     <sun:form id="form">
     <sun:button id="stopInstance" visible="false">
         <!command
             gf.restRequest(endpoint="#{sessionScope.REST_URL}/stop" method="POST");
         />
     </sun:button>
+    </sun:form>
+    
 <f:verbatim>
-  <table border="0" cellpadding="0" cellspacing="0" align="center" title="">
-    <tr>
-      <td width="50%"><img src="/resource/images/dot.gif" width="1" height="1" alt="" /></td>
-      <td><img src="/resource/images/dot.gif" width="728" height="1" alt="" /></td>
-      <td width="50%"><img src="/resource/images/dot.gif" width="1" height="1" alt="" /></td>
-    </tr>
-    <tr class="LogTopBnd" style="background-image: url(/resource/images/gradlogtop.jpg); background-repeat: repeat-x; background-position: left top;">
-      <td><img src="/resource/images/dot.gif" width="1" height="30" alt="" /></td>
-      <td nowrap="nowrap" valign="middle"></td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr>
-      <td class="LogMidBnd" style="background-image: url(/resource/images/gradlogsides.jpg);background-repeat:repeat-x;background-position:left top;">&nbsp;</td>
-      <td class="LogCntTd" height="435" align="center" valign="middle">
-        <table border="0" background="/resource/images/dot.gif" cellpadding="0" cellspacing="0" width="100%" title="">
-          <tr>
-            <td width="260"><img src="/resource/images/dot.gif" width="260" height="245" alt="" /></td>
-            <td width="415" bgcolor="#FFFFFF" valign="top" align="left">&nbsp;
-
-              <table border="0" cellspacing="0" cellpadding="0">
-                <tr>
-                  <td>&nbsp;</td>
-                </tr>
-                <tr>
-                    <td><div class="logLbl"><span class="LblLev2Txt">
+    <div id="header"class="LogTopBnd" style="background: url('#{themeImages.LOGIN_GRADIENT_TOP}') repeat-x; height: 30px;"></div>
+    <div class="middle" style="background-image: url(#{themeImages.LOGIN_GRADIENT_SIDES});background-repeat:repeat-x;background-position:left top; background-color: #D4DCE1;">
+        <div class="plugincontent" style="width1: 1px; visibility: #{byPassLogin ? 'hidden' : 'visible'};">
 </f:verbatim>
-                       <sun:staticText text="$resource{i18n.shutdown.RestartHeading}  $resource{i18n.shutdown.RestartInstructions1} "  />
+        <event>
+            <!afterCreate
+                getClientId(component="$this{component}" clientId=>$attribute{loginId})
+                getUIComponent(clientId="#{loginId}"  component=>$attribute{component})
+                includeFirstIntegrationPoint(type="org.glassfish.admingui:shutdownform" root="#{component}");
+            />
+        </event>
 <f:verbatim>
-                    </span></div></td>
-                </tr>
-                <tr>
-                    <td><div class="logLblLst"><span class="LblLev2Txt">
-        <ul>
-        <li>
+        </div>
+    </div>
+    <div class="footer"
+        style="background-image: url(#{themeImages.LOGIN_GRADIENT_BOTTOM});background-repeat:repeat-x;background-position:left top; color: #FFFFFF; background-color: #4A5C68">
+        <div id="copyright" style="width: 720px; margin-left: auto; margin-right: auto; padding: 5px;">
+            <span>$resource{i18n.copyright.shortMessage}</span>
+        </div>
+    </div>
+    <script src="#{request.contextPath}/resource/js/cj.js"></script>
+</body>
+</html>
 </f:verbatim>
-        <sun:staticText id="text2" text="$resource{i18n.shutdown.RestartStep1}" />
-"        </li><li>
-        <sun:staticText id="text3" text="$resource{i18n.shutdown.RestartStep2}" />
-"        </li><li>
-        <sun:staticText id="text4" text="$resource{i18n.shutdown.RestartStep3}" />
-<f:verbatim>
-        </li>
-        </ul>
-                </span></div></td>
-                </tr>
-                <tr>
-                    <td><div class="logLbl"><span class="LblLev2Txt">
-</f:verbatim>
-                    <sun:staticText text="$resource{i18n.shutdown.RestartContinue}" />
-<f:verbatim>
-                    </span></div></td>
-                </tr>
-              </table>
-            </td>
-          <td>&nbsp;</td>
-          </tr>
-        </table>
-      </td>
-      <td class="LogMidBnd"
-          style="background-image: url(/resource/images/gradlogsides.jpg);background-repeat:repeat-x;background-position:left top;">&nbsp;</td>
-    </tr>
-    <tr class="LogBotBnd" style="background-image: url(/resource/images/gradlogbot.jpg);background-repeat:repeat-x;background-position:left top;">
-      <td>&nbsp;</td>
-      <td><div class="logCpy"><span class="logTxtCpy">
-</f:verbatim>
-        <sun:staticText  text="$resource{i18n.copyright.shortMessage}" />
-<f:verbatim>
-      </span></div>
-      </td>
-      <td>&nbsp;</td>
-    </tr>
-  </table>
-</f:verbatim>
-</sun:form>
-</sun:body>
-</sun:html>
-</sun:page>

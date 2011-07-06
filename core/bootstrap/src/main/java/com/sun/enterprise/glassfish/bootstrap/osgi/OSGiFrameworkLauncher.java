@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,9 +38,10 @@
  * holder.
  */
 
-package com.sun.enterprise.glassfish.bootstrap;
+package com.sun.enterprise.glassfish.bootstrap.osgi;
 
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.BundleReference;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
@@ -50,13 +51,13 @@ import java.util.Properties;
 import java.util.ServiceLoader;
 
 /**
- * Utility class which takes care of launching OSGi framework and reading a set of auto-properties
- * to install and start bundles. It also provides a utility method to get hold of OSGi services
- * registered in the system.
+ * Utility class which takes care of launching OSGi framework.
+ * It lauches the framework in a daemon thread, because typically framework spawned threads inherit
+ * parent thread's daemon status.
+ *
+ * It also provides a utility method to get hold of OSGi services registered in the system.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
- * 
- * @see com.sun.enterprise.glassfish.bootstrap.AutoProcessor
  */
 public class OSGiFrameworkLauncher {
 
@@ -69,21 +70,30 @@ public class OSGiFrameworkLauncher {
 
     public Framework launchOSGiFrameWork() throws Exception {
         if (!isOSGiEnv()) {
-            // Start an OSGi framework
+            // Locate an OSGi framework and initialize it
             ServiceLoader<FrameworkFactory> frameworkFactories =
                     ServiceLoader.load(FrameworkFactory.class, getClass().getClassLoader());
             for (FrameworkFactory ff : frameworkFactories) {
                 framework = ff.newFramework(properties);
+                break;
             }
             if (framework == null) {
                 throw new RuntimeException("No OSGi framework in classpath");
-            } else {
-                framework.init();
             }
-
-            // Call auto-processor - this is where our provisioning bundle is installed and started.
-            AutoProcessor.process(properties, framework.getBundleContext());
-            framework.start();
+            // init framework in a daemon thread so that the framework spwaned internal threads will be daemons
+            Thread t = new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        framework.init();
+                    } catch (BundleException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            };
+            t.setDaemon(true);
+            t.start();
+            t.join();
         } else {
             throw new IllegalStateException("An OSGi framework is already running...");
         }

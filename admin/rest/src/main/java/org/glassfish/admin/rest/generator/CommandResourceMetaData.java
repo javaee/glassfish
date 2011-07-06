@@ -201,6 +201,7 @@ ListLbConfig
             {"Domain", "_get-host-and-port", "GET", "host-port", "HostPort"},
             {"Domain", "_get-restart-required", "GET", "_get-restart-required", "Restart Reasons"},
             {"Domain", "_get-runtime-info", "GET", "get-runtime-info", "Get Runtime Info"},
+            {"Domain", "_get-rest-admin-config", "GET", "_get-rest-admin-config", "_get-rest-admin-config"},
             
 
              {"Domain", "_bootstrap-secure-admin", "POST", "_bootstrap-secure-admin", "_bootstrap-secure-admin"},
@@ -226,6 +227,7 @@ ListLbConfig
              {"Domain", "_register-instance", "POST", "_register-instance", "_register-instance"},
              {"Domain", "_register-instance-at-instance", "POST", "_register-instance-at-instance", "_register-instance-at-instance"},
              {"Domain", "_restart-instance", "POST", "_restart-instance", "_restart-instance"},
+             {"Domain", "_set-rest-admin-config", "POST", "_set-rest-admin-config", "_set-rest-admin-config"},
              {"Domain", "_stop-instance", "POST", "_stop-instance", "_stop-instance"},
              {"Domain", "_synchronize-files", "POST", "_synchronize-files", "_synchronize-files"},
              {"Domain", "_unregister-instance", "POST", "_unregister-instance", "_unregister-instance"},
@@ -282,7 +284,7 @@ ListLbConfig
             {"JavaConfig", "create-profiler", "POST", "create-profiler", "Create Profiler"},
             {"JavaConfig", "generate-jvm-report", "GET", "generate-jvm-report", "Generate Report", "target=$grandparent"},
             {"JmsService", "list-jms-hosts", "GET", "list-jms-hosts", "list-jms-hosts"},
-            {"JmsService", "list-jms-resources", "GET", "list-jms-resources", "list-jms-resources"},
+            {"Resources", "list-jms-resources", "GET", "list-jms-resources", "list-jms-resources"},
             {"JmsHost", "delete-jms-host", "DELETE", "delete-jms-host", "Delete JMS Host", "id=$parent"},
             {"LbConfig", "create-http-lb-ref", "POST", "create-http-lb-ref", "create-http-lb-ref", "config=$parent"},
             {"LbConfig", "create-http-listener", "POST", "create-http-listener", "create-http-listener"},
@@ -322,8 +324,6 @@ ListLbConfig
             {"Protocol", "delete-protocol-filter", "DELETE", "delete-protocol-filter", "Delete", "protocol=$parent"},
             {"Protocol", "delete-protocol-finder", "DELETE", "delete-protocol-finder", "Delete", "protocol=$parent"},
             {"Protocol", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=http-listener"},
-            {"Config", "_get-rest-admin-config", "GET", "_get-rest-admin-config", "_get-rest-admin-config"},
-            {"Config", "_set-rest-admin-config", "POST", "_set-rest-admin-config", "_set-rest-admin-config"},
             {"Resources", "_get-activation-spec-class", "GET", "get-activation-spec-class", "Get Activation Spec Class"},
             {"Resources", "_get-admin-object-class-names", "GET", "get-admin-object-class-names", "Get Admin Object Class Names"},
             {"Resources", "_get-admin-object-config-properties", "GET", "get-admin-object-config-properties", "Get Admin Object Config Properties"},

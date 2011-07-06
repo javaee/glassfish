@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.flashlight.datatree.impl;
 
 import static com.sun.enterprise.util.StringUtils.ok;
@@ -58,10 +57,10 @@ import java.util.regex.Pattern;
  * NOT something like "\\." -- there is too much code around making assumptions
  * about dots, splitting strings, etc.  So we replace with ___MONDOT___
  */
-public abstract class AbstractTreeNode implements TreeNode, Comparable {
-
+public abstract class AbstractTreeNode implements TreeNode, Comparable<TreeNode> {
     protected Map<String, TreeNode> children =
             new ConcurrentHashMap<String, TreeNode>();
+    // bnevins 6/25/2011  -- why is normalizedChildren static ?!?
     private static Map<String, TreeNode> normalizedChildren =
             new ConcurrentHashMap<String, TreeNode>();
     protected String name;    // The node object itself
@@ -192,8 +191,8 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
 
         // too fragile to hunt for the matching key...
         Iterator<TreeNode> it = normalizedChildren.values().iterator();
-        while(it.hasNext()) {
-            if(it.next() == oldChild) {
+        while (it.hasNext()) {
+            if (it.next() == oldChild) {
                 it.remove();
                 break;
             }
@@ -220,14 +219,27 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
         this.description = description;
     }
 
+    // Byron Nevins 6/25/11
+    // JIRA 15964 -- what happened was that the childName was "xxx.yyy"
+    // there was a node that actually matched but it was not found because
+    // its name was "xxx\.yyy"
     @Override
     public TreeNode getChild(String childName) {
-        if (childName == null) {
+        if (childName == null)
             return null;
+
+        childName = normalizeDots(childName);
+        Set<Map.Entry<String, TreeNode>> entries = children.entrySet();
+
+        for (Map.Entry<String, TreeNode> entry : entries) {
+            String entryKey = entry.getKey();
+            String normalizedEntryKey = normalizeDots(entryKey);
+
+            if (childName.equals(entryKey) || childName.equals(normalizedEntryKey))
+                return entry.getValue();
         }
-        else {
-            return children.get(childName);
-        }
+
+        return null;
     }
 
     @Override
@@ -240,7 +252,7 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
         String[] tokens = pattern.split(completeName);
         TreeNode n = findNodeInTree(tokens);
 
-        if(n == null)
+        if (n == null)
             n = findNodeInTreeNormalized(completeName);
 
         return n;
@@ -327,13 +339,13 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
         // the right stuff.
         // This is a ARCHITECTURE flaw.  This hack can be replaced with an
         // ARCHITECTURAL fix later if desired.
-        
+
         List<TreeNode> list = getNodesInternal(pattern, ignoreDisabled, gfv2Compatible);
-        
-        if(list == null || list.size() <= 0)
+
+        if (list == null || list.size() <= 0)
             list = getNodesInternal(pattern.replace("/", SLASH), ignoreDisabled, gfv2Compatible);
 
-        if(list == null || list.size() <= 0)
+        if (list == null || list.size() <= 0)
             list = getNodesInternal(decodeNameToDots(pattern), ignoreDisabled, gfv2Compatible);
 
         return list;
@@ -395,8 +407,8 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
     }
 
     @Override
-    public int compareTo(Object o) {
-        return this.getName().compareTo(((TreeNode) o).getName());
+    public int compareTo(TreeNode other) {
+        return getName().compareTo(other.getName());
     }
 
     @Override
@@ -432,11 +444,7 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
 
     private String encodeNodeName(String nodeName) {
         // The order is important!!
-        return nodeName
-                .replace("\\.", MONDOT)
-                .replace(".", MONDOT)
-                .replace("\\/", SLASH)
-                .replace("/", SLASH);
+        return nodeName.replace("\\.", MONDOT).replace(".", MONDOT).replace("\\/", SLASH).replace("/", SLASH);
     }
 
     private String encodePath(String thePath) {
@@ -458,19 +466,14 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
     }
 
     private static String decodeNameToDots(String s) {
-        return s
-                .replace(SLASH, ".")
-                .replace(MONDOT, ".")
-                .replace("\\/", ".")
-                .replace("\\.", ".")
-                .replace('/', '.');
+        return s.replace(SLASH, ".").replace(MONDOT, ".").replace("\\/", ".").replace("\\.", ".").replace('/', '.');
     }
 
     private TreeNode findNodeInTreeNormalized(String desiredName) {
         // this is ONLY called when there is no match using the tools prior to 2/10/11
         // so the performance hit should be reasonable
 
-        if(!ok(desiredName))
+        if (!ok(desiredName))
             return null;
 
         desiredName = decodeNameToDots(desiredName);
@@ -494,8 +497,8 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
             String[] bits = desiredName.split("\\.");
 
             if (bits != null && bits.length >= 2) {
-                
-                if(bits[1].equals("server"))
+
+                if (bits[1].equals("server"))
                     return desiredName;
 
                 StringBuilder sb = new StringBuilder(bits[0]);
@@ -512,5 +515,30 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
         }
         return null;
     }
-}
 
+    private static String normalizeDots(String s) {
+        // Normalized means a literal dot is "\."  (one 'real' backslash followed by dot
+        // in a java string in source code it would be:  "\\."  -- where one of the backslashes isn't 'real'
+
+        if(s == null || !hasDots(s)) // return quick for performance
+            return s;
+
+        // to avoid expensive regexp work I do it this way...
+        // it changes all occurences of "." with no preceding '\' with "\." and all
+        // MONDOTS also.
+        // I.e. all dots leave here with a backslash in front of them!
+
+        return s.replace("\\.", MONDOT).replace(".", MONDOT).replace(MONDOT, "\\.");
+    }
+
+    private static boolean hasDots(String s) {
+        if(s == null)
+            return false;
+        if(s.indexOf(MONDOT) >= 0)
+            return true;
+        if(s.indexOf(".") >= 0)
+            return true;
+        return false;
+    }
+
+}

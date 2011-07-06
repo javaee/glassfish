@@ -81,7 +81,7 @@
                 <dependency>
                     <groupId>org.glassfish.extras</groupId>
                     <artifactId>glassfish-embedded-all</artifactId>
-                    <version>3.1-SNAPSHOT</version>
+                    <version>3.1.1-SNAPSHOT</version>
                 </dependency>
                 <dependency>
                     <groupId>junit</groupId>
@@ -91,7 +91,7 @@
             </dependencies>
         </profile>
         <profile>
-            <id>run-with-static-shell</id>
+            <id>run-with-shell-jar</id>
             <activation>
                 <property>
                     <name>build</name>

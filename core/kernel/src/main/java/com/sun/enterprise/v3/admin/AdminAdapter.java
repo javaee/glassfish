@@ -145,8 +145,6 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
     @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private volatile Server server;
    
-    private SecureAdmin secureAdmin;
-
     final Class<? extends Privacy> privacyClass;
 
     private boolean isRegistered = false;
@@ -164,7 +162,6 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         epd = new AdminEndpointDecider(config, aalogger);
         this.setHandleStaticResources(true);
         this.addRootFolder(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/asadmindocroot/");
-        secureAdmin = habitat.getComponent(SecureAdmin.class);
     }
 
     /**
@@ -365,9 +362,10 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
             final String headerName,
             final String headerValue) throws IOException {
         report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-        report.setMessage(adminStrings.getLocalString(msgKey, msg));
+        final String messageForResponse = adminStrings.getLocalString(msgKey, msg);
+        report.setMessage(messageForResponse);
         report.setActionDescription("Authentication error");
-        res.setStatus(httpStatus);
+        res.setStatus(httpStatus, messageForResponse);
         if (headerName != null) {
             res.setHeader(headerName, headerValue);
         }
@@ -426,8 +424,14 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
 
         if (requestURI.length() > getContextRoot().length() + 1)
             command = requestURI.substring(getContextRoot().length() + 1);
+        
+        String qs = req.getQueryString();
+        String passwordOptions = req.getHeader("X-passwords");
+        if (passwordOptions != null) {
+            qs = qs + QUERY_STRING_SEPARATOR + passwordOptions;
+        }
 
-        final ParameterMap parameters = extractParameters(req.getQueryString());
+        final ParameterMap parameters = extractParameters(qs);
         try {
             Payload.Inbound inboundPayload = PayloadImpl.Inbound.newInstance(
                     req.getContentType(), req.getInputStream());

@@ -115,7 +115,7 @@ public class WoodstockHandler {
         if (uploadedFile != null) {
 
             String name = uploadedFile.getOriginalName();
-            logger.info("======= uploadFileName="+name);
+            logger.info("uploadFileName="+name);
             //see bug# 6498910, for IE, getOriginalName() returns the full path, including the drive.
             //for any other browser, it just returns the file name.
             int lastIndex = name.lastIndexOf("\\");
@@ -124,7 +124,7 @@ public class WoodstockHandler {
             }
             int index = name.indexOf(".");
             if (index <= 0) {
-                logger.info("======== name="+name + ",index="+index);
+                logger.info("name="+name + ",index="+index);
                 String mesg = GuiUtil.getMessage("msg.deploy.nullArchiveError");
                 GuiUtil.handleError(handlerCtx, mesg);
                 return;

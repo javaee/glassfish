@@ -49,11 +49,9 @@ package org.glassfish.admin.rest.results;
 public class Result {
 
     public Result() {
-        __statusCode = 200;
         __isError = false;
         __errorMessage = null;
     }
-
 
     /**
      * Returns name of the resource, this result object is for.
@@ -61,15 +59,6 @@ public class Result {
     public String getName() {
         return __name;
     }
-
-
-    /**
-     * Returns Http status code for the response.
-     */
-    public int getStatusCode() {
-        return __statusCode;
-    }
-
 
     /**
      * Returns true in case of error. Enables provider to generate
@@ -79,20 +68,11 @@ public class Result {
         return __isError;
     }
 
-
     /**
      * Returns error message in case of an error.
      */
     public String getErrorMessage() {
         return __errorMessage;
-    }
-
-
-    /**
-     * Sets http status code of the response.
-     */
-    public void setStatusCode(int statusCode) {
-        __statusCode = statusCode;
     }
 
     /**
@@ -102,7 +82,6 @@ public class Result {
         __isError = isError;
     }
 
-
     /**
      * Sets error message of the response
      */
@@ -110,8 +89,6 @@ public class Result {
         __errorMessage =  errorMessage;
     }
 
-
-    int __statusCode;
     boolean __isError;
     String __errorMessage;
     String __name;

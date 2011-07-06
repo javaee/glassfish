@@ -64,6 +64,7 @@ import com.sun.jts.CosTransactions.DefaultTransactionService;
 import com.sun.jts.CosTransactions.RecoveryManager;
 import com.sun.jts.CosTransactions.DelegatedRecoveryManager;
 import com.sun.jts.CosTransactions.RWLock;
+import com.sun.jts.CosTransactions.LogControl;
 
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.TransactionService;
@@ -239,7 +240,7 @@ public class JavaEETransactionManagerJTSDelegate
         int status = javax.transaction.Status.STATUS_NO_TRANSACTION;
 
         TransactionManager tm = tmLocal.get();
-        if ( tx != null && tx.isLocalTx())
+        if ( tx != null) 
             status = tx.getStatus();
         else if (tm != null) 
             status = tm.getStatus();
@@ -313,21 +314,26 @@ public class JavaEETransactionManagerJTSDelegate
     public boolean enlistLAOResource(Transaction tran, TransactionalResource h)
            throws RollbackException, IllegalStateException, SystemException {
 
-        JavaEETransactionImpl tx = (JavaEETransactionImpl)tran;
-        ((JavaEETransactionManagerSimplified) javaEETM).startJTSTx(tx);
+        if (tran instanceof JavaEETransaction) {
+            JavaEETransaction tx = (JavaEETransaction)tran;
+            ((JavaEETransactionManagerSimplified) javaEETM).startJTSTx(tx);
 
-        //If transaction conatains a NonXA and no LAO, convert the existing
-        //Non XA to LAO
-        if(useLAO()) {
-            if(h != null && (tx.getLAOResource() == null) ) {
-                tx.setLAOResource(h);
-                if (h.isTransactional()) {
-                    XAResource res = h.getXAResource();
-                    return tran.enlistResource(res);
+            //If transaction conatains a NonXA and no LAO, convert the existing
+            //Non XA to LAO
+            if(useLAO()) {
+                if(h != null && (tx.getLAOResource() == null) ) {
+                    tx.setLAOResource(h);
+                    if (h.isTransactional()) {
+                        XAResource res = h.getXAResource();
+                        return tran.enlistResource(res);
+                    }
                 }
             }
+            return true;
+        } else {
+            // Should not be called
+            return false;
         }
-        return true;
 
     }
 
@@ -600,7 +606,7 @@ public class JavaEETransactionManagerJTSDelegate
     /** {@inheritDoc}
     */
     public String getTxLogLocation() {
-            return RecoveryManager.getLogDirectory();
+            return LogControl.getLogPath();
     }
 
     /** {@inheritDoc}

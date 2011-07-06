@@ -91,7 +91,7 @@
             </dependencies>
         </profile>
         <profile>
-            <id>run-with-static-shell</id>
+            <id>run-with-shell-jar</id>
             <activation>
                 <property>
                     <name>build</name>

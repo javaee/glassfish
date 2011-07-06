@@ -136,13 +136,19 @@ public class RestApiHandlers {
             })
     public static void checkIfEndPointExist(HandlerContext handlerCtx) {
         boolean result = false;
+        RestResponse response = null;
         try {
-            result = get((String) handlerCtx.getInputValue("endpoint")).isSuccess();
+            response = get((String) handlerCtx.getInputValue("endpoint"));
+            result = response.isSuccess();
         }catch(Exception ex){
             GuiUtil.getLogger().info("checkIfEnpointExist failed.");
             if (GuiUtil.getLogger().isLoggable(Level.FINE)){
                 ex.printStackTrace();
             }
+        } finally {
+            if (response != null) {
+                response.close();
+        }
         }
         handlerCtx.setOutputValue("exists", result);
     }

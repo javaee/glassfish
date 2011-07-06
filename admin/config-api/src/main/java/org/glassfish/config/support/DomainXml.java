@@ -52,6 +52,7 @@ import com.sun.enterprise.universal.NanoDuration;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
+import java.io.ByteArrayInputStream;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.ConfigurationCleanup;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
@@ -69,6 +70,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.net.URL;
 import java.util.logging.LogRecord;
+import javax.xml.stream.XMLResolver;
+import javax.xml.stream.XMLStreamException;
 import org.glassfish.api.admin.RuntimeType;
 
 /**
@@ -218,6 +221,19 @@ public abstract class DomainXml implements Populator {
 
         try {
             ServerReaderFilter xsr = null;
+            // Set the resolver so that any external entity references, such 
+            // as a reference to a DTD, return an empty file.  The domain.xml
+            // file doesn't support entity references.
+            xif.setXMLResolver(new XMLResolver() {
+                @Override
+                public Object resolveEntity(String publicID,
+                     String systemID,
+                     String baseURI,
+                     String namespace)
+                     throws XMLStreamException {
+                    return new ByteArrayInputStream(new byte[0]);
+                }
+            });
 
             if (env.getRuntimeType() == RuntimeType.DAS || env.getRuntimeType() == RuntimeType.EMBEDDED)
                 xsr = new DasReaderFilter(domainXml, xif);

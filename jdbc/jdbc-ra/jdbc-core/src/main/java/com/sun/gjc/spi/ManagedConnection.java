@@ -1230,4 +1230,9 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
     public boolean isAborted() {
         return aborted;
     }
+
+    public void purgeStatementFromCache(PreparedStatement preparedStatement) {
+        //TODO isValid check for preparedStatement?
+        statementCache.purge(preparedStatement);
+    }
 }

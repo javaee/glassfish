@@ -83,8 +83,6 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import javax.faces.component.UIViewRoot;
-import org.glassfish.internal.embedded.ScatteredArchive.Builder.type;
-
 
 /**
  *
@@ -940,6 +938,22 @@ public class UtilHandlers {
     public static void convertStrToBoolean(HandlerContext handlerCtx) {
         String str = (String) handlerCtx.getInputValue("str");
         handlerCtx.setOutputValue("out", "true".equals(str));
+    }
+
+
+    @Handler(id="gf.logger",
+    input={
+        @HandlerInput(name="logString", type=String.class , defaultValue=""),
+        @HandlerInput(name="level", type=String.class , defaultValue="INFO")
+    },
+    output={
+        @HandlerOutput(name="string", type=String.class)
+    })
+    public static void logger(HandlerContext handlerCtx) {
+
+        GuiUtil.getLogger().log(
+                Level.parse((String)handlerCtx.getInputValue("level")),
+                "" +handlerCtx.getInputValue("logString"));
     }
 
     /**

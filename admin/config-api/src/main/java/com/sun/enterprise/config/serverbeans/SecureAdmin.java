@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,11 +40,23 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import org.glassfish.api.I18n;
+import org.glassfish.config.support.Create;
+import org.glassfish.config.support.Delete;
+import org.glassfish.config.support.Listing;
+import org.glassfish.config.support.TypeAndNameResolver;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.DuckTyped;
+import org.jvnet.hk2.config.Element;
+import org.jvnet.hk2.config.Transaction;
+import org.jvnet.hk2.config.TransactionFailure;
 
 
 
@@ -55,6 +67,17 @@ import org.jvnet.hk2.config.DuckTyped;
  */
 public interface SecureAdmin extends ConfigBeanProxy, Injectable {
 
+    @Element
+    @Create(value="enable-secure-admin-principal", decorator=SecureAdminPrincipal.CrDecorator.class, i18n=@I18n("enable.secure.admin.principal.command"))
+    @Delete(value="disable-secure-admin-principal", resolver=SecureAdminPrincipal.Resolver.class, i18n=@I18n("disable.secure.admin.principal.command"))
+    @Listing(value="list-secure-admin-principals", resolver=SecureAdminPrincipal.Resolver.class, i18n=@I18n("list.secure.admin.principals.command"))
+    public List<SecureAdminPrincipal> getSecureAdminPrincipal();
+    
+    @Element
+    @Create(value="enable-secure-admin-internal-user", decorator=SecureAdminInternalUser.CrDecorator.class, i18n=@I18n("enable.secure.admin.internal.user.command"))
+    @Delete(value="disable-secure-admin-internal-user", resolver=TypeAndNameResolver.class, i18n=@I18n("disable.secure.admin.internal.user.command"))
+    @Listing(value="list-secure-admin-internal-users", resolver=TypeAndNameResolver.class, i18n=@I18n("list.secure.admin.internal.user.command"))
+    public List<SecureAdminInternalUser> getSecureAdminInternalUser();
 
     /**
      * Gets whether admin security is turned on.
@@ -102,8 +125,8 @@ public interface SecureAdmin extends ConfigBeanProxy, Injectable {
 
     class Duck {
 
-        private final static String DEFAULT_INSTANCE_ALIAS = "glassfish-instance";
-        private final static String DEFAULT_ADMIN_ALIAS = "s1as";
+        public final static String DEFAULT_INSTANCE_ALIAS = "glassfish-instance";
+        public final static String DEFAULT_ADMIN_ALIAS = "s1as";
 
         public static String getInstanceAlias(final SecureAdmin secureAdmin) {
             return secureAdmin.instanceAlias();
@@ -117,9 +140,10 @@ public interface SecureAdmin extends ConfigBeanProxy, Injectable {
     public static class Util {
         
         public static final String ADMIN_INDICATOR_HEADER_NAME = "X-GlassFish-admin";
-        private static final String ADMIN_INDICATOR_DEFAULT_VALUE = "true";
+        public   static final String ADMIN_INDICATOR_DEFAULT_VALUE = "true";
         public static final String ADMIN_ONE_TIME_AUTH_TOKEN_HEADER_NAME = "X-GlassFish-authToken";
         
+        private static volatile SecureAdminHelper _secureAdminHelper = null;
 
         
         /**
@@ -139,7 +163,7 @@ public interface SecureAdmin extends ConfigBeanProxy, Injectable {
          */
         public static String configuredAdminIndicator(final SecureAdmin secureAdmin) {
             return (secureAdmin == null ? ADMIN_INDICATOR_DEFAULT_VALUE : secureAdmin.getSpecialAdminIndicator());
-        }
+            }
 
         public static String DASAlias(final SecureAdmin secureAdmin) {
             return (secureAdmin == null) ? Duck.DEFAULT_ADMIN_ALIAS :
@@ -149,6 +173,97 @@ public interface SecureAdmin extends ConfigBeanProxy, Injectable {
         public static String instanceAlias(final SecureAdmin secureAdmin) {
             return (secureAdmin == null) ? Duck.DEFAULT_INSTANCE_ALIAS :
                 secureAdmin.getInstanceAlias();
+        }
+        
+        
+        public static List<SecureAdminInternalUser> secureAdminInternalUsers(final SecureAdmin secureAdmin) {
+            return (secureAdmin == null) ? Collections.EMPTY_LIST : secureAdmin.getSecureAdminInternalUser();
+        }
+        
+        public static SecureAdminInternalUser secureAdminInternalUser(final SecureAdmin secureAdmin) {
+            final List<SecureAdminInternalUser> secureAdminUsers = secureAdminInternalUsers(secureAdmin);
+            return (secureAdminUsers.isEmpty() ? null : secureAdminUsers.get(0));
+        }
+        
+        public static boolean isUsingUsernamePasswordAuth(final SecureAdmin secureAdmin) {
+            return ! secureAdminInternalUsers(secureAdmin).isEmpty();
+        }
+        
+        public static List<SecureAdminPrincipal> secureAdminPrincipals(
+                final SecureAdmin secureAdmin,
+                final Habitat habitat) {
+            List<SecureAdminPrincipal> result = Collections.EMPTY_LIST;
+            if (secureAdmin != null) {
+                result = secureAdmin.getSecureAdminPrincipal();
+                if (result.isEmpty()) {
+                    try{
+                        final Transaction t = new Transaction();
+                        final SecureAdmin secureAdmin_w = t.enroll(secureAdmin);
+                        result = secureAdmin_w.getSecureAdminPrincipal();
+                        final SecureAdminPrincipal dasPrincipal = 
+                            secureAdmin_w.createChild(SecureAdminPrincipal.class);
+                        dasPrincipal.setDn(secureAdminHelper(habitat).getDN(secureAdmin.dasAlias(), true));
+                        result.add(dasPrincipal);
+
+                        final SecureAdminPrincipal instancePrincipal =
+                                secureAdmin_w.createChild(SecureAdminPrincipal.class);
+                        instancePrincipal.setDn(secureAdminHelper(habitat).getDN(secureAdmin.instanceAlias(), true));
+                        result.add(instancePrincipal);
+                        t.commit();
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+            return result;
+        }
+        
+//        static class DummySecureAdminPrincipal implements SecureAdminPrincipal {
+//
+//            private String dn;
+//            
+//            @Override
+//            public void setDn(String dn) {
+//                this.dn = dn;
+//            }
+//
+//            @Override
+//            public String getDn() {
+//                return dn;
+//            }
+//
+//            @Override
+//            public void injectedInto(Object o) {
+//                throw new UnsupportedOperationException("Not supported yet.");
+//            }
+//
+//            @Override
+//            public ConfigBeanProxy getParent() {
+//                throw new UnsupportedOperationException("Not supported yet.");
+//            }
+//
+//            @Override
+//            public <T extends ConfigBeanProxy> T getParent(Class<T> type) {
+//                throw new UnsupportedOperationException("Not supported yet.");
+//            }
+//
+//            @Override
+//            public <T extends ConfigBeanProxy> T createChild(Class<T> type) throws TransactionFailure {
+//                throw new UnsupportedOperationException("Not supported yet.");
+//            }
+//
+//            @Override
+//            public ConfigBeanProxy deepCopy(ConfigBeanProxy cbp) throws TransactionFailure {
+//                throw new UnsupportedOperationException("Not supported yet.");
+//            }
+//            
+//        }
+        
+        private static synchronized SecureAdminHelper secureAdminHelper(final Habitat habitat) {
+            if (_secureAdminHelper == null) {
+                _secureAdminHelper = habitat.getComponent(SecureAdminHelper.class);
+            }
+            return _secureAdminHelper;
         }
     }
 }
