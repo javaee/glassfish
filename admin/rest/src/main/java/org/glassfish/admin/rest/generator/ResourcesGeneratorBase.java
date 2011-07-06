@@ -110,7 +110,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
                 ConfigModel childModel = node.getModel();
                 List<ConfigModel> subChildConfigModels = ResourceUtil.getRealChildConfigModels(childModel, domDocument);
                 for (ConfigModel subChildConfigModel : subChildConfigModels) {
-                    if (ResourceUtil.isOnlyATag(subChildConfigModel)) {
+                    if (ResourceUtil.isOnlyATag(subChildConfigModel) || subChildConfigModel.getAttributeNames().isEmpty()) {
                         String childResourceClassName = getClassName(ResourceUtil.getUnqualifiedTypeName(subChildConfigModel.targetTypeName));
                         String childPath = subChildConfigModel.getTagName();
                         classWriter.createGetChildResource(childPath, childResourceClassName);
