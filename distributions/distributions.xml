@@ -116,13 +116,25 @@
     <antcall target="pack-compression">
         <param name="image.directory" value="${installer.image.dir.l10n}"/>
     </antcall>
-    <!-- backup cfg_cache file, replace repo.url value, zip, restore -->
+    <!-- backup cfg_cache file, replace repo.url value, remove uuid and variant.arch, zip, restore -->
     <copy file="${installer.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache"
 	    tofile="${basedir}/cfg_cache.bak" />
     <replace file="${installer.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache">
 	    <replacefilter token="${repo.url}"
 		    value="${stable.repository.url}"/>
     </replace>	
+    <copy file="${installer.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache"
+	    tofile="${installer.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache.grep.tmp" />
+    <exec dir="${installer.image.dir}/${install.dir.name}/.org.opensolaris,pkg" executable="/bin/sh">
+        <arg line="-c &quot;grep -v '^uuid =' cfg_cache.grep.tmp &gt; cfg_cache&quot;"/>
+    </exec>
+    <copy file="${installer.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache"
+	  tofile="${installer.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache.grep.tmp"
+          overwrite="true"/>
+    <exec dir="${installer.image.dir}/${install.dir.name}/.org.opensolaris,pkg" executable="/bin/sh">
+        <arg line="-c &quot;grep -v 'variant.arch' cfg_cache.grep.tmp &gt; cfg_cache&quot;"/>
+    </exec>
+    <delete file="${installer.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache.grep.tmp" />
     <exec dir="${installer.image.dir}/${install.dir.name}" executable="zip">
         <arg line= "-r ../../../../target/${image.name}-ips-installer.zip ."/>
     </exec>
@@ -136,6 +148,18 @@
 	    <replacefilter token="${repo.url}"
 		    value="${stable.repository.url}"/>
     </replace>	
+    <copy file="${installer.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache"
+	    tofile="${installer.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache.grep.tmp" />
+    <exec dir="${installer.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg" executable="/bin/sh">
+        <arg line="-c &quot;grep -v '^uuid =' cfg_cache.grep.tmp &gt; cfg_cache&quot;"/>
+    </exec>
+    <copy file="${installer.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache"
+	  tofile="${installer.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache.grep.tmp"
+          overwrite="true"/>
+    <exec dir="${installer.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg" executable="/bin/sh">
+        <arg line="-c &quot;grep -v 'variant.arch' cfg_cache.grep.tmp &gt; cfg_cache&quot;"/>
+    </exec>
+    <delete file="${installer.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache.grep.tmp" />
     <exec dir="${installer.image.dir.l10n}/${install.dir.name}" executable="zip">
         <arg line= "-r ../../../../target/${image.name}-ips-ml-installer.zip ."/>
     </exec>
@@ -154,13 +178,25 @@
         <fileset dir="${glassfish.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/download" includes="**/*"/>
         <fileset dir="${glassfish.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/pkg" includes="**/license.*"/>
     </delete>
-    <!-- backup cfg_cache file, replace repo.url value, zip, restore -->
+    <!-- backup cfg_cache file, replace repo.url value, remove uuid and variant.arch, zip, restore -->
     <copy file="${glassfish.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache"
 	    tofile="${basedir}/cfg_cache.bak" />
     <replace file="${glassfish.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache">
 	    <replacefilter token="${repo.url}"
 		    value="${stable.repository.url}"/>
     </replace>	
+    <copy file="${glassfish.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache"
+	    tofile="${glassfish.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache.grep.tmp" />
+    <exec dir="${glassfish.image.dir}/${install.dir.name}/.org.opensolaris,pkg" executable="/bin/sh">
+        <arg line="-c &quot;grep -v '^uuid =' cfg_cache.grep.tmp &gt; cfg_cache&quot;"/>
+    </exec>
+    <copy file="${glassfish.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache"
+	  tofile="${glassfish.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache.grep.tmp"
+          overwrite="true"/>
+    <exec dir="${glassfish.image.dir}/${install.dir.name}/.org.opensolaris,pkg" executable="/bin/sh">
+        <arg line="-c &quot;grep -v 'variant.arch' cfg_cache.grep.tmp &gt; cfg_cache&quot;"/>
+    </exec>
+    <delete file="${glassfish.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache.grep.tmp" />
     <exec dir="${glassfish.image.dir}" executable="zip">
         <arg line= "-r ../../../target/${image.name}-ips.zip ${install.dir.name}"/>
     </exec>
@@ -174,6 +210,18 @@
 	    <replacefilter token="${repo.url}"
 		    value="${stable.repository.url}"/>
     </replace>	
+    <copy file="${glassfish.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache"
+	    tofile="${glassfish.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache.grep.tmp" />
+    <exec dir="${glassfish.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg" executable="/bin/sh">
+        <arg line="-c &quot;grep -v '^uuid =' cfg_cache.grep.tmp &gt; cfg_cache&quot;"/>
+    </exec>
+    <copy file="${glassfish.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache"
+	  tofile="${glassfish.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache.grep.tmp"
+          overwrite="true"/>
+    <exec dir="${glassfish.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg" executable="/bin/sh">
+        <arg line="-c &quot;grep -v 'variant.arch' cfg_cache.grep.tmp &gt; cfg_cache&quot;"/>
+    </exec>
+    <delete file="${glassfish.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache.grep.tmp" />
     <exec dir="${glassfish.image.dir.l10n}" executable="zip">
         <arg line= "-r ../../../target/${image.name}-ips-ml.zip ${install.dir.name}"/>
     </exec>
