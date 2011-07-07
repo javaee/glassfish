@@ -108,7 +108,7 @@ import javax.transaction.Status;
 public class EJBTimerService 
         /**implements com.sun.ejb.spi.distributed.DistributedEJBTimerService **/ {
 
-    private static EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
+    private EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
 
     private long nextTimerIdMillis_ = 0;
     private long nextTimerIdCounter_ = 0;
