@@ -56,15 +56,6 @@
 
     <developers>
         <developer>
-            <id>rajeshwar</id>
-            <name>Rajeshwar Patil</name>
-            <url>http://blogs.sun.com/aquatic</url>
-            <organization>Oracle, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
             <id>snjezana</id>
             <name>Snjezana Sevo-Zenzerovic</name>
             <url>http://blogs.sun.com/snjezana</url>

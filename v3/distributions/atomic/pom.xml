@@ -49,7 +49,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>atomic</artifactId>
-    <name>Glassfish v3 Atomic Distribution</name>
+    <name>Glassfish Atomic Distribution</name>
     <packaging>distribution-base-zip</packaging>
     <description>This pom describes how to assemble the GlassFish Atomic (single server) Distribution</description>
 

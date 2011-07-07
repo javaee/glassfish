@@ -45,7 +45,7 @@
     <import file="../distributions.xml"/>
     <property name="source.distribution.name" value="GlassFish Open Source Edition 3.2 Nucleus"/>
     <target name="create.distribution">
-        <echo message="Creating distribution: core"/>
+        <echo message="Creating distribution: nucleus"/>
         <unzip dest="target/stage">
             <fileset dir="target/stage">
                 <include name="*.zip"/>

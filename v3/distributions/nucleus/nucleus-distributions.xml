@@ -41,8 +41,8 @@
 
 -->
 
-<project name="Core Distribution (ips) Creation" default="create-image" basedir=".">
-<property name="source.distribution.name" value="GlassFish Open Source Edition 3.2 Core"/>
+<project name="Nucleus Distribution (ips) Creation" default="create-image" basedir=".">
+<property name="source.distribution.name" value="GlassFish Open Source Edition 3.2 Nucleus"/>
 <target name="create-image" depends="create-installer-image, create-glassfish-image">
     <mkdir dir="${installer.image.dir}"/>
     <mkdir dir="${installer.image.dir}/${install.dir.name}"/>
@@ -123,7 +123,7 @@
 		token="%%%SOURCE%%%" value="${source.distribution.name}"/>
 
         <!-- stage appropriate legal content for this distribution -
-          it is OK to inherit nucleus content at this point     -->
+          it is OK to inherit atomic content at this point     -->
 
 </target>
 
