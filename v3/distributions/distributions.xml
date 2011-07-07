@@ -87,7 +87,7 @@
     </antcall>
 </target>
 
-<target name="create-web-distributions" depends="create-core-distributions"> 
+<target name="create-web-distributions" depends="create-nucleus-distributions"> 
     <ant antfile="../web/web-distributions.xml"/>
     <mkdir dir="${image.root}"/>
     <mkdir dir="${installer.image.dir}"/>
