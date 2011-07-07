@@ -49,7 +49,7 @@ import java.util.Arrays;
  * Dev tests for SSH public key access setup command i.e setup-ssh
  * @author Yamini K B
  */
-public class SetupSshTest extends AdminBaseDevTest {
+public class SetupSshTest extends SshBaseDevTest {
     private final String host;
     private final File glassFishHome;
     private static final String NON_INTERACTIVE = " --interactive=false";
@@ -57,22 +57,12 @@ public class SetupSshTest extends AdminBaseDevTest {
     private static final String SSH_DIRECTORY = System.getProperty("user.home")
                                 + File.separator + ".ssh" + File.separator;
     
-    private static final String SSH_HOST_PROP = "ssh.host";
-    private static final String SSH_USER_PROP = "ssh.user";
-    private static final String SSH_PASSWORD = "ssh.password";
-    private static final String SSH_CONFIGURE = "ssh.configure";
-    
     private static final String backup = System.getProperty("user.home")
                                 + File.separator + ".ssh.bak";
-    private static final String pFile = System.getenv("APS_HOME") + File.separator + "config"
-                            + File.separator + "adminpassword.txt";
-    private static final String tmpFile = System.getenv("APS_HOME") + File.separator + "config"
-                            + File.separator + "adminpassword.tmp";
 
     private static final String SSH_KEY = "resources/ssh/id_dsa";
     private static final String SSH_KEY_PASSPHRASE = "Hello World!";
     
-    private static enum PasswordType { SSH_PASS, KEY_PASS };
     private static enum PasswordValue { EMPTY, RIGHT, WRONG };
     
     private String remoteHost = null;
@@ -113,9 +103,9 @@ public class SetupSshTest extends AdminBaseDevTest {
 
         boolean failed = false;
         remoteHost = System.getProperty(SSH_HOST_PROP);
-        sshPass = System.getProperty(SSH_PASSWORD);
+        sshPass = System.getProperty(SSH_PASSWORD_PROP);
         sshUser = System.getProperty(SSH_USER_PROP);
-        sshConfigure = System.getProperty(SSH_CONFIGURE);
+        sshConfigure = System.getProperty(SSH_CONFIGURE_PROP);
 
         if (remoteHost == null || remoteHost.length() == 0) {
             System.out.printf("%s requires you set the %s property\n",
@@ -128,11 +118,11 @@ public class SetupSshTest extends AdminBaseDevTest {
 
         if (sshPass == null || sshPass.length() == 0) {
             System.out.printf("%s requires you set the %s property\n",
-                this.getClass().getName(), SSH_PASSWORD);
+                this.getClass().getName(), SSH_PASSWORD_PROP);
             report("setup-ssh-*", false);
             return;
         } else {
-            System.out.printf("%s=%s\n", SSH_PASSWORD, "<concealed>");
+            System.out.printf("%s=%s\n", SSH_PASSWORD_PROP, "<concealed>");
         }
 
         if (sshUser == null || sshUser.length() == 0) {
@@ -141,7 +131,7 @@ public class SetupSshTest extends AdminBaseDevTest {
             System.out.printf("%s=%s\n", SSH_USER_PROP, sshUser);
         }
 
-        System.out.printf("%s=%s\n", SSH_CONFIGURE, sshConfigure);
+        System.out.printf("%s=%s\n", SSH_CONFIGURE_PROP, sshConfigure);
         System.out.println("Password file = " +  pFile);
         
         addPassword(PasswordValue.RIGHT, PasswordType.SSH_PASS);
@@ -276,99 +266,25 @@ public class SetupSshTest extends AdminBaseDevTest {
     }
 
     private void addPassword(PasswordValue pass, PasswordType passType) {
-        BufferedWriter out = null;
-        try {
-            final File f = new File(pFile);
-            out = new BufferedWriter(new FileWriter(f, true));
-            out.newLine();
-            switch (pass) {
-                case EMPTY: {
-                    if (passType.equals(PasswordType.SSH_PASS))
-                        out.write("AS_ADMIN_SSHPASSWORD=");
-                    else if (passType.equals(PasswordType.KEY_PASS))
-                        out.write("AS_ADMIN_SSHKEYPASSPHRASE=");
-                    break;
-                }
-                case RIGHT: {
-                    if (passType.equals(PasswordType.SSH_PASS))
-                        out.write("AS_ADMIN_SSHPASSWORD=" + sshPass);
-                    else if (passType.equals(PasswordType.KEY_PASS))
-                        out.write("AS_ADMIN_SSHKEYPASSPHRASE=" + SSH_KEY_PASSPHRASE);
-                    break;
-                }
-                case WRONG: {
-                    if (passType.equals(PasswordType.SSH_PASS))
-                        out.write("AS_ADMIN_SSHPASSWORD=xxx");
-                    else if (passType.equals(PasswordType.KEY_PASS))
-                        out.write("AS_ADMIN_SSHKEYPASSPHRASE=xxx");
-                    break;
-                }
-                default:
-                    //do nothing
-            }
-        } catch (IOException ioe) {
-            //ignore
+        switch (pass) {
+            case EMPTY:
+                addPassword("", passType);
+                break;
+            case RIGHT:
+                if (passType.equals(PasswordType.SSH_PASS))
+                    addPassword(sshPass, passType);
+                else if (passType.equals(PasswordType.KEY_PASS))
+                    addPassword(SSH_KEY_PASSPHRASE, passType);
+                break;
+            case WRONG:
+                addPassword("xxx", passType);
+                break;
+            default:
+                //do nothing
         }
-        finally {
-            try {
-                if (out != null) {
-                    out.flush();
-                    out.close();
-                }
-            } catch(final Exception ignore){}
-        }
-
         return;
     }
 
-    private void removePasswords() {
-        final File f = new File(pFile);        
-        final File tempFile = new File(tmpFile);
-
-        BufferedReader reader = null;
-        BufferedWriter writer = null;
-
-        try {
-            writer=new BufferedWriter(new FileWriter(tempFile));
-            reader = new BufferedReader(new FileReader(f));
-            
-            String currentLine;
-
-            while((currentLine = reader.readLine()) != null && !currentLine.trim().isEmpty()) {
-                if(currentLine.trim().startsWith("AS_ADMIN_SSH"))
-                    continue;
-                writer.write(currentLine);
-                writer.newLine();
-            }
-                
-            reader.close();
-            writer.close();
-            
-            //On Windows, rename will fail if destination file already exists
-            if(!f.delete()) {
-                System.out.println("Failed to delete original file");
-            }
-            
-            if(!tempFile.renameTo(f)) {
-                System.out.println("Failed to restore password file.");
-            }            
-        } catch (IOException ioe) {
-            //ignore
-        }
-        finally {
-            try {
-                if (reader != null) {
-                    reader.close();
-                }
-                if (writer != null) {
-                    writer.close();
-                }
-            } catch(final Exception ignore){}
-        }
-
-        return;
-    }
-    
     private void updateCommonOptions() {
         String s = antProp("as.props");
 

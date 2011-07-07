@@ -41,64 +41,92 @@
 package admin;
 
 import java.net.InetAddress;
-import java.io.File;
 import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.Arrays;
+
 
 /**
  * This class adds devtests for creating an SSH node for a remote
  * system, and then using that node for basic instance and cluster
  * lifecycle management.
  * 
- * In order to run this test you must:
+ * You can run this test two ways:
  * 
- * Install glassfish on a remote system.
+ * A. Remote system already has glassfish installed and SSH key is already set up
  * 
- * Pass "-Dssh.host=<hostname> -Dssh.installdir=<installdir>" to the test
- * 
- * Where <hostname> is the remote host you have glassfish installed on and
- * installdir is the full path the that glassfish installation.
- * 
- * You must be able to access the remote system via SSH as the user you are
+ * In this case you already have glassfish installed on the remote system, 
+ * and you are able to access the remote system via SSH as the user you are
  * running this test as, and do so via key authentication. In other words
- * running "ssh hostname" must work without it prompting you for anything.
+ * running "ssh hostname" works without it prompting you for anything.
+ * 
+ * In this case run the test like this:
+ * #
+ * ant -Dteststorun=sshnode -Dssh.host=adc2101159.us.oracle.com
+ *    "-Dssh.installdir=/export/glassfish3" all
+ * 
+ * If you want to use a different user for SSH login you can set ssh.user:
+ *     -Dssh.user=hudson
+ * 
+ * If you want to use an alternate node-dir you can set ssh.nodedir:
+ *     -Dssh.nodedir=/var/tmp/nodes
+ * 
+ * B. Remote system does not have glassfish installed and you want the test
+ *    to set up key authentication for you.
+ * 
+ * In this case you want the test to install glassfish on the remote system
+ * and set up SSH key authentication. Run it like this:
+ * 
+ * ant -Dteststorun=sshnode -Dssh.host=adc2101159.us.oracle.com
+ *      -Dssh.doinstall=true all
+ * 
+ * If you want to use a different ssh user do:
+ * 
+ * ant -Dteststorun=sshnode -Dssh.host=adc2101159.us.oracle.com
+ *      -Dssh.doinstall=true -Dssh.user=hudson -Dssh.password=hudson all
+ * 
+ * If you want to control the directory that the test installs GF into use
+ * the ssh.installPrefix property (which will be used as the parent of
+ * installation directory):
+ * 
+ * ant -Dteststorun=sshnode -Dssh.host=adc2101159.us.oracle.com
+ *      -Dssh.doinstall=true -Dssh.user=hudson -Dssh.password=hudson
+ *      -Dssh.installprefix=/export/home/hudson/devtest all
+ * 
  *
  * @author Joe Di Pol
  */
-public class SSHNodeTest extends AdminBaseDevTest {
+public class SSHNodeTest extends SshBaseDevTest {
 
     private static final String NL = System.getProperty("line.separator");
     private static final String LOCALHOST = "localhost";
     private static final String LOCALHOST_NODE = "localhost-domain1";
-    private static final String SSH_HOST_PROP = "ssh.host";
-    private static final String SSH_INSTALLDIR_PROP = "ssh.installdir";
 
     private String thisHost = null;
     private String remoteHost = null;
     private String remoteInstallDir = null;
+    private String remoteInstallPrefix = null;
+    private String remoteNodeDir = null;
     private String thisUser = null;
-    private String glassfishHome = null;
+    private String sshUser = null;
+    private String sshPassword = null;
+    private Boolean sshDoInstall = null;
 
     SSHNodeTest () {
 
         try {
             thisHost = InetAddress.getLocalHost().getHostName();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             thisHost = "localhost";
         }
 
-        try {
-            glassfishHome = getGlassFishHome().getCanonicalPath();
-        } catch (IOException e) {
-            glassfishHome = getGlassFishHome().getAbsolutePath();
-        }
-
         thisUser = System.getProperty("user.name");
+        remoteHost       = getExpandedSystemProperty(SSH_HOST_PROP);
+        remoteInstallDir = getExpandedSystemProperty(SSH_INSTALLDIR_PROP);
+        remoteInstallPrefix = getExpandedSystemProperty(SSH_INSTALLPREFIX_PROP);
+        remoteNodeDir = getExpandedSystemProperty(SSH_NODEDIR_PROP);
+        sshUser = getExpandedSystemProperty(SSH_USER_PROP);
+        sshPassword = getExpandedSystemProperty(SSH_PASSWORD_PROP);
+        sshDoInstall = Boolean.valueOf(getExpandedSystemProperty(SSH_DOINSTALL_PROP));
     }
 
 
@@ -114,23 +142,40 @@ public class SSHNodeTest extends AdminBaseDevTest {
     private void runTests() {
 
         boolean runTest = true;
-        remoteHost       = System.getProperty(SSH_HOST_PROP);
-        remoteInstallDir = System.getProperty(SSH_INSTALLDIR_PROP);
 
-        if (remoteHost == null || remoteHost.length() == 0) {
+        if (!ok(remoteHost)) {
             System.out.printf("%s requires you set the %s property\n",
                 this.getClass().getName(), SSH_HOST_PROP);
+            remoteHost = null;
             runTest = false;
-        } else {
-            System.out.printf("%s=%s\n", SSH_HOST_PROP, remoteHost);
         }
 
-        if (remoteInstallDir == null || remoteInstallDir.length() == 0) {
-            System.out.printf("%s requires you set the %s property\n",
-                this.getClass().getName() , SSH_INSTALLDIR_PROP);
-            runTest = false;
+        if (!ok(remoteInstallDir)) {
+            if (sshDoInstall) {
+                remoteInstallDir = generateInstallPath(remoteInstallPrefix);
+            } else {
+                System.out.printf(
+                    "%s: You must either set the %s property to point to\n" +
+                    "an existing GF installation or set the %s property to true\n" +
+                    "to have this test install GF for you",
+                    this.getClass().getName() , SSH_INSTALLDIR_PROP,
+                    SSH_DOINSTALL_PROP);
+                runTest = false;
+            }
         } else {
-            System.out.printf("%s=%s\n", SSH_INSTALLDIR_PROP, remoteInstallDir);
+            if (ok(remoteInstallPrefix)) {
+                System.out.printf(
+                    "%s is set (%s). Ignoring %s\n",
+                    SSH_INSTALLDIR_PROP, remoteInstallDir, SSH_INSTALLPREFIX_PROP);
+            }
+        }
+
+        if (!ok(sshUser)) {
+            sshUser = thisUser;
+        }
+
+        if (!ok(sshPassword)) {
+            sshPassword = null;
         }
 
         if (! runTest) {
@@ -140,8 +185,26 @@ public class SSHNodeTest extends AdminBaseDevTest {
             return;
         }
 
+        System.out.printf("Configuration:\n");
+        System.out.printf("%s=%s\n", SSH_HOST_PROP, remoteHost);
+        System.out.printf("%s=%s\n", SSH_INSTALLDIR_PROP, remoteInstallDir);
+        System.out.printf("%s=%s\n", SSH_INSTALLPREFIX_PROP, remoteInstallPrefix);
+        System.out.printf("%s=%s\n", SSH_NODEDIR_PROP,
+                (ok(remoteNodeDir) ? remoteNodeDir : "<default>"));
+        System.out.printf("%s=%s\n", SSH_USER_PROP,
+                (ok(sshUser) ? sshUser : "<default>" ));
+        System.out.printf("%s=%s\n", SSH_PASSWORD_PROP,
+                (ok(sshPassword) ? "<concealed>" : "<none>" ));
+        System.out.printf("%s=%s\n", SSH_DOINSTALL_PROP, sshDoInstall);
+
         startDomain();
+        if (sshDoInstall) {
+            doInstall();
+        }
         testBasicSSHCluster();
+        if (sshDoInstall) {
+            doUnInstall();
+        }
         stopDomain();
         stat.printSummary();
     }
@@ -149,18 +212,49 @@ public class SSHNodeTest extends AdminBaseDevTest {
     private void testBasicSSHCluster() {
         final String CNAME = "ssh_c1";
         final String NNAME = "ssh_node1";
+        final String NNAME2 = "ssh_node2_with_nodedir";
         final String INAME1 = "ssh_remote_i1";
         final String INAME2 = "ssh_local_i2";
+        final String INAME3 = "ssh_remote_i3";
 
-        // Do a basic cluster test. Create a cluster with two
-        // local instances: one local, one remote. Start the cluster, stop it,
+        System.out.printf("Creating cluster, nodes, and instances\n");
+
+        // Do a basic cluster test. Create a cluster with three
+        // instances: one local, two remote. Start the cluster, stop it,
         // then remove everything.
         report("ssh-node-create-cluster", asadmin("create-cluster", CNAME));
 
-        report("ssh-node-create-node-ssh", asadmin("create-node-ssh",
-                "--nodehost", remoteHost,
-                "--installdir", remoteInstallDir,
-                NNAME));
+        ArrayList<String> args = new ArrayList<String>();
+        args.add("create-node-ssh");
+        args.add("--nodehost");
+        args.add(remoteHost);
+        args.add("--installdir");
+        args.add(remoteInstallDir);
+        if (ok(sshUser)) {
+            args.add("--sshuser");
+            args.add(sshUser);
+        }
+        args.add(NNAME);
+        String[] argsArray = new String[args.size()];
+        report("ssh-node-create-node-ssh", asadmin(args.toArray(argsArray)));
+
+        report("ssh-node-ping-node", asadmin("ping-node-ssh",
+                        "--validate",
+                        NNAME));
+
+        // Create a second node, but this time with a nodedir
+        args.remove(NNAME);
+        args.add("--nodedir");
+
+        // If user provided a node dir use it, else use a default
+        if (ok(remoteNodeDir)) {
+            args.add(remoteNodeDir);
+        } else {
+            args.add("mynodes");
+        }
+        args.add(NNAME2);
+        argsArray = new String[args.size()];
+        report("ssh-node-create-node-ssh", asadmin(args.toArray(argsArray)));
 
         report("ssh-node-create-instance1", asadmin("create-instance",
                         "--node", NNAME,
@@ -172,6 +266,11 @@ public class SSHNodeTest extends AdminBaseDevTest {
                         "--cluster", CNAME,
                         INAME2));
 
+        report("ssh-node-create-instance3", asadmin("create-instance",
+                        "--node", NNAME2,
+                        "--cluster", CNAME,
+                        INAME3));
+
         System.out.printf("Starting cluster %s\n", CNAME);
         report("ssh-node-start-cluster1", asadmin("start-cluster", CNAME));
 
@@ -181,6 +280,7 @@ public class SSHNodeTest extends AdminBaseDevTest {
 
         report("ssh-node-check-instance1", isInstanceRunning(INAME1));
         report("ssh-node-check-instance2", isInstanceRunning(INAME2));
+        report("ssh-node-check-instance3", isInstanceRunning(INAME3));
         report("ssh-node-check-cluster1", isClusterRunning(CNAME));
 
         report("ssh-node-stop-cluster1", asadmin("stop-cluster", CNAME));
@@ -197,12 +297,61 @@ public class SSHNodeTest extends AdminBaseDevTest {
 
         report("ssh-node-check-stopped-instance1", ! isInstanceRunning(INAME1));
         report("ssh-node-check-stopped-instance2", ! isInstanceRunning(INAME2));
+        report("ssh-node-check-stopped-instance3", ! isInstanceRunning(INAME3));
         report("ssh-node-check-stopped-cluster1", ! isClusterRunning(CNAME));
 
+        System.out.printf("Deleting instances, cluster, and nodes\n");
         report("ssh-node-delete-instance1", asadmin("delete-instance", INAME1));
         report("ssh-node-delete-instance2", asadmin("delete-instance", INAME2));
+        report("ssh-node-delete-instance3", asadmin("delete-instance", INAME3));
         report("ssh-node-delete-cluster1", asadmin("delete-cluster", CNAME));
         report("ssh-node-delete-node-ssh", asadmin("delete-node-ssh",
                 NNAME));
+        report("ssh-node-delete-node-ssh2", asadmin("delete-node-ssh",
+                NNAME2));
+    }
+
+    private void doInstall() {
+        System.out.printf("Setting up key access for %s@%s\n", sshUser, remoteHost);
+
+        if (ok(sshPassword)) {
+            addPassword(sshPassword, PasswordType.SSH_PASS);
+        }
+        report("ssh-node-setupssh", asadmin("setup-ssh",
+                        "--sshuser", sshUser,
+                        remoteHost));
+        System.out.printf("Installing GlassFish onto %s:%s\n",
+                remoteHost, remoteInstallDir);
+        report("ssh-node-installnode", asadmin("install-node",
+                        "--installdir", remoteInstallDir,
+                        "--sshuser", sshUser,
+                        remoteHost));
+        return;
+    }
+
+    private void doUnInstall() {
+        System.out.printf("Uninstalling GlassFish from %s:%s\n",
+                remoteHost, remoteInstallDir);
+        report("ssh-node-uninstallnode", asadmin("uninstall-node",
+                        "--installdir", remoteInstallDir,
+                        "--sshuser", sshUser,
+                        "--force",
+                        remoteHost));
+        System.out.printf("You may need to manually remove traces of GlassFish from %s:%s\n",
+                remoteHost, remoteInstallDir);
+        return;
+    }
+
+    /**
+     * Generate a unique path to use as a remote install location
+     * @param prefix
+     * @return 
+     */
+    public String generateInstallPath(String prefix) {
+        if (!ok(prefix)) {
+            prefix = "/var/tmp/devTests-" + thisHost;
+        }
+        String randomSuffix = Long.toHexString(Double.doubleToLongBits(Math.random()));
+        return prefix + "/" + "glassfish3-" + randomSuffix;
     }
 }

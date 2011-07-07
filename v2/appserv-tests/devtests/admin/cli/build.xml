@@ -66,8 +66,11 @@
     <property name="ssh.host"       value="chandu.us.oracle.com"/>
     <property name="ssh.user"       value="hudson"/>
     <property name="ssh.password"   value="hudson"/>
-    <property name="ssh.installdir" value="/export/home/hudson/glassfish3"/>
+    <!-- Used by setup-ssh test -->
     <property name="ssh.configure"  value="true"/>
+    <!-- Used by sshnode test -->
+    <property name="ssh.installprefix" value="/export/home/hudson/devtest-${user.name}"/>
+    <property name="ssh.doinstall"  value="true"/>
 
     <!-- convert these paths to canonical form -->
     <pathconvert property="aps_home">
@@ -173,6 +176,11 @@
         <runtest classname="admin.SSHNodeTest">
             <jvmarg value="-Dssh.host=${ssh.host}"/>
             <jvmarg value="-Dssh.installdir=${ssh.installdir}"/>
+            <jvmarg value="-Dssh.installprefix=${ssh.installprefix}"/>
+            <jvmarg value="-Dssh.nodedir=${ssh.nodedir}"/>
+            <jvmarg value="-Dssh.user=${ssh.user}"/>
+            <jvmarg value="-Dssh.password=${ssh.password}"/>
+            <jvmarg value="-Dssh.doinstall=${ssh.doinstall}"/>
         </runtest>
     </target>
 
