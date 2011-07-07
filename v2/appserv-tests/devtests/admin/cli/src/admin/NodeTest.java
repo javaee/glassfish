@@ -256,11 +256,12 @@ public class NodeTest extends AdminBaseDevTest {
      */
     private void testCreateOfflineConfig() {
         final String testNamePrefixCreate = "createOfflineConfig-";
+        final String testNamePrefixCreateInstance = "createInstanceOfflineConfig-";
         final String testNamePrefixDelete = "deleteOfflineConfig-";
         final String testNamePrefixValidate = "validateOfflineConfig-";
         final String testNamePrefixValidateDelete = "validateDeleteOfflineConfig-";
         final String nodeNamePrefix = "n_config_";
-	final String instanceName = "ins1";
+	final String instanceName = "offline-config-ins";
 
         String nodeName = String.format("%s%d", nodeNamePrefix, 0);
 
@@ -273,23 +274,23 @@ public class NodeTest extends AdminBaseDevTest {
         report(testName, asadmin("get", propPrefix + nodeName + "." + "name"));
 
 	// Update the node hostname using create-local-instance
-	testName = testNamePrefixCreate + "1";
+	testName = testNamePrefixCreateInstance + "0";
 	report(testName, asadmin("create-local-instance", "--node", nodeName, instanceName));
 
 	// Make sure hostname is filled in
-	testName = testNamePrefixCreate + "2";
+	testName = testNamePrefixValidate + "1";
 	report (testName, asadmin("get", propPrefix+nodeName+"."+"node-host"));
 
 	// Make sure installdir is filled in
-	testName = testNamePrefixCreate + "3";
+	testName = testNamePrefixValidate + "2";
 	report (testName, asadmin("get", propPrefix+nodeName+"."+"install-dir"));
 
 	// Delete the instance 
-	testName = testNamePrefixCreate + "4";
-	report (testName, asadmin("delete-local-instance", instanceName));
+	testName = testNamePrefixDelete + "0";
+	report (testName, asadmin("delete-local-instance", "--node", nodeName, instanceName));
 
         // Delete it
-        testName = testNamePrefixDelete + "0";
+        testName = testNamePrefixDelete + "1";
         report(testName, asadmin("delete-node-config", nodeName));
 
         // Make sure it is gone by trying to get its name
