@@ -576,8 +576,10 @@ class RegisteredResources {
                         throw (HeuristicHazard) exc;
                     } else if (internal) {
                         throw (INTERNAL) exc;
-                    } else {
+                    } else if (exc instanceof HeuristicMixed) {
                         throw (HeuristicMixed) exc;
+                    } else {
+                         throw new HeuristicMixed();
                     }
                 } else if (exc instanceof RuntimeException) {
                         rmErr = true;
