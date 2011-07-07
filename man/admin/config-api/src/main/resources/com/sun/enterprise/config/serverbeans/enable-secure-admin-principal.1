@@ -9,7 +9,7 @@ NAME
 SYNOPSIS
      enable-secure-admin-principal
      [--help]
-     { --alias aliasname | DN }
+      --alias aliasname | DN
 
 DESCRIPTION
      The   enable-secure-admin-principal   subcommand   instructs
@@ -21,7 +21,7 @@ DESCRIPTION
      certificate.  Otherwise, GlassFish Server records the  value
      you specify as the DN.
 
-     You must specifying either the --alias option, or the DN.
+     You must specify either the --alias option, or the DN.
 
      You can run enable-secure-admin-principal multiple times  so
      that  GlassFish  Server accepts admin requests from a client
@@ -32,11 +32,11 @@ DESCRIPTION
      alias, whether you specify those values or use the defaults.
      You  do  not need to run enable-secure-admin-principal your-
      self for those certificates.  Other than these certificates,
-     though,  you  must run enable-secure-admin-principal for any
-     other DN that GlassFish  Server  should  authorize  to  send
-     admin  requests.  This includes DNs corresponding to trusted
-     certificates (those with a certificate chain  to  a  trusted
-     authority).
+     you  must run enable-secure-admin-principal for any other DN
+     that  GlassFish  Server  should  authorize  to  send   admin
+     requests.  This includes DNs corresponding to trusted certi-
+     ficates (those with a certificate chain to a trusted author-
+     ity.)
 
 OPTIONS
      --help

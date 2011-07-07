@@ -8,14 +8,14 @@ NAME
 SYNOPSIS
      disable-secure-admin-principal
      [--help]
-     { --alias aliasname | DN }
+      --alias aliasname | DN
 
 DESCRIPTION
      The disable-secure-admin-principal subcommand  disables  the
      certificate as being valid for authorizing access as part of
      secure administration.
 
-     You must specifying either the --alias option, or the DN.
+     You must specify either the --alias option, or the DN.
 
 OPTIONS
      --help
@@ -24,12 +24,12 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --alias
-         The alias name of the certificate in  the  trust  store.
-         GlassFish  Server  looks up the certificate in the trust
+         The alias name of the  certificate  in  the  truststore.
+         GlassFish  Server looks up the certificate in the trust-
          store using that  alias  and,  if  found,  disables  the
          corresponding  DN  as being valid for secure administra-
          tion. Because alias-name must  be  an  alias  associated
-         with a certificate currently in the trust store, you may
+         with  a certificate currently in the truststore, you may
          find it most useful for self-signed certificates.
 
 OPERANDS
