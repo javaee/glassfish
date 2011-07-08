@@ -107,7 +107,7 @@ public interface SystemPropertyBag extends ConfigBeanProxy {
             return null;
         }
 
-        public static String getPropertyValue(final SystemPropertyBag me, final String name) {
+        public static String getSystemPropertyValue(final SystemPropertyBag me, final String name) {
             return getSystemPropertyValue(me,name,null);
         }
 
