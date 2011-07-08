@@ -415,7 +415,10 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
     private String getAcceptedMimeType(Request req) {
         String type = null;
         String requestURI = req.getRequestURI();
-        Set<String> acceptableTypes = new HashSet<String>() {{ add("html"); add("xml"); add("json"); }};
+        Set<String> acceptableTypes = new HashSet<String>(3);
+        acceptableTypes.add("html");
+        acceptableTypes.add("xml");
+        acceptableTypes.add("json");
 
         // first we look at the command extension (ie list-applications.[json | html | mf]
         if (requestURI.indexOf('.')!=-1) {

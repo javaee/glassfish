@@ -118,7 +118,7 @@ public class ContainerMapper extends StaticHttpHandler {
      *
      * @param defaultHost
      */
-    protected void setDefaultHost(String defaultHost) {
+    protected synchronized void setDefaultHost(String defaultHost) {
         defaultHostName = defaultHost;
     }
 

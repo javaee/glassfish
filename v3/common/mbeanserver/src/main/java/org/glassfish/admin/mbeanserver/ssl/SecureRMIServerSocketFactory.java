@@ -44,6 +44,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import javax.net.ssl.SSLContext;
@@ -88,17 +89,45 @@ public class SecureRMIServerSocketFactory
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof SecureRMIServerSocketFactory) {
-            return (this.hashCode() == obj.hashCode());
-        } else {
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        SecureRMIServerSocketFactory that = (SecureRMIServerSocketFactory) o;
+
+        if (cipherSuitesSync != null ? !cipherSuitesSync.equals(that.cipherSuitesSync) : that.cipherSuitesSync != null)
             return false;
-        }
+        if (!Arrays.equals(enabledCipherSuites, that.enabledCipherSuites))
+            return false;
+        if (!Arrays.equals(enabledProtocols, that.enabledProtocols))
+            return false;
+        if (habitat != null ? !habitat.equals(that.habitat) : that.habitat != null)
+            return false;
+        if (mAddress != null ? !mAddress.equals(that.mAddress) : that.mAddress != null)
+            return false;
+        if (protocolsSync != null ? !protocolsSync.equals(that.protocolsSync) : that.protocolsSync != null)
+            return false;
+        if (socketMap != null ? !socketMap.equals(that.socketMap) : that.socketMap != null)
+            return false;
+        if (ssl != null ? !ssl.equals(that.ssl) : that.ssl != null)
+            return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return ssl.hashCode() + mAddress.hashCode();
+        int result = super.hashCode();
+        result = 31 * result + (mAddress != null ? mAddress.hashCode() : 0);
+        result = 31 * result + (habitat != null ? habitat.hashCode() : 0);
+        result = 31 * result + (ssl != null ? ssl.hashCode() : 0);
+        result = 31 * result + (enabledCipherSuites != null ? Arrays.hashCode(enabledCipherSuites) : 0);
+        result = 31 * result + (enabledProtocols != null ? Arrays.hashCode(enabledProtocols) : 0);
+        result = 31 * result + (cipherSuitesSync != null ? cipherSuitesSync.hashCode() : 0);
+        result = 31 * result + (protocolsSync != null ? protocolsSync.hashCode() : 0);
+        result = 31 * result + (socketMap != null ? socketMap.hashCode() : 0);
+        return result;
     }
 
     @Override
