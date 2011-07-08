@@ -161,7 +161,7 @@
         <findbugs.version>2.3.2</findbugs.version>
         <btrace.version>1.0.5</btrace.version>
         <opendmk.version>1.0-b01-ea</opendmk.version>
-        <v3-docs.version>3.2-b02</v3-docs.version>
+        <v3-docs.version>3.2-b03</v3-docs.version>
         <l10n.version>3.1.1-b06</l10n.version>
         <asm.version>3.1</asm.version>
         <shoal.version>1.5.34</shoal.version>
