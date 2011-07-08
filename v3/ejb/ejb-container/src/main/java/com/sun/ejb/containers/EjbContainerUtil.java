@@ -61,6 +61,7 @@ import javax.transaction.Transaction;
 import javax.transaction.Synchronization;
 import java.util.Timer;
 import java.util.Vector;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
@@ -78,6 +79,8 @@ public interface EjbContainerUtil {
     public String TIMER_SERVICE_UPGRADED = "ejb-timer-service-upgraded";
 
     public String TIMER_RESOURCE_JNDI = "jdbc/__TimerPool";
+    
+    public static final String DEFAULT_THREAD_POOL_NAME = "__ejb-thread-pool";
 
     public long MINIMUM_TIMER_DELIVERY_INTERVAL = 1000;
 
@@ -165,5 +168,7 @@ public interface EjbContainerUtil {
 
     public ProbeProviderFactory getProbeProviderFactory();
 
-   public boolean isDas();
+    public boolean isDas();
+    
+    public ThreadPoolExecutor getThreadPoolExecutor(String poolName);
 }

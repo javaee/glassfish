@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -69,7 +69,13 @@ import org.glassfish.api.admin.config.PropertyDesc;
 
 @Configured
 public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
-
+    public static final int DEFAULT_THREAD_CORE_POOL_SIZE = 16;
+    public static final int DEFAULT_THREAD_MAX_POOL_SIZE = 32;
+    public static final long DEFAULT_THREAD_KEEP_ALIVE_SECONDS = 60;
+    public static final int DEFAULT_THREAD_QUEUE_CAPACITY = Integer.MAX_VALUE;
+    public static final boolean DEFAULT_ALLOW_CORE_THREAD_TIMEOUT = false;
+    public static final boolean DEFAULT_PRESTART_ALL_CORE_THREADS = false;
+ 
     /**
      * Gets the value of the steadyPoolSize property.
      *
@@ -378,7 +384,14 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
     @PropertiesDesc(props = {
         @PropertyDesc(name = "disable-nonportable-jndi-names",
         defaultValue = "false",
-        values = {"true", "false"})
+        values = {"true", "false"}),
+        
+        @PropertyDesc(name = "thread-core-pool-size"),
+        @PropertyDesc(name = "thread-max-pool-size"),
+        @PropertyDesc(name = "thread-keep-alive-seconds"),
+        @PropertyDesc(name = "thread-queue-capacity"),
+        @PropertyDesc(name = "allow-core-thread-timeout"),
+        @PropertyDesc(name = "prestart-all-core-threads")
     })
     @Element
     List<Property> getProperty();

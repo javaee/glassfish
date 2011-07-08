@@ -51,10 +51,10 @@ import com.sun.enterprise.config.serverbeans.EjbTimerService;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
-import com.sun.enterprise.v3.server.ExecutorServiceFactory;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import com.sun.ejb.base.sfsb.util.EJBServerConfigLookup;
+import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.config.ReferenceContainer;
@@ -97,18 +97,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Timer;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.io.File;
+import java.util.Vector;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 
 /**
  * @author Mahesh Kannan
@@ -120,12 +120,7 @@ public class EjbContainerUtilImpl
 
     private Logger _logger = LogDomains.getLogger(EjbContainerUtilImpl.class, LogDomains.EJB_LOGGER);
 
-    // TODO Temporary thread pool for Timer Service. Also used by various
-    // container pools for periodic resize/cleanup tasks.  We should probably use
-    // a common thread pool by default but allow configuration of a timer-service
-    // specific one.  Should also consider using a distinct JDK timer for
-    // timer service than the one used by containers for periodic work.
-    private ExecutorService executorService;
+    private ThreadPoolExecutor defaultThreadPoolExecutor;
     
     @Inject
     private Habitat habitat;
@@ -213,9 +208,8 @@ public class EjbContainerUtilImpl
                     });
         }
 
-        ThreadFactory tf = new EjbTimerThreadFactory();
-        executorService = Executors.newCachedThreadPool(tf);
-
+        defaultThreadPoolExecutor = createThreadPoolExecutor(DEFAULT_THREAD_POOL_NAME);
+        
         if (!isDas()) {
             // On a clustered instance default is true
             _doDBReadBeforeTimeout = true;
@@ -224,9 +218,9 @@ public class EjbContainerUtilImpl
     }
 
     public void preDestroy() {
-        if( executorService != null ) {
-            executorService.shutdown();
-            executorService = null;
+        if( defaultThreadPoolExecutor != null ) {
+            defaultThreadPoolExecutor.shutdown();
+            defaultThreadPoolExecutor = null;
         }
     }
 
@@ -457,14 +451,11 @@ public class EjbContainerUtilImpl
     }
 
     public void addWork(Runnable task) {
-
-        executorService.submit(task);
+        defaultThreadPoolExecutor.submit(task);
     }
 
     public EjbDescriptor ejbIdToDescriptor(long ejbId) {
-
         throw new RuntimeException("Not supported yet");
-
     }
 
     public boolean isEJBLite() {
@@ -473,23 +464,6 @@ public class EjbContainerUtilImpl
 
     public boolean isEmbeddedServer() {
         return processEnv.getProcessType().isEmbedded();
-    }
-
-    private static class EjbTimerThreadFactory
-        implements ThreadFactory {
-
-        private AtomicInteger threadId = new AtomicInteger(0);
-
-        public Thread newThread(Runnable r) {
-            // TODO change this to use common thread pool
-            Thread th = new Thread(r, "Ejb-Timer-Thread-" + threadId.incrementAndGet());
-            th.setDaemon(true);
-
-            // Prevent any app classloader being set as CCL
-            // App classloader is set by task itself
-            th.setContextClassLoader(null);
-            return th;
-        }
     }
 
     // Various pieces of data associated with a tx.  Store directly
@@ -694,6 +668,60 @@ public class EjbContainerUtilImpl
     */
     public boolean isDas() {
         return env.isDas() || env.isEmbedded();
+    }
+
+    private ThreadPoolExecutor createThreadPoolExecutor(String poolName) {
+        ThreadPoolExecutor result = null;
+        String val = ejbContainer.getPropertyValue(RuntimeTagNames.THREAD_CORE_POOL_SIZE);
+        int corePoolSize = val != null ? Integer.parseInt(val.trim())
+                : EjbContainer.DEFAULT_THREAD_CORE_POOL_SIZE;
+
+        val = ejbContainer.getPropertyValue(RuntimeTagNames.THREAD_MAX_POOL_SIZE);
+        int maxPoolSize = val != null ? Integer.parseInt(val.trim())
+                : EjbContainer.DEFAULT_THREAD_MAX_POOL_SIZE;
+
+        val = ejbContainer.getPropertyValue(RuntimeTagNames.THREAD_KEEP_ALIVE_SECONDS);
+        long keepAliveSeconds = val != null ? Long.parseLong(val.trim())
+                : EjbContainer.DEFAULT_THREAD_KEEP_ALIVE_SECONDS;
+
+        val = ejbContainer.getPropertyValue(RuntimeTagNames.THREAD_QUEUE_CAPACITY);
+        int queueCapacity = val != null ? Integer.parseInt(val.trim())
+                : EjbContainer.DEFAULT_THREAD_QUEUE_CAPACITY;
+
+        val = ejbContainer.getPropertyValue(RuntimeTagNames.ALLOW_CORE_THREAD_TIMEOUT);
+        boolean allowCoreThreadTimeout = val != null ? Boolean.parseBoolean(val.trim())
+                : EjbContainer.DEFAULT_ALLOW_CORE_THREAD_TIMEOUT;
+
+        val = ejbContainer.getPropertyValue(RuntimeTagNames.PRESTART_ALL_CORE_THREADS);
+        boolean preStartAllCoreThreads = val != null ? Boolean.parseBoolean(val.trim())
+                : EjbContainer.DEFAULT_PRESTART_ALL_CORE_THREADS;
+
+        BlockingQueue workQueue = queueCapacity > 0
+                ? new LinkedBlockingQueue<Runnable>(queueCapacity)
+                : new SynchronousQueue(true);
+
+        result = new EjbThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveSeconds, workQueue, poolName);
+
+        if(allowCoreThreadTimeout) {
+            result.allowCoreThreadTimeOut(true);
+        }
+        if (preStartAllCoreThreads) {
+            result.prestartAllCoreThreads();
+        }
+
+        if (_logger.isLoggable(Level.INFO)) {
+            _logger.info("Created " + result.toString());
+
+        }
+        return result;
+    }
+    
+    public ThreadPoolExecutor getThreadPoolExecutor(String poolName) {
+        if(poolName == null) {
+            return defaultThreadPoolExecutor;
+        } 
+        return null;
+//        TODO retrieve the named ThreadPoolExecutor
     }
 
 }
