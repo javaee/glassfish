@@ -81,3 +81,54 @@
     }
 </handler>
 
+<handler id="gfr.getAppScopedResources">
+    //Application scoped Resources
+    createMap(result="#{pageSession.argsMap}");
+    mapPut(map="#{pageSession.argsMap}" key="appname" value="#{pageSession.encodedAppName}");
+    gf.restRequest(endpoint="#{sessionScope.REST_URL}/_list-resources"
+                    attrs="#{pageSession.argsMap}"
+                    method="get"
+                    result="#{requestScope.appScopedResourcesTable}");
+    if("#{requestScope.appScopedResourcesTable.data.properties}") {
+        gf.addToAppScopedResourcesTable(appName="#{pageSession.appName}"
+            resources="#{requestScope.appScopedResourcesTable.data.properties}"
+            listOfRows="#{pageSession.listOfRows}"
+            result="#{pageSession.listOfRows}");
+    }
+    //Module Scoped Resources
+    createMap(result="#{pageSession.argsMap}");
+    mapPut(map="#{pageSession.argsMap}" key="id" value="#{pageSession.encodedAppName}");
+    mapPut(map="#{pageSession.argsMap}" key="resources" value="true");
+    gf.restRequest(endpoint="#{sessionScope.REST_URL}/applications/application/list-sub-components"
+                   attrs="#{pageSession.argsMap}"
+                   method="get"
+                   result="#{requestScope.result}");
+    //To check for the modules
+    if("#{requestScope.result.data.properties}") {
+        setAttribute(key="subReports" value="#{requestScope.result.data.subReports}");
+        if ("#{subReports}") {
+            setAttribute(key="length" value="#{subReports.size()}");
+            dec(number="#{requestScope.length}" value="#{requestScope.length}");
+            gf.getMapKeys(Map="#{requestScope.result.data.properties}" Keys=>$attribute{moduleKeys});
+            forLoop(end="#{length}"  varName="nn"){
+                //To check for the module scoped resources
+                if ( "#{subReports[nn].properties}") {
+                    gf.addToAppScopedResourcesTable(appName="#{pageSession.appName}"
+                        moduleName="#{moduleKeys[nn]}"
+                        resources="#{subReports[nn].properties}"
+                        listOfRows="#{pageSession.listOfRows}"
+                        result="#{pageSession.listOfRows}");
+                }
+            }
+        }
+    }
+</handler>
+
+<handler id="gfr.getAppScopedResourcesTable">
+    gfr.getAppScopedResources();
+    setPageSessionAttribute(key="appScopedResLength" value="#{pageSession.listOfRows.size()}");
+    setPageSessionAttribute(key="appScopedResExists" value="$boolean{false}");
+    if(#{pageSession.appScopedResLength} > $int{0}) {
+        setPageSessionAttribute(key="appScopedResExists" value="$boolean{true}");
+    }
+</handler>

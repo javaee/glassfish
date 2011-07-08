@@ -49,6 +49,7 @@
     guiOnLoad="admingui.nav.selectTreeNodeWithURL('#{request.contextPath}/common/applications/applicationEdit.jsf?appName=#{pageSession.appName}');"
 >
 <!define name="content">
+#include "/common/applications/applicationHandlers.inc"
     <event>
         <!beforeCreate
             setSessionAttribute(key="appGeneralTabs" value="descriptorTab");
@@ -61,6 +62,7 @@
                     result="#{requestScope.result}");
             gf.getDeploymentDescriptorList( data="#{requestScope.result.data.children}" descriptors="#{requestScope.descriptors}");
             gf.onlyDASExist(onlyDAS="#{pageSession.onlyDASExist}");
+            gf.appScopedResourcesExist(appName="#{pageSession.appName}" appScopedResExists="#{pageSession.appScopedResExists}");
 
         />
     </event>

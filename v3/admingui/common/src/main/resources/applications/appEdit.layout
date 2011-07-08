@@ -59,6 +59,7 @@
         setPageSessionAttribute(key="selfUrl" value="#{sessionScope.REST_URL}/applications/application/#{pageSession.encodedAppName}");
         setPageSessionAttribute(key="appRefUrl" value="#{sessionScope.REST_URL}/servers/server/server/application-ref/#{pageSession.encodedAppName}");
         gf.onlyDASExist(onlyDAS="#{pageSession.onlyDASExist}");
+        gf.appScopedResourcesExist(appName="#{pageSession.appName}" appScopedResExists="#{pageSession.appScopedResExists}");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
         if (#{pageSession.onlyDASExist}){
 
