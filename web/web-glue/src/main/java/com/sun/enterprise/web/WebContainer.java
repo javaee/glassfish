@@ -702,6 +702,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         return jkConnector;
     }
 
+    HashMap<String, WebConnector> getConnectorMap() {
+        return connectorMap;
+    }
+
     /**
      * Instantiates and injects the given Servlet class for the given
      * WebModule
@@ -1187,6 +1191,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         if (startAccessLog
                 && vs.isAccessLoggingEnabled(globalAccessLoggingEnabled)) {
             vs.addValve((GlassFishValve) accessLogValve);
+            vs.setErrorHandler(serverConfig, grizzlyService, false);
         }
 
         if (_logger.isLoggable(Level.FINEST)) {
@@ -1346,6 +1351,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         vs.configureErrorPage();
         vs.configureErrorReportValve();
         vs.setServerContext(getServerContext());
+        vs.setServerConfig(serverConfig);
+        vs.setGrizzlyService(grizzlyService);
+        vs.setWebContainer(this);
 
         return vs;
     }
@@ -2791,12 +2799,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         vs.clearAliases();
         vs.configureAliases();
-
-        vs.reconfigureAccessLog(globalAccessLogBufferSize,
-                globalAccessLogWriteInterval,
-                habitat,
-                domain,
-                globalAccessLoggingEnabled);
 
         // support both docroot property and attribute
         String docroot = vsBean.getPropertyValue("docroot");

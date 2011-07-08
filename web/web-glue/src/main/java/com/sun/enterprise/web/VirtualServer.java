@@ -43,6 +43,7 @@ package com.sun.enterprise.web;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.HttpService;
@@ -54,17 +55,24 @@ import com.sun.enterprise.deployment.archivist.WebArchivist;
 import com.sun.enterprise.security.web.GlassFishSingleSignOn;
 import com.sun.enterprise.server.logging.GFFileHandler;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.v3.services.impl.GrizzlyListener;
+import com.sun.enterprise.v3.services.impl.GrizzlyProxy;
+import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.web.logger.CatalinaLogger;
 import com.sun.enterprise.web.logger.FileLoggerHandler;
 import com.sun.enterprise.web.logger.FileLoggerHandlerFactory;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.web.session.SessionCookieConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.http.ErrorHandler;
 import com.sun.logging.LogDomains;
 import com.sun.web.security.RealmAdapter;
 
 import org.apache.catalina.*;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.authenticator.SingleSignOn;
+import org.apache.catalina.connector.Response;
+import org.apache.catalina.connector.Request;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.ErrorPage;
@@ -91,6 +99,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.types.Property;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -235,6 +244,12 @@ public class VirtualServer extends StandardHost
     private String defaultContextPath = null;
 
     private ServerContext serverContext;
+
+    private Config serverConfig;
+
+    private GrizzlyService grizzlyService;
+
+    private WebContainer webContainer;
 
     private boolean ssoFailoverEnabled = false;
 
@@ -1639,6 +1654,64 @@ public class VirtualServer extends StandardHost
         }
     }
 
+
+    void setErrorHandler(Config serverConfig, GrizzlyService grizzlyService, boolean disable) {
+
+        List<String> listenerList = StringUtils.parseStringList(
+                vsBean.getNetworkListeners(), ",");
+        String[] listeners = (listenerList != null) ?
+                listenerList.toArray(new String[listenerList.size()]) :
+                new String[0];
+        List<NetworkListener> networkListeners = new ArrayList<NetworkListener>();
+
+        for (String listener : listeners) {
+            for (NetworkListener networkListener :
+                    serverConfig.getNetworkConfig().getNetworkListeners().getNetworkListener()) {
+                if (networkListener.getName().equals(listener)) {
+                    networkListeners.add(networkListener);
+                }
+            }
+        }
+
+        for (final NetworkListener listener : networkListeners) {
+            final GrizzlyProxy grizzlyProxy =
+                    (GrizzlyProxy) grizzlyService.lookupNetworkProxy(listener);
+            if (grizzlyProxy != null) {
+                final GrizzlyListener grizzlyListener =
+                        grizzlyProxy.getUnderlyingListener();
+                if (grizzlyListener != null) {
+                    if (disable) {
+                        grizzlyListener.getEmbeddedHttp().setErrorHandler(null);
+                    } else {
+                        if (grizzlyListener.getEmbeddedHttp().getErrorHandler() == null) {
+                            grizzlyListener.getEmbeddedHttp().setErrorHandler(new ErrorHandler() {
+                                @Override
+                                public void onParsingError(com.sun.grizzly.tcp.Response response) {
+                                    Response res = new Response();
+                                    res.setCoyoteResponse(response);
+                                    WebConnector connector = webContainer.getConnectorMap().get(listener.getName());
+                                    if (connector != null) {
+                                        Request req = new Request();
+                                        req.setCoyoteRequest(response.getRequest());
+                                        req.setConnector(connector);
+                                        try {
+                                            accessLogValve.postInvoke(req, res);
+                                        } catch (IOException ex) {
+                                            _logger.log(Level.SEVERE, "pewebcontainer.accesslog.reconfigure", ex);
+                                        }
+                                    } else {
+                                        _logger.log(Level.SEVERE, "pewebcontainer.accesslog.reconfigure");
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
     /**
      * Reconfigures the access log of this VirtualServer with its
      * updated access log related properties.
@@ -1686,6 +1759,7 @@ public class VirtualServer extends StandardHost
                 webcontainerFeatureFactory);
             if (restart) {
                 accessLogValve.start();
+                setErrorHandler(serverConfig, grizzlyService, false);
             }
         } catch (LifecycleException le) {
             _logger.log(Level.SEVERE,
@@ -1721,6 +1795,7 @@ public class VirtualServer extends StandardHost
                             le);
             }
         }
+        setErrorHandler(serverConfig, grizzlyService, false);
     }
 
     /**
@@ -1729,6 +1804,7 @@ public class VirtualServer extends StandardHost
      */
     void disableAccessLogging() {
         removeValve(accessLogValve);
+        setErrorHandler(serverConfig, grizzlyService, true);
     }
 
     /**
@@ -1858,6 +1934,18 @@ public class VirtualServer extends StandardHost
 
     void setServerContext(ServerContext serverContext) {
         this.serverContext = serverContext;
+    }
+
+    void setServerConfig(Config serverConfig) {
+        this.serverConfig = serverConfig;
+    }
+
+    void setGrizzlyService(GrizzlyService grizzlyService) {
+        this.grizzlyService = grizzlyService;
+    }
+
+    void setWebContainer(WebContainer webContainer) {
+        this.webContainer = webContainer;
     }
       
     // ----------------------------------------------------- embedded methods
