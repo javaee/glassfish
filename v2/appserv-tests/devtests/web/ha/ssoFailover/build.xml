@@ -118,18 +118,18 @@
 
         <antcall target="start-cluster-common"/>
 
-        <antcall target="asadmin-common">
+        <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set"/>
             <param name="operand.props" value="${cluster.name}.http-service.virtual-server.server.sso-enabled=true"/>
         </antcall>
 
-        <antcall target="asadmin-common">
+        <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set"/>
             <param name="operand.props" value="${cluster.name}.availability-service.web-container-availability.sso-failover-enabled=true"/>
         </antcall>
 
         <!--
-        <antcall target="asadmin-common">
+        <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set"/>
             <param name="operand.props" value="${cluster.name}.availability-service.web-container-availability.persistence-scope=modified-attribute"/>
         </antcall>
@@ -137,7 +137,7 @@
     </target>
 
     <target name="create-local-instance">
-        <antcall target="asadmin-common">
+        <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="create-local-instance"/>
             <param name="operand.props" value="--cluster ${cluster.name} --systemproperties HTTP_LISTENER_PORT=${instance.http.port} ${instance.name}"/>
         </antcall>
@@ -175,7 +175,7 @@
     </target>
 
     <target name="rerun" depends="init-common">
-        <antcall target="asadmin-common">
+        <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="start-local-instance"/>
             <param name="operand.props" value="${instance1.name}"/>
         </antcall>
@@ -194,18 +194,18 @@
     </target>   
 
     <target name="restore" depends="init-common">
-        <antcall target="asadmin-common">
+        <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set"/>
             <param name="operand.props" value="${cluster.name}.http-service.virtual-server.server.sso-enabled=false"/>
         </antcall>
 
-        <antcall target="asadmin-common">
+        <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set"/>
             <param name="operand.props" value="${cluster.name}.availability-service.web-container-availability.sso-failover-enabled=false"/>
         </antcall>
 
         <!--
-        <antcall target="asadmin-common">
+        <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set"/>
             <param name="operand.props" value="${cluster.name}.availability-service.web-container-availability.persistence-scope="/>
         </antcall>
