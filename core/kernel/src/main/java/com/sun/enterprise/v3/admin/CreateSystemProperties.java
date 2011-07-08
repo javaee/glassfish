@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -104,6 +104,7 @@ public class CreateSystemProperties implements AdminCommand {
      *
      * @param context information
      */
+    @Override
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
@@ -134,10 +135,17 @@ public class CreateSystemProperties implements AdminCommand {
                 final String propName = (String) key;
                 sysPropName = propName;
                     
+                // skip create-system property requests that do not change the
+                // value of an existing property
+                if (spb.containsProperty(sysPropName) && 
+                    spb.getSystemProperty(sysPropName).getValue().equals(properties.getProperty(propName))) {
+                    continue;
+                }
                 ConfigSupport.apply(new SingleConfigCode<SystemPropertyBag>() {
 
+                    @Override
                     public Object run(SystemPropertyBag param) throws PropertyVetoException, TransactionFailure {
-
+                       
                         // update existing system properties
                         // sysProperty.setValue(propValue) doesn't work ? so
                         // remove the property and have it recreated with the new value
