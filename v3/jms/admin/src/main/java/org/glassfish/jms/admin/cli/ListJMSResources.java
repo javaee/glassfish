@@ -64,7 +64,7 @@ import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.api.admin.RuntimeType;
-
+import org.jvnet.hk2.component.Habitat;
 /**
  * List Connector Resources command
  *
@@ -95,6 +95,9 @@ public class ListJMSResources implements AdminCommand {
 
     @Inject
     Domain domain;
+
+    @Inject
+    Habitat habitat;
 
     /**
         * Executes the command with the command parameters passed as Properties
@@ -140,7 +143,12 @@ public class ListJMSResources implements AdminCommand {
                     "Nothing to list."));
             } else {
 
-               List <String> resourceList = filterListForTarget(list);
+               List <String> resourceList = null;
+
+               if(CommandTarget.DOMAIN.isValid(habitat, target))
+                     resourceList = list;
+               else
+                     resourceList =  filterListForTarget(list);
                //if(resourceList == null)
                  //   resourceList = list;
 
@@ -171,7 +179,7 @@ public class ListJMSResources implements AdminCommand {
           {
                 for (Object r : adminObjectResources) {
                     AdminObjectResource res = (AdminObjectResource)r;
-                    if(resourceType.equals(res.getResType()))
+                    if(resourceType.equals(res.getResType()))                             
                         list.add(res.getJndiName());
             }
 
