@@ -218,4 +218,15 @@ public abstract class SshBaseDevTest extends AdminBaseDevTest {
             return value;
         }
     }
+    
+    /**
+     * Modify asadmin common options to include --interactive=false
+     */
+    void disableInteractiveMode() {
+        String s = antProp("as.props");
+
+        String newProps = s + " --interactive=false";
+        System.setProperty("as.props", newProps);
+        System.out.println("Updated common options = " + antProp("as.props"));
+    }
 }

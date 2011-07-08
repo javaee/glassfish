@@ -45,18 +45,26 @@ import java.net.*;
 
 /*
  * Dev tests for install/uninstall-node
+ * The test can run against localhost or remote host.
+ * - By default, the test will setup public key auth
+ *   (see install-node target in build.xml)
+ * - To verify with password auth, run the test with -Dssh.configure=false.
+ *   Also, make sure that public key is not present on remote host.
  * @author Yamini K B
  */
-public class InstallNodeTest extends AdminBaseDevTest {
-    private static final String SSH_HOST_PROP = "ssh.host";
-    private static final String SSH_USER_PROP = "ssh.user";
-    private static final String SSH_PASSWORD = "ssh.password";
-    private static final String SSH_CONFIGURE = "ssh.configure";
-
+public class InstallNodeTest extends SshBaseDevTest {
+    
+    private static final String INSTALL_DIR = "--installdir";
+    private static final String LOCALHOST = "localhost";
+    private static final String INSTALL = "--install";
+    private static final String UNINSTALL = "--uninstall";
+    
+    private final String host;
+    private final File glassFishHome;
     private String remoteHost = null;
     private String sshPass = null;
     private String sshUser = null;
-    private String sshConfigure = "false";
+    private Boolean sshConfigure = false;
 
     public InstallNodeTest() {
         String host0 = null;
@@ -68,9 +76,12 @@ public class InstallNodeTest extends AdminBaseDevTest {
             host0 = "localhost";
         }
         host = host0;
-        System.out.println("Host= " + host);
         glassFishHome = getGlassFishHome();
-        System.out.println("GF HOME = " + glassFishHome);
+        
+        sshUser = getExpandedSystemProperty(SSH_USER_PROP);
+        remoteHost = getExpandedSystemProperty(SSH_HOST_PROP);
+        sshPass = getExpandedSystemProperty(SSH_PASSWORD_PROP);
+        sshConfigure = Boolean.valueOf(getExpandedSystemProperty(SSH_CONFIGURE_PROP));
     }
 
     public static void main(String[] args) {
@@ -88,47 +99,48 @@ public class InstallNodeTest extends AdminBaseDevTest {
     }
 
     public void run() {
-        remoteHost = System.getProperty(SSH_HOST_PROP);
-        sshPass = System.getProperty(SSH_PASSWORD);
-        sshUser = System.getProperty(SSH_USER_PROP);
-        sshConfigure = System.getProperty(SSH_CONFIGURE);
 
-        if (remoteHost == null || remoteHost.length() == 0) {
+        boolean runTest = true;
+
+        if (!ok(remoteHost)) {
+            remoteHost=host;
+        }    
+
+        if (!ok(sshUser)) {
+            sshUser = System.getProperty("user.name");
+        }
+        
+        if (!ok(sshPass)) {
             System.out.printf("%s requires you set the %s property\n",
-                this.getClass().getName(), SSH_HOST_PROP);
-            report("install-test-*", false);
-            return;
-        } else {
-            System.out.printf("%s=%s\n", SSH_HOST_PROP, remoteHost);
+                this.getClass().getName(), SSH_PASSWORD_PROP);
+            runTest = false;
         }        
 
-        if (sshPass == null || sshPass.length() == 0) {
-            System.out.printf("%s requires you set the %s property\n",
-                this.getClass().getName(), SSH_PASSWORD);
-            report("install-ssh-*", false);
+        if (!runTest) {
+            report("install-node-*", false);
             return;
-        } else {
-            System.out.printf("%s=%s\n", SSH_PASSWORD, "<concealed>");
         }
-
-        if (sshUser == null || sshUser.length() == 0) {
-            sshUser = System.getProperty("user.name");
-        } else {
-            System.out.printf("%s=%s\n", SSH_USER_PROP, sshUser);
-        }
-
-        System.out.printf("%s=%s\n", SSH_CONFIGURE, sshConfigure);
         
-        if (sshConfigure.equals("false")) {
+        System.out.printf("%s=%s\n", "Host", host);
+        System.out.printf("%s=%s\n", "GlassFish Home", glassFishHome);
+        System.out.printf("%s=%s\n", SSH_HOST_PROP, remoteHost);
+        System.out.printf("%s=%s\n", SSH_USER_PROP,
+                (ok(sshUser) ? sshUser : "<default>" ));
+        System.out.printf("%s=%s\n", SSH_PASSWORD_PROP,
+                (ok(sshPass) ? "<concealed>" : "<none>" ));
+        System.out.printf("%s=%s\n", SSH_CONFIGURE_PROP, sshConfigure);
+        System.out.println("Password file = " +  pFile);
+        
+        if (!sshConfigure) {
             //will use password auth for the tests
-            addPasswords();
+            addPassword(sshPass, PasswordType.SSH_PASS);
         }
         
-        updateCommonOptions();
+        disableInteractiveMode();
 
         asadmin("start-domain");
 
-        if (remoteHost.equals(LOCALHOST)) {
+        if (remoteHost.equals(LOCALHOST) || remoteHost.equals(host)) {
             System.out.println("------------------------------------------------");
             System.out.println("INFO: Running install-node tests locally.");
             System.out.println("------------------------------------------------");
@@ -143,6 +155,7 @@ public class InstallNodeTest extends AdminBaseDevTest {
         }
         
         asadmin("stop-domain");
+        removePasswords();
         stat.printSummary();
     }
     
@@ -202,45 +215,4 @@ public class InstallNodeTest extends AdminBaseDevTest {
         //delete node with --uninstall
         report("delete-node-with-uninstall-remote", asadmin("delete-node-ssh", UNINSTALL, "n2"));
     }
-
-    private void addPasswords() {
-        BufferedWriter out = null;
-        try {
-            String pfile = System.getenv("APS_HOME") + File.separator + "config"
-                            + File.separator + "adminpassword.txt";
-            final File f = new File(pfile);
-            System.out.println("f = " + f.toString());
-            out = new BufferedWriter(new FileWriter(f, true));
-            out.newLine();
-            out.write("AS_ADMIN_SSHPASSWORD=" + sshPass + "\n");
-            out.write("AS_ADMIN_SSHKEYPASSPHRASE=\n");
-        } catch (IOException ioe) {
-            //ignore
-        }
-        finally {
-            try {
-                if (out != null)
-                    out.flush();
-                    out.close();
-            } catch(final Exception ignore){}
-        }
-
-        return;
-    }
-
-    private void updateCommonOptions() {
-        String s = antProp("as.props");
-
-        String newProps = s + NON_INTERACTIVE;
-        System.setProperty("as.props", newProps);
-        System.out.println("Updated common options = " + antProp("as.props"));
-    }
-
-    private final String host;
-    private final File glassFishHome;
-    private static final String NON_INTERACTIVE = " --interactive=false";
-    private static final String INSTALL_DIR = "--installdir";
-    private static final String LOCALHOST = "localhost";
-    private static final String INSTALL = "--install";
-    private static final String UNINSTALL = "--uninstall";
 }

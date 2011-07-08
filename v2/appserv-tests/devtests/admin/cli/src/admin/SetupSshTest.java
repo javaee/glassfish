@@ -42,20 +42,25 @@ package admin;
 
 import java.io.*;
 import java.net.*;
-
 import java.util.Arrays;
 
 /*
  * Dev tests for SSH public key access setup command i.e setup-ssh
+ * The tests can be run against localhost or remote host. If ssh.host property
+ * is not defined, the tests will use localhost as the target host.
+ * Usage:
+ * 1. To use this test to configure public key authentication
+ *    ant -Dteststorun=setup-ssh -Dssh.configure=true -Dssh.host=onyx
+ *        -Dssh.user=hudson -Dssh.password=hudson all
+ *    This would be same as running "asadmin setup-ssh ..."
+ * 2. To run the actual setup-ssh tests
+ *    ant -Dteststorun=setup-ssh -Dssh.configure=false -Dssh.host=onyx
+ *        -Dssh.user=hudson -Dssh.password=hudson all
+ * 
  * @author Yamini K B
  */
 public class SetupSshTest extends SshBaseDevTest {
-    private final String host;
-    private final File glassFishHome;
-    private static final String NON_INTERACTIVE = " --interactive=false";
     private static final String SSH_USER_OPTION = "--sshuser";
-    private static final String SSH_DIRECTORY = System.getProperty("user.home")
-                                + File.separator + ".ssh" + File.separator;
     
     private static final String backup = System.getProperty("user.home")
                                 + File.separator + ".ssh.bak";
@@ -65,10 +70,12 @@ public class SetupSshTest extends SshBaseDevTest {
     
     private static enum PasswordValue { EMPTY, RIGHT, WRONG };
     
+    private final String host;
+    private final File glassFishHome;
     private String remoteHost = null;
     private String sshPass = null;
     private String sshUser = null;
-    private String sshConfigure = "false";
+    private Boolean sshConfigure = false;
 
     public SetupSshTest() {
         String host0 = null;
@@ -80,9 +87,12 @@ public class SetupSshTest extends SshBaseDevTest {
             host0 = "localhost";
         }
         host = host0;
-        System.out.println("Host= " + host);
         glassFishHome = getGlassFishHome();
-        System.out.println("GF HOME = " + glassFishHome);
+        
+        sshUser = getExpandedSystemProperty(SSH_USER_PROP);
+        remoteHost = getExpandedSystemProperty(SSH_HOST_PROP);
+        sshPass = getExpandedSystemProperty(SSH_PASSWORD_PROP);
+        sshConfigure = Boolean.valueOf(getExpandedSystemProperty(SSH_CONFIGURE_PROP));
     }
 
     public static void main(String[] args) {
@@ -102,45 +112,44 @@ public class SetupSshTest extends SshBaseDevTest {
     public void run() {
 
         boolean failed = false;
-        remoteHost = System.getProperty(SSH_HOST_PROP);
-        sshPass = System.getProperty(SSH_PASSWORD_PROP);
-        sshUser = System.getProperty(SSH_USER_PROP);
-        sshConfigure = System.getProperty(SSH_CONFIGURE_PROP);
+        boolean runTest = true;
 
-        if (remoteHost == null || remoteHost.length() == 0) {
-            System.out.printf("%s requires you set the %s property\n",
-                this.getClass().getName(), SSH_HOST_PROP);
-            report("setup-ssh-*", false);
-            return;
-        } else {
-            System.out.printf("%s=%s\n", SSH_HOST_PROP, remoteHost);
-        }        
+        if (!ok(remoteHost)) {
+            remoteHost=host;
+        }    
 
-        if (sshPass == null || sshPass.length() == 0) {
+        if (!ok(sshUser)) {
+            sshUser = System.getProperty("user.name");
+        }
+        
+        if (!ok(sshPass)) {
             System.out.printf("%s requires you set the %s property\n",
                 this.getClass().getName(), SSH_PASSWORD_PROP);
+            runTest = false;
+        }        
+
+        if (!runTest) {
             report("setup-ssh-*", false);
             return;
-        } else {
-            System.out.printf("%s=%s\n", SSH_PASSWORD_PROP, "<concealed>");
         }
-
-        if (sshUser == null || sshUser.length() == 0) {
-            sshUser = System.getProperty("user.name");
-        } else {
-            System.out.printf("%s=%s\n", SSH_USER_PROP, sshUser);
-        }
-
+        
+        System.out.printf("%s=%s\n", "Host", host);
+        System.out.printf("%s=%s\n", "GlassFish Home", glassFishHome);
+        System.out.printf("%s=%s\n", SSH_HOST_PROP, remoteHost);
+        System.out.printf("%s=%s\n", SSH_USER_PROP,
+                (ok(sshUser) ? sshUser : "<default>" ));
+        System.out.printf("%s=%s\n", SSH_PASSWORD_PROP,
+                (ok(sshPass) ? "<concealed>" : "<none>" ));
         System.out.printf("%s=%s\n", SSH_CONFIGURE_PROP, sshConfigure);
         System.out.println("Password file = " +  pFile);
         
         addPassword(PasswordValue.RIGHT, PasswordType.SSH_PASS);
 
         //to add --interactive=false;
-        updateCommonOptions();
+        disableInteractiveMode();
 
         //setup key without running all the tests
-        if (sshConfigure.equals("true")) {
+        if (sshConfigure) {
             System.out.println("INFO: Configuring public key authentication on " + remoteHost);
             boolean ret = asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost);
             if (!ret) {
@@ -162,7 +171,7 @@ public class SetupSshTest extends SshBaseDevTest {
             }
 
             //backup existing .ssh directory
-            if(!renameSSHDirectory(SSH_DIRECTORY, backup)) {
+            if(!renameDirectory(SSH_DIRECTORY, backup)) {
                 System.out.println("Unable to rename .ssh directory, backing out from running the remaining tests.");
                 failed = true;
             }
@@ -174,7 +183,7 @@ public class SetupSshTest extends SshBaseDevTest {
             testEncryptedKey();
 
             //restore .ssh directory
-            if(!renameSSHDirectory(backup, SSH_DIRECTORY)) {
+            if(!renameDirectory(backup, SSH_DIRECTORY)) {
                 System.out.println("Unable to restore .ssh.bak directory, please rename manually.");
             }
         }
@@ -265,6 +274,11 @@ public class SetupSshTest extends SshBaseDevTest {
         removePasswords();
     }
 
+    /**
+     * Make an entry in the password file.
+     * @param pass actual value
+     * @param passType SSH_PASS|KEY_PASS
+     */
     private void addPassword(PasswordValue pass, PasswordType passType) {
         switch (pass) {
             case EMPTY:
@@ -285,15 +299,9 @@ public class SetupSshTest extends SshBaseDevTest {
         return;
     }
 
-    private void updateCommonOptions() {
-        String s = antProp("as.props");
+    
 
-        String newProps = s + NON_INTERACTIVE;
-        System.setProperty("as.props", newProps);
-        System.out.println("Updated common options = " + antProp("as.props"));
-    }
-
-    private boolean renameSSHDirectory(String from, String to) {
+    private boolean renameDirectory(String from, String to) {
         File file = new File(from);
         File file2 = new File(to);
         if (file2.exists()) {
