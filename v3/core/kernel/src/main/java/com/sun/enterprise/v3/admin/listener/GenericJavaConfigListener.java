@@ -75,6 +75,7 @@ import org.jvnet.hk2.config.Changed.TYPE;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.ConfigView;
 import org.jvnet.hk2.config.NotProcessed;
 import org.jvnet.hk2.config.ObservableBean;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
@@ -192,6 +193,8 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
     /* force serial behavior; don't allow more than one thread to make a mess here */
     @Override
     public synchronized UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
+        // ignore a REMOVE and an ADD of the same value
+        
         final UnprocessedChangeEvents unp = ConfigSupport.sortAndDispatch(events, new Changed() {
             @Override
             public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> tc, T t) {
@@ -226,12 +229,20 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
                 }
                 // check tc first because it is faster than instanceof
                 else if (tc == SystemProperty.class && t instanceof SystemProperty) {
-                    // check to see if this system property is referenced by any of the options
                     final SystemProperty sp = (SystemProperty) t;
-                    String pname = sp.getName();
-                    if (referencesProperty(pname, oldProps) ||
-                        referencesProperty(pname, oldAttrs.values())) {
-                        result = new NotProcessed("The system-property, " + pname + ", that is referenced by the Java configuration, was modified");
+                    // check to see if this system property is for this instance
+                    ConfigView p = ConfigSupport.getImpl(sp.getParent());
+                    
+                    if (p == ConfigSupport.getImpl(server) || 
+                            p == ConfigSupport.getImpl(config) || 
+                            p == ConfigSupport.getImpl(cluster) || 
+                            p == ConfigSupport.getImpl(domain)) {
+                        // check to see if this system property is referenced by any of the options
+                        String pname = sp.getName();
+                        if (referencesProperty(pname, oldProps) ||
+                            referencesProperty(pname, oldAttrs.values())) {
+                            result = new NotProcessed("The system-property, " + pname + ", that is referenced by the Java configuration, was modified");
+                        }
                     }
                 }
                 else {
