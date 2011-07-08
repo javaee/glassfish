@@ -106,6 +106,7 @@ public class LazyJerseyInit implements LazyJerseyInterface {
 
         Adapter adapter = null;
         Reloader r = new Reloader();
+
         ResourceConfig rc = new DefaultResourceConfig(classes);
         rc.getMediaTypeMappings().put("xml", MediaType.APPLICATION_XML_TYPE);
         rc.getMediaTypeMappings().put("json", MediaType.APPLICATION_JSON_TYPE);
@@ -121,7 +122,6 @@ public class LazyJerseyInit implements LazyJerseyInterface {
                 rc.getContainerRequestFilters().add(LoggingFilter.class);
             }
             if (restConf.getWadlGeneration().equalsIgnoreCase("false")) { //disable WADL
-
                 rc.getFeatures().put(ResourceConfig.FEATURE_DISABLE_WADL, Boolean.TRUE);
             }
         }
@@ -130,11 +130,9 @@ public class LazyJerseyInit implements LazyJerseyInterface {
         rc.getClasses().add(ReloadResource.class);
 
         //We can only inject these 4 extra classes in Jersey resources...
-        //
         rc.getSingletons().add(new SingletonTypeInjectableProvider<Context, Reloader>(Reloader.class, r) {});
         rc.getSingletons().add(new SingletonTypeInjectableProvider<Context, ServerContext>(ServerContext.class, sc) {});
         rc.getSingletons().add(new SingletonTypeInjectableProvider<Context, Habitat>(Habitat.class, habitat) {});
-        rc.getSingletons().add(new SingletonTypeInjectableProvider<Context, Client>(Client.class, Client.create()) {});
         rc.getSingletons().add(new SingletonTypeInjectableProvider<Context, SessionManager>(SessionManager.class, habitat.getComponent(SessionManager.class)) {});
 
         //Use common classloader. Jersey artifacts are not visible through
@@ -252,7 +250,6 @@ public class LazyJerseyInit implements LazyJerseyInterface {
 
     @Override
     public Set<Class<?>> getResourcesConfigForManagement(Habitat habitat) {
-
         Class domainResourceClass = null;//org.glassfish.admin.rest.resources.generated.DomainResource.class;
 
         generateASM(habitat);
@@ -265,13 +262,14 @@ public class LazyJerseyInit implements LazyJerseyInterface {
         final Set<Class<?>> r = new HashSet<Class<?>>();
 
         // uncomment if you need to run the generator:
-        r.add(GeneratorResource.class);
+        //r.add(GeneratorResource.class);
         r.add(StatusGenerator.class);
         //r.add(ActionReportResource.class);
 
         r.add(domainResourceClass);
         r.add(ManagementProxyResource.class);
-        r.add(org.glassfish.admin.rest.resources.SessionsResource.class); //TODO this needs to be added to all rest adapters that want to be secured. Decide on it after the discussion to unify RestAdapter is concluded
+        //TODO this needs to be added to all rest adapters that want to be secured. Decide on it after the discussion to unify RestAdapter is concluded
+        r.add(org.glassfish.admin.rest.resources.SessionsResource.class); 
         r.add(org.glassfish.admin.rest.resources.StaticResource.class);
 
         //body readers, not in META-INF/services anymore

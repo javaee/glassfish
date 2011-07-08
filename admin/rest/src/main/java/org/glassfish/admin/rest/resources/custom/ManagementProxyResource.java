@@ -40,7 +40,6 @@
 
 package org.glassfish.admin.rest.resources.custom;
 
-import com.sun.jersey.api.client.Client;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.utils.ProxyImpl;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
@@ -58,6 +57,7 @@ import javax.ws.rs.core.UriInfo;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
+import org.glassfish.admin.rest.Util;
 
 /**
  * @author Mitesh Meswani
@@ -71,10 +71,6 @@ public class ManagementProxyResource {
     @Context
     protected Habitat habitat;
 
-    @Context
-    protected Client client;
-
-
     @GET
     public ActionReportResult proxyRequest() {
 
@@ -84,7 +80,7 @@ public class ManagementProxyResource {
 
         ActionReportResult result = new ActionReportResult(ar);
 
-        Properties proxiedResponse = new ManagementProxyImpl().proxyRequest(uriInfo, client, habitat);
+        Properties proxiedResponse = new ManagementProxyImpl().proxyRequest(uriInfo, Util.getJerseyClient(), habitat);
         ar.setExtraProperties(proxiedResponse);
         return result;
     }

@@ -41,6 +41,7 @@ package org.glassfish.admin.rest;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.common.ActionReporter;
+import com.sun.jersey.api.client.Client;
 import org.glassfish.admin.rest.provider.ProviderUtil;
 import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
@@ -63,6 +64,7 @@ import org.jvnet.hk2.component.Habitat;
  */
 public class Util {
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Util.class);
+    private static Client client;
 
     private Util() {
     }
@@ -254,6 +256,14 @@ public class Util {
         }
         String methodName = upperCaseFirstLetter(elementName);
         return methodName = prefix + methodName;
+    }
+    
+    public static Client getJerseyClient() {
+        if (client == null) {
+            client = Client.create();
+        }
+        
+        return client;
     }
 
 

@@ -40,6 +40,7 @@
 
 package org.glassfish.admin.rest.resources;
 
+import org.glassfish.admin.rest.Util;
 import org.glassfish.admin.rest.utils.ProxyImpl;
 import org.jvnet.hk2.component.Habitat;
 
@@ -65,7 +66,6 @@ import javax.ws.rs.PathParam;
 
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.jersey.api.client.Client;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.external.statistics.Statistic;
@@ -91,9 +91,6 @@ public class MonitoringResource {
 
     @Context
     protected Habitat habitat;
-    
-    @Context
-    protected Client client;
     
     @GET
     @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML,"text/html;qs=2"})
@@ -149,7 +146,7 @@ public class MonitoringResource {
             } else { //firstPathElement != currentInstanceName => A proxy request
                 if(isRunningOnDAS) { //Attempt to forward to instance if running on Das
                     //TODO validate that firstPathElement corresponds to a valid server name
-                    Properties proxiedResponse = new MonitoringProxyImpl().proxyRequest(uriInfo, client, habitat);
+                    Properties proxiedResponse = new MonitoringProxyImpl().proxyRequest(uriInfo, Util.getJerseyClient(), habitat);
                     ar.setExtraProperties(proxiedResponse);
                     responseBuilder.entity(new ActionReportResult(ar));
                 } else { // Not running on DAS and firstPathElement != currentInstanceName => Reject the request as invalid
