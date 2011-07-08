@@ -42,6 +42,7 @@ package com.sun.enterprise.v3.services.impl.monitor;
 
 import com.sun.grizzly.http.SelectorThread;
 import com.sun.grizzly.http.SelectorThreadKeyHandler;
+import com.sun.grizzly.util.ConnectionCloseHandler;
 import com.sun.grizzly.util.Copyable;
 import java.nio.channels.SelectionKey;
 
@@ -65,6 +66,7 @@ public class MonitorableSelectionKeyHandler extends SelectorThreadKeyHandler {
         super(selectorThread);
         this.grizzlyMonitoring = grizzlyMonitoring;
         this.monitoringId = monitoringId;
+        setConnectionCloseHandler(new CloseHandler());
     }
 
     @Override
@@ -76,12 +78,21 @@ public class MonitorableSelectionKeyHandler extends SelectorThreadKeyHandler {
         copyHandler.monitoringId = monitoringId;
     }
 
-    @Override
-    public void cancel(SelectionKey key) {
-        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionClosedEvent(
-                monitoringId, key.channel().hashCode());
+    private final class CloseHandler implements ConnectionCloseHandler {
 
-        super.cancel(key);
+        @Override
+        public void locallyClosed(final SelectionKey key) {
+            notifyClosed(key);
+        }
+
+        @Override
+        public void remotlyClosed(final SelectionKey key) {
+            notifyClosed(key);
+        }
+        
+        private void notifyClosed(final SelectionKey key) {
+            grizzlyMonitoring.getConnectionQueueProbeProvider().connectionClosedEvent(
+                    monitoringId, key.channel().hashCode());
+        }
     }
-
 }
