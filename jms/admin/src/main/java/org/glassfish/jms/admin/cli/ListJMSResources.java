@@ -51,6 +51,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
 import com.sun.enterprise.config.serverbeans.AdminObjectResource;
@@ -96,6 +97,8 @@ public class ListJMSResources implements AdminCommand {
     @Inject
     Domain domain;
 
+    @Inject
+    Habitat habitat;
     /**
         * Executes the command with the command parameters passed as Properties
         * where the keys are the paramter names and the values the parameter values
@@ -140,7 +143,12 @@ public class ListJMSResources implements AdminCommand {
                     "Nothing to list."));
             } else {
 
-               List <String> resourceList = filterListForTarget(list);
+               List <String> resourceList = null;
+	       //if("domain".equalsIgnoreCase(target))
+		if(CommandTarget.DOMAIN.isValid(habitat, target))
+			resourceList=list;
+	       else	
+               		resourceList = filterListForTarget(list);
                if(resourceList == null)
                     resourceList = list;
 
@@ -199,7 +207,7 @@ public class ListJMSResources implements AdminCommand {
                 Cluster cluster = domain.getClusterNamed(target);
                 if (cluster != null)
                       resourceRefs=  cluster.getResourceRef();
-
+		
                 else {
                     Server server = domain.getServerNamed(target);
                      if (server != null)
