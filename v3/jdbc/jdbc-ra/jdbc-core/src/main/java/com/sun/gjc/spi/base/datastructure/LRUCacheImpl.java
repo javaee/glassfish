@@ -127,7 +127,7 @@ public class LRUCacheImpl implements Cache {
             if(list.size() >= maxSize){
                 purge();
             }
-            CacheEntry entry = new CacheEntry(key, o);
+            CacheEntry entry = new CacheEntry(o);
             list.put(key, entry);
         }
     }
@@ -202,27 +202,25 @@ public class LRUCacheImpl implements Cache {
     }
 
     /**
-     * Cache object that has a key and an entry. This is used to put inside the 
+     * Cache object that has an entry. This is used to put inside the
      * statement cache.
      */
-    public class CacheEntry{
-        private CacheObjectKey key;
+    public static class CacheEntry{
         private Object entryObj;
 
-        public CacheEntry(CacheObjectKey key, Object o){
-            this.key = key;
+        public CacheEntry(Object o){
             this.entryObj = o;
         }
     }
 
-    public Set getObjects(){
+    /*public Set getObjects(){
         //TODO-SC-DEFER can the set be "type-safe"
         Set set = new HashSet();
         for(CacheEntry entry : list.values()){
             set.add(entry.entryObj);
         }
         return set;
-    }
+    }*/
 
     public boolean isSynchronized() {
         return false;

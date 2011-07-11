@@ -893,7 +893,7 @@ public abstract class PreparedStatementWrapper extends StatementWrapper implemen
     public void resultSetClosed() throws SQLException {
         if (DataSourceObjectBuilder.isJDBC41() && getCached()) {
             decrementResultSetCount();
-            if (getResultSetCount() == 0 && getCloseOnCompletion()) {
+            if (getCloseOnCompletion() && getResultSetCount() == 0) {
                 ConnectionHolder wrappedCon = (ConnectionHolder) getConnection();
                 wrappedCon.getManagedConnection().purgeStatementFromCache(this);
             }

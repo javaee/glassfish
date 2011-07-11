@@ -51,6 +51,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.resource.ResourceException;
@@ -67,7 +68,7 @@ public abstract class StatementWrapper implements Statement, StatementLeakListen
     protected final static Logger _logger;
     protected MethodExecutor executor = null;
     private boolean closeOnCompletion = false;
-    protected int resultSetCount = 0;
+    protected AtomicInteger resultSetCount = new AtomicInteger();
 
 
     static {
@@ -902,15 +903,15 @@ public abstract class StatementWrapper implements Statement, StatementLeakListen
         return closeOnCompletion;
     }
 
-    public synchronized void incrementResultSetCount() {
-        resultSetCount++;
+    public void incrementResultSetCount() {
+        resultSetCount.incrementAndGet();
     }
 
-    public synchronized void decrementResultSetCount() {
-        resultSetCount--;
+    public void decrementResultSetCount() {
+        resultSetCount.decrementAndGet();
     }
 
     public int getResultSetCount() {
-        return resultSetCount;
+        return resultSetCount.get();
     }
 }

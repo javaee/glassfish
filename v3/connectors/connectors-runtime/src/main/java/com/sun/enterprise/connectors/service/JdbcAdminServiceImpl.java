@@ -222,12 +222,12 @@ public class JdbcAdminServiceImpl extends ConnectorService {
      * @return accessibility status of the table.
      */
     private static boolean isPingable(String tableName, java.sql.Connection con) {
-        java.sql.Statement stmt = null;
+        java.sql.PreparedStatement stmt = null;
         java.sql.ResultSet rs = null;
         final String sql = "SELECT COUNT(*) FROM " + tableName;
         try {
-            stmt = con.createStatement();
-            rs = stmt.executeQuery(sql);
+            stmt = con.prepareStatement(sql);
+            rs = stmt.executeQuery();
         } catch (Exception sqle) {
             _logger.log(Level.INFO, "pool.exc_is_pingable", tableName);
             return false;

@@ -97,7 +97,6 @@ public class ProfiledConnectionWrapper30 extends ConnectionHolder30 implements C
             se.initCause(e);
             throw se;
         }
-        output = super.createStatement();
         return output;
     }
 

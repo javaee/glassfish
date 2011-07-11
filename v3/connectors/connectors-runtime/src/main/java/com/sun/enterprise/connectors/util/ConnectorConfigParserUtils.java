@@ -240,8 +240,7 @@ public class ConnectorConfigParserUtils {
      *         configuration in  ra.xml for the corresponding javabean. The 
      *         properties consist of property name as the key and datatype as
      *         the value
-     * @throws ConnectorRuntimeException if the Class could not be loaded 
-     *         or instantiated. 
+     * @throws ConnectorRuntimeException if the Class could not be loaded
      */
 
     public Properties introspectJavaBeanReturnTypes(
@@ -249,7 +248,6 @@ public class ConnectorConfigParserUtils {
     {
 
         Class loadedClass = loadClass(className, rarName);
-        Object loadedInstance = instantiate(loadedClass);
         Method[] methods = loadedClass.getMethods();
         Properties props = new Properties();
         String name = null;

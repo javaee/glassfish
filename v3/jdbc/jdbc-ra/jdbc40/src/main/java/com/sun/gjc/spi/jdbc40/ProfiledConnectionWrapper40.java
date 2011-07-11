@@ -95,7 +95,6 @@ public class ProfiledConnectionWrapper40 extends ConnectionHolder40 implements C
             //TODO SQLexception or any other type?
             throw new SQLException(e);
         }
-        output = super.createStatement();
         return output;
     }
 

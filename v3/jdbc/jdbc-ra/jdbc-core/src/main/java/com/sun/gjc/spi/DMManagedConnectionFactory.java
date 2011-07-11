@@ -220,7 +220,7 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
      * @throws ResourceException if the driver properties string and delimiter are not proper
      */
     //TODO remove unused method
-    private Properties getPropertiesObj() throws ResourceException {
+    /*private Properties getPropertiesObj() throws ResourceException {
         if (props != null) {
             return props;
         }
@@ -289,7 +289,7 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
         }
 
         return props;
-    }
+    } */
 
     /**
      * Check if this <code>ManagedConnectionFactory</code> is equal to
@@ -313,6 +313,11 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
             return this.spec.equals(otherMCF.spec);
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * 7 + (spec.hashCode());
     }
 
     /**
