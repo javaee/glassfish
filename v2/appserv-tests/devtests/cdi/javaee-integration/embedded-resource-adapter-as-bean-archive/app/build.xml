@@ -87,6 +87,7 @@
   <target name="undeploy" depends="init-common">
     <antcall target="undeploy-common">
       <param name="deployedapp.name" value="generic-embeddedApp"/>
+      <param name="appname" value="generic-embedded"/>
     </antcall>
   </target>
 

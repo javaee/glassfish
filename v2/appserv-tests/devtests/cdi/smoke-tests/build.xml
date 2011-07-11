@@ -115,15 +115,15 @@
             <if>
                 <equals arg1="${test.embedded.mode}" arg2="true"/>
                 <then>
-                    <echo> Excluding testcase simple-ejb-cdi, simple-mdb, simple-wab-with-cdi and slf4j-visibility for embedded mode</echo>
+                    <echo> Excluding testcase simple-wab-with-cdi and slf4j-visibility for embedded mode</echo>
                 </then>
                 <else>
-                    <ant dir="simple-ejb-cdi" target="${smoke-target}"/>
-                    <ant dir="simple-mdb" target="${smoke-target}"/>
                     <ant dir="simple-wab-with-cdi" target="${smoke-target}"/>
                     <ant dir="slf4j-visibility" target="${smoke-target}"/>
                 </else>
             </if>
+            <ant dir="simple-ejb-cdi" target="${smoke-target}"/>
+            <ant dir="simple-mdb" target="${smoke-target}"/>
             <ant dir="simple-ejb-singleton/hello" target="${smoke-target}"/>
 <!--
             <ant dir="singleton-startup/hello" target="${smoke-target}"/>
