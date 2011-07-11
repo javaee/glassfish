@@ -40,8 +40,12 @@
 
 package com.sun.enterprise.admin.cli.embeddable;
 
+import org.glassfish.admin.payload.PayloadFilesManager;
+import org.glassfish.admin.payload.PayloadImpl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandException;
+import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.Payload;
 import org.glassfish.embeddable.Deployer;
 import org.glassfish.embeddable.GlassFishException;
 import org.jvnet.hk2.annotations.ContractProvided;
@@ -51,17 +55,26 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This is an implementation of {@link Deployer}.
  * Unlike the other EmbeddedDeployer, this deployer uses admin command execution
  * framework to execute the underlying command, as a result we don't by-pass things like command replication code.
- * 
+ *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 
@@ -69,6 +82,9 @@ import java.util.Properties;
 @Scoped(PerLookup.class)
 @ContractProvided(Deployer.class) // bcos Deployer interface can't depend on HK2, we need ContractProvided here.
 public class DeployerImpl implements Deployer {
+
+    private static final Logger logger =
+            Logger.getLogger(DeployerImpl.class.getPackage().getName());
 
     /*
      * This class currently copies generic URIs to a file before processing. Once deployment backend
@@ -96,7 +112,25 @@ public class DeployerImpl implements Deployer {
         newParams[params.length] = file.getAbsolutePath();
         CommandExecutorImpl executer = habitat.getComponent(CommandExecutorImpl.class);
         try {
-            ActionReport actionReport = executer.executeCommand("deploy", newParams);
+            String command = "deploy";
+            ActionReport actionReport = executer.createActionReport();
+            ParameterMap commandParams = executer.getParameters(command, newParams);
+            org.glassfish.api.admin.CommandRunner.CommandInvocation inv =
+                    executer.getCommandRunner().getCommandInvocation(command, actionReport);
+            inv.parameters(commandParams);
+            // set outputbound payload if --retrieve option is specified.
+            Payload.Outbound outboundPayload = null;
+            String retrieveOpt = commandParams.getOne("retrieve");
+            File retrieve = retrieveOpt != null ? new File(retrieveOpt) : null;
+            if (retrieve != null && retrieve.exists()) {
+                outboundPayload = PayloadImpl.Outbound.newInstance();
+                inv.outbound(outboundPayload);
+            }
+            inv.execute();
+            // extract the outbound payload.
+            if (outboundPayload != null) {
+                extractPayload(outboundPayload, actionReport, retrieve);
+            }
             actionReport.writeReport(System.out);
             return actionReport.getResultType(String.class);
         } catch (CommandException e) {
@@ -185,6 +219,76 @@ public class DeployerImpl implements Deployer {
         int len;
         while ((len = in.read(buf)) >= 0) {
             out.write(buf, 0, len);
+        }
+    }
+
+    /**
+     * Extract the payload (client side stub jar files) to the directory specified via
+     * --retrieve option.
+     *
+     * @param outboundPayload Payload to be extracted
+     * @param actionReport    ActionReport of the deploy command.
+     * @param retrieveDir     Directory where the payload should be extracted to.
+     */
+    private void extractPayload(Payload.Outbound outboundPayload,
+                                ActionReport actionReport, File retrieveDir) {
+        File payloadZip = null;
+        FileOutputStream payloadOutputStream = null;
+        FileInputStream payloadInputStream = null;
+        try {
+            /*
+            * Add the report to the payload to mimic what the normal
+            * non-embedded server does.
+            */
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+            actionReport.writeReport(baos);
+            final ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            final Properties reportProps = new Properties();
+            reportProps.setProperty("data-request-type", "report");
+            outboundPayload.addPart(0, actionReport.getContentType(), "report", reportProps, bais);
+
+            /*
+            * Now process the payload as an *inbound* payload as the non-embedded
+            * admin client does, by writing the *outbound* payload to a temporary file
+            * then reading from that file.
+            */
+            payloadZip = File.createTempFile("appclient", ".zip");
+            payloadOutputStream = new FileOutputStream(payloadZip);
+            outboundPayload.writeTo(payloadOutputStream);
+            payloadOutputStream.flush();
+            payloadOutputStream.close();
+
+            /*
+            * Use the temp file's contents as the inbound payload to
+            * correctly process the downloaded files.
+            */
+            final PayloadFilesManager pfm = new PayloadFilesManager.Perm(
+                    retrieveDir, null /* no action report to record extraction results */, logger);
+            payloadInputStream = new FileInputStream(payloadZip);
+            final PayloadImpl.Inbound inboundPayload = PayloadImpl.Inbound.newInstance(
+                    "application/zip", payloadInputStream);
+            pfm.processParts(inboundPayload); // explodes the payloadZip.
+        } catch (Exception ex) {
+            // Log error and ignore exception.
+            logger.log(Level.WARNING, ex.getMessage(), ex);
+        } finally {
+            if (payloadOutputStream != null) {
+                try {
+                    payloadOutputStream.close();
+                } catch (IOException ioex) {
+                    logger.warning(ioex.getMessage());
+                }
+            }
+            if (payloadInputStream != null) {
+                try {
+                    payloadInputStream.close();
+                } catch (IOException ioex) {
+                    logger.warning(ioex.getMessage());
+                }
+            }
+            if (payloadZip != null) {
+                payloadZip.delete();
+            }
         }
     }
 

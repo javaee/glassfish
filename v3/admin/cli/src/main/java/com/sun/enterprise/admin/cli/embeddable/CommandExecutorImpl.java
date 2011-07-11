@@ -92,7 +92,7 @@ public class CommandExecutorImpl implements org.glassfish.embeddable.CommandRunn
         }
     }
 
-    private ParameterMap getParameters(String command, String[] args) throws CommandException {
+    ParameterMap getParameters(String command, String[] args) throws CommandException {
         CommandModel commandModel = commandRunner.getModel(command, logger);
         if (command == null) {
             throw new CommandException("No command called " + command);
@@ -203,8 +203,12 @@ public class CommandExecutorImpl implements org.glassfish.embeddable.CommandRunn
         };
     }
 
-    private ActionReport createActionReport() {
+    ActionReport createActionReport() {
         return habitat.getComponent(ActionReport.class, "plain");
+    }
+
+    CommandRunner getCommandRunner() {
+        return commandRunner;
     }
 
 }
