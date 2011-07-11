@@ -1006,7 +1006,8 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 
 <!-- deploy the applications in AppServ  -->
 <target name="deploy-common" depends="init-common">
-  <glassfish-embedded-deploy app="${assemble.dir}/${appname}App.ear" name="${appname}" libraries="${libraries}"/>
+    <echo> === EMBEDDED DEPLOYING ${assemble.dir}/${appname}App.ear --retrive=${assemble.dir}</echo>
+  <glassfish-embedded-deploy app="${assemble.dir}/${appname}App.ear" libraries="${libraries}" retrievestubs="${assemble.dir}"/>
   <echo message="Deployment on target server ${appserver.instance.name} successful"/>
 </target>
 
@@ -1134,7 +1135,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 <!--  undeploy the applications in AppServ  -->
 <target name="undeploy-common" depends="init-common">
     <echo> === Embedded UNDEPLOYING ${appname} === </echo>
-    <glassfish-embedded-undeploy name="${appname}"/>
+    <glassfish-embedded-undeploy name="${appname}App"/>
 </target>
 
 <!--  undeploy the standalone war in AppServ  -->
