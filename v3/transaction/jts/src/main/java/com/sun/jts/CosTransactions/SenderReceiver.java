@@ -130,15 +130,23 @@ class SenderReceiver implements Sender, Receiver {
             throws TRANSACTION_ROLLEDBACK, TRANSACTION_REQUIRED {
 
         if (_logger.isLoggable(Level.FINE)) {
-			_logger.log(Level.FINE,"In sending_request"+
-					":"+id+","+holder.value.current.otid.formatID);
+            if (holder.value != null) {
+		_logger.log(Level.FINE,"In sending_request"+
+			":"+id+","+holder.value.current.otid.formatID);
+            } else {
+		_logger.log(Level.FINE,"In sending_request"+ ":"+id+","+holder);
+            }
         }
 
         CurrentTransaction.sendingRequest(id, holder);
 
         if (_logger.isLoggable(Level.FINE)) {
-			_logger.log(Level.FINE,"Out sending_request"+
-					":"+id+","+holder.value.current.otid.formatID);
+            if (holder.value != null) {
+		_logger.log(Level.FINE,"Out sending_request"+
+			":"+id+","+holder.value.current.otid.formatID);
+            } else {
+		_logger.log(Level.FINE,"Out sending_request"+ ":"+id+","+holder);
+            }
         }
     }
 
@@ -161,15 +169,23 @@ class SenderReceiver implements Sender, Receiver {
             throws org.omg.CORBA.WrongTransaction {
 
         if (_logger.isLoggable(Level.FINE)) {
-			_logger.log(Level.FINE,"In received_reply"+
-					":"+id+","+context.current.otid.formatID);
+            if (context != null) {
+		_logger.log(Level.FINE,"In received_reply"+
+			":"+id+","+context.current.otid.formatID);
+            } else {
+		_logger.log(Level.FINE,"In received_reply"+ ":"+id+", null context");
+            }
         }
 
         CurrentTransaction.receivedReply(id, context, ex);
 
         if (_logger.isLoggable(Level.FINE)) {
-			_logger.log(Level.FINE,"Out received_reply"+
-					":"+id+","+context.current.otid.formatID);
+            if (context != null) {
+		_logger.log(Level.FINE,"Out received_reply"+
+			":"+id+","+context.current.otid.formatID);
+            } else {
+		_logger.log(Level.FINE,"Out received_reply"+ ":"+id+", null context");
+            }
         }
     }
 
@@ -186,15 +202,23 @@ class SenderReceiver implements Sender, Receiver {
     public void received_request(int id, PropagationContext context) {
 
         if (_logger.isLoggable(Level.FINE)) {
-			_logger.log(Level.FINE,"In received_request"+
-					":"+id+","+context.current.otid.formatID);
+            if (context != null) {
+		_logger.log(Level.FINE,"In received_request"+
+			":"+id+","+context.current.otid.formatID);
+            } else {
+		_logger.log(Level.FINE,"In received_request"+ ":"+id+", null context");
+            }
         }
 
         CurrentTransaction.receivedRequest(id, context);
 
         if (_logger.isLoggable(Level.FINE)) {
-			_logger.log(Level.FINE,"Out received_request"+
-					":"+id+","+context.current.otid.formatID);
+            if (context != null) {
+		_logger.log(Level.FINE,"Out received_request"+
+			":"+id+","+context.current.otid.formatID);
+            } else {
+		_logger.log(Level.FINE,"Out received_request"+ ":"+id+", null context");
+            }
         }
     }
 
@@ -219,15 +243,23 @@ class SenderReceiver implements Sender, Receiver {
         throws INVALID_TRANSACTION, TRANSACTION_ROLLEDBACK {
 
         if (_logger.isLoggable(Level.FINE)) {
-			_logger.log(Level.FINE,"In sending_reply"+
-					":"+id+","+holder.value.current.otid.formatID);
+            if (holder.value != null) {
+		_logger.log(Level.FINE,"In sending_reply"+
+			":"+id+","+holder.value.current.otid.formatID);
+            } else {
+		_logger.log(Level.FINE,"In sending_reply"+ ":"+id+","+holder);
+            }
         }
 
         CurrentTransaction.sendingReply(id, holder);
 
         if (_logger.isLoggable(Level.FINE)) {
-			_logger.log(Level.FINE,"Out sending_reply"+
-					":"+id+","+holder.value.current.otid.formatID);
+            if (holder.value != null) {
+		_logger.log(Level.FINE,"Out sending_reply"+
+			":"+id+","+holder.value.current.otid.formatID);
+            } else {
+		_logger.log(Level.FINE,"Out sending_reply"+ ":"+id+","+holder);
+            }
         }
     }
 
