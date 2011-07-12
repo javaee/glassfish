@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,11 +36,6 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
- */
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
  */
 
 package com.sun.enterprise.v3.admin.listener;
@@ -117,7 +112,7 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
  */
 
 @Service
-public final class GenericJavaConfigListener implements PostConstruct, ConfigListener, Startup {
+public final class CombinedJavaConfigSystemPropertyListener implements PostConstruct, ConfigListener, Startup {
     /* The following objects are injected so that this
      * ConfigListener receives config events related to those objects.
      */   
@@ -144,7 +139,8 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
     
     volatile Map<String,String>  oldAttrs;
     
-    static final Logger logger = LogDomains.getLogger(GenericJavaConfigListener.class, LogDomains.ADMIN_LOGGER);
+    static final Logger logger = LogDomains.getLogger(CombinedJavaConfigSystemPropertyListener.class, 
+            LogDomains.ADMIN_LOGGER);
     
     @Override
     public void postConstruct() {
@@ -224,12 +220,14 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
                     reasons.addAll( handleAttrs( oldAttrs, curAttrs ) );
                     oldAttrs = curAttrs;
                     
-                    result = reasons.isEmpty() ? null : new NotProcessed( GenericJavaConfigListener.toString(reasons) );
+                    result = reasons.isEmpty() ? null : new NotProcessed( CombinedJavaConfigSystemPropertyListener.toString(reasons) );
                 }
                 else if (tc == SystemProperty.class) {
                     final SystemProperty sp = (SystemProperty) t;
                     // check to see if this system property is for this instance
-                    ConfigView p = ConfigSupport.getImpl(sp.getParent());
+                    ConfigBeanProxy proxy = sp.getParent();
+                    ConfigView p = ConfigSupport.getImpl(proxy);
+
                     
                     if (p == ConfigSupport.getImpl(server) || 
                             p == ConfigSupport.getImpl(config) || 
@@ -240,6 +238,38 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
                         if (referencesProperty(pname, oldProps) ||
                             referencesProperty(pname, oldAttrs.values())) {
                             result = new NotProcessed("The system-property, " + pname + ", that is referenced by the Java configuration, was modified");
+                        }
+                    }
+                    if (type == TYPE.ADD || type == TYPE.CHANGE) {  //create-system-properties
+                        if (proxy instanceof Domain) {
+                            return addToDomain(sp);
+                        } else if (proxy instanceof Config) {
+                            return addToConfig(sp);
+                        } else if (proxy instanceof Cluster) {
+                            return addToCluster(sp);
+                        } else {
+                            //this has to be instance of Server
+                            //GLASSFISH-15665 Check if this is the current running server.
+                            //Don't call addToServer if this is for a different server.
+                            if (proxy instanceof Server) {
+                                Server changedServer = (Server) proxy;
+                                String changedServerName = changedServer.getName();
+                                String thisServerName = server.getName();
+                                if (changedServerName.equals(thisServerName)) {
+                                    return addToServer(sp);
+                                }
+                            }
+                        }
+                    } else if (type == TYPE.REMOVE) {
+                        if (proxy instanceof Domain) {
+                            return removeFromDomain(sp);
+                        } else if (proxy instanceof Config) {
+                            return removeFromConfig(sp);
+                        } else if (proxy instanceof Cluster) {
+                            return removeFromCluster(sp);
+                        } else {
+                            //this has to be instance of Server
+                            return removeFromServer(sp);
                         }
                     }
                 }
@@ -419,4 +449,134 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
         }
         return false;
     }
+        /* 
+     * Notification events can come out of order, i.e., a create-system-properties
+     * on an existing property sends an ADD or the new one, a CHANGE, followed by 
+     * a REMOVE of the old one. So we need to check if the property is still
+     * there.
+     */
+    private NotProcessed removeFromServer(SystemProperty sp) {
+        SystemProperty sysProp = getServerSystemProperty(sp.getName());
+        if (sysProp == null)
+            sysProp = getClusterSystemProperty(sp.getName());
+        if (sysProp == null)
+            sysProp = getConfigSystemProperty(sp.getName());
+        if (sysProp == null)
+            sysProp = getDomainSystemProperty(sp.getName());
+        if (sysProp == null) {
+            System.clearProperty(sp.getName());
+        } else {
+            System.setProperty(sysProp.getName(), sysProp.getValue());
+        }
+        return null; //processed
+    }
+
+    private NotProcessed removeFromCluster(SystemProperty sp) {
+        SystemProperty sysProp = getConfigSystemProperty(sp.getName());
+        if (sysProp == null)
+            sysProp = getDomainSystemProperty(sp.getName());
+        if (sysProp == null) {
+            if (!serverHas(sp))
+                System.clearProperty(sp.getName()); //if server overrides it anyway, this should be a noop
+        } else {
+            if (!serverHas(sp))
+                System.setProperty(sysProp.getName(), sysProp.getValue());
+        }
+        return null; //processed
+    }
+
+    private NotProcessed removeFromConfig(SystemProperty sp) {
+        SystemProperty sysProp = getDomainSystemProperty(sp.getName());
+        if (sysProp == null) {
+            if (!serverHas(sp) && !clusterHas(sp))
+                System.clearProperty(sp.getName()); //if server overrides it anyway, this should be a noop
+        } else {
+            if (!serverHas(sp) && !clusterHas(sp))
+                System.setProperty(sysProp.getName(), sysProp.getValue());
+        }
+        return null; //processed
+    }
+
+    private NotProcessed removeFromDomain(SystemProperty sp) {
+        if(!serverHas(sp)&& !clusterHas(sp) && !configHas(sp))
+            System.clearProperty(sp.getName()); //if server, cluster, or config overrides it anyway, this should be a noop
+        return null; //processed
+    }
+
+    private NotProcessed addToServer(SystemProperty sp) {
+        System.setProperty(sp.getName(), sp.getValue());
+        return null; //processed
+    }
+
+    private NotProcessed addToCluster(SystemProperty sp) {
+        if (!serverHas(sp))
+            System.setProperty(sp.getName(), sp.getValue()); //if server overrides it anyway, this should be a noop
+        return null; //processed
+    }
+
+    private NotProcessed addToConfig(SystemProperty sp) {
+        if (!serverHas(sp) && !clusterHas(sp))
+            System.setProperty(sp.getName(), sp.getValue()); //if server or cluster overrides it anyway, this should be a noop
+        return null; //processed
+    }
+
+    private NotProcessed addToDomain(SystemProperty sp) {
+        if (!serverHas(sp) && !clusterHas(sp) && !configHas(sp))
+            System.setProperty(sp.getName(), sp.getValue()); //if server, cluster, or config overrides it anyway, this should be a noop
+        return null; //processed
+    }
+
+    private boolean serverHas(SystemProperty sp) {
+        List<SystemProperty> ssps = server.getSystemProperty();
+        return hasSystemProperty(ssps, sp);
+    }
+
+    private boolean configHas(SystemProperty sp) {
+        Config c = domain.getConfigNamed(server.getConfigRef());
+        return c != null ? hasSystemProperty(c.getSystemProperty(), sp) : false;
+    }
+
+    private boolean clusterHas(SystemProperty sp) {
+        Cluster c = domain.getClusterForInstance(server.getName());
+        return c != null ? hasSystemProperty(c.getSystemProperty(), sp) : false;
+    }
+    
+    private SystemProperty getServerSystemProperty(String spName) {
+        return getSystemProperty(server.getSystemProperty(), spName);
+    }
+
+    private SystemProperty getClusterSystemProperty(String spName) {
+        Cluster c = domain.getClusterForInstance(server.getName());
+        return c != null ? getSystemProperty(c.getSystemProperty(), spName) : null;
+    }
+
+    private SystemProperty getConfigSystemProperty(String spName) {
+        Config c = domain.getConfigNamed(server.getConfigRef());
+        return c != null ? getSystemProperty(c.getSystemProperty(), spName) : null;
+    }
+
+    private SystemProperty getDomainSystemProperty(String spName) {
+        return getSystemProperty(domain.getSystemProperty(), spName);
+    }
+
+    private boolean hasSystemProperty(List<SystemProperty> ssps, SystemProperty sp) {
+        return getSystemProperty(ssps, sp.getName()) != null;
+    }
+    
+    /*
+     * Return the SystemProperty from the list of system properties with the
+     * given name. If the property is not there, or the list is null, return 
+     * null.
+     */
+    private SystemProperty getSystemProperty(List<SystemProperty> ssps, String spName) {
+         if (ssps != null) {
+            for (SystemProperty sp : ssps) {
+                if (sp.getName().equals(spName)) {
+                    return sp;
+                }
+            }
+        }
+        return null;       
+    }
+
 }
