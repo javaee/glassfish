@@ -58,9 +58,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.servlet</artifactId>
-            <version>${project.version}</version>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
    </dependencies>
