@@ -67,9 +67,9 @@ class Jar
         // Convert to a URI because the location of a bundle
         // is typically a URI. At least, that's the case for
         // autostart bundles.
-        // Normalisation is needed to ensure that we don't treat (e.g.)
+        // No need to normalize, because file.toURI() removes unnecessary slashes
         // /tmp/foo and /tmp//foo differently.
-        uri = file.toURI().normalize();
+        uri = file.toURI();
         lastModified = file.lastModified();
     }
 
