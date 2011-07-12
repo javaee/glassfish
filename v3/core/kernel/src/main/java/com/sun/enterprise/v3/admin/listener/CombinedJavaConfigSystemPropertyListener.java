@@ -231,7 +231,7 @@ public final class CombinedJavaConfigSystemPropertyListener implements PostConst
                     
                     if (p == ConfigSupport.getImpl(server) || 
                             p == ConfigSupport.getImpl(config) || 
-                            p == ConfigSupport.getImpl(cluster) || 
+                            (cluster != null && p == ConfigSupport.getImpl(cluster)) || 
                             p == ConfigSupport.getImpl(domain)) {
                         // check to see if this system property is referenced by any of the options
                         String pname = sp.getName();
