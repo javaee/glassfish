@@ -41,6 +41,7 @@
 
 package com.sun.enterprise.glassfish.bootstrap.osgi;
 
+import com.sun.enterprise.glassfish.bootstrap.Util;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -732,6 +733,9 @@ public class BundleProvisioner {
         logger.logp(Level.INFO, "BundleProvisioner", "main", "Starting");
         Properties props = new Properties();
         props.load(new FileInputStream(args[0]));
+        Util.substVars(props);
+        PrintStream out = new PrintStream(new FileOutputStream(args[1], true));
+        long t0 = System.currentTimeMillis();
         Framework f = null;
         for (FrameworkFactory ff : ServiceLoader.load(FrameworkFactory.class)) {
             f = ff.newFramework(props);
@@ -741,16 +745,18 @@ public class BundleProvisioner {
         if (f == null) {
             throw new RuntimeException("no OSGi framework in classpath");
         }
-        long t0 = System.currentTimeMillis();
-        f.init();
         long t1 = System.currentTimeMillis();
-        logger.logp(Level.INFO, "BundleProvisioner", "main", "timeTaken to initialize OSGi framework = {0} ms",
+        logger.logp(Level.INFO, "BundleProvisioner", "main", "timeTaken to locate OSGi framework = {0} ms",
                 new Object[]{t1 - t0});
+        f.init();
+        long t2 = System.currentTimeMillis();
+        logger.logp(Level.INFO, "BundleProvisioner", "main", "timeTaken to initialize OSGi framework = {0} ms",
+                new Object[]{t2 - t1});
         BundleProvisioner bundleProvisioner = new BundleProvisioner(f.getBundleContext(), props);
         bundleProvisioner.installBundles();
-        long t2 = System.currentTimeMillis();
+        long t3 = System.currentTimeMillis();
         logger.logp(Level.INFO, "BundleProvisioner", "main", "timeTaken to finish installation of bundles = {0} ms",
-                new Object[]{t2 - t1});
+                new Object[]{t3 - t2});
         int installed = bundleProvisioner.getNoOfInstalledBundles();
         int updated = bundleProvisioner.getNoOfUpdatedBundles();
         int uninstalled = bundleProvisioner.getNoOfUninstalledBundles();
@@ -761,8 +767,19 @@ public class BundleProvisioner {
         }
         bundleProvisioner.startBundles();
         f.start();
-        long t3 = System.currentTimeMillis();
-        logger.logp(Level.INFO, "BundleProvisioner", "main", "timeTaken to finish starting bundles = {0} ms",
-                new Object[]{t3 - t2});
+        long t4 = System.currentTimeMillis();
+        logger.logp(Level.INFO, "BundleProvisioner", "main", "time taken to finish starting bundles = {0} ms",
+                new Object[]{t4 - t3});
+        logger.logp(Level.INFO, "BundleProvisioner", "main", "total time taken to start = {0}", new Object[]{t4-t0});
+        if (args.length == 3 && args[2].equalsIgnoreCase("wait-before-stopping")) {
+            System.out.println("Hit enter to continue");
+            System.in.read(); //
+        }
+        f.stop();
+        f.waitForStop(0);
+        long t5 = System.currentTimeMillis();
+        logger.logp(Level.INFO, "BundleProvisioner", "main", "time taken to stop = {0} ms", new Object[]{t5 - t4});
+        logger.logp(Level.INFO, "BundleProvisioner", "main", "Total time taken = {0}", new Object[]{t5-t0});
+        out.printf("%d,%d,%d,%d,%d,%d,%d\n", t1-t0, t2-t1, t3-t2, t4-t3, t4-t0, t5-t4, t5-t0);
     }
 }
