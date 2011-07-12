@@ -102,6 +102,7 @@
 		<echo message="Setting up required registration module dependencies" />
 		<resolveArtifact groupID="org.glassfish.registration" artifactId="registration-api" property="registration-api.jar" />
 		<resolveArtifact groupID="org.glassfish.registration" artifactId="registration-impl" property="registration-impl.jar" />
+                <resolveArtifact groupID="org.glassfish.common" artifactId="common-util" property="common-util.jar" />
 
 		<echo message="Setting up required OpenInstaller dependencies" />
 		<resolveArtifact groupID="org.openinstaller" artifactId="resources" property="resources.zip" />
@@ -236,6 +237,7 @@
 		<echo message="Staging registration jar files" />
 		<copy tofile="${stage.dir}/${bundle.name}/registration-api.jar" file="${registration-api.jar}" />
 		<copy tofile="${stage.dir}/${bundle.name}/registration-impl.jar" file="${registration-impl.jar}" />
+                <copy tofile="${stage.dir}/${bundle.name}/common-util.jar" file="${common-util.jar}" />
 
 		<echo message="Staging binaries required for IPS" />
 		<copy tofile="${stage.dir}/${bundle.name}/pkg-client.jar" file="${pkg-client.jar}" />

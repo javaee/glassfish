@@ -47,7 +47,7 @@ import java.util.Arrays;
  */
 public class PasswordFile {
 
-    private static final String ADMIN_PASSWORD_KEY = "AS_ADMIN_ADMINPASSWORD=";
+    private static final String ADMIN_PASSWORD_KEY = "AS_ADMIN_PASSWORD=";
     private static final String MASTER_PASSWORD_KEY = "AS_ADMIN_MASTERPASSWORD=";
 
     /* Domain administrator password. */
