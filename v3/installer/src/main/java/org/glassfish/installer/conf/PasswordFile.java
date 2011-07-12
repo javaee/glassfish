@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,100 +40,90 @@
 
 package org.glassfish.installer.conf;
 
-import java.io.File;
-import org.glassfish.installer.util.FileIOUtils;
-import org.glassfish.installer.util.OSUtils;
+import java.util.Arrays;
 
 /** PasswordFile to be used for asadmin create-domain command.
  * @author sathyan
  */
 public class PasswordFile {
 
-    /* Domain administrator password. */
-    private String adminPassword;
-    /* Master password. */
-    private String masterPassword;
-    /* Path of the file to be generated. */
-    private File filePath;
-    /* Prefix to the filename to be generated. */
-    private String filePrefix;
+    private static final String ADMIN_PASSWORD_KEY = "AS_ADMIN_ADMINPASSWORD=";
+    private static final String MASTER_PASSWORD_KEY = "AS_ADMIN_MASTERPASSWORD=";
 
-    public PasswordFile(String adminPassword, String masterPassword, String filePrefix) {
+    /* Domain administrator password. */
+    private char[] adminPassword;
+    /* Master password. */
+    private char[] masterPassword;
+    /* Password file content */
+    private char[] fileContent;
+
+    public PasswordFile(char[] adminPassword, char[] masterPassword) {
         this.adminPassword = adminPassword;
         this.masterPassword = masterPassword;
-        this.filePrefix = filePrefix;
+        this.fileContent = null;
     }
 
-    /* Create password file under <filePath> with <filePrefix>.
-     * @return boolean true if the file creation is successful, false otherwise.
+    /* Assemble password file content
+     * @return boolean true if successful, false otherwise.
      */
     public boolean setupPasswordFile() {
         boolean retStatus = true;
         try {
-            filePath = File.createTempFile(filePrefix, null);
-            FileIOUtils fUtil = new FileIOUtils();
-            fUtil.openFile(filePath.getAbsolutePath());
-
-            /* To make sure that the file is deleted, mark it for deletion
-             * upon JVM exit. The caller will also be removing this file
-             * immediately after the run of create-domain command.
-             */
-            filePath.deleteOnExit();
-
+            
+            char[] newline = { '\n' };
             /* The password could be null to support unauthenticated logins. */
-            if (adminPassword != null && adminPassword.trim().length() > 0) {
-                fUtil.appendLine("AS_ADMIN_PASSWORD=" + adminPassword);
+            if (adminPassword != null && adminPassword.length > 0) {
+                fileContent = concat(ADMIN_PASSWORD_KEY.toCharArray(), 
+                    adminPassword);
             } else {
-                fUtil.appendLine("AS_ADMIN_PASSWORD=");
+                fileContent = ADMIN_PASSWORD_KEY.toCharArray();
             }
-            fUtil.appendLine("AS_ADMIN_MASTERPASSWORD=" + masterPassword);
-            fUtil.saveFile();
-            fUtil.closeFile();
-
-            /* Make it readable, setExecutable does that though it adds the execute
-             * permission also :-)
-             */
-            if (!OSUtils.isWindows()) {
-                org.glassfish.installer.util.FileUtils.setExecutable(filePath.getAbsolutePath());
-            }
+            fileContent = concat(fileContent, newline); 
+            fileContent = concat(fileContent, MASTER_PASSWORD_KEY.toCharArray());
+            fileContent = concat(fileContent, masterPassword);
+            fileContent = concat(fileContent, newline);
+         
         } catch (Exception ex) {
             retStatus = false;
         }
         return true;
     }
 
-    /* return String domain administrator password. */
-    public String getAdminPassword() {
+    /* @return char[] domain administrator password. */
+    public char[] getAdminPassword() {
         return adminPassword;
     }
 
     /* @param adminPassword domain administrator password. */
-    public void setAdminPassword(String adminPassword) {
+    public void setAdminPassword(char[] adminPassword) {
         this.adminPassword = adminPassword;
     }
 
-    /* @return String Password file path as a String. */
-    public String getPasswordFilePath() {
-        return filePath.getAbsolutePath();
+    /* @return char[] Password file content. */
+    public char[] getFileContent() {
+        return fileContent;
     }
 
-    /* @param filePrefix Prefix to password file name, default is "asadmin". */
-    public void setPasswordFilePrefix(String filePrefix) {
-        this.filePrefix = filePrefix;
-    }
-
-    /* return String master password. */
-    public String getMasterPassword() {
+    /* @return char[] master password. */
+    public char[] getMasterPassword() {
         return masterPassword;
     }
 
     /* @param masterPassword master password. */
-    public void setMasterPassword(String masterPassword) {
+    public void setMasterPassword(char[] masterPassword) {
         this.masterPassword = masterPassword;
     }
 
-    /* @return File Password file as a File object */
-    public File getPasswordFile() {
-        return this.filePath;
+    private static char[] concat(char[] first, char[] second) {
+        char[] result = Arrays.copyOf(first, first.length + second.length);
+        System.arraycopy(second, 0, result, first.length, second.length);
+        return result;
     }
+
+    public void emptyPasswordArrays() {
+        Arrays.fill(this.adminPassword, ' ');
+        Arrays.fill(this.masterPassword, ' ');
+        Arrays.fill(this.fileContent, ' ');
+    }
+
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,10 +40,10 @@
 package org.glassfish.installer.util;
 
 import java.util.logging.Logger;
+import java.io.InputStream;
 import org.glassfish.installer.conf.Cluster;
 import org.glassfish.installer.conf.Domain;
 import org.glassfish.installer.conf.Instance;
-import org.glassfish.installer.conf.PasswordFile;
 import org.glassfish.installer.conf.Product;
 import org.glassfish.installer.conf.Service;
 import org.openinstaller.util.ClassUtils;
@@ -127,20 +127,20 @@ public class GlassFishUtils {
         return domainProperties;
     }
 
+
     /* Gathers asadmin create-domain commandline based on user entered parameters.
      * @param productRef, reference to Product object to get path to admin script
      * @param glassfishDomain, reference to a pre-filled Domain object to get
-     * requied attrbutes of the domain to be created.
-     * @param passwordFile, reference to Password file to be used with --passwordfile
+     * requied attributes of the domain to be created.
      * argument of create-domain.
-     * @return ExecuteCommand, a pre-assembled executecommand object that can
-     * be executed to create the domain.
+     * @return String[] that can be passed to Runtime.exec)( to create the domain.
+     * 
      */
-    static public ExecuteCommand assembleCreateDomainCommand(Product productRef,
-            Domain glassfishDomain, PasswordFile passwordFile) {
+    static public String[] assembleCreateDomainCommand(Product productRef,
+            Domain glassfishDomain) {
         String[] asadminCommandArray = {productRef.getAdminScript(),
             "--user", glassfishDomain.getAdminUser(),
-            "--passwordfile", passwordFile.getPasswordFilePath(),
+            "--passwordfile", "-",
             "create-domain",
             "--savelogin",
             "--checkports=" + (glassfishDomain.isCheckPorts() ? "true" : "false"),
@@ -149,12 +149,9 @@ public class GlassFishUtils {
             "--domainproperties=" + glassfishDomain.getDomainProperties(),
             glassfishDomain.getDomainName()};
 
-        try {
-            return new ExecuteCommand(asadminCommandArray);
-        } catch (InvalidArgumentException ex) {
-        }
-        return null;
+            return asadminCommandArray;
     }
+
 
     /* Gathers asadmin create-local-instance commandline based on user entered parameters.
      * @param productRef, reference to Product object to get path to admin script
