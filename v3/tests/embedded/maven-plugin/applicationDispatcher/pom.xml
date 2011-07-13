@@ -163,14 +163,14 @@
     </dependencies>
 
     <repositories>
-        <repository>                                                                                          
-            <id>glassfish-repo-archive</id>                                                                   
-            <name>Nexus repository collection for Glassfish</name>                                            
-            <url>http://maven.glassfish.org/content/groups/glassfish</url>                                    
-            <snapshots>                                                                                       
-                <updatePolicy>never</updatePolicy>                                                            
-            </snapshots>                                                                                      
-        </repository>                                                                                         
+        <repository>
+            <id>glassfish-repo-archive</id>
+            <name>Nexus repository collection for Glassfish</name>
+            <url>http://maven.glassfish.org/content/groups/glassfish</url>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
     </repositories>
 
     <pluginRepositories>
