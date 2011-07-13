@@ -43,9 +43,9 @@
 <f:verbatim>
     <script type="text/javascript">
 
- function initClassname(option) {
+ function initClassname(option, createFlag) {
     var selectedOption = getSelectedValueFromForm(document.forms['form1'], 'classnameOption');
-    enableClassnameFields(option);   
+    enableClassnameFields(option, createFlag);
     if (option == 'input'){ 
         #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{rbPropId}:optB', true);  
     }else{  
@@ -53,10 +53,12 @@
     }  
   }
 
- function enableClassnameFields(opt){
+ function enableClassnameFields(opt, createFlag){
     if(opt == 'input') {
-	enableComponent('#{classnameTextId}', 'text');  
-	getTextElement('#{classnameTextId}').focus();  
+	enableComponent('#{classnameTextId}', 'text');
+        if (createFlag){
+            getTextElement('#{classnameTextId}').focus();
+        }
 	#{themeJavascript.JS_PREFIX}.dropDown.setDisabled('#{classnameDropdownId}', true); 
         showDisplay('none'); 
         document.getElementById('form1:option').value='input'; 
