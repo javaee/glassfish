@@ -79,6 +79,10 @@ class ParameterizedInterfaceModelImpl implements ParameterizedInterfaceModel {
         return sb.toString();
     }
 
+    public TypeProxy<InterfaceModel> getRawInterfaceProxy() {
+        return rawInterface;
+    }
+
     @Override
     public InterfaceModel getRawInterface() {
         return rawInterface.get();

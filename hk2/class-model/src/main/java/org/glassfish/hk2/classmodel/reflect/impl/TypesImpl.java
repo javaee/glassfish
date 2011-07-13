@@ -108,15 +108,7 @@ public class TypesImpl implements TypeBuilder {
 
     @Override
     public TypeProxy getHolder(String name) {
-        TypeProxy proxy = getHolder(name, InterfaceModel.class);
-        if (proxy!=null) {
-            return proxy;
-        }
-        proxy = getHolder(name, ClassModel.class);
-        if (proxy!=null) {
-            return proxy;
-        }
-        return getHolder(name, AnnotationType.class);
+        return types.getHolder(name);
     }
 
     @Override

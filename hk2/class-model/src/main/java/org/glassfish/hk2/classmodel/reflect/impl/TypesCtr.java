@@ -73,7 +73,32 @@ public class TypesCtr implements Types {
         }
     }
 
+    public TypeProxy<Type> getHolder(String name) {
+        if (name.equals("java.lang.Object")) return null;
+        // we look first in our storage pools.
+        for (Map<String, TypeProxy<Type>> map : storage.values()) {
+            TypeProxy<Type> proxy = map.get(name);
+            if (proxy!=null) {
+                return proxy;
+            }
+        }
+        // ok let's look in our unknown storage pool.
+        if (unknownTypesStorage.containsKey(name)) {
+            return unknownTypesStorage.get(name);
+        }
+        // ok we don't have and since we don't know its type
+        // let's put it in the unknown storage pool.
+        TypeProxy<Type> typeProxy = new TypeProxy<Type>(null, name);
+        TypeProxy<Type> old = unknownTypesStorage.putIfAbsent(name, typeProxy);
+        if (old==null) {
+            nonVisited.push(typeProxy);
+            return typeProxy;
+        }
+        return old;
+    }
+
     public <T extends Type> TypeProxy<Type> getHolder(String name, Class<T> type) {
+        if (name.equals("java.lang.Object")) return null;
         ConcurrentMap<String, TypeProxy<Type>> typeStorage = storage.get(type);
         if (typeStorage==null) {
             typeStorage = new ConcurrentHashMap<String, TypeProxy<Type>>();
@@ -85,10 +110,18 @@ public class TypesCtr implements Types {
         }
         TypeProxy<Type> typeProxy = typeStorage.get(name);
         if (typeProxy ==null) {
-            typeProxy = new TypeProxy<Type>(null, name);
-            TypeProxy<Type> old = typeStorage.putIfAbsent(name, typeProxy);
-            if (old==null) {
-                nonVisited.push(typeProxy);
+            // in our unknown type pool ?
+            if (unknownTypesStorage.containsKey(name)) {
+                typeProxy = unknownTypesStorage.remove(name);
+                typeStorage.putIfAbsent(name, typeProxy);
+            } else {
+                typeProxy = new TypeProxy<Type>(null, name);
+                TypeProxy<Type> old = typeStorage.putIfAbsent(name, typeProxy);
+                if (old==null) {
+                    nonVisited.push(typeProxy);
+                } else {
+                    typeProxy=old;
+                }
             }
         }
         return typeProxy;
@@ -112,6 +145,11 @@ public class TypesCtr implements Types {
         }
     }
 
+    public void clearNonVisitedEntries() {
+        nonVisited.clear();
+        unknownTypesStorage.clear();
+    }
+
     @Override
     public Collection<Type> getAllTypes() {
         List<Type> allTypes = new ArrayList<Type>();
@@ -125,9 +163,16 @@ public class TypesCtr implements Types {
         return allTypes;
     }
 
-
+    /**
+     * Storage indexed by TYPE : interface | class | annotation and then by name.
+     */
     private final ConcurrentMap<Class, ConcurrentMap<String, TypeProxy<Type>>> storage=
             new ConcurrentHashMap<Class, ConcurrentMap<String, TypeProxy<Type>>>();
+
+    /**
+     * Map of encountered types which we don't know if it is an interface, class or annotation
+     */
+    private final ConcurrentMap<String, TypeProxy<Type>> unknownTypesStorage = new ConcurrentHashMap<String, TypeProxy<Type>>();
     /**
      * Stack on type proxy as they have been instantiated in FILO order.
      */

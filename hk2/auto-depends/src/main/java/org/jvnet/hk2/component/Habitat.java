@@ -259,12 +259,12 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
     }
 
     @Override
-    public Collection<Binding<?>> getBindings() {
-        return getBindings(null);
+    public Collection<Binding<?>> getDeclaredBindings() {
+        return getDeclaredBindings(null);
     }
 
     @Override
-    public Collection<Binding<?>> getBindings(Descriptor descriptor) {
+    public Collection<Binding<?>> getDeclaredBindings(Descriptor descriptor) {
         if (null == descriptor) {
             descriptor = DescriptorImpl.EMPTY_DESCRIPTOR;
         }
@@ -275,12 +275,12 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
     }
 
     @Override
-    public Collection<Binding<?>> getAllBindings() {
-        return getAllBindings(null);
+    public Collection<Binding<?>> getBindings() {
+        return getBindings(null);
     }
 
     @Override
-    public Collection<Binding<?>> getAllBindings(Descriptor descriptor) {
+    public Collection<Binding<?>> getBindings(Descriptor descriptor) {
         if (null == descriptor) {
             descriptor = DescriptorImpl.EMPTY_DESCRIPTOR;
         }
