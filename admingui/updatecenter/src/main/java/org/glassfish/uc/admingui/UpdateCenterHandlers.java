@@ -635,11 +635,13 @@ public class UpdateCenterHandlers {
         try{
             image = new Image (new File (ucDir));
             if (force || (GuiUtil.getSessionValue(CATALOG_REFRESHED) == null)){
-                GuiUtil.setSessionValue(CATALOG_REFRESHED, "TRUE");
-                image.refreshCatalogs();
+                if (image != null){
+		    image.refreshCatalogs();
+		    GuiUtil.setSessionValue(CATALOG_REFRESHED, "TRUE");
+		}
             }
         }catch(Exception ex){
-            if(force){
+            if(force && (image == null)){
                 GuiUtil.getLogger().warning(GuiUtil.getMessage(BUNDLE, "NoImage", new String[]{ucDir}));
             }
         }
