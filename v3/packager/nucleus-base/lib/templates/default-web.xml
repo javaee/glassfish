@@ -315,7 +315,7 @@
         \lib\
         jstl-impl.jar
         el-impl.jar
-        javax.servlet.jar
+        javax.servlet-api.jar
         javax.servlet.jsp.jar
         javax.servlet.jsp.jstl.jar
         javax.jms.jar
