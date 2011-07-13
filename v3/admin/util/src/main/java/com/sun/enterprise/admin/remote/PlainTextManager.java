@@ -57,9 +57,9 @@ class PlainTextManager implements ResponseManager{
 
     public void process() throws RemoteException {
         // format:
-        // "PlainTextActionReporterSUCCESS..." 
+        // "PlainTextActionReporterSUCCESS..."
         // or
-        // "PlainTextActionReporterFAILURE..." 
+        // "PlainTextActionReporterFAILURE..."
         String good = MAGIC + SUCCESS;
         String bad  = MAGIC + FAILURE;
 
