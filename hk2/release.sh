@@ -76,7 +76,7 @@ mvn release:clean
 
 # This starts the release preparation, but it eventually fails because
 # it's unable to resolve the maven-hk2-plugin that the release is going to build.
-mvn -e -B -P release release:prepare || true
+mvn -e -B -DuseEditMode=true -P release release:prepare || true
 
 # At this point local POM has the release version set,
 # so we build it, in particular maven-hk2-plugin.
@@ -87,7 +87,7 @@ mvn -e -P release-phase1 install
 mvn -e install
 
 # Now retry release:prepare and this shall run to the completion
-mvn -e -B -P release release:prepare
+mvn -e -B -DuseEditMode=true -P release release:prepare
 
 # At this point POM has the next SNAPSHOT version set,
 # and unless I build maven-hk2-plugin again, the POM fails to load
