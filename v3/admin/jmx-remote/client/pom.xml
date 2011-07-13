@@ -114,11 +114,9 @@
 
         <dependency>
 
-            <groupId>org.glassfish</groupId>
+            <groupId>javax.servlet</groupId>
 
-            <artifactId>javax.servlet</artifactId>
-
-            <version>${project.version}</version>
+            <artifactId>javax.servlet-api</artifactId>
 
         </dependency>
 
