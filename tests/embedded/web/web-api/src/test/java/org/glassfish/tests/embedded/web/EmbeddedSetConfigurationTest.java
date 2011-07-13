@@ -97,11 +97,32 @@ public class EmbeddedSetConfigurationTest {
         embedded.addWebListener(listener);
 
         Context context = embedded.createContext(root);
-        embedded.addContext(context, contextRoot);
 
-        // TODO
-        //URL servlet = new URL("http://localhost:"+newPort);
-        URL servlet = new URL("http://localhost:9090/"+contextRoot+"/hello");
+        Deployer deployer = glassfish.getDeployer();
+
+        URL source = WebHello.class.getClassLoader().getResource(
+                "org/glassfish/tests/embedded/web/WebHello.class");
+        String p = source.getPath().substring(0, source.getPath().length() -
+                "org/glassfish/tests/embedded/web/WebHello.class".length());
+        File path = new File(p).getParentFile().getParentFile();
+
+        String name = null;
+
+        if (path.getName().lastIndexOf('.') != -1) {
+            name = path.getName().substring(0, path.getName().lastIndexOf('.'));
+        } else {
+            name = path.getName();
+        }
+
+        System.out.println("Deploying " + path + ", name = " + name);
+
+        String appName = deployer.deploy(path.toURI(), "--contextroot", "", "--name=" + name);
+
+        System.out.println("Deployed " + appName);
+
+        Assert.assertTrue(appName != null);
+
+        URL servlet = new URL("http://localhost:9090");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(

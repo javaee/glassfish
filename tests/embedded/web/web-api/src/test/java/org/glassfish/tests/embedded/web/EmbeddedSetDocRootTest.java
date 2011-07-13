@@ -59,7 +59,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Tests WebBuilding#setListings for directory listing feature
+ * Tests WebContainerConfig#setListings for directory listing feature
  * 
  * @author Amy Roh
  */
@@ -89,12 +89,6 @@ public class EmbeddedSetDocRootTest {
     
     @Test
     public void testEmbeddedWebAPIConfig() throws Exception {
-        VirtualServer vs = (VirtualServer)
-                embedded.createVirtualServer("test-server", root);
-        VirtualServerConfig config = new VirtualServerConfig();
-        config.setHostNames("localhost");
-        vs.setConfig(config);
-        embedded.addVirtualServer(vs);
         Context context = (Context) embedded.createContext(root, contextRoot, null);
 
         URL servlet = new URL("http://localhost:8080/"+contextRoot);
