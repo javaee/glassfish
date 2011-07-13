@@ -55,10 +55,6 @@
     <packaging>pom</packaging>
     <name>GlassFish Web Embedded Tests</name>  
     <modules>
-    	<module>web-all</module>
         <module>web-api</module>
-        <module>web-war</module>
-        <module>servlet</module>
-        <module>autodelete</module>
     </modules>
 </project>
