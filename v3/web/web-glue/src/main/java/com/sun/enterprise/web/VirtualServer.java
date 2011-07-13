@@ -1935,15 +1935,28 @@ public class VirtualServer extends StandardHost
             File docRoot = facade.getDocRoot();
             ClassLoader classLoader = facade.getClassLoader();
 
+            if (contextRoot.equals("")) {
+                contextRoot = "/";
+            }
+            String name = contextRoot;
+            if (name.equals("/")) {
+                name =  Constants.DEFAULT_WEB_MODULE_NAME;
+            }
+
             Deployer deployer = Globals.getDefaultHabitat().getComponent(Deployer.class);
             String appName = deployer.deploy(docRoot, "--virtualservers", getName(),
-                            "--name", contextRoot, "--enabled", "false");
-            String contextName = "/"+appName;
+                    "--contextroot", contextRoot, "--name", name,"--enabled", "false");
+             String contextName = "/"+appName;
+
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Deployed --virtualservers=" + getName() +
+                        "--contextroot=" + contextRoot + "--name=" + name);
+            }
 
             File file = null;
             boolean delete = true;
             Applications apps = domain.getApplications();
-            com.sun.enterprise.config.serverbeans.Application app = apps.getApplication(contextRoot);
+            com.sun.enterprise.config.serverbeans.Application app = apps.getApplication(name);
             if (app != null) {
                 file = new File(app.application().getAbsolutePath(), "/WEB-INF/web.xml");
                 if (file.exists()) {
@@ -1958,9 +1971,13 @@ public class VirtualServer extends StandardHost
 
             if (delete) {
                 if (!FileUtils.deleteFileMaybe(file)) {
+                    String path = null;
+                    if (file != null) {
+                        path = file.toString();
+                    }
                     _logger.log(Level.WARNING,
                             "webcontainer.unableToDelete",
-                            file.toString());
+                            path);
                 }
             }
 

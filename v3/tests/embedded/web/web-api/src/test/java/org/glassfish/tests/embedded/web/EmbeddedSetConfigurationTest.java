@@ -68,7 +68,6 @@ public class EmbeddedSetConfigurationTest {
     static GlassFish glassfish;
     static WebContainer embedded;
     static File root;
-    static int newPort = 9090;
     static String contextRoot = "test";
 
     @BeforeClass
@@ -91,17 +90,10 @@ public class EmbeddedSetConfigurationTest {
     
     @Test
     public void testEmbeddedWebAPIConfig() throws Exception {
-
-        WebListener listener = embedded.createWebListener("test-listener", HttpListener.class);
-        listener.setPort(newPort);
-        embedded.addWebListener(listener);
-
         Context context = embedded.createContext(root);
-        embedded.addContext(context, contextRoot);
+        embedded.addContext(context, "/");
 
-        // TODO
-        //URL servlet = new URL("http://localhost:"+newPort);
-        URL servlet = new URL("http://localhost:9090/"+contextRoot+"/hello");
+        URL servlet = new URL("http://localhost:8080");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(
