@@ -50,21 +50,17 @@ import com.sun.enterprise.module.common_impl.Jar;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.hk2.component.InhabitantsFile;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleReference;
 import org.osgi.framework.Constants;
 
 import java.io.*;
-import java.io.ObjectStreamException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.Map;
-import java.util.HashMap;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.*;
 import java.util.jar.Attributes;
-import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 
@@ -77,7 +73,7 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
     private String bundleName;
     private URI location;
     private String version;
-    private SerializableManifest manifest;
+    private Manifest manifest;
     private String lifecyclePolicyClassName;
     private ModuleMetadata metadata = new ModuleMetadata();
 
@@ -92,9 +88,10 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
         * manifest info. For now, just use the standard URI.
         */
         this.location = location;
-        manifest = new SerializableManifest(jarFile.getManifest());
+        final Manifest m = jarFile.getManifest();
+        manifest = m instanceof Serializable ? m : new SerializableManifest(m);
         Attributes mainAttr = manifest.getMainAttributes();
-        bundleName = manifest.getMainAttributes().getValue(Constants.BUNDLE_NAME);
+        bundleName = mainAttr.getValue(Constants.BUNDLE_NAME);
 
         name = mainAttr.getValue(Constants.BUNDLE_SYMBOLICNAME);
         // R3 bundles may not have any name, yet HK2 requires some name to be
@@ -220,12 +217,7 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
 
         private BundleJar(Bundle b) throws IOException {
             this.b = b;
-            InputStream is = b.getEntry(JarFile.MANIFEST_NAME).openStream();
-            try {
-                m = new Manifest(is);
-            } finally {
-                is.close();
-            }
+            m = new BundleManifest(b);
         }
 
         public Manifest getManifest() throws IOException {
@@ -273,10 +265,9 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
 
         private void parseServiceDescriptors(ModuleMetadata result) {
             /*
-             * No need for this optimisation, becasuse it fails when jar does not
-             * have directory entries.
-            if (b.getEntry(SERVICE_LOCATION) == null) return;
+             * This optimisation was earlier not working because of FELIX-1210.
              */
+            if (b.getEntry(SERVICE_LOCATION) == null) return;
             Enumeration<String> entries;
             entries = b.getEntryPaths(SERVICE_LOCATION);
             if (entries != null) {
@@ -326,6 +317,52 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
         public String getBaseName() {
             throw new UnsupportedOperationException("Method not implemented");
         }
+
+        /**
+         * Manifest of a bundle. It is optimized for serialization as it writes out only the bundle id to the stream.
+         * So, it can only be desrialized in the context of OSGi and that too only if the bundle id is same.
+         */
+        private static class BundleManifest extends Manifest implements Serializable {
+            private long bundleId;
+
+            private BundleManifest() {
+            }
+
+            private BundleManifest(Bundle b) {
+                this.bundleId = b.getBundleId();
+                init(b);
+            }
+
+            private void init(Bundle b) {
+                Attributes attrs = getMainAttributes();
+                Dictionary headers = b.getHeaders();
+                for (Object o : Collections.list(headers.keys())) {
+                    attrs.putValue((String)o, (String)headers.get(o));
+                }
+            }
+
+            // Serialization method
+            private void writeObject(ObjectOutputStream out) throws IOException {
+                out.defaultWriteObject();
+            }
+
+            private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+                in.defaultReadObject();
+                ClassLoader cl;
+                if (System.getSecurityManager() != null) {
+                    cl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                        public ClassLoader run() {
+                            return getClass().getClassLoader();
+                        }
+                    });
+                } else {
+                    cl = getClass().getClassLoader();
+                }
+
+                init(BundleReference.class.cast(cl).getBundle().getBundleContext().getBundle(bundleId));
+            }
+
+        }
     }
 
     private static class SerializableManifest extends Manifest implements Serializable {
@@ -339,62 +376,12 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
             super(man);
         }
 
-        private Object writeReplace() throws ObjectStreamException {
-            return new ManifestData(this);
+        private void writeObject(ObjectOutputStream out) throws IOException {
+            write(out);
         }
 
-        /**
-         * a class which is used as a substiture for
-         * {@link SerializableManifest} during serialization.
-         * @see java.io.Serializable
-         * @see #readResolve
-         * @see org.jvnet.hk2.osgiadapter.OSGiModuleDefinition.SerializableManifest#writeReplace
-         */
-        private static class ManifestData implements Serializable {
-            private Map<String, String> mainAttributes;
-            private Map<String, Map<String, String>> entries;
-
-            // called during serialization
-            private ManifestData(Manifest manifest)
-            {
-                mainAttributes = new HashMap<String, String>();
-                mainAttributes.putAll(toMap(manifest.getMainAttributes()));
-                entries = new HashMap<String, Map<String, String>>();
-                for (Map.Entry<String, Attributes> entry : manifest.getEntries().entrySet()) {
-                    entries.put(entry.getKey(), toMap(entry.getValue()));
-                }
-            }
-
-            // called during desrialization
-            private Object readResolve() throws ObjectStreamException {
-                SerializableManifest m = new SerializableManifest();
-                for (Map.Entry<String, String> entry : mainAttributes.entrySet()) {
-                    m.getMainAttributes().putValue(entry.getKey(), entry.getValue());
-                }
-                for (Map.Entry<String, Map<String, String>> entry : entries.entrySet()) {
-                    m.getEntries().put(entry.getKey(), toAttributes(entry.getValue()));
-                }
-                return m;
-            }
-
-            private Attributes toAttributes(Map<String, String> map) {
-                Attributes attrs = new Attributes();
-                for (Map.Entry<String, String> entry : map.entrySet()) {
-                    attrs.putValue(entry.getKey(), entry.getValue());
-                }
-                return attrs;
-            }
-
-            private Map<String, String> toMap(Attributes attrs) {
-                Map<String, String> map = new HashMap<String, String>();
-                for (Map.Entry<Object, Object> entry : attrs.entrySet()) {
-                    // the cast is OK, as Manifest only puts Name, String pairs
-                    // See javadocs of Manifest.
-                    map.put(Attributes.Name.class.cast(entry.getKey()).toString(),
-                            (String)entry.getValue());
-                }
-                return map;
-            }
+        private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+            read(in);
         }
     }
 

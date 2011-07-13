@@ -78,8 +78,13 @@ public class OSGiModulesRegistryImpl
     private Map<ModuleLifecycleListener, BundleListener> moduleLifecycleListeners =
             new HashMap<ModuleLifecycleListener, BundleListener>();
 
+    // cache related attributes
+    private Map<URI, ModuleDefinition> cachedData = new HashMap<URI, ModuleDefinition>();
+    private boolean cacheInvalidated = false;
     private static final String HK2_CACHE_DIR = "com.sun.enterprise.hk2.cacheDir";
     private static final String INHABITANTS_CACHE = "inhabitants";
+    private static final String HK2_CACHE_IO_BUFFER_SIZE = "com.sun.enterprise.hk2.cacheIoBufferSize";
+    private static final int DEFAULT_BUFFER_SIZE = 1024;
 
     /*package*/ OSGiModulesRegistryImpl(BundleContext bctx) {
         super(null);
@@ -179,8 +184,6 @@ public class OSGiModulesRegistryImpl
         return m;
     }
 
-    Map<URI, ModuleDefinition> cachedData = new HashMap<URI, ModuleDefinition>();
-
     /**
      * Loads the inhabitants metadata from the cache. metadata is saved in a file
      * called inhabitants
@@ -194,7 +197,11 @@ public class OSGiModulesRegistryImpl
         }
         File io = new File(cacheLocation, INHABITANTS_CACHE);
         if (!io.exists()) return;
-        ObjectInputStream stream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(io)));
+        if(logger.isLoggable(Level.FINE)) {
+            logger.logp(Level.INFO, "OSGiModulesRegistryImpl", "loadCachedData", "HK2 cache file = {0}", new Object[]{io});
+        }
+        ObjectInputStream stream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(io),
+                getBufferSize()));
         cachedData = (Map<URI, ModuleDefinition>) stream.readObject();
         stream.close();
     }
@@ -209,13 +216,16 @@ public class OSGiModulesRegistryImpl
             return;
         }
         File io = new File(cacheLocation, INHABITANTS_CACHE);
+        if(logger.isLoggable(Level.FINE)) {
+            logger.logp(Level.INFO, "OSGiModulesRegistryImpl", "saveCache", "HK2 cache file = {0}", new Object[]{io});
+        }
         if (io.exists()) io.delete();
         io.createNewFile();
         Map<URI, ModuleDefinition> data = new HashMap<URI, ModuleDefinition>();
         for (Module m : modules.values()) {
             data.put(m.getModuleDefinition().getLocations()[0], m.getModuleDefinition());
         }
-        ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(io)));
+        ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(io), getBufferSize()));
         os.writeObject(data);
         os.close();
     }
@@ -236,6 +246,19 @@ public class OSGiModulesRegistryImpl
             }
         }
     }
+
+    private int getBufferSize() {
+        int bufsize = DEFAULT_BUFFER_SIZE;
+        try {
+            bufsize = Integer.valueOf(bctx.getProperty(HK2_CACHE_IO_BUFFER_SIZE));
+        } catch (Exception e) {
+        }
+        if(logger.isLoggable(Level.FINE)) {
+            logger.logp(Level.FINE, "OSGiModulesRegistryImpl", "getBufferSize", "bufsize = {0}", new Object[]{bufsize});
+        }
+        return bufsize;
+    }
+
     // Factory method
     private OSGiModuleDefinition makeModuleDef(Bundle bundle)
             throws IOException, URISyntaxException {
@@ -243,17 +266,18 @@ public class OSGiModulesRegistryImpl
         if (cachedData.containsKey(key)) {
             return OSGiModuleDefinition.class.cast(cachedData.get(key));
         } else {
+            this.cacheInvalidated = true;
             return new OSGiModuleDefinition(bundle);
         }
     }
-
-
 
     @Override
     protected synchronized void add(Module newModule) {
         // It is overridden to make it synchronized as it is called from
         // BundleListener.
         super.add(newModule);
+        // don't set cacheInvalidated = true here, as this method is called while iterating initial
+        // set of bundles when this module is started. Instead, we invalidate the cache makeModuleDef().
     }
 
     @Override
@@ -265,6 +289,7 @@ public class OSGiModulesRegistryImpl
         // Update cache. 
         final URI location = module.getModuleDefinition().getLocations()[0];
         cachedData.remove(location);
+        cacheInvalidated = true;
     }
 
     // factory method
@@ -316,7 +341,9 @@ public class OSGiModulesRegistryImpl
         }
         // Save the cache before clearing modules
         try {
-            saveCache();
+            if (cacheInvalidated) {
+                saveCache();
+            }
         } catch (IOException e) {
             Logger.logger.log(Level.WARNING, "Cannot save metadata to cache", e);
         }

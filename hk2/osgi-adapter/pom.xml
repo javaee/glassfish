@@ -90,15 +90,15 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.apache.felix</groupId>
+            <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>1.2.0</version>
+            <version>4.2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>osgi_R4_compendium</artifactId>
-            <version>1.0</version>
+            <artifactId>org.osgi.compendium</artifactId>
+            <version>4.2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
