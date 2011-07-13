@@ -42,6 +42,7 @@ package org.glassfish.hk2.classmodel.reflect.test;
 import org.glassfish.hk2.classmodel.reflect.*;
 
 import org.glassfish.hk2.classmodel.reflect.test.ordering.MethodDeclarationOrderTest;
+import org.glassfish.hk2.classmodel.reflect.test.parameterized.PathRouteBuilder;
 import org.junit.Test;
 import org.junit.Assert;
 import java.io.IOException;
@@ -67,5 +68,12 @@ public class ModelTest {
             Assert.assertEquals("method"+i, mm.getName());
             i++;
         }
+    }
+
+    @Test
+    public void parameterizedInterfacesTest() throws IOException, InterruptedException {
+        Types types = ClassModelTestsUtils.getTypes();
+        ExtensibleType<?> pathRouteBuilder = (ExtensibleType<?>) types.getBy(PathRouteBuilder.class.getName());
+        Assert.assertEquals(pathRouteBuilder.getParameterizedInterfaces().size(), 1);
     }
 }

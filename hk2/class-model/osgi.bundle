@@ -45,4 +45,5 @@
 
 Import-Package: \
                         org.objectweb.asm;password=GlassFish;resolution:=optional, \
+                        org.objectweb.asm.signature;password=GlassFish;resolution:=optional, \
                         org.objectweb.asm.commons;password=GlassFish;resolution:=optional

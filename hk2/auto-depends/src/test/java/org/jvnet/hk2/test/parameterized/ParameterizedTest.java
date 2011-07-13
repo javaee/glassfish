@@ -50,7 +50,6 @@ import org.jvnet.hk2.junit.Hk2Runner;
  * @author Jerome Dochez
  */
 @RunWith(Hk2Runner.class)
-@Ignore
 public class ParameterizedTest {
 
     @Inject

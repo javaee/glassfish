@@ -40,21 +40,15 @@
 package org.glassfish.hk2.classmodel.reflect.impl;
 
 import org.glassfish.hk2.classmodel.reflect.*;
+import org.glassfish.hk2.classmodel.reflect.Type;
 import org.objectweb.asm.*;
 import org.objectweb.asm.commons.EmptyVisitor;
 import org.objectweb.asm.signature.SignatureReader;
 
-import javax.naming.Context;
-import java.lang.reflect.Array;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * ASM class visitor, used to build to model
@@ -95,9 +89,13 @@ public class ModelClassVisitor implements ClassVisitor {
     }
 
     @Override
-    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {        
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         String parentName = (superName!=null?org.objectweb.asm.Type.getObjectType(superName).getClassName():null);
-        TypeProxy parent = (parentName!=null?typeBuilder.getHolder(parentName, typeBuilder.getType(access)):null);
+        TypeProxy parent = null;
+        Class<? extends Type> typeType = typeBuilder.getType(access);
+        if (!typeType.equals(AnnotationType.class)) {
+            parent = (parentName!=null?typeBuilder.getHolder(parentName, typeType):null);
+        }
         if (parent!=null && !parentName.equals(Object.class.getName())) {
             // put a temporary parent until we eventually visit it. 
             TypeImpl parentType = typeBuilder.getType(access, parentName, null);
@@ -141,51 +139,33 @@ public class ModelClassVisitor implements ClassVisitor {
 
         try {
             ExtensibleTypeImpl classModel = (ExtensibleTypeImpl) type;
-            /*if (signature!=null) {
-                    SignatureReader reader = new SignatureReader(signature);
-                    System.out.println("Starting to visit " + className);
-                    SignatureVisitorImpl signatureVisitor = new SignatureVisitorImpl(typeBuilder);
-                    reader.accept(signatureVisitor);
-                    System.out.println("Done vising signature for " + className);
-                    System.out.println("And the signature is " + signatureVisitor.getTopElement().getName());
-                    System.out.println(className+"<" + signatureVisitor.getTopElement().getName()+">");
-            } */
-            for (String intf : interfaces) {
-                String interfaceName = org.objectweb.asm.Type.getObjectType(intf).getClassName();
-                TypeProxy<InterfaceModel> typeProxy = typeBuilder.getHolder(interfaceName, InterfaceModel.class);
-
-                ParameterizedInterfaceModelImpl pim = new ParameterizedInterfaceModelImpl(typeProxy);
-                if (signature!=null && className.contains("parameterized")) {
-                    /*
-                    if (!signature.startsWith("<") && signature.indexOf('<')!=-1) {
-                        Pattern pattern = Pattern.compile("L([^;]*);L?([^;]*);?L?([^;]*);?L?([^;]*);?");
-                        if (!signature.contains(intf)) continue;
-                        int lastIndexOf = signature.lastIndexOf('>');
-                        if (!signature.contains(intf)) continue;
-                        String subSignature = signature.substring(signature.indexOf(intf)+intf.length()+1, lastIndexOf);
-                        Matcher m = pattern.matcher(subSignature);
-                        if (m.matches()) {
-                            for (int i = 0;i<m.groupCount();i++) {
-                                if (m.group(i+1).isEmpty()) continue;
-                                System.out.print(className + "with parameter " + m.group(i+1));
-                                String parameterClassName = org.objectweb.asm.Type.getObjectType(m.group(i+1)).getClassName();
-                                pim.addParameterizedType(typeBuilder.getHolder(parameterClassName));
-                                System.out.println(" and name " + parameterClassName);
+            if (signature!=null) {
+                SignatureReader reader = new SignatureReader(signature);
+                SignatureVisitorImpl signatureVisitor = new SignatureVisitorImpl(typeBuilder);
+                reader.accept(signatureVisitor);
+                if (!signatureVisitor.getImplementedInterfaces().isEmpty()) {
+                    for (ParameterizedInterfaceModelImpl pim : signatureVisitor.getImplementedInterfaces()) {
+                        if (pim.getRawInterfaceProxy()!=null) {
+                            classModel.isImplementing(pim);
+                            if (classModel instanceof ClassModel) {
+                                pim.getRawInterfaceProxy().
+                                    addImplementation((ClassModel) classModel);
                             }
                         }
-                        classModel.isImplementing(pim);
                     }
-                    SignatureReader reader = new SignatureReader(signature);
-                    System.out.println("Starting to visit " + className);
-                    reader.accept(new SignatureVisitorImpl(typeBuilder));
-                    System.out.println("Done vising signature for " + className);
-                    System.out.println("And the signature is " + pim.getName());
-                    */
                 }
-                classModel.isImplementing(typeProxy);
-                if (classModel instanceof ClassModel)
-                    typeProxy.addImplementation((ClassModel) classModel);
+            } else {
+                if (!typeType.equals(AnnotationType.class)) {
+                    for (String intf : interfaces) {
+                        String interfaceName = org.objectweb.asm.Type.getObjectType(intf).getClassName();
+                        TypeProxy<InterfaceModel> typeProxy = typeBuilder.getHolder(interfaceName, InterfaceModel.class);
 
+                        classModel.isImplementing(typeProxy);
+                        if (classModel instanceof ClassModel)
+                            typeProxy.addImplementation((ClassModel) classModel);
+
+                    }
+                }
             }
         } catch(ClassCastException e) {
             // ignore

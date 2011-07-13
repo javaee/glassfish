@@ -90,7 +90,7 @@ public interface Services extends Locator {
      * 
      * @return a non-null collection of service bindings
      */
-    Collection<Binding<?>> getBindings();
+    Collection<Binding<?>> getDeclaredBindings();
     
     /**
      * Retrieve the collection of existing bindings in this, and only this, service
@@ -104,7 +104,7 @@ public interface Services extends Locator {
      * @param descriptor the descriptor used for matching, or null for all
      * @return a non-null collection of service bindings matching the argument
      */
-    Collection<Binding<?>> getBindings(Descriptor descriptor);
+    Collection<Binding<?>> getDeclaredBindings(Descriptor descriptor);
 
     /**
      * Retrieve the collection of all existing bindings in this as well as in parent
@@ -112,7 +112,7 @@ public interface Services extends Locator {
      * 
      * @return a non-null collection of service bindings
      */
-    Collection<Binding<?>> getAllBindings();
+    Collection<Binding<?>> getBindings();
 
     /**
      * Retrieve the collection of existing bindings in this as well as in parent
@@ -126,7 +126,7 @@ public interface Services extends Locator {
      * @param descriptor the descriptor used for matching, or null for all
      * @return a non-null collection of service bindings matching the argument
      */
-    Collection<Binding<?>> getAllBindings(Descriptor descriptor);
+    Collection<Binding<?>> getBindings(Descriptor descriptor);
     
 }
 

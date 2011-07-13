@@ -179,6 +179,8 @@ public class Parser implements Closeable {
                         }
                     }
                 });
+            } else {
+                context.types.clearNonVisitedEntries();
             }
             close();
             return exceptions.toArray(new Exception[exceptions.size()]);
