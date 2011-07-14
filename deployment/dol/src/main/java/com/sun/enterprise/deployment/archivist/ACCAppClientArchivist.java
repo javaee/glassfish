@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.appclient.client.acc;
+package com.sun.enterprise.deployment.archivist;
 
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
