@@ -80,7 +80,7 @@
                     if ("!(#{pageSession.valueMap['defaultProvider']}=true)") {
                         mapPut(map="#{pageSession.securityConfigMap}" key="isdefaultprovider" value="false");
                     }
-                    mapPut(map="#{pageSession.securityConfigMap}" key="providername" value="#{pageSession.valueMap['Name']}");
+                    mapPut(map="#{pageSession.securityConfigMap}" key="id" value="#{pageSession.valueMap['Name']}");
                     mapPut(map="#{pageSession.securityConfigMap}" key="providertype" value="#{pageSession.valueMap['ProviderType']}");
                     mapPut(map="#{pageSession.securityConfigMap}" key="classname" value="#{pageSession.valueMap['ClassName']}");
                     mapPut(map="#{pageSession.securityConfigMap}" key="target" value="#{pageSession.configName}");
