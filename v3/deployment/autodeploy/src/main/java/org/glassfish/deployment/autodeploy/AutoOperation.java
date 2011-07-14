@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -212,7 +212,11 @@ public abstract class AutoOperation {
     protected void deleteAllMarks(File f) {
         try {
             for (String suffix : autoDeployFileSuffixes) {
-                getSuffixedFile(f, suffix).delete();
+                final File suffixedFile = getSuffixedFile(f, suffix);
+                if ( ! suffixedFile.delete()) {
+                    sLogger.log(Level.WARNING, "enterprise.deployment.deleteFailed",
+                            suffixedFile.getAbsolutePath());
+                }
             }
         } catch (Exception e) { 
             //ignore 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -123,8 +123,12 @@ public class AutoDeployedFilesManager {
     public void setDeployedFileInfo(File f) throws Exception {
       try {
         File statusFile = getStatusFile(f);
-        statusFile.createNewFile();
-        statusFile.setLastModified(f.lastModified());
+        if ( ! statusFile.createNewFile()) {
+            sLogger.log(Level.WARNING, "enterprise.deployment.createFailed", statusFile.getAbsolutePath());
+        }
+        if ( ! statusFile.setLastModified(f.lastModified())) {
+            sLogger.log(Level.WARNING, "enterprise.deployment.setLastModFailed", statusFile.getAbsolutePath());
+        }
       } catch (Exception e) { throw e; }
     }
 
@@ -134,7 +138,9 @@ public class AutoDeployedFilesManager {
     public void deleteDeployedFileInfo(File f) throws Exception {
       try {
         File statusFile = getStatusFile(f);
-        statusFile.delete();
+        if ( ! statusFile.delete()) {
+            sLogger.log(Level.WARNING, "enterprise.deployment.deleteFailed", f.getAbsolutePath());
+        }
       } catch (Exception e) { throw e;}
     }
 
@@ -161,7 +167,9 @@ public class AutoDeployedFilesManager {
          * and all intervening ones again.
          */
         if (autoDeployDir.exists()) {
-            statDir.mkdirs();
+            if ( ! statDir.mkdirs()) {
+                sLogger.log(Level.WARNING, "enterprise.deployment.mkdirsFailed", autoDeployDir.getAbsolutePath());
+            }
         }
         return statDir;
     }
@@ -195,7 +203,7 @@ public class AutoDeployedFilesManager {
                 }
             }
         }
-        return arrList.toArray(new File[0]);
+        return arrList.toArray(new File[arrList.size()]);
         
     }
     
@@ -246,7 +254,7 @@ public class AutoDeployedFilesManager {
         // Add to the app names files any entries for which auto-undeployment
         // has been requested by the user's creation of xxx_undeploy_requested.
         appNames.addAll(getFilesToUndeployByRequest(autodeployDir, statusDir));
-        return appNames.toArray(new File[0]);
+        return appNames.toArray(new File[appNames.size()]);
     }    
     
     /* 
@@ -305,7 +313,7 @@ public class AutoDeployedFilesManager {
      * A marker class to indicate that the file is to be undeployed and then
      * deleted by the autodeployer.
      */
-    protected final class UndeployRequestedFile extends File {
+    protected static final class UndeployRequestedFile extends File {
         public UndeployRequestedFile(File parent, String child) {
             super(parent, child);
         }

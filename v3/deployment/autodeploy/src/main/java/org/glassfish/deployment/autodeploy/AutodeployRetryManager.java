@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -389,7 +389,6 @@ public class AutodeployRetryManager implements PostConstruct {
          */
         public Info(File file) {
             this.file = file;
-            update();
         }
 
         /**
@@ -428,11 +427,12 @@ public class AutodeployRetryManager implements PostConstruct {
 
         /** File length the previous time this file was reported as
          * invalid. */
-        private long recordedLength = 0;
+        private long recordedLength;
 
         public JarInfo(File f) {
             super(f);
             recordedLength = f.length();
+            update();
         }
 
         @Override
@@ -467,10 +467,12 @@ public class AutodeployRetryManager implements PostConstruct {
     
     private class DirectoryInfo extends Info {
         
-        private long whenScanned = 0;
+        private long whenScanned;
         
         public DirectoryInfo(File f) {
             super(f);
+            whenScanned = 0;
+            update();
         }
 
         @Override

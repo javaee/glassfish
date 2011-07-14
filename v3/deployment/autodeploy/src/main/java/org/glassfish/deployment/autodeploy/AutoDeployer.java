@@ -417,7 +417,7 @@ public class AutoDeployer {
     
     public void waitUntilIdle() throws InterruptedException {
         synchronized(inProgress) {
-            if (inProgress.get()) {
+            while ( ! inProgress.get()) {
                 inProgress.wait();
             }
         }
@@ -550,7 +550,6 @@ public class AutoDeployer {
      */
     protected AutodeploymentStatus deploy(File deployablefile, File autodeployDir) throws AutoDeploymentException {
         
-        AutodeploymentStatus status = AutodeploymentStatus.FAILURE;
         String file=deployablefile.getAbsolutePath();
         if ( ! retryManager.shouldAttemptDeployment(deployablefile)) {
             return AutodeploymentStatus.PENDING;

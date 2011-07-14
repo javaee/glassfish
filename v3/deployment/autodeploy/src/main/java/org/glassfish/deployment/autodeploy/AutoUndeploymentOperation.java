@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -195,7 +195,11 @@ public class AutoUndeploymentOperation extends AutoOperation {
     private void markUndeployed(File f) {
         try {
             deleteAllMarks(f);
-            getUndeployedFile(f).createNewFile();
+            final File undeployedFile = getUndeployedFile(f);
+            if ( ! undeployedFile.createNewFile()) {
+                sLogger.log(Level.WARNING, "enterprise.deployment.createFailed",
+                        undeployedFile.getAbsolutePath());
+            }
         } catch (Exception e) { 
             //ignore 
         }
@@ -204,7 +208,11 @@ public class AutoUndeploymentOperation extends AutoOperation {
     private void markUndeployFailed(File f) {
         try {
             deleteAllMarks(f);
-            getUndeployFailedFile(f).createNewFile();
+            final File undeployFailedFile = getUndeployFailedFile(f);
+            if ( ! undeployFailedFile.createNewFile()) {
+                sLogger.log(Level.WARNING, "enterprise.deployment.createFailed",
+                        undeployFailedFile.getAbsolutePath());
+            }
         } catch (Exception e) { 
             //ignore 
         }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -155,7 +155,8 @@ public class AutoDeployDirectoryScanner implements DirectoryScanner{
     }
   
     protected File[] getListOfFiles(File dir, boolean includeSubDir) {
-        return getListOfFilesAsSet(dir, includeSubDir).toArray(new File[0]);
+        final Set<File> fileSet = getListOfFilesAsSet(dir, includeSubDir);
+        return fileSet.toArray(new File[fileSet.size()]);
     }
             
             
