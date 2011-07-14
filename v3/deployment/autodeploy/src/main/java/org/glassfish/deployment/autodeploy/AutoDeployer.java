@@ -383,7 +383,7 @@ public class AutoDeployer {
         }
     }
     
-    public void run(boolean includeSubdir) {
+    public synchronized void run(boolean includeSubdir) {
         markInProgress();
         try {
             deployAll(directory, includeSubdir);
@@ -409,17 +409,13 @@ public class AutoDeployer {
     }
 
     private void clearInProgress() {
-        synchronized(inProgress) {
-            inProgress.set(false);
-            inProgress.notifyAll();
-        }
+        inProgress.set(false);
+        notifyAll();
     }
     
-    public void waitUntilIdle() throws InterruptedException {
-        synchronized(inProgress) {
-            while ( ! inProgress.get()) {
-                inProgress.wait();
-            }
+    public synchronized void waitUntilIdle() throws InterruptedException {
+        while ( ! inProgress.get()) {
+            wait();
         }
     }
     
