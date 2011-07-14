@@ -24,9 +24,9 @@ then
 fi
 rm -rf glassfishv3
 rm revision-under-test.html
-wget -q -O revision-under-test.html http://${REHudson}/hudson/job/${upstreamSource}/lastSuccessfulBuild
+wget --no-proxy -q -O revision-under-test.html http://${REHudson}/hudson/job/${upstreamSource}/lastSuccessfulBuild
 grep 'Build #' revision-under-test.html
-time wget -q -O glassfish.zip http://${REHudson}/hudson/job/${upstreamSource}/lastSuccessfulBuild/artifact/bundles/glassfish.zip
+time wget --no-proxy -q -O glassfish.zip http://${REHudson}/hudson/job/${upstreamSource}/lastSuccessfulBuild/artifact/bundles/glassfish.zip
 rm -fR glassfish3
 unzip -q glassfish.zip
 if [ $? -ne 0 ]
