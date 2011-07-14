@@ -150,8 +150,9 @@ public class JdbcAdminServiceImpl extends ConnectorService {
         ConnectorConnectionPool connectorConnectionPool = null;
         try {
             String jndiNameForPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(poolInfo);
-            Context ic = _runtime.getNamingManager().getInitialContext();
-            connectorConnectionPool = (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
+            connectorConnectionPool = (ConnectorConnectionPool)
+                    _runtime.getResourceNamingService().
+                            lookup(poolInfo, jndiNameForPool, null);
         } catch (NamingException ne) {
             throw ne;
         }
