@@ -154,8 +154,6 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
     @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private volatile Server server;
    
-    private SecureAdmin secureAdmin;
-
     final Class<? extends Privacy> privacyClass;
 
     private boolean isRegistered = false;
@@ -178,7 +176,6 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
         
         epd = new AdminEndpointDecider(config, aalogger);
         addDocRoot(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/asadmindocroot/");
-        secureAdmin = habitat.getComponent(SecureAdmin.class);
     }
 
     /**

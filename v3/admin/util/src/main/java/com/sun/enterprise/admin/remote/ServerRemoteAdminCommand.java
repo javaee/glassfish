@@ -40,13 +40,16 @@
 
 package com.sun.enterprise.admin.remote;
 
+import com.sun.enterprise.admin.util.AuthenticationInfo;
 import com.sun.enterprise.admin.util.HttpConnectorAddress;
 import com.sun.enterprise.config.serverbeans.SecureAdmin;
+import com.sun.enterprise.config.serverbeans.SecureAdminInternalUser;
 import com.sun.enterprise.security.ssl.SSLUtils;
 import java.net.URLConnection;
 import java.util.logging.Logger;
 import org.glassfish.api.admin.CommandException;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.security.common.MasterPassword;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -68,6 +71,8 @@ public class ServerRemoteAdminCommand extends RemoteAdminCommand {
     private ServerEnvironment serverEnv;
 
     private SSLUtils _sslUtils = null;
+    
+    private MasterPassword masterPasswordHelper = null;
 
     public ServerRemoteAdminCommand(Habitat habitat, String name, String host, int port,
             boolean secure, String user, String password, Logger logger)
@@ -84,7 +89,14 @@ public class ServerRemoteAdminCommand extends RemoteAdminCommand {
 
     @Override
     protected synchronized HttpConnectorAddress getHttpConnectorAddress(String host, int port, boolean shouldUseSecure) {
-        if (SecureAdmin.Util.isEnabled(secureAdmin)) {
+        /*
+         * Return a connector address that uses a cert to authenticate this
+         * process as a client only if secure admin is enabled and if a cert,
+         * rather than an admin username and password, are used for process-to-
+         * process authentication.
+         */
+        if (SecureAdmin.Util.isEnabled(secureAdmin)
+                && ! SecureAdmin.Util.isUsingUsernamePasswordAuth(secureAdmin)) {
             return new HttpConnectorAddress(host, port,
                 sslUtils().getAdminSocketFactory(getCertAlias(), SSL_SOCKET_PROTOCOL));
         } else {
@@ -92,25 +104,40 @@ public class ServerRemoteAdminCommand extends RemoteAdminCommand {
         }
     }
 
+    @Override
+    protected AuthenticationInfo authenticationInfo() {
+        AuthenticationInfo result = null;
+        if (SecureAdmin.Util.isEnabled(secureAdmin)
+                && SecureAdmin.Util.isUsingUsernamePasswordAuth(secureAdmin)) {
+            final SecureAdminInternalUser secureAdminInternalUser = SecureAdmin.Util.secureAdminInternalUser(secureAdmin);
+            if (secureAdminInternalUser != null) {
+                try {
+                    String pw = masterPassword().getMasterPasswordAdapter().getPasswordForAlias(secureAdminInternalUser.getPasswordAlias());
+                    result = new AuthenticationInfo(secureAdminInternalUser.getUsername(), pw);
+                    pw = null;
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+        return result;
+    }
+    
     /**
-     * Adds the admin indicator header to the request so, in the unsecured admin
-     * use case, admin requests from the DAS to instances will be accepted as
-     * legitimate.
+     * Adds the admin indicator header to the request so. Do this whether 
+     * secure admin is enabled or not, because the indicator is unique among
+     * domains to help make sure only processes in the same domain talk to 
+     * each other.
      *
      * @param urlConnection
      */
     @Override
     protected synchronized void addAdditionalHeaders(final URLConnection urlConnection) {
-        /*
-         * If secure admin is enabled, we do not need to add the admin indicator header.
-         */
-        if ( ! SecureAdmin.Util.isEnabled(secureAdmin)) {
-            final String indicatorValue = SecureAdmin.Util.configuredAdminIndicator(secureAdmin);
-            if (indicatorValue != null) {
-                urlConnection.setRequestProperty(
-                        SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME,
-                        indicatorValue);
-            }
+        final String indicatorValue = SecureAdmin.Util.configuredAdminIndicator(secureAdmin);
+        if (indicatorValue != null) {
+            urlConnection.setRequestProperty(
+                    SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME,
+                    indicatorValue);
         }
     }
 
@@ -124,5 +151,12 @@ public class ServerRemoteAdminCommand extends RemoteAdminCommand {
             _sslUtils = habitat.getComponent(SSLUtils.class);
         }
         return _sslUtils;
+    }
+    
+    private synchronized MasterPassword masterPassword() {
+        if (masterPasswordHelper == null) {
+            masterPasswordHelper = habitat.getComponent(MasterPassword.class);
+        }
+        return masterPasswordHelper;
     }
 }

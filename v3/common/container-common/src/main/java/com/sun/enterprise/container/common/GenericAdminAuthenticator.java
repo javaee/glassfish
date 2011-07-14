@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,9 +40,11 @@
 
 package com.sun.enterprise.container.common;
 
+import com.sun.enterprise.config.serverbeans.SecureAdmin;
+import com.sun.enterprise.config.serverbeans.SecureAdminInternalUser;
+import com.sun.enterprise.config.serverbeans.SecureAdminPrincipal;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.security.auth.realm.file.FileRealmUser;
 import com.sun.enterprise.security.auth.realm.NoSuchUserException;
@@ -56,10 +58,8 @@ import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.security.ssl.SSLUtils;
 import com.sun.enterprise.util.net.NetUtils;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.security.KeyStoreException;
 import java.util.Map;
 import java.util.logging.Level;
 import org.glassfish.common.util.admin.AuthTokenManager;
@@ -78,8 +78,6 @@ import java.util.Set;
 import java.io.File;
 import java.security.KeyStore;
 import java.security.Principal;
-import java.security.cert.Certificate;
-import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.HashMap;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -136,7 +134,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
 
     private static LocalStringManagerImpl lsm = new LocalStringManagerImpl(GenericAdminAuthenticator.class);
     
-    private final Logger logger = LogDomains.getLogger(GenericAdminAuthenticator.class,
+    private static final Logger logger = LogDomains.getLogger(GenericAdminAuthenticator.class,
             LogDomains.ADMIN_LOGGER);
 
     private KeyStore truststore = null;
@@ -159,6 +157,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
      * @return AdminAcessController.Access level of access to grant
      * @throws LoginException
      */
+    @Override
     public AdminAccessController.Access loginAsAdmin(String user, String password,
             String realm, final String originHost) throws LoginException {
         return loginAsAdmin(user, password, realm,
@@ -176,41 +175,70 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
      * @return AdminAcessController.Access level of access to grant
      * @throws LoginException
      */
+    @Override
     public synchronized AdminAccessController.Access loginAsAdmin(String user, String password, String realm,
             final String originHost, final Map<String,String> authRelatedHeaders,
             final Principal requestPrincipal) throws LoginException {
-        boolean isLocal = isLocalPassword(user, password); //local password gets preference
+                
+        /*
+         * If the request includes the domain ID header, make sure its value
+         * matches the configured value for this server.
+         */
+        final SpecialAdminIndicatorChecker adminIndicatorChecker =
+                new SpecialAdminIndicatorChecker(secureAdmin, logger, authRelatedHeaders, originHost);
+        if (adminIndicatorChecker.result() == SpecialAdminIndicatorChecker.Result.MISMATCHED) {
+            /*
+             * The checker will have logged a warning if the ID is mismatched,
+             * so there's no need to do so again here.
+             */
+            return AdminAccessController.Access.NONE;
+        }
+        
+        /*
+         * If secure admin is not enabled and the special admin indicator is
+         * present, then we assume the request came from another GlassFish
+         * process in the domain and we grant it access.
+         */
+        if ( (adminIndicatorChecker.result() == SpecialAdminIndicatorChecker.Result.MATCHED)
+             && ! SecureAdmin.Util.isEnabled(secureAdmin)) {
+            return AdminAccessController.Access.FULL;
+        }
+        
+        final boolean isLocal = isLocalPassword(user, password); //local password gets preference
         if (isLocal) {
             logger.fine("Accepted locally-provisioned password authentication");
             return AdminAccessController.Access.FULL;
         }
+        
         /*
-         * Try to authenticate as a trusted sender first.  A trusted sender is
-         * one that either presents an SSL cert that is in our truststore or
-         * presents a very-short-term authentication token in the http request
-         * header.
-         * 
-         * One reason to check for a trusted sender first is that
-         * under secure admin an incoming command could have an auth token and,
-         * if there is one, we'd like to consume it and retire it.  If we 
-         * checked for file realm auth. first then a command submitted from a
-         * shell process on a system using asadmin - which will have a limited-use
-         * token - might also be using a stored password which would authenticate,
-         * thereby bypassing the auth token
-         * processing and allowing the token to remain valid longer than it should.
+         * See if the request has a valid limited-use auth. token.
          */
-        boolean result = authenticateAsTrustedSender(authRelatedHeaders, requestPrincipal);
-        if (result) {
-            logger.log(Level.FINE, "Authenticated as trusted sender");
+        final boolean isTokenAuth = authenticateUsingOneTimeToken(
+                authRelatedHeaders.get(SecureAdmin.Util.ADMIN_ONE_TIME_AUTH_TOKEN_HEADER_NAME));
+        if (isTokenAuth) {
+            logger.log(Level.FINE, "Authenticated using one-time auth token");
             return AdminAccessController.Access.FULL;
         }
+                
+        /*
+         * See if the request has an authorized SSL cert.
+         */
+        final boolean isCertAuth  = authorizeUsingCert(requestPrincipal);
+        if (isCertAuth) {
+            logger.log(Level.FINE, "Authenticated SSL client auth principal {0}", requestPrincipal.getName());
+            return AdminAccessController.Access.FULL;
+        }
+        
+        /*
+         * Last, see if the request has username/password credentials.
+         */
         if (as.usesFileRealm()) {
-            result = handleFileRealm(user, password);
+            final boolean isUsernamePasswordAuth  = handleFileRealm(user, password);
             logger.log(Level.FINE, "Not a \"trusted sender\"; file realm user authentication {1} for admin user {0}",
-                    new Object[] {user, result ? "passed" : "failed"});
+                    new Object[] {user, isUsernamePasswordAuth ? "passed" : "failed"});
             final Access access;
-            if (result) {
-                 access = chooseAccess(originHost);
+            if (isUsernamePasswordAuth) {
+                access = chooseAccess(originHost, user);
                 logger.log(Level.FINE, "Authorized {0} access for user {1}",
                         new Object[] {access, user});
 
@@ -254,7 +282,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
                         (as.getAssociatedAuthRealm().getGroupMapping() == null)
                         || ensureGroupMembership(user, realm));
                 return isConsideredInAdminGroup
-                    ?  chooseAccess(originHost)
+                    ?  chooseAccess(originHost, user)
                     : AdminAccessController.Access.NONE;
            } catch(Exception e) {
 //              LoginException le = new LoginException("login failed!");
@@ -271,74 +299,53 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
     /**
      * Chooses what level of admin access to grant an authenticated user.
      * <p>
-     * If the current node is not the DAS, then we grant only monitoring access.
-     * (We do not permit full admin access to instances.)
+     * If the current node is not the DAS, then we grant only monitoring access
+     * unless the message was authenticated using an internal admin 
+     * username and password, in which case we grant full access. 
+     * (We do not permit full admin access to instances from end-user clients.)
      *
      * If the current node is the DAS, then we grant full admin access only
      * if the request came from the same host or if secure admin is enabled.
      * 
      * @return the access to be granted to the authenticated user
      */
-    private Access chooseAccess(final String originHost) {
+    private Access chooseAccess(final String originHost, final String username) {
         Access grantedAccess = Access.MONITORING;
-        if (serverEnv.isDas()) {
-            if ( NetUtils.isThisHostLocal(originHost) 
-                 ||
-                 SecureAdmin.Util.isEnabled(secureAdmin) ) {
-                grantedAccess = Access.FULL;
+        if (isAuthorizedInternalUser(username)) {
+            grantedAccess = Access.FULL;
+        } else {
+            if (serverEnv.isDas()) {
+                if ( NetUtils.isThisHostLocal(originHost) 
+                     ||
+                     SecureAdmin.Util.isEnabled(secureAdmin) ) {
+                    grantedAccess = Access.FULL;
+                }
             }
         }
         return grantedAccess;
     }
 
-    /**
-     * Tries to authenticate using a Principal, typically from the incoming admin request,
-     * or using the special admin indicator (which flags requests as from another
-     * server in the unsecured use case).
-     *
-     * @param authRelatedHeaders headers related to authentication from the incoming admin request
-     * @param reqPrincipal Principal, typically as returned by the secure transport which delivered the incoming admin request
-     * @return true if the Principal is non-null and is the expected one and is therefore authorized for admin tasks; false otherwise
-     * @throws Exception
-     */
-    private boolean authenticateAsTrustedSender(
-            final Map<String,String> authRelatedHeaders, final Principal reqPrincipal) throws LoginException  {
-        /*
-         * If secure admin is enabled, use only the cert check.  If it's not
-         * enabled, use only the special indicator check.
-         */
-        boolean result;
-        result = authenticateUsingCert(reqPrincipal, 
-                serverEnv.isDas() ? SecureAdmin.Util.instanceAlias(secureAdmin) :
-                    SecureAdmin.Util.DASAlias(secureAdmin));
-        if (result) {
-            logger.log(Level.FINE, "Authenticated SSL client auth principal {0}", reqPrincipal.getName());
-            return result;
-        }
-        if ( ! SecureAdmin.Util.isEnabled(secureAdmin)) {
-            result = authenticateUsingSpecialIndicator(
-                    authRelatedHeaders.get(SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME));
-            if (result) {
-                logger.log(Level.FINE, "Authenticated server using server admin header indicator");
-                return result;
+    private boolean isAuthorizedInternalUser(final String username) {
+        for (SecureAdminInternalUser u : SecureAdmin.Util.secureAdminInternalUsers(secureAdmin)) {
+            if (u.getUsername().equals(username)) {
+                return true;
             }
         }
-        
-        result = authenticateUsingOneTimeToken(
-                authRelatedHeaders.get(SecureAdmin.Util.ADMIN_ONE_TIME_AUTH_TOKEN_HEADER_NAME));
-        if (result) {
-            logger.log(Level.FINE, "Authenticated using one-time auth token");
-        }
-        return result;
+        return false;
     }
-
-    private boolean authenticateUsingCert(final Principal reqPrincipal, final String instanceAlias) throws LoginException {
+    
+    private boolean authorizeUsingCert(final Principal reqPrincipal) throws LoginException {
         if (reqPrincipal == null) {
             return false;
         }
         try {
-            final Principal expectedPrincipal = expectedPrincipal(instanceAlias);
-            return (expectedPrincipal != null ? expectedPrincipal.equals(reqPrincipal) : false);
+            if (isPrincipalAuthorized(reqPrincipal)) {
+                logger.log(Level.FINE, "Cert {0} recognized as authorized admin cert", reqPrincipal.toString());
+                return true;
+            }
+            logger.log(Level.FINE, "Authenticated cert {0} is not separately authorized for admin operations", 
+                    reqPrincipal.toString());
+            return false;
         } catch (Exception ex) {
             final LoginException loginEx = new LoginException();
             loginEx.initCause(ex);
@@ -346,46 +353,16 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
         }
     }
 
-    private synchronized KeyStore trustStore() throws IOException {
-        if (truststore == null) {
-            truststore = sslUtils().getTrustStore();
-        }
-        return truststore;
-    }
-
-    private synchronized SSLUtils sslUtils() {
-        if (sslUtils == null) {
-            sslUtils = habitat.getComponent(SSLUtils.class);
-        }
-        return sslUtils;
-    }
-
-    private synchronized Principal expectedPrincipal(final String instanceAlias) throws IOException, KeyStoreException {
-        Principal result;
-        if ((result = serverPrincipals.get(instanceAlias)) == null) {
-            final Certificate cert = trustStore().getCertificate(instanceAlias);
-            if (cert == null || ! (cert instanceof X509Certificate)) {
-                return null;
+    private boolean isPrincipalAuthorized(final Principal reqPrincipal) {
+        final String principalName = reqPrincipal.getName();
+        for (SecureAdminPrincipal configPrincipal : SecureAdmin.Util.secureAdminPrincipals(secureAdmin, habitat)) {
+            if (configPrincipal.getDn().equals(principalName)) {
+                return true;
             }
-            result = ((X509Certificate) cert).getSubjectX500Principal();
-            serverPrincipals.put(instanceAlias, result);
         }
-        return result;
+        return false;
     }
-
-    /*
-     * Returns whether the admin indicator value tells that the sender is
-     * a server (DAS or instance).
-     */
-    private boolean authenticateUsingSpecialIndicator(
-            final String candidateSpecialAdminIndicator) {
-        if (candidateSpecialAdminIndicator == null) {
-            return false;
-        }
-        return candidateSpecialAdminIndicator.equals(
-                SecureAdmin.Util.configuredAdminIndicator(secureAdmin));
-    }
-
+    
     private boolean authenticateUsingOneTimeToken(
             final String oneTimeAuthToken) {
         return oneTimeAuthToken == null ? false : authTokenManager.consumeToken(oneTimeAuthToken);
@@ -394,8 +371,8 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
 
     private boolean ensureGroupMembership(String user, String realm) {
         try {
-            SecurityContext sc = SecurityContext.getCurrent();
-            Set ps = sc.getPrincipalSet(); //before generics
+            SecurityContext secContext = SecurityContext.getCurrent();
+            Set ps = secContext.getPrincipalSet(); //before generics
             for (Object principal : ps) {
                 if (principal instanceof Group) {
                     Group group = (Group) principal;
@@ -406,7 +383,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
             logger.fine("User is not the member of the special admin group");
             return false;
         } catch(Exception e) {
-            logger.fine("User is not the member of the special admin group: " + e.getMessage());
+            logger.log(Level.FINE, "User is not the member of the special admin group: {0}", e.getMessage());
             return false;
         }
 
@@ -422,7 +399,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
             String defuser = getDefaultAdminUser();
             if (defuser != null) {
                 user = defuser;
-                logger.fine("Using default user: " + defuser);
+                logger.log(Level.FINE, "Using default user: {0}", defuser);
             } else
                 logger.fine("No default user");
         }
@@ -482,7 +459,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
                     for (String group : fru.getGroups()) {
                         if (group.equals(AdminConstants.DOMAIN_ADMIN_GROUP_NAME))
                             // there is only one admin user, in the right group, default to it
-                            logger.fine("Attempting access using default admin user: " + au);
+                            logger.log(Level.FINE, "Attempting access using default admin user: {0}", au);
                             return au;
                     }
                 }
@@ -546,5 +523,58 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
         } catch (LoginException e) {
             throw new SecurityException(e);
         }
+    }
+    
+    /*
+     * If the admin client sent the unique domain identifier in a header then
+     * that should mean the request came from another GlassFish server in this
+     * domain. Make sure that the value, if present, matches the one in 
+     * this server's domain config.  If they do not match then reject the 
+     * message - it came from a domain other than this server's.
+     * 
+     * Note that we don't insist that every request have the domain identifier.  For 
+     * example, requests from asadmin will not include the domain ID.  But if
+     * the domain ID is present in the request it needs to match the 
+     * configured ID.
+     */
+    private static class SpecialAdminIndicatorChecker {
+        
+        private static enum Result {
+            NOT_IN_REQUEST,
+            MATCHED,
+            MISMATCHED
+        }
+        
+        private final Result _result;
+        
+        private SpecialAdminIndicatorChecker(
+                final SecureAdmin sa,
+                final Logger logger,
+                final Map<String,String> authRelatedHeaders,
+                final String originHost) {
+            final String requestSpecialAdminIndicator = 
+                    authRelatedHeaders.get(SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME);
+            if (requestSpecialAdminIndicator != null) {
+                if (requestSpecialAdminIndicator.equals(
+                        SecureAdmin.Util.configuredAdminIndicator(sa))) {
+                    _result = Result.MATCHED;
+                    logger.fine("Admin request contains expected domain ID");
+                } else {
+                    final String msg = lsm.getLocalString("foreign.domain.ID", 
+                    "An admin request arrived from {0} with the domain identifier {1} which does not match the domain identifier {2} configured for this server's domain; rejecting the request",
+                    originHost, requestSpecialAdminIndicator, sa.getSpecialAdminIndicator());
+                    logger.log(Level.WARNING, msg);
+                    _result = Result.MISMATCHED;
+                }
+            } else {
+                logger.fine("Admin request contains no domain ID; this is OK - continuing");
+                _result = Result.NOT_IN_REQUEST;
+            }
+        }
+        
+        private Result result() {
+            return _result;
+        }
+        
     }
 }

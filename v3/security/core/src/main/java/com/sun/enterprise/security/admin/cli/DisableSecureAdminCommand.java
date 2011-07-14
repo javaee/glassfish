@@ -68,7 +68,7 @@ asadmin -s delete-protocol pu-protocol
 @Service(name = "disable-secure-admin")
 @Scoped(PerLookup.class)
 @I18n("disable.secure.admin.command")
-@ExecuteOn(RuntimeType.ALL)
+@ExecuteOn(RuntimeType.DAS)
 public class DisableSecureAdminCommand extends SecureAdminCommand {
 
     @Override

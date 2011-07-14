@@ -620,9 +620,10 @@ public class RemoteAdminCommand {
                 logger.log(Level.FINER, "Password options: {0}", passwordOptions);
                 logger.log(Level.FINER, "Using auth info: User: {0}, Password: {1}", 
                         new Object[]{user, ok(password) ? "<non-null>" : "<null>"});
-                if (user != null || password != null)
-                    url.setAuthenticationInfo(
-                        new AuthenticationInfo(user, password));
+                final AuthenticationInfo authInfo = authenticationInfo();
+                if (authInfo != null) {
+                    url.setAuthenticationInfo(authInfo);
+                }
                 urlConnection = (HttpURLConnection)
                         url.openConnection(uriString);
                 urlConnection.setRequestProperty("User-Agent", responseFormatType);
@@ -876,6 +877,17 @@ public class RemoteAdminCommand {
          * true admin clients.
          */
     }
+    
+            /*
+     * Returns the username/password authenticaiton information to use
+     * in building the outbound HTTP connection.
+     * 
+     * @return the username/password auth. information to send with the request
+     */
+    protected AuthenticationInfo authenticationInfo() {
+        return ((user != null || password != null) ? new AuthenticationInfo(user, password) : null);
+    }
+    
 
     /**
      * Check that the connection was successful and handle any error responses,
