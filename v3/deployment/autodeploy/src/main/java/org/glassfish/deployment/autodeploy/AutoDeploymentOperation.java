@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,8 +40,11 @@
 
 package org.glassfish.deployment.autodeploy;
 
+import com.sun.logging.LogDomains;
 import java.io.File;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.deployment.autodeploy.AutoDeployer.AutodeploymentStatus;
@@ -106,6 +109,8 @@ public class AutoDeploymentOperation extends AutoOperation {
     @Inject
     private AutodeployRetryManager retryManager;
     
+    private static final Logger logger = LogDomains.getLogger(AutoDeploymentOperation.class, LogDomains.DPL_LOGGER); 
+    
     /**
      * Completes the initialization of the object.
      * @param renameOnSuccess
@@ -168,7 +173,7 @@ public class AutoDeploymentOperation extends AutoOperation {
          * might fail because the file is incomplete but a later attempt might
          * work.
          */
-        if (ds != AutodeploymentStatus.SUCCESS) {
+        if (ds != AutodeploymentStatus.SUCCESS && ds != AutodeploymentStatus.WARNING) {
             try {
                 retryManager.recordFailedDeployment(file);
             } catch (AutoDeploymentException ex) {
@@ -195,7 +200,11 @@ public class AutoDeploymentOperation extends AutoOperation {
     private void markDeployed(File f) {
         try {
             deleteAllMarks(f);
-            getDeployedFile(f).createNewFile();
+            final File deployedFile = getDeployedFile(f);
+            if ( ! deployedFile.createNewFile()) {
+                logger.log(Level.WARNING, "enterprise.deployment.createFailed",
+                        deployedFile.getAbsolutePath());
+            }
         } catch (Exception e) { 
             //ignore 
         }
@@ -204,7 +213,11 @@ public class AutoDeploymentOperation extends AutoOperation {
     private void markDeployFailed(File f) {
         try {
             deleteAllMarks(f);
-            getDeployFailedFile(f).createNewFile();
+            final File deployFailedFile = getDeployFailedFile(f);
+            if ( ! deployFailedFile.createNewFile()) {
+                logger.log(Level.WARNING, "enterprise.deployment.createFailed", 
+                        deployFailedFile.getAbsolutePath());
+            }
         } catch (Exception e) { 
             //ignore 
         }
