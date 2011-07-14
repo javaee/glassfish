@@ -81,6 +81,10 @@ public class ArchivistFactory implements ContractProvider, PostConstruct {
     @Inject
     Habitat habitat;
 
+    public ArchivistFactory() {
+        habitat = null;
+    }
+    
     public Archivist getArchivist(ReadableArchive archive,
         ClassLoader cl) throws IOException {
         Archivist archivist = getPrivateArchivistFor(archive);
