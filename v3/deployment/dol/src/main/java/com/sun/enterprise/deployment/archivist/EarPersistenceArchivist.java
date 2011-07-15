@@ -40,9 +40,9 @@
 
 package com.sun.enterprise.deployment.archivist;
 
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+import org.glassfish.deployment.common.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.util.XModuleType;
+import org.glassfish.deployment.common.XModuleType;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.Archive;
 import org.xml.sax.SAXParseException;

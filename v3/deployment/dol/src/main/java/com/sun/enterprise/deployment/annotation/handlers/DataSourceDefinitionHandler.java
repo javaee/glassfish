@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.deployment.annotation.handlers;
 
+import org.glassfish.deployment.common.RootDeploymentDescriptor;
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.apf.HandlerProcessingResult;
 import org.glassfish.apf.AnnotationInfo;

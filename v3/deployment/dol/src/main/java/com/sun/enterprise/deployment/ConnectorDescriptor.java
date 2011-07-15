@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,8 +44,8 @@ import com.sun.enterprise.deployment.node.connector.ConnectorNode;
 import com.sun.enterprise.deployment.runtime.connector.SunConnector;
 import com.sun.enterprise.deployment.util.ConnectorVisitor;
 import com.sun.enterprise.deployment.util.DOLUtils;
-import com.sun.enterprise.deployment.util.DescriptorVisitor;
-import com.sun.enterprise.deployment.util.XModuleType;
+import org.glassfish.deployment.common.DescriptorVisitor;
+import org.glassfish.deployment.common.XModuleType;
 
 import java.io.IOException;
 import java.util.*;

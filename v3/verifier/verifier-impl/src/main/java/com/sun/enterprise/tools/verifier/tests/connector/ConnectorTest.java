@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,8 +47,8 @@
 package com.sun.enterprise.tools.verifier.tests.connector;
 
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import org.glassfish.deployment.common.Descriptor;
+import org.glassfish.deployment.common.ModuleDescriptor;
 import com.sun.enterprise.tools.verifier.Result;
 import com.sun.enterprise.tools.verifier.Verifier;
 import com.sun.enterprise.tools.verifier.tests.VerifierCheck;

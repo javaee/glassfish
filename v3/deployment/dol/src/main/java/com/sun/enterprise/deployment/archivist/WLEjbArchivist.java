@@ -41,8 +41,8 @@
 package com.sun.enterprise.deployment.archivist;
 
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
-import com.sun.enterprise.deployment.util.XModuleType;
+import org.glassfish.deployment.common.RootDeploymentDescriptor;
+import org.glassfish.deployment.common.XModuleType;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.runtime.EjbRuntimeDDFile;
 import com.sun.enterprise.deployment.io.runtime.GFEjbRuntimeDDFile;

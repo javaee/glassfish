@@ -42,9 +42,12 @@ package com.sun.enterprise.deployment;
 
 import com.sun.enterprise.deployment.types.EntityManagerFactoryReference;
 import com.sun.enterprise.deployment.types.EntityManagerReference;
-import com.sun.enterprise.deployment.util.XModuleType;
+import org.glassfish.deployment.common.RootDeploymentDescriptor;
+import org.glassfish.deployment.common.XModuleType;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
+import org.glassfish.deployment.common.Descriptor;
+import org.glassfish.security.common.Role;
 
 import javax.persistence.EntityManagerFactory;
 import java.net.URI;

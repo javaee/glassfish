@@ -41,8 +41,10 @@
 package com.sun.enterprise.deployment.node.runtime.application;
 
 import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.Role;
-import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
+import org.glassfish.deployment.common.ModuleDescriptor;
+import org.glassfish.deployment.common.XModuleType;
+import org.glassfish.security.common.Role;
+import org.glassfish.deployment.common.SecurityRoleMapper;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.node.runtime.RuntimeBundleNode;
@@ -56,15 +58,12 @@ import com.sun.enterprise.deployment.node.runtime.ServiceRefNode;
 import com.sun.enterprise.deployment.node.runtime.RuntimeDescriptorNode;
 import com.sun.enterprise.deployment.runtime.common.PrincipalNameDescriptor;
 import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deployment.xml.DTDRegistry;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
 import org.glassfish.security.common.Group;
 import org.w3c.dom.Node;
 
-import javax.enterprise.deploy.shared.ModuleType;
 import java.util.List;
 import java.util.Map;
 

@@ -41,6 +41,7 @@
 package com.sun.enterprise.deployment;
 
 import com.sun.enterprise.deployment.util.DOLUtils;
+import org.glassfish.deployment.common.Descriptor;
 
 import java.util.Properties;
 import java.util.logging.Level;

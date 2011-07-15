@@ -40,14 +40,8 @@
 
 package com.sun.enterprise.deployment;
 
-import com.sun.enterprise.deploy.shared.FileArchive;
-import com.sun.enterprise.deployment.annotation.introspection.EjbComponentAnnotationScanner;
-import com.sun.enterprise.deployment.archivist.AppClientArchivist;
-import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
-import com.sun.enterprise.deployment.archivist.EjbArchivist;
-import com.sun.enterprise.deployment.deploy.shared.InputJarArchive;
-import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
-import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
+import org.glassfish.deployment.common.SecurityRoleMapper;
+import org.glassfish.deployment.common.SecurityRoleMapperFactory;
 import com.sun.enterprise.deployment.node.ApplicationNode;
 import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
 import com.sun.enterprise.deployment.runtime.ApplicationParameter;
@@ -56,17 +50,12 @@ import com.sun.enterprise.deployment.runtime.common.WLSecurityRoleAssignment;
 import com.sun.enterprise.deployment.types.*;
 import com.sun.enterprise.deployment.util.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.io.FileUtils;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.deployment.common.*;
 import org.glassfish.resource.common.Resource;
+import org.glassfish.security.common.Role;
 import org.jvnet.hk2.component.Habitat;
 
-import javax.enterprise.deploy.shared.ModuleType;
 import javax.persistence.EntityManagerFactory;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -835,7 +824,7 @@ public class Application extends BundleDescriptor
     }
 
     /**
-     * Return the set of com.sun.enterprise.deployment.Role objects
+     * Return the set of org.glassfish.security.common.Role objects
      * I have (the ones defined in application xml).
      */
     public Set<Role> getAppRoles() {

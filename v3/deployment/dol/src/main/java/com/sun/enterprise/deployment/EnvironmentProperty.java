@@ -47,6 +47,7 @@ import com.sun.enterprise.deployment.web.InitializationParameter;
 import com.sun.enterprise.deployment.web.WebDescriptor;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.deployment.common.Descriptor;
 import org.glassfish.internal.api.RelativePathResolver;
 
 import java.util.HashSet;

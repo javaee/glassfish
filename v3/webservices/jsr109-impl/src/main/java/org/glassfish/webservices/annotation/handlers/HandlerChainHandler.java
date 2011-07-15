@@ -65,29 +65,25 @@ import org.glassfish.apf.ResultType;
 import org.glassfish.apf.HandlerProcessingResult;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.impl.HandlerProcessingResultImpl;
-import org.glassfish.apf.context.AnnotationContext;
-import com.sun.enterprise.deployment.annotation.context.ResourceContainerContextImpl; 
+import com.sun.enterprise.deployment.annotation.context.ResourceContainerContextImpl;
 
 import com.sun.enterprise.deployment.WebServiceHandlerChain;
 import com.sun.enterprise.deployment.WebServiceHandler;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.Descriptor; 
+import org.glassfish.deployment.common.Descriptor;
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
-import com.sun.enterprise.deployment.util.XModuleType;
+import org.glassfish.deployment.common.XModuleType;
 
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
 import com.sun.enterprise.deployment.types.HandlerChainContainer;
-import com.sun.enterprise.deployment.annotation.context.EjbContext;
-import com.sun.enterprise.deployment.annotation.context.EjbBundleContext;
-import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
 import com.sun.enterprise.deployment.annotation.context.HandlerContext;
-import javax.enterprise.deploy.shared.ModuleType;
 import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.w3c.dom.Document;
@@ -310,7 +306,7 @@ public class HandlerChainHandler extends AbstractHandler {
                 }
                 // we have the list of handler classes, we can now 
                 // push the context and call back annotation processing.                                
-                Descriptor jndiContainer=null; 
+                Descriptor jndiContainer=null;
                 if (serviceSideChain) { 
                     WebServiceEndpoint endpoint = (WebServiceEndpoint) container; 
                     if (XModuleType.WAR.equals(endpoint.getBundleDescriptor().getModuleType())) { 

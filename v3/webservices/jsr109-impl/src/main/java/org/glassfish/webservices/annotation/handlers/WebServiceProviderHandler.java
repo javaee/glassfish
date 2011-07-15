@@ -42,33 +42,23 @@ package org.glassfish.webservices.annotation.handlers;
 
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.annotation.Annotation;
 import java.util.logging.Logger;
 
-import javax.enterprise.deploy.shared.ModuleType;
-
 import com.sun.logging.LogDomains;
-import org.glassfish.apf.AnnotationHandler;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationInfo;
-import org.glassfish.apf.ProcessingContext;
 import org.glassfish.apf.ResultType;
 import org.glassfish.apf.HandlerProcessingResult;
-import org.glassfish.apf.AnnotationProcessorException;
 
-import org.glassfish.apf.impl.AnnotationUtils;
 import org.glassfish.apf.impl.HandlerProcessingResultImpl;
 
-import org.glassfish.apf.context.AnnotationContext;
 import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
 import com.sun.enterprise.deployment.annotation.context.WebComponentContext;
-import com.sun.enterprise.deployment.annotation.context.EjbBundleContext;
 import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
 
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -79,7 +69,7 @@ import com.sun.enterprise.deployment.WebService;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
-import com.sun.enterprise.deployment.util.XModuleType;
+import org.glassfish.deployment.common.XModuleType;
 
 import javax.xml.namespace.QName;
 

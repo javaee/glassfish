@@ -40,7 +40,7 @@
 
 package com.sun.enterprise.deployment;
 
-import java.io.Serializable;
+import org.glassfish.deployment.common.Descriptor;
 
 /**
  * @author Jagadish Ramu

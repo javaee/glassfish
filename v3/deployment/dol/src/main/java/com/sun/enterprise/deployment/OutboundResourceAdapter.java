@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,6 +50,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.glassfish.deployment.common.Descriptor;
 import org.ietf.jgss.GSSCredential;
 
 /**
@@ -58,7 +59,7 @@ import org.ietf.jgss.GSSCredential;
  * @author	Qingqing Ouyang
  * @author Sheetal Vartak
  */
-public class OutboundResourceAdapter extends Descriptor 
+public class OutboundResourceAdapter extends Descriptor
 {
 
     private int     transactionSupport = PoolManagerConstants.LOCAL_TRANSACTION;

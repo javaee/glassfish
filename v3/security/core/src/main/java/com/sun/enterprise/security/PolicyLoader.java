@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -151,7 +151,7 @@ public class PolicyLoader{
                 Class javaPolicyClass = loader.loadClass(javaPolicy);
                 Object obj = javaPolicyClass.newInstance();
                 if (j2ee13) {
-                    // Use JDK 1.3 classes if j2ee13 property being used
+                    // Use JDK 1.3 classes if j2ee1 3 property being used
                     if (!(obj instanceof javax.security.auth.Policy)) {
                         String msg = 
                             sm.getString("enterprise.security.plcyload.not13");

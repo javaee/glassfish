@@ -41,6 +41,7 @@
 package com.sun.enterprise.deployment;
 
 import com.sun.enterprise.deployment.web.WebResourceCollection;
+import org.glassfish.deployment.common.Descriptor;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -54,7 +55,7 @@ import java.util.Set;
  */
 
 
-public class WebResourceCollectionImpl extends Descriptor 
+public class WebResourceCollectionImpl extends Descriptor
 				implements WebResourceCollection 
 {
     private Set<String> urlPatterns;

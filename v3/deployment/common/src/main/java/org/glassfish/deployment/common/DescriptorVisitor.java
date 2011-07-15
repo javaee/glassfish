@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,22 +38,20 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment.util;
+package org.glassfish.deployment.common;
 
-import com.sun.enterprise.deployment.Descriptor;
 
 /**
  * This class defines the minimum visitor API each descriptor 
  * is required to implement. 
  *
  * @author  Jerome Dochez
- * @version 
  */
 public interface DescriptorVisitor {
 
    /**
      * visits a J2EE descriptor
-     * @param the descriptor
+     * @param descriptor descriptor to visit
      */
     public void accept(Descriptor descriptor);
 }

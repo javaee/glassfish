@@ -41,7 +41,7 @@
 package com.sun.enterprise.deployment.annotation.handlers;
 
 import com.sun.enterprise.deployment.AuthorizationConstraintImpl;
-import com.sun.enterprise.deployment.Role;
+import org.glassfish.security.common.Role;
 import com.sun.enterprise.deployment.SecurityConstraintImpl;
 import com.sun.enterprise.deployment.UserDataConstraintImpl;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -52,7 +52,6 @@ import com.sun.enterprise.deployment.web.UserDataConstraint;
 import com.sun.enterprise.deployment.web.WebResourceCollection;
 import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
 import com.sun.enterprise.deployment.annotation.context.WebComponentContext;
-import com.sun.enterprise.util.net.URLPattern;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
@@ -67,10 +66,8 @@ import javax.servlet.annotation.ServletSecurity.TransportGuarantee;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import java.lang.annotation.Annotation;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 

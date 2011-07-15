@@ -44,6 +44,7 @@ import com.sun.logging.LogDomains;
 
 import java.util.logging.Logger;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.deployment.common.ModuleDescriptor;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.loader.util.ASClassLoaderUtil;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -51,12 +52,10 @@ import org.glassfish.api.deployment.DeploymentContext;
 import java.net.URL;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.jar.Manifest;
 import java.io.File;
 import java.io.IOException;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
 
 
 /**

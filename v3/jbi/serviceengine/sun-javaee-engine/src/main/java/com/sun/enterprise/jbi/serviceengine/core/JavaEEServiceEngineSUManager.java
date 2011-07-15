@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,7 +42,7 @@ package com.sun.enterprise.jbi.serviceengine.core;
 
 
 import com.sun.enterprise.deployment.archivist.Archivist;
-import com.sun.enterprise.deployment.util.XModuleType;
+import org.glassfish.deployment.common.XModuleType;
 import java.net.URISyntaxException;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.ModuleExploder;
@@ -55,7 +55,7 @@ import org.glassfish.deployment.client.DFDeploymentProperties;
 import org.glassfish.deployment.client.ServerConnectionIdentifier;
 import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.deploy.shared.OutputJarArchive;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import org.glassfish.deployment.common.ModuleDescriptor;
 import com.sun.enterprise.jbi.serviceengine.util.LocalDeploymentFacility;
 import com.sun.enterprise.jbi.serviceengine.util.JBIConstants;
 import com.sun.enterprise.jbi.serviceengine.util.Util;

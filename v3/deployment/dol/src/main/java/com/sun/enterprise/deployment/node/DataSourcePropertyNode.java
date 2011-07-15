@@ -41,7 +41,6 @@
 package com.sun.enterprise.deployment.node;
 
 import com.sun.enterprise.deployment.xml.TagNames;
-import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.DataSourceDefinitionDescriptor;
 import com.sun.enterprise.deployment.DataSourcePropertyDescriptor;
 

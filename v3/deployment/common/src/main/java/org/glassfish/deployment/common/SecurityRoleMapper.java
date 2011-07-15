@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,10 +38,10 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment.interfaces;
+package org.glassfish.deployment.common;
 
-import com.sun.enterprise.deployment.Role;
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+import org.glassfish.deployment.common.RootDeploymentDescriptor;
+import org.glassfish.security.common.Role;
 
 import java.security.Principal;
 import java.util.Enumeration;

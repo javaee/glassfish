@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -152,12 +152,6 @@ public interface TagNames {
     public static final String PRE_DESTROY = "pre-destroy";
     public static final String LIFECYCLE_CALLBACK_CLASS = "lifecycle-callback-class";  
     public static final String LIFECYCLE_CALLBACK_METHOD = "lifecycle-callback-method";  
-
-    // deployment extension related tags
-    public static final String DEPLOYMENT_EXTENSION = "deployment-extension";
-    public static final String EXTENSION_ELEMENT = "extension-element";
-    public static final String NAMESPACE = "namespace";
-    public static final String MUST_UNDERSTAND = "mustUnderstand";
 
     public static final String J2EE_DEFAULTNAMESPACEPREFIX = "j2ee";
     public static final String J2EE_NAMESPACE = "http://java.sun.com/xml/ns/j2ee";

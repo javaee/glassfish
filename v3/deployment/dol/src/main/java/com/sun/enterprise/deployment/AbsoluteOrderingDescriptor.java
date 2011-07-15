@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.deployment.common.Descriptor;
 
 /*
  * Deployment object representing the absolute-ordering of web-fragment.

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,12 +40,13 @@
 
 package com.sun.enterprise.tools.verifier.tests.ejb;
 
-import com.sun.enterprise.tools.verifier.tests.ejb.EjbTest;
 import java.util.*;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.*;
-/** 
+import org.glassfish.security.common.Role;
+
+/**
  * Security role references test.
  * The Bean provider must declare all of the enterprise's bean references 
  * to security roles as specified in section 15.2.1.3 of the Moscone spec.

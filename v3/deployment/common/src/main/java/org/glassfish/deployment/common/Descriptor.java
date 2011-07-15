@@ -38,9 +38,7 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment;
-
-import com.sun.enterprise.deployment.util.DescriptorVisitor;
+package org.glassfish.deployment.common;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -51,7 +49,7 @@ import java.util.*;
 /**
  * Descriptor is the root class for all objects
  * representing deployment information in J2EE. Descriptors
- * notifiy listeners of state changes, and have a name, description,
+ * notify listeners of state changes, and have a name, description,
  * and icons.
  *
  * @author Danny Coward
@@ -512,21 +510,6 @@ public class Descriptor extends DynamicAttributesDescriptor implements Serializa
             v.addElement(next.getName());
         }
         return createUniqueNameAmongst(trialName, v);
-    }
-
-    /**
-     * Add a new deployment-extension for this descriptor
-     *
-     * @param de descriptor to add
-     */
-    @SuppressWarnings("unchecked")
-    public void addDeploymentExtension(DeploymentExtensionDescriptor de) {
-        Vector<DeploymentExtensionDescriptor> extensions = (Vector<DeploymentExtensionDescriptor>) getExtraAttribute("deployment-extension");
-        if (extensions == null) {
-            extensions = new Vector<DeploymentExtensionDescriptor>();
-            addExtraAttribute("deployment-extension", extensions);
-        }
-        extensions.add(de);
     }
 
     /**

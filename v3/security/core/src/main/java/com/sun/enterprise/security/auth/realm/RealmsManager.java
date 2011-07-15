@@ -191,7 +191,7 @@ public class RealmsManager {
                "com.sun.enterprise.security.auth.realm.file.FileRealm",
                "com.sun.enterprise.security.auth.realm.certificate.CertificateRealm",
                "com.sun.enterprise.security.auth.realm.ldap.LDAPRealm",
-               "com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm",
+               "com.sun.enterprise.security.ee.auth.realm.jdbc.JDBCRealm",
                "com.sun.enterprise.security.auth.realm.solaris.SolarisRealm"};*/
        Habitat habitat = Globals.getDefaultHabitat();
        Collection<Inhabitant<? extends Realm>> collection = habitat.getInhabitants(Realm.class);

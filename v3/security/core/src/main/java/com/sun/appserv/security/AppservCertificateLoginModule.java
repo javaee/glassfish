@@ -41,7 +41,7 @@
 package com.sun.appserv.security;
 
 import com.sun.enterprise.security.auth.realm.certificate.CertificateRealm;
-import com.sun.enterprise.security.web.integration.PrincipalGroupFactory;
+import com.sun.enterprise.security.PrincipalGroupFactory;
 import com.sun.logging.LogDomains;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
@@ -57,6 +57,8 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 import javax.security.auth.x500.X500Principal;
+
+import org.glassfish.internal.api.Globals;
 import org.glassfish.security.common.Group;
 
 /**
@@ -121,7 +123,8 @@ public abstract class AppservCertificateLoginModule implements LoginModule {
         Set<Principal> principalSet = subject.getPrincipals();
         for (int i = 0; i < groups.length; i++) {
             if (groups[i] != null) {
-                Group g = PrincipalGroupFactory.getGroupInstance(groups[i], CertificateRealm.AUTH_TYPE);
+                Group g = Globals.getDefaultHabitat().getComponent(PrincipalGroupFactory.class).
+                        getGroupInstance(groups[i], CertificateRealm.AUTH_TYPE);
                 principalSet.add(g);
             }
             groups[i] = null;

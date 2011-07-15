@@ -160,7 +160,7 @@
     <jacc-provider name="default" policy-provider="com.sun.enterprise.security.provider.PolicyWrapper" policy-configuration-factory-provider="com.sun.enterprise.security.provider.PolicyConfigurationFactoryImpl">
      <property name="repository" value="${com.sun.aas.instanceRoot}/generated/policy"/>
     </jacc-provider>
-    <audit-module name="default" classname="com.sun.enterprise.security.Audit">
+    <audit-module name="default" classname="com.sun.enterprise.security.ee.Audit">
 	<property name="auditOn" value="false"/>
     </audit-module>
    <message-security-config auth-layer="SOAP">

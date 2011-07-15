@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.security.auth.login;
 
+import com.sun.enterprise.security.PrincipalGroupFactory;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.logging.LogDomains;
 import java.util.Enumeration;
@@ -53,7 +54,7 @@ import com.sun.enterprise.util.i18n.StringManager;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
-import com.sun.enterprise.security.web.integration.PrincipalGroupFactory;
+import org.glassfish.internal.api.Globals;
 import org.glassfish.security.common.PrincipalImpl;
 import org.glassfish.security.common.Group;
 import com.sun.enterprise.security.auth.digest.api.DigestAlgorithmParameter;
@@ -133,8 +134,8 @@ public abstract class DigestLoginModule implements LoginModule {
                 return false;
             }
 
-
-            _userPrincipal = com.sun.enterprise.security.web.integration.PrincipalGroupFactory.getPrincipalInstance(digestCredentials.getUserName(), digestCredentials.getRealmName());
+            PrincipalGroupFactory factory = Globals.getDefaultHabitat().getComponent(PrincipalGroupFactory.class);
+            _userPrincipal = factory.getPrincipalInstance(digestCredentials.getUserName(), digestCredentials.getRealmName());
             java.util.Set principalSet = this.subject.getPrincipals();
             if (!principalSet.contains(_userPrincipal)) {
                 principalSet.add(_userPrincipal);
@@ -142,7 +143,7 @@ public abstract class DigestLoginModule implements LoginModule {
             java.util.Enumeration groupsList = getGroups(digestCredentials.getUserName());
             while (groupsList.hasMoreElements()) {
                 java.lang.String value = (java.lang.String) groupsList.nextElement();
-                Group g = com.sun.enterprise.security.web.integration.PrincipalGroupFactory.getGroupInstance(value, digestCredentials.getRealmName());
+                Group g = factory.getGroupInstance(value, digestCredentials.getRealmName());
                 if (!principalSet.contains(g)) {
                     principalSet.add(g);
                 }

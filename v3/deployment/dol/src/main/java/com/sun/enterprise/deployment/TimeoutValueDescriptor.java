@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.deployment;
 
+import org.glassfish.deployment.common.Descriptor;
+
 import java.util.concurrent.TimeUnit;
 
 public class TimeoutValueDescriptor extends Descriptor {

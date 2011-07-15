@@ -43,18 +43,21 @@ package com.sun.appserv.security;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+
+import com.sun.enterprise.security.PrincipalGroupFactory;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
 import javax.security.auth.*;
 import javax.security.auth.callback.*;
 import javax.security.auth.login.*;
 import javax.security.auth.spi.*;
+
+import org.glassfish.internal.api.Globals;
 import org.glassfish.security.common.PrincipalImpl;
 import org.glassfish.security.common.Group;
 import com.sun.enterprise.security.auth.login.LoginCallbackHandler;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.login.common.PasswordCredential;
-import com.sun.enterprise.security.web.integration.PrincipalGroupFactory;
 import com.sun.enterprise.security.common.AppservPasswordLoginModuleInterface;
 import java.security.Principal;
 import org.jvnet.hk2.annotations.Scoped;
@@ -172,8 +175,9 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
         // Add a Principal (authenticated identity) to the Subject
         // Assume the user we authenticated is the PrincipalImpl [RI]
         String realm_name = _currentRealm.getName();
+        PrincipalGroupFactory factory = Globals.getDefaultHabitat().getComponent(PrincipalGroupFactory.class);
         _userPrincipal = 
-            PrincipalGroupFactory.getPrincipalInstance(getUsername(),realm_name);
+            factory.getPrincipalInstance(getUsername(),realm_name);
         Set<Principal> principalSet = _subject.getPrincipals();
         if (!principalSet.contains(_userPrincipal)){
             principalSet.add(_userPrincipal);
@@ -184,7 +188,7 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
         for(int i = 0; i<_groupsList.length; i++){
             if(_groupsList[i] != null){
                 Group g =
-                    PrincipalGroupFactory.getGroupInstance(_groupsList[i], realm_name);
+                    factory.getGroupInstance(_groupsList[i], realm_name);
                 if(!principalSet.contains(g)){
                     principalSet.add(g);
                 }

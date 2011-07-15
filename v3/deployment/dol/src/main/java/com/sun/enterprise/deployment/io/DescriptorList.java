@@ -40,8 +40,7 @@
 
 package com.sun.enterprise.deployment.io;
 
-import javax.enterprise.deploy.shared.ModuleType;
-import com.sun.enterprise.deployment.util.XModuleType;
+import org.glassfish.deployment.common.XModuleType;
 
 /**
  * Repository of descriptors

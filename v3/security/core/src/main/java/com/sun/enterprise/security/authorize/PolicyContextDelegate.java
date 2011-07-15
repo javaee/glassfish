@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,64 +40,21 @@
 
 package com.sun.enterprise.security.authorize;
 
-import java.lang.reflect.Method;
 import org.glassfish.api.invocation.ComponentInvocation;
-import org.glassfish.ejb.api.EJBInvocation;
+import org.jvnet.hk2.annotations.Contract;
 
-/**
- * This class is primarily a delegate for PolicyContextHandler related queries
- * But also handles Authorization of WebServiceInvocations
- * @author Kumar
- */
-public class EJBPolicyContextDelegate {
+import java.lang.reflect.Method;
 
-    public Object getEnterpriseBean(ComponentInvocation inv) {
-        if (inv instanceof EJBInvocation) {
-            return ((EJBInvocation)inv).getJaccEjb();
-        }
-        return null;
-    }
-    
-    public Object getEJbArguments(ComponentInvocation inv) {
-        if (inv instanceof EJBInvocation) {
-            EJBInvocation eInv = (EJBInvocation) inv;
-            if (eInv.isAWebService()) {
-                return null;
-            } else {
-                return (eInv.getMethodParams() != null) ? eInv.getMethodParams() : new Object[0];
-            }
-        }
-        return null;
-    }
-    
-    public Object getSOAPMessage(ComponentInvocation inv) {
-        if (inv instanceof EJBInvocation) {
-            EJBInvocation eInv = (EJBInvocation) inv;
-            if (eInv.isAWebService()) {
-               //TODO:V3 does this violate JACC spec?, we may have to convert to SOAPMessage on demand
-               //return eInv.getSOAPMessage();
-                return eInv.getMessage();
-            }
-        }
-        return null;
-    }
+@Contract
+public interface PolicyContextDelegate {
 
-    public void setSOAPMessage(Object message, ComponentInvocation inv) {
-         if (inv instanceof EJBInvocation) {
-            EJBInvocation eInv = (EJBInvocation) inv;
-            if (eInv.isAWebService()) {
-               eInv.setMessage(message);
-            }
-        }
-    }
+    Object getEnterpriseBean(ComponentInvocation inv);
 
-    public boolean authorize(ComponentInvocation inv, Method m) throws Exception {
-         Exception ie = null;
-         if (inv instanceof EJBInvocation) {
-             return ((EJBInvocation)inv).authorizeWebService(m);
-             
-         }
-         return true;
-    }
-    
+    public Object getEJbArguments(ComponentInvocation inv);
+
+    public Object getSOAPMessage(ComponentInvocation inv);
+
+    public void setSOAPMessage(Object message, ComponentInvocation inv);
+
+    public boolean authorize(ComponentInvocation inv, Method m) throws Exception;
 }

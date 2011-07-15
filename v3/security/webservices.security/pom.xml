@@ -147,7 +147,7 @@
         </dependency> -->
         <dependency>
             <groupId>org.glassfish.security</groupId>
-            <artifactId>security</artifactId>
+            <artifactId>security-ee</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

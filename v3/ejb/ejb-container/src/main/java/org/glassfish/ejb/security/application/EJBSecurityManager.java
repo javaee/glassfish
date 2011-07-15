@@ -60,7 +60,8 @@ import javax.security.jacc.PolicyContextException;
 
 import com.sun.enterprise.security.SecurityManager;
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
+import com.sun.enterprise.security.ee.SecurityUtil;
+import org.glassfish.deployment.common.SecurityRoleMapperFactory;
 import com.sun.enterprise.deployment.web.SecurityRoleReference;
 import com.sun.enterprise.security.common.AppservAccessController;
 import com.sun.enterprise.security.SecurityContext;
@@ -76,7 +77,6 @@ import java.util.logging.*;
 import com.sun.logging.LogDomains;
 import com.sun.ejb.EjbInvocation;
 
-import com.sun.enterprise.security.SecurityUtil;
 import java.security.*;
 
 import org.glassfish.api.invocation.ComponentInvocation;

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,6 +52,7 @@ import com.sun.enterprise.deployment.node.DescriptorFactory;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.ConnectorTagNames;
+import org.glassfish.deployment.common.Descriptor;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
 
@@ -176,7 +177,7 @@ public class OutBoundRANode extends DeploymentDescriptorNode {
      * @param the descriptor to write
      * @return the DOM tree top node
      */    
-    public Node writeDescriptor(Node connectorNode, Descriptor descriptor) {  
+    public Node writeDescriptor(Node connectorNode, Descriptor descriptor) {
 	//outbound RA info
 	
 	Node raNode = appendChild(connectorNode, ConnectorTagNames.OUTBOUND_RESOURCE_ADAPTER);

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -53,12 +53,12 @@ import java.security.Principal;
 import java.security.PrivilegedExceptionAction;
 import java.security.PrivilegedAction;
 import javax.security.auth.Subject;
+
+import org.glassfish.internal.api.Globals;
 import org.glassfish.security.common.PrincipalImpl;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.security.auth.login.DistinguishedPrincipalCredential;
 //V3:Comment import com.sun.enterprise.server.ApplicationServer;
-import com.sun.enterprise.security.web.integration.PrincipalGroupFactory;
-import com.sun.enterprise.security.web.integration.WebPrincipal;
 import com.sun.logging.*;
 import java.security.AccessController;
 import org.jvnet.hk2.annotations.Scoped;
@@ -69,7 +69,7 @@ import org.jvnet.hk2.component.PerLookup;
 * This  class that extends AbstractSecurityContext that gets 
  * stored in Thread Local Storage. If the current thread creates
  * child threads, the SecurityContext stored in the current 
- * thread is automatically propogated to the child threads.
+ * thread is automatically propagated to the child threads.
  * 
  * This class is used on the server side to represent the 
  * security context.
@@ -187,8 +187,11 @@ public class SecurityContext extends AbstractSecurityContext  {
             if (_logger.isLoggable(Level.WARNING)) {
 	        _logger.warning("java_security.null_subject");
             }
-	} 
-	this.initiator = PrincipalGroupFactory.getPrincipalInstance(userName, realm);
+	}
+    PrincipalGroupFactory factory = Globals.getDefaultHabitat().getComponent(PrincipalGroupFactory.class);
+    if (factory!=null) {
+	    this.initiator = factory.getPrincipalInstance(userName, realm);
+    }
         final Subject sub = s;
         this.subject = (Subject)
             AppservAccessController.doPrivileged(new PrivilegedAction(){
@@ -449,8 +452,8 @@ public class SecurityContext extends AbstractSecurityContext  {
     private SecurityContext getSecurityContextForPrincipal(final Principal p) {
         if (p == null) {
             return null;
-        } else if (p instanceof WebPrincipal) {
-            return ((WebPrincipal) p).getSecurityContext();
+        } else if (p instanceof SecurityContextProxy) {
+            return ((SecurityContextProxy) p).getSecurityContext();
         } else {
             return AccessController.doPrivileged(new PrivilegedAction<SecurityContext>() {
                 public SecurityContext run() {

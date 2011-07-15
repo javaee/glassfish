@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,13 +43,13 @@ package com.sun.enterprise.deployment.io;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.node.SaxParserHandlerFactory;
 import com.sun.enterprise.deployment.xml.*;
-import com.sun.enterprise.deployment.util.XModuleType;
+import org.glassfish.deployment.common.RootDeploymentDescriptor;
+import org.glassfish.deployment.common.XModuleType;
 import org.glassfish.api.ContractProvider;
 import org.jvnet.hk2.annotations.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import javax.enterprise.deploy.shared.ModuleType;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;

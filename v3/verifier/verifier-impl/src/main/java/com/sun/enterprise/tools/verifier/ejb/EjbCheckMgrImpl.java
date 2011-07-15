@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,11 +45,11 @@ import java.io.FileInputStream;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.sun.ejb.codegen.GeneratorException;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.io.EjbDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.util.EjbBundleValidator;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import org.glassfish.deployment.common.Descriptor;
+import org.glassfish.deployment.common.ModuleDescriptor;
 import com.sun.enterprise.tools.verifier.*;
 import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
 import com.sun.enterprise.tools.verifier.tests.dd.ParseDD;

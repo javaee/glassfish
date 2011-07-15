@@ -43,15 +43,14 @@ package com.sun.enterprise.deployment;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.TreeMap;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.deployment.common.Descriptor;
 
 /**
  * This represents the ordering resided in web-fragment.xml.

@@ -47,7 +47,7 @@ import javax.naming.NamingException;
 import javax.validation.ValidatorFactory;
 
 import org.glassfish.api.deployment.DeploymentContext;
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+import org.glassfish.deployment.common.RootDeploymentDescriptor;
 
 
 /**

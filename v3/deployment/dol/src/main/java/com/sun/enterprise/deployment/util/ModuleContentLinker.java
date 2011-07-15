@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,6 +44,7 @@ import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.deployment.WSDolSupport;
 import com.sun.enterprise.deployment.WebService;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.deployment.common.ModuleDescriptor;
 import org.glassfish.internal.api.Globals;
 
 import java.io.File;
@@ -177,7 +178,7 @@ public class ModuleContentLinker extends DefaultDOLVisitor {
 
     public void accept(WebService webService) {
         try {
-            ModuleDescriptor moduleDesc = 
+            ModuleDescriptor moduleDesc =
                 webService.getBundleDescriptor().getModuleDescriptor();
             // If the web service has a WSDL file, assign its URL if it is not
             // already assigned or if URLs are forced to be assigned.  

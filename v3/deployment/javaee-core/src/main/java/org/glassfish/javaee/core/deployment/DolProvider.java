@@ -40,6 +40,8 @@
 
 package org.glassfish.javaee.core.deployment;
 
+import org.glassfish.deployment.common.ModuleDescriptor;
+import org.glassfish.deployment.common.RootDeploymentDescriptor;
 import org.glassfish.hk2.classmodel.reflect.Parser;
 import org.glassfish.hk2.classmodel.reflect.Types;
 import org.glassfish.internal.deployment.DeploymentTracing;
@@ -52,19 +54,13 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
-import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.ActionReport;
-import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.deployment.common.DeploymentUtils;
-import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.ApplicationInfoProvider;
 import org.xml.sax.SAXParseException;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
-import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.deploy.shared.DeploymentPlanArchive;
 import com.sun.enterprise.deployment.archivist.Archivist;
@@ -77,8 +73,6 @@ import com.sun.enterprise.config.serverbeans.DasConfig;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
-import java.util.Properties;
-import java.util.Collection;
 import java.io.IOException;
 import java.io.File;
 import java.util.logging.Level;
@@ -330,7 +324,7 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
                     app_w.getModule().add(modConfig);
                     modConfig.setName(application.getRegistrationName());
                 } else {
-                    for (ModuleDescriptor moduleDesc : 
+                    for (ModuleDescriptor moduleDesc :
                         application.getModules()) {
                         Module modConfig = app_w.createChild(Module.class);
                         app_w.getModule().add(modConfig);

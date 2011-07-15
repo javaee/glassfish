@@ -41,7 +41,6 @@
 package org.glassfish.appclient.client.acc;
 
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.deployment.annotation.introspection.AppClientPersistenceDependencyAnnotationScanner;
 import com.sun.enterprise.deployment.archivist.Archivist;
@@ -59,6 +58,7 @@ import java.util.Iterator;
 import java.util.logging.Logger;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.deployment.common.RootDeploymentDescriptor;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;

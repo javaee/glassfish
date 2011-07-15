@@ -62,6 +62,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
 import java.util.logging.Level;
+
+import org.glassfish.api.container.Sniffer;
 import org.glassfish.common.util.admin.AuthTokenManager;
 import org.glassfish.internal.api.*;
 import org.glassfish.security.common.Group;
@@ -103,8 +105,8 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
     @Inject
     Habitat habitat;
     
-    @Inject
-    SecuritySniffer snif;
+    @Inject(name="security", optional=true)
+    Sniffer snif;
 
     @Inject
     volatile SecurityService ss;
@@ -275,7 +277,9 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
                 }
                 Inhabitant<SecurityLifecycle> sl = habitat.getInhabitantByType(SecurityLifecycle.class);
                 sl.get();
-                snif.setup(System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) + "/modules/security", Logger.getAnonymousLogger());
+                if (snif!=null) {
+                    snif.setup(System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) + "/modules/security", Logger.getAnonymousLogger());
+                }
                 LoginContextDriver.login(user, password.toCharArray(), realm);
                 authenticated = true;
                 final boolean isConsideredInAdminGroup = (

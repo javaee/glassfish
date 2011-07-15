@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,54 +38,19 @@
  * holder.
  */
 
-package com.sun.enterprise.security.auth.login;
+package com.sun.enterprise.security;
 
-import java.util.logging.Level;
-
-import com.sun.enterprise.security.auth.login.common.LoginException;
-import com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm;
-import java.util.Arrays;
-
+import org.glassfish.security.common.Group;
+import org.glassfish.security.common.PrincipalImpl;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * This class implement a JDBC Login module for Glassfish. The work is derivated from Sun's sample JDBC login module.
- * Enhancement has been done to use latest features.
- * sample setting in server.xml for JDBCLoginModule
- * @author Jean-Baptiste Bugeaud
+ * Factory for Group and Principal instances.
  */
-public class JDBCLoginModule extends PasswordLoginModule {
-    /**
-     * Perform JDBC authentication. Delegates to JDBCRealm.
-     *
-     * @throws LoginException If login fails (JAAS login() behavior).
-     */    
-    protected void authenticate() throws LoginException {
-        if (!(_currentRealm instanceof JDBCRealm)) {
-            String msg = sm.getString("jdbclm.badrealm");
-            throw new LoginException(msg);
-        }
-        
-        final JDBCRealm jdbcRealm = (JDBCRealm)_currentRealm;
+@Contract
+public interface PrincipalGroupFactory {
 
-        // A JDBC user must have a name not null and non-empty.
-        if ( (_username == null) || (_username.length() == 0) ) {
-            String msg = sm.getString("jdbclm.nulluser");
-            throw new LoginException(msg);
-        }
-        
-        String[] grpList = jdbcRealm.authenticate(_username, getPasswordChar());
+    PrincipalImpl getPrincipalInstance(String name, String realm);
 
-        if (grpList == null) {  // JAAS behavior
-            String msg = sm.getString("jdbclm.loginfail", _username);
-            throw new LoginException(msg);
-        }
-
-        if (_logger.isLoggable(Level.FINEST)) {
-            _logger.finest("JDBC login succeeded for: " + _username
-                + " groups:" + Arrays.toString(grpList));
-        }
-
-        commitAuthentication(_username, getPasswordChar(),
-                             _currentRealm, grpList);
-    }
+    Group getGroupInstance(String name, String realm);
 }

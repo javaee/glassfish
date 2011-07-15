@@ -51,7 +51,6 @@
                         com.sun.enterprise.security.jmac; \
                         com.sun.enterprise.security.jmac.callback; \
                         com.sun.enterprise.security.jmac.config; \
-                        com.sun.enterprise.security.web.integration; \
                         com.sun.enterprise.security.provider; \
                         com.iplanet.ias.security.auth.realm; \
                         com.sun.appserv.security; \

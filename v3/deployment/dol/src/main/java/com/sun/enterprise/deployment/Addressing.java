@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.deployment;
 
+import org.glassfish.deployment.common.Descriptor;
+
 /**
  * This class describes addressing element from webservices.xml .
  *

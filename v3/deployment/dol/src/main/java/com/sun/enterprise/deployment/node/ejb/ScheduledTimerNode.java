@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,7 +41,7 @@
 package com.sun.enterprise.deployment.node.ejb;
 
 import com.sun.enterprise.deployment.ScheduledTimerDescriptor;
-import com.sun.enterprise.deployment.Descriptor;
+import org.glassfish.deployment.common.Descriptor;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import java.util.logging.Level;
 
@@ -52,10 +52,8 @@ import com.sun.enterprise.deployment.xml.EjbTagNames;
 
 import org.w3c.dom.Node;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.GregorianCalendar;
-import java.util.concurrent.TimeUnit;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 

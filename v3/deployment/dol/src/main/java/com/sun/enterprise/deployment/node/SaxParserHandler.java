@@ -61,6 +61,8 @@ import com.sun.enterprise.deployment.xml.DTDRegistry;
 import com.sun.enterprise.deployment.xml.TagNames;
 import com.sun.enterprise.deployment.xml.WebTagNames;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.deployment.common.Descriptor;
+import org.glassfish.deployment.common.RootDeploymentDescriptor;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -532,11 +534,11 @@ public class SaxParserHandler extends DefaultHandler {
 
                 long timeStart = System.currentTimeMillis();
                 InputStream is;
-                com.sun.enterprise.deployment.RootDeploymentDescriptor desc=null;
+                RootDeploymentDescriptor desc=null;
                 ddFile.setXMLValidation(true);
                 for (int i=0;i<10;i++) {
                     is = new BufferedInputStream(new FileInputStream(inFile));                
-                    desc = (com.sun.enterprise.deployment.RootDeploymentDescriptor) ddFile.read(is);
+                    desc = (RootDeploymentDescriptor) ddFile.read(is);
                     is.close();
                 } 
 		if (desc!=null && args.length>1) {
@@ -551,7 +553,7 @@ public class SaxParserHandler extends DefaultHandler {
 		
 		if (args.length>2)
                 if (args[2].equals("-o")) {
-                    ddFile.write((com.sun.enterprise.deployment.Descriptor) desc, new File(args[3]));
+                    ddFile.write((Descriptor) desc, new File(args[3]));
                 }
                 
             } catch (Throwable t) {

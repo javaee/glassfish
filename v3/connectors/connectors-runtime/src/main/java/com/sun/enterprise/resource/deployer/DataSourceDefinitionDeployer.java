@@ -48,6 +48,8 @@ import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.logging.LogDomains;
+import org.glassfish.deployment.common.Descriptor;
+import org.glassfish.deployment.common.RootDeploymentDescriptor;
 import org.glassfish.javaee.services.DataSourceDefinitionProxy;
 import org.glassfish.resource.common.ResourceInfo;
 import org.jvnet.hk2.annotations.Service;

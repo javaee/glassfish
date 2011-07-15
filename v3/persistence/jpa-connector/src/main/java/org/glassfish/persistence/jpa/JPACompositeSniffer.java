@@ -44,7 +44,7 @@ package org.glassfish.persistence.jpa;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.archivist.EARBasedPersistenceHelper;
 import com.sun.enterprise.deployment.archivist.PersistenceArchivist;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import org.glassfish.deployment.common.ModuleDescriptor;
 import org.glassfish.api.container.CompositeSniffer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;

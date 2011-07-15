@@ -41,7 +41,7 @@
 package com.sun.enterprise.deployment.node.runtime.web;
 
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
+import org.glassfish.deployment.common.SecurityRoleMapper;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.runtime.*;
 import com.sun.enterprise.deployment.node.runtime.common.EjbRefNode;
@@ -57,6 +57,7 @@ import com.sun.enterprise.deployment.xml.DTDRegistry;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
 import org.glassfish.security.common.Group;
+import org.glassfish.security.common.Role;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;

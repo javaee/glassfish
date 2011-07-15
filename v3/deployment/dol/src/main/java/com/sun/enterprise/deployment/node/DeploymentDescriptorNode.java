@@ -49,6 +49,7 @@ import com.sun.enterprise.deployment.xml.EjbTagNames;
 import com.sun.enterprise.deployment.xml.TagNames;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.deployment.common.Descriptor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -971,27 +972,6 @@ public abstract class DeploymentDescriptorNode<T> implements XMLNode<T>  {
 		   maxOccurs="unbounded"/>
          */
          writePreDestroyDescriptors(node, descriptor.getPreDestroyDescriptors().iterator());
-    }
-    
-    /**
-     * write the deployment extension nodes associated with this node
-     * 
-     * @param parentNode parent node for the DOM tree
-     * @param descriptor the deployment extension descriptor
-     * 
-     * @note this was an iterim feature of the J2EE 1.4 platform, I leave it
-     * here for now because it may reappear in a later platform release, I put
-     * it private so that it is not misused in the meantime.
-     */
-    private void writeDeploymentExtensionDescriptor(
-        Node parentNode, Descriptor descriptor) {
-                    
-        Iterator itr = descriptor.getDeploymentExtensions();
-        if (itr==null) {
-            return;
-        } 
-        DeploymentExtensionNode subNode = new DeploymentExtensionNode();
-        subNode.writeDescriptor(parentNode, itr);        
     }
     
     /**

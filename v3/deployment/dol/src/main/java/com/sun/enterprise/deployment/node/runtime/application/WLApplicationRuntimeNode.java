@@ -42,8 +42,8 @@ package com.sun.enterprise.deployment.node.runtime.application;
 
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.deployment.Role;
-import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
+import org.glassfish.security.common.Role;
+import org.glassfish.deployment.common.SecurityRoleMapper;
 import com.sun.enterprise.deployment.runtime.ApplicationParameter;
 import com.sun.enterprise.deployment.runtime.WLModuleDescriptor;
 import com.sun.enterprise.deployment.node.runtime.RuntimeBundleNode;

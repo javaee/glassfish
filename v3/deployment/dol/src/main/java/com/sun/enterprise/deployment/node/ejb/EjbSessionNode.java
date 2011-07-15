@@ -44,6 +44,7 @@ import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.EjbSessionDescriptor.ConcurrencyManagementType;
 import com.sun.enterprise.deployment.node.*;
 import com.sun.enterprise.deployment.xml.EjbTagNames;
+import org.glassfish.deployment.common.Descriptor;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
 

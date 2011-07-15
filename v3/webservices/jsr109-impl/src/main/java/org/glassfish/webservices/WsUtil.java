@@ -42,13 +42,13 @@ package org.glassfish.webservices;
 
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
+import org.glassfish.deployment.common.ModuleDescriptor;
 import org.glassfish.grizzly.config.dom.NetworkListener;
 import com.sun.xml.ws.api.server.SDDocumentSource;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.WebServerInfo;
 import com.sun.enterprise.deployment.util.VirtualServerInfo;
 import com.sun.enterprise.deployment.web.UserDataConstraint;
@@ -57,11 +57,10 @@ import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.xml.rpc.spi.model.*;
+
 import javax.servlet.http.*;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.handler.MessageContext;
-import javax.xml.rpc.Stub;
 import javax.xml.rpc.ServiceFactory;
 import javax.xml.rpc.handler.soap.SOAPMessageContext;
 import javax.xml.rpc.soap.SOAPFaultException;
@@ -72,13 +71,9 @@ import com.sun.xml.rpc.spi.model.Model;
 import com.sun.xml.rpc.spi.model.ModelProperties;
 import com.sun.xml.rpc.spi.model.Port;
 import com.sun.xml.rpc.spi.model.Service;
-import com.sun.xml.rpc.spi.runtime.ClientTransportFactory;
-import com.sun.xml.rpc.spi.runtime.ClientTransportFactoryTypes;
 import com.sun.xml.rpc.spi.runtime.SOAPConstants;
 import com.sun.xml.rpc.spi.runtime.StreamingHandler;
-import com.sun.xml.rpc.spi.runtime.StubBase;
 import com.sun.xml.rpc.spi.runtime.Tie;
-import com.sun.xml.rpc.spi.tools.WSDLUtil;
 
 
 import java.util.*;
@@ -89,7 +84,6 @@ import javax.xml.parsers.*;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.handler.Handler;
 import javax.xml.ws.http.HTTPBinding;
-import javax.xml.namespace.QName;
 import javax.xml.soap.*;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
@@ -98,7 +92,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletOutputStream;
 
 import org.glassfish.web.util.HtmlEntityEncoder;
 import org.jvnet.hk2.component.Habitat;
@@ -115,7 +108,6 @@ import java.lang.reflect.Method;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.deployment.common.DeploymentException;
 
 
 /**
@@ -211,7 +203,7 @@ public class WsUtil {
             String wsdlPath = endpoint.getWsdlContentPath(requestUri);
 
             if( wsdlPath != null) {
-                ModuleDescriptor module = 
+                ModuleDescriptor module =
                     webService.getBundleDescriptor().getModuleDescriptor();
 
                 if( wsdlPath.equals(webService.getWsdlFileUri())){

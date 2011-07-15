@@ -41,7 +41,6 @@
 package org.glassfish.appclient.client.acc;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
@@ -56,6 +55,7 @@ import javax.persistence.spi.ClassTransformer;
 import javax.validation.ValidatorFactory;
 
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.deployment.common.RootDeploymentDescriptor;
 import org.glassfish.persistence.jpa.ProviderContainerContractInfoBase;
 
 /**

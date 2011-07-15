@@ -47,25 +47,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.Properties;
 import javax.rmi.PortableRemoteObject;
 import javax.management.AttributeList;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
 import javax.management.Notification;
-import javax.management.NotificationFilter;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
-import javax.management.j2ee.ListenerRegistration;
-import javax.naming.Context;
 import javax.naming.InitialContext;
 
 import javax.management.j2ee.ManagementHome;
+
+import com.sun.enterprise.security.ee.auth.login.ProgrammaticLogin;
 import org.glassfish.external.amx.AMXGlassfish;
 
 import javax.management.j2ee.Management;
-
-import com.sun.appserv.security.ProgrammaticLogin;
 
 
 import org.junit.Ignore;

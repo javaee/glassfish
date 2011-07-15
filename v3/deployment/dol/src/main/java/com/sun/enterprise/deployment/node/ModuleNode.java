@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,12 +40,11 @@
 
 package com.sun.enterprise.deployment.node;
 
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.deployment.util.XModuleType;
+import org.glassfish.deployment.common.ModuleDescriptor;
+import org.glassfish.deployment.common.XModuleType;
 import com.sun.enterprise.deployment.xml.ApplicationTagNames;
 import org.w3c.dom.Node;
 
-import javax.enterprise.deploy.shared.ModuleType;
 import java.util.Map;
 
 /**
@@ -103,7 +102,7 @@ public class ModuleNode extends DeploymentDescriptorNode {
      * @param the descriptor to write
      * @return the DOM tree top node
      */
-    public Node writeDescriptor(Node parent, String nodeName, ModuleDescriptor descriptor) {   
+    public Node writeDescriptor(Node parent, String nodeName, ModuleDescriptor descriptor) {
         
         Node module = appendChild(parent, nodeName);
         if (XModuleType.WAR.equals(descriptor.getModuleType())) {            

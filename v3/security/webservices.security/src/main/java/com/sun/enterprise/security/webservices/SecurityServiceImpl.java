@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,6 +44,7 @@ import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.runtime.common.MessageSecurityBindingDescriptor;
 import com.sun.enterprise.security.jauth.AuthException;
+import com.sun.enterprise.security.web.integration.WebPrincipal;
 import com.sun.logging.LogDomains;
 import com.sun.web.security.RealmAdapter;
 import com.sun.xml.rpc.spi.runtime.SOAPMessageContext;
@@ -64,7 +65,6 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
 
-import com.sun.enterprise.security.web.integration.WebPrincipal;
 import com.sun.enterprise.security.SecurityContext;
 import java.security.Principal;
 import org.apache.catalina.Globals;

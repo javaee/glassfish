@@ -48,20 +48,19 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.container.Sniffer;
+import org.glassfish.deployment.common.*;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.data.*;
 import org.glassfish.internal.deployment.SnifferManager;
-import org.glassfish.deployment.common.DeploymentContextImpl;
-import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.deployment.util.XModuleType;
+import org.glassfish.deployment.common.ModuleDescriptor;
+import org.glassfish.deployment.common.XModuleType;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.deploy.shared.Util;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -72,8 +71,6 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.io.IOException;
 import java.io.File;
-import org.glassfish.deployment.common.DeploymentException;
-import org.glassfish.deployment.common.DummyApplication;
 
 /**
  * EarDeployer to deploy composite Java EE applications.
@@ -253,7 +250,7 @@ public class EarDeployer implements Deployer {
             bundles.removeAll(doOnAllTypedBundles(application, XModuleType.WAR, runnable));
 
             // extract the app client bundles to take care of later
-            Collection<ModuleDescriptor<BundleDescriptor>> appClientBundles = 
+            Collection<ModuleDescriptor<BundleDescriptor>> appClientBundles =
                     application.getModuleDescriptorsByType(XModuleType.CAR);
             bundles.removeAll(appClientBundles);
             

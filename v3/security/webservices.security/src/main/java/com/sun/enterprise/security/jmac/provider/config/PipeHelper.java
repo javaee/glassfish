@@ -63,7 +63,7 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import org.glassfish.deployment.common.ModuleDescriptor;
 
 import com.sun.enterprise.deployment.runtime.common.MessageSecurityBindingDescriptor;
 
@@ -71,7 +71,7 @@ import com.sun.enterprise.security.audit.AuditManager;
 //import com.sun.enterprise.security.audit.AuditManagerFactory;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.SecurityServicesUtil;
-import com.sun.enterprise.security.authorize.EJBPolicyContextDelegate;
+import com.sun.enterprise.security.ee.authorize.EJBPolicyContextDelegate;
 import com.sun.enterprise.security.common.AppservAccessController;
 import com.sun.enterprise.security.common.ClientSecurityContext;
 import com.sun.enterprise.security.jmac.AuthMessagePolicy;

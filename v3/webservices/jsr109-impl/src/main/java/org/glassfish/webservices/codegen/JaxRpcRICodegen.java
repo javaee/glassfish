@@ -54,13 +54,13 @@ import java.net.URI;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
-import javax.enterprise.deploy.shared.ModuleType;
-
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 
 // DOL imports
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.deployment.common.Descriptor;
+import org.glassfish.deployment.common.XModuleType;
 import org.glassfish.loader.util.ASClassLoaderUtil;
 import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.io.JaxrpcMappingDeploymentDescriptorFile;
@@ -68,7 +68,6 @@ import com.sun.enterprise.deployment.JaxrpcMappingDescriptor.Mapping;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
 import com.sun.enterprise.deployment.util.ModuleContentLinker;
 import com.sun.enterprise.deployment.util.WebServerInfo;
-import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deployment.*;
 import org.glassfish.deployment.common.InstalledLibrariesResolver;
 import org.glassfish.deployment.common.ClientArtifactsManager;

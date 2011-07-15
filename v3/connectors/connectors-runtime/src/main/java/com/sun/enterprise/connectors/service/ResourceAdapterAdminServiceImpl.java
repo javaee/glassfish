@@ -51,7 +51,7 @@ import com.sun.enterprise.connectors.util.ConnectorDDTransformUtils;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import org.glassfish.deployment.common.ModuleDescriptor;
 import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
 
 import javax.naming.NamingException;
@@ -63,8 +63,6 @@ import java.util.logging.Level;
 import java.util.concurrent.*;
 
 import org.jvnet.hk2.config.types.Property;
-import org.glassfish.internal.api.DelegatingClassLoader;
-import org.glassfish.internal.api.ConnectorClassFinder;
 
 
 /**

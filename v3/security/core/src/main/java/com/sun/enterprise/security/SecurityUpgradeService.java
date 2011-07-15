@@ -86,7 +86,7 @@ public class SecurityUpgradeService implements ConfigurationUpgrade, PostConstru
   //  private static final String KEYSTORE = "keystore.jks";
   //  private static final String TRUSTSTORE = "cacerts.jks";
 
-    private static final String JDBC_REALM_CLASSNAME = "com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm";
+    private static final String JDBC_REALM_CLASSNAME = "com.sun.enterprise.security.ee.auth.realm.jdbc.JDBCRealm";
     public static final String PARAM_DIGEST_ALGORITHM = "digest-algorithm";
     private static final String GF_SSL_IMPL_NAME = "com.sun.enterprise.security.ssl.GlassfishSSLImpl";
     private static final Logger _logger = LogDomains.getLogger(SecurityUpgradeService.class, LogDomains.SECURITY_LOGGER);

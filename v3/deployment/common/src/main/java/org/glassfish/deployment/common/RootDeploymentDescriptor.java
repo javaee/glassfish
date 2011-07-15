@@ -38,13 +38,10 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment;
+package org.glassfish.deployment.common;
 
-import com.sun.enterprise.deployment.util.DOLUtils;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.deployment.util.XModuleType;
+import com.sun.logging.LogDomains;
 
-import javax.enterprise.deploy.shared.ModuleType;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -151,7 +148,7 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
         try {
             Double.parseDouble(specVersion); 
         } catch (NumberFormatException nfe) {
-            DOLUtils.getDefaultLogger().log(Level.WARNING, "invalidSpecVersion",
+            LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER).log(Level.WARNING, "invalidSpecVersion",
                 new Object[] {specVersion, getDefaultSpecVersion()});
             specVersion = getDefaultSpecVersion();
         }

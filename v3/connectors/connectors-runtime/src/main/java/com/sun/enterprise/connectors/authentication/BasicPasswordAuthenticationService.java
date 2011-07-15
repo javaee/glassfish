@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.connectors.authentication;
 
+import org.glassfish.deployment.common.SecurityRoleMapper;
+import org.glassfish.deployment.common.SecurityRoleMapperFactory;
 import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.connectors.*;
 import com.sun.logging.LogDomains;
@@ -51,7 +53,6 @@ import javax.security.auth.Subject;
 import javax.ejb.EJBContext;
 
 
-import com.sun.enterprise.deployment.interfaces.*;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;

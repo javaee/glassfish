@@ -44,6 +44,7 @@ import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.TagNames;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
+import org.glassfish.deployment.common.Descriptor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -169,7 +170,7 @@ public class WebServicesDescriptorNode extends BundleNode {
      * @param descriptor to write
      * @return the DOM tree top node
      */    
-    public Node writeDescriptor(Node parent, Descriptor descriptor) {    
+    public Node writeDescriptor(Node parent, Descriptor descriptor) {
         Node topNode = parent;
         if (parent instanceof Document) {
             BundleDescriptor bundleDesc = (BundleDescriptor) descriptor;

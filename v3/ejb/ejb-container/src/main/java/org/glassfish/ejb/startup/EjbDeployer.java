@@ -53,7 +53,7 @@ import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.ScheduledTimerDescriptor;
 import com.sun.enterprise.security.PolicyLoader;
-import com.sun.enterprise.security.SecurityUtil;
+import com.sun.enterprise.security.ee.SecurityUtil;
 import com.sun.enterprise.security.util.IASSecurityException;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.config.serverbeans.Cluster;
@@ -81,7 +81,6 @@ import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
-import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 
 import org.glassfish.api.invocation.RegisteredComponentInvocationHandler;

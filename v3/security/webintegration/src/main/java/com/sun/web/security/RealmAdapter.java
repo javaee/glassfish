@@ -40,13 +40,15 @@
 
 package com.sun.web.security;
 
+import com.sun.enterprise.security.ee.SecurityUtil;
+import com.sun.enterprise.security.ee.jmac.config.HttpServletHelper;
+import com.sun.enterprise.security.web.integration.WebPrincipal;
+import com.sun.enterprise.security.web.integration.WebSecurityManager;
+import com.sun.enterprise.security.web.integration.WebSecurityManagerFactory;
 import org.glassfish.security.common.NonceInfo;
 import com.sun.enterprise.security.CNonceCacheFactory;
 import org.glassfish.security.common.CNonceCache;
 import com.sun.enterprise.security.auth.digest.impl.HttpAlgorithmParameterImpl;
-import com.sun.enterprise.security.web.integration.WebSecurityManager;
-import com.sun.enterprise.security.web.integration.WebSecurityManagerFactory;
-import com.sun.enterprise.security.web.integration.WebPrincipal;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -92,18 +94,16 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
-//import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
+//import org.glassfish.deployment.common.SecurityRoleMapper;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.security.AppCNonceCacheMap;
 import com.sun.enterprise.security.SecurityContext;
-import com.sun.enterprise.security.SecurityUtil;
 import com.sun.enterprise.security.WebSecurityDeployerProbeProvider;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.auth.realm.certificate.CertificateRealm;
 import com.sun.enterprise.security.integration.RealmInitializer;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.security.jmac.config.HttpServletConstants;
-import com.sun.enterprise.security.jmac.config.HttpServletHelper;
 
 /*V3:Comment
 import com.sun.enterprise.webservice.monitoring.WebServiceEngineImpl;
@@ -1571,7 +1571,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
                     }
                      */
                     String authType = (String) messageInfo.getMap().get(
-                            HttpServletHelper.AUTH_TYPE);
+                            HttpServletConstants.AUTH_TYPE);
                     boolean register = messageInfo.getMap().containsKey(
                             HttpServletConstants.REGISTER_WITH_AUTHENTICATOR);
 

@@ -45,7 +45,6 @@ import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 import com.sun.enterprise.deployment.deploy.shared.MemoryMappedArchive;
-import com.sun.enterprise.deployment.util.XModuleType;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,6 +60,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.deployment.common.XModuleType;
 import org.jvnet.hk2.component.Habitat;
 import org.xml.sax.SAXParseException;
 
@@ -71,7 +71,8 @@ import org.xml.sax.SAXParseException;
  *
  * @author tjquinn
  */
-public class MainClassLaunchable implements Launchable {
+public class
+        MainClassLaunchable implements Launchable {
 
     private final Class mainClass;
     private ApplicationClientDescriptor acDesc = null;

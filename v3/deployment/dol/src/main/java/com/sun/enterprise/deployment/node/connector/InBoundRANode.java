@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,7 +41,7 @@
 package com.sun.enterprise.deployment.node.connector;
 
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.Descriptor;
+import org.glassfish.deployment.common.Descriptor;
 import com.sun.enterprise.deployment.InboundResourceAdapter;
 import com.sun.enterprise.deployment.MessageListener;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
@@ -127,7 +127,7 @@ public class InBoundRANode extends DeploymentDescriptorNode {
      * @param the descriptor to write
      * @return the DOM tree top node
      */    
-    public Node writeDescriptor(Node connectorNode, Descriptor descriptor) {  
+    public Node writeDescriptor(Node connectorNode, Descriptor descriptor) {
 	Node inBoundNode = appendChild(connectorNode, ConnectorTagNames.INBOUND_RESOURCE_ADAPTER);
 	appendInBoundNode(inBoundNode, (InboundResourceAdapter)((ConnectorDescriptor)descriptor).getInboundResourceAdapter());
 	return connectorNode;

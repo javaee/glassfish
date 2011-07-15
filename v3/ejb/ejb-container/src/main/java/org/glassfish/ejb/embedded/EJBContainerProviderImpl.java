@@ -41,7 +41,6 @@
 package org.glassfish.ejb.embedded;
 
 import java.io.*;
-import java.net.URI;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -56,13 +55,13 @@ import javax.ejb.spi.EJBContainerProvider;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 
+import org.glassfish.deployment.common.ModuleDescriptor;
 import org.glassfish.embeddable.*;
 
 import org.glassfish.deployment.common.GenericAnnotationDetector;
 import org.glassfish.deployment.common.DeploymentUtils;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.io.EjbDeploymentDescriptorFile;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;

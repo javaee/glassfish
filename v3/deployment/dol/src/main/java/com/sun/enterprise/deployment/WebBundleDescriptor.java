@@ -45,11 +45,14 @@ import com.sun.enterprise.deployment.node.web.WebBundleNode;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.deployment.types.*;
-import com.sun.enterprise.deployment.util.DescriptorVisitor;
 import com.sun.enterprise.deployment.util.WebBundleVisitor;
-import com.sun.enterprise.deployment.util.XModuleType;
+import org.glassfish.deployment.common.DescriptorVisitor;
+import org.glassfish.deployment.common.RootDeploymentDescriptor;
+import org.glassfish.deployment.common.XModuleType;
 import com.sun.enterprise.deployment.web.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.deployment.common.Descriptor;
+import org.glassfish.security.common.Role;
 
 import java.util.*;
 

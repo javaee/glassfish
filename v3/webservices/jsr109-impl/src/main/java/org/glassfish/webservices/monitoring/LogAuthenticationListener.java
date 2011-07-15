@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,11 +43,10 @@ package org.glassfish.webservices.monitoring;
 import java.security.Principal;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import javax.enterprise.deploy.shared.ModuleType;
 
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.util.XModuleType;
+import org.glassfish.deployment.common.XModuleType;
 
 /**
  * Log all authentication successes and failures.

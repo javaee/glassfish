@@ -43,6 +43,7 @@ package com.sun.enterprise.deployment;
 import com.sun.enterprise.deployment.util.TypeUtil;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.deployment.common.Descriptor;
 
 import java.lang.reflect.Method;
 import java.util.*;

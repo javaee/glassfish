@@ -41,9 +41,9 @@
 package com.sun.enterprise.deployment.io;
 
 import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.Descriptor;
+import org.glassfish.deployment.common.Descriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+import org.glassfish.deployment.common.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.node.RootXMLNode;
 import com.sun.enterprise.deployment.node.WebServicesDescriptorNode;
 

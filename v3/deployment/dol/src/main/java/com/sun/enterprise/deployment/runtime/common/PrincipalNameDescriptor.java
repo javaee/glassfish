@@ -40,7 +40,7 @@
 
 package com.sun.enterprise.deployment.runtime.common;
 
-import com.sun.enterprise.deployment.Descriptor;
+import org.glassfish.deployment.common.Descriptor;
 
 import java.lang.reflect.Constructor;
 import java.security.Principal;

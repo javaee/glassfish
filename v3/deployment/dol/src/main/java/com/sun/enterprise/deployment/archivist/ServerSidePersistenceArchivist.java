@@ -40,9 +40,8 @@
 
 package com.sun.enterprise.deployment.archivist;
 
-import com.sun.enterprise.deployment.util.XModuleType;
+import org.glassfish.deployment.common.XModuleType;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 import org.glassfish.api.admin.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;

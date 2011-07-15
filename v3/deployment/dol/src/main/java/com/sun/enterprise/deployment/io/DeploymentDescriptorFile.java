@@ -40,7 +40,7 @@
 
 package com.sun.enterprise.deployment.io;
 
-import com.sun.enterprise.deployment.Descriptor;
+import org.glassfish.deployment.common.Descriptor;
 import com.sun.enterprise.deployment.node.J2EEDocumentBuilder;
 import com.sun.enterprise.deployment.node.RootXMLNode;
 import com.sun.enterprise.deployment.node.SaxParserHandler;
@@ -59,7 +59,6 @@ import javax.xml.parsers.*;
 import java.io.*;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This abstract class defines common behaviour for classes responsibles 

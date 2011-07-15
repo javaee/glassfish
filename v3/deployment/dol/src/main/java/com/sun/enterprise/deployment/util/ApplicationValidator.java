@@ -42,7 +42,6 @@ package com.sun.enterprise.deployment.util;
 
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.web.MultipartConfig;
-import com.sun.enterprise.deployment.web.LoginConfiguration;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -51,6 +50,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.glassfish.deployment.common.ModuleDescriptor;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -84,7 +84,7 @@ public class ApplicationValidator extends EjbBundleValidator
         // list to store the current conflicted modules
         List<ModuleDescriptor> conflicted = new ArrayList<ModuleDescriptor>();
         // make sure all the modules have unique names
-        Set<ModuleDescriptor<BundleDescriptor>> modules = 
+        Set<ModuleDescriptor<BundleDescriptor>> modules =
             application.getModules();
         for (ModuleDescriptor module : modules) {
             // if this module is already added to the conflicted list

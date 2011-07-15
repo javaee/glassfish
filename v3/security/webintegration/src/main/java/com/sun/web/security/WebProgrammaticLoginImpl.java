@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,6 @@
 
 package com.sun.web.security;
 
-import com.sun.enterprise.security.web.integration.WebPrincipal;
 import java.security.*;
 import java.io.*;
 import java.util.logging.Logger;
@@ -51,6 +50,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.sun.enterprise.security.web.integration.WebPrincipal;
 import org.apache.catalina.Session;
 import org.apache.catalina.Context;
 import org.apache.catalina.Manager;
@@ -68,7 +68,7 @@ import com.sun.enterprise.security.web.integration.WebProgrammaticLogin;
 /**
  * Internal implementation for servlet programmatic login.
  *
- * @see com.sun.appserv.security.ProgrammaticLogin
+ * @see com.sun.enterprise.security.ee.auth.login.ProgrammaticLogin
  *
  */
 @Service
@@ -106,7 +106,7 @@ public class WebProgrammaticLoginImpl implements WebProgrammaticLogin {
      * @param realm the realm name to be authenticated to. If the realm is null, 
      * authentication takes place in default realm
      * @returns A Boolean object; true if login succeeded, false otherwise.
-     * @see com.sun.appserv.security.ProgrammaticLogin
+     * @see com.sun.enterprise.security.ee.auth.login.ProgrammaticLogin
      * @throws Exception on login failure.
      *
      */
@@ -196,7 +196,7 @@ public class WebProgrammaticLoginImpl implements WebProgrammaticLogin {
      *     should be an instance of HttpServletResponse. This is not used
      *     currently.
      * @returns A Boolean object; true if login succeeded, false otherwise.
-     * @see com.sun.appserv.security.ProgrammaticLogin
+     * @see com.sun.enterprise.security.ee.auth.login.ProgrammaticLogin
      * @throws Exception any exception encountered during logout operation
      */
     public  Boolean logout(HttpServletRequest request,

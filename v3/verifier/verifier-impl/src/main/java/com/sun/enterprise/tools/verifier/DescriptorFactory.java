@@ -52,7 +52,7 @@ import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 import com.sun.enterprise.deployment.archivist.ApplicationFactory;
 import com.sun.enterprise.config.serverbeans.DasConfig;
 import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.Descriptor;
+import org.glassfish.deployment.common.Descriptor;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
 import com.sun.enterprise.deployment.util.ApplicationValidator;
 import com.sun.enterprise.util.io.FileUtils;

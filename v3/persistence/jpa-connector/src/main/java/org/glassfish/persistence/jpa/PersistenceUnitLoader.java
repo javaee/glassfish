@@ -41,7 +41,7 @@
 package org.glassfish.persistence.jpa;
 
 import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+import org.glassfish.deployment.common.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.PersistenceUnitsDescriptor;
 import com.sun.enterprise.util.i18n.StringManager;
 import org.glassfish.persistence.common.Java2DBProcessorHelper;

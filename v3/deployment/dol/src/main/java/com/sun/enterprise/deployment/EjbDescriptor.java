@@ -51,7 +51,10 @@ import com.sun.enterprise.deployment.types.*;
 import com.sun.enterprise.deployment.util.*;
 import com.sun.enterprise.deployment.util.InterceptorBindingTranslator.TranslationResults;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.deployment.common.Descriptor;
+import org.glassfish.deployment.common.DescriptorVisitor;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.security.common.Role;
 
 import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
 

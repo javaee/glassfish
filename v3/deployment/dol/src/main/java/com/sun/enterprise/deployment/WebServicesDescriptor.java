@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,9 +41,9 @@
 package com.sun.enterprise.deployment;
 
 import com.sun.enterprise.deployment.node.WebServicesDescriptorNode;
-import com.sun.enterprise.deployment.util.XModuleType;
+import org.glassfish.deployment.common.RootDeploymentDescriptor;
+import org.glassfish.deployment.common.XModuleType;
 
-import javax.enterprise.deploy.shared.ModuleType;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -169,7 +169,7 @@ public class WebServicesDescriptor extends RootDeploymentDescriptor {
         return allEndpoints;
     }
     
-    public XModuleType getModuleType() { 
+    public XModuleType getModuleType() {
         if (bundleDesc!=null) {
           return bundleDesc.getModuleType();  
         } 

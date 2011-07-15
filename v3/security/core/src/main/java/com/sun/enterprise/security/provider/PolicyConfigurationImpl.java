@@ -62,13 +62,14 @@ import java.util.logging.*;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
-import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
-import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import com.sun.enterprise.security.SecurityRoleMapperFactoryGen;
 import com.sun.enterprise.security.provider.PolicyParser.GrantEntry;
 import com.sun.enterprise.security.provider.PolicyParser.ParsingException;
 import com.sun.enterprise.security.provider.PolicyParser.PermissionEntry;
 import com.sun.enterprise.security.provider.PolicyParser.PrincipalEntry;
+import org.glassfish.deployment.common.SecurityRoleMapper;
+import org.glassfish.deployment.common.SecurityRoleMapperFactory;
+
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 

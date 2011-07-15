@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,19 +38,13 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment.util;
-
-import com.sun.enterprise.deployment.DeploymentExtensionDescriptor;
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
-import org.glassfish.deployment.common.DeploymentUtils;
+package org.glassfish.deployment.common;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.jar.Manifest;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.deployment.versioning.VersioningUtils;
 
 /**
@@ -237,19 +231,6 @@ public class ModuleDescriptor<T extends RootDeploymentDescriptor> extends Descri
      */
     public void setStandalone(boolean standalone) {
         this.standalone = standalone;
-    }
-
-    /**
-     * Add a new deployment-extension for this descriptor
-     * @param de deployment-extension descriptor to add
-     */
-    public void addWebDeploymentExtension(DeploymentExtensionDescriptor de) {
-        Vector extensions = (Vector) getExtraAttribute("web-deployment-extension");
-        if (extensions==null) {
-            extensions = new Vector();
-            addExtraAttribute("web-deployment-extension", extensions);
-        }
-        extensions.add(de);
     }
 
     /**

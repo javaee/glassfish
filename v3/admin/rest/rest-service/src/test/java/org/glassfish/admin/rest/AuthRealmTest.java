@@ -105,7 +105,7 @@ public class AuthRealmTest extends RestTestBase {
         List<String> classNameList = getCommandResults(get(URL_AUTH_REALM_CLASS_NAMES));
         // Overkill? Too fragile?
         assertTrue(classNameList.contains("com.sun.enterprise.security.auth.realm.certificate.CertificateRealm"));
-        assertTrue(classNameList.contains("com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"));
+//        assertTrue(classNameList.contains("com.sun.enterprise.security.ee.auth.realm.jdbc.JDBCRealm"));
         assertTrue(classNameList.contains("com.sun.enterprise.security.auth.realm.file.FileRealm"));
         assertTrue(classNameList.contains("com.sun.enterprise.security.auth.realm.pam.PamRealm"));
         assertTrue(classNameList.contains("com.sun.enterprise.security.auth.realm.ldap.LDAPRealm"));

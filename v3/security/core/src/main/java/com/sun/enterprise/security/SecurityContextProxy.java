@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,37 +37,11 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-package com.sun.enterprise.security.acl;
-
-
-import java.lang.reflect.Method;
+package com.sun.enterprise.security;
 
 /**
- * An EJB resource.
- * @author Harish Prabandham
+ * acts as a security context proxy
  */
-public class EJBResource extends Resource {
-
-    public EJBResource(String app, Method method) {
-        super(app,method.getDeclaringClass().getName(), method.toString());
-    }
-
-    public boolean equals(Object obj) {
-        if(obj == this)
-            return true;
-        
-        if ((obj == null) || (obj.getClass() != getClass()))
-            return false;
-        
-        Resource r = (Resource) obj;
-        
-        return getApplication().equals(r.getApplication()) &&
-            getMethod().equals(r.getMethod()) &&
-            getName().equals(r.getName());
-    }
-    
-    public boolean implies(Resource resource) {
-        return equals(resource);
-    }
+public interface SecurityContextProxy {
+    SecurityContext getSecurityContext();
 }

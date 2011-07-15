@@ -40,7 +40,7 @@
 
 package com.sun.enterprise.deployment.node;
 
-import com.sun.enterprise.deployment.Descriptor;
+import org.glassfish.deployment.common.Descriptor;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import org.w3c.dom.DOMImplementation;
@@ -211,7 +211,7 @@ public class J2EEDocumentBuilder {
         transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
     }  
     
-    public static String descriptorToString(Descriptor descriptor, final DeploymentDescriptorFile ddFile) 
+    public static String descriptorToString(Descriptor descriptor, final DeploymentDescriptorFile ddFile)
                                 throws Exception {
         java.io.StringWriter sw = new java.io.StringWriter();
         StreamResult sr = new StreamResult(sw);
