@@ -401,9 +401,9 @@
              <!-- End of OSGi bundle configurations -->
         </java-config>
          <availability-service>
-             <web-container-availability availability-enabled="true" persistence-frequency="web-method" persistence-scope="session" persistence-type="replicated" sso-failover-enabled="false"/>
-             <ejb-container-availability availability-enabled="true" sfsb-store-pool-name="jdbc/hastore"/>
-             <jms-availability availability-enabled="false"/>
+             <web-container-availability/>
+             <ejb-container-availability sfsb-store-pool-name="jdbc/hastore"/>
+             <jms-availability/>
          </availability-service>
          <network-config>
              <protocols>

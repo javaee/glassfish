@@ -57,7 +57,6 @@ import org.jvnet.hk2.config.types.Property;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
 
 @Service
 @Scoped(PerLookup.class)
@@ -69,12 +68,6 @@ public class ServerConfigLookup {
 
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Config configBean;
-
-    @Inject(optional = true)
-    private AvailabilityService availabilityService;
-
-    @Inject(optional = true)
-    private WebContainerAvailability webContainerAvailability;
 
     @Inject
     private ClassLoaderHierarchy clh;
@@ -160,7 +153,7 @@ public class ServerConfigLookup {
      * return null if not found
      */
     protected AvailabilityService getAvailabilityService() {
-        return this.availabilityService;
+        return configBean.getAvailabilityService();
     }
 
     /**
@@ -188,8 +181,9 @@ public class ServerConfigLookup {
      * Get the web-container-availability element from domain.xml.
      * return null if not found
      */     
-    private WebContainerAvailability  getWebContainerAvailability() {
-        return this.webContainerAvailability;
+    private WebContainerAvailability getWebContainerAvailability() {
+        AvailabilityService as = getAvailabilityService();
+        return ((as != null)? as.getWebContainerAvailability() : null);
     }
     
     /**
@@ -257,27 +251,6 @@ public class ServerConfigLookup {
     } 
 
     /**
-     * Get the availability-enabled for the web container from domain.xml.
-     * return inherited global availability-enabled if not found
-     */   
-    public boolean getWebContainerAvailabilityEnabledFromConfig(boolean inheritedValue) {
-        WebContainerAvailability was = getWebContainerAvailability();
-        if (was == null) {
-            if (_logger.isLoggable(Level.FINEST)) {
-                _logger.finest("WebContainerAvailability not defined - check domain.xml");
-            }
-            return inheritedValue;
-        }
-        
-        Boolean bool = toBoolean(was.getAvailabilityEnabled());
-        if (bool == null) {
-            return inheritedValue;
-        } else {
-            return bool;
-        }       
-    }    
-
-    /**
      * Get the sso-failover-enabled boolean from domain.xml.
      */
     public boolean isSsoFailoverEnabledFromConfig() {
@@ -293,10 +266,9 @@ public class ServerConfigLookup {
      * This takes into account:
      * global
      * web-container-availability
-     * web-module (if stand-alone)
      * return false if not found
      */   
-    public boolean calculateWebAvailabilityEnabledFromConfig(WebModule ctx) {
+    public boolean calculateWebAvailabilityEnabledFromConfig() {
         // global availability from <availability-service> element
         boolean globalAvailability = getAvailabilityEnabledFromConfig();
         if (_logger.isLoggable(Level.FINEST)) {
@@ -307,10 +279,24 @@ public class ServerConfigLookup {
         // sub-element
 
         boolean webContainerAvailability =
-            getWebContainerAvailabilityEnabledFromConfig(globalAvailability);
+            getWebContainerAvailabilityEnabledFromConfig();
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest("webContainerAvailability = " + webContainerAvailability);
         }
+
+        return globalAvailability && webContainerAvailability;
+    }
+
+    /**
+     * Get the availability-enabled from domain.xml.
+     * This takes into account:
+     * global
+     * web-container-availability
+     * web-module (if stand-alone)
+     * return false if not found
+     */   
+    public boolean calculateWebAvailabilityEnabledFromConfig(WebModule ctx) {
+        boolean waEnabled = calculateWebAvailabilityEnabledFromConfig();
 
         boolean webModuleAvailability = false;
         DeploymentContext dc = ctx.getWebModuleConfig().getDeploymentContext();
@@ -325,7 +311,7 @@ public class ServerConfigLookup {
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest("webModuleAvailability = " + webModuleAvailability);
         }
-        return globalAvailability && webContainerAvailability && webModuleAvailability;
+        return waEnabled && webModuleAvailability;
     }
 
     /**
