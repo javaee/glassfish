@@ -60,6 +60,7 @@ import com.sun.enterprise.config.serverbeans.IiopService;
 import com.sun.enterprise.config.serverbeans.JmsHost;
 import com.sun.enterprise.config.serverbeans.JmsService;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.Result;
 import com.sun.enterprise.util.StringUtils;
@@ -87,8 +88,9 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.ObservableBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ObservableBean;
+import org.jvnet.hk2.config.Transactions;
 
 /**
  * The Network Service is responsible for starting grizzly and register the
@@ -110,6 +112,9 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
 
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Server server;
+
+    @Inject
+    Transactions transactions;
 
     @Inject
     ProbeProviderFactory probeProviderFactory;
@@ -332,13 +337,15 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         NetworkConfig networkConfig = config.getNetworkConfig();
 
         configListener = new DynamicConfigListener(config);
-        
+
         ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(networkConfig.getNetworkListeners());
         bean.addListener(configListener);
         bean = (ObservableBean) ConfigSupport.getImpl(config.getHttpService());
         bean.addListener(configListener);
         bean = (ObservableBean) ConfigSupport.getImpl(server);
         bean.addListener(configListener);
+
+        //transactions.addListenerForType(SystemProperty.class, configListener);
 
         configListener.setGrizzlyService(this);
         configListener.setLogger(logger);
@@ -349,7 +356,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             for (NetworkListener listener : networkConfig.getNetworkListeners().getNetworkListener()) {
                 createNetworkProxy(listener);
             }
-            
+
             /*
              * Ideally (and ultimately), all services that need lazy Init will add a network-listener element
              * in the domain.xml with protocol = "light-weight-listener". And a LWL instance would have been created
@@ -401,18 +408,18 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
                 }
             }
 
-            registerNetworkProxy(); 
+            registerNetworkProxy();
         } catch(RuntimeException e) { // So far postConstruct can not throw any other exception type
             logger.log(Level.SEVERE, "Unable to start v3. Closing all ports",e);
             for(NetworkProxy proxy : proxies) {
                 try {
                     proxy.stop();
                 } catch(Exception proxyStopException) {
-                    logger.log(Level.SEVERE, "Exception closing port: " 
+                    logger.log(Level.SEVERE, "Exception closing port: "
                             + proxy.getPort() , proxyStopException);
                 }
             }
-            
+
             throw e;
         }
 
@@ -445,14 +452,14 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             final NetworkConfig networkConfig = listener.getParent(NetworkListeners.class).getParent(NetworkConfig.class);
             // attach all virtual servers to this port
             for (VirtualServer vs : networkConfig.getParent(Config.class).getHttpService().getVirtualServer()) {
-                List<String> vsListeners = 
+                List<String> vsListeners =
                     StringUtils.parseStringList(vs.getNetworkListeners(), " ,");
                 if (vsListeners == null || vsListeners.isEmpty() ||
                         vsListeners.contains(listener.getName())) {
                     if (!hosts.contains(vs.getId())){
                         hosts.add(vs.getId());
                     }
-                }            
+                }
             }
             addChangeListener(listener);
             addChangeListener(listener.findThreadPool());
