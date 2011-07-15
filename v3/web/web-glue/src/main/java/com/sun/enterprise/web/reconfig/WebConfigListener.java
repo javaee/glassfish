@@ -39,8 +39,9 @@
  */
 
 package com.sun.enterprise.web.reconfig;
-                                                    
+
 import com.sun.enterprise.config.serverbeans.AccessLog;
+import com.sun.enterprise.config.serverbeans.AvailabilityService;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.ManagerProperties;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
@@ -136,7 +137,8 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
                         container.updateAccessLog(httpService);
                     } else if (tClass == ManagerProperties.class) {
                         return new NotProcessed("ManagerProperties requires restart");
-                    } else if (tClass == WebContainerAvailability.class) {
+                    } else if (tClass == WebContainerAvailability.class ||
+                            tClass == AvailabilityService.class) {
                         // container.updateHttpService handles SingleSignOn valve configuration
                         container.updateHttpService(httpService);
                     } else if (tClass == NetworkListeners.class) {

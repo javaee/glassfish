@@ -2960,7 +2960,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     private boolean isSsoFailoverEnabled() {
         boolean webContainerAvailabilityEnabled =
-            serverConfigLookup.getWebContainerAvailabilityEnabledFromConfig();
+            serverConfigLookup.calculateWebAvailabilityEnabledFromConfig();
         boolean isSsoFailoverEnabled =
             serverConfigLookup.isSsoFailoverEnabledFromConfig();
         return isSsoFailoverEnabled && webContainerAvailabilityEnabled;
@@ -3330,7 +3330,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     private WebContainerFeatureFactory getWebContainerFeatureFactory() {
         String featureFactoryName =
-                    (serverConfigLookup.getWebContainerAvailabilityEnabledFromConfig() ? "ha" : "pe");
+                    (serverConfigLookup.calculateWebAvailabilityEnabledFromConfig() ? "ha" : "pe");
         return webContainerFeatureFactory = habitat.getComponent(
                     WebContainerFeatureFactory.class, featureFactoryName);
     }

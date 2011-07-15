@@ -42,22 +42,28 @@ package org.glassfish.web.ha;
 
 
 import com.sun.enterprise.config.serverbeans.AvailabilityService;
+import com.sun.enterprise.config.serverbeans.Config;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.gms.bootstrap.GMSAdapterService;
-import org.jvnet.hk2.annotations.Service;
 import org.glassfish.security.common.HAUtil;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
  *
  * @author vbkumarjayanti
  */
 @Service
+@Scoped(PerLookup.class)
 public class HAUtilImpl implements HAUtil {
 
+    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Config config;
+    
     @Inject(optional=true)
     private GMSAdapterService gmsAdapterService;
-    @Inject(optional=true)
-    private AvailabilityService availabilityService;
 
     public String getClusterName() {
         return (this.gmsAdapterService != null) ?
@@ -68,10 +74,10 @@ public class HAUtilImpl implements HAUtil {
             gmsAdapterService.getGMSAdapter().getModule().getInstanceName(): null;
     }
     public boolean isHAEnabled() {
+         AvailabilityService availabilityService = config.getAvailabilityService();
          if (availabilityService != null && gmsAdapterService != null && gmsAdapterService.isGmsEnabled()) {
              return Boolean.valueOf(availabilityService.getAvailabilityEnabled());
          }
          return false;
     }
-
 }
