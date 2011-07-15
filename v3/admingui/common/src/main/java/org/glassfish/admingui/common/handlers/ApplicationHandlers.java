@@ -248,7 +248,7 @@ public class ApplicationHandlers {
     @Handler(id = "gf.addToAppScopedResourcesTable",
         input = {
             @HandlerInput(name = "appName", type = String.class, required = true),
-            @HandlerInput(name = "resources", type = Map.class, required = true),
+            @HandlerInput(name = "resources", type = Map.class),
             @HandlerInput(name = "moduleName", type = String.class),
             @HandlerInput(name = "listOfRows", type = java.util.List.class)},
         output = {
@@ -264,12 +264,18 @@ public class ApplicationHandlers {
         if (GuiUtil.isEmpty(moduleName)) {
             moduleName = "-----------";
         }
+        if( resources != null )
         for (String resource : resources.keySet()) {
             Map oneRow = new HashMap();
             oneRow.put("appName", appName);
             oneRow.put("moduleName", moduleName);
             oneRow.put("resName", resource);
-            oneRow.put("resType", AppUtil.getAppScopedResTypeToDisplay(resources.get(resource)));
+            oneRow.put("resType", AppUtil.getAppScopedResType(resources.get(resource), "display"));
+            String link = AppUtil.getAppScopedResType(resources.get(resource), "edit") + resource + "&appName=" + appName;
+            if (!moduleName.equals("-----------")) {
+                link = link + "&moduleName=" + moduleName;
+            }
+            oneRow.put("link", link);
             result.add(oneRow);
         }
         handlerCtx.setOutputValue("result", result);

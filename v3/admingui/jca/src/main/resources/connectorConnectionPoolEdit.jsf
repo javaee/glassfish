@@ -53,11 +53,28 @@
         setSessionAttribute(key="connectorPoolTabs" value="general");
         getRequestValue(key="name" value="#{pageSession.Name}");
         urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorConnectionPoolEdit.jsf?name=#{pageSession.encodedName}");
-        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorConnectionPools.jsf");
+        getRequestValue(key="isAppScopedRes" value="#{pageSession.isAppScopedRes}");
+        if(#{pageSession.isAppScopedRes}){
+            getRequestValue(key="appName" value="#{pageSession.encodedAppName}");
+            getRequestValue(key="moduleName" value="#{pageSession.moduleName}");
+            if(#{pageSession.moduleName}) {
+                urlencode(value="#{pageSession.moduleName}" encoding="UTF-8" result="#{pageSession.encodedModuleName}");
+                setPageSessionAttribute(key="selfPageArgs" value="&isAppScopedRes=$boolean{true}&appName=#{pageSession.encodedAppName}&moduleName=#{pageSession.encodedModuleName}");
+                setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/applications/application/#{pageSession.encodedAppName}/module/#{pageSession.encodedModuleName}/resources");
+            }
+            if(!#{pageSession.moduleName}) {
+                setPageSessionAttribute(key="selfPageArgs" value="&isAppScopedRes=$boolean{true}&appName=#{pageSession.encodedAppName}");
+                setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/applications/application/#{pageSession.encodedAppName}/resources");
+            }
+            setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/applications/resources/appScopedResources.jsf?appName=#{pageSession.encodedAppName}&listPageLink=/common/applications/applications.jsf");
+        }
+        if(!#{pageSession.isAppScopedRes}){            
+            setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorConnectionPools.jsf");
+            setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
+        }
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorConnectionPoolEdit.jsf?name=#{pageSession.encodedName}#{pageSession.selfPageArgs}");
         setPageSessionAttribute(key="childType" value="connector-connection-pool");
         //REST related
-        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
         setPageSessionAttribute(key="rest-api" value="true");
         setPageSessionAttribute(key="poolGeneralAttrs" value={"name" "resourceAdapterName" "connectionDefinitionName"
@@ -126,6 +143,12 @@
                 if ("#{valueMap['ping']}") {
                     urlencode(value="#{valueMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
                     gf.createAttributeMap(keys={"id"} values={"$pageSession{encodeName}"} map="#{requestScope.attrMap}");
+                    if(#{pageSession.isAppScopedRes}){
+                        mapPut(map="#{requestScope.attrMap}" key="appname" value="#{pageSession.encodedAppName}");
+                        if(#{pageSession.moduleName}){
+                            mapPut(map="#{requestScope.attrMap}" key="modulename" value="#{pageSession.encodedModuleName}");
+                        }
+                    }
                     gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool"
                                    attrs="#{requestScope.attrMap}"
                                    method="GET"
@@ -151,6 +174,12 @@
     <sun:button id="flush" text="$resource{i18njca.button.Flush}" primary="#{false}" >
         <!command
             gf.createAttributeMap(keys={"id"} values={"$pageSession{Name}"} map="#{requestScope.attrMap}");
+            if(#{pageSession.isAppScopedRes}){
+                mapPut(map="#{requestScope.attrMap}" key="appname" value="#{pageSession.encodedAppName}");
+                if(#{pageSession.moduleName}){
+                    mapPut(map="#{requestScope.attrMap}" key="modulename" value="#{pageSession.encodedModuleName}");
+                }
+            }
             gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/flush-connection-pool"
                            attrs="#{requestScope.attrMap}"
                            method="POST"
@@ -163,6 +192,12 @@
     <sun:button id="ping"  text="$resource{i18n.button.Ping}" primary="#{false}" >
         <!command
             gf.createAttributeMap(keys={"id"} values={"$pageSession{Name}"} map="#{requestScope.attrMap}");
+            if(#{pageSession.isAppScopedRes}){
+                mapPut(map="#{requestScope.attrMap}" key="appname" value="#{pageSession.encodedAppName}");
+                if(#{pageSession.moduleName}){
+                    mapPut(map="#{requestScope.attrMap}" key="modulename" value="#{pageSession.encodedModuleName}");
+                }
+            }
             gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool"
                            attrs="#{requestScope.attrMap}"
                            method="GET"

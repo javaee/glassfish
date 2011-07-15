@@ -53,15 +53,36 @@
     <!beforeCreate
         getRequestValue(key="name" value="#{pageSession.Name}");
         urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+        getRequestValue(key="isAppScopedRes" value="#{pageSession.isAppScopedRes}");
+        if(#{pageSession.isAppScopedRes}){
+            getRequestValue(key="appName" value="#{pageSession.encodedAppName}");
+            getRequestValue(key="moduleName" value="#{pageSession.moduleName}");
+            if(#{pageSession.moduleName}) {
+                urlencode(value="#{pageSession.moduleName}" encoding="UTF-8" result="#{pageSession.encodedModuleName}");
+                setPageSessionAttribute(key="selfPageArgs" value="&isAppScopedRes=$boolean{true}&appName=#{pageSession.encodedAppName}&moduleName=#{pageSession.encodedModuleName}");
+                setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/applications/application/#{pageSession.encodedAppName}/module/#{pageSession.encodedModuleName}/resources/connector-connection-pool/#{pageSession.encodedName}");
+            }
+            if(!#{pageSession.moduleName}) {
+                setPageSessionAttribute(key="selfPageArgs" value="&isAppScopedRes=$boolean{true}&appName=#{pageSession.encodedAppName}");
+                setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/applications/application/#{pageSession.encodedAppName}/resources/connector-connection-pool/#{pageSession.encodedName}");
+            }
+            setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/applications/resources/appScopedResources.jsf?appName=#{pageSession.encodedAppName}&listPageLink=/common/applications/applications.jsf");
+            setPageSessionAttribute(key="showSecurityButtons" value="#{false}");
+        }
+        if(!#{pageSession.isAppScopedRes}){
+            setPageSessionAttribute(key="isAppScopedRes" value="$boolean{false}");
+            setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorConnectionPools.jsf");
+            setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources/connector-connection-pool/#{pageSession.encodedName}");
+            setPageSessionAttribute(key="showSecurityButtons" value="#{true}");
+        }
         setSessionAttribute(key="connectorPoolTabs" value="securityMapTab");
         setPageSessionAttribute(key="childType" value="security-map");
-        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources/connector-connection-pool/#{pageSession.encodedName}");
         gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.tmpRows}");
         setAttribute(key="listOfRows" value="#{requestScope.tmpRows}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njca.msg.JS.confirmDeleteSM}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jca/connectorSecurityMapNew.jsf?name=#{pageSession.encodedName}");
-        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/jca/connectorSecurityMaps.jsf?name=#{pageSession.encodedName}");
-        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/jca/connectorSecurityMapEdit.jsf?name=#{pageSession.encodedName}");
+        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/jca/connectorSecurityMaps.jsf?name=#{pageSession.encodedName}#{pageSession.selfPageArgs}");
+        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/jca/connectorSecurityMapEdit.jsf?name=#{pageSession.encodedName}#{pageSession.selfPageArgs}");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18njca.connectorSecurityMaps.tableTitle}");
     />
     </event>

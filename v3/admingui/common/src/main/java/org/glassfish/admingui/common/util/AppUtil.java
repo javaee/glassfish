@@ -166,10 +166,14 @@ public class AppUtil {
         return RestUtil.doesProxyExist(GuiUtil.getSessionValue("REST_URL") + "/applications/application/" + appName + "/resources");
     }
     
-    static public String getAppScopedResTypeToDisplay(String resName){
+    static public String getAppScopedResType(String resName, String type){
         int index = appResTypes.indexOf(resName);
         if (index != -1){
-            return appResTypesToDisplay.get(index);
+            if (type.equals("display")) {
+                return appResTypesToDisplay.get(index);
+            } else if (type.equals("edit")) {
+                return appResTypesEdit.get(index);
+            }
         }
         return null;
     }
@@ -203,6 +207,19 @@ public class AppUtil {
         appResTypesToDisplay.add(GuiUtil.getMessage("tree.connectorConnectionPools"));
         appResTypesToDisplay.add(GuiUtil.getMessage("tree.resourceAdapterConfigs"));
         appResTypesToDisplay.add(GuiUtil.getMessage("tree.workSecurityMaps"));
+    }
+    static final public List<String> appResTypesEdit = new ArrayList<String>();
+    static {
+        appResTypesEdit.add("jdbc/jdbcResourceEdit.jsf?name=");
+        appResTypesEdit.add("jca/connectorResourceEdit.jsf?name=");
+        appResTypesEdit.add("full/externalResourceEdit.jsf?name=");
+        appResTypesEdit.add("full/customResourceEdit.jsf?name=");
+        appResTypesEdit.add("jca/adminObjectEdit.jsf?name=");
+        appResTypesEdit.add("full/mailResourceEdit.jsf?name=");
+        appResTypesEdit.add("jdbc/jdbcConnectionPoolEdit.jsf?name=");
+        appResTypesEdit.add("jca/connectorConnectionPoolEdit.jsf?name=");
+        appResTypesEdit.add("jca/resourceAdapterConfigEdit.jsf?name=");
+        appResTypesEdit.add("jca/workSecurityMapEdit.jsf?mapName=");
     }
 }
 

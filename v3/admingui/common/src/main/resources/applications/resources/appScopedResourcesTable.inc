@@ -56,8 +56,8 @@
             <staticText id="nameCol" value="#{td.value.moduleName}" />
         </sun:tableColumn>
         <sun:tableColumn headerText="$resource{i18n.appScopedResourcesTable.colResourceName}" sort="resName" rowHeader="$boolean{true}" id="resName">
-            <staticText id="resNameCol" value="#{td.value.resName}" />
-        </sun:tableColumn>
+            <sun:hyperlink id="resNameCol" text="#{td.value.resName}" url="#{request.contextPath}/#{td.value.link}&isAppScopedRes=#{true}" />
+           </sun:tableColumn>
         <sun:tableColumn headerText="Resource Type" sort="resType" rowHeader="$boolean{true}" id="colResType">
             <staticText id="resTypeCol" value="#{td.value.resType}" />
         </sun:tableColumn>

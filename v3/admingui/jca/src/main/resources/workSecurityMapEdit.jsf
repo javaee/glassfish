@@ -52,9 +52,26 @@
     <!beforeCreate
         getRequestValue(key="mapName" value="#{pageSession.Name}");
         urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/workSecurityMapEdit.jsf?name=#{pageSession.encodedName}");
-        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/workSecurityMaps.jsf");
-        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
+        getRequestValue(key="isAppScopedRes" value="#{pageSession.isAppScopedRes}");
+        if(#{pageSession.isAppScopedRes}){
+            getRequestValue(key="appName" value="#{pageSession.encodedAppName}");
+            getRequestValue(key="moduleName" value="#{pageSession.moduleName}");
+            if(#{pageSession.moduleName}) {
+                urlencode(value="#{pageSession.moduleName}" encoding="UTF-8" result="#{pageSession.encodedModuleName}");
+                setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/workSecurityMapEdit.jsf?mapName=#{pageSession.encodedName}&isAppScopedRes=$boolean{true}&appName=#{pageSession.encodedAppName}&moduleName=#{pageSession.encodedModuleName}");
+                setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/applications/application/#{pageSession.encodedAppName}/module/#{pageSession.encodedModuleName}/resources");
+            }
+            if(!#{pageSession.moduleName}) {
+                setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/workSecurityMapEdit.jsf?mapName=#{pageSession.encodedName}&isAppScopedRes=$boolean{true}&appName=#{pageSession.encodedAppName}");
+                setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/applications/application/#{pageSession.encodedAppName}/resources");
+            }
+            setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/applications/resources/appScopedResources.jsf?appName=#{pageSession.encodedAppName}&listPageLink=/common/applications/applications.jsf");
+        }
+        if(!#{pageSession.isAppScopedRes}){
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/workSecurityMapEdit.jsf?mapName=#{pageSession.encodedName}");
+            setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/workSecurityMaps.jsf");
+            setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
+        }
         setPageSessionAttribute(key="childType", value="work-security-map");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
         setPageSessionAttribute(key="rest-api" value="true");

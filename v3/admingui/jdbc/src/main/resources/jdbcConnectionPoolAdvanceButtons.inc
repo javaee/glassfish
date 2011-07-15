@@ -66,6 +66,12 @@
                 if ("#{valueMap['ping']}") {
                     urlencode(value="#{valueMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
                     gf.createAttributeMap(keys={"id"} values={"$pageSession{encodeName}"} map="#{requestScope.attrMap}");
+                    if(#{pageSession.isAppScopedRes}){
+                        mapPut(map="#{requestScope.attrMap}" key="appname" value="#{pageSession.encodedAppName}");
+                        if(#{pageSession.moduleName}){
+                            mapPut(map="#{requestScope.attrMap}" key="modulename" value="#{pageSession.encodedModuleName}");
+                        }
+                    }
                     gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool.json"
                                    attrs="#{requestScope.attrMap}"
                                    method="get"
