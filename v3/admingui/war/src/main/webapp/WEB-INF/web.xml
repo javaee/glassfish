@@ -97,6 +97,24 @@
         <servlet-class>com.sun.webui.theme.ThemeServlet</servlet-class>
         <load-on-startup>2</load-on-startup>
     </servlet>
+    <servlet>
+	<servlet-name>DownloadServlet</servlet-name>
+	<servlet-class>org.glassfish.admingui.common.servlet.DownloadServlet</servlet-class>
+	<init-param>
+	    <param-name>ContentSources</param-name>
+	    <param-value>
+                org.glassfish.admingui.common.servlet.LBConfigContentSource 
+	    </param-value>
+	</init-param>
+	<init-param>
+		<param-name>contentSourceId</param-name>
+		<param-value>LBConfig</param-value>
+	</init-param>
+    </servlet>
+    <servlet-mapping>
+	<servlet-name>DownloadServlet</servlet-name>
+	<url-pattern>/download/*</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>FacesServlet</servlet-name>
         <url-pattern>/resource/*</url-pattern>
