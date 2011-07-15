@@ -185,6 +185,12 @@
                           <artifactId>jakarta-regexp</artifactId>
                           <version>1.4</version>
                     </dependency>
+                    <dependency>
+                     <groupId>ant-contrib</groupId>
+                     <artifactId>ant-contrib</artifactId>
+                     <version>1.0b3</version>
+                   </dependency>
+
                 </dependencies>
             </plugin>
         </plugins>

@@ -371,6 +371,45 @@
                 </junitreport>
         <echo message="Test Report available at ${test.report}/index.html"/>
     </target>
+    <!-- Fail the build unless the expected number of tests has passed -->
+    <target name="assert.expected.passed.test.count">
+      <taskdef resource="net/sf/antcontrib/antlib.xml">
+        <classpath>
+            <pathelement
+                  location="${maven.repo.local}/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar"/>
+        </classpath>
+      </taskdef>
+
+      <if>
+        <isset property="expected.passed.test.count" />
+        <then> 
+<echo>perform the assertion</echo>
+         <sequential>
+           <property name="test.report.dir" 
+                     value="${basedir}/test-output" />
+           <loadfile property="report.summary"
+                     srcFile="${test.report.dir}/index.html" />
+           <propertyregex property="actual.passed.test.count"
+                          input="${report.summary}"
+                          regexp="(?s)(.*)(invocation-passed...td..em.Total./em../td..td..em.)([0-9]{1,6})(.*)"
+                          select="\3"
+           />
+           <math result="passed.test.count.difference" datatype="int"
+                 operation="subtract" 
+                 operand1="${actual.passed.test.count}"
+                 operand2="${expected.passed.test.count}" />
+           <propertyregex property="actual.lessthan.expected"
+                          input="${passed.test.count.difference}"
+                          regexp="^-.*"
+                          replace="actual.lessthan.expected" />
+           <fail if="actual.lessthan.expected" status="-1"
+                 message="
+--JOB FAILED!-- Fewer than expected tests passed.  Expected: ${expected.passed.test.count} Actual: ${actual.passed.test.count}"/>
+          </sequential>
+        </then>
+      </if>
+    </target>
+
     
 <!--
     <target name="reportAll" depends="initprops">        
