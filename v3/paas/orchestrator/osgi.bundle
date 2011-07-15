@@ -42,13 +42,13 @@
 
 -exportcontents: \
     org.glassfish.paas.orchestrator; \
-    org.glassfish.pass.orchestrator.schema; \
-    org.glassfish.pass.orchestrator.service; \
-    org.glassfish.pass.orchestrator.service.spi; \
-    org.glassfish.pass.orchestrator.provisioning; \
-    org.glassfish.pass.orchestrator.provisioning.cli; \
-    org.glassfish.pass.orchestrator.provisioning.iaas; \
-    org.glassfish.pass.orchestrator.provisioning.util; version=${project.osgi.version}
+    org.glassfish.paas.orchestrator.schema; \
+    org.glassfish.paas.orchestrator.service; \
+    org.glassfish.paas.orchestrator.service.spi; \
+    org.glassfish.paas.orchestrator.provisioning; \
+    org.glassfish.paas.orchestrator.provisioning.cli; \
+    org.glassfish.paas.orchestrator.provisioning.iaas; \
+    org.glassfish.paas.orchestrator.provisioning.util; version=${project.osgi.version}
 
 Import-Package: javax.xml.stream, javax.xml.stream.util, javax.xml.stream.events, javax.xml.namespace, *; resolution:=optional
 
