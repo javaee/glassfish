@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -77,6 +77,24 @@ public class ListResources implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
+        if(appName != null){
+            if(!isValidApplication(appName)){
+                ActionReport report = context.getActionReport();
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                ActionReport.MessagePart messagePart = report.getTopMessagePart();
+                messagePart.setMessage("Invalid application ["+appName+"]");
+                return;
+            }
+        }
+        if(moduleName != null){
+            if(!isValidModule(appName, moduleName)){
+                ActionReport report = context.getActionReport();
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                ActionReport.MessagePart messagePart = report.getTopMessagePart();
+                messagePart.setMessage("Invalid module ["+moduleName+"] in application ["+appName+"]");
+                return;
+            }
+        }
         if(appName != null && moduleName != null){
             Application application = applications.getApplication(appName);
             Module module = application.getModule(moduleName);
@@ -160,5 +178,16 @@ public class ListResources implements AdminCommand {
             list.put(type, typedResources);
         }
         return typedResources;
+    }
+
+    private boolean isValidApplication(String appName){
+        Application app = applications.getApplication(appName);
+        return app != null;
+    }
+
+    private boolean isValidModule(String appName, String moduleName){
+        Application app = applications.getApplication(appName);
+        Module module = app.getModule(moduleName);
+        return module != null;
     }
 }
