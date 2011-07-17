@@ -179,15 +179,28 @@
 <!-- Target to create instance -->
 <!-- ================================================================ -->
 <target name="create-instance-common" depends="init-common">
-<echo message="Creating instance ${appserver.instance.name}" level="verbose"/>
+<echo message="Creating instance ${instance.name}" level="verbose"/>
   <exec executable="${ASADMIN}" failonerror="false">
     <arg line="create-instance"/>
-    <arg line="${as.props}"/>
     <arg line="--nodeagent ${nodeagent.name}"/>
+    <arg line="${as.props}"/>
     <arg line="--systemproperties HTTP_LISTENER_PORT=${http.listener1.port}:HTTP_SSL_LISTENER_PORT=${http.listener2.port}:IIOP_LISTENER_PORT=${orb.listener1.port}:IIOP_SSL_LISTENER_PORT=${ssl.port}:IIOP_SSL_MUTUALAUTH_PORT=${ssl.mutualauth.port}:JMX_SYSTEM_CONNECTOR_PORT=${jmx.system.connector.port}"/>
-    <arg line="${appserver.instance.name}"/>
+    <arg line="${instance.name}"/>
   </exec>
 </target>
+
+<!-- ================================================================ -->
+<!-- Target to start instance  -->
+<!-- ================================================================ -->
+<target name="start-instance-common" depends="init-common">
+<echo message="Starting instance " level="verbose"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="start-instance"/>
+    <arg line="${as.props}"/>
+    <arg line="${instance.name}"/>
+  </exec>
+</target>
+
 
 <!-- ================================================================ -->
 <!-- Target to stop instance  -->
@@ -197,7 +210,7 @@
   <exec executable="${ASADMIN}" failonerror="false">
     <arg line="stop-instance"/>
     <arg line="${as.props}"/>
-    <arg line="${appserver.instance.name}"/>
+    <arg line="${instance.name}"/>
   </exec>
 </target>
 
@@ -205,11 +218,11 @@
 <!-- Target to delete instance  -->
 <!-- ================================================================ -->
 <target name="delete-instance-common" depends="init-common">
-<echo message="Deleting instance ${appserver.instance.name}" level="verbose"/>
+<echo message="Deleting instance ${instance.name}" level="verbose"/>
   <exec executable="${ASADMIN}" failonerror="false">
     <arg line="delete-instance"/>
     <arg line="${as.props}"/>
-    <arg line="${appserver.instance.name}"/>
+    <arg line="${instance.name}"/>
   </exec>
 </target>
 
