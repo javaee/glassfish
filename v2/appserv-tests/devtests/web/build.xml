@@ -357,6 +357,7 @@
         <ant dir="formHintFieldPostWithQueryParamPrecedence" target="all"/>
         <ant dir="formHintFieldPrecedence" target="all"/>
         <ant dir="httpListenerDynamicConfig" target="all"/>
+        <ant dir="instanceHttpPortDynamicReconfig" target="all"/>
         <ant dir="invokerServletDisabled" target="all"/>
         <ant dir="jmxUndeployEvent" target="all"/>
         <ant dir="jrouteIdInCookieOrURL" target="all"/>
