@@ -75,7 +75,7 @@ import com.sun.grizzly.config.dom.NetworkListeners;
 import com.sun.grizzly.util.buf.MessageBytes;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.grizzly.util.http.mapper.MappingData;
-import com.sun.hk2.component.ConstructorWomb;
+import com.sun.hk2.component.ConstructorCreator;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.*;
 import org.apache.catalina.Engine;
@@ -505,8 +505,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         initInstanceSessionProperties();
 
-        ConstructorWomb<WebConfigListener> womb =
-                new ConstructorWomb<WebConfigListener>(
+        ConstructorCreator<WebConfigListener> womb =
+                new ConstructorCreator<WebConfigListener>(
                         WebConfigListener.class,
                         habitat,
                         null);

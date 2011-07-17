@@ -73,21 +73,12 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
 
     @Inject
     public HttpService httpService;
-
-    @Inject(optional=true)
-    public AccessLog accessLog;
     
     @Inject(optional=true)
     public ManagerProperties managerProperties;
 
     @Inject(optional=true)
     public List<Property> property;
-
-    @Inject(name="accessLoggingEnabled",optional=true)
-    public Property accessLoggingEnabledProperty;
-
-    @Inject(name="docroot",optional=true)
-    public Property docroot;
     
     private WebContainer container;
 
@@ -119,7 +110,7 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
      * @param events the PropertyChangeEvent
      */
     @Override
-    public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
+    public synchronized UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         return ConfigSupport.sortAndDispatch(events, new Changed() {
             @Override
             public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> tClass, T t) {

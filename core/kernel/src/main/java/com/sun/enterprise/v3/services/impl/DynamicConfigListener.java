@@ -79,19 +79,18 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
 public class DynamicConfigListener implements ConfigListener {
     private static final String ADMIN_LISTENER = "admin-listener";
     private GrizzlyService grizzlyService;
-    private NetworkConfig networkConfig;
-    private String config;
+    private Config config;
     private Logger logger;
     private static final int RECONFIG_LOCK_TIMEOUT_SEC = 30;
     private static final ReentrantLock reconfigLock = new ReentrantLock();
     private static final Map<Integer, GrizzlyFuture> reconfigByPortLock = new HashMap<Integer, GrizzlyFuture>();
 
     public DynamicConfigListener(final Config parent) {
-        config = findConfigName(parent);
+        config = parent;
     }
 
     @Override
-    public UnprocessedChangeEvents changed(final PropertyChangeEvent[] events) {
+    public synchronized UnprocessedChangeEvents changed(final PropertyChangeEvent[] events) {
         return ConfigSupport.sortAndDispatch(
             events, new Changed() {
                 @Override
@@ -126,6 +125,7 @@ public class DynamicConfigListener implements ConfigListener {
                     } else if (tClass == VirtualServer.class && !grizzlyService.hasMapperUpdateListener()) {
                         return processVirtualServer(type, (VirtualServer) t);
                     } else if (tClass == SystemProperty.class) {
+                        NetworkConfig networkConfig = config.getNetworkConfig();
                         if ((networkConfig != null) && ((SystemProperty)t).getName().endsWith("LISTENER_PORT")) {
                             for (NetworkListener listener : networkConfig.getNetworkListeners().getNetworkListener()) {
                                 if (listener.getPort().equals(((SystemProperty)t).getValue())) {
@@ -142,7 +142,7 @@ public class DynamicConfigListener implements ConfigListener {
 
     private <T extends ConfigBeanProxy> NotProcessed processNetworkListener(Changed.TYPE type,
         NetworkListener listener, PropertyChangeEvent[] changedProperties) {
-        if (findConfigName(listener).equals(config)) {
+        if (findConfigName(listener).equals(findConfigName(config))) {
             boolean isAdminListener = ADMIN_LISTENER.equals(listener.getName());
             Lock portLock = null;
             try {
@@ -245,10 +245,6 @@ public class DynamicConfigListener implements ConfigListener {
 
     public void setGrizzlyService(GrizzlyService grizzlyService) {
         this.grizzlyService = grizzlyService;
-    }
-
-    public void setNetworkConfig(NetworkConfig networkConfig) {
-        this.networkConfig = networkConfig;
     }
 
     public Logger getLogger() {

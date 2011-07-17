@@ -335,7 +335,6 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     @Override
     public void postConstruct() {
         NetworkConfig networkConfig = config.getNetworkConfig();
-
         configListener = new DynamicConfigListener(config);
 
         ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(networkConfig.getNetworkListeners());
@@ -349,7 +348,6 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
 
         configListener.setGrizzlyService(this);
         configListener.setLogger(logger);
-        configListener.setNetworkConfig(networkConfig);
 
         try {
             futures = new ArrayList<Future<Result<Thread>>>();
