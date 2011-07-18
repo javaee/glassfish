@@ -11,7 +11,7 @@ import java.util.concurrent.*;
 
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
-import com.sun.appserv.security.ProgrammaticLogin;
+import com.sun.enterprise.security.ee.auth.login.ProgrammaticLogin;
 
 public class Client {
 
