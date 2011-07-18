@@ -158,6 +158,7 @@ instance.http.port=${WEBTIER_INSTANCE_PORT}
 instance.https.port=${WEBTIER_INSTANCE_HTTPS_PORT}
 instance.http.port.2=${WEBTIER_INSTANCE_PORT_2}
 instance.http.port.3=${WEBTIER_INSTANCE_PORT_3}
+nodeagent.name=localhost-domain1
 " > config.properties
 
 kill_processes
