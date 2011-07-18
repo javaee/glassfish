@@ -70,6 +70,8 @@ public final class Transactions implements PostConstruct, PreDestroy {
     private final List<Holder<ListenerNotifier<TransactionListener, ?, Void>>> listeners =
             new ArrayList<Holder<ListenerNotifier<TransactionListener, ?, Void>>>();
 
+    private final Map<Class, Set<ConfigListener>> typeListeners = new HashMap<Class, Set<ConfigListener>>();
+
     @Inject(name="transactions-executor", optional=true)
     private ExecutorService executor;
 
@@ -195,7 +197,7 @@ public final class Transactions implements PostConstruct, PreDestroy {
      * @param <U> type of events the listener methods are expecting
      * @param <V> return type of the listener interface methods.
      */
-    public class ListenerNotifier<T,U,V> extends Notifier<T,U,V> {
+    private class ListenerNotifier<T,U,V> extends Notifier<T,U,V> {
         
         final T listener;
 
@@ -225,7 +227,7 @@ public final class Transactions implements PostConstruct, PreDestroy {
      * takes care of the job pump.
      * 
      */
-    public class ConfigListenerNotifier extends Notifier<ConfigListener,PropertyChangeEvent,UnprocessedChangeEvents> {
+    private class ConfigListenerNotifier extends Notifier<ConfigListener,PropertyChangeEvent,UnprocessedChangeEvents> {
 
         protected FutureTask<UnprocessedChangeEvents>
             prepare(final Job<ConfigListener, PropertyChangeEvent, UnprocessedChangeEvents> job) {
@@ -240,6 +242,25 @@ public final class Transactions implements PostConstruct, PreDestroy {
                     // we also notify the parent.
                     if (dom.parent()!=null) {
                         configListeners.addAll(dom.parent().getListeners());
+                    }
+
+                    // and now, notify all listeners for the changed types.
+                    Set<ConfigListener> listeners = typeListeners.get(dom.getProxyType());
+                    if (listeners!=null) {
+                        configListeners.addAll(listeners);
+                    }
+
+                    // we need to check if elements are removed to ensure
+                    // the typed listeners are notified.
+                    if (event.getNewValue()==null) {
+                        Object oldValue = event.getOldValue();
+                        if (oldValue instanceof ConfigBeanProxy) {
+                            Dom domOldValue = Dom.unwrap((ConfigBeanProxy) oldValue);
+                            Set<ConfigListener> typedListeners = typeListeners.get(domOldValue.<ConfigBeanProxy>getProxyType());
+                            if (typedListeners!=null) {
+                                configListeners.addAll(typedListeners);
+                            }
+                        }
                     }
                 }
             }
@@ -366,7 +387,7 @@ public final class Transactions implements PostConstruct, PreDestroy {
         }
     }
 
-    public class ConfigListenerJob extends Job<ConfigListener, PropertyChangeEvent, UnprocessedChangeEvents> {
+    private class ConfigListenerJob extends Job<ConfigListener, PropertyChangeEvent, UnprocessedChangeEvents> {
 
         final PropertyChangeEvent[] eventsArray;
 
@@ -379,7 +400,37 @@ public final class Transactions implements PostConstruct, PreDestroy {
             return target.changed(eventsArray);
         }
     }
-    
+
+    /**
+     * adds a listener for a particular config type
+     * @param listenerType the config type
+     * @param listener the config listener
+     */
+    public synchronized void addListenerForType(Class listenerType, ConfigListener listener) {
+        Set<ConfigListener> listeners = typeListeners.get(listenerType);
+        if (listeners==null) {
+            listeners = new HashSet<ConfigListener>();
+            typeListeners.put(listenerType, listeners);
+        }
+        listeners.add(listener);
+    }
+
+    /**
+     * removes a listener for a particular config type
+     *
+     * @param listenerType the config type
+     * @param listener the config listener
+     * @return true if the listener was removed successfully, false otherwise.
+     */
+    public synchronized boolean removeListenerForType(Class listenerType, ConfigListener listener) {
+        Set<ConfigListener> listeners = typeListeners.get(listenerType);
+        if (listeners==null) {
+            return false;
+        }
+        return listeners.remove(listener);
+
+
+    }
     /**
      * add a new listener to all transaction events.
      *
