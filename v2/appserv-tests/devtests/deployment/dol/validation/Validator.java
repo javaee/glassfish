@@ -2,7 +2,7 @@ package dol.validation;
 
 import java.io.*;
 import com.sun.enterprise.deployment.archivist.*;
-import com.sun.enterprise.deployment.Descriptor;
+import org.glassfish.deployment.common.Descriptor;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
@@ -133,7 +133,7 @@ public class Validator {
             StartupContext startupContext = new StartupContext();
             habitat.add(new ExistingSingletonInhabitant(startupContext));
 
-            habitat.addComponent(null, new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
+            habitat.addComponent(new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
         }
     }
 

@@ -16,7 +16,7 @@ import java.util.logging.Handler;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
-import com.sun.enterprise.deployment.Descriptor;
+import org.glassfish.deployment.common.Descriptor;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /**
