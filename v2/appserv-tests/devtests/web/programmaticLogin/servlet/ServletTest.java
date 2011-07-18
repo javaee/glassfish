@@ -45,7 +45,7 @@ import java.net.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import com.sun.appserv.security.ProgrammaticLogin;
+import com.sun.enterprise.security.ee.auth.login.ProgrammaticLogin;
 
 public class ServletTest extends HttpServlet {
 
