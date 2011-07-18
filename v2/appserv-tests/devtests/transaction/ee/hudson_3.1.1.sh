@@ -9,7 +9,7 @@ pushd glassfish-v3-image
 export http_proxy=http://www-proxy.us.oracle.com:80
 
 # download the latest GF 
-wget http://gf-hudson.us.oracle.com/hudson/job/gf-3.1.1-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
+wget --no-proxy http://gf-hudson.us.oracle.com/hudson/job/gf-3.1.1-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
 
 unzip -q glassfish.zip
 
