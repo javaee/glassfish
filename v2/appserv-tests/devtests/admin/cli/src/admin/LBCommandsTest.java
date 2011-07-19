@@ -96,6 +96,10 @@ public class LBCommandsTest extends AdminBaseDevTest {
 
         //deleting cluster-ref when lb doesn't reference it should fail
         runTest(i++ + ".delete-http-lb-cluster-ref", !asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
+
+        //test options
+        runTest(i++ + ".create-http-lb-cluster-ref", !asadmin("create-http-lb-ref", CLUSTER));
+        runTest(i++ + ".create-http-lb-cluster-ref", !asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, LB_NAME_OPTION, LB_NAME, CLUSTER));
         
         //create/delete cluster-ref for LB
         runTest(i++ + ".create-http-lb-cluster-ref", asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
@@ -126,6 +130,10 @@ public class LBCommandsTest extends AdminBaseDevTest {
         runTest(i++ + ".delete-http-health-checker-for-cluster", asadmin("delete-http-health-checker", CONFIG_OPTION, LB_CONFIG, CLUSTER));
         runTest(i++ + ".delete-http-health-checker-for-cluster", !asadmin("delete-http-health-checker", CONFIG_OPTION, LB_CONFIG, CLUSTER));
 
+        //test options
+        runTest(i++ + ".delete-http-lb-cluster-ref", !asadmin("delete-http-lb-ref", CLUSTER));
+        runTest(i++ + ".delete-http-lb-cluster-ref", !asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, LB_NAME_OPTION, LB_NAME, CLUSTER));
+        
         runTest(i++ + ".delete-http-lb-cluster-ref", asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
 
         //create server-ref for LB
@@ -149,8 +157,7 @@ public class LBCommandsTest extends AdminBaseDevTest {
         runTest(i++ + ".enable-http-lb-server", asadmin("enable-http-lb-server", STANDALONE_INSTANCE2));
 
         runTest(i++ + ".delete-http-lb-server-ref", !asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
-
-
+  
         runTest(i++ + ".disable-http-lb-server", asadmin("disable-http-lb-server", STANDALONE_INSTANCE2));
         runTest(i++ + ".enable-http-lb-server", asadmin("enable-http-lb-server", STANDALONE_INSTANCE2));
 
