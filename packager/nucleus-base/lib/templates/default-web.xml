@@ -336,8 +336,8 @@
         javax.security.jacc.jar
         javax.transaction.jar
         jaxrpc-api-osgi.jar
+        jaxr-api-osgi.jar
         jersey-core.jar
-        webservices-osgi.jar
         weld-osgi-bundle.jar
       </param-value>
     </init-param>
