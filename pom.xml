@@ -128,13 +128,14 @@
         <uc-pkg-client.version>1.122-54.2834</uc-pkg-client.version>
         <uc-pkg-bootstrap.version>1.122-54.2834</uc-pkg-bootstrap.version>
 
-        <webservices.version>2.1.1-b07</webservices.version>
+        <webservices.version>2.1.1-b09</webservices.version>
         <woodstox.version>4.1.1</woodstox.version>
         <woodstox-stax2.version>3.1.1</woodstox-stax2.version>
         <jaxb-api.version>2.2.3</jaxb-api.version>
         <jaxb.version>2.2.4-1</jaxb.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
         <jaxrpc-api-osgi.version>1.1-b01</jaxrpc-api-osgi.version>
+        <jaxr-api-osgi.version>1.0-b01</jaxr-api-osgi.version> 
 
         <javax-persistence-api.version>2.0.3</javax-persistence-api.version>
         <eclipselink.version>2.3.0</eclipselink.version>
@@ -154,7 +155,7 @@
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <gmbal.version>3.1.0-b001</gmbal.version>
         <glassfish-management-api.version>3.1.0-b001</glassfish-management-api.version>
-        <mimepull.version>1.5</mimepull.version>
+        <mimepull.version>1.6</mimepull.version>
         <findbugs.skip>false</findbugs.skip>
         <findbugs.threshold>High</findbugs.threshold>
         <findbugs.exclude></findbugs.exclude>
@@ -1057,6 +1058,11 @@
                 <groupId>javax.xml</groupId>
                 <artifactId>jaxrpc-api-osgi</artifactId>
                 <version>${jaxrpc-api-osgi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.xml</groupId>
+                <artifactId>jaxr-api-osgi</artifactId>
+                <version>${jaxr-api-osgi.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.xml.bind</groupId>
