@@ -171,9 +171,7 @@ public class LBCommandsTest extends AdminBaseDevTest {
         runTest(i++ + ".disable-http-lb-server", asadmin("disable-http-lb-server", STANDALONE_INSTANCE1));
         
         //delete server-ref for LB, but no apps
-        runTest(i++ + ".delete-http-lb-server-ref", !asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
-        //force delete
-        runTest(i++ + ".delete-http-lb-server-ref", asadmin("delete-http-lb-ref", "--force", "true", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
+        runTest(i++ + ".delete-http-lb-server-ref", asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
 
         //configure weights
         runTest(i++ + ".configure-lb-weight", asadmin("configure-lb-weight", CLUSTER_OPTION, CLUSTER, "cl1-ins1=2:cl1-ins2=3:cl1-ins3=5"));
