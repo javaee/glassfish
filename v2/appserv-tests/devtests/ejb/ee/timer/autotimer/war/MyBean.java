@@ -22,10 +22,17 @@ public class MyBean {
     private volatile int counter = 0;
     private HashSet timers = new HashSet();
     private volatile boolean second_timer_running = false;
+    private volatile boolean transient_timer_running = false;
 
     @Schedule(second="*/5", minute="*", hour="*", info = "timer01")
     private void scheduledtimeout(Timer t) {
         test(t, "timer01");
+    }
+
+    @Schedule(second="*/3", minute="*", hour="*", info = "timer0T", persistent=false)
+    private void scheduledtimeoutT(Timer t) {
+        transient_timer_running = true;
+        test(t, "timer0T");
     }
 
     @Timeout
@@ -37,8 +44,10 @@ public class MyBean {
     private void test(Timer t, String name) {
         if (((String)t.getInfo()).startsWith(name)) {
             System.err.println("In ___MyBean:timeout___ "  + t.getInfo() + " - persistent: " + t.isPersistent());
-            timers.add(t.getInfo());
-            counter++;
+            if (t.isPersistent()) {
+                timers.add(t.getInfo());
+                counter++;
+            }
         } else {
             throw new RuntimeException("Wrong " + t.getInfo() + " timer was called");
         }
@@ -47,7 +56,7 @@ public class MyBean {
 
     public boolean timeoutReceived(String param) {
         System.err.println("In ___MyBean:timeoutReceived___ " + counter + " times");
-        boolean result = (counter > 0);
+        boolean result = transient_timer_running && (counter > 0);
         if (!second_timer_running)  {
             ts.createTimer(1000, 5000, "timer02 " + param);
         } else {
