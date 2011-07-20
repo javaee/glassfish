@@ -65,6 +65,8 @@ import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.ReferenceContainer;
 
 import java.beans.PropertyVetoException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -151,6 +153,32 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     void setGmsEnabled(String value) throws PropertyVetoException;
 
     /**
+     * Gets the value of the broadcast property.
+     *
+     * When "broadcast" is set to default of "udpmulticast" and GmsMulticastPort
+     * GMSMulticastAddress are not set, then their values are generated.
+     * When "broadcast" is set to implied unicast using udp or tcp protocol,
+     * then the VIRUTAL_MUTLICAST_URI_LIST is generated
+     * for virtual broadcast over unicast mode.
+     *
+     * @return true | false as a string, null means false
+     */
+    @Attribute (defaultValue="udpmulticast", dataType=String.class, required=true)
+    @NotNull
+    String getBroadcast();
+
+    /**
+     * Sets the value of the broadcast property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
+     */
+    @Param(name="broadcast", optional=true)
+    void setBroadcast(String value) throws PropertyVetoException;
+
+
+    /**
      * Gets the value of the gmsMulticastPort property.
      *
      * This is the communication port GMS uses to listen for group  events.
@@ -162,7 +190,6 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     @Attribute
     @Min(value=2048)
     @Max(value=32000)
-    @NotNull
     String getGmsMulticastPort();
 
     /**
@@ -185,7 +212,6 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *         {@link String }
      */
     @Attribute
-    @NotNull
     String getGmsMulticastAddress();
 
     /**
@@ -550,12 +576,6 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                     "${GMS-BIND-INTERFACE-ADDRESS-%s}",
                     instanceName));
             }
-            if (instance.getGmsMulticastAddress() == null) {
-                instance.setGmsMulticastAddress(generateHeartbeatAddress());
-            }
-            if (instance.getGmsMulticastPort() == null) {
-                instance.setGmsMulticastPort(generateHeartbeatPort());
-            }
 
             Property gmsListenerPort = instance.createChild(Property.class);
             gmsListenerPort.setName("GMS_LISTENER_PORT");
@@ -588,6 +608,57 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                             "noSuchConfig", "Configuration {0} does not exist.", configRef));
                 }
             }
+
+            String broadcastProtocol = instance.getBroadcast();
+            if (broadcastProtocol.equals("udpmulticast")) {
+
+                // only generate these values when they are not set AND broadcastProtocol is set to enable UDP multicast.
+                // Note: that this is the default for DAS controlled clusters.
+                if (instance.getGmsMulticastAddress() == null) {
+                    instance.setGmsMulticastAddress(generateHeartbeatAddress());
+                }
+                if (instance.getGmsMulticastPort() == null) {
+                    instance.setGmsMulticastPort(generateHeartbeatPort());
+                }
+            } else {
+
+                // non mulitcast case.  generate VIRTUAL_MULTICAST_URI_LIST with DAS as the seed.
+                // must explicitly set GMS_LISTENER_PORT-clustername system property for DAS and
+                // use this in generated VIRTUAL_MULTICAST_URI_LIST.
+                String  vmulticastUriList = instance.getPropertyValue("VIRTUAL_MULTICAST_URI_LIST");
+                if (vmulticastUriList == null || vmulticastUriList.length() == 0) {
+
+                    // TODO: implement UDP unicast.
+                    // Only tcp mode is supported now.
+                    // So either "udpunicast" or "tcp" for broadcast mode is treated the same.
+
+                    String TCPPORT = "9090";
+                    Property vmulticastUriListProp = instance.createChild(Property.class);
+                    vmulticastUriListProp.setName("VIRTUAL_MULTICAST_URI_LIST");
+
+                    // TBD: consider calling GMS NetworkUtility.getFirstAddress() here to copy how GMS gets the
+                    // network address of DAS.
+                    // TBD:  This is just an initial phase that will only work for a single cluster.
+                    String hostAddress = "localhost";
+                    try {
+                        hostAddress = InetAddress.getLocalHost().getHostAddress();
+                    } catch (UnknownHostException uhe)  {}
+                    String value = "http://" + hostAddress + ":" + TCPPORT;
+                    vmulticastUriListProp.setValue(value);
+                    instance.getProperty().add(vmulticastUriListProp);
+
+                    // lookup server-config and set environment property value GMS_LISTENER_PORT-clusterName to 9090.
+                    Config config = habitat.getComponent(Config.class, "server-config");
+                    if (config != null) {
+                        Config writeableConfig = t.enroll(config);
+                        SystemProperty gmsListenerPortSysProp = instance.createChild(SystemProperty.class);
+                        gmsListenerPortSysProp.setName(String.format("GMS_LISTENER_PORT-%s", instanceName));
+                        gmsListenerPortSysProp.setValue(TCPPORT);
+                        boolean result = writeableConfig.getSystemProperty().add(gmsListenerPortSysProp);
+                    }
+                }
+            }
+
 
             for (Resource resource : domain.getResources().getResources()) {
                 if (resource.getObjectType().equals("system-all") || resource.getObjectType().equals("system-instance")) {
