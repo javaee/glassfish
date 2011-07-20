@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -244,6 +244,12 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
     private void readGMSConfigProps(Properties configProps) {
         configProps.put(MEMBERTYPE_STRING, isDas ? SPECTATOR : CORE);
+
+        // Next line should correspond with GlassFish default for grizzly.
+        // For GlassFish 3.1.2, that is grizzly 1.9.
+        // For GlassFish with Grizzly 2.0, just let this default to it.
+        configProps.put("SHOAL_GROUP_COMMUNICATION_PROVIDER", "grizzly1_9");
+        
         for (ServiceProviderConfigurationKeys key : ServiceProviderConfigurationKeys.values()) {
             String keyName = key.toString();
             try {

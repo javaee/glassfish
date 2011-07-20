@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,7 @@ package org.glassfish.gms.bootstrap;
 
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Clusters;
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.ee.cms.core.GMSConstants;
 import com.sun.enterprise.ee.cms.core.GroupManagementService;
@@ -63,6 +64,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.*;
+import org.jvnet.hk2.config.types.Property;
 
 /**
  * This service is responsible for loading the group management
@@ -84,6 +86,13 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
     private static final StringManager strings =
         StringManager.getManager(GMSAdapterService.class);
 
+    public static final String GMS_ENABLED = "GMS_ENABLED";
+    public static final String SEED_LIST = "GMS_JOIN_CLUSTER_SEED_LIST";
+
+    // when we have a real cluster name, remove this and fix the
+    // code that's using it. todo bobby
+    private static final String UMC_CLUSTER_NAME = "umcluster";
+
     @Inject
     Clusters clusters;
 
@@ -102,7 +111,6 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
     static private final Object lock = new Object();
 
     List<GMSAdapter> gmsAdapters = new LinkedList<GMSAdapter>();
-
     final static private Level TRACE_LEVEL = Level.FINE;
 
     /**
@@ -121,13 +129,21 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
      */
     @Override
     public void postConstruct() {
+        // first check that this isn't a config upgrade
         if (startupContext != null) {
             Properties args = startupContext.getArguments();
             if (args != null && Boolean.valueOf(args.getProperty("-upgrade"))) {
                 return;
             }
         }
-        if (clusters != null) {
+
+        // in the UMC case, check server-config, otherwise check clusters
+        if (server.isClusteredDas()) {
+            logger.setLevel(TRACE_LEVEL);
+            logger.log(TRACE_LEVEL, "Turning on trace logging during " +
+                "development. Will remove this once we're stable.");
+            checkServerConfig(server.getConfig());
+        } else if (clusters != null) {
             if (env.isDas()) {
                 checkAllClusters(clusters);
             } else {
@@ -189,24 +205,59 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
                         cluster.getName(), gmsEnString));
         }
         if (gmsEnString != null && Boolean.parseBoolean(gmsEnString)) {
-            result = loadModule(cluster);
+            result = loadModule(cluster.getName());
         }
         return result;
     }
 
     /*
-     * initial support for multiple clusters in DAS. a clustered instance can only belong to one cluster.
+     * In this iteration, will only check for the "seed list," implying
+     * that multicast is not available. In a future version we can also
+     * check for multicast address and port.
+     *
+     * If the seed list is null, we'll warn and exit. An empty list is
+     * ok, but null could mean the user forgot to set it. When we're supporting
+     * UMC with nonmulticast and multicast, something must be set to tell
+     * GMS which mode to use.
+     *
+     * This is for the UMC case only.
      */
-    private GMSAdapter loadModule(Cluster cluster) {
+    private void checkServerConfig(Config config) {
+        com.sun.enterprise.config.serverbeans.GroupManagementService gms =
+            config.getGroupManagementService();
+        boolean gmsEnabled = false;
+        String seedList = null;
+        for (Property prop : gms.getProperty()) {
+            if (GMS_ENABLED.equals(prop.getName())) {
+                gmsEnabled = Boolean.valueOf(prop.getValue());
+            } else if (SEED_LIST.equals(prop.getName())) {
+                seedList = prop.getValue();
+            }
+        }
+        if (gmsEnabled) {
+            if (seedList == null) {
+                logger.log(Level.WARNING, "gmsadapter.null.seedlist");
+                return;
+            }
+            loadModule(UMC_CLUSTER_NAME);
+        }
+    }
+
+    /*
+     * Initial support for multiple clusters in DAS. A clustered instance can
+     * only belong to one cluster. In the UMC case, there will only be
+     * one cluster at all.
+     */
+    private GMSAdapter loadModule(String name) {
         GMSAdapter result = null;
         synchronized(lock) {
-            result = getGMSAdapterByName(cluster.getName());
+            result = getGMSAdapterByName(name);
             if (logger.isLoggable(TRACE_LEVEL)) {
-                logger.log(TRACE_LEVEL, "lookup GMSAdapter by clusterName=" + cluster.getName() + " returned " + result);
+                logger.log(TRACE_LEVEL, "lookup GMSAdapter by clusterName=" + name + " returned " + result);
             }
             if (result == null) {
                 if (logger.isLoggable(TRACE_LEVEL)) {
-                    logger.log(TRACE_LEVEL, "creating gms-adapter for clustername " + cluster.getName() + " since no gms adapter found for clustername " + cluster.getName());
+                    logger.log(TRACE_LEVEL, "creating gms-adapter for clustername " + name + " since no gms adapter found for clustername " + name);
                 }
                 result = habitat.getByContract(GMSAdapter.class);
 
@@ -215,13 +266,13 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
                     logger.log(Level.WARNING, "gmsadapter.not.available");
                     return null;
                 }
-                boolean initResult = result.initialize(cluster.getName());
+                boolean initResult = result.initialize(name);
                 if (initResult == false) {
                     return null;
                 }
-                habitat.addIndex(new ExistingSingletonInhabitant<GMSAdapter>(result), GMSAdapter.class.getName(), cluster.getName());
+                habitat.addIndex(new ExistingSingletonInhabitant<GMSAdapter>(result), GMSAdapter.class.getName(), name);
                 if (logger.isLoggable(TRACE_LEVEL)) {
-                    logger.log(TRACE_LEVEL, "loadModule: registered created gmsadapter for cluster " + cluster.getName() + " initialized result=" + initResult);
+                    logger.log(TRACE_LEVEL, "loadModule: registered created gmsadapter for cluster " + name + " initialized result=" + initResult);
                 }
                 gmsAdapters.add(result);
             }
@@ -233,7 +284,6 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
      * On create-cluster event, DAS joins a gms-enabled cluster.
      * On delete-cluster event, DAS leaves a gms-enabled cluster.
      */
-
     @Override
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         if (env.isDas()) {
