@@ -87,7 +87,7 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>${project.groupId}</groupId>
+                <groupId>com.sun.enterprise</groupId>
                 <artifactId>osgiversion-maven-plugin</artifactId>
             </plugin>
             <plugin>
