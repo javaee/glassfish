@@ -157,7 +157,7 @@
     <arg line="create-instance"/>
     <arg line="--cluster ${cluster.name}"/>
     <arg line="--nodeagent ${nodeagent.name}"/>
-    <arg line="--systemproperties HTTP_LISTENER_PORT=${http.listener1.port}:HTTP_SSL_LISTENER_PORT=${http.listener2.port}:IIOP_LISTENER_PORT=${orb.listener1.port}:IIOP_SSL_LISTENER_PORT=${ssl.port}:IIOP_SSL_MUTUALAUTH_PORT=${ssl.mutualauth.port}:JMX_SYSTEM_CONNECTOR_PORT=${jmx.system.connector.port}"/>
+    <arg line="--systemproperties HTTP_LISTENER_PORT=${instance.http.port}:HTTP_SSL_LISTENER_PORT=${instance.https.port}:IIOP_LISTENER_PORT=${orb.listener1.port}:IIOP_SSL_LISTENER_PORT=${ssl.port}:IIOP_SSL_MUTUALAUTH_PORT=${ssl.mutualauth.port}:JMX_SYSTEM_CONNECTOR_PORT=${jmx.system.connector.port}"/>
     <arg line="${as.props}"/>
     <arg line="${clustered.server.name}"/>
   </exec>
@@ -184,7 +184,7 @@
     <arg line="create-instance"/>
     <arg line="--nodeagent ${nodeagent.name}"/>
     <arg line="${as.props}"/>
-    <arg line="--systemproperties HTTP_LISTENER_PORT=${http.listener1.port}:HTTP_SSL_LISTENER_PORT=${http.listener2.port}:IIOP_LISTENER_PORT=${orb.listener1.port}:IIOP_SSL_LISTENER_PORT=${ssl.port}:IIOP_SSL_MUTUALAUTH_PORT=${ssl.mutualauth.port}:JMX_SYSTEM_CONNECTOR_PORT=${jmx.system.connector.port}"/>
+    <arg line="--systemproperties HTTP_LISTENER_PORT=${instance.http.port}:HTTP_SSL_LISTENER_PORT=${instance.https.port}:IIOP_LISTENER_PORT=${orb.listener1.port}:IIOP_SSL_LISTENER_PORT=${ssl.port}:IIOP_SSL_MUTUALAUTH_PORT=${ssl.mutualauth.port}:JMX_SYSTEM_CONNECTOR_PORT=${jmx.system.connector.port}"/>
     <arg line="${instance.name}"/>
   </exec>
 </target>
