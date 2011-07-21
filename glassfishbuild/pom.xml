@@ -49,15 +49,54 @@
         <version>1</version>
     </parent>
 
-    <groupId>org.glassfish.build</groupId>
+    <groupId>org.glassfish</groupId>
     <artifactId>build</artifactId>
     <version>3.2.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>GlassFish Build Utilities</name>
+
+    <developers>
+        <developer>
+            <id>janey</id>
+            <name>Jane Young</name>
+            <organization>Oracle Corporation</organization>
+        </developer>
+    </developers>
+
+    <url>http://glassfish.java.net</url>
+    <organization>
+        <name>GlassFish Community</name>
+        <url>http://glassfish.org</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>CDDL + GPLv2 with classpath exception</name>
+            <url>https://glassfish.dev.java.net/nonav/public/CDDL+GPL.html</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+    <issueManagement>
+        <system>jira</system>
+        <url>http://java.net/jira/browse/glassfish</url>
+    </issueManagement>
+    <mailingLists>
+        <mailingList>
+            <name>GlassFish Developer</name>
+            <archive>dev@glassfish.java.net</archive>
+        </mailingList>
+    </mailingLists>
+    <scm>
+        <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/glassfishbuild</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/glassfishbuild</developerConnection>
+        <url>http://java.net/projects/glassfish/sources/svn/show</url>
+    </scm>
+
     <modules>
         <module>maven-glassfishbuild-plugin</module>
         <module>maven-glassfishbuild-extension</module>
     </modules>
+
     <build>
         <pluginManagement>
             <plugins>
