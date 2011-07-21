@@ -112,6 +112,8 @@ public class WorkDispatcher implements Work {
 
                     count = testTICWithSICAndSICListenerForGroupCallback(count, groupName);
 
+                    //translation required flag is used by SIC to avoid passing PVC
+
                     if (translationRequired) {
                         count = testTICWithSICAndSICListenerForDomainXMLFlag(count, "jagadish", "prasath", jagadish);
 
