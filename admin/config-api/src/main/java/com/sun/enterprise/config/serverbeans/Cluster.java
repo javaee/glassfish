@@ -610,6 +610,12 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
             }
 
             String broadcastProtocol = instance.getBroadcast();
+            String  vmulticastUriList = instance.getPropertyValue("VIRTUAL_MULTICAST_URI_LIST");
+            if (vmulticastUriList != null  && broadcastProtocol != null && broadcastProtocol.equals("udpmulticast")) {
+
+                // override default broadcast protocol of udp multicast when VIRTUAL_MULTICAST_URI_LIST has been set.
+                instance.setBroadcast("tcp");
+            }
             if (broadcastProtocol.equals("udpmulticast")) {
 
                 // only generate these values when they are not set AND broadcastProtocol is set to enable UDP multicast.
@@ -625,7 +631,6 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                 // non mulitcast case.  generate VIRTUAL_MULTICAST_URI_LIST with DAS as the seed.
                 // must explicitly set GMS_LISTENER_PORT-clustername system property for DAS and
                 // use this in generated VIRTUAL_MULTICAST_URI_LIST.
-                String  vmulticastUriList = instance.getPropertyValue("VIRTUAL_MULTICAST_URI_LIST");
                 if (vmulticastUriList == null || vmulticastUriList.length() == 0) {
 
                     // TODO: implement UDP unicast.
