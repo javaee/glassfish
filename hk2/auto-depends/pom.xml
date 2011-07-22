@@ -44,7 +44,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.sun.enterprise</groupId>
+        <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2-parent</artifactId>
         <version>1.6.10-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -87,7 +87,7 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>com.sun.enterprise</groupId>
+                <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgiversion-maven-plugin</artifactId>
             </plugin>
             <plugin>
@@ -129,21 +129,21 @@
             <artifactId>javax.inject</artifactId>
             <version>${project.version}</version>
         </dependency>
-   		<dependency>
-        	<groupId>org.glassfish.hk2</groupId>
+	<dependency>
+       	<groupId>org.glassfish.hk2</groupId>
             <artifactId>class-model</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
-        	<groupId>junit</groupId>
+            <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.3.1</version>
             <optional>true</optional>
             <scope>provided</scope>
         </dependency>
         <dependency>
-        	<groupId>org.glassfish.hk2.external</groupId>
+            <groupId>org.glassfish.hk2.external</groupId>
             <artifactId>asm-all-repackaged</artifactId>
             <version>${project.version}</version>
         </dependency>
