@@ -39,7 +39,6 @@
  */
 package org.glassfish.hk2;
 
-import java.io.Serializable;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -55,10 +54,9 @@ import java.lang.reflect.Type;
  *  TypeLiteral&lt;List&lt;String>> stringListType = new TypeLiteral&lt;List&lt;String>>() {};
  * </pre>
  *
+ * @param <T> 
  */
-public abstract class TypeLiteral<T> implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public abstract class TypeLiteral<T> {
 
     /**
      * Store the actual type (direct subclass of TypeLiteral).
@@ -112,8 +110,8 @@ public abstract class TypeLiteral<T> implements Serializable {
         if (rawType == null) {
 
             // Get the actual type
-            Type type = getType();
-            return (Class<T>) getRawType(type);
+            Type t = getType();
+            return (Class<T>) getRawType(t);
         }
 
         return rawType;

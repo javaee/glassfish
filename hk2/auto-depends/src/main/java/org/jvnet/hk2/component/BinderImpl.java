@@ -85,6 +85,12 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
     }
 
     @Override
+    public NamedBinder<V> annotatedWith(Class<? extends Annotation> annotation) {
+        this.annotations.add(annotation);
+        return this;
+    }
+
+    @Override
     public ResolvedBinder<V> to(String className) {
         typeName = className;
         return this;
@@ -92,21 +98,21 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
 
     @Override
     public <T extends V> ResolvedBinder<T> to(Class<? extends T> serviceClass) {
-        AbstractResolvedBinder<T> resolvedBinder = new TypeBasedBinder<T>((BinderImpl<T>) this, serviceClass);
+        AbstractResolvedBinder<T> resolvedBinder = new TypeBasedBinder<T>(this, serviceClass);
         owner.add(resolvedBinder);
         return resolvedBinder;
     }
 
     @Override
     public <T extends V> ResolvedBinder<T> to(TypeLiteral<T> typeLiteral) {
-        AbstractResolvedBinder<T> resolvedBinder = new TypeLiteralBasedBinder<T>((BinderImpl<T>)  this, typeLiteral);
+        AbstractResolvedBinder<T> resolvedBinder = new TypeLiteralBasedBinder<T>(this, typeLiteral);
         owner.add(resolvedBinder);
         return resolvedBinder;
     }
 
     @Override
     public <T extends V> void toInstance(T instance) {
-        AbstractResolvedBinder<T> resolvedBinder = new InstanceBasedBinder<T>((BinderImpl<T>) this, instance);
+        AbstractResolvedBinder<T> resolvedBinder = new InstanceBasedBinder<T>(this, instance);
         owner.add(resolvedBinder);
 //        in(Singleton.class);
     }
@@ -114,12 +120,12 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
     @Override
     public <T extends V> ResolvedBinder<T> toFactory(final org.glassfish.hk2.Factory<T> provider) {
 
-        return new AbstractResolvedBinder<T>((BinderImpl<T>) this) {
+        return new AbstractResolvedBinder<T>(this) {
             @Override
             void registerIn(Habitat habitat) {
-                MultiMap<String, String> metadata = super.populateMetadata();
+                MultiMap<String, String> metadataMap = super.populateMetadata();
                 // todo : we need to reconcile the fact we don't have the type and passing null below.
-                Inhabitant<T> inh = new AbstractCreatorImpl<T>(null, habitat, metadata) {
+                Inhabitant<T> inh = new AbstractCreatorImpl<T>(null, habitat, metadataMap) {
                     @Override
                     public T create(Inhabitant onBehalfOf) throws ComponentException {
                         T t = provider.get();
@@ -134,12 +140,12 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
 
     @Override
     public <T extends V> ResolvedBinder<T> toFactory(final Class<? extends org.glassfish.hk2.Factory<? extends T>> factoryType) {
-        return new AbstractResolvedBinder<T>((BinderImpl<T>) this) {
+        return new AbstractResolvedBinder<T>(this) {
             @Override
             void registerIn(Habitat habitat) {
-                MultiMap<String, String> metadata = super.populateMetadata();
+                MultiMap<String, String> metadataMap = super.populateMetadata();
                 // todo : we need to reconcile the fact we don't have the type and passing null below.
-                Inhabitant<T> inh = new AbstractCreatorImpl<T>(null, habitat, metadata) {
+                Inhabitant<T> inh = new AbstractCreatorImpl<T>(null, habitat, metadataMap) {
                     @Override
                     public T create(Inhabitant onBehalfOf) throws ComponentException {
                         Inhabitant<? extends org.glassfish.hk2.Factory<? extends T>> factoryInhabitant =
