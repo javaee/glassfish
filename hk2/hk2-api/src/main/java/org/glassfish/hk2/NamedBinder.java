@@ -55,6 +55,7 @@ import java.lang.annotation.Annotation;
  * provided - the target is the actual implementation strategy behing the
  * binding (e.g., class name to load reflectively, a factory, etc.).
  * 
+ * @param <U> TODO javadoc.
  * @author Jerome Dochez
  * @author Jeff Trent
  */
@@ -62,12 +63,27 @@ public interface NamedBinder<U>  {
 
     /**
      * Append annotations to the binding. Those annotations should be
-     * annotated with {@link javax.inject.Qualifier} annotation
+     * annotated with {@link javax.inject.Qualifier} annotation.
+     * 
+     * This method has been made deprecated since using this method always results
+     * in an "unchecked generic array creation for varargs parameter" warning.
+     * It should be removed from the API.
      * 
      * @param annotations the annotations to append
      * @return this instances, with additional annotations appended to it
+     * @deprecated use {@link #annotatedWith(java.lang.Class) } instead.
      */
+    @Deprecated
     NamedBinder<U> annotatedWith(Class<? extends Annotation>... annotations);
+
+    /**
+     * Append annotation to the binding. The annotation should be
+     * annotated with {@link javax.inject.Qualifier} annotation
+     * 
+     * @param annotation the annotation to append
+     * @return this instances, with additional annotations appended to it
+     */
+    NamedBinder<U> annotatedWith(Class<? extends Annotation> annotation);
 
     /**
      * Have this instance resolve to a particular target implementation
@@ -84,6 +100,7 @@ public interface NamedBinder<U>  {
      * depending on its {@kink Scope} when this binding is requested
      * for injection or through explicit lookup.
      * 
+     * @param <T> TODO javadoc.
      * @param serviceClass the class type target to resolve to
      * @return a ResolvedBinder
      */
@@ -95,6 +112,7 @@ public interface NamedBinder<U>  {
      * depending on its {@kink Scope} when this binding is requested
      * for injection or through explicit lookup.
      * 
+     * @param <T> TODO javadoc.
      * @param typeLiteral the type literal target to resolve to
      * @return a ResolvedBinder
      */
@@ -104,8 +122,8 @@ public interface NamedBinder<U>  {
      * Have this instance resolve to a particular singleton implementation
      * instance. In this case the {@link Scope} is assumed to be singleton. 
      * 
+     * @param <T> TODO javadoc.
      * @param instance the instance used to satisfy this binding requests.
-     * @return a ResolvedBinder
      */
     <T extends U> void toInstance(T instance);
 
@@ -113,6 +131,7 @@ public interface NamedBinder<U>  {
      * Have this instance resolve to a particular target factory
      * implementation.
      * 
+     * @param <T> TODO javadoc.
      * @param factory the factory target to resolve to
      * @return a ResolvedBinder
      */
@@ -122,6 +141,7 @@ public interface NamedBinder<U>  {
      * Have this instance resolve to a particular target factory
      * class type.
      * 
+     * @param <T> TODO javadoc.
      * @param factoryType the factory class type target to resolve to
      * @return a ResolvedBinder
      */
@@ -130,6 +150,7 @@ public interface NamedBinder<U>  {
     /**
      * Have this instance resolve to a particular target type literal factory.
      * 
+     * @param <T> TODO javadoc.
      * @param factoryType the type literal factory to resolve to
      * @return a ResolvedBinder
      */

@@ -37,16 +37,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.jvnet.hk2.component;
 
-import com.sun.hk2.component.*;
-
-import javax.xml.bind.Binder;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
+import com.sun.hk2.component.ConstructorCreator;
 
 /**
  * Binds a typed binding to the habitat
@@ -56,7 +49,7 @@ class TypeBasedBinder<T> extends AbstractResolvedBinder<T> {
 
     final Class<? extends T> type;
 
-    TypeBasedBinder(BinderImpl<T> metadata, Class<? extends T> type) {
+    TypeBasedBinder(BinderImpl<? super T> metadata, Class<? extends T> type) {
         super(metadata);
         this.type = type;
     }

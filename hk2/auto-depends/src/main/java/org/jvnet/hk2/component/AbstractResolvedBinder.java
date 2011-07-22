@@ -37,17 +37,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.jvnet.hk2.component;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.hk2.component.InhabitantsFile;
-import com.sun.hk2.component.ScopedInhabitant;
 import org.glassfish.hk2.ResolvedBinder;
 import org.glassfish.hk2.Scope;
+
+import com.sun.hk2.component.InhabitantsFile;
 
 /**
  * Created by IntelliJ IDEA.
@@ -57,9 +56,10 @@ import org.glassfish.hk2.Scope;
  * To change this template use File | Settings | File Templates.
  */
 abstract class AbstractResolvedBinder<T> implements ResolvedBinder<T> {
-    final BinderImpl<T> metadata;
 
-    protected AbstractResolvedBinder(BinderImpl<T> metadata) {
+    final BinderImpl<? super T> metadata;
+
+    protected AbstractResolvedBinder(BinderImpl<? super T> metadata) {
         this.metadata = metadata;
     }
 
@@ -80,7 +80,7 @@ abstract class AbstractResolvedBinder<T> implements ResolvedBinder<T> {
     protected void registerIn(Habitat habitat, Inhabitant<T> inhabitant) {
         List<String> contracts = new ArrayList<String>();
         contracts.addAll(metadata.contracts);
-        if (contracts.isEmpty() && (metadata.name==null || metadata.name.isEmpty())) {
+        if (contracts.isEmpty() && (metadata.name == null || metadata.name.isEmpty())) {
             // there is no name, or contract, register by type
             habitat.add(inhabitant);
         } else {

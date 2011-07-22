@@ -53,7 +53,7 @@ class InstanceBasedBinder<T> extends AbstractResolvedBinder<T> {
 
     final T instance;
 
-    public InstanceBasedBinder(BinderImpl<T> metadata, T instance) {
+    InstanceBasedBinder(BinderImpl<? super T> metadata, T instance) {
         super(metadata);
         this.instance = instance;
     }

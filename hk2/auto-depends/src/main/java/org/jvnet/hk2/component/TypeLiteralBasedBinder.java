@@ -37,26 +37,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.jvnet.hk2.component;
 
-import com.sun.hk2.component.*;
+import com.sun.hk2.component.ConstructorCreator;
+import com.sun.hk2.component.InhabitantsFile;
 import org.glassfish.hk2.TypeLiteral;
 
-import java.lang.annotation.Annotation;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
 
 /**
  * Binder for a {@link TypeLiteral} binding
  *
  * @author Jerome Dochez
  */
-public class TypeLiteralBasedBinder<T> extends AbstractResolvedBinder<T> {
+class TypeLiteralBasedBinder<T> extends AbstractResolvedBinder<T> {
 
     final TypeLiteral<T> typeLiteral;
 
-    protected TypeLiteralBasedBinder(BinderImpl<T> metadata, TypeLiteral<T> typeLiteral) {
+    TypeLiteralBasedBinder(BinderImpl<? super T> metadata, TypeLiteral<T> typeLiteral) {
         super(metadata);
         this.typeLiteral = typeLiteral;
     }
@@ -75,6 +73,7 @@ public class TypeLiteralBasedBinder<T> extends AbstractResolvedBinder<T> {
 
         super.registerIn(habitat, com.sun.hk2.component.Inhabitants.wrapByScope(
                 new ConstructorCreator<T>(typeLiteral.getRawType(), habitat, inhMetadata) {
+            @Override
                     public String typeName(){
                         return parameterizedTypes;
                     }
