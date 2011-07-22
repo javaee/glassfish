@@ -105,6 +105,15 @@
                        <artifactId>maven-compiler-plugin</artifactId>
                        <version>2.3.2</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>                           
+                    <artifactId>maven-release-plugin</artifactId>                         
+                    <configuration>                                                       
+                       <mavenExecutorId>forked-path</mavenExecutorId>                
+                       <useReleaseProfile>false</useReleaseProfile>                  
+                       <arguments>${release.arguments}</arguments>
+                   </configuration>                                                      
+               </plugin>                    
             </plugins>
         </pluginManagement>
     </build>
