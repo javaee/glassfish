@@ -43,7 +43,7 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.sun.enterprise</groupId>
+    <groupId>org.glassfish.hk2</groupId>
     <artifactId>hk2-parent</artifactId>
     <packaging>pom</packaging>
 
@@ -252,7 +252,7 @@
                      </configuration>
                  </plugin>
                 <plugin>
-                    <groupId>com.sun.enterprise</groupId>
+                    <groupId>org.glassfish.hk2</groupId>
                     <artifactId>osgiversion-maven-plugin</artifactId>
                     <version>${project.version}</version>
                     <executions>
@@ -288,9 +288,7 @@
         <module>dependency-verifier</module>
         <module>dependency-visualizer</module>
         <module>osgiversion-maven-plugin</module>
-        <module>config-types</module>
         <module>consolidatedbundle-maven-plugin</module>
-        <module>hk2-jsr330</module>
         <module>hk2-api</module>
   </modules>
 
@@ -314,6 +312,8 @@
                 <module>auto-depends-tests</module>
                 <module>apt-test</module>
                 <module>hk2</module>
+                <module>config-types</module>
+                <module>hk2-jsr330</module>
             </modules>
         </profile>
         <profile>
@@ -323,6 +323,8 @@
                 <module>auto-depends-tests</module>
                 <module>apt-test</module>
                 <module>hk2</module>
+                <module>config-types</module>
+                <module>hk2-jsr330</module>
             </modules>
         </profile>
         <profile>
