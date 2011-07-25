@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,7 @@ package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -79,6 +80,8 @@ public class GetHealthCommand implements AdminCommand {
     private Domain domain;
     @Inject
     private ServerEnvironment env;
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Server server;
     @Inject
     GMSAdapterService gmsAdapterService;
 
@@ -126,10 +129,12 @@ public class GetHealthCommand implements AdminCommand {
             return setFail(Strings.get("get.health.onlyRunsOnDas"));
         }
 
-        // check that cluster exists
-        Cluster cluster = domain.getClusterNamed(clusterName);
-        if (cluster == null) {
-            return setFail(Strings.get("get.health.noCluster", clusterName));
+        // check that cluster exists if not user-managed cluster
+        if (!server.isClusteredDas()) {
+            Cluster cluster = domain.getClusterNamed(clusterName);
+            if (cluster == null) {
+                return setFail(Strings.get("get.health.noCluster", clusterName));
+            }
         }
 
         // ok to go
