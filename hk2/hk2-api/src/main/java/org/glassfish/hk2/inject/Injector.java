@@ -42,9 +42,20 @@ package org.glassfish.hk2.inject;
 
 import org.jvnet.hk2.annotations.Contract;
 
+/**
+ * Defines a simple API for injecting HK2 components
+ *
+ * @author Jerome Dochez
+ */
 @Contract
 public interface Injector {
 
-  void inject(Object t);
-  
+    /**
+     * Injects all the {@link org.jvnet.hk2.annotations.Inject} annotated fields and methods
+     * of the passed instance.
+     *
+     * @param target the instance to inject
+     */
+    void inject(Object target);
+
 }

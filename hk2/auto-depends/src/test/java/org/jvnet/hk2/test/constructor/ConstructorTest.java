@@ -41,8 +41,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Injector;
+import org.glassfish.hk2.inject.Injector;
 import org.jvnet.hk2.junit.Hk2Runner;
 
 /**

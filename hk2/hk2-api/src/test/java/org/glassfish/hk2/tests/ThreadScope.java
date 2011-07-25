@@ -51,7 +51,7 @@ import org.glassfish.hk2.ScopeInstance;
  * Time: 4:13 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ThreadScope extends Scope {
+public class ThreadScope implements Scope {
 
     @Override
     public ScopeInstance current() {

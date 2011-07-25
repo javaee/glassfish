@@ -80,7 +80,9 @@
 package org.glassfish.hk2;
 
 /**
- * A particular instanciation of a {@link Scope}.
+ * A particular instantiation of a {@link Scope}. Will be
+ * used to store and retrieve components for that particular
+ * {@link Scope}
  *
  * <p>
  * For example, for the "request scope", an instance
@@ -91,9 +93,29 @@ package org.glassfish.hk2;
  */
 public interface ScopeInstance {
 
-    public <T> T get(Provider<T> inhabitant);
+    /**
+     * Retrieves a stored inhabitant if present in the storage bag.
+     *
+     * @param provider the {@link Provider} we request the instance for.
+     * @param <T> the requested instance type
+     * @return the instance of T for that provider or null if it was
+     * never added to the bug.
+     */
+    public <T> T get(Provider<T> provider);
 
-    public <T> T put(Provider<T> inhabitant, T value);
+    /**
+     * Stores a inhabitant component instance.
+     *
+     * @param provider component description as an {@link Provider}
+     * @param value component instance
+     * @param <T> type of the component
+     * @return the previous value associated with this provider if any,
+     */
+    public <T> T put(Provider<T> provider, T value);
 
+    /**
+     * release the backend storage and call {@link org.glassfish.hk2.PreDestroy#preDestroy()}
+     * on all instantiated components that implement the {@link PreDestroy} interface.
+     */
     public void release();
 }

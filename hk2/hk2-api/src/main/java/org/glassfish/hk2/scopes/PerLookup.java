@@ -55,7 +55,7 @@ import java.util.HashMap;
  * @author Kohsuke Kawaguchi
  */
 @Scoped(Singleton.class)
-public class PerLookup extends Scope {
+public class PerLookup implements Scope {
     @Override
     public ScopeInstance current() {
         return new ScopeInstanceImpl(new HashMap());

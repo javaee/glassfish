@@ -38,7 +38,7 @@
 package org.jvnet.hk2.test.constructor;
 
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Injector;
+import org.glassfish.hk2.inject.Injector;
 
 /**
  * Value object test
@@ -61,6 +61,8 @@ public class ValueObject {
     }
 
     public static ValueObject from(Injector injector, String one, String two) {
-        return injector.inject(new ValueObject(one, two));
+        ValueObject vo = new ValueObject(one, two);
+        injector.inject(vo);
+        return vo;
     }
 }

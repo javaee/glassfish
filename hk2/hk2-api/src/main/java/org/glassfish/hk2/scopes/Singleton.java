@@ -49,7 +49,7 @@ import org.jvnet.hk2.annotations.Scoped;
  * @author Kohsuke Kawaguchi
  */
 @Scoped(Singleton.class)
-public class Singleton extends Scope {
+public class Singleton implements Scope {
     /**
      * @deprecated
      *  Singleton instances are not stored in a single map.
