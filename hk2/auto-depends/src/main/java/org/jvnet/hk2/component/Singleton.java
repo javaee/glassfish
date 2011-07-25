@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,22 +39,9 @@
  */
 package org.jvnet.hk2.component;
 
-import org.glassfish.hk2.ScopeInstance;
-import org.jvnet.hk2.annotations.Scoped;
-
 /**
- * Singleton scope.
- *
- * @author Kohsuke Kawaguchi
+ * Compatibility class for the {@link org.glassfish.hk2.scopes.Singleton} scope.
+ * @author Jerome Dochez
  */
-@Scoped(Singleton.class)
-public class Singleton extends Scope {
-    /**
-     * @deprecated
-     *  Singleton instances are not stored in a single map.
-     */
-    @Override
-    public ScopeInstance current() {
-        throw new UnsupportedOperationException();
-    }
+public class Singleton extends org.glassfish.hk2.scopes.Singleton {
 }

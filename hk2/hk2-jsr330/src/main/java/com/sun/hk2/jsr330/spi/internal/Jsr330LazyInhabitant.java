@@ -39,10 +39,10 @@
  */
 package com.sun.hk2.jsr330.spi.internal;
 
+import org.glassfish.hk2.Scope;
 import org.jvnet.hk2.component.Creator;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.MultiMap;
-import org.jvnet.hk2.component.Scope;
 
 import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.LazyInhabitant;

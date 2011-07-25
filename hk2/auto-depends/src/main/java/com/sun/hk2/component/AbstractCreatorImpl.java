@@ -44,7 +44,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.glassfish.hk2.*;
 import org.jvnet.hk2.component.*;
+import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.hk2.tracing.TracingThreadLocal;
 import org.jvnet.hk2.tracing.TracingUtilities;
 
@@ -56,7 +59,7 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
     private final static Logger logger = Logger.getLogger(AbstractCreatorImpl.class.getName());
   
     protected final Class<? extends T> type;
-    protected final Habitat habitat; 
+    protected final Habitat habitat;
     private final MultiMap<String,String> metadata;
 
     public AbstractCreatorImpl(Class<? extends T> type, Habitat habitat, MultiMap<String,String> metadata) {
@@ -125,9 +128,9 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
         injectionMgr.inject(t, onBehalfOf, es, targets);
 
         // postContruct call if any
-        if (t instanceof PostConstruct) {
+        if (t instanceof org.glassfish.hk2.PostConstruct) {
             logger.log(Level.FINER, "calling PostConstruct on {0}", t);
-            ((PostConstruct)t).postConstruct();
+            ((org.glassfish.hk2.PostConstruct) t).postConstruct();
         }
         
         logger.log(Level.FINER, "injection finished on {0}", t);

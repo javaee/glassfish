@@ -45,7 +45,7 @@ import java.util.concurrent.ThreadFactory;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.PostConstruct;
 
 @Service
 public class MultiThreadedInhabitantActivator 

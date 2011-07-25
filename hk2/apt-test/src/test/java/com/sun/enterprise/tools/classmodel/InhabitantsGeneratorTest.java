@@ -431,7 +431,7 @@ public class InhabitantsGeneratorTest {
     while (en.hasMoreElements()) {
       URL url = en.nextElement();
       String name = url.getPath().toString();
-      if (!name.contains("test-rls")) {
+      if (!name.contains("test-rls") && !name.contains("hk2-api")) {
         count++;
 
         InputStream is = (InputStream) url.getContent();
@@ -601,6 +601,7 @@ public class InhabitantsGeneratorTest {
       sb.append("class=rls.test.model.ServiceY2,index=rls.test.model.ContractY,index=org.jvnet.hk2.annotations.RunLevel,env=java.lang.Void,runLevel=-1\n");
       sb.append("class=rls.test.model.ServiceZ\n");
       sb.append("class=rls.test.infra.RandomInhabitantSorter,index=org.jvnet.hk2.component.InhabitantSorter\n");
+      sb.append("class=org.glassfish.hk2.scopes.PerThread,index=org.glassfish.hk2.Scope\n");
       if (worldViewClassPath) {
         sb.append("class=rls.test.RlsTest,index=com.sun.enterprise.module.bootstrap.ModuleStartup\n");
         sb.append("class=test1.Start,index=com.sun.enterprise.module.bootstrap.ModuleStartup\n");

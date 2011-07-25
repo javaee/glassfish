@@ -39,12 +39,12 @@
  */
 package org.jvnet.hk2.test.impl;
 
+import org.glassfish.hk2.scopes.PerLookup;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.PreDestroy;
+import org.glassfish.hk2.PostConstruct;
+import org.glassfish.hk2.PreDestroy;
 
 @Service
 @Scoped(PerLookup.class)

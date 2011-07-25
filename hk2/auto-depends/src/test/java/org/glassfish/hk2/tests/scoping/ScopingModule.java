@@ -41,8 +41,8 @@ package org.glassfish.hk2.tests.scoping;
 
 import org.glassfish.hk2.BinderFactory;
 import org.glassfish.hk2.Module;
-import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.component.Singleton;
+import org.glassfish.hk2.scopes.PerLookup;
+import org.glassfish.hk2.scopes.Singleton;
 
 /**
  * Scoping test module, responsible for binding.

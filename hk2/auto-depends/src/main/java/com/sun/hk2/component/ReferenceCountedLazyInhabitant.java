@@ -40,9 +40,9 @@ import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
+import org.glassfish.hk2.PreDestroy;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.PreDestroy;
 
 /**
  * Enables lifecycle controls surrounding and inhabitant's get() and release().

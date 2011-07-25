@@ -44,8 +44,8 @@ import java.util.logging.Logger;
 
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.PreDestroy;
+import org.glassfish.hk2.PostConstruct;
+import org.glassfish.hk2.PreDestroy;
 
 /**
  * Used in testing interrupt handling, also belonging to another RunLevel environment.

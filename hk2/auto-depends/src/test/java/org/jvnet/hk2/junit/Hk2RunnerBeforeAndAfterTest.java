@@ -47,6 +47,8 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.glassfish.hk2.PostConstruct;
+import org.glassfish.hk2.PreDestroy;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -58,8 +60,6 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.Suite;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.PreDestroy;
 
 /**
  * A suite of tests for testing {link @Before} and {link @After} test

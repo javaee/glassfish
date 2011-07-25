@@ -45,7 +45,6 @@ import org.glassfish.hk2.ManagedComponentProvider;
 import org.jvnet.hk2.annotations.Service;
 
 import com.sun.hk2.component.Holder;
-import com.sun.hk2.component.ScopeInstance;
 
 /**
  * Represents a component in the world of {@link Habitat}.
@@ -194,11 +193,11 @@ public interface Inhabitant<T> extends ManagedComponentProvider<T>, Holder<T> {
     /**
      * Called to orderly shutdown {@link Habitat}.
      * <p>
-     * The expected behavior is for objects to get its {@link PreDestroy}
+     * The expected behavior is for objects to get its {@link org.glassfish.hk2.PreDestroy}
      * callback invoked, and its reference released. For singleton
      * objects, this method is expected to dispose that object.
      * <p>
-     * For scoped objects, those are released when {@link ScopeInstance#release()}
+     * For scoped objects, those are released when {@link org.glassfish.hk2.ScopeInstance#release()}
      * is invoked.
      */
     void release();

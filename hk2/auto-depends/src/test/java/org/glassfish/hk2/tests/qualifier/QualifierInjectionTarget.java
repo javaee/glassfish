@@ -42,8 +42,6 @@ package org.glassfish.hk2.tests.qualifier;
 
 import org.jvnet.hk2.annotations.Inject;
 
-import javax.inject.Named;
-
 /**
  * Test main injected classes. all fields should be injected successfully
  *

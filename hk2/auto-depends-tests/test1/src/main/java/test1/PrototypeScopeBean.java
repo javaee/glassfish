@@ -39,9 +39,9 @@
  */
 package test1;
 
+import org.glassfish.hk2.scopes.PerLookup;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.PerLookup;
 
 /**
  * Per-lookup component test.

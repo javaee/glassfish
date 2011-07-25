@@ -55,7 +55,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantActivator;
 import org.jvnet.hk2.component.MultiMap;
-import org.jvnet.hk2.component.PreDestroy;
+import org.glassfish.hk2.PreDestroy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfiguredBy;
 import org.jvnet.hk2.config.provider.ConfigTransaction;

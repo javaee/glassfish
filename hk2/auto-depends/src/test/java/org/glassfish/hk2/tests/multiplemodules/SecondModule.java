@@ -44,7 +44,7 @@ import org.glassfish.hk2.Module;
 import org.glassfish.hk2.Services;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.PostConstruct;
 import org.jvnet.hk2.test.runlevel.RandomContract;
 
 /**

@@ -46,6 +46,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.glassfish.hk2.Scope;
+import org.glassfish.hk2.scopes.PerLookup;
+import org.glassfish.hk2.scopes.Singleton;
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.ComponentException;
@@ -53,8 +55,6 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantProviderInterceptor;
 import org.jvnet.hk2.component.MultiMap;
-import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.Creator;
 import org.jvnet.hk2.component.Creators;
 
@@ -135,10 +135,12 @@ public class Inhabitants {
       Class<? extends Scope> scopeClass) {
       // those two scopes are so common and different that they deserve
       // specialized code optimized for them.
-      if (scopeClass== PerLookup.class) {
+      if (scopeClass== PerLookup.class
+              || scopeClass==org.jvnet.hk2.component.PerLookup.class) {
           return creator;
       }
-      if (scopeClass==null || scopeClass== Singleton.class) {
+      if (scopeClass==null || scopeClass== Singleton.class
+              || scopeClass==org.jvnet.hk2.component.Singleton.class) {
           return new SingletonInhabitant<T>(creator);
       }
   

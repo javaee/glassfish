@@ -41,9 +41,9 @@ package com.sun.hk2.jsr330.spi.internal;
 
 import java.util.Set;
 
+import org.glassfish.hk2.Scope;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
-import org.jvnet.hk2.component.Scope;
 
 /**
  * Data describing the inhabitant including the inhabitant.

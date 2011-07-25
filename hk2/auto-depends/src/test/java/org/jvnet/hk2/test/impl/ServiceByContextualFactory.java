@@ -8,7 +8,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.ContextualFactory;
 import org.jvnet.hk2.component.InjectionPoint;
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.PostConstruct;
 import org.jvnet.hk2.test.contracts.DummyContract;
 import org.jvnet.hk2.test.contracts.TestingInfoService;
 import org.jvnet.hk2.test.contracts.TestingInfoService2;

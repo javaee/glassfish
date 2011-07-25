@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,71 +37,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.hk2.component;
+package org.glassfish.hk2.tests.perthread;
 
-import org.glassfish.hk2.Provider;
-import org.jvnet.hk2.component.PreDestroy;
-
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * A particular instanciation of a {@link org.jvnet.hk2.component.Scope}.
- *
- * <p>
- * For example, for the "request scope", an instance
- * of {@link ScopeInstance} is created for each request.
- * 
- * @author Kohsuke Kawaguchi
- * @see org.jvnet.hk2.component.Scope#current()
+ * Definition of a contract to test the @PerThread scope.
+ * @author Jerome Dochez
  */
-@SuppressWarnings("unchecked")
-public final class ScopeInstance implements org.glassfish.hk2.ScopeInstance, PreDestroy {
-    private static final Logger logger = Logger.getLogger(ScopeInstance.class.getName());
-    
-    /**
-     * Human readable scope instance name for debug assistance. 
-     */
-    public final String name;
+@Contract
+public interface SomeContract {
 
-    private final Map backend;
+    String perThread();
 
-    public ScopeInstance(String name, Map backend) {
-        this.name = name;
-        this.backend = backend;
-    }
-
-    public ScopeInstance(Map backend) {
-        this.name = super.toString();
-        this.backend = backend;
-    }
-    
-    public String toString() {
-        return name;
-    }
-
-    public <T> T get(Provider<T> inhabitant) {
-        return (T) backend.get(inhabitant);
-    }
-
-    public <T> T put(Provider<T> inhabitant, T value) {
-        return (T) backend.put(inhabitant,value);
-    }
-
-    public void release() {
-        synchronized(backend) {
-            for (Object o : backend.values()) {
-                if(o instanceof PreDestroy) {
-                    logger.log(Level.FINER, "calling PreDestroy on {0}", o);
-                    ((PreDestroy)o).preDestroy();
-                }
-            }
-            backend.clear();
-        }
-    }
-
-    public void preDestroy() {
-        release();
-    }
+    int allocationNumber();
 }

@@ -47,6 +47,7 @@ import org.jvnet.hk2.annotations.InhabitantAnnotation;
 import org.jvnet.hk2.annotations.InhabitantMetadata;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.MultiMap;
+import sun.misc.VM;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -101,14 +102,6 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
         return type.getAnnotation(Contract.class.getName())!=null;
     }
 
-    public void findClassContracts(ClassModel cm, Set<String> interfaces, Set<String> annotationTypeInterfaces) {
-        for (InterfaceModel im : cm.getInterfaces()) {
-            if (isContract(im)) {
-                interfaces.add(im.getName());
-            }
-        }
-        findContractsFromAnnotations(cm, interfaces, annotationTypeInterfaces);
-    }
 
     public void findInterfaceContracts(InterfaceModel im, Set<String> interfaces, Set<String> annInterfaces) {
         if (im.getParent()!=null) {
@@ -172,35 +165,44 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
         return mangled.replace("/", ".");
     }
 
-    public void findContracts(ClassModel cm, Set<String> interfaces, Set<String> annotationTypeInterfaces) {
+    public void findContracts(ClassModel cm, Set<String> contracts, Set<String> annotationTypeInterfaces) {
 
         // It is questionable that the indexes will contain the fully qualified
         // parameterized type as well as the raw type but it's safer for
         // backward compatibility.
         for (ParameterizedInterfaceModel pim : cm.getParameterizedInterfaces()) {
             if (isContract(pim.getRawInterface())) {
-                interfaces.add(pim.getName());
+                contracts.add(pim.getName());
             }
         }
 
-        for (InterfaceModel im : cm.getInterfaces()) {
-            getAllContractInterfaces(im, interfaces);
+        // find abstract classes annotated with @Contract
+        ClassModel currentClassModel = cm.getParent();
+        while(currentClassModel!=null) {
+            if (isContract(currentClassModel)) {
+                contracts.add(currentClassModel.getName());
+            }
+            currentClassModel = currentClassModel.getParent();
         }
 
-        findContractsFromAnnotations(cm, interfaces, annotationTypeInterfaces);
+        for (InterfaceModel im : cm.getInterfaces()) {
+            getAllContractInterfaces(im, contracts);
+        }
+
+        findContractsFromAnnotations(cm, contracts, annotationTypeInterfaces);
 
         // walk parent chain too
         ClassModel parent = cm.getParent();
         if (null == parent) {
           // at this point, we check all interfaces to see if they have super interfaces
           Set<String> newIfaces = new LinkedHashSet<String>();
-          for (String ifaceName : interfaces) {
+          for (String ifaceName : contracts) {
             InterfaceModel iface = types.getBy(InterfaceModel.class, ifaceName);
             getAllContractInterfaces(iface, newIfaces);
           }
-          interfaces.addAll(newIfaces);
+          contracts.addAll(newIfaces);
         } else if (!parent.getName().equals(Object.class.getName())) {
-          findContracts(parent, interfaces, annotationTypeInterfaces);
+          findContracts(parent, contracts, annotationTypeInterfaces);
         }
     }
 
