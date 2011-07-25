@@ -43,6 +43,6 @@ package org.glassfish.hk2;
 import org.jvnet.hk2.annotations.Contract;
 
 @Contract
-public abstract class Scope {
-    public abstract ScopeInstance current();
+public interface Scope {
+    ScopeInstance current();
 }

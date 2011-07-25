@@ -73,7 +73,7 @@ class TypeLiteralBasedBinder<T> extends AbstractResolvedBinder<T> {
 
         super.registerIn(habitat, com.sun.hk2.component.Inhabitants.wrapByScope(
                 new ConstructorCreator<T>(typeLiteral.getRawType(), habitat, inhMetadata) {
-            @Override
+                    @Override
                     public String typeName(){
                         return parameterizedTypes;
                     }

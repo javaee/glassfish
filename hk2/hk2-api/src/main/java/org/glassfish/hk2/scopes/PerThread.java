@@ -57,7 +57,7 @@ import java.util.HashMap;
  */
 @Service
 @Scoped(Singleton.class)
-public class PerThread extends Scope {
+public class PerThread implements Scope {
 
     ThreadLocal<ScopeInstance> threadLocalInstance =
             new ThreadLocal<ScopeInstance>() {

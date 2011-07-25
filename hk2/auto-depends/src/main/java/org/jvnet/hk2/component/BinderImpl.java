@@ -77,14 +77,6 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
     }
 
     @Override
-    public NamedBinder<V> annotatedWith(Class<? extends Annotation>... annotations) {
-        for (Class<? extends Annotation> annotation : annotations) {
-            this.annotations.add(annotation);
-        }
-        return this;
-    }
-
-    @Override
     public NamedBinder<V> annotatedWith(Class<? extends Annotation> annotation) {
         this.annotations.add(annotation);
         return this;

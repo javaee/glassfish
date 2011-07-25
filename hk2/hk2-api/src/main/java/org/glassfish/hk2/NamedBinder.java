@@ -62,21 +62,6 @@ import java.lang.annotation.Annotation;
 public interface NamedBinder<U>  {
 
     /**
-     * Append annotations to the binding. Those annotations should be
-     * annotated with {@link javax.inject.Qualifier} annotation.
-     * 
-     * This method has been made deprecated since using this method always results
-     * in an "unchecked generic array creation for varargs parameter" warning.
-     * It should be removed from the API.
-     * 
-     * @param annotations the annotations to append
-     * @return this instances, with additional annotations appended to it
-     * @deprecated use {@link #annotatedWith(java.lang.Class) } instead.
-     */
-    @Deprecated
-    NamedBinder<U> annotatedWith(Class<? extends Annotation>... annotations);
-
-    /**
      * Append annotation to the binding. The annotation should be
      * annotated with {@link javax.inject.Qualifier} annotation
      * 

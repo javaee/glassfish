@@ -48,5 +48,5 @@ import org.jvnet.hk2.annotations.Contract;
  * @see org.jvnet.hk2.annotations.Scoped#value() 
  */
 @Contract
-public abstract class Scope extends org.glassfish.hk2.Scope {
+public abstract class Scope implements org.glassfish.hk2.Scope {
 }

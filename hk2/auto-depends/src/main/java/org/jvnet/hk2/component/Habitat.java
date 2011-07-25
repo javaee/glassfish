@@ -62,7 +62,7 @@ import java.util.logging.Logger;
 
 import com.sun.hk2.component.*;
 import org.glassfish.hk2.*;
-import org.glassfish.hk2.scopes.PerThread;
+import org.glassfish.hk2.inject.Injector;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.FactoryFor;
@@ -1060,15 +1060,15 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
     }
 
     @Override
-    public <T> T inject(final T object) {
-        Creator<T> c = new ConstructorCreator<T>((Class<T>) object.getClass(),
+    public void inject(final Object object) {
+        Creator<?> c = new ConstructorCreator((Class<?>) object.getClass(),
                 this, null) {
             @Override
-            public T create(Inhabitant onBehalfOf) throws ComponentException {
+            public Object create(Inhabitant onBehalfOf) throws ComponentException {
                 return object;
             }
         };
-        return c.get();
+        c.get();
     }
 
     /**
