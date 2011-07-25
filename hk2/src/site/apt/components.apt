@@ -102,7 +102,7 @@ public abstract class Scope {
 }
 +------------+
 
-    Example of scoping for service to the predefined {{{org.jvnet.hk2.component.Singleton.html}Singleton}} Scope
+    Example of scoping for service to the predefined {{{org.glassfish.hk2.scopes.Singleton.html}Singleton}} Scope
 
 +--------------+
 @Service

@@ -41,7 +41,7 @@ package org.glassfish.hk2.tests.multiplemodules;
 
 import junit.framework.Assert;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.PostConstruct;
 import org.jvnet.hk2.test.runlevel.RandomContract;
 
 /**

@@ -39,7 +39,7 @@
  */
 package test3;
 
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.PostConstruct;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Attribute;
 

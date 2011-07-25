@@ -60,13 +60,9 @@ import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.glassfish.hk2.Binding;
-import org.glassfish.hk2.ContractLocator;
-import org.glassfish.hk2.Descriptor;
-import org.glassfish.hk2.DynamicBinderFactory;
-import org.glassfish.hk2.ServiceLocator;
-import org.glassfish.hk2.Services;
-import org.glassfish.hk2.TypeLiteral;
+import com.sun.hk2.component.*;
+import org.glassfish.hk2.*;
+import org.glassfish.hk2.scopes.PerThread;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.FactoryFor;
@@ -75,14 +71,6 @@ import org.jvnet.hk2.component.InhabitantTracker.Callback;
 import org.jvnet.hk2.component.concurrent.Hk2Executor;
 import org.jvnet.hk2.component.concurrent.SameThreadExecutor;
 import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
-
-import com.sun.hk2.component.ConstructorCreator;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
-import com.sun.hk2.component.FactoryCreator;
-import com.sun.hk2.component.InjectInjectionResolver;
-import com.sun.hk2.component.InjectionResolver;
-import com.sun.hk2.component.RunLevelInhabitantProvider;
-import com.sun.hk2.component.ScopeInstance;
 
 /**
  * A set of templates that constitute a world of objects.
@@ -175,7 +163,7 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
         this.byContract = new MultiMap<String, NamedInhabitant>(
                 this.concurrencyControls);
         this.byType = new MultiMap<String, Inhabitant>(this.concurrencyControls);
-        this.singletonScope = new ScopeInstance("singleton", new HashMap());
+        this.singletonScope = new ScopeInstanceImpl("singleton", new HashMap());
 
         // add the set of ExecutorServices by name
         if (concurrencyControls) {

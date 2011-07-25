@@ -40,15 +40,9 @@
 package org.jvnet.hk2.component;
 
 /**
- * Components implementing this interface registers an interest
- * in being notified when they are about to be decommissioned.
+ * Compatibility class for the {@link org.glassfish.hk2.PreDestroy} interface
  *
  * @author Jerome Dochez
  */
-public interface PreDestroy {
-
-    /**
-     * The component is about to be removed from commission
-     */
-    public void preDestroy();
+public interface PreDestroy extends org.glassfish.hk2.PreDestroy {
 }

@@ -47,13 +47,13 @@ import java.beans.PropertyChangeEvent;
 import java.lang.reflect.Proxy;
 import java.util.concurrent.*;
 
+import com.sun.hk2.component.Holder;
+import org.glassfish.hk2.PostConstruct;
+import org.glassfish.hk2.PreDestroy;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.Singleton;
-import org.jvnet.hk2.component.PreDestroy;
-import org.jvnet.hk2.component.PostConstruct;
-import com.sun.hk2.component.*;
+import org.glassfish.hk2.scopes.Singleton;
 
 /**
  * Transactions is a singleton service that receives transaction notifications and dispatch these

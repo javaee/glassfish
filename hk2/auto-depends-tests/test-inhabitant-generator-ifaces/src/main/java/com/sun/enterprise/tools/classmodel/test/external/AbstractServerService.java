@@ -39,8 +39,8 @@
  */
 package com.sun.enterprise.tools.classmodel.test.external;
 
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.PreDestroy;
+import org.glassfish.hk2.PostConstruct;
+import org.glassfish.hk2.PreDestroy;
 
 public abstract class AbstractServerService implements ServerService, PostConstruct, PreDestroy {
 

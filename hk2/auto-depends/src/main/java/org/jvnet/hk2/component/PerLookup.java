@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,23 +39,9 @@
  */
 package org.jvnet.hk2.component;
 
-import com.sun.hk2.component.ScopeInstance;
-import org.jvnet.hk2.annotations.Scoped;
-
-import java.util.HashMap;
-
 /**
- * {@link Scope} local to each invocation.
- *
- * <p>
- * Components in this scope will create new instances every time someone asks for it. 
- *
- * @author Kohsuke Kawaguchi
+ * Compatibility class for {@link org.glassfish.hk2.scopes.PerLookup} scope
+ * @author Jerome Dochez
  */
-@Scoped(Singleton.class)
-public class PerLookup extends Scope {
-    @Override
-    public ScopeInstance current() {
-        return new ScopeInstance(new HashMap());
-    }
+public class PerLookup extends org.glassfish.hk2.scopes.PerLookup {
 }

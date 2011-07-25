@@ -40,7 +40,7 @@
 package org.glassfish.hk2.tests;
 
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.PostConstruct;
 import org.jvnet.hk2.test.runlevel.RandomContract;
 import static org.junit.Assert.*;
 

@@ -40,7 +40,7 @@
 package rls.test.model;
 
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.PostConstruct;
 
 @Service
 public class ServiceZ implements PostConstruct {

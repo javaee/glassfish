@@ -47,6 +47,9 @@ import java.util.Set;
 
 import javax.inject.Named;
 
+import org.glassfish.hk2.Scope;
+import org.glassfish.hk2.scopes.PerLookup;
+import org.glassfish.hk2.scopes.Singleton;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
@@ -54,10 +57,7 @@ import org.jvnet.hk2.component.Constants;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
-import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.Scope;
-import org.jvnet.hk2.component.Singleton;
+import org.glassfish.hk2.PostConstruct;
 import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 
 import com.sun.hk2.component.ExistingSingletonInhabitant;
@@ -208,7 +208,7 @@ public class Jsr330ProcessorImpl implements Jsr330Processor, PostConstruct {
   protected Scope getScope(Jsr330Binding binding) {
     javax.inject.Scope scope = binding.getServiceScope();
     if (null == scope) {
-      return new PerLookup(); 
+      return new PerLookup();
     }
     
     if (javax.inject.Singleton.class.isInstance(scope)) {

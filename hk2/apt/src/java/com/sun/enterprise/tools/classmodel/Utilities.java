@@ -70,7 +70,7 @@ public class Utilities {
     String line;
     try {
       while (null != (line = reader.readLine())) {
-        if (!line.startsWith("#")) {
+        if (!line.startsWith("#") && !line.isEmpty()) {
           lines.add(innerSort ? innerSort(line) : line);
         }
       }

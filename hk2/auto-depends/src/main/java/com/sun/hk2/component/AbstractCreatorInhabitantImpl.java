@@ -55,7 +55,7 @@ import java.util.logging.Logger;
  * @author Kohsuke Kawaguchi
  */
 abstract class AbstractCreatorInhabitantImpl<T> extends AbstractInhabitantImpl<T> {
-    private static final Logger logger = Logger.getLogger(ScopeInstance.class.getName());
+    private static final Logger logger = Logger.getLogger(AbstractCreatorInhabitantImpl.class.getName());
 
     protected final Creator<T> creator;
 

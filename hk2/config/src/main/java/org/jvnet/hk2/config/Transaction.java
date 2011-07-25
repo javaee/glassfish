@@ -39,17 +39,8 @@
  */
 package org.jvnet.hk2.config;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.PerLookup;
-
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 

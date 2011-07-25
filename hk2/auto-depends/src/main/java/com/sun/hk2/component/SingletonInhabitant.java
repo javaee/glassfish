@@ -40,13 +40,12 @@
 package com.sun.hk2.component;
 
 import org.jvnet.hk2.component.Creator;
-import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.tracing.TracingThreadLocal;
 import org.jvnet.hk2.tracing.TracingUtilities;
 
 /**
- * Specialized implementation of {@link ScopedInhabitant} for {@link Singleton}.
+ * Specialized implementation of {@link ScopedInhabitant} for {@link org.glassfish.hk2.scopes.Singleton}.
  * @author Kohsuke Kawaguchi
  */
 public class SingletonInhabitant<T> extends AbstractCreatorInhabitantImpl<T> {

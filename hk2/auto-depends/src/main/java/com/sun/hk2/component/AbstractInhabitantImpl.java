@@ -51,9 +51,9 @@ import java.util.logging.Logger;
 
 import org.glassfish.hk2.Descriptor;
 import org.glassfish.hk2.MultiMap;
+import org.glassfish.hk2.PreDestroy;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.tracing.TracingThreadLocal;
 import org.jvnet.hk2.tracing.TracingUtilities;
 
@@ -68,7 +68,7 @@ import sun.misc.BASE64Decoder;
 public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T> {
 //    private static final boolean MANAGED_ENABLED = Habitat.MANAGED_INJECTION_POINTS_ENABLED;
     
-    protected static final Logger logger = Logger.getLogger(ScopeInstance.class.getName());
+    protected static final Logger logger = Logger.getLogger(AbstractInhabitantImpl.class.getName());
 
     private Collection<Inhabitant> companions;
 
