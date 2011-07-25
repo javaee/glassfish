@@ -46,6 +46,7 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.ee.cms.core.GMSConstants;
 import com.sun.enterprise.ee.cms.core.GroupManagementService;
+import com.sun.enterprise.ee.cms.core.ServiceProviderConfigurationKeys;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
@@ -86,12 +87,10 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
     private static final StringManager strings =
         StringManager.getManager(GMSAdapterService.class);
 
-    public static final String GMS_ENABLED = "GMS_ENABLED";
-    public static final String SEED_LIST = "GMS_JOIN_CLUSTER_SEED_LIST";
-
-    // when we have a real cluster name, remove this and fix the
-    // code that's using it. todo bobby
-    private static final String UMC_CLUSTER_NAME = "umcluster";
+    private static final String GMS_ENABLED = "GMS_ENABLED";
+    private static final String SEED_LIST = "GMS_" +
+        ServiceProviderConfigurationKeys.DISCOVERY_URI_LIST;
+    private static final String CLUSTER_NAME_PROPERTY = "cluster-name";
 
     @Inject
     Clusters clusters;
@@ -239,7 +238,12 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
                 logger.log(Level.WARNING, "gmsadapter.null.seedlist");
                 return;
             }
-            loadModule(UMC_CLUSTER_NAME);
+            String clusterName = server.getPropertyValue(CLUSTER_NAME_PROPERTY);
+            if (clusterName == null || clusterName.isEmpty()) {
+                logger.log(Level.WARNING, "gmsadapter.null.clustername");
+                return;
+            }
+            loadModule(clusterName);
         }
     }
 
@@ -253,11 +257,15 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
         synchronized(lock) {
             result = getGMSAdapterByName(name);
             if (logger.isLoggable(TRACE_LEVEL)) {
-                logger.log(TRACE_LEVEL, "lookup GMSAdapter by clusterName=" + name + " returned " + result);
+                logger.log(TRACE_LEVEL, "lookup GMSAdapter by clusterName=" +
+                    name + " returned " + result);
             }
             if (result == null) {
                 if (logger.isLoggable(TRACE_LEVEL)) {
-                    logger.log(TRACE_LEVEL, "creating gms-adapter for clustername " + name + " since no gms adapter found for clustername " + name);
+                    logger.log(TRACE_LEVEL,
+                        "creating gms-adapter for clustername " + name +
+                            " since no gms adapter found for clustername " +
+                            name);
                 }
                 result = habitat.getByContract(GMSAdapter.class);
 
@@ -270,9 +278,13 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
                 if (initResult == false) {
                     return null;
                 }
-                habitat.addIndex(new ExistingSingletonInhabitant<GMSAdapter>(result), GMSAdapter.class.getName(), name);
+                habitat.addIndex(
+                    new ExistingSingletonInhabitant<GMSAdapter>(result),
+                    GMSAdapter.class.getName(), name);
                 if (logger.isLoggable(TRACE_LEVEL)) {
-                    logger.log(TRACE_LEVEL, "loadModule: registered created gmsadapter for cluster " + name + " initialized result=" + initResult);
+                    logger.log(TRACE_LEVEL,
+                        "loadModule: registered created gmsadapter for cluster " +
+                            name + " initialized result=" + initResult);
                 }
                 gmsAdapters.add(result);
             }

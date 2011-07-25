@@ -96,33 +96,48 @@ public final class HealthHistory implements ConfigListener {
      */
     public static final long NOTIME = -1l;
     
-    private final ConcurrentMap<String, InstanceHealth> healthMap;
+    private final ConcurrentMap<String, InstanceHealth> healthMap =
+        new ConcurrentHashMap<String, InstanceHealth>();
 
     /*
      * Creates a health history that knows about the expected
      * list of instances. This is called from the GMS adapter
-     * during initialization, before 
+     * during initialization.
      */
     public HealthHistory(Cluster cluster) {
-        healthMap = new ConcurrentHashMap<String, InstanceHealth>(
-            cluster.getInstances().size());
         for (Server server : cluster.getInstances()) {
             if (server.isDas()) {
                 continue;
             }
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, String.format(
-                    "instance name in HealthHistory constructor %s",
-                    server.getName()));
-            }
-            if (healthMap.putIfAbsent(server.getName(),
-                new InstanceHealth(STATE.NOT_RUNNING, NOTIME)) != null) {
-                logger.log(Level.WARNING,
-                    "duplicate.instance", server.getName());
-            }
+            checkAndAddName(server.getName());
         }
     }
 
+    /*
+     * Creates a health history that contains only the given
+     * instance.
+     */
+    public HealthHistory(String instanceName) {
+        checkAndAddName(instanceName);
+    }
+
+    /*
+     * Used by the constructors to add instance names.
+     */
+    private void checkAndAddName(String name) {
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, String.format(
+                "instance name in HealthHistory constructor %s",
+                name));
+        }
+        if (healthMap.putIfAbsent(name,
+            new InstanceHealth(STATE.NOT_RUNNING, NOTIME)) != null) {
+
+            // has yet to be observed in the wild
+            logger.log(Level.WARNING,
+                "duplicate.instance", name);
+        }
+    }
     /**
      * Returns the state/time of a specific instance.
      */
@@ -153,8 +168,6 @@ public final class HealthHistory implements ConfigListener {
 
     /**
      * Called by GMS subsystem to update the health of an instance.
-     *
-     * TODO: add try/catch around everything for safety
      */
     public void updateHealth(Signal signal) {
         if (logger.isLoggable(Level.FINE)) {
