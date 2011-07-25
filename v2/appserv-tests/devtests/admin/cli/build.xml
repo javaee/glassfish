@@ -360,6 +360,7 @@
         <unzip src="${asinstall_dir}/glassfish.zip" dest="${asinstall_dir}"/>
         <chmod perm="a+x" file="${asinstall_dir}/glassfish3/bin/asadmin"/>
         <chmod perm="a+x" file="${asinstall_dir}/glassfish3/glassfish/bin/asadmin"/>
+        <chmod perm="a+x" file="${asinstall_dir}/glassfish3/glassfish/lib/nadmin"/>
     </target>
 
     <target name="usage">
