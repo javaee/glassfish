@@ -205,12 +205,6 @@
            <antcall target="kill-instance"/>
         </parallel>
 
-        <!-- restart the instance -->
-        <exec executable="${ASADMIN}" failonerror="false">
-          <arg line="start-local-instance"/>
-          <arg line="in1"/>
-        </exec>
-
         <!-- wait a little -->
         <sleep seconds="35"/>
 
@@ -224,6 +218,12 @@
            <arg line="28081"/>
            <arg line="recover"/>
         </java>
+
+        <!-- restart the instance -->
+        <exec executable="${ASADMIN}" failonerror="false">
+          <arg line="start-local-instance"/>
+          <arg line="in1"/>
+        </exec>
 
     </target>
 

@@ -86,13 +86,15 @@ public class Client extends AdminBaseDevTest {
             asadmin("create-cluster", CLUSTER_NAME);
             asadmin("create-system-properties", "--target", CLUSTER_NAME, "-Dcom.sun.appserv.transaction.nofdsync");
             asadmin("set", "configs.config." + CLUSTER_NAME + "-config.transaction-service.property.db-logging-resource=" + NONTX_RESOURCE);
-            asadmin("set", "configs.config." + CLUSTER_NAME + "-config.transaction-service.automatic-recovery=false");
+            //asadmin("set", "configs.config." + CLUSTER_NAME + "-config.transaction-service.automatic-recovery=true");
+            asadmin("set", "configs.config." + CLUSTER_NAME + "-config.transaction-service.property.delegated-recovery=true");
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE1_NAME);
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE2_NAME);
             if (Boolean.getBoolean("enableShoalLogger")) {
                  asadmin("set-log-levels", "ShoalLogger=FINER");
                  asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger=FINER");
             }
+            asadmin("set-log-levels", "--target", CLUSTER_NAME, "javax.enterprise.system.core.transaction=FINE");
             asadmin("start-cluster", CLUSTER_NAME);
             System.out.println("Started cluster. Setting up resources.");
 
