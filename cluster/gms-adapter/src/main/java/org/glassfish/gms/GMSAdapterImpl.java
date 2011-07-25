@@ -561,8 +561,8 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 registerFailureSuspectedListener(this);
 
                 //fix gf it 12905
-                // TODO: if core member, register handler
-                if (testFailureRecoveryHandler && ! env.isDas()) {
+                if (testFailureRecoveryHandler &&
+                    CORE.equals(configProps.getProperty(MEMBERTYPE_STRING))) {
 
                     // this must be here or appointed recovery server notification is not printed out for automated testing.
                     registerFailureRecoveryListener("GlassfishFailureRecoveryHandlerTest", this);
