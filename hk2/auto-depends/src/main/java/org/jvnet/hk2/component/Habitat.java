@@ -1060,15 +1060,15 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
     }
 
     @Override
-    public void inject(final Object object) {
-        Creator<?> c = new ConstructorCreator((Class<?>) object.getClass(),
+    public <T> T inject(final T object) {
+        Creator<T> c = new ConstructorCreator((Class<T>) object.getClass(),
                 this, null) {
             @Override
             public Object create(Inhabitant onBehalfOf) throws ComponentException {
                 return object;
             }
         };
-        c.get();
+        return c.get();
     }
 
     /**
