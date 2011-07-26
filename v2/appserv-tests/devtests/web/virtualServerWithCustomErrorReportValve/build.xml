@@ -69,6 +69,7 @@
     </target>
 
     <target name="build" depends="compile">
+        <mkdir dir="${assemble.dir}"/>
         <jar destfile="${assemble.dir}/valve.jar">
             <fileset dir="${build.classes.dir}" includes="custom/*.class"/>
         </jar>
