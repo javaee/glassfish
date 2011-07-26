@@ -56,6 +56,6 @@ public interface Injector {
      *
      * @param target the instance to inject
      */
-    void inject(Object target);
+    <T> T inject(T target);
 
 }
