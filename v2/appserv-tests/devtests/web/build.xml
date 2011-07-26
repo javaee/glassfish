@@ -425,6 +425,7 @@
         <ant dir="virtualServerUpdateHostsDynamicReconfig" target="all"/>
         <ant dir="virtualServerUpdateHttpListenersDynamicReconfig" target="all"/>
         <ant dir="virtualServerWithCustomValves" target="all"/>
+        <ant dir="virtualServerWithCustomErrorReportValve" target="all"/>
         <ant dir="webappAlternateDocroot" target="all"/>
         <ant dir="webappAlternateDocrootTagFile" target="all"/>
         <ant dir="webappDeployDashDashLibraries" target="all"/>
