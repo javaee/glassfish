@@ -609,12 +609,20 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                 }
             }
 
+            // handle generation of udp multicast and non-multicast mode for DAS managed cluster.
+            // inspect cluster attribute broadcast and cluster property GMS_DISCOVERY_URI_LIST.
             String broadcastProtocol = instance.getBroadcast();
-            String  vmulticastUriList = instance.getPropertyValue("VIRTUAL_MULTICAST_URI_LIST");
-            if (vmulticastUriList != null  && broadcastProtocol != null && broadcastProtocol.equals("udpmulticast")) {
+            Property discoveryUriListProp = instance.getProperty("GMS_DISCOVERY_URI_LIST");
+            String  discoveryUriList = discoveryUriListProp != null ? discoveryUriListProp.getValue() : null;
+            if (discoveryUriList != null  && broadcastProtocol != null && broadcastProtocol.equals("udpmulticast")) {
 
-                // override default broadcast protocol of udp multicast when VIRTUAL_MULTICAST_URI_LIST has been set.
+                // override default broadcast protocol of udp multicast when GMS_DISCOVERY_URI_LIST has been set.
                 instance.setBroadcast("tcp");
+                broadcastProtocol = "tcp";
+            }
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, "cluster attribute gms broadcast=" + instance.getBroadcast());
+                logger.log(Level.FINE, "cluster property GMS_DISCOVERY_URI_LIST=" + discoveryUriList);
             }
             if (broadcastProtocol.equals("udpmulticast")) {
 
@@ -628,18 +636,26 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                 }
             } else {
 
-                // non mulitcast case.  generate VIRTUAL_MULTICAST_URI_LIST with DAS as the seed.
+                // cover case that broadcast is set to non-multicast and no cluster property GMS_DISCOVERY_URI_LIST exists.
+                // create the property.
+                if (discoveryUriListProp == null) {
+                    discoveryUriListProp = instance.createChild(Property.class);
+                    discoveryUriListProp.setName("GMS_DISCOVERY_URI_LIST");
+                    discoveryUriList = null;
+                    instance.getProperty().add(discoveryUriListProp);
+
+                }
+
+                // non mulitcast case.  genereate GMS_DISCOVERY_URI_LIST value with DAS as the seed.
                 // must explicitly set GMS_LISTENER_PORT-clustername system property for DAS and
-                // use this in generated VIRTUAL_MULTICAST_URI_LIST.
-                if (vmulticastUriList == null || vmulticastUriList.length() == 0) {
+                // use this in generated GMS_DISCOVERY_URI_LIST.
+                if (discoveryUriList == null || discoveryUriList.equals("generate")) {
 
                     // TODO: implement UDP unicast.
+
                     // Only tcp mode is supported now.
                     // So either "udpunicast" or "tcp" for broadcast mode is treated the same.
-
                     String TCPPORT = "9090";
-                    Property vmulticastUriListProp = instance.createChild(Property.class);
-                    vmulticastUriListProp.setName("VIRTUAL_MULTICAST_URI_LIST");
 
                     // TBD: consider calling GMS NetworkUtility.getFirstAddress() here to copy how GMS gets the
                     // network address of DAS.
@@ -648,9 +664,11 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                     try {
                         hostAddress = InetAddress.getLocalHost().getHostAddress();
                     } catch (UnknownHostException uhe)  {}
-                    String value = "http://" + hostAddress + ":" + TCPPORT;
-                    vmulticastUriListProp.setValue(value);
-                    instance.getProperty().add(vmulticastUriListProp);
+                    String uriValue = "http://" + hostAddress + ":" + TCPPORT;
+                    discoveryUriListProp.setValue(uriValue);
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.log(Level.FINE,"Generated GMS_DISCOVERY_URI_LIST value " + uriValue);
+                    }
 
                     // lookup server-config and set environment property value GMS_LISTENER_PORT-clusterName to 9090.
                     Config config = habitat.getComponent(Config.class, "server-config");
