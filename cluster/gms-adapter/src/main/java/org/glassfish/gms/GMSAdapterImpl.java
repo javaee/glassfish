@@ -91,6 +91,15 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
     private final static String SPECTATOR = "SPECTATOR";
     private final static String MEMBERTYPE_STRING = "MEMBER_TYPE";
 
+    /*
+     * Used only for user-managed clusters. This ties each cluster
+     * instance to port 9090 for GMS communication, so only
+     * one instance can be run per machine. For more information, including
+     * how we could let the user set this, see the usage in
+     * readGMSConfigProps().
+     */
+    private static final int UMC_GMS_LISTENER_PORT = 9090;
+
     // all set in postConstruct
     private String instanceName = null;
     private Cluster cluster = null;
@@ -426,6 +435,23 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                     t.getLocalizedMessage());
             }
         } /* end for loop over ServiceProviderConfigurationKeys */
+
+        /*
+         * Special case for user-managed clusters. This is the equivalent
+         * of setting GMS_LISTENER_PORT on a cluster object (if there
+         * were one). This ties GMS to the same port on all instances.
+         * If we want to allow users to specify different ports for
+         * each instance, then we can look for this property in the
+         * server config instead (but that is more work for the user
+         * since s/he would need to include it in every address in the
+         * discovery uri list).
+         */
+        if (server.isClusteredDas()) {
+            configProps.put(GrizzlyConfigConstants.TCPSTARTPORT.toString(),
+                UMC_GMS_LISTENER_PORT);
+            configProps.put(GrizzlyConfigConstants.TCPENDPORT.toString(),
+                UMC_GMS_LISTENER_PORT);
+        }
 
         // check for Grizzly transport specific properties in GroupManagementService property list and then cluster property list.
         // cluster property is more specific than group-mangement-service, so allow cluster property to override group-management-service proeprty
