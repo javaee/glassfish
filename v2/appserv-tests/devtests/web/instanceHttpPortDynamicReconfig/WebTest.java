@@ -90,6 +90,7 @@ public class WebTest {
     private void invoke() throws Exception {
         
         URL url = new URL("http://" + host  + ":" + newPort); 
+        System.out.println("Connecting ... "+"http://" + host  + ":" + newPort);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();
