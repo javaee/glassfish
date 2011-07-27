@@ -112,7 +112,7 @@
     <target name="cli" depends="setup, monitoring, zombie, ports, instance, cluster,
                         configs, sync, domain, backup, tokens, validation, node,
                         load-balancer, getset, misc-commands, manual-sync, upgrade,
-                        cluster-upgrade, restart-domain, teardown"/>
+                        restart-domain, teardown"/>
 
     <target name="cluster" depends="init">
         <runtest classname="admin.ClusterTest"/>
@@ -260,10 +260,6 @@
 
     <target name="upgrade" depends="init">
         <runtest classname="admin.UpgradeTest"/>
-    </target>
-
-    <target name="cluster-upgrade" depends="init">
-        <runtest classname="admin.ClusterUpgradeTest"/>
     </target>
 
     <target name="zombie" depends="init">
