@@ -70,8 +70,6 @@ public class UpgradeTest extends AdminBaseDevTest {
         // before copying in our domain config, move the old one
         renameOriginalDomainConfig();
 
-        testV2Domain();
-
         testV3_0_1Domain();
 
         // after all the tests have run, move back the old domain
@@ -79,67 +77,6 @@ public class UpgradeTest extends AdminBaseDevTest {
 
         // print results
         stat.printSummary();
-    }
-
-    /*
-     * test that uses the v2domain.xml file in resources/configs
-     *
-     * This mostly tests cluster/gms-related information. Feel free
-     * to add more.
-     */
-    private void testV2Domain() {
-        copyDomainConfig("v2domain.xml");
-
-        // am commenting this out since we know what's in there and don't
-        // need to test. if I can get the xpath call to work without
-        // trying to retrieve the DTD, then I can uncomment below
-
-//        // quick check before upgrade to see if our data is there
-//        String xPath =
-//            "//cluster[@name='testUpgradeCluster']/@heartbeat-enabled";
-//        Boolean heartbeatEnabled = false;
-//        try {
-//            heartbeatEnabled = (Boolean)
-//                evalXPath(xPath, getDASDomainXML(), XPathConstants.BOOLEAN);
-//        } catch (Exception e) {
-//            // e.g. unknown host exception
-//            System.err.println(e);
-//        }
-//        report("pre-upgrade-check", heartbeatEnabled);
-
-        // now the upgrade (note: this leaves server in stopped state)
-        report("run-upgrade", asadmin("start-domain", "--upgrade"));
-
-        // non-default values should be there
-        String xPath = "//config" +
-            "[@name='testUpgradeClusterNonDefaultGMSProperties-config']" +
-            "/group-management-service" +
-            "/failure-detection" +
-            "/@max-missed-heartbeats";
-        Double heartBeats =
-            (Double) evalXPath(xPath, getDASDomainXML(), XPathConstants.NUMBER);
-        report("non-default-heartbeats", heartBeats.intValue() == 4);
-
-        // default values should not be there
-        xPath = "//config" +
-            "[@name='testUpgradeCluster-config']" +
-            "/group-management-service" +
-            "/failure-detection" +
-            "/@max-missed-heartbeats";
-        Object node = evalXPath(xPath, getDASDomainXML(), XPathConstants.NODE);
-        report("default-heartbeats", node == null);
-
-        // start server for 'asadmin get' tests
-        report("server-start-post-upgrade", asadmin("start-domain"));
-
-        final String attribute =
-            "configs.config.testUpgradeCluster-config.group-management-service.failure-detection.max-missed-heartbeats";
-        String out = asadminWithOutput("get", attribute).outAndErr;
-        report("default-heartbeats-get-cmd",
-            out.indexOf(attribute + "=3") > 0);
-
-        // and bring it down
-        report("server-stop-post-upgrade", asadmin("stop-domain"));
     }
 
     private void testV3_0_1Domain() {
