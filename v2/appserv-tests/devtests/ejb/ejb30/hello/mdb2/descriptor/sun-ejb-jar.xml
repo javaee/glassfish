@@ -4,6 +4,10 @@
   <enterprise-beans>
     <ejb>
       <ejb-name>MessageBean</ejb-name>
+
+      <!-- http://java.net/jira/browse/GLASSFISH-7302 and sun bug 6335445
+      Once these bugs are fixed, the following jndi-name can be removed -->
+
       <jndi-name>jms/ejb_ejb30_hello_mdb2_InQueue</jndi-name>
       <resource-ref>
         <res-ref-name>jms/MyQueueConnectionFactory</res-ref-name>

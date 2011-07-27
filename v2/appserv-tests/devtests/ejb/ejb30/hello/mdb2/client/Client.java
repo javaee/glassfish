@@ -52,8 +52,7 @@ public class Client {
     public void doTest() {
         try {
             setup();
-            //doTest("java:comp/env/jms/MsgBeanQueue", numMessages);
-	    doTest("jms/ejb_ejb30_hello_mdb2_InQueue", numMessages);
+            doTest("java:comp/env/jms/MsgBeanQueue", numMessages);
             stat.addStatus("cmt main", stat.PASS);
         } catch(Throwable t) {
             stat.addStatus("cmt main", stat.FAIL);
@@ -75,9 +74,7 @@ public class Client {
         queueSender = queueSession.createSender(null);        
 
         clientQueue = (javax.jms.Queue)
-            // @@@ comment out until message-destination links supported
-	    // context.lookup("java:comp/env/jms/MsgBeanClientQueue");
-	    context.lookup("jms/ejb_ejb30_hello_mdb2_OutQueue");
+	    context.lookup("java:comp/env/jms/MsgBeanClientQueue");
 
         queueReceiver = queueSession.createReceiver(clientQueue);
 
