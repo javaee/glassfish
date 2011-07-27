@@ -62,13 +62,13 @@ public class Client extends AdminBaseDevTest {
     public static void main(String[] args) {
 
         if ("prepare".equals(args[0])) {
-            (new Client()).prepare(args[1], args[2]);
+            (new Client()).prepare(args[1], args[2], Boolean.valueOf(args[3]));
         } else if ("clean".equals(args[0])) {
             (new Client()).clean(args[1]);
         } else if ("insert_xa_data".equals(args[0])) {
             (new Client()).insert_xa_data(args[1], args[2]);
         } else if ("recover".equals(args[0])) {
-            (new Client()).recover(args[1]);
+            (new Client()).recover();
         } else if ("verify_xa".equals(args[0])) {
             (new Client()).verify_xa(args[1], args[2], args[3]);
         } else {
@@ -81,13 +81,16 @@ public class Client extends AdminBaseDevTest {
         return "Unit test for transaction CLIs";
     }
 
-    public void prepare(String path, String tx_log_dir) {
+    public void prepare(String path, String tx_log_dir, boolean enable_delegate) {
         try {
             asadmin("create-cluster", CLUSTER_NAME);
             asadmin("create-system-properties", "--target", CLUSTER_NAME, "-Dcom.sun.appserv.transaction.nofdsync");
             asadmin("set", "configs.config." + CLUSTER_NAME + "-config.transaction-service.property.db-logging-resource=" + NONTX_RESOURCE);
             //asadmin("set", "configs.config." + CLUSTER_NAME + "-config.transaction-service.automatic-recovery=true");
-            asadmin("set", "configs.config." + CLUSTER_NAME + "-config.transaction-service.property.delegated-recovery=true");
+            if (enable_delegate) {
+                asadmin("set", "configs.config." + CLUSTER_NAME + "-config.transaction-service.property.delegated-recovery=true");
+            }
+
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE1_NAME);
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE2_NAME);
             if (Boolean.getBoolean("enableShoalLogger")) {
@@ -177,17 +180,11 @@ public class Client extends AdminBaseDevTest {
           return result;
     }
 
-    public void recover(String location) {
+    public void recover() {
         System.out.println("Executing recover CLI");
         try {
             AsadminReturn result = null;
-            String txLog = new StringBuffer(location).append(File.separator)
-                    .append("nodes").append(File.separator).append("localhost-domain1")
-                    .append(File.separator).append(INSTANCE1_NAME).append(File.separator)
-                    .append("logs").append(File.separator).append(INSTANCE1_NAME)
-                    .append(File.separator).append("tx").toString();
-            result = asadminWithOutput("recover-transactions", "--target", INSTANCE2_NAME,
-                    "--transactionlogdir", txLog, INSTANCE1_NAME);
+            result = asadminWithOutput("recover-transactions", "--target", INSTANCE2_NAME, "--transactionlogdir", INSTANCE1_NAME, INSTANCE1_NAME);
             System.out.println("Executed command: " + result.out);
             if (!result.returnValue) {
                 System.out.println("CLI FAILED: " + result.err);

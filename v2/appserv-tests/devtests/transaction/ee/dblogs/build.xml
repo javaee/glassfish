@@ -59,13 +59,12 @@
     <target name="setup" depends="init-common">
       <antcall target="clean-results"/>
       <antcall target="start-derby"/>
-      <ant target="start-domain"/>
       <antcall target="setup-test"/>
     </target>
 
     <target name="setup-test" depends="init-common">
+      <ant target="start-domain"/>
       <antcall target="setup-database"/>
-      <antcall target="setup-cluster"/>
     </target>
 
     <target name="setup-database" depends="init-common">
@@ -113,11 +112,13 @@
            <arg line="prepare"/>
            <arg line="${assemble.dir}/${appname}-web.war"/>
            <arg line="${assemble.dir}"/>
+           <arg line="${delegated}"/>
         </java>
     </target>
 
     <target name="unsetup-test" depends="init-common">
         <antcall target="save-logs"/>
+        <copy file="${module}-logs.zip" tofile="${module}-cli-logs.zip"/>
         <antcall target="unsetup-cluster"/>
         <antcall target="unsetup-database"/>
     </target>
@@ -192,22 +193,41 @@
     </target>
 
     <target name="run" depends="init-common">
-        <antcall target="run-recover"/>
+      <antcall target="setup-cluster">
+            <param name="delegated" value="true"/>
+       </antcall>
+      <antcall target="run-delegated"/>
+      <antcall target="save-logs"/>
+      <copy file="${module}-logs.zip" tofile="${module}-delegated-logs.zip"/>
+      <antcall target="unsetup-cluster"/>
+      <antcall target="reset-tables"/>
+
+      <antcall target="setup-cluster">
+            <param name="delegated" value="false"/>
+       </antcall>
+      <antcall target="run-cli"/>
     </target>
 
-    <target name="run-recover" depends="init-common">
+    <target name="run-delegated" depends="init-common">
         <parallel>
-           <antcall target="insert-data">
-               <param name="port" value="28080"/>
-               <param name="operation" value="insert_xa_data"/>
-           </antcall>
-
+           <antcall target="insert-data"/>
            <antcall target="kill-instance"/>
         </parallel>
 
         <!-- wait a little -->
         <sleep seconds="35"/>
 
+        <antcall target="verify-results"/>
+
+        <!-- restart the instance -->
+        <exec executable="${ASADMIN}" failonerror="false">
+          <arg line="start-local-instance"/>
+          <arg line="in1"/>
+        </exec>
+
+    </target>
+
+    <target name="verify-results" depends="init-common">
         <echo message="Verifying results"/>
         <java  fork="on"
               failonerror="true"
@@ -218,14 +238,24 @@
            <arg line="28081"/>
            <arg line="recover"/>
         </java>
+    </target>
 
-        <!-- restart the instance -->
+    <target name="run-cli" depends="init-common">
+        <parallel>
+           <antcall target="insert-data"/>
+           <antcall target="kill-instance"/>
+        </parallel>
+
+        <sleep seconds="15"/>
+        <antcall target="cli-recover-transactions"/>
+        <antcall target="verify-results"/>
+
         <exec executable="${ASADMIN}" failonerror="false">
           <arg line="start-local-instance"/>
           <arg line="in1"/>
         </exec>
-
     </target>
+
 
     <target name="kill-instance">
       <sleep seconds="20"/>
@@ -235,14 +265,25 @@
     </target>
 
     <target name="insert-data">
-        <echo message="Executing test on port ${port}"/>
+        <echo message="Executing test on port 28080"/>
         <java  fork="on"
               failonerror="true"
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
               classname="${se.client}">
-           <arg line="${operation}"/>
+           <arg line="insert_xa_data"/>
            <arg line="${appname}-web"/>
-           <arg line="${port}"/>
+           <arg line="28080"/>
+        </java>
+    </target>
+
+    <target name="cli-recover-transactions">
+        <sleep seconds="15"/>
+        <echo message="Recover XA transaction"/>
+        <java  fork="on"
+              failonerror="true"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
+              classname="${se.client}">
+           <arg line="recover"/>
         </java>
     </target>
 
