@@ -61,7 +61,7 @@
       <plugin>
         <groupId>org.glassfish</groupId>
         <artifactId>maven-embedded-glassfish-plugin</artifactId>
-        <version>3.1.1-SNAPSHOT</version>
+        <version>3.1.2-SNAPSHOT</version>
         <configuration>
           <goalPrefix>glassfish</goalPrefix>
           <app>hello.war</app>

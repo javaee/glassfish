@@ -48,7 +48,7 @@
     <groupId>org.glassfish.tests.embedded.maven-plugin</groupId>
     <artifactId>queryString</artifactId>
     <packaging>war</packaging>
-    <version>3.1.1-SNAPSHOT</version>
+    <version>3.1.2-SNAPSHOT</version>
     <name>Query String Test (maven-plugin/queryString)</name>
 
     <build>

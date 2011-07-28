@@ -48,7 +48,7 @@
     <groupId>org.glassfish.tests.embedded.maven-plugin</groupId>
     <artifactId>jmxUndeployEvent</artifactId>
     <packaging>war</packaging>
-    <version>3.1.1-SNAPSHOT</version>
+    <version>3.1.2-SNAPSHOT</version>
     <name>JMX Undeployment Event Test (maven-plugin/jmsUndeploymentTest)</name>
 
     <build>

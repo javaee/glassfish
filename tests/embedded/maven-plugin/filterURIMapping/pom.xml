@@ -48,7 +48,7 @@
     <groupId>org.glassfish.tests.embedded.maven-plugin</groupId>
     <artifactId>filterURIMapping</artifactId>
     <packaging>war</packaging>
-    <version>3.1.1-SNAPSHOT</version>
+    <version>3.1.2-SNAPSHOT</version>
     <name>Filter URI Mapping Test (maven-plugin/filterURIMapping)</name>
 
     <build>
