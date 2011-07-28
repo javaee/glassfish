@@ -1,0 +1,29 @@
+There are two scripts here.
+------------------------------------------------------------------------------------------------------------------------------------
+
+1. Uses build.xml & Filter.java.
+This scripts generates master list of message Ids and also check which message Ids has missing diagnostic info. 
+
+How to use?
+% ant all -Dglassfish_home=<gf_home> -Doptions=masterId/missingIds
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+2. Uses ruby script missing-msg-id-finder.rb, message-keys-used-checker.rb & message-key-excl.txt.
+2.1 missing-msg-id-finder.rb (uses message-key-excl.txt). Searches all LogStrings.properties in (hard-coded) GF v3 src path for
+messages with no proper Id. Result is stored in msgs-with-no-ids.txt.
+
+2.2 message-keys-used-checker.rb (uses msgs-with-no-ids.txt). Searches through all Java classes in (hard-coded) GF v3 src path for
+the usage of specified message keys. If found (and not logged as FINE, etc. message), reported to stdout.
+
+2.3 message-key-excl.txt contanis exception list which stores message key for which bug is already raised. Once user close the bug,
+you must have to update this txt file and run script again for bug verification.
+
+So first you run 2.1, then 2.2, then update the exclude list as you report/solve the issues. Then run them again, etc.
+
+How to use?
+
+% ruby missing-msg-id-finder.rb <glassfish_home>
+% ruby message-keys-used-checker.rb <glassfish_home>
+
+------------------------------------------------------------------------------------------------------------------------------------
