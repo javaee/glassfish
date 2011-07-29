@@ -203,6 +203,7 @@ public class RunLevelServiceTest {
     assertEquals(null, defRLS.getPlannedRunLevel());
   }
 
+  @Ignore
   @Test
   public void proceedUpTo5Async() throws InterruptedException {
     installTestRunLevelService(true);
