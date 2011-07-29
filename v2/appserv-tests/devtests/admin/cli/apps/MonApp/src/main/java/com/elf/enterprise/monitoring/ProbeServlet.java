@@ -13,8 +13,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.annotations.Probe;
 import org.glassfish.external.probe.provider.annotations.ProbeProvider;
+import org.glassfish.external.probe.provider.StatsProviderManager;
 import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
@@ -84,7 +86,9 @@ public class ProbeServlet extends HttpServlet {
             // need to get the probe provider registered before the listener!
             probeProviderFactory.getProbeProvider(getClass());
             probeInterface = probeProviderFactory.getProbeProvider(ProbeInterface.class);
-            listenerRegistrar.registerListener(new MyProbeListener());
+            //listenerRegistrar.registerListener(new MyProbeListener());
+
+            StatsProviderManager.register("foo", PluginPoint.SERVER, "fooblog/samples/ProbeServlet", new MyProbeListener());
         }
         catch (Exception e) {
             throw new ServletException("Error initializing", e);
