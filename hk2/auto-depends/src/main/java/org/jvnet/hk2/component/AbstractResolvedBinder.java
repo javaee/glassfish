@@ -77,7 +77,7 @@ abstract class AbstractResolvedBinder<T> implements ResolvedBinder<T> {
         return inhMetadata;
     }
 
-    protected void registerIn(Habitat habitat, Inhabitant<T> inhabitant) {
+    protected void registerIn(Habitat habitat, Inhabitant inhabitant) {
         List<String> contracts = new ArrayList<String>();
         contracts.addAll(metadata.contracts);
         if (contracts.isEmpty() && (metadata.name == null || metadata.name.isEmpty())) {

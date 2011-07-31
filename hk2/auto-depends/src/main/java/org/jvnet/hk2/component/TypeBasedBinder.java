@@ -58,7 +58,7 @@ class TypeBasedBinder<T> extends AbstractResolvedBinder<T> {
     void registerIn(Habitat habitat) {
         MultiMap<String, String> inhMetadata = super.populateMetadata();
         super.registerIn(habitat, com.sun.hk2.component.Inhabitants.wrapByScope(
-                new ConstructorCreator<T>(type, habitat, inhMetadata),
+                Creators.create(type, habitat, inhMetadata),
                 habitat,
                 metadata.scope));
     }

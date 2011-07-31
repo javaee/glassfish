@@ -39,23 +39,23 @@
  */
 package org.glassfish.hk2.tests.services;
 
-import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.tests.contracts.ContractA;
 import org.glassfish.hk2.tests.contracts.ContractB;
 import org.jvnet.hk2.annotations.Inject;
+import org.glassfish.hk2.Factory;
 
 /**
  *
  * @author Marek Potociar (marek.potociar at oracle.com)
  */
 public class ServiceA implements ContractA {
-    private final Provider<ContractB> bp;
+    private final Factory<ContractB> bp;
 
     /**
      * package-private constructor to test the ability of HK2 to inject non-public
      * constructors
      */
-    /*package*/ ServiceA(@Inject Provider<ContractB> bp) {
+    /*package*/ ServiceA(@Inject Factory<ContractB> bp) {
         this.bp = bp;
     }
 

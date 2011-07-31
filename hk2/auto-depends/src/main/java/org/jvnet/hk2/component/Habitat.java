@@ -1072,44 +1072,15 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
     }
 
     /**
-     * Creates a new value object which will be instantiated using the empty
-     * parameter constructor. All declared dependencies of this value object
-     * will be injected as well as normal component lifecycle.
-     * <p/>
-     * Instances created by this method will not be added to the habitat and
-     * will not be managed or lookup up by the habitat.
+     * Instantiate the passed type and injects all the {@link org.jvnet.hk2.annotations.Inject}
+     * annotated fields and methods
      *
-     * @param type requested value object type
-     * @param <T>  value object type
-     * @return value object instantiated and injected.
+     * @param type class of the requested instance
+     * @param <T> type of the requested instance
+     * @return the instantiated and injected instance
      */
-    public <T> T newValueObject(Class<T> type) {
-
-        Creator<T> c = new ConstructorCreator<T>(type, this, null) {
-            @Override
-            public T create(Inhabitant onBehalfOf) throws ComponentException {
-                try {
-                    return type.newInstance();
-                } catch (InstantiationException e) {
-                    throw new ComponentException("Failed to create " + type, e);
-                } catch (IllegalAccessException e) {
-                    try {
-                        Constructor<? extends T> ctor = type
-                                .getDeclaredConstructor((Class<?>[]) null);
-                        ctor.setAccessible(true);
-                        return ctor.newInstance((Object[]) null);
-                    } catch (Exception e1) {
-                        // ignore
-                    }
-                    throw new ComponentException("Failed to create " + type, e);
-                } catch (LinkageError e) {
-                    throw new ComponentException("Failed to create " + type, e);
-                } catch (RuntimeException e) {
-                    throw new ComponentException("Failed to create " + type, e);
-                }
-            }
-        };
-        return c.get();
+    public <T> T inject(Class<T> type) {
+        return  getByType(type);
     }
 
     /**
@@ -1297,7 +1268,12 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
 
     @Override
     public <T> T getByType(Class<T> implType) {
-        return (T) getBy(implType.getName(), byType);
+        T value = (T) getBy(implType.getName(), byType);
+        if (value==null && !implType.isInterface()) {
+            Creator<T> creator =  Creators.create(implType, this, new MultiMap<String, String>());
+            if (creator!=null) return creator.get();
+        }
+        return value;
     }
 
     @Override

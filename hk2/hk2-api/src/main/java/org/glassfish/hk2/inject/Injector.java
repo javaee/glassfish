@@ -55,7 +55,18 @@ public interface Injector {
      * of the passed instance.
      *
      * @param target the instance to inject
+     * @return the passed parameter as a convenience
      */
     <T> T inject(T target);
+
+    /**
+     * Instantiate the passed type and injects all the {@link org.jvnet.hk2.annotations.Inject}
+     * annotated fields and methods
+     *
+     * @param type class of the requested instance
+     * @param <T> type of the requested instance
+     * @return the instantiated and injected instance
+     */
+    <T> T inject(Class<T> type);
 
 }

@@ -112,4 +112,8 @@ public class InhabitantsFile {
      * was annotated.
      */
     public static final String TARGET_TYPE = "targetType";
+
+    public static final String METHOD_NAME = "method-name";
+
+    public static final String DECORATED_TYPE = "decorated";
 }
