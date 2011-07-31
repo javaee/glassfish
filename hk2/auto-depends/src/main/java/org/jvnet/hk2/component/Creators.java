@@ -42,10 +42,14 @@ package org.jvnet.hk2.component;
 import com.sun.hk2.component.ConstructorCreator;
 import com.sun.hk2.component.FactoryCreator;
 import com.sun.hk2.component.InjectableParametizedConstructorCreator;
+import org.junit.Ignore;
 import org.jvnet.hk2.annotations.Factory;
 import org.jvnet.hk2.annotations.FactoryFor;
+import org.jvnet.hk2.annotations.Inject;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.security.cert.TrustAnchor;
 
 /**
  * {@link Creator} factory.
@@ -64,10 +68,38 @@ public class Creators {
         if (factory!=null) {
             return new FactoryCreator<T>(c,factory,habitat,metadata);
         }
-        Constructor[] ctors = c.getConstructors();
-        if ((ctors.length==1) && (ctors[0].getGenericParameterTypes().length>0)) {
-            return new InjectableParametizedConstructorCreator(c, habitat, metadata);
+        Constructor[] ctors;
+        try {
+            ctors = c.getDeclaredConstructors();
+        } catch(Exception e) {
+            ctors = c.getConstructors();
         }
-        return new ConstructorCreator<T>(c,habitat,metadata);
+        Constructor<T> noArgCtor=null;
+        Constructor<T> defaultCtor=null;
+        for (Constructor ctor : ctors) {
+            if (ctor.getParameterTypes().length==0) {
+                noArgCtor = ctor;
+            } else {
+                Annotation[][] parametersAnnotations = ctor.getParameterAnnotations();
+                boolean allParametersInjected=true;
+                for (int i=0;i<ctor.getParameterTypes().length;i++) {
+                    boolean foundInject=false;
+                    for (int j=0;j<parametersAnnotations[i].length;j++) {
+                        if (parametersAnnotations[i][j].annotationType().equals(Inject.class)) {
+                            foundInject=true;
+                        }
+                    }
+                    if (!foundInject) allParametersInjected=false;
+                }
+                if (allParametersInjected) defaultCtor=ctor;
+            }
+        }
+        if (defaultCtor!=null) {
+            return new InjectableParametizedConstructorCreator<T>(c, defaultCtor, habitat, metadata);
+        }
+        if (noArgCtor!=null) {
+            return new ConstructorCreator<T>(c,habitat,metadata);
+        }
+        return null;
     }
 }

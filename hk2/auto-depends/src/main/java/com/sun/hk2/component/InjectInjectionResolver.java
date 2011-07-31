@@ -46,13 +46,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
-import java.util.zip.Inflater;
 
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.ComponentException;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.InjectionPoint;
+import org.jvnet.hk2.component.*;
 import org.jvnet.tiger_types.Types;
 
 import javax.inject.Named;
@@ -94,7 +90,8 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
                 if (type.isArray()) {
                     result = getArrayInjectValue(habitat, component, onBehalfOf, target, genericType, type);
                 } else {
-                    if (Types.isSubClassOf(type, Holder.class)) {
+                    if (Types.isSubClassOf(type, org.glassfish.hk2.Factory.class)) {
+
                         result = getHolderInjectValue(habitat, component, onBehalfOf, target, genericType, type, inject);
                     } else {
                         if (genericType instanceof TypeVariable) {
@@ -120,11 +117,6 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
                                 }
                             }
                         } else {
-                            if (genericType instanceof ParameterizedType) {
-                                // in this case, we try to inject a parametized type, the lookup will need
-                                // to ensure that the service can be looked up...
-
-                            }
                             if (habitat.isContract(genericType)) {
                                 result = getServiceInjectValue(habitat, component, onBehalfOf, target, genericType, type, inject);
                             } else {
@@ -179,7 +171,8 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
                                          final Type genericType,
                                          final Class<V> type,
                                          final Inject inject) throws ComponentException {
-        final Type t = Types.getTypeArgument(((java.lang.reflect.Field) target).getGenericType(), 0);
+
+        final Type t = Types.getTypeArgument(genericType, 0);
         final Class<?> finalType = Types.erasure(t);
 
         if (habitat.isContract(finalType)) {
@@ -187,6 +180,8 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
             return type.cast(i);
         }
 
+        // the receiver maybe requesting the inhabitant pointing to itself to have
+        // access to its own metadata.
         try {
             if (finalType.cast(component) != null) {
                 return type.cast(onBehalfOf);
@@ -195,9 +190,12 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
             // ignore
         }
 
-        V result = type.cast(getInhabitantByType(onBehalfOf, habitat, finalType));
-        // TODO: validate() here too
-        return result;
+        V result = type.cast(manage(onBehalfOf, habitat.getInhabitantByType(finalType)));
+        if (result!=null) {
+            return result;
+        }
+        Inhabitant<?> i = Creators.create(finalType, habitat, new MultiMap<String, String>());
+        return type.cast(i);
     }
 
     protected <V> V getServiceInjectValue(Habitat habitat,
@@ -277,6 +275,11 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
         if (null != i) {
             return (V) i.get();
         }
+        // if the type is a Class, we can just provide a just in time bindings.
+        if (!type.isInterface()) {
+            return Creators.create(type, habitat, new MultiMap<String, String>()).get();
+        }
+
         return null;
     }
 

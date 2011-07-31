@@ -49,70 +49,65 @@ import java.lang.reflect.*;
  */
 public class InjectableParametizedConstructorCreator<T> extends ConstructorCreator<T> {
 
-    public InjectableParametizedConstructorCreator(Class<T> type, Habitat habitat, MultiMap<String, String> metadata) {
-        super(type, habitat, metadata);    //To change body of overridden methods use File | Settings | File Templates.
+    final Constructor<T> ctor;
+
+    public InjectableParametizedConstructorCreator(Class<T> type, Constructor<T> ctor, Habitat habitat, MultiMap<String, String> metadata) {
+        super(type, habitat, metadata);
+        this.ctor = ctor;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public T create(Inhabitant onBehalfOf) throws ComponentException {
-        // find appropriate constructor.
-        Constructor[] ctors = type.getDeclaredConstructors();
-        if (ctors.length!=1) {
-            // more than one constructor, we expect a null parameter ctor and fall back
-            // into parent.
-            return super.create(onBehalfOf);
-        } else {
-            Constructor<T> ctor=ctors[0];
-            Annotation paramsAnnotations[][] = ctor.getParameterAnnotations();
-            Class paramTypes[] = ctor.getParameterTypes();
-            Type genericParamTypes[] = ctor.getGenericParameterTypes();
-            Object paramValues[] = new Object[paramTypes.length];
-            for (int i=0;i<paramTypes.length;i++) {
-                Class paramType = paramTypes[i];
-                final Annotation paramAnnotations[] = paramsAnnotations[i];
-                for (Annotation a : paramAnnotations) {
-                    if (a.annotationType().equals(Inject.class)) {
-                        for (InjectionResolverQuery resolver : getInjectionResolvers(habitat)) {
+        Annotation paramsAnnotations[][] = ctor.getParameterAnnotations();
+        Class paramTypes[] = ctor.getParameterTypes();
+        Type genericParamTypes[] = ctor.getGenericParameterTypes();
+        Object paramValues[] = new Object[paramTypes.length];
+        for (int i=0;i<paramTypes.length;i++) {
+            Class paramType = paramTypes[i];
+            final Annotation paramAnnotations[] = paramsAnnotations[i];
+            for (Annotation a : paramAnnotations) {
+                if (a.annotationType().equals(Inject.class)) {
+                    for (InjectionResolverQuery resolver : getInjectionResolvers(habitat)) {
 
-                            AnnotatedElement annotatedElement = new AnnotatedElement() {
-                                @Override
-                                public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
-                                    return getAnnotation(annotationClass)!=null;
-                                }
-
-                                @Override
-                                public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-                                    for (Annotation a : paramAnnotations) {
-                                        if (a.annotationType().equals(annotationClass)) {
-                                            return (T) a;
-                                        }
-                                    }
-                                    return null;
-                                }
-
-                                @Override
-                                public Annotation[] getAnnotations() {
-                                    return paramAnnotations;
-                                }
-
-                                @Override
-                                public Annotation[] getDeclaredAnnotations() {
-                                    return paramAnnotations;
-                                }
-                            };
-                            Object value = resolver.getValue(this, onBehalfOf, annotatedElement, genericParamTypes[i], paramType);
-                            if (value!=null) {
-                                paramValues[i] = value;
-                                break;
+                        AnnotatedElement annotatedElement = new AnnotatedElement() {
+                            @Override
+                            public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
+                                return getAnnotation(annotationClass)!=null;
                             }
+
+                            @Override
+                            public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+                                for (Annotation a : paramAnnotations) {
+                                    if (a.annotationType().equals(annotationClass)) {
+                                        return (T) a;
+                                    }
+                                }
+                                return null;
+                            }
+
+                            @Override
+                            public Annotation[] getAnnotations() {
+                                return paramAnnotations;
+                            }
+
+                            @Override
+                            public Annotation[] getDeclaredAnnotations() {
+                                return paramAnnotations;
+                            }
+                        };
+                        Object value = resolver.getValue(this, onBehalfOf, annotatedElement, genericParamTypes[i], paramType);
+                        if (value!=null) {
+                            paramValues[i] = value;
+                            break;
                         }
-                        if ((paramValues[i] == null) && !((Inject) a).optional()) {
-                            throw new UnsatisfiedDependencyException(ctor, a);
-                        }
+                    }
+                    if ((paramValues[i] == null) && !((Inject) a).optional()) {
+                        throw new UnsatisfiedDependencyException(ctor, a);
                     }
                 }
             }
+        }
         try {
             return ctor.newInstance(paramValues);
         } catch(InvocationTargetException e) {
@@ -131,7 +126,6 @@ public class InjectableParametizedConstructorCreator<T> extends ConstructorCreat
             throw new ComponentException("Failed to create "+type,e);
         } catch (RuntimeException e) {
             throw new ComponentException("Failed to create "+type,e);
-        }
         }
     }
 }

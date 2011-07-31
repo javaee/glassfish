@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,36 +37,43 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.hk2.component;
 
-import org.jvnet.hk2.component.Factory;
+package org.jvnet.hk2.annotations;
+
+import java.lang.annotation.*;
 
 /**
- * Indirection to a value. That is, instead of referring to the value itself,
- * this class allows you to obtain the value when you need it.
+ * Decorates a {@link java.lang.reflect.Method} with all the annotation which types are
+ * specified using the {@link org.jvnet.hk2.annotations.Decorate#with()}.
  *
- * <p>
- * This is the basis for all the lazy computation.
- *
- *
- *
- * @author Kohsuke Kawaguchi
+ * @author Jerome Dochez
  */
-public interface Holder<T> extends Factory<T> {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface Decorate {
 
     /**
-     * {@link Holder} implementation that doesn't do any deferred computation,
-     * where the value is given in the constructor.
+     * Returns the decorated type
+     *
+     * @return the decorated type
      */
-    public static final class Impl<T> implements Holder<T> {
-        private final T t;
+    Class<?> targetType();
 
-        public Impl(T t) {
-            this.t = t;
-        }
+    /**
+     * Returns the decorated method name defined in the Class returned by
+     * {@link org.jvnet.hk2.annotations.Decorate#targetType()}
+     *
+     * @return the decorated method name
+     */
+    String methodName();
 
-        public T get() {
-            return t;
-        }
-    }
+    /**
+     * Returns a list of annotation types that are defined on the same
+     * annotated element and decorate the method identified by the
+     * {@link org.jvnet.hk2.annotations.Decorate#targetType()} and
+     * {@link org.jvnet.hk2.annotations.Decorate#methodName()}.
+     *
+     * @return list of annotate types that decorates the {@link java.lang.reflect.Method}
+     */
+    Class<? extends Annotation>[] with();
 }

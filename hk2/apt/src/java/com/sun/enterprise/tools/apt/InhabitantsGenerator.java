@@ -218,7 +218,37 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                      buf.append(",").append(INDEX_KEY).append("=").append(contract).append(":").append(name);
                    }
                  }
+            // is there a Decorate annotation ?
+            Decorate decorate = d.getAnnotation(Decorate.class);
+            boolean decorationApplies = false;
+
+            if (decorate!=null) {
+                try {
+                    decorate.with();
+                } catch (MirroredTypesException e) {
+                    Iterator<TypeMirror> itr = e.getTypeMirrors().iterator();
+                    while(itr.hasNext()) {
+                        if (a.getAnnotationType().getDeclaration().getQualifiedName().equals(
+                                ((DeclaredType) itr.next()).getDeclaration().getQualifiedName())) {
+                            decorationApplies=true;
+                        }
+                    }
+                }
+            }
+            if (decorationApplies) {
+                String targetClassName;
+                    try {
+                        targetClassName = decorate.targetType().getName();
+                    } catch (MirroredTypeException e) {
+                        targetClassName = ((DeclaredType)e.getTypeMirror()).getDeclaration().getQualifiedName();
+                    }
+
+                buf.append(",").append(TARGET_TYPE).append("=").append(d.getQualifiedName());
+                buf.append(",").append(METHOD_NAME).append('=').append(decorate.methodName());
+                buf.append(",").append(DECORATED_TYPE).append('=').append(targetClassName);
+            } else {
                  buf.append(",").append(TARGET_TYPE).append("=").append(qualifiedName);
+            }
                  for (AnnotationTypeElementDeclaration ated : a.getAnnotationType().getDeclaration().getMethods()) {
                      for (AnnotationMirror am : ated.getAnnotationMirrors()) {
                          if (am.getAnnotationType().getDeclaration().getSimpleName().equals(InhabitantMetadata.class.getSimpleName())) {
@@ -354,7 +384,7 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                   }
                 }
                 buf.append(",").append(TARGET_TYPE).append("=").append(d.getDeclaringType().getQualifiedName());
-                buf.append(",").append("method-name").append('=').append(d.getSimpleName());
+                buf.append(",").append(METHOD_NAME).append('=').append(d.getSimpleName());
                 for (AnnotationTypeElementDeclaration ated : a.getAnnotationType().getDeclaration().getMethods()) {
                     for (AnnotationMirror am : ated.getAnnotationMirrors()) {
                         if (am.getAnnotationType().getDeclaration().getSimpleName().equals(InhabitantMetadata.class.getSimpleName())) {
