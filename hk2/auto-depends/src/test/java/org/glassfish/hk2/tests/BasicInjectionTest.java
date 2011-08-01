@@ -39,6 +39,10 @@
  */
 package org.glassfish.hk2.tests;
 
+import org.glassfish.hk2.tests.arbitrary.ConstructorQualifierInjectedClass;
+import org.glassfish.hk2.tests.arbitrary.QualifierInjectedClass;
+import org.glassfish.hk2.tests.services.ServiceB1;
+import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.tests.services.ServiceD;
 import org.glassfish.hk2.tests.services.ServiceC;
 import org.glassfish.hk2.BinderFactory;
@@ -48,6 +52,9 @@ import org.glassfish.hk2.Services;
 import org.glassfish.hk2.tests.arbitrary.ClassX;
 import org.glassfish.hk2.tests.contracts.ContractA;
 import org.glassfish.hk2.tests.contracts.ContractB;
+import org.glassfish.hk2.tests.qualifier.SomeQualifier;
+import org.glassfish.hk2.tests.services.ConstructorQualifierInjectedService;
+import org.glassfish.hk2.tests.services.QualifierInjectedService;
 import org.glassfish.hk2.tests.services.ServiceA;
 import org.glassfish.hk2.tests.services.ServiceB;
 import org.junit.BeforeClass;
@@ -60,7 +67,6 @@ import static org.junit.Assert.*;
  *
  * @author Marek Potociar (marek.potociar at oracle.com)
  */
-
 public class BasicInjectionTest {
 
     public static class TestModule implements Module {
@@ -69,8 +75,11 @@ public class BasicInjectionTest {
         public void configure(BinderFactory binderFactory) {
             binderFactory.bind(ContractA.class).to(ServiceA.class);
             binderFactory.bind(ContractB.class).to(ServiceB.class);
+            binderFactory.bind(ContractB.class).annotatedWith(SomeQualifier.class).to(ServiceB1.class);
             binderFactory.bind().to(ServiceC.class);
             binderFactory.bind().to(ServiceD.class);
+            binderFactory.bind().to(QualifierInjectedService.class);
+            binderFactory.bind().to(ConstructorQualifierInjectedService.class);
         }
     }
 
@@ -123,5 +132,49 @@ public class BasicInjectionTest {
         final ContractB cb = ca.getB();
         assertTrue("No-arg constructor service injected as a provider was not provided by HK2 or not of expected type.", cb instanceof ServiceB);
         assertNotNull("Arbitrary class not injected into a service.", cb.getX());
+    }
+    
+    @Test
+    @Ignore
+    public void testGetProvider() {
+        // for now workaround by exposing ContractLocatorImpl.getFactory() by adding the method
+        // to the Providers API interface
+        final Provider<ContractA> cap = services.forContract(ContractA.class).getProvider();
+        
+        assertNotNull("Contract provider is null.", cap);
+        assertNotNull("Contract provider returns null contract.", cap.get());
+        assertTrue("Type of the contract returned by the provider is not expected.", cap.get() instanceof ServiceA);
+
+        final ContractB cb = cap.get().getB();
+        assertTrue("No-arg constructor service injected as a provider was not provided by HK2 or not of expected type.", cb instanceof ServiceB);
+        assertNotNull("Arbitrary class not injected into a service.", cb.getX());    
+    }
+    
+    @Test
+    @Ignore
+    public void testQualifiedInjection() {
+        QualifierInjectedService s1 = services.byType(QualifierInjectedService.class).get();
+        assertNotNull("Property injected service instance not provisioned", s1);
+        assertTrue("Property injected service: Qualified injection point null or of unexepceted type", s1.getQb() instanceof ServiceB1);
+        assertNotNull("Property injected service: Qualified injection provider not provisioned", s1.getQbf());
+        assertTrue("Property injected service: Qualified injection provider returned instance of null or unexpected type", s1.getQbf().get() instanceof ServiceB1);
+        
+        ConstructorQualifierInjectedService s2 = services.byType(ConstructorQualifierInjectedService.class).get();
+        assertNotNull("Constructor injected service instance not provisioned", s2);
+        assertTrue("Constructor injected service: Qualified injection point null or of unexepceted type", s2.getQb() instanceof ServiceB1);
+        assertNotNull("Constructor injected service: Qualified injection provider not provisioned", s2.getQbf());
+        assertTrue("Constructor injected service: Qualified injection provider returned instance of null or unexpected type", s2.getQbf().get() instanceof ServiceB1);
+        
+        QualifierInjectedClass c1 = services.byType(QualifierInjectedClass.class).get();
+        assertNotNull("Property injected arbitrary class instance not provisioned", c1);
+        assertTrue("Property injected arbitrary class: Qualified injection point null or of unexepceted type", c1.getQb() instanceof ServiceB1);
+        assertNotNull("Property injected arbitrary class: Qualified injection provider not provisioned", c1.getQbf());
+        assertTrue("Property injected arbitrary class: Qualified injection provider returned instance of null or unexpected type", c1.getQbf().get() instanceof ServiceB1);
+        
+        ConstructorQualifierInjectedClass c2 = services.byType(ConstructorQualifierInjectedClass.class).get();
+        assertNotNull("Constructor injected arbitrary class instance not provisioned", c2);
+        assertTrue("Constructor injected arbitrary class: Qualified injection point null or of unexepceted type", c2.getQb() instanceof ServiceB1);
+        assertNotNull("Constructor injected arbitrary class: Qualified injection provider not provisioned", c2.getQbf());
+        assertTrue("Constructor injected arbitrary class: Qualified injection provider returned instance of null or unexpected type", c2.getQbf().get() instanceof ServiceB1);
     }
 }
