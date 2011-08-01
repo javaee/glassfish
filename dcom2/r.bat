@@ -1,0 +1,2 @@
+call mvn install
+java -cp C:\Users\wnevins.ST-USERS\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;C:\Users\wnevins.ST-USERS\.m2\repository\org\jinterop\j-interop\2.0.4\j-interop-2.0.4.jar;C:\Users\wnevins.ST-USERS\.m2\repository\org\jinterop\j-interopdeps\2.0.4\j-interopdeps-2.0.4.jar;C:\Users\wnevins.ST-USERS\.m2\repository\org\samba\jcifs\jcifs\1.2.19\jcifs-1.2.19.jar;d:\gf_other\bnevins\dcom2\target\dcom2-1.0-SNAPSHOT.jar org.glassfish.dcom2.App
