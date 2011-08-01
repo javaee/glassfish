@@ -64,7 +64,7 @@ import org.glassfish.hk2.Scope;
 //TODO: support metadata for byContract & byType
 class ContractLocatorImpl<T> implements ContractLocator<T> {
 
-    private final Logger logger = Logger.getLogger(ContractLocatorImpl.class.getName());
+    private static final Logger logger = Logger.getLogger(ContractLocatorImpl.class.getName());
 
     private final SimpleServiceLocator habitat;
     private String name;
@@ -153,6 +153,7 @@ class ContractLocatorImpl<T> implements ContractLocator<T> {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public org.glassfish.hk2.Factory<T> getFactory() {
         return getter;
     }

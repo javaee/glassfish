@@ -103,7 +103,7 @@ public class InjectableParametizedConstructorCreator<T> extends ConstructorCreat
                         }
                     }
                     if ((paramValues[i] == null) && !((Inject) a).optional()) {
-                        throw new UnsatisfiedDependencyException(ctor, a);
+                        throw new UnsatisfiedDependencyException(ctor, a, new UnsatisfiedDependencyException(ctor.getParameterTypes()[i], a));
                     }
                 }
             }
