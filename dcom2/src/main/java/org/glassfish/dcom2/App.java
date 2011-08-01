@@ -25,8 +25,8 @@ public class App
 
     public void foo() {
         try {
-            NtlmPasswordAuthentication authOracle = createSmbAuth("wnevins-lnr", "wnevins", "Swteim235");
-            NtlmPasswordAuthentication authBnevins = createSmbAuth("sony", "bnevins", "Sloop23Stow");
+            NtlmPasswordAuthentication authOracle = createSmbAuth("wnevins-lnr", "wnevins", "password");
+            NtlmPasswordAuthentication authBnevins = createSmbAuth("sony", "bnevins", "password");
             System.out.println("DUMP: " + authOracle);
             System.out.println("DUMP: " + authBnevins);
 
