@@ -4,54 +4,27 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.admingui</groupId>
-        <artifactId>console-demo-parent</artifactId>
+        <artifactId>console-next-parent</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
+    
     <artifactId>plugin-system</artifactId>
     <name>Plugin System</name>
     <packaging>hk2-jar</packaging>
 
     <dependencies>
         <dependency>
-            <groupId>com.sun.enterprise</groupId>
-            <artifactId>hk2</artifactId>
-            <version>${hk2.version}</version>
-            <scope>provided</scope>
+            <groupId>javax.faces</groupId>
+            <artifactId>jsf-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>${osgi.version}</version>
-                <!-- This jar should never be part of runtime. -->
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.enterprise</artifactId>
-            <version>${osgi.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.faces</groupId>
-            <artifactId>jsf-api</artifactId>
-            <version>${jsf.version}</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.sun.enterprise</groupId>
-                <artifactId>hk2-maven-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <archive>
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
