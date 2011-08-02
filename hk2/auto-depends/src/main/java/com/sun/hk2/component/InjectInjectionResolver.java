@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
+import org.glassfish.hk2.Provider;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.*;
 import org.jvnet.tiger_types.Types;
@@ -176,7 +177,7 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
         final Class<?> finalType = Types.erasure(t);
 
         if (habitat.isContract(finalType)) {
-            final Inhabitant<?> i = manage(onBehalfOf, habitat.getInhabitant(finalType, inject.name()));
+            final Inhabitant<?> i = getProviderByContract(habitat, onBehalfOf, target, finalType, finalType, inject);
             return type.cast(i);
         }
 
@@ -198,15 +199,9 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
         return type.cast(i);
     }
 
-    protected <V> V getServiceInjectValue(Habitat habitat,
-                                          Object component,
-                                          Inhabitant<?> onBehalfOf,
-                                          AnnotatedElement target,
-                                          Type genericType,
-                                          Class<V> type,
-                                          Inject inject) throws ComponentException {
-
-        V result = null;
+    protected <V> Inhabitant<V> getProviderByContract(Habitat habitat, Inhabitant<?> onBehalfOf,
+                                                  AnnotatedElement target, Type genericType,
+                                                  Class<V> type, Inject inject) throws ComponentException {
 
         // named injection ?
         String name = this.getTargetName(target, inject);
@@ -247,6 +242,20 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
         } else {
             i = manage(onBehalfOf, habitat.getInhabitant(genericType, name));
         }
+        return (Inhabitant<V>) i;
+    }
+
+    protected <V> V getServiceInjectValue(Habitat habitat,
+                                          Object component,
+                                          Inhabitant<?> onBehalfOf,
+                                          AnnotatedElement target,
+                                          Type genericType,
+                                          Class<V> type,
+                                          Inject inject) throws ComponentException {
+
+        V result = null;
+
+        Inhabitant<V> i = getProviderByContract(habitat, onBehalfOf, target, genericType, type, inject);
         if (null != i) {
             Object service = i.get();
             try {

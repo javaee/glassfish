@@ -39,6 +39,8 @@
  */
 package org.jvnet.hk2.component;
 
+import org.glassfish.hk2.Provider;
+
 /**
  * Provide a simple abstraction for getting services by contract or type.
  *
@@ -85,5 +87,14 @@ public interface SimpleServiceLocator {
      * @return null if not found.
      */
     <T> T getByType(String implType);
+
+    /**
+     * Gets an inhabitant from its type and optionally name
+     * @param type requested inhabitant type
+     * @param name optional name
+     */
+    <T> Provider<T> getProvider(Class<T> type, String name);
+
+    <T> Provider<T> getProvider(String fqcn, String name);
     
 }

@@ -69,16 +69,6 @@ public interface Providers<T> {
     Provider<T> getProvider();
 
     /**
-     * Return the "best" {@link Factory} from the collection that matches
-     * current criteria. If the collection {@link #all()} is not empty,
-     * this will return a non null value.  Otherwise the return value is
-     * null.
-     * 
-     * This method is just a workaround until getProvider() works.
-     */
-    Factory<T> getFactory();
-    
-    /**
      * A shortcut for
      * <pre>
      *  if (getProvider() != null)
