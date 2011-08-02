@@ -37,26 +37,28 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests;
+package org.glassfish.hk2.tests.basic;
 
-import org.glassfish.hk2.tests.arbitrary.ConstructorQualifierInjectedClass;
-import org.glassfish.hk2.tests.arbitrary.QualifierInjectedClass;
-import org.glassfish.hk2.tests.services.ServiceB1;
+import org.glassfish.hk2.tests.basic.arbitrary.QualifierInjected;
+import org.glassfish.hk2.ComponentException;
+import org.glassfish.hk2.tests.basic.arbitrary.ConstructorQualifierInjectedClass;
+import org.glassfish.hk2.tests.basic.arbitrary.QualifierInjectedClass;
+import org.glassfish.hk2.tests.basic.services.ServiceB1;
 import org.glassfish.hk2.Provider;
-import org.glassfish.hk2.tests.services.ServiceD;
-import org.glassfish.hk2.tests.services.ServiceC;
+import org.glassfish.hk2.tests.basic.services.ServiceD;
+import org.glassfish.hk2.tests.basic.services.ServiceC;
 import org.glassfish.hk2.BinderFactory;
 import org.glassfish.hk2.HK2;
 import org.glassfish.hk2.Module;
 import org.glassfish.hk2.Services;
-import org.glassfish.hk2.tests.arbitrary.ClassX;
-import org.glassfish.hk2.tests.contracts.ContractA;
-import org.glassfish.hk2.tests.contracts.ContractB;
-import org.glassfish.hk2.tests.qualifier.SomeQualifier;
-import org.glassfish.hk2.tests.services.ConstructorQualifierInjectedService;
-import org.glassfish.hk2.tests.services.QualifierInjectedService;
-import org.glassfish.hk2.tests.services.ServiceA;
-import org.glassfish.hk2.tests.services.ServiceB;
+import org.glassfish.hk2.tests.basic.annotations.Marker;
+import org.glassfish.hk2.tests.basic.arbitrary.ClassX;
+import org.glassfish.hk2.tests.basic.contracts.ContractA;
+import org.glassfish.hk2.tests.basic.contracts.ContractB;
+import org.glassfish.hk2.tests.basic.services.ConstructorQualifierInjectedService;
+import org.glassfish.hk2.tests.basic.services.QualifierInjectedService;
+import org.glassfish.hk2.tests.basic.services.ServiceA;
+import org.glassfish.hk2.tests.basic.services.ServiceB;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Ignore;
@@ -64,7 +66,10 @@ import org.junit.Ignore;
 import static org.junit.Assert.*;
 
 /**
- *
+ * This is a test of basic injection features. To avoid the potential influence
+ * of being in the same package (e.g. implicit access to the package-private data),
+ * all classes that the test works with are placed in separate nested packages.
+ * 
  * @author Marek Potociar (marek.potociar at oracle.com)
  */
 public class BasicInjectionTest {
@@ -75,7 +80,7 @@ public class BasicInjectionTest {
         public void configure(BinderFactory binderFactory) {
             binderFactory.bind(ContractA.class).to(ServiceA.class);
             binderFactory.bind(ContractB.class).to(ServiceB.class);
-            binderFactory.bind(ContractB.class).annotatedWith(SomeQualifier.class).to(ServiceB1.class);
+            binderFactory.bind(ContractB.class).annotatedWith(Marker.class).to(ServiceB1.class);
             binderFactory.bind().to(ServiceC.class);
             binderFactory.bind().to(ServiceD.class);
             binderFactory.bind().to(QualifierInjectedService.class);
@@ -149,32 +154,42 @@ public class BasicInjectionTest {
         assertTrue("No-arg constructor service injected as a provider was not provided by HK2 or not of expected type.", cb instanceof ServiceB);
         assertNotNull("Arbitrary class not injected into a service.", cb.getX());    
     }
+
+    private void testQualifierInjectedContent(QualifierInjected instance) throws ComponentException {
+        assertNotNull("Instance not provisioned", instance);
+        assertNotNull("Qualified injection point null", instance.getQb());
+        // the .getSimpleName() bellow is meant to avoid the long, package-poluted JUnit assertion reports
+        assertEquals("Qualified injection point of unexepceted type", ServiceB1.class.getSimpleName(), instance.getQb().getClass().getSimpleName());
+        assertNotNull("Qualified injection provider not provisioned", instance.getQbf());
+        assertNotNull("Qualified injection provider returned null", instance.getQbf().get());
+        assertEquals("Qualified injection provider returned instance of unexpected type", ServiceB1.class.getSimpleName(), instance.getQbf().get().getClass().getSimpleName());
+    }
     
     @Test
     @Ignore
-    public void testQualifiedInjection() {
-        QualifierInjectedService s1 = services.byType(QualifierInjectedService.class).get();
-        assertNotNull("Property injected service instance not provisioned", s1);
-        assertTrue("Property injected service: Qualified injection point null or of unexepceted type", s1.getQb() instanceof ServiceB1);
-        assertNotNull("Property injected service: Qualified injection provider not provisioned", s1.getQbf());
-        assertTrue("Property injected service: Qualified injection provider returned instance of null or unexpected type", s1.getQbf().get() instanceof ServiceB1);
-        
-        ConstructorQualifierInjectedService s2 = services.byType(ConstructorQualifierInjectedService.class).get();
-        assertNotNull("Constructor injected service instance not provisioned", s2);
-        assertTrue("Constructor injected service: Qualified injection point null or of unexepceted type", s2.getQb() instanceof ServiceB1);
-        assertNotNull("Constructor injected service: Qualified injection provider not provisioned", s2.getQbf());
-        assertTrue("Constructor injected service: Qualified injection provider returned instance of null or unexpected type", s2.getQbf().get() instanceof ServiceB1);
-        
-        QualifierInjectedClass c1 = services.byType(QualifierInjectedClass.class).get();
-        assertNotNull("Property injected arbitrary class instance not provisioned", c1);
-        assertTrue("Property injected arbitrary class: Qualified injection point null or of unexepceted type", c1.getQb() instanceof ServiceB1);
-        assertNotNull("Property injected arbitrary class: Qualified injection provider not provisioned", c1.getQbf());
-        assertTrue("Property injected arbitrary class: Qualified injection provider returned instance of null or unexpected type", c1.getQbf().get() instanceof ServiceB1);
-        
-        ConstructorQualifierInjectedClass c2 = services.byType(ConstructorQualifierInjectedClass.class).get();
-        assertNotNull("Constructor injected arbitrary class instance not provisioned", c2);
-        assertTrue("Constructor injected arbitrary class: Qualified injection point null or of unexepceted type", c2.getQb() instanceof ServiceB1);
-        assertNotNull("Constructor injected arbitrary class: Qualified injection provider not provisioned", c2.getQbf());
-        assertTrue("Constructor injected arbitrary class: Qualified injection provider returned instance of null or unexpected type", c2.getQbf().get() instanceof ServiceB1);
+    public void testQualifiedInjectedService() {
+        QualifierInjectedService instance = services.byType(QualifierInjectedService.class).get();
+        testQualifierInjectedContent(instance);
+    }
+    
+    @Test
+    @Ignore
+    public void testConstuctorQualifiedInjectedService() {
+        ConstructorQualifierInjectedService instance = services.byType(ConstructorQualifierInjectedService.class).get();
+        testQualifierInjectedContent(instance);
+    }
+    
+    @Test
+    @Ignore
+    public void testQualifiedInjectedClass() {
+        QualifierInjectedClass instance = services.byType(QualifierInjectedClass.class).get();
+        testQualifierInjectedContent(instance);
+    }
+    
+    @Test
+    @Ignore
+    public void testConstructorQualifiedInjectedClass() {
+        ConstructorQualifierInjectedClass instance = services.byType(ConstructorQualifierInjectedClass.class).get();
+        testQualifierInjectedContent(instance);
     }
 }
