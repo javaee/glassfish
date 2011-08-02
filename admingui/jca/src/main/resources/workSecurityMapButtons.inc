@@ -74,14 +74,15 @@
                                 listAdd(list="#{pageSession.groupsToAddList}" value="#{group}=#{val}" result="#{pageSession.groupsToAddList}");                                
                             }                            
                         }
-                        
-                        convertListToCommaString(list="#{pageSession.groupsToAddList}" commaString=>$attribute{groupsToAddStr});
-                        convertListToCommaString(list="#{pageSession.oldGroupsList}" commaString=>$attribute{oldGroupsStr});
-                        createMap(result="#{requestScope.attrsMap}");
-                        mapPut(map="#{requestScope.attrsMap}" key="raname" value="#{pageSession.valueMap['resourceAdapterName']}");
-                        mapPut(map="#{requestScope.attrsMap}" key="addgroups" value="#{groupsToAddStr}");
-                        mapPut(map="#{requestScope.attrsMap}" key="removegroups" value="#{oldGroupsStr}");
-                        gf.restRequest(endpoint="#{pageSession.selfUrl}/update-connector-work-security-map" attrs="#{requestScope.attrsMap}" method="POST");
+                        if(!#{pageSession.isAppScopedRes}){
+                            convertListToCommaString(list="#{pageSession.groupsToAddList}" commaString=>$attribute{groupsToAddStr});
+                            convertListToCommaString(list="#{pageSession.oldGroupsList}" commaString=>$attribute{oldGroupsStr});
+                            createMap(result="#{requestScope.attrsMap}");
+                            mapPut(map="#{requestScope.attrsMap}" key="raname" value="#{pageSession.valueMap['resourceAdapterName']}");
+                            mapPut(map="#{requestScope.attrsMap}" key="addgroups" value="#{groupsToAddStr}");
+                            mapPut(map="#{requestScope.attrsMap}" key="removegroups" value="#{oldGroupsStr}");
+                            gf.restRequest(endpoint="#{pageSession.selfUrl}/update-connector-work-security-map" attrs="#{requestScope.attrsMap}" method="POST");
+                        }
                     }
                     if ('#{usersOptionP}=principals') {
                         convertStringToMap(str="#{pageSession.valueMap2['principalMapping']}" result="#{requestScope.principalsMap}");
@@ -107,17 +108,19 @@
                                 listAdd(list="#{pageSession.principalsToAddList}" value="#{principal}=#{val}" result="#{pageSession.principalsToAddList}");
                             }
                         }
-                        convertListToCommaString(list="#{pageSession.principalsToAddList}" commaString=>$attribute{principalsToAddStr});
-                        convertListToCommaString(list="#{pageSession.oldPrincipalsList}" commaString=>$attribute{oldPrincipalsStr});
-                        createMap(result="#{requestScope.attrsMap}");
-                        mapPut(map="#{requestScope.attrsMap}" key="raname" value="#{pageSession.valueMap['resourceAdapterName']}");
-                        mapPut(map="#{requestScope.attrsMap}" key="addprincipals" value="#{principalsToAddStr}");
-                        mapPut(map="#{requestScope.attrsMap}" key="removeprincipals" value="#{oldPrincipalsStr}");
-                        gf.restRequest(endpoint="#{pageSession.selfUrl}/update-connector-work-security-map" attrs="#{requestScope.attrsMap}" method="POST");
+                        if(!#{pageSession.isAppScopedRes}){
+                            convertListToCommaString(list="#{pageSession.principalsToAddList}" commaString=>$attribute{principalsToAddStr});
+                            convertListToCommaString(list="#{pageSession.oldPrincipalsList}" commaString=>$attribute{oldPrincipalsStr});
+                            createMap(result="#{requestScope.attrsMap}");
+                            mapPut(map="#{requestScope.attrsMap}" key="raname" value="#{pageSession.valueMap['resourceAdapterName']}");
+                            mapPut(map="#{requestScope.attrsMap}" key="addprincipals" value="#{principalsToAddStr}");
+                            mapPut(map="#{requestScope.attrsMap}" key="removeprincipals" value="#{oldPrincipalsStr}");
+                            gf.restRequest(endpoint="#{pageSession.selfUrl}/update-connector-work-security-map" attrs="#{requestScope.attrsMap}" method="POST");
+                        }
 
                     }                   
                     prepareSuccessfulMsg();
-                    gf.redirect(page="#{selfPage}&mapName=#{pageSession.valueMap['name']}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                    gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"

@@ -56,11 +56,11 @@
         <!afterCreate
                 getClientId(component="$this{component}" clientId=>$page{topActionGroup});
             />
-        <sun:button id="newButton" text="$resource{i18n.button.New}" >
+        <sun:button id="newButton" text="$resource{i18n.button.New}" rendered="#{pageSession.showSecurityButtons}" >
             <!command gf.redirect(page="#{pageSession.createLink}") />
         </sun:button>
 
-        <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
+        <sun:button id="button1" text="$resource{i18n.button.Delete}" rendered="#{pageSession.showSecurityButtons}" disabled="#{true}" primary="#{false}"
             onClick="if (getConfirm(this,'$pageSession{confirmDeleteMsg}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
         <!command
             getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});

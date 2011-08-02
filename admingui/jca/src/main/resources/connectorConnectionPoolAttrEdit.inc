@@ -60,6 +60,9 @@
                     //getUIComponentProperty(component="$attribute{nameComponent}", name="submittedValue", value=>$attribute{poolName});
                     setAttribute(key="click" value="$this{component}");
                     setAttribute(key="name" value="#{pageSession.Name}")
+                    setAttribute(key="name" value="#{pageSession.Name}")
+                    setAttribute(key="name" value="#{pageSession.Name}")
+                    setAttribute(key="name" value="#{pageSession.Name}")
                     setAttribute(key="resAdapterChoosen" value="#{click.selected}")
                     gf.navigate(page="#{request.contextPath}/jca/connectorConnectionPoolEdit.jsf");
                 />

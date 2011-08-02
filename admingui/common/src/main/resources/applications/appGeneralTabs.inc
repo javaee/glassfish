@@ -60,7 +60,7 @@
     <sun:tab id="resourcesTab" rendered="#{pageSession.appScopedResExists}" immediate="true" text="$resource{i18n.common.Resources}" toolTip="$resource{i18n.common.Resources} Tab">
         <!command
             setSessionAttribute(key="appGeneralTabs" value="resourcesTab");
-            gf.redirect(page="#{request.contextPath}/common/applications/resources/appScopedResources.jsf?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}");
+            gf.redirect(page="#{request.contextPath}/common/applications/resources/appScopedResources.jsf?appName=#{pageSession.encodedAppName}&listPageLink=/common/applications/applications.jsf");
         />
     </sun:tab>
 
