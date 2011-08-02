@@ -1,0 +1,72 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+         <link href="#{request.contextPath}/css/tableStyle.css" rel="stylesheet"/>
+    </h:head>
+    <h:form>
+        <h3>JDBC Resources List</h3>
+        <br/>
+        <h:panelGrid columns="2">
+            <h:outputText value="Jndi Names:&npsp;&npsp;&npsp;&npsp;&npsp;&npsp;&npsp;" />
+            <h:selectOneMenu id="resList" value="#{jdbcResource.jndiName}" valueChangeListener="#{jdbcResource.processValueChange}" type="submit" immediate="true">
+                <f:selectItems value="#{jdbcResource.resList}" />
+            </h:selectOneMenu>
+            <div/>
+            <h:outputText value="Select any JDBC Resource"/>
+        </h:panelGrid>
+        <br/><br/>
+        <hr/>
+        <h3> JDBC Resource Edit </h3>
+        <br/>
+        <h:panelGrid columns="2">            
+            <h:outputText value="JNDI Name :&npsp;&npsp;&npsp;&npsp;&npsp;&npsp;"/>
+            <h:inputText id="jndiName" value="#{jdbcResource.jndiName}" />
+            <h:outputText value="Description : &npsp;&npsp;&npsp;&npsp;&npsp;&npsp;"/>
+            <h:inputText id="desc" value="#{jdbcResource.description}" />
+        </h:panelGrid>
+        <br/>
+        <h:panelGrid columns="1">
+            <h:outputText value="Properties:"/>
+        </h:panelGrid>
+        <h:panelGrid columns="2">
+            <h:commandButton value="Add Property" action="#{jdbcResource.addDummyProp}" />
+            <h:commandButton value="Delete Property" action="#{jdbcResource.delProp}" />
+        </h:panelGrid>
+        <h:panelGrid columns="1">
+            <h:dataTable value="#{jdbcResource.props}" var="o" styleClass="props" cellspacing="0" cellpadding="0"
+                border="0" rowClasses="odd,even" columnClasses="name,value,description">
+    			<h:column headerstyleClass="first">
+    				<!-- column header -->
+    				<f:facet name="header">Selected</f:facet>
+                    <h:selectBooleanCheckbox value="#{o.selected}"/>
+    			</h:column>
+
+                <h:column>
+    				<!-- column header -->
+    				<f:facet name="header">Name</f:facet>
+                    <h:outputText value="#{o.name}" rendered="#{o.name != null}" />
+                    <h:inputText value="new" rendered="#{o.name == null}" />
+    			</h:column>
+
+    			<h:column>
+    				<f:facet name="header">Value</f:facet>
+    				<h:outputText value="#{o.value}" rendered="#{o.value != null}" />
+                    <h:inputText value="new" rendered="#{o.value == null}" />
+    			</h:column>
+
+    			<h:column headerstyleClass="last">
+    				<f:facet name="header">Description</f:facet>
+    				<h:outputText value="#{o.description}" rendered="#{o.description != null}" />
+                    <h:inputText value="new" rendered="#{o.description == null}" />
+    			</h:column>    			
+
+    		</h:dataTable>
+
+        </h:panelGrid>
+        <h:commandButton id="button1" value="Save" type="submit"/>
+        <h:commandButton id="button2" value="Cancel"/>
+    </h:form>
+</ui:fragment>

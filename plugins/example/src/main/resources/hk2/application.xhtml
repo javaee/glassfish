@@ -1,0 +1,96 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core">
+    <bar>
+    <div id="applications" style="padding: 20px;">
+        <b>Deployed applications(2)</b>
+        <br/>
+
+        <h:form prependId="false">
+            <button dojoType="dijit.form.Button" id="buttonDeploy" type="button">Deploy</button>
+            <button dojoType="dijit.form.Button" id="buttonUndeploy" type="button" disabled="true">Undeploy</button>
+
+            <!--
+                        <div data-dojo-type="dojox.data.HtmlStore" data-dojo-props="dataId:'j_idt20:_vfwrapper1:j_idt4:myData1', trimWhitespace:true"
+                             data-dojo-id="gridStore" class="hide">
+            
+                            <h:dataTable id="myData1" value="#{requestScopedBean.applications}" var="app">   
+                                <h:column>
+                                    <f:facet name="header">
+                                    </f:facet>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">
+				     Name
+                                    </f:facet>
+                                    <h:outputText value="#{app.name}"/>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">
+				      Enabled
+                                    </f:facet>
+                                    <h:outputText value="#{app.enabled}"/>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">
+				      Engines
+                                    </f:facet>
+                                    <h:outputText value="#{app.engines}"/>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">
+				      Action
+                                    </f:facet>
+				     Launch | Undeploy | Disable
+                                </h:column>
+                            </h:dataTable>
+            
+                        </div>
+                        
+                        <table dojoType="dojox.grid.DataGrid" store="gridStore" query="{ Name: '*' }" clientSort="true"
+                               autoWidth="true" autoHeight="true" selectionMode="none">
+                            <thead>
+                                <tr>
+                                    <th field="a" editable="true" alwaysEditing="true" cellType="dojox.grid.cells.Bool">&nbsp;</th>
+            
+                                    <th width="200px" field="Name">
+		                Name
+                                    </th>
+                                    <th formatter="formatterEnabled">
+		                Enabled
+                                    </th>
+                                    <th width="300px">
+		                Engines
+                                    </th>
+                                    <th width="200px">
+		                Action
+                                    </th>
+                                </tr>
+                            </thead>
+                        </table>
+            -->
+            <bar>
+            <div id="table"/>
+            <script type="text/javascript">
+                    var actions = 'Launch | Undeploy | Disable';
+                    new Y.DataTable.Base({
+                        columnset: [
+                            {key: 'name', label: 'Name'},
+                            {key: 'enabled', label: 'Enabled'},
+                            {key: 'engines', label: 'Engines'},
+                            {key: 'actions', label: 'Action'}
+                        ],
+                        recordset: [
+                            {name: 'console-demo', enabled: 'false', engines: 'web', actions: actions},
+                            {name: 'plugin-demo', enabled: 'false', engines: 'web', actions: actions},
+                            {name: 'cdi-demo', enabled: 'false', engines: 'web, cdi', actions: actions},
+                        ]
+                    }).render("#table");                
+            </script>
+
+        </h:form>
+
+    </div>
+</ui:fragment>

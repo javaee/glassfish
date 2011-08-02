@@ -1,0 +1,19 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core">
+    
+    <h:form>
+        <h1>A Form in a Plugin</h1>
+        <h2>
+        <h:outputText value="Hello #{requestScopedBean.text} !!!"/>
+        </h2>
+        <br/><br/>
+        <h:inputText value="#{requestScopedBean.text}" size="80"/>
+        <br/><br/><br/>
+        <h:commandButton value="Update">
+            <f:ajax execute="@form" render="@form"/>
+        </h:commandButton>
+    </h:form>
+</ui:fragment>
