@@ -43,6 +43,13 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.java</groupId>
+        <artifactId>jvnet-parent</artifactId>
+        <version>1</version>
+    </parent>
+
     <groupId>org.glassfish.hk2</groupId>
     <artifactId>hk2-parent</artifactId>
     <packaging>pom</packaging>
@@ -127,17 +134,6 @@
       <developerConnection>scm:svn:https://svn.java.net/svn/hk2~svn/trunk/hk2</developerConnection>
       <url>https://svn.java.net/svn/hk2~svn/trunk/hk2</url>
     </scm>
-    <distributionManagement>
-        <site>
-            <id>local</id>
-            <url>file:../www/</url>
-        </site>
-        <repository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>rator.sfbay</id>
-            <url>dav:http://glassfish-maven-repository.us.oracle.com/maven/repositories/glassfish/</url>
-        </repository>
-    </distributionManagement>
     <repositories>
         <repository>
             <id>glassfish-maven-repository</id>
@@ -226,13 +222,6 @@
                 </configuration>
             </plugin>
         </plugins>
-        <extensions>
-             <extension>
-                  <groupId>org.apache.maven.wagon</groupId>
-                  <artifactId>wagon-webdav</artifactId>
-                  <version>1.0-beta-2</version>
-             </extension>
-        </extensions>
         <pluginManagement>
              <plugins>
                  <plugin>
@@ -320,8 +309,6 @@
             <!-- this profile is used when maven release plugin runs. see the mojo configuration above -->
             <id>release</id>
             <modules>
-                <module>auto-depends-tests</module>
-                <module>apt-test</module>
                 <module>hk2</module>
                 <module>config-types</module>
                 <module>hk2-jsr330</module>
