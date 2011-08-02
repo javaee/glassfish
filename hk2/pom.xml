@@ -185,14 +185,12 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.1</version>
                 <configuration>
-                    <!--
-                      execute release in the release profile to exclude test related modules
-                      that don't need to be published.
-                    -->
-                    <arguments>-P release</arguments>
+                    <mavenExecutorId>forked-path</mavenExecutorId>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <arguments>${release.arguments}</arguments>
                 </configuration>
             </plugin>
             <plugin>
@@ -307,7 +305,7 @@
         </profile>
         <profile>
             <!-- this profile is used when maven release plugin runs. see the mojo configuration above -->
-            <id>release</id>
+            <id>release-modules</id>
             <modules>
                 <module>hk2</module>
                 <module>config-types</module>
