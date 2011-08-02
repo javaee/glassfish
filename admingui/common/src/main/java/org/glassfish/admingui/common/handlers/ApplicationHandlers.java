@@ -245,6 +245,46 @@ public class ApplicationHandlers {
         return result;
     }
 
+    @Handler(id = "gf.addToAppScopedResourcesTable",
+        input = {
+            @HandlerInput(name = "appName", type = String.class, required = true),
+            @HandlerInput(name = "resources", type = Map.class, required = true),
+            @HandlerInput(name = "moduleName", type = String.class),
+            @HandlerInput(name = "listOfRows", type = java.util.List.class)},
+        output = {
+            @HandlerOutput(name = "result", type = java.util.List.class)})
+    public static void addToAppScopedResourcesTable(HandlerContext handlerCtx) {
+        String appName = (String) handlerCtx.getInputValue("appName");
+        String moduleName = (String) handlerCtx.getInputValue("moduleName");
+        Map<String, String> resources = (Map<String, String>) handlerCtx.getInputValue("resources");
+        List<Map<String, String>> result = (List<Map<String, String>>) handlerCtx.getInputValue("listOfRows");
+        if (result == null) {
+            result = new ArrayList<Map<String, String>>();
+        }
+        if (GuiUtil.isEmpty(moduleName)) {
+            moduleName = "-----------";
+        }
+        for (String resource : resources.keySet()) {
+            Map oneRow = new HashMap();
+            oneRow.put("appName", appName);
+            oneRow.put("moduleName", moduleName);
+            oneRow.put("resName", resource);
+            oneRow.put("resType", AppUtil.getAppScopedResTypeToDisplay(resources.get(resource)));
+            result.add(oneRow);
+        }
+        handlerCtx.setOutputValue("result", result);
+    }
+
+    @Handler(id = "gf.appScopedResourcesExist",
+        input = {
+            @HandlerInput(name = "appName", type = String.class, required = true)
+            },
+        output = {
+            @HandlerOutput(name = "appScopedResExists", type = java.lang.Boolean.class)})
+    public static void appScopedResourcesExist(HandlerContext handlerCtx) {
+        String appName = (String) handlerCtx.getInputValue("appName");        
+        handlerCtx.setOutputValue("appScopedResExists", AppUtil.doesAppContainsResources(appName));
+    }
 
     @Handler(id = "gf.getLifecyclesInfo",
         input = {

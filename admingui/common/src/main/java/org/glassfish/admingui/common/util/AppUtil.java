@@ -162,9 +162,47 @@ public class AppUtil {
         RestUtil.restRequest(endpoint, attrs, (add)? "POST" : "DELETE", handlerCtx, false);
     }
 
+    static public Boolean doesAppContainsResources(String appName){
+        return RestUtil.doesProxyExist(GuiUtil.getSessionValue("REST_URL") + "/applications/application/" + appName + "/resources");
+    }
+    
+    static public String getAppScopedResTypeToDisplay(String resName){
+        int index = appResTypes.indexOf(resName);
+        if (index != -1){
+            return appResTypesToDisplay.get(index);
+        }
+        return null;
+    }
+
     static final public List sniffersHide = new ArrayList();
     static {
         sniffersHide.add("security");
+    }
+    static final public List<String> appResTypes = new ArrayList<String>();
+    static {
+        appResTypes.add("<JdbcResource>");
+        appResTypes.add("<ConnectorResource>");
+        appResTypes.add("<ExternalJndiResource>");
+        appResTypes.add("<CustomResource>");
+        appResTypes.add("<AdminObjectResource>");
+        appResTypes.add("<MailResource>");
+        appResTypes.add("<JdbcConnectionPool>");
+        appResTypes.add("<ConnectorConnectionPool>");
+        appResTypes.add("<ResourceAdapterConfig>");
+        appResTypes.add("<WorkSecurityMap>");
+    }
+    static final public List<String> appResTypesToDisplay = new ArrayList<String>();
+    static {
+        appResTypesToDisplay.add(GuiUtil.getMessage("tree.jdbcResources"));
+        appResTypesToDisplay.add(GuiUtil.getMessage("tree.connectorResources"));
+        appResTypesToDisplay.add(GuiUtil.getMessage("tree.externalResources"));
+        appResTypesToDisplay.add(GuiUtil.getMessage("tree.customResources"));
+        appResTypesToDisplay.add(GuiUtil.getMessage("tree.adminObjectResources"));
+        appResTypesToDisplay.add(GuiUtil.getMessage("tree.javaMailSessions"));
+        appResTypesToDisplay.add(GuiUtil.getMessage("common.JdbcConnectionPools"));
+        appResTypesToDisplay.add(GuiUtil.getMessage("tree.connectorConnectionPools"));
+        appResTypesToDisplay.add(GuiUtil.getMessage("tree.resourceAdapterConfigs"));
+        appResTypesToDisplay.add(GuiUtil.getMessage("tree.workSecurityMaps"));
     }
 }
 
