@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <script type="text/javascript" src="#{request.contextPath}/jquery/js/jquery-1.5.1.min.js"></script>
+        <script type="text/javascript" src="#{request.contextPath}/jquery/js/jquery-ui-1.8.14.custom.min.js"></script>
+        <script type="text/javascript" src="#{request.contextPath}/jquery/jstree/jquery.jstree.js"></script>
+
+        <link href="#{request.contextPath}/css/nihilo.css" rel="stylesheet" type="text/css"/>
+        <link href="#{request.contextPath}/css/Wizard.css" rel="stylesheet" type="text/css"/>
+        <link href="#{request.contextPath}/css/td_main.css" rel="stylesheet" type="text/css"/>
+
+        <link href="#{request.contextPath}/jquery/jstree/themes/default/style.css" rel="stylesheet" type="text/css"/>
+        <link href="#{request.contextPath}/jquery/jstree/themes/apple/style.css" rel="stylesheet" type="text/css"/>
+
+        <script src="#{request.contextPath}/alloy/aui/aui.js" type="text/javascript"/>
+        <link type="text/css" href="#{request.contextPath}/alloy/aui-skin-classic/css/aui-skin-classic-min.css" rel="stylesheet" />
+
+        <style type="text/css">
+            #navgiation {
+                color: #000000;
+            }
+            .jstree-default.jstree-focused {
+                background-color: #FFFFFF;
+            }
+        </style>
+        <link type="text/css" href="#{request.contextPath}/jquery/css/cupertino/jquery-ui-1.8.14.custom.css" rel="stylesheet" />	
+    </h:head>
+
+    <h:body class="nihilo">
+        <div id="mainContainer" class="">
+            <div widgetid="masthead" id="masthead">
+                <!-- Copyright 2011, Oracle and/or its affiliates. All Rights Reserved. -->
+                <table border="0" cellpadding="0" cellspacing="0">
+                    <tbody><tr>
+                            <td>
+                                <img class="logo" src="#{request.contextPath}/images/logo-oracle-red.png" title="product.logo.title" alt="product.logo.title" border="0"/>
+                                <span class="title">GlassFish Application Server</span>
+                            </td>
+                            <td></td>
+                            <td align="right">
+                                <table class="linksTable" cellpadding="2" cellspacing="0">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <h:form id="ajaxNavForm" prependId="false" style="display: inline; visibility: hidden">
+                                                    <h:inputText id="content" value="#{appHelper.contentPage}"/>
+                                                    <h:commandButton id="contentButton">
+                                                        <f:ajax execute="@form" render=":ajaxBody" onevent="Console.Ajax.ajaxCallback"/>
+                                                    </h:commandButton>
+                                                </h:form>
+                                                <span class="actionLink mastheadButton">
+                                                    <a href="#{request.contextPath}/login.jsf">Logout</a>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="infoBar"></div>
+            <div id="mainContent">
+                <ui:insert name="body"/>
+
+                <!-- Tasks -->
+                <ui:include src="/commonTasks.xhtml"/>
+            </div>
+        </div>
+        <ui:remove>
+            <div class="window bottomLeftRounded version">
+                <div>
+                    <span id="miniVersion">Oracle GlassFish Application Server</span>
+                </div>
+                <div class="copyright" id="copyright">Copyright © 2011, Oracle and/or its affiliates. All Rights Reserved.</div>
+            </div>
+            <div widgetid="messageConsole" id="messageConsole" class="window bottomRightRounded">
+                <table class="heading" border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tbody><tr>
+                            <td>Console Messages</td>
+                            <td align="right">
+                                <span widgetid="dijit_form_Button_0" class="dijit dijitReset dijitInline secondaryButton dijitButton dijitButtonDisabled dijitDisabled">
+                                    <span class="dijitReset dijitInline dijitButtonNode" dojoattachevent="ondijitclick:_onButtonClick">
+                                        <span aria-disabled="true" id="dijit_form_Button_0" style="-moz-user-select: none;" class="dijitReset dijitStretch dijitButtonContents" >
+                                            <span class="dijitReset dijitInline dijitIcon" dojoattachpoint="iconNode"/></span>
+                                        <span class="dijitReset dijitToggleButtonIconChar">●</span>
+                                        <span class="dijitReset dijitInline dijitButtonText" id="dijit_form_Button_0_label" dojoattachpoint="containerNode">Clear All</span>
+                                    </span>
+                                </span>
+                                <input disabled="disabled" value="" class="dijitOffScreen" tabindex="-1" dojoattachpoint="valueNode" type="button"/>
+                            </td>
+                        </tr>
+                    </tbody></table>
+                <div class="container">
+                    <table class="messagesTable" cellpadding="0" cellspacing="0">
+                        <tbody dojoattachpoint="messagesTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </ui:remove>
+        <style type="text/css">
+            .navButtons {
+                padding: 0px;
+            }
+            #navigation {
+                color: #99000;
+            }
+            #mainContent {
+                bottom: 7px;
+            }
+        </style>
+    </h:body>
+</html>
