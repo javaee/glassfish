@@ -962,14 +962,23 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
     }
 
     @Override
-    public <T> T getComponent(String fullQualifiedName, String name) {
+    public <T> Provider<T> getProvider(String fullQualifiedName, String name) {
         if (name != null && name.length() == 0) {
             name = null;
         }
-        Inhabitant i = isContract(fullQualifiedName) ?
+        Inhabitant<T> i = isContract(fullQualifiedName) ?
                 getInhabitantByContract(fullQualifiedName, name)
                 : getInhabitantByType(fullQualifiedName);
-        return (T) (i == null ? null : i.get());
+        return (i == null ? null : i);
+    }
+
+    @Override
+    public <T> T getComponent(String fullQualifiedName, String name) {
+        Provider<T> provider = getProvider(fullQualifiedName, name);
+        if (provider!=null) {
+            return provider.get();
+        }
+        return null;
     }
 
     /**
@@ -1279,6 +1288,19 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
     @Override
     public <T> T getByType(String implType) {
         return (T) getBy(implType, byType);
+    }
+
+    @Override
+    public <T> Provider<T> getProvider(Class<T> type, String name) {
+        Provider<T> provider = getInhabitant(type, name);
+        if (provider==null) {
+            provider = getInhabitantByType(type);
+            if (provider==null && !type.isInterface()) {
+                Creator<T> creator =  Creators.create(type, this, new MultiMap<String, String>());
+                if (creator!=null) return creator;
+            }
+        }
+        return provider;
     }
 
     /**
