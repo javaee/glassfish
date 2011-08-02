@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="./base_layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:gf="http://admingui.glassfish.org/glassfish"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:define name="body">
+        <!-- Navigation -->
+        <div id="navigation" class="window topLeftRounded bottomLeftRounded">
+            <div style="width: 230px; display: block;" id="navContainer">
+                <div widgetid="td_ConfigurationNavPanel_0" id="td_ConfigurationNavPanel_0">
+                    <h:form id="navForm" style="color: black;">
+                        <ui:include src="navigation.xhtml"/>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+        <!-- /Navigation -->
+
+        <div style="left: 233px;" widgetid="pageContainer" role="group" title="" id="pageContainer" dojotype="dijit.layout.ContentPane" class="dijitContentPane window">
+            <h:panelGroup id="ajaxBody">
+                <ui:insert name="content">Default content</ui:insert>
+            </h:panelGroup>
+        </div>
+    </ui:define>
+</ui:composition>
+

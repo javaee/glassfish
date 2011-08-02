@@ -205,8 +205,7 @@
                         </goals>
                         <configuration>
                             <dropVersionComponent>qualifier</dropVersionComponent>
-                            <versionPropertyName>project.osgi
-                            </versionPropertyName>
+                            <versionPropertyName>project.osgi.version</versionPropertyName>
                         </configuration>
                     </execution>
                 </executions>

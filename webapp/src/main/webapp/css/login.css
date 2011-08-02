@@ -1,0 +1,40 @@
+/* Copyright (c) 2011, Oracle and/or its affiliates. All Rights Reserved. */
+
+body {
+    margin:0;
+    padding:0;
+    background: #d1d1d1;
+}
+
+body, table {
+    color: #333333;
+    font-family: Tahoma,Verdana,Helvetica,sans-serif;
+    font-size: 11px;
+    font-weight: normal;
+}
+
+#adminConsoleLoader {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    display: none;
+    background: #fff url(images/td/curtainBG.png) top left;
+}
+
+#adminConsoleLoader table {
+    height: 100%;
+}
+
+#adminConsoleLoader table img {
+    vertical-align: middle;
+    padding-right: 10px;
+}
+
+#adminConsoleLoader table div {
+    font-weight: bold;
+    font-size: 15px;
+    color: #003286
+}

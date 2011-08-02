@@ -1,0 +1,35 @@
+table.props {
+	width: 100%;
+	border-collapse: collapse; 
+	border-bottom: 1px solid #000;
+}
+
+table.props th,
+table.props td {
+	padding: 5px;
+	text-align: left;
+	font-family: Arial, Verdana, sans-serif;
+	border: 1px solid #000; 
+	border-bottom:0;
+}
+
+table.props th {
+	background-color: #ddd;
+	border-bottom: 2px solid #000;
+}
+
+table.props tr.odd {
+	background-color: #DDFFFF;
+}
+
+table.props tr.odd td {
+	border-top: 1px solid #ccc;
+}
+
+table.props tr.even {
+	background-color: #FBFBFB;
+}
+
+table.props tr.even td {
+	border-top: 1px solid #BBEEEE;
+}

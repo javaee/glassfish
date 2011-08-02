@@ -10,7 +10,7 @@
     </parent>
     
     <artifactId>plugin-system</artifactId>
-    <name>Plugin System</name>
+    <name>Console.next Plugin System</name>
     <packaging>hk2-jar</packaging>
 
     <dependencies>
