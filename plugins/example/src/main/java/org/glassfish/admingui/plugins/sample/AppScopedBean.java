@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.glassfish.admingui.pluginprototype.plugins.hk2;
+package org.glassfish.admingui.plugins.sample;
 
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;

@@ -23,19 +23,20 @@ import org.osgi.util.tracker.BundleTracker;
  * @author jdlee
  */
 class PluginTracker extends BundleTracker {
+    public static final String HABITAT_ATTRIBUTE = "org.glassfish.servlet.habitat";
+    public static final String PLUGIN_MARKER_FILE = "/META-INF/console-plugin.xml";
 
-    public static final String HEADER_PLUGIN = "Console-Plugin";
+    private static Habitat habitat;
     private PluginService ps;
 
     public PluginTracker(BundleContext context) {
         super(context, Bundle.RESOLVED | Bundle.STARTING | Bundle.ACTIVE, null);
-        System.out.println("***** Starting PluginTracker");
         ps = getPluginService();
     }
 
     @Override
     public Object addingBundle(Bundle bundle, BundleEvent event) {
-        if (bundle.getHeaders().get(HEADER_PLUGIN) != null) {
+        if (bundle.getEntry(PLUGIN_MARKER_FILE) != null) {
             try {
                 bundle.start();
                 Enumeration e = bundle.findEntries("/", "*.class", true);
@@ -55,8 +56,6 @@ class PluginTracker extends BundleTracker {
 
         return super.addingBundle(bundle, event);
     }
-    public static final String HABITAT_ATTRIBUTE = "org.glassfish.servlet.habitat";
-    private static Habitat habitat;
 
     public static Habitat getHabitat() {
         if (habitat == null) {

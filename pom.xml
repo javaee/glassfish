@@ -46,6 +46,7 @@
     <modules>
         <module>plugin-system</module>
         <module>plugin-system-jsf</module>
+        <module>plugins</module>
         <module>webapp</module>
     </modules>
     
