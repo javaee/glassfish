@@ -40,15 +40,19 @@
 
 package org.glassfish.hk2.tests.qualifier;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import javax.inject.Qualifier;
 
 /**
  * Non @Qualifier annotated annotation that will be used as a Qualifier
  * with the Hk2 APIs.
  */
-// note that this is not annotated with @Qualifier on purpose.
-@java.lang.annotation.Target({ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER, ElementType.CONSTRUCTOR, ElementType.METHOD})
-@java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
-@java.lang.annotation.Documented
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER, ElementType.CONSTRUCTOR, ElementType.METHOD})
+@Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
+@Documented
+@Qualifier
 public @interface SomeQualifier {
 }
