@@ -61,11 +61,37 @@ public class QualifierTest {
 
     @Test
     @Ignore
-    public void assertInjections() {
+    public void assertInjectionsQualifiedBoundBeforeUnqualified() {
         Services services = HK2.get().create(null, new Module() {
             @Override
             public void configure(BinderFactory binderFactory) {
                 binderFactory.bind().to(QualifierInjectionTarget.class);
+                // binding definition order seems to matter (see the other version of the same test
+                binderFactory.bind(ToBeQualified.class).annotatedWith(SomeQualifier.class).to(QualifiedService.class);
+                binderFactory.bind(ToBeQualified.class).to(FallbackService.class);
+                binderFactory.bind(ToBeQualified.class).named("named").to(NamedService.class);
+            }
+        });
+        
+        QualifierInjectionTarget tests = services.byType(QualifierInjectionTarget.class).get();
+        
+        assertInjectedInstance(NamedService.class, tests.namedQualified);
+        assertInjectedInstance(QualifiedService.class, tests.qualified);
+        assertInjectedInstance(FallbackService.class, tests.fallback);
+
+        assertInjectedProvider(NamedService.class, tests.namedQualifiedProvider);
+        assertInjectedProvider(QualifiedService.class, tests.qualifiedProvider);
+        assertInjectedProvider(FallbackService.class, tests.fallbackProvider);        
+    }
+    
+    @Test
+    @Ignore
+    public void assertInjectionsUnqualifiedBoundBeforeQualified() {
+        Services services = HK2.get().create(null, new Module() {
+            @Override
+            public void configure(BinderFactory binderFactory) {
+                binderFactory.bind().to(QualifierInjectionTarget.class);
+                // binding definition order seems to matter (see the other version of the same test
                 binderFactory.bind(ToBeQualified.class).to(FallbackService.class);
                 binderFactory.bind(ToBeQualified.class).annotatedWith(SomeQualifier.class).to(QualifiedService.class);
                 binderFactory.bind(ToBeQualified.class).named("named").to(NamedService.class);
