@@ -39,7 +39,12 @@
  */
 package org.jvnet.hk2.component.internal.runlevel;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -168,7 +173,10 @@ public class RunLevelServiceTest {
     }
     assertTrue(String.valueOf(count), count >= 5);
   }
-  
+
+  /**
+   * Garbage in produces garbage out (by way of exception) in proceedTo() operations.
+   */
   @Test
   public void proceedToInvalidNegNum() {
     try {
@@ -180,7 +188,7 @@ public class RunLevelServiceTest {
   }
   
   /**
-   * There should be no runlevel services at this level.
+   * There should be no runlevel services at this level in the current set of test material.
    */
   @Test
   public void proceedTo0() {
@@ -191,6 +199,9 @@ public class RunLevelServiceTest {
     assertEquals(null, defRLS.getPlannedRunLevel());
   }
   
+  /**
+   * Proceed to level 5, and ensure we have the right # of services that were started.
+   */
   @Test
   public void proceedUpTo5_basics() {
     installTestRunLevelService(false);
@@ -203,6 +214,9 @@ public class RunLevelServiceTest {
     assertEquals(null, defRLS.getPlannedRunLevel());
   }
 
+  /**
+   * Do the same thing, but in async mode.
+   */
   @Ignore
   @Test
   public void proceedUpTo5Async() throws InterruptedException {
@@ -427,7 +441,10 @@ public class RunLevelServiceTest {
 
     assertListenerState(true, false, false);
   }
-  
+ 
+  /**
+   * Dependencies from from a non-RLS-annotated service to a RLS service is a violation.
+   */
   @Test
   public void dependenciesFromNonRunLevelToRunLevelService() {
     rls.proceedTo(10);
@@ -555,6 +572,12 @@ public class RunLevelServiceTest {
     assertListenerState(true, false, false);
   }
 
+  /**
+   * RLS supports other subcomponent lifecycle through what is known as
+   * "environments".  This tests another environment startup.
+   * 
+   * @throws Exception
+   */
   @Test
   public void exceptionTypeEnvRunLevelService() throws Exception {
     installTestRunLevelService(false);
