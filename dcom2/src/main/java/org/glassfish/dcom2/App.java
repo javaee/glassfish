@@ -1,5 +1,6 @@
 package org.glassfish.dcom2;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -19,13 +20,18 @@ import org.jinterop.dcom.common.JIDefaultAuthInfoImpl;
  */
 public class App {
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        try {
+            System.out.println("Hello World!");
 
-        App app = new App();
-        app.foo();
+            App app = new App();
+            app.foo();
+        }
+        catch (IOException ex) {
+            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    public void foo() {
+    public void foo() throws IOException {
         try {
             NtlmPasswordAuthentication authOracle = createSmbAuth("wnevins-lnr", "wnevins", password);
             NtlmPasswordAuthentication authBnevins = createSmbAuth("sony", "bnevins", password);
@@ -47,21 +53,22 @@ public class App {
             WindowsRemoteFileSystem wrfs =
                     new WindowsRemoteFileSystem("wnevins-lnr", authOracle);
 
-            WinFile wf = new WinFile(wrfs, "C:/temp", true);
-            WinFile wf2 = new WinFile(wrfs, "C:/temp/notexists", true);
-            WinFile foo = new WinFile(wrfs, "C:/temp/foo.txt", true);
-            foo.copyTo(wf2);
+            WinFile wf = new WinFile(wrfs, "C:/temp");
+            WinFile wf2 = new WinFile(wrfs, "C:/temp/notexists");
+            WinFile foo = new WinFile(wrfs, "C:/temp/foo.txt");
+            WinFile copyto = new WinFile(wrfs, "C:/temp/copied_from_lap.txt");
 
+            File from = new File("d:\\temp\\copyfrom");
+            System.out.println("LOCAL EXISTS: " + from.exists());
+            System.out.println("copy to should not exist yet: " + copyto.exists());
+            copyto.copyFrom(from);
+            System.out.println("copy to should exist now: " + copyto.exists());
 
-
-            System.out.println("WF: " + Arrays.toString(wf.list()));
-            System.out.println("wf exists, wf2 exists: " + wf.exists() + wf2.exists());
-            //wf2.createNewFile();
-            System.out.println("wf exists, wf2 exists: " + wf.exists() + wf2.exists());
         }
         catch (UnknownHostException ex) {
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
-        }        catch (SmbException ex) {
+        }
+        catch (SmbException ex) {
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
         }
         catch (MalformedURLException ex) {
@@ -86,10 +93,10 @@ public class App {
     return new JIDefaultAuthInfoImpl(tokens[0], tokens[1], Secret.toString(password));
     return new JIDefaultAuthInfoImpl("", userName, Secret.toString(password));
     }*/
-
     // I don't want my password going into subversion!  Put it into a
     // properties file instead.
     final static String password;
+
     static {
         String pw = null;
 
@@ -105,5 +112,4 @@ public class App {
         }
         password = pw;
     }
-
 }

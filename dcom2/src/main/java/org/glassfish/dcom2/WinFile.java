@@ -38,6 +38,10 @@
  */
 package org.glassfish.dcom2;
 
+import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import jcifs.smb.SmbException;
@@ -50,10 +54,9 @@ import jcifs.smb.SmbFile;
 public final class WinFile {
     private SmbFile smbFile;
     private WindowsRemoteFileSystem wrfs;
-    private final String smbPath;
-    private boolean isDir;
+    private String smbPath;
 
-    WinFile(WindowsRemoteFileSystem wrfs, String path, boolean isDir) throws MalformedURLException, UnknownHostException {
+    WinFile(WindowsRemoteFileSystem wrfs, String path) throws MalformedURLException, UnknownHostException {
         if (wrfs == null || path == null || path.isEmpty())
             throw new NullPointerException();
 
@@ -61,22 +64,17 @@ public final class WinFile {
             throw new IllegalArgumentException("Non-absolute path.  No colon in the path");
 
         this.wrfs = wrfs;
-        this.isDir = isDir;
+        //  this.isDir = isDir;
 
         // replace backslashes with forward slashes
         // replace drive designator(e:) with the default admin share for the drive (e$)
 
         path = path.replace('\\', '/').replace(':', '$');
 
-        // simpler logic -- just remove trailing slash first.  Maybe add it back
-        // soon...
-        if (path.endsWith("/"))
-            path = path.substring(0, path.length() - 1);
-
         StringBuilder sb = new StringBuilder("smb://");
         sb.append(wrfs.getHost()).append("/").append(path);
 
-        if (isDir)
+        if (!path.endsWith("/"))
             sb.append('/');
 
         smbPath = sb.toString();
@@ -88,6 +86,7 @@ public final class WinFile {
     public final boolean exists() throws SmbException {
         return smbFile.exists();
     }
+
     public final String[] list() throws SmbException {
         return smbFile.list();
     }
@@ -98,5 +97,32 @@ public final class WinFile {
 
     void copyTo(WinFile wf) throws SmbException {
         smbFile.copyTo(wf.smbFile);
+    }
+    void copyFrom(File from) throws SmbException, IOException {
+        if(from == null || !from.isFile())
+            throw new IllegalArgumentException("copyFrom file arg is bad: " + from);
+
+        if(!exists())
+            createNewFile();
+
+        OutputStream sout = new BufferedOutputStream(smbFile.getOutputStream());
+        InputStream sin = new BufferedInputStream(new FileInputStream(from));
+        byte[] buf = new byte[256*256];
+
+        while(sin.read(buf) >= 0) {
+            sout.write(buf);
+        }
+        try {
+            sin.close();
+        }
+        catch(Exception e) {
+            // nothing can be done!
+        }
+        try {
+            sout.close();
+        }
+        catch(Exception e) {
+            // nothing can be done!
+        }
     }
 }
