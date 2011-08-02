@@ -149,6 +149,7 @@ public class ListResources implements AdminCommand {
             for (String value : values) {
                 ActionReport.MessagePart child = part.addChild();
                 child.setMessage("  " + value + "\t" + type);
+                part.addProperty(value, type);
             }
         }
     }
