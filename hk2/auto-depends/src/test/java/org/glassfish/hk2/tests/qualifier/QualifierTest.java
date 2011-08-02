@@ -40,12 +40,15 @@
 
 package org.glassfish.hk2.tests.qualifier;
 
+import org.junit.Ignore;
+import org.glassfish.hk2.Factory;
 import org.glassfish.hk2.BinderFactory;
 import org.glassfish.hk2.HK2;
 import org.glassfish.hk2.Module;
 import org.glassfish.hk2.Services;
-import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Main test class, creates the HK2 services instance and insure that
@@ -57,17 +60,37 @@ import org.junit.Test;
 public class QualifierTest {
 
     @Test
+    @Ignore
     public void assertInjections() {
         Services services = HK2.get().create(null, new Module() {
             @Override
             public void configure(BinderFactory binderFactory) {
                 binderFactory.bind().to(QualifierInjectionTarget.class);
+                binderFactory.bind(ToBeQualified.class).to(FallbackService.class);
                 binderFactory.bind(ToBeQualified.class).annotatedWith(SomeQualifier.class).to(QualifiedService.class);
                 binderFactory.bind(ToBeQualified.class).named("named").to(NamedService.class);
             }
         });
+        
         QualifierInjectionTarget tests = services.byType(QualifierInjectionTarget.class).get();
-        Assert.assertNotNull(tests.qualified);
-        Assert.assertNotNull(tests.namedQualified);
+        
+        assertInjectedInstance(NamedService.class, tests.namedQualified);
+        assertInjectedInstance(QualifiedService.class, tests.qualified);
+        assertInjectedInstance(FallbackService.class, tests.fallback);
+
+        assertInjectedProvider(NamedService.class, tests.namedQualifiedProvider);
+        assertInjectedProvider(QualifiedService.class, tests.qualifiedProvider);
+        assertInjectedProvider(FallbackService.class, tests.fallbackProvider);        
+    }
+    
+    private <T> void assertInjectedInstance(Class<? extends T> expectedType, T instance) {
+        assertNotNull(instance);
+        assertEquals(expectedType.getSimpleName(), instance.getClass().getSimpleName());        
+    }
+    
+    private <T> void assertInjectedProvider(Class<? extends T> expectedType, Factory<T> provider) {
+        assertNotNull(provider);
+        assertNotNull(provider.get());
+        assertEquals(expectedType.getSimpleName(), provider.get().getClass().getSimpleName());
     }
 }
