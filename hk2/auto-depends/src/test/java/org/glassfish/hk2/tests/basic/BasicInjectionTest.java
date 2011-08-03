@@ -61,7 +61,6 @@ import org.glassfish.hk2.tests.basic.services.ServiceA;
 import org.glassfish.hk2.tests.basic.services.ServiceB;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.Ignore;
 
 import static org.junit.Assert.*;
 
@@ -140,7 +139,6 @@ public class BasicInjectionTest {
     }
     
     @Test
-    @Ignore
     public void testGetProvider() {
         // for now workaround by exposing ContractLocatorImpl.getFactory() by adding the method
         // to the Providers API interface
@@ -166,28 +164,24 @@ public class BasicInjectionTest {
     }
     
     @Test
-    @Ignore
     public void testQualifiedInjectedService() {
         QualifierInjectedService instance = services.byType(QualifierInjectedService.class).get();
         testQualifierInjectedContent(instance);
     }
     
     @Test
-    @Ignore
     public void testConstuctorQualifiedInjectedService() {
         ConstructorQualifierInjectedService instance = services.byType(ConstructorQualifierInjectedService.class).get();
         testQualifierInjectedContent(instance);
     }
     
     @Test
-    @Ignore
     public void testQualifiedInjectedClass() {
         QualifierInjectedClass instance = services.byType(QualifierInjectedClass.class).get();
         testQualifierInjectedContent(instance);
     }
     
     @Test
-    @Ignore
     public void testConstructorQualifiedInjectedClass() {
         ConstructorQualifierInjectedClass instance = services.byType(ConstructorQualifierInjectedClass.class).get();
         testQualifierInjectedContent(instance);
