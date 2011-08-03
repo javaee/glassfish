@@ -79,11 +79,13 @@ public interface ContractLocator<T> extends ServiceLocator<T> {
     ContractLocator<T> in(Scope scope);
 
     /**
-     * Qualify this ContractLocator to identify services have the given annotations.
+     * Qualify this ContractLocator to identify services have the given annotation.
+     * This method may be chained to specify multiple annotations.
      * 
-     * @param annotations the annotations that the service must have
-     * @return the same ContractLocator instance, now additionally qualified by annotations
+     * @param annotation the annotation that the service must have
+     * @return the same ContractLocator instance, now additionally qualified by 
+     *     the newly specified annotation.
      */
-    ContractLocator<T> annotatedWith(Class<? extends Annotation>... annotations);
+    ContractLocator<T> annotatedWith(Class<? extends Annotation> annotation);
 
 }
