@@ -37,22 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.basic.annotations;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-import javax.inject.Qualifier;
+package org.glassfish.hk2.tests.basic.contracts;
 
 /**
  *
  * @author Marek Potociar (marek.potociar at oracle.com)
  */
-@Target({ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER, ElementType.CONSTRUCTOR, ElementType.METHOD})
-@Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
-@Documented
-@Qualifier
-public @interface Marker {
+public interface FactoryProvidedContractC {
     
 }

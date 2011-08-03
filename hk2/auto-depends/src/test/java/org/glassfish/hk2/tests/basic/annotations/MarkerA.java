@@ -37,33 +37,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.basic.arbitrary;
+package org.glassfish.hk2.tests.basic.annotations;
 
-import org.glassfish.hk2.Factory;
-import org.glassfish.hk2.tests.basic.annotations.MarkerA;
-import org.glassfish.hk2.tests.basic.contracts.ContractB;
-import org.jvnet.hk2.annotations.Inject;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import javax.inject.Qualifier;
 
 /**
  *
  * @author Marek Potociar (marek.potociar at oracle.com)
  */
-public class ConstructorQualifierInjectedClass implements QualifierInjected {
-    final ContractB qb;
-    final Factory<ContractB> qbf;
-
-    public ConstructorQualifierInjectedClass(@Inject @MarkerA ContractB qb, @Inject @MarkerA Factory<ContractB> qbf) {
-        this.qb = qb;
-        this.qbf = qbf;
-    }
-
-    @Override
-    public ContractB getQb() {
-        return qb;
-    }
-
-    @Override
-    public Factory<ContractB> getQbf() {
-        return qbf;
-    }    
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER, ElementType.CONSTRUCTOR, ElementType.METHOD})
+@Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
+@Documented
+@Qualifier
+public @interface MarkerA {
+    
 }
