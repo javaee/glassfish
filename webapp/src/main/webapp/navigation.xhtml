@@ -9,7 +9,7 @@
     <tr:tree var="node" value="#{treeBean.model}">
         <f:facet name="nodeStamp">
             <h:graphicImage url="#{node.icon}" rendered="#{!empty node.icon}" style="display: inline"/>
-            <span styleClass="navLink" style="padding-left: 5px;" onclick="Console.Ajax.loadPage('#{node.link}');">
+            <span class="navLink" style="padding-left: 5px;" onclick="Console.Ajax.loadPage('#{node.link}');">
                 #{node.label}
             </span> 
         </f:facet>
