@@ -18,7 +18,74 @@
         <param-name>javax.faces.FACELETS_RESOURCE_RESOLVER</param-name>
         <param-value>org.glassfish.admingui.plugins.jsf.PluginResourceResolver</param-value>
     </context-param>
+    
+    <!-- Trinidad changes -->
+    <context-param>
+        <param-name>org.apache.myfaces.trinidad.USE_APPLICATION_VIEW_CACHE</param-name>
+        <param-value>false</param-value>
+    </context-param>
+ 
+    <context-param>
+        <param-name>org.apache.myfaces.trinidad.DISABLE_CONTENT_COMPRESSION</param-name>
+        <param-value>true</param-value>
+    </context-param>
 
+    <!-- If this parameter is enabled, Trinidad will automatically
+        check the modification date of your JSPs, and discard saved
+        state when they change. Trinidad will also automatically check
+        if your skinning css files have changed without having to restart
+        the server; this makes development easier,
+        but adds overhead that should be avoided when your application
+        is deployed. -->
+    <context-param>
+        <param-name>org.apache.myfaces.trinidad.CHECK_FILE_MODIFICATION</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>org.apache.myfaces.trinidad.ENABLE_LIGHTWEIGHT_DIALOGS</param-name>
+        <param-value>true</param-value>
+    </context-param> 
+    
+    <context-param>
+        <param-name>org.apache.myfaces.trinidad.resource.DEBUG</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>org.apache.myfaces.trinidad.DEBUG_JAVASCRIPT</param-name>
+        <param-value>true</param-value>
+    </context-param>      
+
+    <context-param>
+        <param-name>org.apache.myfaces.trinidad.FACELETS_VIEW_MAPPINGS</param-name>
+        <param-value>*.xhtml</param-value>
+    </context-param>
+
+    <filter>
+        <filter-name>trinidad</filter-name>
+        <filter-class>org.apache.myfaces.trinidad.webapp.TrinidadFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>trinidad</filter-name>
+        <servlet-name>Faces Servlet</servlet-name>
+    </filter-mapping>
+    <servlet>
+        <servlet-name>resources</servlet-name>
+        <servlet-class>org.apache.myfaces.trinidad.webapp.ResourceServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>resources</servlet-name>
+        <url-pattern>/adf/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>resources</servlet-name>
+        <url-pattern>/afr/*</url-pattern>
+    </servlet-mapping>
+    <!-- /Trinidad changes -->
+
+    
+    
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>

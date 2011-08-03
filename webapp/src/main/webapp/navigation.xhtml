@@ -5,43 +5,13 @@
              xmlns:gf="http://admingui.glassfish.org/glassfish"
              xmlns:h="http://java.sun.com/jsf/html"
              xmlns:f="http://java.sun.com/jsf/core"
-             xmlns:ps="http://admingui.glassfish.org/console">
-    <gf:navigation id="navTree" type="#{appHelper.navType}">
-        <gf:navNode id="homeNode" value="Home" page="/scratchpad.xhtml"/>
-        <gf:navNode id="domainNode" value="Domain" page="/domain.xhtml"
-                    icon="/images/icon/domain.gif"/>
-        <gf:navNode id="serverNode" value="Admin Server" page="/adminServer.xhtml"
-                    icon="/images/icon/instance.gif"/>
-        <gf:navNode id="clustersNode" value="Clusters" page="/clusters.xhtml"
-                    icon="/images/icon/cluster.gif"/>
-        <gf:navNode id="instancesNode" value="Standalone Instances" page="/instances.xhtml" 
-                    icon="/images/icon/instance.gif"/>
-        <gf:navNode id="jdbcNode" value="Applications" page="/testApplications.xhtml" 
-                    icon="/images/icon/instance.gif"/>
-        <ps:viewFragment type="navNode"/>
-        <gf:navNode id="resourcesNode" value="Resources"
-                    icon="/images/icon/resources.gif">
-            <gf:navNode id="jdbcNode" value="JDBC"
-                        icon="/images/icon/jdbc.gif">
-                <gf:navNode id="jdbcResourcesNode" value="JDBC Resources" page="/jdbcResources.xhtml"
-                            icon="/images/icon/tree_folder.gif"/>
-                <gf:navNode id="jdbcConnPoolsNode" value="JDBC Connection Pools" page="/jdbcConnectionPools.xhtml"
-                            icon="/images/icon/tree_folder.gif"/>
-            </gf:navNode>
-            <gf:navNode id="connectorsNode" value="Connectors" icon="/images/icon/connector.png">
-                <gf:navNode id="connectorResourcesNode" value="Connector Resources" page="/connectorResources.xhtml"
-                            icon="/images/icon/tree_folder.gif"/>
-                <gf:navNode id="connectorConnPoolsNode" value="Connector Connection Pools" page="/connectorConnectionPools.xhtml"
-                            icon="/images/icon/tree_folder.gif"/>
-                <gf:navNode id="adminObjectResourcesNode" value="Admin Object Resources" page="/adminObjectResources.xhtml"
-                            icon="/images/icon/tree_folder.gif"/>
-                <gf:navNode id1="workSecurityMapsNode" value="Work Security Maps" page="/workSecurityMaps.xhtml"
-                            icon="/images/icon/tree_folder.gif"/>
-            </gf:navNode>
-        </gf:navNode>
-        <gf:navNode id="configsNode" value="Configurations" icon="/images/icon/configs.gif">
-            <gf:navNode id="ejbContainer" value="EJB Container" icon="/images/icon/ejb.gif" page="/ejbContainer.xhtml"/>
-        </gf:navNode>
-    </gf:navigation>
+             xmlns:tr="http://myfaces.apache.org/trinidad">
+    <hr/>
+    <tr:tree var="foo" value="#{treeBean.model}" rendered="true">
+        <f:facet name="nodeStamp">
+            <h:outputLink value="#{foo.link}">#{foo.label}</h:outputLink> 
+        </f:facet>
+    </tr:tree>
+    <hr/>
 </ui:fragment>
 
