@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ps="http://admingui.glassfish.org/console">
+        <div class="navObjectInfo">
+            <div class="title headerPageTitle">Applications</div>
+            <div class="subHeading">
+                <span>
+                    Applications can be enterprise or web applications, or various kinds of modules. 
+                    Restart an application or module by clicking on the reload link, this action will 
+                    apply only to the targets that the application or module is enabled on.
+                </span>
+            </div>
+        </div>
+        <br/>
+        <hr/>
+        <ps:viewFragment type="navNode"/>
+        <ps:viewFragment type="applicationPlugin"/>
+        <hr/>
+            <div id="table"/>
+            <script type="text/javascript">
+                    var actions = 'Launch | Undeploy | Disable';
+                    new Y.DataTable.Base({
+                        columnset: [
+                            {key: 'name', label: 'Name'},
+                            {key: 'enabled', label: 'Enabled'},
+                            {key: 'engines', label: 'Engines'},
+                            {key: 'actions', label: 'Action'}
+                        ],
+                        recordset: [
+                            {name: 'console-demo', enabled: 'false', engines: 'web', actions: actions},
+                            {name: 'plugin-demo', enabled: 'false', engines: 'web', actions: actions},
+                            {name: 'cdi-demo', enabled: 'false', engines: 'web, cdi', actions: actions},
+                        ]
+                    }).render("#table");                
+            </script>
+
+</ui:composition>

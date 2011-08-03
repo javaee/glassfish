@@ -6,12 +6,13 @@
              xmlns:h="http://java.sun.com/jsf/html"
              xmlns:f="http://java.sun.com/jsf/core"
              xmlns:tr="http://myfaces.apache.org/trinidad">
-    <hr/>
-    <tr:tree var="foo" value="#{treeBean.model}" rendered="true">
+    <tr:tree var="node" value="#{treeBean.model}">
         <f:facet name="nodeStamp">
-            <h:outputLink value="#{foo.link}">#{foo.label}</h:outputLink> 
+            <h:graphicImage url="#{node.icon}" rendered="#{!empty node.icon}" style="display: inline"/>
+            <span styleClass="navLink" style="padding-left: 5px;" onclick="Console.Ajax.loadPage('#{node.link}');">
+                #{node.label}
+            </span> 
         </f:facet>
     </tr:tree>
-    <hr/>
 </ui:fragment>
 

@@ -6,29 +6,26 @@
       xmlns:f="http://java.sun.com/jsf/core">
 
     <h:head>
-        <script type="text/javascript" src="#{request.contextPath}/jquery/js/jquery-1.5.1.min.js"></script>
-        <script type="text/javascript" src="#{request.contextPath}/jquery/js/jquery-ui-1.8.14.custom.min.js"></script>
-        <script type="text/javascript" src="#{request.contextPath}/jquery/jstree/jquery.jstree.js"></script>
+        <script type="text/javascript" src="#{request.contextPath}/js/console.js"></script>
 
         <link href="#{request.contextPath}/css/nihilo.css" rel="stylesheet" type="text/css"/>
         <link href="#{request.contextPath}/css/Wizard.css" rel="stylesheet" type="text/css"/>
         <link href="#{request.contextPath}/css/td_main.css" rel="stylesheet" type="text/css"/>
 
-        <link href="#{request.contextPath}/jquery/jstree/themes/default/style.css" rel="stylesheet" type="text/css"/>
-        <link href="#{request.contextPath}/jquery/jstree/themes/apple/style.css" rel="stylesheet" type="text/css"/>
-
-        <script src="#{request.contextPath}/alloy/aui/aui.js" type="text/javascript"/>
-        <link type="text/css" href="#{request.contextPath}/alloy/aui-skin-classic/css/aui-skin-classic-min.css" rel="stylesheet" />
-
         <style type="text/css">
-            #navgiation {
+            #navigation table {
                 color: #000000;
+                font-size: 14px;
             }
+
+            #navLink {
+                cursor: pointer;
+            }
+
             .jstree-default.jstree-focused {
                 background-color: #FFFFFF;
             }
         </style>
-        <link type="text/css" href="#{request.contextPath}/jquery/css/cupertino/jquery-ui-1.8.14.custom.css" rel="stylesheet" />	
     </h:head>
 
     <h:body class="nihilo">
