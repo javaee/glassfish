@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -201,13 +201,18 @@ public class DelegatedRecoveryManager {
     
     public static boolean delegated_recover(String logPath, XAResource[] resources) throws Exception  {
        try {
-            File recoveryFile = new File(logPath,LogControl.RECOVERY_STRING_FILE_NAME);
-            RandomAccessFile raf = new RandomAccessFile(recoveryFile,"r");
-            long length = raf.length();
-            byte b1[] = new byte[(int)length]; // length is very small
-            raf.readFully(b1);
-            String serverName = new String(b1);
-            raf.close();
+            String serverName = null;
+            if (Configuration.isDBLoggingEnabled()) {
+                serverName = LogDBHelper.getInstance().getServerNameForInstanceName(logPath);
+            } else {
+                File recoveryFile = new File(logPath,LogControl.RECOVERY_STRING_FILE_NAME);
+                RandomAccessFile raf = new RandomAccessFile(recoveryFile,"r");
+                long length = raf.length();
+                byte b1[] = new byte[(int)length]; // length is very small
+                raf.readFully(b1);
+                serverName = new String(b1);
+                raf.close();
+            }
             return delegated_recover(serverName,logPath,resources);
        } catch (IOException ex) {
            _logger.log(Level.WARNING,"jts.exception_in_recovery_file_handling",ex);
@@ -220,6 +225,11 @@ public class DelegatedRecoveryManager {
             return false;
         }
         Configuration.setServerName(logPath,serverName);
+        if (Configuration.isDBLoggingEnabled()) {
+            RecoveryManager.dbXARecovery(serverName, Collections.enumeration(Arrays.asList(resources)));
+            return true;
+        }
+
         boolean result = false;
         boolean keypointRequired = false;
         RecoveryStateHolder state = new RecoveryStateHolder();
@@ -316,9 +326,9 @@ public class DelegatedRecoveryManager {
                         
                         DelegatedTimeoutManager tmoutMgr = getTimeoutManager(logPath);
                         tmoutMgr.setTimeout(
-                        new Long(coord.getLocalTID()),
-                        DelegatedTimeoutManager.IN_DOUBT_TIMEOUT,
-                        60);
+                                coord.getLocalTID(),
+                                DelegatedTimeoutManager.IN_DOUBT_TIMEOUT,
+                                60);
                         
                     } else if (state == Status.StatusCommitted) {
                         
@@ -611,7 +621,7 @@ public class DelegatedRecoveryManager {
                         // is registered with the coordinator per transaction
                         // per RM.
                         
-                        String xidStr = stringifyXid(inDoubtXids[i]);
+                        //String xidStr = stringifyXid(inDoubtXids[i]);
                         if (!uniqueXids.contains(inDoubtXids[i])) { // unique xid
                             if(_logger.isLoggable(Level.FINE))
                             {
@@ -834,5 +844,5 @@ class RecoveryStateHolder {
     
     Hashtable coordsByGlobalTID = new Hashtable();
     Hashtable coordsByLocalTID = new Hashtable();
-    Hashtable transactionIds = new Hashtable();
+    //Hashtable transactionIds = new Hashtable();
 }
