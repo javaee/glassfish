@@ -39,35 +39,23 @@
  */
 package org.glassfish.hk2.tests.basic;
 
-import org.junit.Ignore;
-import org.jvnet.hk2.annotations.Inject;
-import org.glassfish.hk2.tests.basic.annotations.MarkerB;
-import org.glassfish.hk2.tests.basic.contracts.FactoryProvidedContractB;
-import org.glassfish.hk2.tests.basic.contracts.FactoryProvidedContractC;
-import org.glassfish.hk2.tests.basic.arbitrary.QualifierInjected;
-import org.glassfish.hk2.ComponentException;
-import org.glassfish.hk2.tests.basic.arbitrary.ConstructorQualifierInjectedClass;
-import org.glassfish.hk2.tests.basic.arbitrary.QualifierInjectedClass;
-import org.glassfish.hk2.tests.basic.services.ServiceB1;
-import org.glassfish.hk2.Provider;
-import org.glassfish.hk2.tests.basic.services.ServiceD;
-import org.glassfish.hk2.tests.basic.services.ServiceC;
 import org.glassfish.hk2.BinderFactory;
+import org.glassfish.hk2.ComponentException;
 import org.glassfish.hk2.Factory;
 import org.glassfish.hk2.HK2;
 import org.glassfish.hk2.Module;
+import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.Services;
-import org.glassfish.hk2.tests.basic.annotations.MarkerA;
-import org.glassfish.hk2.tests.basic.arbitrary.ClassX;
-import org.glassfish.hk2.tests.basic.contracts.ContractA;
-import org.glassfish.hk2.tests.basic.contracts.ContractB;
-import org.glassfish.hk2.tests.basic.services.ConstructorQualifierInjectedService;
-import org.glassfish.hk2.tests.basic.contracts.FactoryProvidedContractA;
-import org.glassfish.hk2.tests.basic.services.QualifierInjectedService;
-import org.glassfish.hk2.tests.basic.services.ServiceA;
-import org.glassfish.hk2.tests.basic.services.ServiceB;
+import org.glassfish.hk2.tests.basic.annotations.*;
+import org.glassfish.hk2.tests.basic.arbitrary.*;
+import org.glassfish.hk2.tests.basic.contracts.*;
+import org.glassfish.hk2.tests.basic.scopes.*;
+import org.glassfish.hk2.tests.basic.services.*;
+
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.jvnet.hk2.annotations.Inject;
 
 import static org.junit.Assert.*;
 
@@ -79,6 +67,8 @@ import static org.junit.Assert.*;
  * @author Marek Potociar (marek.potociar at oracle.com)
  */
 public class BasicInjectionTest {
+    public static InstanceBoundContract boundContractInstance = new InstanceBoundContract(){};
+    public static InstanceBoundService boundServiceInstance = new InstanceBoundService();
 
     static class FactoryProvidedContractAImpl implements FactoryProvidedContractA {
     }
@@ -164,6 +154,7 @@ public class BasicInjectionTest {
 
         @Override
         public void configure(BinderFactory binderFactory) {
+            // basic & qualified bindings
             binderFactory.bind(ContractA.class).to(ServiceA.class);
             binderFactory.bind(ContractB.class).to(ServiceB.class);
             binderFactory.bind(ContractB.class).annotatedWith(MarkerA.class).to(ServiceB1.class);
@@ -171,6 +162,16 @@ public class BasicInjectionTest {
             binderFactory.bind().to(ServiceD.class);
             binderFactory.bind().to(QualifierInjectedService.class);
             binderFactory.bind().to(ConstructorQualifierInjectedService.class);
+            
+            // instance bindings
+            binderFactory.bind(InstanceBoundContract.class).toInstance(boundContractInstance);
+            binderFactory.bind().toInstance(boundServiceInstance);
+            
+            // scoped bindings
+            binderFactory.bind(CustomScope.class).toInstance(new CustomScope());
+            binderFactory.bind().to(CustomScopeInjectedClass.class).in(CustomScope.class);
+            
+            // factory provided bindings
             binderFactory.bind(FactoryProvidedContractA.class).toFactory(new Factory<FactoryProvidedContractA>() {
 
                 @Override
@@ -240,6 +241,19 @@ public class BasicInjectionTest {
         final ContractB cb = ca.getB();
         assertInjectedInstance(ServiceB.class, cb);
         assertNotNull("Arbitrary class not injected into a service.", cb.getX());
+    }
+    
+    @Test
+    public void testInstanceBindingInjection() {
+        final InstanceBoundContract i1 = services.forContract(InstanceBoundContract.class).get();
+        final InstanceBoundContract i2 = services.forContract(InstanceBoundContract.class).get();
+        assertSame("Provisioned contract instance not the same as the one used in instance binding definition", boundContractInstance, i1);
+        assertSame("Provisioned contract instance not the same as the one used in instance binding definition", boundContractInstance, i2);
+        
+        final InstanceBoundService s1 = services.byType(InstanceBoundService.class).get();
+        final InstanceBoundService s2 = services.byType(InstanceBoundService.class).get();
+        assertSame("Provisioned service instance not the same as the one used in instance binding definition", boundServiceInstance, s1);
+        assertSame("Provisioned service instance not the same as the one used in instance binding definition", boundServiceInstance, s2);
     }
 
     @Test
@@ -318,7 +332,28 @@ public class BasicInjectionTest {
         assertNull("No binding defined for the non-annotated contract. Provisioned instance should be null.", ci.c_default);
         assertTrue("No binding defined for the non-annotated contract. Provider or returned instance should be null.", ci.pc_default == null || ci.pc_default.get() == null);
     }
+    
+    @Test
+    public void testScopes() {
+        final CustomScope customScope = services.forContract(CustomScope.class).get();
 
+        CustomScopeInjectedClass customScopeInjectedClass;
+        
+        customScope.enter();
+        customScopeInjectedClass = services.byType(CustomScopeInjectedClass.class).get();
+        assertNotNull("Instance not provisioned", customScopeInjectedClass);
+        customScope.leave();
+        
+        try {
+            customScopeInjectedClass = services.byType(CustomScopeInjectedClass.class).get();
+        } catch (IllegalStateException ex) {
+            assertEquals(ex.getMessage(), CustomScope.OUT_OF_SCOPE_MESSAGE);
+            return;
+        }
+        
+        fail("IllegalStateException expected to be raised when trying to access a custom-scoped biding outside of the scope.");
+    }
+    
     @Test
     public void testGetProvider() {
         // for now workaround by exposing ContractLocatorImpl.getFactory() by adding the method
