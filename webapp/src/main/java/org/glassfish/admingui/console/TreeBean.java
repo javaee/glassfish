@@ -28,25 +28,25 @@ public class TreeBean {
         return model;
     }   
     
-    private List<TreeNodeBean> getRoot() {
-        List<TreeNodeBean> root = new ArrayList<TreeNodeBean>();
+    private List<NavigationNode> getRoot() {
+        List<NavigationNode> root = new ArrayList<NavigationNode>();
         
-        root.add(new TreeNodeBean("Home", "/welcome.xhtml"));
-        root.add(new TreeNodeBean("Domain", "/images/icons/domain.gif", "/demo/domain.xhtml"));
-        root.add(new TreeNodeBean("Admin Server", "/images/icons/instance.gif", "/demo/adminServer.xhtml"));
-        root.add(new TreeNodeBean("Clusters", "/images/icons/cluster.gif", "/demo/clusters.xhtml"));
-        root.add(new TreeNodeBean("Standalone Instances", "/images/icons/instance.gif", "/demo/instances.xhtml" ));
-        root.add(new TreeNodeBean("Applications", "/images/icons/instance.gif", "/demo/testApplications.xhtml"));
+        root.add(new NavigationNode("Home", "/welcome.xhtml"));
+        root.add(new NavigationNode("Domain", "/images/icons/domain.gif", "/demo/domain.xhtml"));
+        root.add(new NavigationNode("Admin Server", "/images/icons/instance.gif", "/demo/adminServer.xhtml"));
+        root.add(new NavigationNode("Clusters", "/images/icons/cluster.gif", "/demo/clusters.xhtml"));
+        root.add(new NavigationNode("Standalone Instances", "/images/icons/instance.gif", "/demo/instances.xhtml" ));
+        root.add(new NavigationNode("Applications", "/images/icons/instance.gif", "/demo/testApplications.xhtml"));
         
-        TreeNodeBean resources = new TreeNodeBean("Resources", "/images/icons/resources.gif");
+        NavigationNode resources = new NavigationNode("Resources", "/images/icons/resources.gif");
         root.add(resources);
-        resources.setChildren(new ArrayList<TreeNodeBean>() {{
-                add(new TreeNodeBean("JDBC", "/images/icons/jdbc.gif"));
-                add(new TreeNodeBean("Connectors", "/images/icons/connector.png"));
-                add(new TreeNodeBean("Resource Adapter Configs", "/images/icons/connector.png"));
-                add(new TreeNodeBean("JMS Resources"));
-                add(new TreeNodeBean("JavaMail Resources"));
-                add(new TreeNodeBean("JNDI"));
+        resources.setChildren(new ArrayList<NavigationNode>() {{
+                add(new NavigationNode("JDBC", "/images/icons/jdbc.gif"));
+                add(new NavigationNode("Connectors", "/images/icons/connector.png"));
+                add(new NavigationNode("Resource Adapter Configs", "/images/icons/connector.png"));
+                add(new NavigationNode("JMS Resources"));
+                add(new NavigationNode("JavaMail Resources"));
+                add(new NavigationNode("JNDI"));
         }});
 
         return root;

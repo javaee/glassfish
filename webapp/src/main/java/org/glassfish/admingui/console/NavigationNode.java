@@ -13,20 +13,20 @@ import java.util.List;
  *
  * @author jdlee
  */
-public class TreeNodeBean implements Serializable {
+public class NavigationNode implements Serializable {
 
     private String label;
     private String link;
     private String icon;
-    private List<TreeNodeBean> children;
+    private List<NavigationNode> children;
 
-    public TreeNodeBean(String label) {
+    public NavigationNode(String label) {
         this(label, null, null);
     }
-    public TreeNodeBean(String label, String icon) {
+    public NavigationNode(String label, String icon) {
         this(label, icon, null);
     }
-    public TreeNodeBean(String label, String icon, String link) {
+    public NavigationNode(String label, String icon, String link) {
         this.label = label;
         this.icon = icon;
         this.link = link;
@@ -56,11 +56,11 @@ public class TreeNodeBean implements Serializable {
         this.icon = icon;
     }
 
-    public void setChildren(List<TreeNodeBean> nodes) {
+    public void setChildren(List<NavigationNode> nodes) {
         children = nodes;
     }
 
-    public List<TreeNodeBean> getChildren() {
+    public List<NavigationNode> getChildren() {
         return (children == null) ? null : Collections.unmodifiableList(children);
     }
 }
