@@ -43,6 +43,7 @@
 <!-- appServer/serverInstGeneralPe.jsf -->
 <!initPage
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="i18core" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.instance.GeneralTitle}" >
@@ -62,6 +63,12 @@
                 setPageSessionAttribute(key="statusString" value="$resource{i18nc.status.RUNNING} $resource{i18nc.status.image.RUNNING} ");
         }
         gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/servers/server/#{pageSession.instanceName}", valueMap="#{pageSession.vMap}");
+        if (#{sessionScope.secureAdminEnabled}) {
+            setPageSessionAttribute(key="secureAdminString" value="$resource{i18core.common.Enabled}");
+        }
+        if (!#{sessionScope.secureAdminEnabled}) {
+            setPageSessionAttribute(key="secureAdminString" value="$resource{i18core.inst.notEnabled}");
+        }
     />
     </event>
     <sun:form id="propertyForm">
@@ -109,7 +116,13 @@
                 <!command
                     gf.redirect(page="serverRecoverTransactions.jsf?instanceName=#{pageSession.instanceName}");
                 />
-            </sun:button>
+                </sun:button>
+                <sun:button id="secureAdmin" text="$resource{i18nc.button.secureAdmin}" primary="#{false}">
+                <!command
+                    setSessionAttribute(key="secureCancelUrl" value="#{facesContext.externalContext.requestContextPath}/common/appServer/serverInstGeneralPe.jsf")
+                    gf.redirect(page="securityAdmin.jsf");
+                />
+                </sun:button>
         </sun:title>
 
                         <!-- PropertySheet .... -->
@@ -161,6 +174,10 @@
 
                 <sun:property id="versionProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.versionLabel}">
                     <sun:staticText id="version" text="#{sessionScope.appServerVersion}"/>
+                </sun:property>
+
+                <sun:property id="secureAdminProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.security.secureLabel}">
+                    <sun:staticText id="secureAdminEnabled" text="#{pageSession.secureAdminString}"/>
                 </sun:property>
 
                 <sun:property id="debugProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.debugLabel}">
