@@ -41,7 +41,6 @@ package org.jvnet.hk2.component;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.AnnotationTypeMismatchException;
-import java.lang.reflect.Constructor;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,7 +48,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -60,8 +61,15 @@ import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.sun.hk2.component.*;
-import org.glassfish.hk2.*;
+import org.glassfish.hk2.Binding;
+import org.glassfish.hk2.ContractLocator;
+import org.glassfish.hk2.Descriptor;
+import org.glassfish.hk2.DynamicBinderFactory;
+import org.glassfish.hk2.Provider;
+import org.glassfish.hk2.ScopeInstance;
+import org.glassfish.hk2.ServiceLocator;
+import org.glassfish.hk2.Services;
+import org.glassfish.hk2.TypeLiteral;
 import org.glassfish.hk2.inject.Injector;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
@@ -71,6 +79,14 @@ import org.jvnet.hk2.component.InhabitantTracker.Callback;
 import org.jvnet.hk2.component.concurrent.Hk2Executor;
 import org.jvnet.hk2.component.concurrent.SameThreadExecutor;
 import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
+
+import com.sun.hk2.component.ConstructorCreator;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
+import com.sun.hk2.component.FactoryCreator;
+import com.sun.hk2.component.InjectInjectionResolver;
+import com.sun.hk2.component.InjectionResolver;
+import com.sun.hk2.component.RunLevelInhabitantProvider;
+import com.sun.hk2.component.ScopeInstanceImpl;
 
 /**
  * A set of templates that constitute a world of objects.
@@ -253,14 +269,45 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
 
     @Override
     public Collection<Binding<?>> getDeclaredBindings(Descriptor descriptor) {
-        if (null == descriptor) {
-            descriptor = DescriptorImpl.EMPTY_DESCRIPTOR;
-        }
-
-        // TODO:
-//        return null;
+//        LinkedHashSet<Binding<?>> result = new LinkedHashSet<Binding<?>>();
+//
+//        // try optimized approaches first
+//        if (DescriptorImpl.isEmpty(descriptor)) {
+//            includeBinding(result, byContract);
+//            includeBinding(result, byType);
+//        } else if (null != descriptor && !DescriptorImpl.isEmpty(descriptor.getTypeName())) {
+//            includeBindingIfMaches(result, descriptor, byType.get(descriptor.getTypeName()));
+//        } else if (null != descriptor && !DescriptorImpl.isEmpty(descriptor.getContracts())) {
+//            includeBindingIfMatches(result, descriptor, byContract.get(descriptor.getContracts()));
+//        } else {
+//            // no optimized approaches, let's try them all
+//            includeMatchingBinding(result, descriptor);
+//        }
+//        
+//        return result;
         throw new UnsupportedOperationException();
     }
+
+//    private void includeBindingIfMaches(LinkedHashSet<Binding<?>> result,
+//            Descriptor descriptor,
+//            List<Inhabitant> list) {
+//        for (Inhabitant i : list) {
+//            if (matches(descriptor)) {
+//                includeBinding(result, i);
+//            }
+//        }
+//    }
+
+//    private void includeBinding(LinkedHashSet<Binding<?>> result, Inhabitant i) {
+//        // TODO Auto-generated method stub
+//        
+//    }
+//
+//    void includeBinding(LinkedHashSet<Binding<?>> result, MultiMap<String, /*Inhabitant*/?> mm) {
+//        for (Entry<String, ?> entry : mm.entrySet()) {
+//            result.add(entry.getValue());
+//        }
+//    }
 
     @Override
     public Collection<Binding<?>> getBindings() {
@@ -269,13 +316,18 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
 
     @Override
     public Collection<Binding<?>> getBindings(Descriptor descriptor) {
-        if (null == descriptor) {
-            descriptor = DescriptorImpl.EMPTY_DESCRIPTOR;
+        ArrayList<Binding<?>> result = new ArrayList<Binding<?>>();
+        
+        // add parent bindings
+        if (null != parent) {
+            Collection<Binding<?>> parentBindings = parent.getBindings(descriptor);
+            result.addAll(parentBindings);
         }
-
-        // TODO:
-//      return null;
-      throw new UnsupportedOperationException();
+        
+        // add our bindings
+        result.addAll(getDeclaredBindings(descriptor));
+        
+        return result;
     }
     
     @Override
