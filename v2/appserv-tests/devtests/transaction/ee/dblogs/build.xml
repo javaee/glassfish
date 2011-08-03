@@ -59,11 +59,11 @@
     <target name="setup" depends="init-common">
       <antcall target="clean-results"/>
       <antcall target="start-derby"/>
+      <ant target="start-domain"/>
       <antcall target="setup-test"/>
     </target>
 
     <target name="setup-test" depends="init-common">
-      <ant target="start-domain"/>
       <antcall target="setup-database"/>
     </target>
 

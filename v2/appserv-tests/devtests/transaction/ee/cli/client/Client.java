@@ -101,7 +101,7 @@ public class Client extends AdminBaseDevTest {
             }
             asadmin("start-cluster", CLUSTER_NAME);
             asadmin("set", "configs.config." + CLUSTER_NAME + "-config.monitoring-service.module-monitoring-levels.transaction-service=HIGH");
-            asadmin("set", "configs.config." + CLUSTER_NAME + "-config.log-service.module-log-levels.jta=FINE");
+            //asadmin("set", "configs.config." + CLUSTER_NAME + "-config.log-service.module-log-levels.jta=FINE");
             // to force derby failure on recovery after it was killed: asadmin("set", "configs.config." + CLUSTER_NAME + "-config.transaction-service.property.commit-one-phase-during-recovery=true");
             //asadmin("set-log-level", "javax.enterprise.resource.jta=FINE");
             System.out.println("Started cluster. Setting up resources.");
@@ -149,7 +149,7 @@ public class Client extends AdminBaseDevTest {
     public void recover(String location) {
         System.out.println("Executing recover CLI");
         try {
-            asadmin("set", "configs.config." + CLUSTER_NAME + "-config.log-service.module-log-levels.resourceadapter=FINE");
+            //asadmin("set", "configs.config." + CLUSTER_NAME + "-config.log-service.module-log-levels.resourceadapter=FINE");
             AsadminReturn result = null;
             if (location != null && location.length() > 0) {
                 String txLog = new StringBuffer(location).append(File.separator)

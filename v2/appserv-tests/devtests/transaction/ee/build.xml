@@ -63,6 +63,7 @@
         <ant dir="mdb" target="test"/>
         <ant dir="resendautorecovery" target="test"/>
         <ant dir="timer_with_autorecovery" target="test"/>
+        <ant dir="dblogs" target="test"/>
 
         <antcall target="stop-domain"/>
         <antcall target="stop-derby"/>

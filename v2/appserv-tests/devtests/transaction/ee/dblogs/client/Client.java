@@ -97,7 +97,7 @@ public class Client extends AdminBaseDevTest {
                  asadmin("set-log-levels", "ShoalLogger=FINER");
                  asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger=FINER");
             }
-            asadmin("set-log-levels", "--target", CLUSTER_NAME, "javax.enterprise.system.core.transaction=FINE");
+            //asadmin("set-log-levels", "--target", CLUSTER_NAME, "javax.enterprise.system.core.transaction=FINE");
             asadmin("start-cluster", CLUSTER_NAME);
             System.out.println("Started cluster. Setting up resources.");
 
