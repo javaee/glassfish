@@ -144,5 +144,26 @@ public class DescriptorImplTest {
         assertTrue(descriptor.matches(copy));
         assertFalse(copy.matches(descriptor));
     }
-    
+
+    @Test
+    public void isEmpty() {
+        assertTrue(DescriptorImpl.isEmpty((Descriptor)null));
+        assertTrue(DescriptorImpl.isEmpty(DescriptorImpl.EMPTY_DESCRIPTOR));
+        assertTrue(DescriptorImpl.isEmpty(new DescriptorImpl(null, null)));
+        
+        DescriptorImpl descriptor = new DescriptorImpl("x", null);
+        assertFalse(DescriptorImpl.isEmpty(descriptor));
+
+        descriptor = new DescriptorImpl(null, "x");
+        assertFalse(DescriptorImpl.isEmpty(descriptor));
+
+        descriptor = new DescriptorImpl(null, null).addContract("x");
+        assertFalse(DescriptorImpl.isEmpty(descriptor));
+
+        descriptor = new DescriptorImpl(null, null).addMetadata("x", null);
+        assertFalse(DescriptorImpl.isEmpty(descriptor));
+
+        descriptor = new DescriptorImpl(null, null).addQualifierType("x");
+        assertFalse(DescriptorImpl.isEmpty(descriptor));
+    }
 }

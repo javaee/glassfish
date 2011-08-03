@@ -43,6 +43,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -252,5 +253,47 @@ public class MultiMapTest {
 
         assertTrue(mm.matches(mm4));
         assertFalse(mm4.matches(mm));
+    }
+    
+    @Test
+    public void union() {
+        MultiMap<String, String> mm = new MultiMap<String, String>();
+        mm.add("key", "val");
+        mm.add("key", "val2");
+        mm.add("key2", "val");
+        mm.add("key3", "val2");
+        
+        List<String> result = mm.getUnionOfAll(Collections.singleton(""));
+        assertEquals(result.toString(), 0, result.size());
+        
+        result = mm.getUnionOfAll(Arrays.asList("key2"));
+        assertEquals(Arrays.asList("val"), result);
+
+        result = mm.getUnionOfAll(Arrays.asList("key", "bogus", "key2", "key3"));
+        assertEquals(Arrays.asList("val", "val2"), result);
+    }
+    
+    @Test
+    public void intersection() {
+        MultiMap<String, String> mm = new MultiMap<String, String>();
+        mm.add("key", "val");
+        mm.add("key", "val2");
+        mm.add("key2", "val");
+        mm.add("key3", "val2");
+        
+        List<String> result = mm.getIntersectionOfAll(Collections.singleton(""));
+        assertEquals(result.toString(), 0, result.size());
+        
+        result = mm.getIntersectionOfAll(Arrays.asList("key2"));
+        assertEquals(Arrays.asList("val"), result);
+
+        result = mm.getIntersectionOfAll(Arrays.asList("key2", "key"));
+        assertEquals(Arrays.asList("val"), result);
+        
+        result = mm.getIntersectionOfAll(Arrays.asList("key2", "key", "bogus"));
+        assertEquals(result.toString(), 0, result.size());
+        
+        result = mm.getIntersectionOfAll(Arrays.asList("key", "key2", "key3"));
+        assertEquals(result.toString(), 0, result.size());
     }
 }

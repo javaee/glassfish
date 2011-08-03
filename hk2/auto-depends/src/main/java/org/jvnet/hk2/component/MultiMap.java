@@ -258,6 +258,81 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
     }
 
     /**
+     * Returns the union of all elements indexed by the provided keys.
+     * This is a disjunctive operation.
+     *  
+     * @param keys the collection of keys
+     * @return the union collection of values
+     */
+    public List<V> getUnionOfAll(Collection<K> keys) {
+        LinkedHashSet<V> set = new LinkedHashSet<V>();
+        for (K k : keys) {
+            set.addAll(get(k));
+        }
+        return Collections.unmodifiableList(new ArrayList<V>(set));
+    }
+
+    /**
+     * Returns the intersection of all elements indexed by the provided keys.
+     * That means that all values must appear for each and every key specified.
+     * This is a conjunctive operation.
+     *  
+     * @param keys the collection of keys
+     * @return the intersecting collection of values
+     */
+    public List<V> getIntersectionOfAll(Collection<K> keys) {
+        LinkedHashSet<V> set = new LinkedHashSet<V>();
+        for (K k : keys) {
+            List<V> vals = get(k);
+            
+            if (vals.isEmpty()) {
+                return Collections.emptyList();
+            }
+            
+            if (set.isEmpty()) {
+                // 1st iteration
+                set.addAll(vals);
+            } else {
+                // >1st iteration
+                if (1 == set.size()) {
+                  V item = set.iterator().next();
+                  if (vals.contains(item)) {
+                      set.clear();
+                      set.add(item);
+                  } else {
+                      return Collections.emptyList();
+                  }
+                } else if (1 == vals.size()) {
+                    V item = vals.iterator().next();
+                    if (set.contains(item)) {
+                        set.clear();
+                        set.add(item);
+                    } else {
+                        return Collections.emptyList();
+                    }
+                } else {
+                    Iterator<V> iter = set.iterator();
+                    while (iter.hasNext()) {
+                        V item = iter.next();
+                        if (!vals.contains(item)) {
+                            iter.remove();
+                        }
+                        if (set.isEmpty()) {
+                            return Collections.emptyList();
+                        }
+                    }
+                }
+            }
+        }
+
+        if (set.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return Collections.unmodifiableList(new ArrayList<V>(set));
+    }
+
+    /**
      * Package private (for getting the raw map for direct manipulation by the habitat)
      *
      * @param k the key

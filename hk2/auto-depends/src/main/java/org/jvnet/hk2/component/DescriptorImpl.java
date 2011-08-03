@@ -79,16 +79,47 @@ import org.glassfish.hk2.Descriptor;
         this.metadata = new MultiMap<String, String>(other.getMetadata());
     }
     
-    void addContract(String contractFQCN) {
+    public static boolean isEmpty(Descriptor descriptor) {
+        if (null == descriptor || EMPTY_DESCRIPTOR == descriptor) {
+            return true;
+        }
+        
+        if (!isEmpty(descriptor.getName()) || !isEmpty(descriptor.getTypeName())) {
+            return false;
+        }
+        
+        if (!isEmpty(descriptor.getContracts()) || ! isEmpty(descriptor.getQualifiers())) {
+            return false;
+        }
+        
+        if (null != descriptor.getMetadata() && descriptor.getMetadata().size() > 0) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    static boolean isEmpty(Collection<String> coll) {
+        return (null == coll || coll.isEmpty());
+    }
+
+    static boolean isEmpty(String val) {
+        return (null == val || val.isEmpty());
+    }
+
+    DescriptorImpl addContract(String contractFQCN) {
         contracts.add(contractFQCN);
+        return this;
     }
 
-    void addQualifierType(String annotation) {
+    DescriptorImpl addQualifierType(String annotation) {
         qualifiers.add(annotation);
+        return this;
     }
 
-    void addMetadata(String key, String value) {
+    DescriptorImpl addMetadata(String key, String value) {
         metadata.add(key, value);
+        return this;
     }
     
     @Override
@@ -242,4 +273,5 @@ import org.glassfish.hk2.Descriptor;
             return null;
         }
     };
+
 }
