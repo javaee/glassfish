@@ -44,12 +44,9 @@ import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.glassfish.hk2.ComponentException;
 import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.ContractLocator;
 import org.glassfish.hk2.Scope;
-import org.glassfish.hk2.classmodel.reflect.Type;
-import org.junit.Ignore;
 
 /**
  * Implementation of the {@link ContractLocator} interface.
@@ -108,7 +105,7 @@ class ContractLocatorImpl<T> implements ContractLocator<T> {
     }
 
     @Override
-    public ContractLocator<T> annotatedWith(Class<? extends Annotation>... annotations) {
+    public ContractLocator<T> annotatedWith(Class<? extends Annotation> annotation) {
         throw new UnsupportedOperationException();
     }
 
