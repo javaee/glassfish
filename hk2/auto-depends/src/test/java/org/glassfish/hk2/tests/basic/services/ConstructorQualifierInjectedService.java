@@ -40,7 +40,7 @@
 package org.glassfish.hk2.tests.basic.services;
 
 import org.glassfish.hk2.Factory;
-import org.glassfish.hk2.tests.basic.annotations.Marker;
+import org.glassfish.hk2.tests.basic.annotations.MarkerA;
 import org.glassfish.hk2.tests.basic.arbitrary.QualifierInjected;
 import org.glassfish.hk2.tests.basic.contracts.ContractB;
 import org.jvnet.hk2.annotations.Inject;
@@ -53,7 +53,7 @@ public class ConstructorQualifierInjectedService implements QualifierInjected {
     final ContractB qb;
     final Factory<ContractB> qbf;
 
-    public ConstructorQualifierInjectedService(@Inject @Marker ContractB qb, @Inject @Marker Factory<ContractB> qbf) {
+    public ConstructorQualifierInjectedService(@Inject @MarkerA ContractB qb, @Inject @MarkerA Factory<ContractB> qbf) {
         this.qb = qb;
         this.qbf = qbf;
     }

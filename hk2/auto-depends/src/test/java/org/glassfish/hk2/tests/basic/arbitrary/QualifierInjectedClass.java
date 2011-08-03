@@ -40,7 +40,7 @@
 package org.glassfish.hk2.tests.basic.arbitrary;
 
 import org.glassfish.hk2.Factory;
-import org.glassfish.hk2.tests.basic.annotations.Marker;
+import org.glassfish.hk2.tests.basic.annotations.MarkerA;
 import org.glassfish.hk2.tests.basic.contracts.ContractB;
 import org.jvnet.hk2.annotations.Inject;
 
@@ -49,8 +49,8 @@ import org.jvnet.hk2.annotations.Inject;
  * @author Marek Potociar (marek.potociar at oracle.com)
  */
 public class QualifierInjectedClass implements QualifierInjected {
-    @Inject @Marker ContractB qb;
-    @Inject @Marker Factory<ContractB> qbf;
+    @Inject @MarkerA ContractB qb;
+    @Inject @MarkerA Factory<ContractB> qbf;
 
     @Override
     public ContractB getQb() {
