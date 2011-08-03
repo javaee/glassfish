@@ -57,6 +57,7 @@
       <hibernate-validator.version>4.1.0.Final</hibernate-validator.version>
       <javax.validation.version>1.0</javax.validation.version>
       <slf4j.version>1.5.6</slf4j.version>
+      <jtype.version>0.1.0</jtype.version>
     </properties>
     <name>Validation API (JSR 303) version ${javax.validation.version}, Hibernate Validator version ${hibernate-validator.version} and its dependencies repackaged as OSGi bundle</name>
 
@@ -143,6 +144,83 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/alternateLocation</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>get-sources</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.hibernate</groupId>
+                                    <artifactId>hibernate-validator</artifactId>
+                                    <version>${hibernate-validator.version}</version>
+                                    <classifier>sources</classifier>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/alternateLocation</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.googlecode.jtype</groupId>
+                                    <artifactId>jtype</artifactId>
+                                    <version>${jtype.version}</version>
+                                    <classifier>sources</classifier>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/alternateLocation</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.slf4j</groupId>
+                                    <artifactId>slf4j-jdk14</artifactId>
+                                    <version>${slf4j.version}</version>
+                                    <classifier>sources</classifier>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/alternateLocation</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
+                <configuration>
+                    <includePom>true</includePom>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal> 
+                        </goals>
+                    </execution>
+                 </executions>
+             </plugin>
+
         </plugins>
     </build>
     <dependencies>
@@ -167,7 +245,7 @@
             -->
             <groupId>com.googlecode.jtype</groupId>
             <artifactId>jtype</artifactId>
-            <version>0.1.0</version>
+            <version>${jtype.version}</version>
         </dependency>
 
         <!-- We bundle jdk binding inside this OSGi bundle -->
