@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.glassfish.admingui.console;
+package org.glassfish.admingui.plugins;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -23,9 +23,16 @@ public class NavigationNode implements Serializable {
     public NavigationNode(String label) {
         this(label, null, null);
     }
+    
+    public NavigationNode(String label, List<NavigationNode> children) {
+        this(label, null, null);
+        setChildren(children);
+    }
+    
     public NavigationNode(String label, String icon) {
         this(label, icon, null);
     }
+    
     public NavigationNode(String label, String icon, String link) {
         this.label = label;
         this.icon = icon;

@@ -4,9 +4,11 @@
  */
 package org.glassfish.admingui.plugins;
 
+import java.lang.reflect.InvocationTargetException;
 import org.glassfish.admingui.plugins.annotations.ViewFragment;
 import org.glassfish.admingui.plugins.annotations.ConsolePlugin;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.admingui.plugins.annotations.NavNodes;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -35,13 +38,14 @@ public class PluginService {
     private static Habitat habitat;
 
     public List<ConsolePluginMetadata> getPlugins() {
-        if (plugins == null) {
+//        if (plugins == null) {
+
             plugins = new ArrayList<ConsolePluginMetadata>();
             for (ConsolePlugin cp : habitat.getAllByContract(ConsolePlugin.class)) {
                 ConsolePluginMetadata cpm = new ConsolePluginMetadata(cp.priority);
                 Class clazz = cp.getClass();
                 try {
-                    processAnnotations(clazz.getFields(), cpm, clazz);
+                    processAnnotations(cpm, clazz);
                     cpm.setPluginPackage(clazz.getPackage().getName());
                 } catch (Exception ex) {
                     Logger.getLogger(PluginService.class.getName()).log(Level.SEVERE, null, ex);
@@ -51,15 +55,26 @@ public class PluginService {
             }
 
             Collections.sort(plugins, new ConsolePluginComparator());
-        }
+//        }
         return Collections.unmodifiableList(plugins);
     }
 
-    protected void processAnnotations(Field[] fields, ConsolePluginMetadata cp, Class<?> clazz) throws IllegalAccessException, IllegalArgumentException {
-        for (Field field : fields) {
+    protected void processAnnotations(ConsolePluginMetadata cp, Class<?> clazz) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException {
+        for (Field field : clazz.getFields()) {
             ViewFragment vf = field.getAnnotation(ViewFragment.class);
             if (vf != null) {
                 cp.addViewFragment(vf.type(), (String) field.get(clazz));
+            }
+            NavNodes nn = field.getAnnotation(NavNodes.class);
+            if (nn != null) {
+                cp.addNavigationNodes(nn.parent(), (List<NavigationNode>) field.get (clazz));
+            }
+        }
+        
+        for (Method method : clazz.getMethods()) {
+            NavNodes nn = method.getAnnotation(NavNodes.class);
+            if (nn != null) {
+                cp.addNavigationNodes(nn.parent(), (List<NavigationNode>) method.invoke (null, new Object[]{}));
             }
         }
     }

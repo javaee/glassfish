@@ -11,6 +11,10 @@ import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import org.apache.myfaces.trinidad.model.ChildPropertyTreeModel;
 import org.apache.myfaces.trinidad.model.TreeModel;
+import org.glassfish.admingui.plugins.ConsolePluginMetadata;
+import org.glassfish.admingui.plugins.NavigationNode;
+import org.glassfish.admingui.plugins.PluginService;
+import org.glassfish.admingui.plugins.jsf.PluginUtil;
 
 /**
  *
@@ -37,6 +41,7 @@ public class TreeBean {
         root.add(new NavigationNode("Clusters", "/images/icons/cluster.gif", "/demo/clusters.xhtml"));
         root.add(new NavigationNode("Standalone Instances", "/images/icons/instance.gif", "/demo/instances.xhtml" ));
         root.add(new NavigationNode("Applications", "/images/icons/instance.gif", "/demo/testApplications.xhtml"));
+        root.addAll(getRootNodes());
         
         NavigationNode resources = new NavigationNode("Resources", "/images/icons/resources.gif");
         root.add(resources);
@@ -50,5 +55,16 @@ public class TreeBean {
         }});
 
         return root;
+    }
+
+    private List<NavigationNode> getRootNodes() {
+        PluginService ps = PluginUtil.getPluginService();
+        List<NavigationNode> nodes = new ArrayList<NavigationNode>();
+        
+        for (ConsolePluginMetadata cpm : ps.getPlugins()) {
+            nodes.addAll(cpm.getNavigationNodes("root"));
+        }
+        
+        return nodes;
     }
 }

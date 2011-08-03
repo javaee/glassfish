@@ -10,7 +10,7 @@ if [ "$MODULE_DIR" == "" ] ; then
 fi
 
 echo Stopping the server
-gf_undeploy console-demo
+gf_undeploy admin-console
 gf_stop
 echo Clearing the OSGi cache
 rm -rf $SERVER_DIR/glassfish/domains/domain1/osgi-cache
@@ -30,9 +30,9 @@ echo Installing modules to $MODULE_DIR
 cp plugin-system/target/plugin-system-*.jar $MODULE_DIR
 for PLUGIN in plugins/* ; do
     PLUGIN=`basename $PLUGIN`
-    if [ -d plugins/$PLUGIN -a "example" != "$PLUGIN" ] ; then
+    if [ -d plugins/$PLUGIN -a "example1" != "$PLUGIN" ] ; then
         echo "     $PLUGIN..."
-        cp plugins/$PLUGIN/target/$PLUGIN-*.jar $MODULE_DIR 2>/dev/null
+        cp plugins/$PLUGIN/target/*.jar $MODULE_DIR 2>/dev/null
     fi
 done
 

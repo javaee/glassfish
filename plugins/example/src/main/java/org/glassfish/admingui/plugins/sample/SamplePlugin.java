@@ -4,7 +4,11 @@
  */
 package org.glassfish.admingui.plugins.sample;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.glassfish.admingui.plugins.NavigationNode;
 import org.glassfish.admingui.plugins.annotations.ConsolePlugin;
+import org.glassfish.admingui.plugins.annotations.NavNodes;
 import org.glassfish.admingui.plugins.annotations.ViewFragment;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -18,11 +22,31 @@ import org.jvnet.hk2.component.Singleton;
 @Service
 @Scoped(Singleton.class)
 public class SamplePlugin implements ConsolePlugin {
-    public int priority = 275;
 
-    @ViewFragment(type="tab")
+    public int priority = 275;
+    @ViewFragment(type = "tab")
     public static final String TAB = "/sample/tab.xhtml";
-    
-    @ViewFragment(type="navNode", parent="")
+    @ViewFragment(type = "navNode", parent = "")
     public static final String NAV_NODES = "/sample/navNodes.xhtml";
+
+    @NavNodes(parent = "root")
+    public static List<NavigationNode> getNavNodes() {
+        List<NavigationNode> nodes = new ArrayList<NavigationNode>();
+
+        nodes.add(new NavigationNode("Test 1"));
+        nodes.add(new NavigationNode("Test 2"));
+        nodes.add(new NavigationNode("Test 3"));
+        nodes.add(new NavigationNode("Test 4"));
+        nodes.add(new NavigationNode("Test 5"));
+        nodes.add(new NavigationNode("Test 6", new ArrayList<NavigationNode>() {{
+            add(new NavigationNode("Test 6-1"));
+            add(new NavigationNode("Test 6-2"));
+            add(new NavigationNode("Test 6-3"));
+            add(new NavigationNode("Test 6-4"));
+            add(new NavigationNode("Test 6-5"));
+        }}));
+
+
+        return nodes;
+    }
 }

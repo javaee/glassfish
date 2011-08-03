@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:tr="http://myfaces.apache.org/trinidad">
 
     <h:head>
         <script type="text/javascript" src="#{request.contextPath}/js/console.js"></script>
@@ -44,12 +45,12 @@
                                     <tbody>
                                         <tr>
                                             <td>
-                                                <h:form id="ajaxNavForm" prependId="false" style="display: inline; visibility: hidden1">
+                                                <tr:form id="ajaxNavForm" prependId="false" style="display: inline; visibility: hidden1">
                                                     <h:inputText id="content" value="#{appHelper.contentPage}"/>
                                                     <h:commandButton id="contentButton">
                                                         <f:ajax execute="@form" render=":ajaxBody" onevent1="Console.Ajax.ajaxCallback"/>
                                                     </h:commandButton>
-                                                </h:form>
+                                                </tr:form>
                                                 <span class="actionLink mastheadButton">
                                                     <a href="#{request.contextPath}/login.jsf">Logout</a>
                                                 </span>

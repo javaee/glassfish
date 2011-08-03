@@ -11,6 +11,7 @@ import java.util.Map;
  */
 public class ConsolePluginMetadata {
     private Map<String, List<String>> viewFragments = new HashMap<String, List<String>>();
+    private Map<String, List<NavigationNode>> navigationNodes = new HashMap<String, List<NavigationNode>>();
     private String pluginPackage;
     private int priority = 500;
 
@@ -20,6 +21,14 @@ public class ConsolePluginMetadata {
 
     public int getPriority() {
         return priority;
+    }
+
+    public String getPluginPackage() {
+        return pluginPackage;
+    }
+
+    public void setPluginPackage(String pluginPackage) {
+        this.pluginPackage = pluginPackage;
     }
 
     public void addViewFragment(String type, String id) {
@@ -35,12 +44,17 @@ public class ConsolePluginMetadata {
     public List<String> getViewFragments(String type) {
         return viewFragments.get(type);
     }
-
-    public String getPluginPackage() {
-        return pluginPackage;
+    
+    public List<NavigationNode> getNavigationNodes(String parent) {
+        return navigationNodes.get(parent);
     }
-
-    public void setPluginPackage(String pluginPackage) {
-        this.pluginPackage = pluginPackage;
+    
+    public void addNavigationNodes(String parent, List<NavigationNode> newNodes) {
+        List<NavigationNode> nodes = getNavigationNodes(parent);
+        if (nodes == null) {
+            nodes = new ArrayList<NavigationNode>();
+            navigationNodes.put(parent, nodes);
+        }
+        nodes.addAll(newNodes);
     }
 }
