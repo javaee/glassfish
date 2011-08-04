@@ -92,7 +92,7 @@ mvn -e -B -DuseEditMode=true -P release ${RELEASE_OPTS} release:prepare
 # At this point POM has the next SNAPSHOT version set,
 # and unless I build maven-hk2-plugin again, the POM fails to load
 # when we run "release:perform" later. So do the build again.
-mvn -e -P release-phase1 install
+mvn -DskipTests -e -P release-phase1 install
 
 # finally a release
 mvn -e -B -P release-modules,release ${RELEASE_OPTS} release:perform
