@@ -46,6 +46,7 @@ import org.glassfish.hk2.HK2;
 import org.glassfish.hk2.Module;
 import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.Services;
+import org.glassfish.hk2.inject.Injector;
 import org.glassfish.hk2.tests.basic.annotations.*;
 import org.glassfish.hk2.tests.basic.arbitrary.*;
 import org.glassfish.hk2.tests.basic.contracts.*;
@@ -483,6 +484,126 @@ public class BasicInjectionTest {
         }
         
         fail("IllegalStateException expected to be raised when trying to access a custom-scoped biding outside of the scope.");
+    }
+    
+    @Test
+    public void testInjector() {        
+        Injector injector = services.forContract(Injector.class).get();
+        
+        class FieldInjectedTestClass {
+            @Inject ServiceC sc;
+            @Inject ClassX cx;
+            @Inject ContractB cb;
+            @Inject ContractA ca;
+            @Inject Factory<ServiceC> scp;
+            @Inject Factory<ClassX> cxp;
+            @Inject Factory<ContractB> cbp;
+            @Inject Factory<ContractA> cap;            
+        }        
+        FieldInjectedTestClass fi = new FieldInjectedTestClass();
+        injector.inject(fi);
+        
+        assertInjectedInstance(ServiceC.class, fi.sc);
+        assertInjectedInstance(ClassX.class, fi.cx);
+ 
+        assertInjectedInstance(ServiceB.class, fi.cb);
+        assertInjectedInstance(ClassX.class, fi.cb.getX());
+
+        assertInjectedInstance(ServiceA.class, fi.ca);
+        assertInjectedInstance(ServiceB.class, fi.ca.getB());
+        assertInjectedInstance(ClassX.class, fi.ca.getB().getX());
+        
+        assertInjectedFactory(ServiceC.class, fi.scp);
+        
+        assertInjectedFactory(ClassX.class, fi.cxp);
+ 
+        assertInjectedFactory(ServiceB.class, fi.cbp);
+        assertInjectedInstance(ClassX.class, fi.cbp.get().getX());
+
+        assertInjectedFactory(ServiceA.class, fi.cap);
+        assertInjectedInstance(ServiceB.class, fi.cap.get().getB());
+        assertInjectedInstance(ClassX.class, fi.cap.get().getB().getX());                
+        
+        ConstructorInjectedTestClass ci = injector.inject(ConstructorInjectedTestClass.class);
+        
+        assertInjectedInstance(ServiceC.class, ci.sc);
+        assertInjectedInstance(ClassX.class, ci.cx);
+ 
+        assertInjectedInstance(ServiceB.class, ci.cb);
+        assertInjectedInstance(ClassX.class, ci.cb.getX());
+
+        assertInjectedInstance(ServiceA.class, ci.ca);
+        assertInjectedInstance(ServiceB.class, ci.ca.getB());
+        assertInjectedInstance(ClassX.class, ci.ca.getB().getX());
+        
+        assertInjectedFactory(ServiceC.class, ci.scp);
+        
+        assertInjectedFactory(ClassX.class, ci.cxp);
+ 
+        assertInjectedFactory(ServiceB.class, ci.cbp);
+        assertInjectedInstance(ClassX.class, ci.cbp.get().getX());
+
+        assertInjectedFactory(ServiceA.class, ci.cap);
+        assertInjectedInstance(ServiceB.class, ci.cap.get().getB());
+        assertInjectedInstance(ClassX.class, ci.cap.get().getB().getX());                        
+    }
+    
+    static class ConstructorInjectedTestClass { 
+        // must be declared as a static class as HK2 cannot inject non-static 
+        // inner classes using constructor-based injection
+        final ServiceC sc;
+        final ClassX cx;
+        final ContractB cb;
+        final ContractA ca;
+        final Factory<ServiceC> scp;
+        final Factory<ClassX> cxp;
+        final Factory<ContractB> cbp;
+        final Factory<ContractA> cap;
+
+        public ConstructorInjectedTestClass(
+                @Inject ServiceC sc, 
+                @Inject ClassX cx, 
+                @Inject ContractB cb, 
+                @Inject ContractA ca, 
+                @Inject Factory<ServiceC> scp, 
+                @Inject Factory<ClassX> cxp, 
+                @Inject Factory<ContractB> cbp, 
+                @Inject Factory<ContractA> cap) {
+            this.sc = sc;
+            this.cx = cx;
+            this.cb = cb;
+            this.ca = ca;
+            this.scp = scp;
+            this.cxp = cxp;
+            this.cbp = cbp;
+            this.cap = cap;
+        }        
+    }
+    
+    @Test
+    @Ignore
+    public void testConstructorBasedInjectionOnNonStaticInnerClass() {
+        Injector injector = services.forContract(Injector.class).get();
+        class TestClass { 
+            final ContractA ca;
+            final Factory<ContractA> cap;
+
+            public TestClass(
+                    @Inject ContractA ca, 
+                    @Inject Factory<ContractA> cap) {
+                this.ca = ca;
+                this.cap = cap;
+            }        
+        }
+        TestClass ci = injector.inject(TestClass.class);
+
+        assertInjectedInstance(ServiceA.class, ci.ca);
+        assertInjectedInstance(ServiceB.class, ci.ca.getB());
+        assertInjectedInstance(ClassX.class, ci.ca.getB().getX());
+        
+        assertInjectedFactory(ServiceA.class, ci.cap);
+        assertInjectedInstance(ServiceB.class, ci.cap.get().getB());
+        assertInjectedInstance(ClassX.class, ci.cap.get().getB().getX());                
     }
 
     private void assertQualifierInjectedContent(QualifierInjected instance) throws ComponentException {
