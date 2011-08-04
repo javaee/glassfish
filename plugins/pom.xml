@@ -10,7 +10,7 @@
     </parent>
     
     <artifactId>plugins-parent</artifactId>
-    <name>Plugins Parent</name>
+    <name>Console.next Plugins Parent</name>
     <packaging>pom</packaging>
 
     <modules>

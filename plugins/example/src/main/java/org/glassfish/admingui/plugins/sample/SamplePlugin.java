@@ -26,12 +26,10 @@ public class SamplePlugin implements ConsolePlugin {
     public int priority = 275;
     @ViewFragment(type = "tab")
     public static final String TAB = "/sample/tab.xhtml";
-//    @ViewFragment(type = "navNode", parent = "")
-//    public static final String NAV_NODES = "/sample/navNodes.xhtml";
     
     @NavNodes(parent="root")
     public static final List<NavigationNode> navNodes = new ArrayList<NavigationNode>() {{
-       add (new NavigationNode("Field Test 1", 
+       add (new NavigationNode("Field Test 1", "/sample/icons/family-tree.jpg",
                new ArrayList<NavigationNode>() {{ 
                    add (new NavigationNode("Field Test 1-1")); 
                }}

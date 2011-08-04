@@ -42,12 +42,12 @@ class PluginTracker extends BundleTracker {
                 Enumeration e = bundle.findEntries("/", "*.class", true);
                 while (e.hasMoreElements()) {
                     final String className = ((URL) e.nextElement()).getFile().substring(1).replaceAll("/", ".").replaceAll(".class", "");
-                    try {
-                        bundle.loadClass(className);
                         ps.addClass(className);
-                    } catch (ClassNotFoundException ex) {
-                        Logger.getLogger(PluginTracker.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+//                    try {
+//                        bundle.loadClass(className);
+//                    } catch (ClassNotFoundException ex) {
+//                        Logger.getLogger(PluginTracker.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
                 }
             } catch (BundleException ex) {
                 Logger.getLogger(PluginTracker.class.getName()).log(Level.SEVERE, null, ex);

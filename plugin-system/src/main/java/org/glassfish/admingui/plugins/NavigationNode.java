@@ -21,16 +21,21 @@ public class NavigationNode implements Serializable {
     private List<NavigationNode> children;
 
     public NavigationNode(String label) {
-        this(label, null, null);
+        this(label, (String)null, (String)null);
     }
-    
+
     public NavigationNode(String label, List<NavigationNode> children) {
-        this(label, null, null);
+        this(label, (String)null, (List<NavigationNode>)null);
         setChildren(children);
     }
     
     public NavigationNode(String label, String icon) {
-        this(label, icon, null);
+        this(label, icon, (String)null);
+    }
+
+    public NavigationNode(String label, String icon, List<NavigationNode> children) {
+        this(label, icon, (String)null);
+        setChildren(children);
     }
     
     public NavigationNode(String label, String icon, String link) {

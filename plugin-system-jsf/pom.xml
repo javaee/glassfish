@@ -11,7 +11,7 @@
     
     <artifactId>plugin-system-jsf</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Plugin System JSF Integration</name>
+    <name>Console.next Plugin System JSF Integration</name>
     
     <dependencies>
         <dependency>

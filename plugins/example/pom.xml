@@ -9,7 +9,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>plugin-sample</artifactId>
-    <name>Plugin Sample</name>
+    <name>Console.next Plugin Sample</name>
     <packaging>hk2-jar</packaging>
 
     <dependencies>

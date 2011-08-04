@@ -1,5 +1,6 @@
 if (typeof Console == 'undefined') {
     Console = { };
+    $(document).ready(function () { Console.Ajax.processLinks() });
 }
 
 if (!Array.prototype.forEach) {
@@ -36,6 +37,16 @@ if (!HTMLCollection.prototype.forEach) {
 
 Console.Ajax = {
     processLinks: function() {
+        $('a').click(function() {
+            var href = $(this).prop('href');
+            console.debug('Modifyin ' + $(this).prop('id'));
+            if (href != '') {
+                Console.Ajax.loadPage(href);
+            }
+
+            return false;
+        });
+        /*
         AUI().all('a').each(function (instance, index, nodeList) {
             var href = instance.getAttribute('href');
             
@@ -44,6 +55,7 @@ Console.Ajax = {
                 AUI().on('click', function() {Console.Ajax.loadPage(href);return false;}, instance);
             }
         });
+        */
        /*
         var anchors = document.getElementsByTagName("a");
         
@@ -248,7 +260,7 @@ Console.UI = {
             A.one(selector).setStyle('visibility', 'visible');
         });
         */
-       $(selector).jstree({ "plugins" : [ "themes", "html_data" ] });
+       $(selector).jstree({"plugins" : [ "themes", "html_data" ]});
     },
     
     processTreeNodes: function (nodeList) {
