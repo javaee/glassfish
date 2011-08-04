@@ -1173,7 +1173,7 @@ public class VirtualServer extends StandardHost
      * @param valveName The valve's fully qualified class nam
      */
     protected void addValve(String valveName) {
-        Object valve = loadInstance(valveName);
+        Object valve = safeLoadInstance(valveName);
         if (valve instanceof Valve) {
             addValve((Valve) valve);
         } else if (valve instanceof GlassFishValve) {
@@ -1190,7 +1190,7 @@ public class VirtualServer extends StandardHost
      * @param listenerName The fully qualified class name of the listener
      */
     protected void addListener(String listenerName) {
-        Object listener = loadInstance(listenerName);
+        Object listener = safeLoadInstance(listenerName);
 
         if ( listener == null ) return;
 
@@ -1204,11 +1204,16 @@ public class VirtualServer extends StandardHost
         }
     }
 
-    private Object loadInstance(String className){
+    @Override
+    protected Object loadInstance(String className) throws Exception {
+        // See IT 11674 for why CommonClassLoader must be used
+        Class clazz = serverContext.getCommonClassLoader().loadClass(className);
+        return clazz.newInstance();
+    }
+    
+    private Object safeLoadInstance(String className){
         try{
-            // See IT 11674 for why CommonClassLoader must be used
-            Class clazz = serverContext.getCommonClassLoader().loadClass(className);
-            return clazz.newInstance();
+            return loadInstance(className);
         } catch (Throwable ex){
             _logger.log(Level.SEVERE,"webcontainer.unableToLoadExtension",ex);
         }

@@ -1354,6 +1354,10 @@ public class StandardHost
         return new ObjectName( domain + ":type=Host,host=" + getName());
     }
 
+    protected Object loadInstance(String className) throws Exception {
+        return Class.forName(className).newInstance();
+    }
+
 
     // ------------------------------------------------------ Private Methods
 
@@ -1364,7 +1368,7 @@ public class StandardHost
             && !"".equals(errorReportValveClass)) {
             try {
                 GlassFishValve valve = (GlassFishValve)
-                    Class.forName(errorReportValveClass).newInstance();
+                    loadInstance(errorReportValveClass);
                 /* START SJSAS 6374691
                 addValve(valve);
                 */
