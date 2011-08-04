@@ -5,7 +5,6 @@
 package org.glassfish.admingui.plugins;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,27 +20,33 @@ public class NavigationNode implements Serializable {
     private List<NavigationNode> children;
 
     public NavigationNode(String label) {
-        this(label, (String)null, (String)null);
+        this(label, (String) null, (String) null);
     }
 
-    public NavigationNode(String label, List<NavigationNode> children) {
-        this(label, (String)null, (List<NavigationNode>)null);
-        setChildren(children);
-    }
-    
     public NavigationNode(String label, String icon) {
-        this(label, icon, (String)null);
+        this(label, icon, (String) null);
     }
 
-    public NavigationNode(String label, String icon, List<NavigationNode> children) {
-        this(label, icon, (String)null);
-        setChildren(children);
-    }
-    
     public NavigationNode(String label, String icon, String link) {
         this.label = label;
         this.icon = icon;
         this.link = link;
+    }
+
+    public NavigationNode(String label, List<NavigationNode> children) {
+        this(label, null, (List<NavigationNode>) null);
+        this.children = children;
+    }
+
+    public NavigationNode(String label, String icon, List<NavigationNode> children) {
+        this(label, icon, (String) null);
+        this.children = children;
+    }
+
+    public NavigationNode(String label, String icon, String link, List<NavigationNode> children) {
+        this(label, icon, link);
+        this.children = children;
+
     }
 
     public String getLabel() {

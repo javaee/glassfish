@@ -29,7 +29,7 @@ public class SamplePlugin implements ConsolePlugin {
     
     @NavNodes(parent="root")
     public static final List<NavigationNode> navNodes = new ArrayList<NavigationNode>() {{
-       add (new NavigationNode("Field Test 1", "/sample/icons/family-tree.jpg",
+       add (new NavigationNode("Field Test 1", "/sample/icons/family-tree.jpg", "/sample/page1.xhtml",
                new ArrayList<NavigationNode>() {{ 
                    add (new NavigationNode("Field Test 1-1")); 
                }}
