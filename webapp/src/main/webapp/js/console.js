@@ -46,33 +46,6 @@ Console.Ajax = {
 
             return false;
         });
-        /*
-        AUI().all('a').each(function (instance, index, nodeList) {
-            var href = instance.getAttribute('href');
-            
-            instance.setAttribute('href', 'javascript:');
-            if (href != "") {
-                AUI().on('click', function() {Console.Ajax.loadPage(href);return false;}, instance);
-            }
-        });
-        */
-       /*
-        var anchors = document.getElementsByTagName("a");
-        
-        anchors.forEach(
-            function(el, index, array) {
-                var href = el.href;
-                var oldOnClick = el.onclick;
-//                el.href = "#";
-                el.onclick = function() {
-                    alert(href);
-                    if (typeof oldOnClick != 'undefined') {
-                        oldOnClick();
-                    }
-                }
-            }
-            );
-       */
     },
     
     loadPage: function (url) {
