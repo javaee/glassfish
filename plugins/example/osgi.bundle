@@ -1,18 +1,11 @@
 -exportcontents: \
                         org.glassfish.admingui.pluginprototype.plugins; \
                         org.glassfish.admingui.pluginprototype.plugins.hk2; \
-                        hk2; \
                         sample; \
+                        sample.icons; \
                         META-INF; \
                         version=${project.osgi.version}
 Console-Plugin:         true
 Import-Package: \
                         org.glassfish.admingui.plugins.annotations;version=${project.osgi.version}, \
                         *
-#                        org.jvnet.hk2.annotations; \
-#                        org.jvnet.hk2.component; \
-#                        com.sun.hk2.component; \
-#                        javax.faces.bean; \ 
-#                        org.osgi.framework; \
-#Bundle-Activator:       org.glassfish.admingui.pluginprototype.plugins.hk2.Activator
-
