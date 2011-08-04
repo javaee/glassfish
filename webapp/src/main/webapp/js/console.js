@@ -37,9 +37,9 @@ if (!HTMLCollection.prototype.forEach) {
 
 Console.Ajax = {
     processLinks: function() {
-        $('a').click(function() {
+        $('#ajaxBody > a').click(function() {
             var href = $(this).prop('href');
-            console.debug('Modifyin ' + $(this).prop('id'));
+            console.debug('Modifying ' + $(this).prop('id'));
             if (href != '') {
                 Console.Ajax.loadPage(href);
             }

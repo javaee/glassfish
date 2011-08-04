@@ -95,6 +95,7 @@
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.jsf</url-pattern>
     </servlet-mapping>
+    <!--
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>/images/*</url-pattern>
@@ -103,6 +104,7 @@
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.png</url-pattern>
     </servlet-mapping>
+    -->
 
     <welcome-file-list>
         <welcome-file>login.jsf</welcome-file>

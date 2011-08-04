@@ -11,7 +11,7 @@
             <h:graphicImage url="#{node.icon}" rendered="#{!empty node.icon}" style="display: inline"/>
             
             <h:panelGroup rendered="#{!empty node.link}">
-                <span class="navLink" style="padding-left: 5px;" onclick1="Console.Ajax.loadPage('#{node.link}');">#{node.label}</span>
+                <span class="navLink" style="padding-left: 5px;" onclick="Console.Ajax.loadPage('#{node.link}');">#{node.label}</span>
             </h:panelGroup> 
             <h:panelGroup rendered="#{empty node.link}">
                 <span class="navLink" style="padding-left: 5px;">#{node.label}</span>

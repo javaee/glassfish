@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8' ?> 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <trh:html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:tr="http://myfaces.apache.org/trinidad"
-      xmlns:trh="http://myfaces.apache.org/trinidad/html">
+          xmlns:ui="http://java.sun.com/jsf/facelets"
+          xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:tr="http://myfaces.apache.org/trinidad"
+          xmlns:trh="http://myfaces.apache.org/trinidad/html">
 
     <trh:head>
         <script type="text/javascript" src="#{request.contextPath}/js/jquery-1.6.2.min.js"></script>
@@ -31,11 +31,13 @@
                                     <tbody>
                                         <tr>
                                             <td>
-                                                <tr:form id="ajaxNavForm" prependId="false" style="display: inline; visibility: hidden1">
-                                                    <h:inputText id="content" value="#{appHelper.contentPage}"/>
-                                                    <tr:commandButton id="contentButton" text="Go!">
-                                                        <f:ajax execute="@form" render=":ajaxBody" onevent1="Console.Ajax.ajaxCallback"/>
-                                                    </tr:commandButton>
+                                                <tr:form id="ajaxNavForm" prependId="false" >
+                                                    <div style="display: inline; visibility: hidden;">
+                                                        <h:inputText id="content" value="#{appHelper.contentPage}"/>
+                                                        <tr:commandButton id="contentButton" text="Go!">
+                                                            <f:ajax execute="@form" render=":ajaxBody" onevent="Console.Ajax.ajaxCallback"/>
+                                                        </tr:commandButton>
+                                                    </div>
                                                     <span class="actionLink mastheadButton">
                                                         <a href="#{request.contextPath}/login.jsf">Logout</a>
                                                     </span>
