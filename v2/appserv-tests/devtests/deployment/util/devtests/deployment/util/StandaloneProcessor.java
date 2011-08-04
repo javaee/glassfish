@@ -51,6 +51,7 @@ import com.sun.enterprise.deployment.io.WebServicesDeploymentDescriptorFile;
 
 import com.sun.enterprise.deployment.util.ApplicationValidator;
 import com.sun.enterprise.deployment.util.AppClientVisitor;
+import com.sun.enterprise.deployment.util.AppClientValidator;
 import com.sun.enterprise.deployment.util.EjbBundleValidator;
 import com.sun.enterprise.deployment.util.EjbBundleVisitor;
 import com.sun.enterprise.deployment.util.WebBundleVisitor;
@@ -190,7 +191,7 @@ public class StandaloneProcessor {
                         wbd.visit((WebBundleVisitor)new ApplicationValidator());
                     } else if (ModuleType.CAR.equals(type)) {
                         ApplicationClientDescriptor acbd = (ApplicationClientDescriptor)bundleDescriptor;
-                        acbd.visit((AppClientVisitor)new ApplicationValidator());
+                        acbd.visit((AppClientVisitor)new AppClientValidator());
                     }
                     // display the result ejb bundle...
                     // AnnotationUtils.getLogger().info("Resulting " + bundleDescriptor);
