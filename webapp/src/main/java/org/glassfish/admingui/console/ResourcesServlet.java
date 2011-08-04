@@ -16,8 +16,13 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author jdlee
  */
-@WebServlet(name="ResourcesServlet",
-        urlPatterns={"*.jpg", "*.png", "*.gif"})
+@WebServlet(
+        name="ResourcesServlet",
+        urlPatterns={
+            "*.jpg", 
+            "*.png", 
+            "*.gif"}
+        )
 public class ResourcesServlet extends HttpServlet {
 
     @Override
@@ -39,6 +44,5 @@ public class ResourcesServlet extends HttpServlet {
             
             is.close();
         }
-//        super.doGet(req, resp);
     }
 }
