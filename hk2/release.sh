@@ -76,7 +76,7 @@ mvn release:clean
 
 # This starts the release preparation, but it eventually fails because
 # it's unable to resolve the maven-hk2-plugin that the release is going to build.
-mvn -e -B -DuseEditMode=true -P release-modules,release ${RELEASE_OPTS} release:prepare || true
+mvn -e -B -DuseEditMode=true -P release ${RELEASE_OPTS} release:prepare || true
 
 # At this point local POM has the release version set,
 # so we build it, in particular maven-hk2-plugin.
@@ -87,7 +87,7 @@ mvn -e -P release-phase1 install
 mvn -e install
 
 # Now retry release:prepare and this shall run to the completion
-mvn -e -B -DuseEditMode=true -P release-modules,release ${RELEASE_OPTS} release:prepare
+mvn -e -B -DuseEditMode=true -P release ${RELEASE_OPTS} release:prepare
 
 # At this point POM has the next SNAPSHOT version set,
 # and unless I build maven-hk2-plugin again, the POM fails to load
@@ -95,7 +95,7 @@ mvn -e -B -DuseEditMode=true -P release-modules,release ${RELEASE_OPTS} release:
 mvn -e -P release-phase1 install
 
 # finally a release
-mvn -e -B -Prelease ${RELEASE_OPTS} release:perform
+mvn -e -B -P release-modules,release ${RELEASE_OPTS} release:perform
 
 
 # Once the bits are pushed and made visible, you just need to change v3/pom.xml <hk2.version> property
