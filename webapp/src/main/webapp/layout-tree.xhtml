@@ -9,13 +9,11 @@
 
     <ui:define name="body">
         <div id="navigation" class="window topLeftRounded bottomLeftRounded">
-            <div style="width: 230px; display: block" id="navContainer">
-                <div widgetid="td_ConfigurationNavPanel_0" id="td_ConfigurationNavPanel_0">
+            <tr:panelBox background="medium" text="Common Tasks" inlineStyle="width:230px">
                     <h:form id="navForm" style="color: black;">
                         <ui:include src="/navigation.xhtml"/>
                     </h:form>
-                </div>
-            </div>
+            </tr:panelBox>
         </div>
 
         <div style="left: 233px;" widgetid="pageContainer" role="group" title="" id="pageContainer" dojotype="dijit.layout.ContentPane" class="dijitContentPane window">

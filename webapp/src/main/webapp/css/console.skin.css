@@ -1,0 +1,43 @@
+.AFDefaultFontFamily:alias {
+    font-family: Tahoma,Verdana,Helvetica,sans-serif;
+}
+.AFDefaultFont:alias {
+    -tr-rule-ref:selector(".AFDefaultFontFamily:alias");
+    font-size: 11px;
+}
+
+.AFTextForeground:alias {
+  color: #222;
+  
+}
+
+.AFPanelBoxBody:alias {
+  background: url("/images/dbcc.png")  repeat-x scroll 0 0 transparent;
+}
+
+af|panelBox::header {
+  color: #003D5B;
+  border-bottom:1px solid #949494;
+  padding:7px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.AFHeaderText:alias {
+    font-size:16px;
+    color: #003d5b;
+    font-weight: bold;
+    overflow:hidden;
+}
+
+af|commandButton {
+    background:url("/images/button_bg_ena.png") repeat-x scroll center top #CCD6E8;
+    border-color:#E0E3E8 #606974 #606974 #E0E3E8;
+    border-style:solid;
+    border-width:1px;
+    color:#000000;
+    margin:3px;
+    padding:3px 5px 1px 6px;
+    text-decoration:none;
+    white-space:nowrap;
+}

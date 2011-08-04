@@ -35,7 +35,7 @@ public class TreeBean {
     private List<NavigationNode> getRoot() {
         List<NavigationNode> root = new ArrayList<NavigationNode>();
         
-        root.add(new NavigationNode("Home", "/welcome.xhtml"));
+        root.add(new NavigationNode("Home", null, "/welcome.xhtml"));
         root.add(new NavigationNode("Domain", "/images/icons/domain.gif", "/demo/domain.xhtml"));
         root.add(new NavigationNode("Admin Server", "/images/icons/instance.gif", "/demo/adminServer.xhtml"));
         root.add(new NavigationNode("Clusters", "/images/icons/cluster.gif", "/demo/clusters.xhtml"));

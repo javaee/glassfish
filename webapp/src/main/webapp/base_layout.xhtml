@@ -1,39 +1,24 @@
 <?xml version='1.0' encoding='UTF-8' ?> 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
+<trh:html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:tr="http://myfaces.apache.org/trinidad">
+      xmlns:tr="http://myfaces.apache.org/trinidad"
+      xmlns:trh="http://myfaces.apache.org/trinidad/html">
 
-    <h:head>
+    <trh:head>
         <script type="text/javascript" src="#{request.contextPath}/js/console.js"></script>
-
-        <link href="#{request.contextPath}/css/nihilo.css" rel="stylesheet" type="text/css"/>
-        <link href="#{request.contextPath}/css/Wizard.css" rel="stylesheet" type="text/css"/>
         <link href="#{request.contextPath}/css/td_main.css" rel="stylesheet" type="text/css"/>
+        <link type="image/x-icon" href="#{request.contextPath}/images/favicon.ico" rel="icon"/>
+        <link type="image/x-icon" href="#{request.contextPath}/images/favicon.ico" rel="shortcut icon"/>
+    </trh:head>
 
-        <style type="text/css">
-            #navigation table {
-                color: #000000;
-                font-size: 14px;
-            }
-
-            .navLink {
-                cursor: pointer;
-            }
-
-            .jstree-default.jstree-focused {
-                background-color: #FFFFFF;
-            }
-        </style>
-    </h:head>
-
-    <h:body class="nihilo">
-        <div id="mainContainer" class="">
-            <div widgetid="masthead" id="masthead">
+    <trh:body>
+        <div id="mainContainer">
+            <div id="masthead">
                 <!-- Copyright 2011, Oracle and/or its affiliates. All Rights Reserved. -->
-                <table border="0" cellpadding="0" cellspacing="0">
+                <table border="0" cellpadding="0" cellspacing="0" >
                     <tbody><tr>
                             <td>
                                 <img class="logo" src="#{request.contextPath}/images/logo-oracle-red.png" title="product.logo.title" alt="product.logo.title" border="0"/>
@@ -47,13 +32,13 @@
                                             <td>
                                                 <tr:form id="ajaxNavForm" prependId="false" style="display: inline; visibility: hidden1">
                                                     <h:inputText id="content" value="#{appHelper.contentPage}"/>
-                                                    <h:commandButton id="contentButton">
+                                                    <tr:commandButton id="contentButton" text="Go!">
                                                         <f:ajax execute="@form" render=":ajaxBody" onevent1="Console.Ajax.ajaxCallback"/>
-                                                    </h:commandButton>
+                                                    </tr:commandButton>
+                                                    <span class="actionLink mastheadButton">
+                                                        <a href="#{request.contextPath}/login.jsf">Logout</a>
+                                                    </span>
                                                 </tr:form>
-                                                <span class="actionLink mastheadButton">
-                                                    <a href="#{request.contextPath}/login.jsf">Logout</a>
-                                                </span>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -78,40 +63,21 @@
                 </div>
                 <div class="copyright" id="copyright">Copyright © 2011, Oracle and/or its affiliates. All Rights Reserved.</div>
             </div>
-            <div widgetid="messageConsole" id="messageConsole" class="window bottomRightRounded">
+            <div id="messageConsole" class="window bottomRightRounded">
                 <table class="heading" border="0" cellpadding="0" cellspacing="0" width="100%">
                     <tbody><tr>
                             <td>Console Messages</td>
                             <td align="right">
-                                <span widgetid="dijit_form_Button_0" class="dijit dijitReset dijitInline secondaryButton dijitButton dijitButtonDisabled dijitDisabled">
-                                    <span class="dijitReset dijitInline dijitButtonNode" dojoattachevent="ondijitclick:_onButtonClick">
-                                        <span aria-disabled="true" id="dijit_form_Button_0" style="-moz-user-select: none;" class="dijitReset dijitStretch dijitButtonContents" >
-                                            <span class="dijitReset dijitInline dijitIcon" dojoattachpoint="iconNode"/></span>
-                                        <span class="dijitReset dijitToggleButtonIconChar">●</span>
-                                        <span class="dijitReset dijitInline dijitButtonText" id="dijit_form_Button_0_label" dojoattachpoint="containerNode">Clear All</span>
-                                    </span>
-                                </span>
-                                <input disabled="disabled" value="" class="dijitOffScreen" tabindex="-1" dojoattachpoint="valueNode" type="button"/>
+                                <tr:commandButton text="Clear All" action="#"/>
                             </td>
                         </tr>
                     </tbody></table>
                 <div class="container">
                     <table class="messagesTable" cellpadding="0" cellspacing="0">
-                        <tbody dojoattachpoint="messagesTable"></tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
         </ui:remove>
-        <style type="text/css">
-            .navButtons {
-                padding: 0px;
-            }
-            #navigation {
-                color: #99000;
-            }
-            #mainContent {
-                bottom: 7px;
-            }
-        </style>
-    </h:body>
-</html>
+    </trh:body>
+</trh:html>

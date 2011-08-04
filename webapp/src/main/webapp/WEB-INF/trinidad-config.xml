@@ -1,0 +1,6 @@
+<trinidad-config xmlns="http://myfaces.apache.org/trinidad/config">
+  <!--debug-output>true</debug-output-->
+
+  <skin-family>console</skin-family>  
+
+</trinidad-config>
