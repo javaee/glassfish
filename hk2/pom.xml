@@ -271,7 +271,6 @@
         <module>hk2-maven</module>
         <module>hk2-maven-plugin</module>
         <module>osgi-adapter</module>
-        <module>test-harness</module>
         <module>dependency-verifier</module>
         <module>dependency-visualizer</module>
         <module>osgiversion-maven-plugin</module>
@@ -298,6 +297,7 @@
             <modules>
                 <module>auto-depends-tests</module>
                 <module>apt-test</module>
+                <module>test-harness</module>
                 <module>hk2</module>
                 <module>config-types</module>
                 <module>hk2-jsr330</module>
