@@ -99,7 +99,7 @@ public class PluginAnnotationScanner extends AnnotationScanner {
 
                 }
             } catch (ClassNotFoundException ex) {
-//                Logger.getLogger(PluginService.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(PluginService.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return Collections.unmodifiableMap(classes);

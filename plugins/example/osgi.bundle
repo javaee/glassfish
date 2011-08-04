@@ -1,6 +1,5 @@
 -exportcontents: \
-                        org.glassfish.admingui.pluginprototype.plugins; \
-                        org.glassfish.admingui.pluginprototype.plugins.hk2; \
+                        org.glassfish.admingui.plugins.sample; \
                         sample; \
                         sample.icons; \
                         META-INF; \

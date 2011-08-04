@@ -23,9 +23,9 @@ import org.osgi.util.tracker.BundleTracker;
  * @author jdlee
  */
 class PluginTracker extends BundleTracker {
+
     public static final String HABITAT_ATTRIBUTE = "org.glassfish.servlet.habitat";
     public static final String PLUGIN_MARKER_FILE = "/META-INF/console-plugin.xml";
-
     private static Habitat habitat;
     private PluginService ps;
 
@@ -42,12 +42,12 @@ class PluginTracker extends BundleTracker {
                 Enumeration e = bundle.findEntries("/", "*.class", true);
                 while (e.hasMoreElements()) {
                     final String className = ((URL) e.nextElement()).getFile().substring(1).replaceAll("/", ".").replaceAll(".class", "");
-                        ps.addClass(className);
-//                    try {
-//                        bundle.loadClass(className);
-//                    } catch (ClassNotFoundException ex) {
-//                        Logger.getLogger(PluginTracker.class.getName()).log(Level.SEVERE, null, ex);
-//                    }
+                    ps.addClass(className);
+                    try {
+                        bundle.loadClass(className);
+                    } catch (ClassNotFoundException ex) {
+                        Logger.getLogger(PluginTracker.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             } catch (BundleException ex) {
                 Logger.getLogger(PluginTracker.class.getName()).log(Level.SEVERE, null, ex);
