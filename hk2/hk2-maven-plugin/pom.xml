@@ -80,11 +80,6 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
-            <artifactId>test-harness</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.hk2</groupId>
             <artifactId>config-generator</artifactId>
             <version>${project.version}</version>
         </dependency>
