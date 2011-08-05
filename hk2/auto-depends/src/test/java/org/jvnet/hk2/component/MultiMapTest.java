@@ -296,4 +296,44 @@ public class MultiMapTest {
         result = mm.getIntersectionOfAll(Arrays.asList("key", "key2", "key3"));
         assertEquals(result.toString(), 0, result.size());
     }
+    
+    @Test
+    public void mergeAll() {
+        MultiMap<String, String> mm = new MultiMap<String, String>();
+        mm.add("key", "val");
+        mm.add("key", "val2");
+        mm.add("key2", "val");
+        mm.add("key3", "val2");
+        mm.add("key4", "val");
+        
+        MultiMap<String, String> mm2 = new MultiMap<String, String>();
+        mm2.add("key2", "val");
+        mm2.add("key3", "val");
+        mm2.add("key4", "val2");
+        mm2.add("key4", "val");
+        mm2.add("key5", "val");
+
+        mm.mergeAll(mm2);
+        assertEquals(mm.toString(), 5, mm.size());
+        assertEquals(Arrays.asList("val", "val2"), mm.get("key"));
+        assertEquals(Arrays.asList("val"), mm.get("key2"));
+        assertEquals(Arrays.asList("val2", "val"), mm.get("key3"));
+        assertEquals(Arrays.asList("val", "val2"), mm.get("key4"));
+        assertEquals(Arrays.asList("val"), mm.get("key5"));
+        
+        mm2.mergeAll(mm);
+        assertEquals(mm2.toString(), 5, mm2.size());
+        assertEquals(Arrays.asList("val", "val2"), mm2.get("key"));
+        assertEquals(Arrays.asList("val"), mm2.get("key2"));
+        assertEquals(Arrays.asList("val", "val2"), mm2.get("key3"));
+        assertEquals(Arrays.asList("val2", "val"), mm2.get("key4"));
+        assertEquals(Arrays.asList("val"), mm2.get("key5"));
+        
+        // ensure we copied list instead of used same references
+        
+        mm.add("key", "newVal");
+        assertEquals(Arrays.asList("val", "val2"), mm2.get("key"));
+        mm.add("key5", "newVal");
+        assertEquals(Arrays.asList("val"), mm2.get("key5"));
+    }
 }

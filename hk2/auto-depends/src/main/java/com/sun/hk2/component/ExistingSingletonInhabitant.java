@@ -40,6 +40,7 @@
 package com.sun.hk2.component;
 
 import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.DescriptorImpl;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
 
@@ -51,7 +52,6 @@ import org.jvnet.hk2.component.MultiMap;
 public class ExistingSingletonInhabitant<T> extends AbstractInhabitantImpl<T> {
     private final T object;
     private final Class<T> type;
-    private final MultiMap<String,String> metadata;
 
     public ExistingSingletonInhabitant(T object) {
         this((Class<T>)object.getClass(),object);
@@ -62,15 +62,15 @@ public class ExistingSingletonInhabitant<T> extends AbstractInhabitantImpl<T> {
     }
 
     public ExistingSingletonInhabitant(Class<T> type, T object, MultiMap<String,String> metadata) {
+        super(new DescriptorImpl(null, type.getName(), metadata, null));
         this.type = type;
         this.object = object;
-        this.metadata = (null == metadata) ? new MultiMap<String,String>() : metadata;
     }
     
     @Override
     public String toString() {
         return getClass().getSimpleName() + "-" + System.identityHashCode(this) + 
-          "(" + get(null) + "," + metadata + ")";
+          "(value=" + get(null) + ", " + getDescriptor() + ")\n";
     }
 
     @Override
@@ -85,7 +85,7 @@ public class ExistingSingletonInhabitant<T> extends AbstractInhabitantImpl<T> {
 
     @Override
     public MultiMap<String, String> metadata() {
-        return metadata;
+        return (MultiMap<String, String>) getDescriptor().getMetadata();
     }
 
     public T get(Inhabitant onBehalfOf) throws ComponentException {

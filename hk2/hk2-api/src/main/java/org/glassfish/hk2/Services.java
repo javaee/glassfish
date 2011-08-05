@@ -85,16 +85,16 @@ public interface Services extends Locator {
     DynamicBinderFactory bindDynamically();
     
     /**
-     * Retrieve the collection of all existing bindings in this, and only this, service
-     * registry.
+     * Retrieve the collection of all registered bindings in this, and only this,
+     * Services instance.
      * 
      * @return a non-null collection of service bindings
      */
     Collection<Binding<?>> getDeclaredBindings();
     
     /**
-     * Retrieve the collection of existing bindings in this, and only this, service
-     * registry that matches the {@link Descriptor}.
+     * Retrieve the collection of registered bindings in this, and only this, Services
+     * instance that match the {@link Descriptor} argument.
      * 
      * <p/>
      * A {@link Descriptor} matches if it's attributes are equal, or specified as null.
@@ -107,8 +107,8 @@ public interface Services extends Locator {
     Collection<Binding<?>> getDeclaredBindings(Descriptor descriptor);
 
     /**
-     * Retrieve the collection of all existing bindings in this as well as in parent
-     * service registries.
+     * Retrieve the collection of all registered bindings in this instance as well as
+     * in the parent service instance(s).
      * 
      * @return a non-null collection of service bindings
      */

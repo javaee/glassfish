@@ -41,6 +41,7 @@ package com.sun.hk2.component;
 
 import org.glassfish.hk2.Scope;
 import org.jvnet.hk2.component.Creator;
+import org.jvnet.hk2.component.DescriptorImpl;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.tracing.TracingThreadLocal;
 import org.jvnet.hk2.tracing.TracingUtilities;
@@ -52,11 +53,13 @@ public class ScopedInhabitant<T> extends AbstractCreatorInhabitantImpl<T> {
     private final Scope scope;
 
     public ScopedInhabitant(Creator<T> creator, Scope scope) {
-        super(creator);
+        super(DescriptorImpl.createMerged(getDescriptorFor(creator), 
+                new DescriptorImpl(null, null, null, scope)),
+             creator);
         this.scope = scope;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public T get(Inhabitant onBehalfOf) {
         try {
             if (TracingUtilities.isEnabled())

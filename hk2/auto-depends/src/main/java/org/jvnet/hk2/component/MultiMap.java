@@ -281,6 +281,10 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
      * @return the intersecting collection of values
      */
     public List<V> getIntersectionOfAll(Collection<K> keys) {
+        if (1 == keys.size()) {
+            return get(keys.iterator().next());
+        }
+        
         LinkedHashSet<V> set = new LinkedHashSet<V>();
         for (K k : keys) {
             List<V> vals = get(k);
@@ -330,6 +334,24 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
         }
 
         return Collections.unmodifiableList(new ArrayList<V>(set));
+    }
+    
+    public void mergeAll(org.glassfish.hk2.MultiMap<K, V> another) {
+        if (null != another) {
+            for (Entry<K, List<V>> entry : another.entrySet()) {
+                List<V> ourList = store.get(entry.getKey());
+                if (null == ourList) {
+                    ourList = newList(entry.getValue());
+                    store.put(entry.getKey(), ourList);
+                } else {
+                    for (V v : entry.getValue()) {
+                        if (!ourList.contains(v)) {
+                            ourList.add(v);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**

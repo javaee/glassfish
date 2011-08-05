@@ -43,14 +43,15 @@ import java.lang.annotation.Annotation;
 import java.util.Collection;
 
 /**
- * Extends the {@link Factory} contract, offering the ability to
+ * Similar to the {@link Factory} contract, providing a means to access the
+ * class type instance. The scope of the instances produces by the provider
+ * is determined by the implementation (e.g., singleton, per lookup, etc).
  * 
- * 	<li> obtain the runtime {@link Descriptor} describing the
- * 		attributes of the registered component/service, and
- * 
- * 	<li> provides a means to access the class type instance.  Note
- * 		that the class instance might be managed in a context
- * 		other than the current thread classloader context.
+ * <p/>
+ * {@link Binding}s represent something that is registered in {@link
+ * Services} whereas a Provider provides the runtime services for the given
+ * registered {@link Binding} entry in the correct context appropriate for
+ * the caller.
  * 
  * @author Jerome Dochez
  * @author Jeff Trent
@@ -63,29 +64,20 @@ public interface Provider<T> {
     /**
      * The system calls this method to obtain a reference
      * to the component/service.
-     *
+     * 
      * @return
      *      null is a valid return value. This is useful
      *      when a factory primarily does a look-up and it fails
      *      to find the specified component, yet you don't want that
      *      by itself to be an error. If the injection wants
      *      a non-null value (i.e., <tt>@Inject(optional=false)</tt>).
+     *      
      * @throws ComponentException
      *      If the factory failed to get/create an instance
      *      and would like to propagate the error to the caller.
      */
     T get() throws ComponentException;
 
-    /**
-     * The {@link Descriptor} fully characterizes the attributes
-     * of this Provider.
-     * 
-     * @return 
-     * 	a non-null Descriptor describing the complete set of
-     * 	attributes of the provider.
-     */
-    Descriptor getDescriptor();
-  
     /**
      * The class type of the implementation. it is responsible also
      * for determining how (i.e., which loader) to use.

@@ -85,7 +85,7 @@ public class Inhabitants {
         classLoader, typeName, metadata, lead, null, indicies);
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public static Inhabitant<?> createInhabitant(Habitat habitat,
       Iterator<InhabitantProviderInterceptor> interceptors,
       Holder<ClassLoader> classLoader,

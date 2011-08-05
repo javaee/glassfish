@@ -57,16 +57,21 @@ import java.util.Collection;
 public interface Descriptor {
 
     /**
-     * The optional name for the service.
+     * The name(s) for the service.
      *
-     * @return service's name or null if none provided
+     * @return the collection of services names used to describe the service
      */
-    String getName();
+    Collection<String> getNames();
 
-//    /**
-//     * The optional scoping for the service.
-//     */
-//    Scope getScope();
+    /**
+     * Returns true if {@link #getNames()} contains the passed argument.
+     */
+    boolean hasName(String name);
+    
+    /**
+     * The optional scoping for the service.
+     */
+    Scope getScope();
 
     /**
      * The meta data attributes for the service.
@@ -81,7 +86,12 @@ public interface Descriptor {
      * @return a collection of qualifiers for this service.
      */
     Collection<String> getQualifiers();
-  
+
+    /**
+     * Returns true if {@link #getQualifiers()} contains the passed argument.
+     */
+    boolean hasQualifier(String qualifier);
+    
     /**
      * The contracts that are used to index the service definition.
      *
@@ -89,6 +99,11 @@ public interface Descriptor {
      */
     Collection<String> getContracts();
 
+    /**
+     * Returns true if {@link #getContracts()} contains the passed argument.
+     */
+    boolean hasContract(String contract);
+    
     /**
      * The implementation definition type.
      *

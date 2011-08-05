@@ -52,9 +52,9 @@ import java.util.logging.Logger;
 import org.glassfish.hk2.Binding;
 import org.glassfish.hk2.Context;
 import org.glassfish.hk2.Descriptor;
-import org.glassfish.hk2.MultiMap;
 import org.glassfish.hk2.PreDestroy;
 import org.glassfish.hk2.Provider;
+import org.jvnet.hk2.component.DescriptorImpl;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.tracing.TracingThreadLocal;
@@ -75,59 +75,46 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T>, Bindin
 
     private Collection<Inhabitant> companions;
 
+    protected final Descriptor descriptor;
+    
 //    private Collection<Inhabitant<?>> managed;
 
+    
+    public AbstractInhabitantImpl(Descriptor descriptorOfSelf) {
+        // TODO: in the future, we should make the descriptor read-only
+        this.descriptor = (null == descriptorOfSelf) ? null : new DescriptorImpl(descriptorOfSelf, false);
+    }
+    
+    protected static Descriptor getDescriptorFor(Inhabitant<?> i) {
+        if (AbstractInhabitantImpl.class.isInstance(i)) {
+            return AbstractInhabitantImpl.class.cast(i).getDescriptor();
+        }
+        return null;
+    }
     
     // TODO: handle Context
     @Override
     public Provider<T> getProvider(Context ctx) {
         return this;
     }
+    
+    public boolean matches(Descriptor matchTo) {
+        if (null == matchTo) {
+            return true;
+        }
+        
+        return DescriptorImpl.matches(matchTo, descriptor);
+    }
 
     @Override
     public Descriptor getDescriptor() {
-        return new Descriptor() {
-            @Override
-            public String getName() {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException();
-            }
-
-//            @Override
-//            public Scope getScope() {
-//                return null;  //To change body of implemented methods use File | Settings | File Templates.
-//            }
-
-            @Override
-            public MultiMap<String, String> getMetadata() {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public Collection<String> getQualifiers() {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public Collection<String> getContracts() {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public String getTypeName() {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException();
-            }
-        };
+        return descriptor;
     }
 
     @Override
     public String toString() {
         return getClass().getSimpleName() + "-" + System.identityHashCode(this) + 
-            "(" + typeName() + ")";
+            "(" + getDescriptor() + ")\n";
     }
     
     @Override

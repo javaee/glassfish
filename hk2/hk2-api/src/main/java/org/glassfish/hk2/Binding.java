@@ -40,8 +40,13 @@
 package org.glassfish.hk2;
 
 /**
- * A Binding represents a registered entry in the HK2 {@link Services}
- * registry.
+ * A Binding represents a single registered entry in the HK2 {@link Services}
+ * registry that provides a facility to get to contextual provider instances.
+ * 
+ * <p/>
+ * Bindings represent something that is registered in {@link Services} whereas
+ * a {@link Provider} provides the runtime services for the given registered
+ * Binding entry in the correct context appropriate for the caller.
  *  
  * @author Jerome Dochez
  * @author Jeff Trent
@@ -49,6 +54,16 @@ package org.glassfish.hk2;
  */
 public interface Binding<T> {
 
+    /**
+     * The {@link Descriptor} fully characterizes the attributes
+     * of this Provider.
+     * 
+     * @return 
+     *  a non-null Descriptor describing the complete set of
+     *  attributes of the provider.
+     */
+    Descriptor getDescriptor();
+  
     /**
      * Return a {@link Provider} optionally providing contextual
      * information for how the component provider will be used (e.g., for
@@ -65,5 +80,5 @@ public interface Binding<T> {
      * @return a non-null component provider instance
      */
     Provider<T> getProvider(Context ctx);
-  
+
 }

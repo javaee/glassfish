@@ -80,6 +80,7 @@ import org.jvnet.hk2.component.concurrent.Hk2Executor;
 import org.jvnet.hk2.component.concurrent.SameThreadExecutor;
 import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 
+import com.sun.hk2.component.AbstractInhabitantImpl;
 import com.sun.hk2.component.ConstructorCreator;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.FactoryCreator;
@@ -187,16 +188,16 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
             // TODO: remove me (eventually)
             // System.out.println("CONCURRENCY CONTROLS ENABLED");
             addIndex(new ExistingSingletonInhabitant<ExecutorService>(
-                    ExecutorService.class, exec),
+                        ExecutorService.class, exec),
                     ExecutorService.class.getName(),
                     Constants.EXECUTOR_INHABITANT_INJECTION_MANAGER);
             addIndex(new ExistingSingletonInhabitant<ExecutorService>(
-                    ExecutorService.class, exec),
+                        ExecutorService.class, exec),
                     ExecutorService.class.getName(),
                     Constants.EXECUTOR_INHABITANT_ACTIVATOR);
         }
         addIndex(new ExistingSingletonInhabitant<ExecutorService>(
-                ExecutorService.class, SameThreadExecutor.instance),
+                    ExecutorService.class, SameThreadExecutor.instance),
                 ExecutorService.class.getName(),
                 Constants.EXECUTOR_HABITAT_LISTENERS_AND_TRACKERS);
 
@@ -204,17 +205,15 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
         addHabitatListener(new SelfListener());
 
         // add the set of injection resolvers
-        InjectInjectionResolver injectresolver = new InjectInjectionResolver(
-                this);
+        InjectInjectionResolver injectresolver = new InjectInjectionResolver(this);
         add(new ExistingSingletonInhabitant<InjectionResolver>(
                 InjectionResolver.class, injectresolver));
         addIndex(new ExistingSingletonInhabitant<InjectionResolver>(
-                InjectionResolver.class, injectresolver),
+                    InjectionResolver.class, injectresolver),
                 InjectionResolver.class.getName(), null);
 
         // make the habitat itself available
-        Inhabitant<Habitat> habitatInh = new ExistingSingletonInhabitant<Habitat>(
-                Habitat.class, this);
+        Inhabitant<Habitat> habitatInh = new ExistingSingletonInhabitant<Habitat>(Habitat.class, this);
         add(habitatInh);
         addIndex(habitatInh, Injector.class.getName(), null);
         addIndex(habitatInh, Services.class.getName(), null);
@@ -269,45 +268,63 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
 
     @Override
     public Collection<Binding<?>> getDeclaredBindings(Descriptor descriptor) {
-//        LinkedHashSet<Binding<?>> result = new LinkedHashSet<Binding<?>>();
-//
-//        // try optimized approaches first
-//        if (DescriptorImpl.isEmpty(descriptor)) {
-//            includeBinding(result, byContract);
-//            includeBinding(result, byType);
-//        } else if (null != descriptor && !DescriptorImpl.isEmpty(descriptor.getTypeName())) {
-//            includeBindingIfMaches(result, descriptor, byType.get(descriptor.getTypeName()));
-//        } else if (null != descriptor && !DescriptorImpl.isEmpty(descriptor.getContracts())) {
-//            includeBindingIfMatches(result, descriptor, byContract.get(descriptor.getContracts()));
-//        } else {
-//            // no optimized approaches, let's try them all
-//            includeMatchingBinding(result, descriptor);
-//        }
-//        
-//        return result;
-        throw new UnsupportedOperationException();
+        LinkedHashSet<Binding<?>> result = new LinkedHashSet<Binding<?>>();
+
+        // try optimized approaches first
+        if (DescriptorImpl.isEmpty(descriptor)) {
+            includeBinding(result, byContract);
+            includeBinding(result, byType);
+        } else if (null != descriptor && !DescriptorImpl.isEmpty(descriptor.getTypeName())) {
+            includeBindingIfMatches(result, descriptor, byType.get(descriptor.getTypeName()));
+            // Note, that next we are treating the type as a Contract (seems appropriate to do)
+            includeBindingIfMatches(result, descriptor, byContract.get(descriptor.getTypeName()));
+        } else if (null != descriptor && !DescriptorImpl.isEmpty(descriptor.getContracts())) {
+            includeBindingIfMatches(result, descriptor, byContract.getIntersectionOfAll(descriptor.getContracts()));
+        } else {
+            // no optimized approaches, let's try them all
+            includeBindingIfMatches(result, descriptor, byType.entrySet());
+            includeBindingIfMatches(result, descriptor, byContract.entrySet());
+        }
+        
+        return result;
     }
 
-//    private void includeBindingIfMaches(LinkedHashSet<Binding<?>> result,
-//            Descriptor descriptor,
-//            List<Inhabitant> list) {
-//        for (Inhabitant i : list) {
-//            if (matches(descriptor)) {
-//                includeBinding(result, i);
-//            }
-//        }
-//    }
+    private void includeBindingIfMatches(LinkedHashSet<Binding<?>> result,
+            Descriptor descriptor,
+            Set entrySet) {
+        for (Object o : entrySet) {
+            Map.Entry<String, List<Inhabitant>> entry = (Map.Entry<String, List<Inhabitant>>)o; 
+            includeBindingIfMatches(result, descriptor, entry.getValue());
+        }
+    }
 
-//    private void includeBinding(LinkedHashSet<Binding<?>> result, Inhabitant i) {
-//        // TODO Auto-generated method stub
-//        
-//    }
-//
-//    void includeBinding(LinkedHashSet<Binding<?>> result, MultiMap<String, /*Inhabitant*/?> mm) {
-//        for (Entry<String, ?> entry : mm.entrySet()) {
-//            result.add(entry.getValue());
-//        }
-//    }
+    private void includeBinding(LinkedHashSet<Binding<?>> result, MultiMap<String,?> mm) {
+        for (Entry<String, ?> entry : mm.entrySet()) {
+            includeBindingIfMatches(result, null, (List<?>)entry.getValue());
+        }
+    }
+
+    private void includeBindingIfMatches(LinkedHashSet<Binding<?>> result,
+            Descriptor descriptor,
+            List<?> list) {
+        for (Object i : list) {
+            includeBinding(result, descriptor, i);
+        }
+    }
+
+    void includeBinding(LinkedHashSet<Binding<?>> result, Descriptor descriptor, Object i) {
+        if (NamedInhabitant.class.isInstance(i)) {
+            i = NamedInhabitant.class.cast(i).inhabitant;
+        }
+        
+        if (AbstractInhabitantImpl.class.isInstance(i)) {
+            AbstractInhabitantImpl<?> ai = AbstractInhabitantImpl.class.cast(i);
+            if (null == descriptor || (null != descriptor && ai.matches(descriptor))) {
+                // TODO: we need to do more here, i think, to avoid duplicates since Inhabitants can layer on top of one another
+                result.add(ai);
+            }
+        }
+    }
 
     @Override
     public Collection<Binding<?>> getBindings() {
@@ -584,8 +601,20 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
         addIndex(i, index, name, true);
     }
 
-    protected void addIndex(Inhabitant<?> i, String index, String name,
-                            boolean notify) {
+    protected void addIndex(Inhabitant<?> i, String index, String name, boolean notify) {
+        // TODO: it would be nice NOT to have to do this in the future!
+        if (AbstractInhabitantImpl.class.isInstance(i)) {
+            DescriptorImpl descriptor = (DescriptorImpl)i.getDescriptor();
+            if (null != descriptor) {
+                if (null != index) {
+                    descriptor.addContract(index);
+                }
+                if (null != name) {
+                    descriptor.addName(name);
+                }
+            }
+        }
+        
         byContract.add(index, new NamedInhabitant(name, i));
 
         if (notify) {

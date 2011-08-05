@@ -39,99 +39,164 @@
  */
 package org.jvnet.hk2.component;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
+import java.util.LinkedHashSet;
 
 import org.glassfish.hk2.Descriptor;
+import org.glassfish.hk2.Scope;
 
 /**
- * A simple Descriptor Builder.
+ * A simple Descriptor.  FOR INTERNAL USE ONLY.
  * 
  * @author Jerome Dochez
  * @author Jeff Trent
  */
-/*public*/ class DescriptorImpl implements Descriptor {
+public class DescriptorImpl implements Descriptor {
 
-    private final String name;
+    private final LinkedHashSet<String> names;
     private final String typeName;
-    // TODO: handle scope
-//    private final Scope scope;
-    private final List<String> qualifiers = new ArrayList<String>();
-    private final List<String> contracts = new ArrayList<String>();
+    private final LinkedHashSet<String> qualifiers;
+    private final LinkedHashSet<String> contracts;
     private final MultiMap<String, String> metadata;
+    private final Scope scope;
+    
+    private boolean readOnly;
 
     public DescriptorImpl(String name, String typeName) {
-        this.name = name;
-        this.typeName = typeName;
-        this.metadata = new MultiMap<String, String>();
+        this(name, typeName, null, null);
+    }
+    
+    public DescriptorImpl(String name, String typeName, MultiMap<String, String> metadata, Scope scope) {
+        this(null, typeName, metadata, scope, null, null);
+        if (null != name) {
+            addName(name);
+        }
     }
     
     public DescriptorImpl(Descriptor other) {
-        this.name = other.getName();
-        // TODO:
-//        this.scope = other.getScope();
+        this(other, false);
+    }
+    
+    public DescriptorImpl(Descriptor other, boolean readOnly) {
+        this.names = new LinkedHashSet<String>(other.getNames());
         this.typeName = other.getTypeName();
-        this.qualifiers.addAll(other.getQualifiers());
-        this.contracts.addAll(other.getContracts());
-        this.metadata = new MultiMap<String, String>(other.getMetadata());
+        this.scope = (Scope) other.getScope();
+        this.qualifiers = new LinkedHashSet<String>(other.getQualifiers());
+        this.contracts = new LinkedHashSet<String>(other.getContracts());
+        if (null == other.getMetadata() || MultiMap.emptyMap() == (Object)other.getMetadata()) {
+            this.metadata = MultiMap.emptyMap();
+        } else {
+            this.metadata = new MultiMap<String, String>(other.getMetadata());
+        }
+        
+        if (readOnly) {
+            setReadOnly();
+        }
     }
     
-    public static boolean isEmpty(Descriptor descriptor) {
-        if (null == descriptor || EMPTY_DESCRIPTOR == descriptor) {
-            return true;
-        }
-        
-        if (!isEmpty(descriptor.getName()) || !isEmpty(descriptor.getTypeName())) {
-            return false;
-        }
-        
-        if (!isEmpty(descriptor.getContracts()) || ! isEmpty(descriptor.getQualifiers())) {
-            return false;
-        }
-        
-        if (null != descriptor.getMetadata() && descriptor.getMetadata().size() > 0) {
-            return false;
-        }
-        
-        return true;
+    private DescriptorImpl(LinkedHashSet<String> names,
+            String typeName,
+            MultiMap<String, String> metadata,
+            Scope scope,
+            LinkedHashSet<String> qualifiers,
+            LinkedHashSet<String> contracts) {
+        this.names = (null == names) ? new LinkedHashSet<String>() : names;
+        this.typeName = typeName;
+        this.scope = scope;
+        this.qualifiers = (null == qualifiers) ? new LinkedHashSet<String>() : qualifiers;
+        this.contracts = (null == contracts) ? new LinkedHashSet<String>() : contracts;
+        this.metadata = (null == metadata) ? new MultiMap<String, String>() : metadata;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        append(sb, "names", names);
+        append(sb, "typeName", typeName);
+        append(sb, "scope", scope);
+        append(sb, "qualifiers", qualifiers);
+        append(sb, "contracts", contracts);
+        append(sb, "metadata", metadata);
+        return sb.toString();
     }
     
-    static boolean isEmpty(Collection<String> coll) {
-        return (null == coll || coll.isEmpty());
+    @Override
+    public int hashCode() {
+        return (null == typeName) ? -1 : typeName.hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object another) {
+        if (!Descriptor.class.isInstance(another)) {
+            return false;
+        }
+
+        Descriptor d = Descriptor.class.cast(another);
+        
+        return equals(getNames(), d.getNames()) 
+            && equals(getTypeName(), d.getTypeName())
+            && equals(getMetadata(), d.getMetadata())
+            && equals(getScope(), d.getScope())
+            && equals(getContracts(), d.getContracts())
+            && equals(getQualifiers(), d.getQualifiers());
+    }
+    
+    private void append(StringBuilder sb, String key, Object val) {
+        if (null != val) {
+            if (sb.length() > 0) {
+                sb.append(",");
+            }
+            sb.append(key).append("=").append(val);
+        }
     }
 
-    static boolean isEmpty(String val) {
-        return (null == val || val.isEmpty());
+    public void setReadOnly() {
+        this.readOnly = true;
     }
 
-    DescriptorImpl addContract(String contractFQCN) {
+    public DescriptorImpl addName(String name) {
+        if (readOnly) {
+            throw new IllegalStateException();
+        }
+        names.add(name);
+        return this;
+    }
+
+    public DescriptorImpl addContract(String contractFQCN) {
+        if (readOnly) {
+            throw new IllegalStateException();
+        }
         contracts.add(contractFQCN);
         return this;
     }
 
-    DescriptorImpl addQualifierType(String annotation) {
+    public DescriptorImpl addQualifierType(String annotation) {
+        if (readOnly) {
+            throw new IllegalStateException();
+        }
         qualifiers.add(annotation);
         return this;
     }
 
-    DescriptorImpl addMetadata(String key, String value) {
+    public DescriptorImpl addMetadata(String key, String value) {
+        if (readOnly) {
+            throw new IllegalStateException();
+        }
         metadata.add(key, value);
         return this;
     }
     
     @Override
-    public String getName() {
-        return name;
+    public Collection<String> getNames() {
+        return Collections.unmodifiableSet(names);
     }
 
-    // TODO:
-//    @Override
-//    public Scope getScope() {
-//        return scope;
-//    }
+    @Override
+    public org.glassfish.hk2.Scope getScope() {
+        return scope;
+    }
 
     @Override
     public MultiMap<String, String> getMetadata() {
@@ -140,12 +205,27 @@ import org.glassfish.hk2.Descriptor;
 
     @Override
     public Collection<String> getQualifiers() {
-        return Collections.unmodifiableList(qualifiers);
+        return Collections.unmodifiableSet(qualifiers);
     }
 
     @Override
     public Collection<String> getContracts() {
-        return Collections.unmodifiableList(contracts);
+        return Collections.unmodifiableSet(contracts);
+    }
+
+    @Override
+    public boolean hasName(String name) {
+        return names.contains(name);
+    }
+    
+    @Override
+    public boolean hasQualifier(String qualifier) {
+        return qualifiers.contains(qualifier);
+    }
+
+    @Override
+    public boolean hasContract(String contract) {
+        return contracts.contains(contract);
     }
 
     @Override
@@ -167,45 +247,27 @@ import org.glassfish.hk2.Descriptor;
      * @param another the other Descriptor to compare against
      * @return true if all fields in this instance matches another
      */
-    boolean matches(Descriptor another) {
-        // TODO: Scope
-        return matches(name, another.getName())
-            && matches(typeName, another.getTypeName())
-            && matches(qualifiers, another.getQualifiers())
-            && matches(contracts, another.getContracts())
-            && matches(metadata, another.getMetadata());
+    public boolean matches(Descriptor another) {
+        return matches(this, another);
     }
-
-    private static boolean equals(Object o1, Object o2) {
-        if (null == o1 && null == o2) {
+    
+    public static boolean matches(Descriptor d1, Descriptor d2) {
+        if (null == d1 && null == d2) {
             return true;
         }
         
-        if (null == o1 || null == o2) {
+        if (null == d1 || null == d2) {
             return false;
         }
         
-        if (Collection.class.isInstance(o1)) {
-            Collection<?> c1 = Collection.class.cast(o1);
-            Collection<?> c2 = Collection.class.cast(o2);
-            if (c1.size() != c2.size()) {
-                return false;
-            }
-            
-            Iterator<?> it1 = c1.iterator();
-            Iterator<?> it2 = c2.iterator();
-            while (it1.hasNext()) {
-                if (!it1.next().equals(it2.next())) {
-                    return false;
-                }
-            }
-            
-            return true;
-        }
-        
-        return o1.equals(o2);
+        return matches(d1.getNames(), d2.getNames())
+            && matches(d1.getTypeName(), d2.getTypeName())
+            && matches(d1.getScope(), d2.getScope())
+            && matches(d1.getQualifiers(), d2.getQualifiers())
+            && matches(d1.getContracts(), d2.getContracts())
+            && matches(d1.getMetadata(), d2.getMetadata());
     }
-    
+
     @SuppressWarnings("unchecked")
     private static boolean matches(Object o1, Object o2) {
         if (null == o1) {
@@ -247,10 +309,152 @@ import org.glassfish.hk2.Descriptor;
         return true;
     }
     
+
+    public static boolean isEmpty(Descriptor descriptor) {
+        if (null == descriptor || EMPTY_DESCRIPTOR == descriptor) {
+            return true;
+        }
+        
+        if (!isEmpty(descriptor.getNames()) || !isEmpty(descriptor.getTypeName())) {
+            return false;
+        }
+        
+        if (!isEmpty(descriptor.getContracts()) || ! isEmpty(descriptor.getQualifiers())) {
+            return false;
+        }
+        
+        if (null != descriptor.getMetadata() && descriptor.getMetadata().size() > 0) {
+            return false;
+        }
+        
+        if (null != descriptor.getScope()) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    static boolean isEmpty(Collection<String> coll) {
+        return (null == coll || coll.isEmpty());
+    }
+
+    static boolean isEmpty(String val) {
+        return (null == val || val.isEmpty());
+    }
+
+
+    private static boolean equals(Object o1, Object o2) {
+        if (null == o1 && null == o2) {
+            return true;
+        }
+        
+        if (null == o1 || null == o2) {
+            return false;
+        }
+        
+        if (o1.getClass() != o2.getClass()) {
+            if (Collection.class.isInstance(o1)) {
+                Collection<?> c1 = Collection.class.cast(o1);
+                Collection<?> c2 = Collection.class.cast(o2);
+                if (c1.size() != c2.size()) {
+                    return false;
+                }
+                
+                Iterator<?> it1 = c1.iterator();
+                Iterator<?> it2 = c2.iterator();
+                while (it1.hasNext()) {
+                    if (!it1.next().equals(it2.next())) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            }
+        }
+        
+        return o1.equals(o2);
+    }
+    
+
+    public static DescriptorImpl createMerged(Descriptor d1, Descriptor d2) {
+        if (null == d1 && null == d2) {
+            return null;
+        }
+        
+        if (null == d1) {
+            return new DescriptorImpl(d2);
+        }
+        
+        if (null == d2) {
+            return new DescriptorImpl(d1);
+        }
+        
+        LinkedHashSet<String> names = getMergedSet(d1.getNames(), d2.getNames());
+        String typeName = getMerged(d1.getTypeName(), d2.getTypeName());
+        Scope scope = (Scope) getMerged(d1.getScope(), d2.getScope());
+        MultiMap<String, String> metadata = getMergedMetaData(d1.getMetadata(), d2.getMetadata());
+        LinkedHashSet<String> qualifiers = getMergedSet(d1.getQualifiers(), d2.getQualifiers());
+        LinkedHashSet<String> contracts = getMergedSet(d1.getContracts(), d2.getContracts());
+        return new DescriptorImpl(names, typeName, metadata, scope, qualifiers, contracts);
+    }
+    
+    private static MultiMap<String, String> getMergedMetaData(
+            org.glassfish.hk2.MultiMap<String, String> m1,
+            org.glassfish.hk2.MultiMap<String, String> m2) {
+        if (null == m1 && null == m2) {
+            return null;
+        }
+
+        MultiMap<String, String> mm = new MultiMap<String, String>();
+        if (null != m1) {
+            mm.mergeAll(m1);
+        }
+
+        if (null != m2) {
+            mm.mergeAll(m2);
+        }
+
+        return mm;
+    }
+
+    private static LinkedHashSet<String> getMergedSet(Collection<String> s1, Collection<String> s2) {
+        if (null == s1 && null == s2) {
+            return null;
+        }
+        
+        LinkedHashSet<String> set = new LinkedHashSet<String>();
+        if (null != s1) {
+            set.addAll(s1);
+        }
+
+        if (null != s2) {
+            set.addAll(s2);
+        }
+        
+        return set;
+    }
+
+    static <T> T getMerged(T v1, T v2) {
+        if (null == v1) {
+            return v2;
+        }
+        
+        if (null == v2) {
+            return v1;
+        }
+        
+        if (!v1.equals(v2)) {
+            throw new IllegalStateException("can't merge " + v1 + " and " + v2);
+        }
+        
+        return v1;
+    }
+
+
     final static Descriptor EMPTY_DESCRIPTOR = new Descriptor() {
         @Override
-        public String getName() {
-            return null;
+        public Collection<String> getNames() {
+            return Collections.emptySet();
         }
 
         @Override
@@ -271,6 +475,26 @@ import org.glassfish.hk2.Descriptor;
         @Override
         public String getTypeName() {
             return null;
+        }
+
+        @Override
+        public org.glassfish.hk2.Scope getScope() {
+            return null;
+        }
+
+        @Override
+        public boolean hasName(String name) {
+            return false;
+        }
+        
+        @Override
+        public boolean hasQualifier(String qualifier) {
+            return false;
+        }
+
+        @Override
+        public boolean hasContract(String contract) {
+            return false;
         }
     };
 

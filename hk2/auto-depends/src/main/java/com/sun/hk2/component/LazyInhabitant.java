@@ -44,6 +44,7 @@ import java.util.logging.Level;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Creator;
 import org.jvnet.hk2.component.Creators;
+import org.jvnet.hk2.component.DescriptorImpl;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
@@ -52,8 +53,6 @@ import org.jvnet.hk2.component.MultiMap;
  * @author Kohsuke Kawaguchi
  */
 public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements ClassLoaderHolder {
-    private final String typeName;
-
     /**
      * Lazy reference to {@link ClassLoader}.
      */
@@ -61,8 +60,6 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
 
     protected final Habitat habitat;
 
-    private final MultiMap<String,String> metadata;
-    
     private final Inhabitant<?> lead;
 
     
@@ -71,12 +68,11 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
     }
 
     public LazyInhabitant(Habitat habitat, Holder<ClassLoader> cl, String typeName, MultiMap<String,String> metadata, Inhabitant<?> lead) {
-      assert metadata!=null;
-      this.habitat = habitat;
-      this.classLoader = cl;
-      this.typeName = typeName;
-      this.metadata = metadata;
-      this.lead = lead;
+        super(new DescriptorImpl(null, typeName, metadata, null));
+        assert metadata!=null;
+        this.habitat = habitat;
+        this.classLoader = cl;
+        this.lead = lead;
     }
 
     @Override
@@ -86,7 +82,7 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
     
     @Override
     public String typeName() {
-        return typeName;
+        return getDescriptor().getTypeName();
     }
     
     @Override
@@ -104,7 +100,7 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
 
     @Override
     public MultiMap<String,String> metadata() {
-        return metadata;
+        return (MultiMap<String, String>) getDescriptor().getMetadata();
     }
 
     @Override
@@ -121,6 +117,7 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
     
     @SuppressWarnings("unchecked")
     protected Class<T> loadClass() {
+        String typeName = typeName();
         logger.log(Level.FINER, "loading class for: {0}", typeName);
         
         final ClassLoader cl = getClassLoader();
@@ -142,6 +139,7 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
      * Creates {@link Creator} for instantiating objects.
      */
     protected Creator<T> createCreator(Class<T> c) {
+        MultiMap<String, String> metadata = metadata();
         return Creators.create(c,habitat,metadata);
     }
 

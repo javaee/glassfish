@@ -42,12 +42,15 @@ package org.jvnet.hk2.component;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.glassfish.hk2.Descriptor;
+import org.glassfish.hk2.ScopeInstance;
 import org.junit.Test;
 
 public class DescriptorImplTest {
@@ -66,10 +69,13 @@ public class DescriptorImplTest {
         mm.add("key", "val1");
         mm.add("key", "val2");
         
-        assertEquals("name", descriptor.getName());
+        assertEquals(Arrays.asList(new String[] {"name"}), 
+                new ArrayList<String>(descriptor.getNames()));
         assertEquals("typeName", descriptor.getTypeName());
-        assertEquals(Arrays.asList(new String[] {"qualifier1", "qualifier2"}), descriptor.getQualifiers());
-        assertEquals(Arrays.asList(new String[] {"contract1", "contract2"}), descriptor.getContracts());
+        assertEquals(Arrays.asList(new String[] {"qualifier1", "qualifier2"}), 
+                new ArrayList<String>(descriptor.getQualifiers()));
+        assertEquals(Arrays.asList(new String[] {"contract1", "contract2"}),
+                new ArrayList<String>(descriptor.getContracts()));
         assertEquals(mm, descriptor.getMetadata());
         
         try {
@@ -94,10 +100,13 @@ public class DescriptorImplTest {
         }
         
         Descriptor copy = new DescriptorImpl(descriptor);
-        assertEquals("name", copy.getName());
+        assertEquals(Arrays.asList(new String[] {"name"}), 
+                new ArrayList<String>(copy.getNames()));
         assertEquals("typeName", copy.getTypeName());
-        assertEquals(Arrays.asList(new String[] {"qualifier1", "qualifier2"}), copy.getQualifiers());
-        assertEquals(Arrays.asList(new String[] {"contract1", "contract2"}), copy.getContracts());
+        assertEquals(Arrays.asList(new String[] {"qualifier1", "qualifier2"}),
+                new ArrayList<String>(copy.getQualifiers()));
+        assertEquals(Arrays.asList(new String[] {"contract1", "contract2"}),
+                new ArrayList<String>(copy.getContracts()));
         assertEquals(mm, copy.getMetadata());
     }
     
@@ -165,5 +174,90 @@ public class DescriptorImplTest {
 
         descriptor = new DescriptorImpl(null, null).addQualifierType("x");
         assertFalse(DescriptorImpl.isEmpty(descriptor));
+    }
+    
+    @Test
+    public void readOnly() {
+        DescriptorImpl descriptor = new DescriptorImpl("name", "typeName");
+        descriptor = new DescriptorImpl(descriptor, true);
+
+        try {
+            fail(descriptor.addContract("contract1").toString());
+        } catch (IllegalStateException e) {
+        }
+        
+        try {
+            fail(descriptor.addQualifierType("contract1").toString());
+        } catch (IllegalStateException e) {
+        }
+
+        try {
+            fail(descriptor.addMetadata("key", "val").toString());
+        } catch (IllegalStateException e) {
+        }
+    }
+    
+    @Test
+    public void illegalMerge() {
+        DescriptorImpl d1 = new DescriptorImpl("name", "typeName");
+        DescriptorImpl d2 = new DescriptorImpl("name2", "typeName");
+        
+        d2 = new DescriptorImpl("name", "typeName2");
+        try {
+            fail(DescriptorImpl.createMerged(d1, d2).toString());
+        } catch (IllegalStateException e) {
+        }
+    }
+
+    @Test
+    public void mergeWithNulls() {
+        DescriptorImpl d1 = new DescriptorImpl("name", "typeName");
+        assertNotNull(DescriptorImpl.createMerged(d1, null));
+        assertNotNull(DescriptorImpl.createMerged(null, d1));
+
+        assertFalse(d1 == DescriptorImpl.createMerged(d1, null));
+        assertFalse(d1 == DescriptorImpl.createMerged(null, d1));
+        
+        assertEquals(d1, DescriptorImpl.createMerged(d1, null));
+
+        assertEquals(d1, DescriptorImpl.createMerged(d1, d1));
+    }
+    
+    @Test
+    public void merge() {
+        Scope scope = new Scope() {
+            @Override
+            public ScopeInstance current() {
+                return null;
+            }
+        };
+        
+        MultiMap<String, String> mm = new MultiMap<String, String>();
+        mm.add("k", "1");
+        
+        DescriptorImpl d1 = new DescriptorImpl("name", null, null, scope);
+        DescriptorImpl d2 = new DescriptorImpl("name2", "typeName", mm, scope);
+        DescriptorImpl d3 = new DescriptorImpl("name", "typeName", mm, null);
+
+        d1.addContract("c1");
+        d1.addContract("c2");
+
+        d1.addMetadata("k", "1");
+        d1.addMetadata("l", "1");
+        
+        d2.addContract("c1");
+        d2.addContract("c3");
+        
+        d2.addQualifierType("x");
+        
+        Descriptor descriptor = DescriptorImpl.createMerged(d1, d2);
+        descriptor = DescriptorImpl.createMerged(descriptor, d3);
+        
+        assertEquals(Arrays.asList("name", "name2"), new ArrayList<String>(descriptor.getNames()));
+        assertEquals("typeName", descriptor.getTypeName());
+        assertSame("scope", scope, descriptor.getScope());
+        assertEquals(Arrays.asList("c1", "c2", "c3"), new ArrayList<String>(descriptor.getContracts()));
+        assertEquals(Arrays.asList("x"), new ArrayList<String>(descriptor.getQualifiers()));
+        assertEquals(2, descriptor.getMetadata().size());
     }
 }
