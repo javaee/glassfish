@@ -82,6 +82,7 @@ af|commandButton {
     white-space:nowrap;
 }
 
-.af_table_content {
-    margin: 5px;
+.af_table table {
+    width: 100%;
+    padding: 5px;
 }
