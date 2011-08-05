@@ -7,20 +7,20 @@
 }
 
 .AFTextForeground:alias {
-  color: #222;
-  
+    color: #222;
+
 }
 
 .AFPanelBoxBody:alias {
-  background: url("/images/dbcc.png")  repeat-x scroll 0 0 transparent;
+    background: url("/images/dbcc.png")  repeat-x scroll 0 0 transparent;
 }
 
 af|panelBox::header {
-  color: #003D5B;
-  border-bottom:1px solid #949494;
-  padding:7px;
-  font-size: 12px;
-  font-weight: bold;
+    color: #003D5B;
+    border-bottom:1px solid #949494;
+    padding:7px;
+    font-size: 12px;
+    font-weight: bold;
 }
 
 .AFHeaderText:alias {
@@ -40,4 +40,8 @@ af|commandButton {
     padding:3px 5px 1px 6px;
     text-decoration:none;
     white-space:nowrap;
+}
+
+.af_table_content {
+    margin: 5px;
 }
