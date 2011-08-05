@@ -16,6 +16,17 @@ import javax.faces.bean.ViewScoped;
 @ManagedBean
 @ViewScoped
 public class SampleBean {
+    private List<String> availableServers = new ArrayList<String>();
+    private List<String> selectedServers = new ArrayList<String>();
+
+    public SampleBean() {
+        selectedServers.add("server1");
+        availableServers.add("server2");
+        availableServers.add("server3");
+        availableServers.add("server4");
+        availableServers.add("server5");
+    }
+    
     public List<Application> getApplications() {
         List<Application> apps = new ArrayList<Application>();
         
@@ -23,6 +34,22 @@ public class SampleBean {
         apps.add(new Application("application2", false, "ejb, web"));
         
         return apps;
+    }
+
+    public List<String> getAvailableServers() {
+        return availableServers;
+    }
+
+    public void setAvailableServers(List<String> availableServers) {
+        this.availableServers = availableServers;
+    }
+
+    public List<String> getSelectedServers() {
+        return selectedServers;
+    }
+
+    public void setSelectedServers(List<String> selectedServers) {
+        this.selectedServers = selectedServers;
     }
     
     public static class Application {
