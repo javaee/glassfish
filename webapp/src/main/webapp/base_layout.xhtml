@@ -13,7 +13,7 @@
         <link href="#{request.contextPath}/css/td_main.css" rel="stylesheet" type="text/css"/>
         <link type="image/x-icon" href="#{request.contextPath}/images/favicon.ico" rel="icon"/>
         <link type="image/x-icon" href="#{request.contextPath}/images/favicon.ico" rel="shortcut icon"/>
-        
+
         <style type="text/css">
             .af_panelBox_medium .af_panelBox_body, .OraBGAccentMedium {
                 background-color: #ffffff;
@@ -34,37 +34,23 @@
         <div id="mainContainer">
             <div id="masthead">
                 <!-- Copyright 2011, Oracle and/or its affiliates. All Rights Reserved. -->
-                <table border="0" cellpadding="0" cellspacing="0" >
-                    <tbody><tr>
-                            <td>
-                                <img class="logo" src="#{request.contextPath}/images/logo-oracle-red.png" title="product.logo.title" alt="product.logo.title" border="0"/>
-                                <span class="title">GlassFish Application Server</span>
-                            </td>
-                            <td></td>
-                            <td align="right">
-                                <table class="linksTable" cellpadding="2" cellspacing="0">
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <tr:form id="ajaxNavForm" prependId="false" >
-                                                    <div style="display: inline; visibility: hidden;">
-                                                        <h:inputText id="content" value="#{appHelper.contentPage}"/>
-                                                        <tr:commandButton id="contentButton" text="Go!">
-                                                            <f:ajax execute="@form" render=":ajaxBody" onevent="Console.Ajax.ajaxCallback"/>
-                                                        </tr:commandButton>
-                                                    </div>
-                                                    <span class="actionLink mastheadButton">
-                                                        <a href="#{request.contextPath}/login.jsf">Logout</a>
-                                                    </span>
-                                                </tr:form>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div style="float: left; margin-top: 4px;">
+                    <img class="logo" src="#{request.contextPath}/images/logo-oracle-red.png" title="product.logo.title" alt="product.logo.title" border="0"/>
+                    <span class="title">GlassFish Application Server</span>
+                </div>
+                <div style="float: right; margin-top: 5px;">
+                    <tr:form id="ajaxNavForm" prependId="false" >
+                        <div style="display: inline; visibility: hidden;">
+                            <h:inputText id="content" value="#{appHelper.contentPage}"/>
+                            <tr:commandButton id="contentButton">
+                                <f:ajax execute="@form" render=":ajaxBody" onevent="Console.Ajax.ajaxCallback"/>
+                            </tr:commandButton>
+                        </div>
+                        <span class="actionLink mastheadButton">
+                            <a href="#{request.contextPath}/login.jsf">Logout</a>
+                        </span>
+                    </tr:form>
+                </div>
             </div>
             <div id="infoBar"></div>
             <div id="mainContent">

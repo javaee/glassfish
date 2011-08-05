@@ -3,38 +3,6 @@ if (typeof Console == 'undefined') {
     $(document).ready(function () { Console.Ajax.processLinks() });
 }
 
-if (!Array.prototype.forEach) {
-    Array.prototype.forEach = function(fun /*, thisp*/)
-    {
-        var len = this.length;
-        if (typeof fun != "function")
-            throw new TypeError();
-
-        var thisp = arguments[1];
-        for (var i = 0; i < len; i++)
-        {
-            if (i in this)
-                fun.call(thisp, this[i], i, this);
-        }
-    };
-}
-
-if (!HTMLCollection.prototype.forEach) {
-    HTMLCollection.prototype.forEach = function(fun /*, thisp*/)
-    {
-        var len = this.length;
-        if (typeof fun != "function")
-            throw new TypeError();
-
-        var thisp = arguments[1];
-        for (var i = 0; i < len; i++)
-        {
-            if (i in this)
-                fun.call(thisp, this[i], i, this);
-        }
-    };
-}
-
 Console.Ajax = {
     processLinks: function() {
         $('#ajaxBody > a').click(function() {
@@ -158,104 +126,6 @@ Console.Ajax = {
     }
 }
 
-
-Console.UI = {
-    tabs: [ ],
-    
-    createTabs: function(selector) {
-        /*
-        $(selector).prepend('<ul/>');
-        $(selector + ' > div').each(function (index, el) {
-            $(selector + ' > ul').append('<li><a href="#' + el.id + '">' + el.title + '</a></li>');
-        });
-        $(selector).tabs();
-         */
-        //                var ul = A.one(selector + '_ul');
-        //                var tabs = A.one(selector + '_div');
-        //                tabs.get('children').each(function(el, obj) { 
-        //                    if (el.get('tagName') == 'DIV') {
-        //                        ul.append('<li><a href="#' + el.get('id') + '">' + el.get('title') + '</a></li>');
-        //                    }
-        ////                    console.debug(el);
-        //                });
-        //                var tabView = 
-        
-        AUI().use('node', function (A) {        
-            if (Console.UI.tabs.length == 0) {
-                A.on('domready', Console.UI.renderTabs)
-            }
-                
-            Console.UI.tabs.push(selector);
-        });
-    },
-    
-    renderTabs: function() {
-        AUI().use(
-            'tabview',
-            function(A) {
-                for (var i = Console.UI.tabs.length -1 ; i>= 0; i--) {
-                    new A.TabView({
-                        srcNode: Console.UI.tabs[i]
-                    }).render();
-                    A.one(Console.UI.tabs[i]).setStyle('visibility', 'visible');
-                }
-        
-                Console.UI.tabs = [];
-            });
-    },
-    
-    createTree: function(selector) {
-        /*
-        selector = selector + ' ul' + selector + '_top > li';
-        var nodes = {
-            identifier: 'id', 
-            label: 'value',
-            items: [ ]
-        };
-        
-        this.processTreeNodes(dojo.query(selector)).forEach(
-            function(el, index, array) {
-                nodes.items.push(el); 
-            });
-        console.debug(nodes.items);
-         */
-        
-        /*
-        AUI().ready('aui-tree', 'substitute', 'node', function(A) {
-            var treeView = new A.TreeView({
-                boundingBox: selector
-                ,
-                contentBox: selector+'_ul'
-            }
-            )
-//            .render()
-            ;
-            A.one(selector).setStyle('visibility', 'visible');
-        });
-        */
-       $(selector).jstree({"plugins" : [ "themes", "html_data" ]});
-    },
-    
-    processTreeNodes: function (nodeList) {
-        var nodes = [ ];
-        var o = this;
-        nodeList.forEach(function(node, index, arr){
-            var anchor = dojo.query('#' + node.id + '_a')[0];
-            var selector = '#' + node.id;
-            var item =  {
-                id: node.id,
-                link: anchor.href,
-                value: anchor.innerHTML,
-                children: o.processTreeNodes(dojo.query(selector + ' ul' + selector + '_ul > li'))
-            };
-            
-            nodes.push(item);
-        });
-        
-        return nodes;
-    }
-}
-
 var globalEvalNextScript = function(scriptQueue) {
     if (typeof(scriptQueue) === "undefined") {
         // Nothing to do...
@@ -300,3 +170,37 @@ var globalEval = function(src) {
     };
     fn();
 };
+
+/*
+if (!Array.prototype.forEach) {
+    Array.prototype.forEach = function(fun )
+    {
+        var len = this.length;
+        if (typeof fun != "function")
+            throw new TypeError();
+
+        var thisp = arguments[1];
+        for (var i = 0; i < len; i++)
+        {
+            if (i in this)
+                fun.call(thisp, this[i], i, this);
+        }
+    };
+}
+
+if (!HTMLCollection.prototype.forEach) {
+    HTMLCollection.prototype.forEach = function(fun )
+    {
+        var len = this.length;
+        if (typeof fun != "function")
+            throw new TypeError();
+
+        var thisp = arguments[1];
+        for (var i = 0; i < len; i++)
+        {
+            if (i in this)
+                fun.call(thisp, this[i], i, this);
+        }
+    };
+}
+*/
