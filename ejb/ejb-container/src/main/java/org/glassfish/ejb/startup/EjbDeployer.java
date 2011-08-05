@@ -40,10 +40,13 @@
 
 package org.glassfish.ejb.startup;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
+import java.security.MessageDigest;
 
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.deployment.Application;
@@ -70,6 +73,7 @@ import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.deployment.common.DeploymentUtils;
@@ -135,6 +139,7 @@ public class EjbDeployer
     // Property used to persist unique id across server restart.
     static final String APP_UNIQUE_ID_PROP = "org.glassfish.ejb.container.application_unique_id";
     static final String IS_TIMEOUT_APP_PROP = "org.glassfish.ejb.container.is_timeout_application";
+    private static final boolean useHash = Boolean.getBoolean("use.hash.for.appid");
 
     private AtomicLong uniqueIdCounter;
     
@@ -200,7 +205,11 @@ public class EjbDeployer
             // This is the first time load is being called for any ejb module in an
             // application, so generate the unique id.
 
-            uniqueAppId = getNextEjbAppUniqueId();
+            if (useHash) {
+                uniqueAppId = getNextEjbAppUniqueId(dc, ejbBundle);
+            } else {
+                uniqueAppId = getNextEjbAppUniqueId();
+            }
             appProps.setProperty(APP_UNIQUE_ID_PROP, uniqueAppId + "");
         } else {
             uniqueAppId = Long.parseLong(appProps.getProperty(APP_UNIQUE_ID_PROP));
@@ -619,6 +628,54 @@ public class EjbDeployer
 
 
         return target;
+    }
+
+    /**
+     * Calculate application id as a hash of the application file.
+     */
+    private long getNextEjbAppUniqueId(DeploymentContext dc, EjbBundleDescriptor ejbBundle) {
+        ReadableArchive originalSource;
+        if (ejbBundle.getApplication().isVirtual()) {
+            originalSource = dc.getOriginalSource();
+        } else {
+            ExtendedDeploymentContext exdc = (ExtendedDeploymentContext) dc;
+            originalSource=exdc.getParentContext().getOriginalSource();
+        }
+
+        File originalSourceDir = new File(originalSource.getURI()); 
+        FileInputStream fis = null;
+        long result = 0;
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            fis = new FileInputStream(originalSourceDir);
+            byte[] dataBytes = new byte[1024];
+
+            int nread = 0;
+            while ((nread = fis.read(dataBytes)) != -1) {
+                md.update(dataBytes, 0, nread);
+            }
+            byte[] mdbytes = md.digest();
+
+            // Convert into long
+            for (byte b : mdbytes) {
+                result = 31*result + b;
+            }
+            result = result << 16;
+
+            _logger.log(Level.INFO, "EjbDeployer.getNextEjbAppUniqueId hash for the application: " + 
+                    originalSourceDir + ": " + result);
+
+        } catch (Exception e) {
+            _logger.log( Level.WARNING, "Failed to calculate hash for file " + originalSourceDir, e);
+            result = getNextEjbAppUniqueId(); // XXX - will it work?
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (Exception e) { }
+            }
+        }
+        return result;
     }
 
     private long getNextEjbAppUniqueId() {
