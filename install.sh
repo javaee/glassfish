@@ -10,8 +10,9 @@ if [ "$MODULE_DIR" == "" ] ; then
 fi
 
 echo Stopping the server
-gf_undeploy admin-console
-gf_stop
+$SERVER_DIR/bin/asadmin undeploy admin-console
+$SERVER_DIR/bin/asadmin stop-domain 
+
 echo Clearing the OSGi cache
 rm -rf $SERVER_DIR/glassfish/domains/domain1/osgi-cache
 rm -rf $SERVER_DIR/glassfish/domains/domain1/generated
@@ -30,7 +31,7 @@ echo Installing modules to $MODULE_DIR
 cp plugin-system/target/plugin-system-*.jar $MODULE_DIR
 for PLUGIN in plugins/* ; do
     PLUGIN=`basename $PLUGIN`
-    if [ -d plugins/$PLUGIN -a "example1" != "$PLUGIN" ] ; then
+    if [ -d plugins/$PLUGIN ] ; then
         echo "     $PLUGIN..."
         cp plugins/$PLUGIN/target/*.jar $MODULE_DIR 2>/dev/null
     fi
@@ -41,6 +42,6 @@ $SERVER_DIR/bin/asadmin start-domain --debug=true
 
 echo Deploying the application
 read -p "Attach debugger if desired, then press Enter to deploy the web app"
-gf_deploy webapp/target/admin-console/
+$SERVER_DIR/bin/asadmin deploy --force=true webapp/target/admin-console/
 
 echo Done.
