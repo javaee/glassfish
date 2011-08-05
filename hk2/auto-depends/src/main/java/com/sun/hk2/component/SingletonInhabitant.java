@@ -55,7 +55,8 @@ public class SingletonInhabitant<T> extends AbstractCreatorInhabitantImpl<T> {
       super(creator);
   }
 
-  public T get(Inhabitant onBehalfOf) {
+  @SuppressWarnings("rawtypes")
+public T get(Inhabitant onBehalfOf) {
       if(object==null) {
           synchronized(this) {
               if(object==null) {

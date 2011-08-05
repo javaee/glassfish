@@ -44,9 +44,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.glassfish.hk2.*;
-import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.Constants;
+import org.jvnet.hk2.component.Creator;
+import org.jvnet.hk2.component.DescriptorImpl;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.InhabitantRequested;
+import org.jvnet.hk2.component.InjectionManager;
 import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.hk2.tracing.TracingThreadLocal;
 import org.jvnet.hk2.tracing.TracingUtilities;
@@ -60,12 +65,11 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
   
     protected final Class<? extends T> type;
     protected final Habitat habitat;
-    private final MultiMap<String,String> metadata;
 
     public AbstractCreatorImpl(Class<? extends T> type, Habitat habitat, MultiMap<String,String> metadata) {
+        super(new DescriptorImpl(null, type.getName(), metadata, null));
         this.type = type;
         this.habitat = habitat;
-        this.metadata = metadata;
     }
 
     public String typeName() {
@@ -109,8 +113,9 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
         // so there's nothing to release here.
     }
 
+    @Override
     public MultiMap<String, String> metadata() {
-        return metadata;
+        return (MultiMap<String, String>) getDescriptor().getMetadata();
     }
 
     /**

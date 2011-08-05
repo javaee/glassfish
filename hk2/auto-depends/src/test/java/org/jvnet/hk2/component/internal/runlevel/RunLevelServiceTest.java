@@ -96,6 +96,7 @@ import com.sun.hk2.component.ExistingSingletonInhabitant;
  * 
  * @author Jeff Trent
  */
+@SuppressWarnings("rawtypes")
 @RunWith(Hk2Runner.class)
 @Hk2RunnerOptions(reinitializePerTest=true)
 public class RunLevelServiceTest {
@@ -119,7 +120,6 @@ public class RunLevelServiceTest {
   /**
    * Verifies the state of the habitat
    */
-  @SuppressWarnings("unchecked")
   @Test
   public void validInitialHabitatState() {
     Collection<RunLevelListener> coll1 = h.getAllByContract(RunLevelListener.class);
@@ -1274,7 +1274,6 @@ public class RunLevelServiceTest {
     assertEquals("error count", 2, errCount);
   }
   
-  @SuppressWarnings("unchecked")
   private void installTestRunLevelService(boolean async) {
     Inhabitant<RunLevelService> r = 
       (Inhabitant<RunLevelService>) h.getInhabitant(RunLevelService.class, "default");

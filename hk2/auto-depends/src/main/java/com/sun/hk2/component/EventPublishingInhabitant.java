@@ -44,6 +44,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.glassfish.hk2.Descriptor;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantListener;
 import org.jvnet.hk2.component.MultiMap;
@@ -69,20 +70,22 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
   private volatile CopyOnWriteArraySet<InhabitantListener> listeners;
 
   
-  public EventPublishingInhabitant() {
-    this.real = null;
+  public EventPublishingInhabitant(Descriptor descriptor) {
+      super(descriptor);
+      this.real = null;
   }
   
   public EventPublishingInhabitant(Inhabitant<?> delegate) {
-    this(delegate, null);
+      this(delegate, null);
   }
 
   @SuppressWarnings("unchecked")
   public EventPublishingInhabitant(Inhabitant<?> delegate, InhabitantListener listener) {
-    this.real = (Inhabitant<T>) delegate;
-    if (null != listener) {
-      addInhabitantListener(listener);
-    }
+      super(getDescriptorFor(delegate));
+      this.real = (Inhabitant<T>) delegate;
+      if (null != listener) {
+          addInhabitantListener(listener);
+      }
   }
   
   @Override

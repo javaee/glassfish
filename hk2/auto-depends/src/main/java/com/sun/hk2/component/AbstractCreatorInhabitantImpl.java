@@ -39,11 +39,11 @@
  */
 package com.sun.hk2.component;
 
+import org.glassfish.hk2.Descriptor;
 import org.jvnet.hk2.component.Creator;
-import org.jvnet.hk2.component.MultiMap;
+import org.jvnet.hk2.component.DescriptorImpl;
 import org.jvnet.hk2.component.Inhabitant;
-
-import java.util.logging.Logger;
+import org.jvnet.hk2.component.MultiMap;
 
 /**
  * Partial implementation of {@link Inhabitant} that delegates to {@link Creator}
@@ -55,11 +55,16 @@ import java.util.logging.Logger;
  * @author Kohsuke Kawaguchi
  */
 abstract class AbstractCreatorInhabitantImpl<T> extends AbstractInhabitantImpl<T> {
-    private static final Logger logger = Logger.getLogger(AbstractCreatorInhabitantImpl.class.getName());
+//    private static final Logger logger = Logger.getLogger(AbstractCreatorInhabitantImpl.class.getName());
 
     protected final Creator<T> creator;
 
     protected AbstractCreatorInhabitantImpl(Creator<T> creator) {
+        this(getDescriptorFor(creator), creator);
+    }
+
+    public AbstractCreatorInhabitantImpl(Descriptor descriptor, Creator<T> creator) {
+        super(descriptor);
         this.creator = creator;
     }
 

@@ -1,5 +1,6 @@
 package org.jvnet.hk2.config.provider.internal;
 
+import org.glassfish.hk2.Descriptor;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
 
@@ -18,7 +19,6 @@ import com.sun.hk2.component.InhabitantStore;
   private final InhabitantStore store;
   
   private final ConfigByCreator managedServiceCreator;
-  private final MultiMap<String, String> metadata; 
 
   private volatile Object managedService;
   
@@ -27,10 +27,10 @@ import com.sun.hk2.component.InhabitantStore;
         ConfigByMetaInhabitant lead,
         ConfigByCreator managedServiceCreator,
         MultiMap<String, String> md) {
+    super((Descriptor)null); // TODO: handle descriptor
     this.store = store;
     this.lead = lead;
     this.managedServiceCreator = managedServiceCreator;
-    this.metadata = (null == md) ? new MultiMap<String, String>() : md;
   }
   
   @Override
@@ -71,7 +71,7 @@ import com.sun.hk2.component.InhabitantStore;
 
   @Override
   public MultiMap<String, String> metadata() {
-    return metadata;
+    return (MultiMap<String, String>) getDescriptor().getMetadata();
   }
 
   @Override

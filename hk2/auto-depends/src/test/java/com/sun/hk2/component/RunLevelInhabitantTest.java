@@ -78,7 +78,7 @@ public class RunLevelInhabitantTest {
     rli.release();
     assertFalse(rli.isActive());
     assertFalse(i.isActive());
-    assertSame(i.metadata(), rli.metadata());
+    assertEquals(i.metadata(), rli.metadata());
   }
 
   @Test
@@ -102,7 +102,7 @@ public class RunLevelInhabitantTest {
     rli.release();
     assertFalse(rli.isActive());
     assertFalse(i.isActive());
-    assertSame(i.metadata(), rli.metadata());
+    assertEquals(i.metadata(), rli.metadata());
   }
   
 }

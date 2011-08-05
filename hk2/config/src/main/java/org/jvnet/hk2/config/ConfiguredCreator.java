@@ -56,6 +56,7 @@ class ConfiguredCreator<T> extends AbstractInhabitantImpl<T> implements Creator<
     private final Dom dom;
 
     public ConfiguredCreator(Creator<T> core, Dom dom) {
+        super(getDescriptorFor(core));
         this.core = core;
         this.dom = dom;
     }
