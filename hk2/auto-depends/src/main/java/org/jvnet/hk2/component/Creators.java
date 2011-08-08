@@ -82,7 +82,7 @@ public class Creators {
             } else {
                 Annotation[][] parametersAnnotations = ctor.getParameterAnnotations();
                 boolean allParametersInjected=true;
-                for (int i=0;i<ctor.getParameterTypes().length;i++) {
+                for (int i=0;i<parametersAnnotations.length;i++) {
                     boolean foundInject=false;
                     for (int j=0;j<parametersAnnotations[i].length;j++) {
                         if (parametersAnnotations[i][j].annotationType().equals(Inject.class)) {

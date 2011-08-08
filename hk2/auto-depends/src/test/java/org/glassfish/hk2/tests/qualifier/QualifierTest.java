@@ -60,7 +60,6 @@ import static org.junit.Assert.*;
 public class QualifierTest {
 
     @Test
-    @Ignore
     public void assertInjectionsQualifiedBoundBeforeUnqualified() {
         Services services = HK2.get().create(null, new Module() {
             @Override
@@ -85,7 +84,6 @@ public class QualifierTest {
     }
     
     @Test
-    @Ignore
     public void assertInjectionsUnqualifiedBoundBeforeQualified() {
         Services services = HK2.get().create(null, new Module() {
             @Override

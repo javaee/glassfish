@@ -40,6 +40,7 @@
 package com.sun.hk2.component;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;

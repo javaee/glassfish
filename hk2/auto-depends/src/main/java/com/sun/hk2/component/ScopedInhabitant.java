@@ -59,6 +59,10 @@ public class ScopedInhabitant<T> extends AbstractCreatorInhabitantImpl<T> {
         this.scope = scope;
     }
 
+    public Scope getScope() {
+        return scope;
+    }
+
     @SuppressWarnings("rawtypes")
     public T get(Inhabitant onBehalfOf) {
         try {

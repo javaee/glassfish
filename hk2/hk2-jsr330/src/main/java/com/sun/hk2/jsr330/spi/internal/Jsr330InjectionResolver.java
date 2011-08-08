@@ -223,7 +223,7 @@ public class Jsr330InjectionResolver extends
   protected static <V> V getServiceInjectValue(Habitat habitat,
       Class<V> type,
       Annotation[] annotations) throws ComponentException {
-    Collection<Inhabitant<?>> candidates = habitat.getAllInhabitantsByContract(type.getName());
+    Collection<Inhabitant<?>> candidates = habitat.getInhabitantsByContract(type.getName());
     for (Inhabitant<?> candidate : candidates) {
       if (matched(annotations, candidate.metadata())) {
         return (V) candidate.get();

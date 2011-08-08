@@ -47,8 +47,7 @@ import org.glassfish.hk2.Factory;
 import org.glassfish.hk2.Scope;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -63,7 +62,7 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
     String typeName;
     Class<? extends Scope> scope;
     final List<Class<? extends Annotation>> annotations = new ArrayList<Class<? extends Annotation>>();
-    final List<String> contracts = new ArrayList<String>();
+    final Map<String, Class> contracts = new HashMap<String,Class>();
     final BinderFactoryImpl owner;
 
     BinderImpl(BinderFactoryImpl owner) {
@@ -112,12 +111,17 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
     @Override
     public <T extends V> ResolvedBinder<T> toFactory(final org.glassfish.hk2.Factory<T> provider) {
 
-        return new AbstractResolvedBinder<T>(this) {
+        AbstractResolvedBinder<T> resolvedBinder = new AbstractResolvedBinder<T>(this) {
             @Override
             void registerIn(Habitat habitat) {
                 MultiMap<String, String> metadataMap = super.populateMetadata();
-                // todo : we need to reconcile the fact we don't have the type and passing null below.
-                Inhabitant<T> inh = new AbstractCreatorImpl<T>(null, habitat, metadataMap) {
+                Class contractType=null;
+                Iterator<Class> itrClasses = contracts.values().iterator();
+                while(itrClasses.hasNext() && contractType==null) {
+                    contractType = itrClasses.next();
+                }
+                if (contractType==null) throw new RuntimeException("You must use a bind(Class contractType) API to bind a Provider");
+                Inhabitant<T> inh = new AbstractCreatorImpl<T>(contractType, habitat, metadataMap) {
                     @Override
                     public T create(Inhabitant onBehalfOf) throws ComponentException {
                         T t = provider.get();
@@ -128,16 +132,24 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
                 super.registerIn(habitat, inh);
             }
         };
+        owner.add(resolvedBinder);
+        return resolvedBinder;
     }
 
     @Override
     public <T extends V> ResolvedBinder<T> toFactory(final Class<? extends org.glassfish.hk2.Factory<? extends T>> factoryType) {
-        return new AbstractResolvedBinder<T>(this) {
+        AbstractResolvedBinder<T> resolvedBinder = new AbstractResolvedBinder<T>(this) {
             @Override
             void registerIn(Habitat habitat) {
                 MultiMap<String, String> metadataMap = super.populateMetadata();
-                // todo : we need to reconcile the fact we don't have the type and passing null below.
-                Inhabitant<T> inh = new AbstractCreatorImpl<T>(null, habitat, metadataMap) {
+                Class contractType=null;
+                Iterator<Class> itrClasses = contracts.values().iterator();
+                while(itrClasses.hasNext() && contractType==null) {
+                    contractType = itrClasses.next();
+                }
+                if (contractType==null) throw new RuntimeException("You must use a bind(Class contractType) API to bind a Provider");
+
+                Inhabitant<T> inh = new AbstractCreatorImpl<T>(contractType, habitat, metadataMap) {
                     @Override
                     public T create(Inhabitant onBehalfOf) throws ComponentException {
                         Inhabitant<? extends org.glassfish.hk2.Factory<? extends T>> factoryInhabitant =
@@ -154,6 +166,8 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
                 super.registerIn(habitat, inh);
             }
         };
+        owner.add(resolvedBinder);
+        return resolvedBinder;
     }
 
     @Override
@@ -167,10 +181,10 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
     }
 
     void addContract(Class<?> contract) {
-        addContract(contract.getName());
+        contracts.put(contract.getName(), contract);
     }
 
     void addContract(String contractName) {
-        contracts.add(contractName);
+        contracts.put(contractName, null);
     }
 }

@@ -171,12 +171,12 @@ public class BasicInjectionTest {
         @Inject FactoryProvidedContractB b;
         @Inject @MarkerA FactoryProvidedContractC c_a;
         @Inject @MarkerB FactoryProvidedContractC c_b;
-        @Inject FactoryProvidedContractC c_default;
+        @Inject(optional = true) FactoryProvidedContractC c_default=null;
         @Inject Factory<FactoryProvidedContractA> pa;
         @Inject Factory<FactoryProvidedContractB> pb;
         @Inject @MarkerA Factory<FactoryProvidedContractC> pc_a;
         @Inject @MarkerB Factory<FactoryProvidedContractC> pc_b;
-        @Inject Factory<FactoryProvidedContractC> pc_default;
+        @Inject(optional=true) Factory<FactoryProvidedContractC> pc_default=null;
     }
 
     static class ConstructorInjectedFactoryBindingTestClass {
@@ -197,12 +197,12 @@ public class BasicInjectionTest {
                 @Inject FactoryProvidedContractB b,
                 @Inject @MarkerA FactoryProvidedContractC c_a,
                 @Inject @MarkerB FactoryProvidedContractC c_b,
-                @Inject FactoryProvidedContractC c_default,
+                @Inject(optional=true) FactoryProvidedContractC c_default,
                 @Inject Factory<FactoryProvidedContractA> pa,
                 @Inject Factory<FactoryProvidedContractB> pb,
                 @Inject @MarkerA Factory<FactoryProvidedContractC> pc_a,
                 @Inject @MarkerB Factory<FactoryProvidedContractC> pc_b,
-                @Inject Factory<FactoryProvidedContractC> pc_default) {
+                @Inject(optional=true) Factory<FactoryProvidedContractC> pc_default) {
 
             this.a = a;
             this.b = b;
@@ -389,7 +389,6 @@ public class BasicInjectionTest {
     }
     
     @Test
-    @Ignore
     public void testFactoryProvidedContractProvisioningViaServicesApi() {
         // binding defined using (annonymous) factory instance 
         final FactoryProvidedContractA a = services.forContract(FactoryProvidedContractA.class).get();
@@ -428,7 +427,6 @@ public class BasicInjectionTest {
     }
 
     @Test
-    @Ignore
     public void testFactoryProvidedContractInjection() {
         final FieldInjectedFactoryBindingTestClass fi = services.forContract(FieldInjectedFactoryBindingTestClass.class).get();
         // binding defined using (annonymous) factory instance         
@@ -581,7 +579,6 @@ public class BasicInjectionTest {
     }
     
     @Test
-    @Ignore
     public void testConstructorBasedInjectionOnNonStaticInnerClass() {
         Injector injector = services.forContract(Injector.class).get();
         class TestClass { 

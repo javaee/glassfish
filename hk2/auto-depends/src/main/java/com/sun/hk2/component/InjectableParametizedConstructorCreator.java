@@ -63,8 +63,10 @@ public class InjectableParametizedConstructorCreator<T> extends ConstructorCreat
         Class paramTypes[] = ctor.getParameterTypes();
         Type genericParamTypes[] = ctor.getGenericParameterTypes();
         Object paramValues[] = new Object[paramTypes.length];
-        for (int i=0;i<paramTypes.length;i++) {
-            Class paramType = paramTypes[i];
+        int firstIndex =paramTypes.length-genericParamTypes.length;
+        paramValues[0]=null;
+        for (int i=0;i<genericParamTypes.length;i++) {
+            Class paramType = paramTypes[i+firstIndex];
             final Annotation paramAnnotations[] = paramsAnnotations[i];
             for (Annotation a : paramAnnotations) {
                 if (a.annotationType().equals(Inject.class)) {
@@ -98,12 +100,12 @@ public class InjectableParametizedConstructorCreator<T> extends ConstructorCreat
                         };
                         Object value = resolver.getValue(this, onBehalfOf, annotatedElement, genericParamTypes[i], paramType);
                         if (value!=null) {
-                            paramValues[i] = value;
+                            paramValues[i+firstIndex] = value;
                             break;
                         }
                     }
-                    if ((paramValues[i] == null) && !((Inject) a).optional()) {
-                        throw new UnsatisfiedDependencyException(ctor, a, new UnsatisfiedDependencyException(ctor.getParameterTypes()[i], a));
+                    if ((paramValues[i+firstIndex] == null) && !((Inject) a).optional()) {
+                        throw new UnsatisfiedDependencyException(ctor, a, new UnsatisfiedDependencyException(ctor.getParameterTypes()[i+firstIndex], a));
                     }
                 }
             }

@@ -74,12 +74,15 @@ abstract class AbstractResolvedBinder<T> implements ResolvedBinder<T> {
         for (Class<? extends Annotation> annotation : metadata.annotations) {
             inhMetadata.add(InhabitantsFile.QUALIFIER_KEY, annotation.getName());
         }
+        for (String contract : metadata.contracts.keySet()) {
+            inhMetadata.add(InhabitantsFile.INDEX_KEY, contract);
+        }
         return inhMetadata;
     }
 
     protected void registerIn(Habitat habitat, Inhabitant inhabitant) {
         List<String> contracts = new ArrayList<String>();
-        contracts.addAll(metadata.contracts);
+        contracts.addAll(metadata.contracts.keySet());
         if (contracts.isEmpty() && (metadata.name == null || metadata.name.isEmpty())) {
             // there is no name, or contract, register by type
             habitat.add(inhabitant);

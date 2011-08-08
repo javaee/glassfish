@@ -125,18 +125,18 @@ public class ConfigTransactionProviderTest implements HabitatFactory {
     assertNull(ejbServerConfigBeanInhabitant);
 
     assertEquals("ConfiguredBy inhabitants", 1,
-        habitat.getAllInhabitantsByType(WebServer.class).size());
+        habitat.getInhabitantsByType(WebServer.class).size());
     assertEquals("ConfiguredBy inhabitants", 1,
-        habitat.getAllInhabitantsByType(JmsServer.class).size());
+        habitat.getInhabitantsByType(JmsServer.class).size());
     assertEquals("ConfiguredBy inhabitants", 1,
-        habitat.getAllInhabitantsByType(EjbServer.class).size());
+        habitat.getInhabitantsByType(EjbServer.class).size());
 
     assertEquals("ConfiguredBy inhabitants", 4,
-        habitat.getAllInhabitantsByContract(ConfiguredBy.class.getName()).size());
+        habitat.getInhabitantsByContract(ConfiguredBy.class.getName()).size());
     assertEquals("ConfiguredBy inhabitants", 0,
-        habitat.getAllInhabitantsByContract(JmsServerService.class.getName()).size());
+        habitat.getInhabitantsByContract(JmsServerService.class.getName()).size());
     assertEquals("ConfiguredBy inhabitants", 0,
-        habitat.getAllInhabitantsByContract(ServerService.class.getName()).size());
+        habitat.getInhabitantsByContract(ServerService.class.getName()).size());
     
     // now that we verified the habitat doesn't define these, we can define them locally for testing
     webServerConfigBean = new WebServerConfigBean() {};
@@ -226,18 +226,18 @@ public class ConfigTransactionProviderTest implements HabitatFactory {
     cfgTxn.created(jmsServerConfigBean, null, /*metadata*/null);
 
     assertEquals("ConfiguredBy inhabitants", 1,
-        habitat.getAllInhabitantsByType(WebServer.class).size());
+        habitat.getInhabitantsByType(WebServer.class).size());
     assertEquals("ConfiguredBy inhabitants", 1,
-        habitat.getAllInhabitantsByType(JmsServer.class).size());
+        habitat.getInhabitantsByType(JmsServer.class).size());
     assertEquals("ConfiguredBy inhabitants", 1,
-        habitat.getAllInhabitantsByType(EjbServer.class).size());
+        habitat.getInhabitantsByType(EjbServer.class).size());
     
     assertEquals("ConfiguredBy inhabitants", 4,
-        habitat.getAllInhabitantsByContract(ConfiguredBy.class.getName()).size());
+        habitat.getInhabitantsByContract(ConfiguredBy.class.getName()).size());
     assertEquals("ConfiguredBy inhabitants", 0,
-        habitat.getAllInhabitantsByContract(JmsServerService.class.getName()).size());
+        habitat.getInhabitantsByContract(JmsServerService.class.getName()).size());
     assertEquals("ConfiguredBy inhabitants", 0,
-        habitat.getAllInhabitantsByContract(ServerService.class.getName()).size());
+        habitat.getInhabitantsByContract(ServerService.class.getName()).size());
     
     // verify that JmsServer was not yet registered by name
     Inhabitant<JmsServerService> jmsServer = habitat.getInhabitant(JmsServerService.class, "Moe");
@@ -254,11 +254,11 @@ public class ConfigTransactionProviderTest implements HabitatFactory {
     assertEquals(0, WebServer.destroyCount);
     
     assertEquals("Configured inhabitants", 0,
-        habitat.getAllInhabitantsByContract(EjbServerConfigBean.class.getName()).size());
+        habitat.getInhabitantsByContract(EjbServerConfigBean.class.getName()).size());
     assertEquals("Configured inhabitants", 0,
-        habitat.getAllInhabitantsByContract(WebServerConfigBean.class.getName()).size());
+        habitat.getInhabitantsByContract(WebServerConfigBean.class.getName()).size());
     assertEquals("Configured inhabitants", 0,
-        habitat.getAllInhabitantsByContract(JmsServerConfigBean.class.getName()).size());
+        habitat.getInhabitantsByContract(JmsServerConfigBean.class.getName()).size());
 
     // commit the txn
     cfgTxn.commit();
@@ -267,18 +267,18 @@ public class ConfigTransactionProviderTest implements HabitatFactory {
     // Config instances should not be made available by type!
     //
     assertEquals("ConfiguredBy inhabitants", 1,
-        habitat.getAllInhabitantsByType(WebServer.class).size());
+        habitat.getInhabitantsByType(WebServer.class).size());
     assertEquals("ConfiguredBy inhabitants", 1,
-        habitat.getAllInhabitantsByType(JmsServer.class).size());
+        habitat.getInhabitantsByType(JmsServer.class).size());
     assertEquals("ConfiguredBy inhabitants", 1,
-        habitat.getAllInhabitantsByType(EjbServer.class).size());
+        habitat.getInhabitantsByType(EjbServer.class).size());
     
     assertEquals("ConfiguredBy inhabitants after commit", 4,
-        habitat.getAllInhabitantsByContract(ConfiguredBy.class.getName()).size());
+        habitat.getInhabitantsByContract(ConfiguredBy.class.getName()).size());
     assertEquals("ConfiguredBy inhabitants after commit", 1,
-        habitat.getAllInhabitantsByContract(JmsServerService.class.getName()).size());
+        habitat.getInhabitantsByContract(JmsServerService.class.getName()).size());
     assertEquals("ConfiguredBy inhabitants after commit", 3,
-        habitat.getAllInhabitantsByContract(ServerService.class.getName()).size());
+        habitat.getInhabitantsByContract(ServerService.class.getName()).size());
     
     cfgTxn = cfgTxnFactory.getActiveTransaction(false);
     assertNull(cfgTxn);
@@ -304,11 +304,11 @@ public class ConfigTransactionProviderTest implements HabitatFactory {
     assertEquals(0, WebServer.destroyCount);
 
     assertEquals("Configured inhabitants", 1,
-        habitat.getAllInhabitantsByContract(EjbServerConfigBean.class.getName()).size());
+        habitat.getInhabitantsByContract(EjbServerConfigBean.class.getName()).size());
     assertEquals("Configured inhabitants", 1,
-        habitat.getAllInhabitantsByContract(WebServerConfigBean.class.getName()).size());
+        habitat.getInhabitantsByContract(WebServerConfigBean.class.getName()).size());
     assertEquals("Configured inhabitants", 1,
-        habitat.getAllInhabitantsByContract(JmsServerConfigBean.class.getName()).size());
+        habitat.getInhabitantsByContract(JmsServerConfigBean.class.getName()).size());
 
     assertNotNull("Configured inhabitants", 
         habitat.getInhabitant(JmsServerConfigBean.class, "Moe"));
@@ -328,18 +328,18 @@ public class ConfigTransactionProviderTest implements HabitatFactory {
     cfgTxn.deleted(jmsServerConfigBean);
 
     assertEquals("ConfiguredBy inhabitants", 1,
-        habitat.getAllInhabitantsByType(WebServer.class).size());
+        habitat.getInhabitantsByType(WebServer.class).size());
     assertEquals("ConfiguredBy inhabitants", 1,
-        habitat.getAllInhabitantsByType(JmsServer.class).size());
+        habitat.getInhabitantsByType(JmsServer.class).size());
     assertEquals("ConfiguredBy inhabitants", 1,
-        habitat.getAllInhabitantsByType(EjbServer.class).size());
+        habitat.getInhabitantsByType(EjbServer.class).size());
     
     assertEquals("ConfiguredBy inhabitants", 4,
-        habitat.getAllInhabitantsByContract(ConfiguredBy.class.getName()).size());
+        habitat.getInhabitantsByContract(ConfiguredBy.class.getName()).size());
     assertEquals("ConfiguredBy inhabitants", 1,
-        habitat.getAllInhabitantsByContract(JmsServerService.class.getName()).size());
+        habitat.getInhabitantsByContract(JmsServerService.class.getName()).size());
     assertEquals("ConfiguredBy inhabitants", 3,
-        habitat.getAllInhabitantsByContract(ServerService.class.getName()).size());
+        habitat.getInhabitantsByContract(ServerService.class.getName()).size());
     
     cfgTxn.commit();
 
@@ -347,18 +347,18 @@ public class ConfigTransactionProviderTest implements HabitatFactory {
     // Config instances should not be made available by type!
     //
     assertEquals("ConfiguredBy inhabitants", 1,
-        habitat.getAllInhabitantsByType(WebServer.class).size());
+        habitat.getInhabitantsByType(WebServer.class).size());
     assertEquals("ConfiguredBy inhabitants", 1,
-        habitat.getAllInhabitantsByType(JmsServer.class).size());
+        habitat.getInhabitantsByType(JmsServer.class).size());
     assertEquals("ConfiguredBy inhabitants", 1,
-        habitat.getAllInhabitantsByType(EjbServer.class).size());
+        habitat.getInhabitantsByType(EjbServer.class).size());
     
     assertEquals("ConfiguredBy inhabitants after commit", 4,
-        habitat.getAllInhabitantsByContract(ConfiguredBy.class.getName()).size());
+        habitat.getInhabitantsByContract(ConfiguredBy.class.getName()).size());
     assertEquals("ConfiguredBy inhabitants after commit", 0,
-        habitat.getAllInhabitantsByContract(JmsServerService.class.getName()).size());
+        habitat.getInhabitantsByContract(JmsServerService.class.getName()).size());
     assertEquals("ConfiguredBy inhabitants after commit", 0,
-        habitat.getAllInhabitantsByContract(ServerService.class.getName()).size());
+        habitat.getInhabitantsByContract(ServerService.class.getName()).size());
     
     cfgTxn = cfgTxnFactory.getActiveTransaction(false);
     assertNull(cfgTxn);
@@ -375,11 +375,11 @@ public class ConfigTransactionProviderTest implements HabitatFactory {
     assertEquals(1, WebServer.destroyCount);
     
     assertEquals("Configured inhabitants", 0,
-        habitat.getAllInhabitantsByContract(EjbServerConfigBean.class.getName()).size());
+        habitat.getInhabitantsByContract(EjbServerConfigBean.class.getName()).size());
     assertEquals("Configured inhabitants", 0,
-        habitat.getAllInhabitantsByContract(WebServerConfigBean.class.getName()).size());
+        habitat.getInhabitantsByContract(WebServerConfigBean.class.getName()).size());
     assertEquals("Configured inhabitants", 0,
-        habitat.getAllInhabitantsByContract(JmsServerConfigBean.class.getName()).size());
+        habitat.getInhabitantsByContract(JmsServerConfigBean.class.getName()).size());
   }
   
   /**

@@ -365,7 +365,7 @@ public class Main {
                 Thread.currentThread().setContextClassLoader(currentCL);
             }
         } else {
-            Collection<Inhabitant<? extends ModuleStartup>> startups = habitat.getInhabitants(ModuleStartup.class);
+            Collection<Inhabitant<ModuleStartup>> startups = habitat.getInhabitantsByContract(ModuleStartup.class);
 
             if(startups.isEmpty())
                 throw new BootException("No module has a ModuleStartup implementation");
@@ -387,7 +387,7 @@ public class Main {
                 }
                 if (startupCode==null) {
                     if (mainServiceName==null) {
-                        Iterator<Inhabitant<? extends ModuleStartup>> itr = startups.iterator();
+                        Iterator<Inhabitant<ModuleStartup>> itr = startups.iterator();
                         ModuleStartup a = itr.next().get();
                         ModuleStartup b = itr.next().get();
                         Module am = registry.find(a.getClass());
