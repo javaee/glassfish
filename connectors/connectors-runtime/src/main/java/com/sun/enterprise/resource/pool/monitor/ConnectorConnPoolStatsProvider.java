@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -605,7 +605,7 @@ public class ConnectorConnPoolStatsProvider {
         stackTrace.append("\n numConnDestroyed = " + numConnDestroyed.getCount());        
     }
     
-    private void highLevelLog(StringBuffer stackTrace) {
+    /*private void highLevelLog(StringBuffer stackTrace) {
         lowLevelLog(stackTrace);
         stackTrace.append("\n numConnFailedValidation = " + numConnFailedValidation.getCount());
         stackTrace.append("\n numConnTimedOut = " + numConnTimedOut.getCount());
@@ -620,9 +620,9 @@ public class ConnectorConnPoolStatsProvider {
         stackTrace.append("\n totalConnectionRequestWait = " + totalConnectionRequestWait);
 
         stackTrace.append("\n numConnSuccessfullyMatched = " + this.numConnSuccessfullyMatched);
-        stackTrace.append("\n numConnNotSuccessfullyMatched = " + numConnNotSuccessfullyMatched);*/
+        stackTrace.append("\n numConnNotSuccessfullyMatched = " + numConnNotSuccessfullyMatched);
         stackTrace.append("\n numPotentialConnLeak = " + numPotentialConnLeak.getCount());
-    }
+    }*/
 
     @ManagedAttribute(id="numpotentialconnleak")
     public CountStatistic getNumPotentialConnLeakCount() {
