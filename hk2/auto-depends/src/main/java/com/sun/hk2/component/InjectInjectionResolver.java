@@ -43,7 +43,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
@@ -106,11 +105,12 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
                                     String parameterizedType = onBehalfOf.metadata().get(InhabitantsFile.PARAMETERIZED_TYPE).get(i);
                                     try {
                                         Class<?> clazz = component.getClass().getClassLoader().loadClass(parameterizedType);
-                                        if (habitat.isContract(clazz)) {
-                                            result = (V) getServiceInjectValue(habitat, component, onBehalfOf, target, clazz, clazz, inject);
-                                        } else {
-                                            result = (V) getComponentInjectValue(habitat, component, onBehalfOf, target, clazz, clazz, inject);
-                                        }
+                                        ContractLocatorImpl<V> contractLocator = new ContractLocatorImpl<V>(habitat, clazz, habitat.isContract(
+                                                clazz
+                                        ));
+                                        populateContractLocator(contractLocator, target, inject);
+                                        result = contractLocator.get();
+
                                     } catch(ClassNotFoundException e) {
                                         Logger.getAnonymousLogger().warning("Cannot load class " + parameterizedType);
                                         return null;
@@ -118,11 +118,11 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
                                 }
                             }
                         } else {
-                            if (habitat.isContract(genericType)) {
-                                result = getServiceInjectValue(habitat, component, onBehalfOf, target, genericType, type, inject);
-                            } else {
-                                result = getComponentInjectValue(habitat, component, onBehalfOf, target, genericType, type, inject);
-                            }
+                            ContractLocatorImpl<V> contractLocator = new ContractLocatorImpl<V>(habitat, genericType, habitat.isContract(
+                                    genericType
+                            ));
+                            populateContractLocator(contractLocator, target, inject);
+                            result = contractLocator.get();
                         }
                     }
                 }
@@ -177,8 +177,9 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
         final Class<?> finalType = Types.erasure(t);
 
         if (habitat.isContract(finalType)) {
-            final Inhabitant<?> i = getProviderByContract(habitat, onBehalfOf, target, finalType, finalType, inject);
-            return type.cast(i);
+            ContractLocatorImpl<V> contractLocator = new ContractLocatorImpl<V>(habitat, t, true);
+            populateContractLocator(contractLocator, target, inject);
+            return type.cast(contractLocator.getProvider());
         }
 
         // the receiver maybe requesting the inhabitant pointing to itself to have
@@ -191,105 +192,18 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
             // ignore
         }
 
-        V result = type.cast(manage(onBehalfOf, habitat.getInhabitantByType(finalType)));
-        if (result!=null) {
-            return result;
-        }
-        Inhabitant<?> i = Creators.create(finalType, habitat, new MultiMap<String, String>());
-        return type.cast(i);
+        ContractLocatorImpl<V> contractLocator = new ContractLocatorImpl<V>(habitat, finalType, false);
+        return type.cast(contractLocator.getProvider());
     }
 
-    protected <V> Inhabitant<V> getProviderByContract(Habitat habitat, Inhabitant<?> onBehalfOf,
-                                                  AnnotatedElement target, Type genericType,
-                                                  Class<V> type, Inject inject) throws ComponentException {
+    protected <V> Provider<V> getProviderByContract(Habitat habitat, Inhabitant<?> onBehalfOf,
+                                                  AnnotatedElement target, Type genericType, Inject inject)
+            throws ComponentException {
 
-        // named injection ?
-        String name = this.getTargetName(target, inject);
 
-        // first we need to obtain all qualifiers on the injection target so we narraw the search.
-        List<String> qualifiers = new ArrayList<String>();
-        Annotation[] targetAnnotations = target.getAnnotations();
-        Inhabitant<?> i = null;
-        // if there is only one annotation, it's @Inject, we can ignore qualifiers narrowing
-        if (name.isEmpty() && targetAnnotations.length > 1) {
-            for (Annotation annotation : target.getAnnotations()) {
-                for (Annotation annotationAnnotation : annotation.annotationType().getAnnotations()) {
-                    if (annotationAnnotation.annotationType()==Qualifier.class) {
-                        qualifiers.add(annotation.annotationType().getName());
-                    }
-                }
-            }
-            if (qualifiers.isEmpty()) {
-                i = manage(onBehalfOf, habitat.getInhabitant(genericType, name));
-            } else {
-                List<String> tmpQualifiers = new ArrayList<String>(qualifiers);
-                for (Inhabitant<? extends V> inh : habitat.getInhabitants(type)) {
-                    List<String> declaredQualifiers = inh.metadata().get(InhabitantsFile.QUALIFIER_KEY);
-                    for (String declaredQualifier : declaredQualifiers) {
-                        // todo : we need to look at the instances of the Annotations
-                        // rather than the type on both the injection target and the
-                        // candidate so we can ensure that annotation attribute matching is performed
-                        tmpQualifiers.remove(declaredQualifier);
-                    }
-
-                    // if the injection point qualifiers are all satisfied, stop the query
-                    if (tmpQualifiers.isEmpty()) {
-                        i = manage(onBehalfOf, inh);
-                        break;
-                    }
-                }
-            }
-        } else {
-            i = manage(onBehalfOf, habitat.getInhabitant(genericType, name));
-        }
-        return (Inhabitant<V>) i;
-    }
-
-    protected <V> V getServiceInjectValue(Habitat habitat,
-                                          Object component,
-                                          Inhabitant<?> onBehalfOf,
-                                          AnnotatedElement target,
-                                          Type genericType,
-                                          Class<V> type,
-                                          Inject inject) throws ComponentException {
-
-        V result = null;
-
-        Inhabitant<V> i = getProviderByContract(habitat, onBehalfOf, target, genericType, type, inject);
-        if (null != i) {
-            Object service = i.get();
-            try {
-                result = type.cast(service);
-            } catch (ClassCastException e) {
-                Logger.getAnonymousLogger().severe("ClassCastException between contract " + type + " and service " + service);
-                Logger.getAnonymousLogger().severe("Contract class loader " + type.getClassLoader());
-                Logger.getAnonymousLogger().severe("Service class loader " + service.getClass().getClassLoader());
-                i.release();
-                throw e;
-            }
-        }
-        return result;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected <V> V getComponentInjectValue(Habitat habitat,
-                                            Object component,
-                                            Inhabitant<?> onBehalfOf,
-                                            AnnotatedElement target,
-                                            Type genericType,
-                                            Class<V> type,
-                                            Inject inject) throws ComponentException {
-        // ideally we should check if type has @Service or @Configured
-        Inhabitant<?> i = manage(onBehalfOf, habitat.getInhabitantByType(genericType));
-        if (null != i) {
-            return (V) i.get();
-        }
-        // if the type is a Class, we can just provide a just in time bindings.
-        if (!type.isInterface()) {
-            return Creators.create(type, habitat, new MultiMap<String, String>()).get();
-        }
-
-        return null;
+        ContractLocatorImpl<V> contractLocator = new ContractLocatorImpl<V>(habitat, genericType, true);
+        populateContractLocator(contractLocator, target, inject);
+        return contractLocator.getProvider();
     }
 
     /**
@@ -340,26 +254,18 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
         return managed;
     }
 
-    protected Inhabitant<?> getInhabitantByType(Inhabitant<?> onBehalfOf, Habitat habitat, Class<?> finalType) {
-        return manage(onBehalfOf, habitat.getInhabitantByType(finalType));
-    }
-
-    protected <V> Collection<V> getInhabitants(Inhabitant<?> onBehalfOf, Habitat habitat, Class<?> finalType, String name) {
-        return manage(onBehalfOf, habitat.getInhabitants(finalType, name));
-    }
-
     @SuppressWarnings("unchecked")
     protected <V> Collection<V> getAllByType(Inhabitant<?> onBehalfOf, Habitat habitat, Class<V> ct) {
-        return (Collection<V>) manage(onBehalfOf, habitat.getAllInhabitantsByType(ct));
+        return (Collection<V>) manage(onBehalfOf, habitat.getInhabitantsByType(ct));
     }
 
     @SuppressWarnings("unchecked")
     protected <V> Collection<V> getAllByContract(Inhabitant<?> onBehalfOf, Habitat habitat, Class<V> ct) {
-        return (Collection<V>) manage(onBehalfOf, habitat.getAllInhabitantsByContract(ct.getName()));
+        return (Collection<V>) manage(onBehalfOf, habitat.getInhabitantsByContract(ct.getName()));
     }
 
 
-    String getTargetName(AnnotatedElement target, Inject inject) {
+    void populateContractLocator(ContractLocatorImpl contractLocator, AnnotatedElement target, Inject inject) {
         Named named = target.getAnnotation(Named.class);
         String name = inject.name();
         if (named!=null && !inject.name().isEmpty()) {
@@ -369,6 +275,20 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
         if (named!=null) {
             name = named.value();
         }
-        return name;
+        contractLocator.named(name);
+
+        // now we need to obtain all qualifiers on the injection target so we narraw the search.
+        Annotation[] targetAnnotations = target.getAnnotations();
+
+        // if there is only one annotation, it's @Inject, we can ignore qualifiers narrowing
+        if (name.isEmpty() && targetAnnotations.length > 1) {
+            for (Annotation annotation : target.getAnnotations()) {
+                for (Annotation annotationAnnotation : annotation.annotationType().getAnnotations()) {
+                    if (annotationAnnotation.annotationType()==Qualifier.class) {
+                        contractLocator.annotatedWith(annotation.annotationType());
+                    }
+                }
+            }
+        }
     }
 }

@@ -40,13 +40,19 @@
 package org.jvnet.hk2.component;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.sun.hk2.component.InhabitantsFile;
+import com.sun.hk2.component.ScopedInhabitant;
 import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.ContractLocator;
 import org.glassfish.hk2.Scope;
+import org.glassfish.hk2.classmodel.reflect.Types;
 
 /**
  * Implementation of the {@link ContractLocator} interface.
@@ -61,20 +67,21 @@ import org.glassfish.hk2.Scope;
 //TODO: support name for byType
 //TODO: support annotation for byContract & byType
 //TODO: support metadata for byContract & byType
-class ContractLocatorImpl<T> implements ContractLocator<T> {
+public class ContractLocatorImpl<T> implements ContractLocator<T> {
 
     private static final Logger logger = Logger.getLogger(ContractLocatorImpl.class.getName());
 
     private final SimpleServiceLocator habitat;
     private String name;
-    private Class<T> type=null;
+    private Type type=null;
     private String typeName=null;
-
+    private Collection<Class<? extends Annotation>> qualifiers = new ArrayList<Class<? extends Annotation>>();
+    private Scope scope;
 
     // byContract, else byType
     private final boolean byContract;
 
-    ContractLocatorImpl(SimpleServiceLocator habitat, Class<T> clazz, boolean byContract) {
+    public ContractLocatorImpl(SimpleServiceLocator habitat, Type clazz, boolean byContract) {
         this.habitat = habitat;
         this.byContract = byContract;
         this.type=clazz;
@@ -101,12 +108,14 @@ class ContractLocatorImpl<T> implements ContractLocator<T> {
 
     @Override
     public ContractLocator<T> in(Scope scope) {
-        throw new UnsupportedOperationException();
+        this.scope = scope;
+        return this;
     }
 
     @Override
     public ContractLocator<T> annotatedWith(Class<? extends Annotation> annotation) {
-        throw new UnsupportedOperationException();
+        qualifiers.add(annotation);
+        return this;
     }
 
     @Override
@@ -119,17 +128,95 @@ class ContractLocatorImpl<T> implements ContractLocator<T> {
     }
 
     @Override
-    public Collection<Provider<T>> all() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+    public Provider<T> getProvider() {
+        Collection<Provider<T>> providers = all(true);
+        return (providers.isEmpty()?null:providers.iterator().next());
     }
 
     @Override
-    public Provider<T> getProvider() {
-        if (type==null) {
-            return habitat.getProvider(typeName, name);
+    public Collection<Provider<T>> all() {
+        return all(false);
+    }
+
+    public Collection<Provider<T>> all(boolean stopAtFirstMatch) {
+
+        List<Provider<T>> providers = new ArrayList<Provider<T>>();
+
+        if (qualifiers.isEmpty()) {
+            Provider<T> provider = getNonQualifiedInhabitant();
+            if (provider!=null) providers.add(provider);
+            return providers;
         } else {
+            List<String> tmpQualifiers = new ArrayList<String>();
+            for (Class<? extends Annotation> annotation : qualifiers) {
+                tmpQualifiers.add(annotation.getName());
+            }
+            for (Inhabitant<T> inh : inhabitants()) {
+                List<String> declaredQualifiers = inh.metadata().get(InhabitantsFile.QUALIFIER_KEY);
+                for (String declaredQualifier : declaredQualifiers) {
+                    // todo : we need to look at the instances of the Annotations
+                    // rather than the type on both the injection target and the
+                    // candidate so we can ensure that annotation attribute matching is performed
+                    tmpQualifiers.remove(declaredQualifier);
+                }
+
+                // if the injection point qualifiers are all satisfied, stop the query
+                if (tmpQualifiers.isEmpty()) {
+                    // check if the scope is fine.
+                    if (scope==null) {
+                        providers.add(inh);
+                    } else {
+                        if ((inh instanceof ScopedInhabitant) && ((ScopedInhabitant) inh).getScope().equals(scope)) {
+                            providers.add(inh);
+                        }
+                    }
+                    if (!providers.isEmpty() && stopAtFirstMatch) return providers;
+                }
+            }
+        }
+        return providers;
+    }
+
+    private Inhabitant<T> getNonQualifiedInhabitant() {
+        if (name!=null && !name.isEmpty()) {
+            return provider();
+        }
+        Inhabitant<T> inh = provider();
+        if (inh==null) return null;
+        if (inh.metadata().get(InhabitantsFile.QUALIFIER_KEY).isEmpty()) {
+            return inh;
+        }
+        // we should find the inhabitant with no qualifier.
+        for (Inhabitant<T> inhabitant : inhabitants()) {
+            if (inhabitant.metadata().get(InhabitantsFile.QUALIFIER_KEY).isEmpty()) {
+                return inhabitant;
+            }
+        }
+        return null;
+    }
+
+    private Inhabitant<T> provider() {
+        if (type!=null) {
             return habitat.getProvider(type, name);
+        } else {
+            return habitat.getProvider(typeName, name);
+        }
+    }
+
+    private Collection<Inhabitant<T>> inhabitants() {
+        if (type!=null) {
+            if (byContract) {
+                return habitat.getInhabitantsByContract(type);
+            } else {
+                Class<T> classType = org.jvnet.tiger_types.Types.erasure(type);
+                return habitat.getInhabitantsByType(classType);
+            }
+        } else {
+            if (byContract) {
+                return habitat.getInhabitantsByContract(typeName);
+            } else {
+                return habitat.getInhabitantsByType(typeName);
+            }
         }
     }
 

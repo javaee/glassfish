@@ -291,7 +291,7 @@ public class ExtendedInjectTest {
   @Test
   public void errorThrowingSetterMethod() {
     Collection<Inhabitant<?>> iColl = h
-        .getAllInhabitantsByContract(ErrorThrowingContract.class.getName());
+        .getInhabitantsByContract(ErrorThrowingContract.class.getName());
     assertNotNull(iColl);
     assertEquals(1, iColl.size());
     Inhabitant<?> i = iColl.iterator().next();

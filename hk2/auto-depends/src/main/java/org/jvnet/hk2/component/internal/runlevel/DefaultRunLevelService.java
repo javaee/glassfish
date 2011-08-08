@@ -872,7 +872,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
       
       // TODO: we could cache this in top-level proceedTo()
       Collection<Inhabitant<?>> runLevelInhabitants = 
-        habitat.getAllInhabitantsByContract(RunLevel.class.getName());
+        habitat.getInhabitantsByContract(RunLevel.class.getName());
       for (Inhabitant<?> i : runLevelInhabitants) {
         AbstractInhabitantImpl<?> ai = AbstractInhabitantImpl.class.cast(i);
     

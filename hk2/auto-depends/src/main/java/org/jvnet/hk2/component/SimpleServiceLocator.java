@@ -41,6 +41,9 @@ package org.jvnet.hk2.component;
 
 import org.glassfish.hk2.Provider;
 
+import java.lang.reflect.Type;
+import java.util.Collection;
+
 /**
  * Provide a simple abstraction for getting services by contract or type.
  *
@@ -93,8 +96,26 @@ public interface SimpleServiceLocator {
      * @param type requested inhabitant type
      * @param name optional name
      */
-    <T> Provider<T> getProvider(Class<T> type, String name);
+    <T> Inhabitant<T> getProvider(Type type, String name);
 
-    <T> Provider<T> getProvider(String fqcn, String name);
-    
+    <T> Inhabitant<T> getProvider(String fqcn, String name);
+
+    /**
+     * Gets all the inhabitants that has the given contract.
+     */
+    public <T> Collection<Inhabitant<T>> getInhabitantsByContract(
+            Type contract) throws ComponentException;
+
+    public <T> Collection<Inhabitant<T>> getInhabitantsByContract(
+            String contractName) throws ComponentException;
+
+
+    /**
+     * Gets all the inhabitants that has the given type.
+     */
+    public <T> Collection<Inhabitant<T>> getInhabitantsByType(
+            Class<T> type) throws ComponentException;
+
+    public <T> Collection<Inhabitant<T>> getInhabitantsByType(
+            String typeName) throws ComponentException;
 }

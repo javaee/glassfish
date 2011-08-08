@@ -139,7 +139,7 @@ public class ConfigTransactionCoordinator
     }
     
     ArrayList<ConfigByMetaInhabitant> configuredByList = null;
-    for (Inhabitant<?> i : habitat.getAllInhabitantsByContract(ConfiguredBy.class.getName())) {
+    for (Inhabitant<?> i : habitat.getInhabitantsByContract(ConfiguredBy.class.getName())) {
       ConfigByMetaInhabitant configuredBy = (ConfigByMetaInhabitant)i;
       if (configured.contains(configuredBy.getConfiguredBy())) {
         if (null == configuredByList) {

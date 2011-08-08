@@ -231,7 +231,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
   protected void findInitialMatches() {
     for (String contractName : itc.getClassNames()) {
       Collection<Inhabitant<?>> coll = 
-        h.getAllInhabitantsByContract(contractName);
+        h.getInhabitantsByContract(contractName);
       for (Inhabitant<?> i : coll) {
         inhabitantIndexChanged(EventType.INHABITANT_INDEX_ADDED,
             h, i, contractName, null, null);

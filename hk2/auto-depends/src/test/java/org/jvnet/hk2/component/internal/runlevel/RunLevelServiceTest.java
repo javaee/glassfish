@@ -1239,7 +1239,7 @@ public class RunLevelServiceTest {
     
     // (1) if any of ClientServiceOf_ContractWithNoImplementers, FirstRemovedClientServiceOf_ContractWithNoImplementers do not become active then fail.<br/>
     // (6) If any of the two ok RunLevel services don't become active then fail.<br/>
-    Collection<Inhabitant<?>> coll = h.getAllInhabitantsByContract(ShouldBeActivateable1.class.getName());
+    Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(ShouldBeActivateable1.class.getName());
     assertEquals("should be active count", 4, coll.size());
     for (Inhabitant<?> i : coll) {
       assertTrue("expected active: " + i, i.isActive());
@@ -1249,7 +1249,7 @@ public class RunLevelServiceTest {
     
     // (2) if any of ServiceImplOf_ContractWithExceptionThrowingImplementers, ClientServiceOf_ContractWithExceptionThrowingImplementers, FirstRemovedClientServiceOf_ContractWithExceptionThrowingImplementers becomes active then fail.<br/>
     // (3) If any of the two bad RunLevel services become active then fail.<br/>
-    coll = h.getAllInhabitantsByContract(ShouldNotBeActivateable1.class.getName());
+    coll = h.getInhabitantsByContract(ShouldNotBeActivateable1.class.getName());
     assertEquals("should not be active count", 5, coll.size());
     for (Inhabitant<?> i : coll) {
       assertFalse("expected not active: " + i, i.isActive());
@@ -1310,7 +1310,7 @@ public class RunLevelServiceTest {
    * @param runLevel
    */
   private void assertInhabitantsState(int runLevel) {
-    Collection<Inhabitant<?>> runLevelInhabitants = h.getAllInhabitantsByContract(RunLevel.class.getName());
+    Collection<Inhabitant<?>> runLevelInhabitants = h.getInhabitantsByContract(RunLevel.class.getName());
     assertTrue(runLevelInhabitants.size() > 0);
     for (Inhabitant<?> i : runLevelInhabitants) {
       AbstractInhabitantImpl<?> ai = AbstractInhabitantImpl.class.cast(i);

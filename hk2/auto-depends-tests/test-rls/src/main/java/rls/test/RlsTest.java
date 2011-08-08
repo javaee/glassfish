@@ -102,11 +102,11 @@ public class RlsTest implements ModuleStartup {
       fail(e.getMessage());
     }
     
-    Collection<Inhabitant<?>> coll = h.getAllInhabitantsByContract(ContractX.class.getName());
+    Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(ContractX.class.getName());
     assertEquals("ContractX service count: " + coll, 2, coll.size());
     mustBeActive(coll, true);
 
-    coll = new HashSet<Inhabitant<?>>(h.getAllInhabitantsByContract(RunLevel.class.getName()));
+    coll = new HashSet<Inhabitant<?>>(h.getInhabitantsByContract(RunLevel.class.getName()));
     assertEquals("ContractX service count: " + coll, 5, coll.size());
     
     mustBeActive(coll, true);
@@ -146,7 +146,7 @@ public class RlsTest implements ModuleStartup {
     assertNotNull("other.y", ServiceOtherToY.y);
     assertNotNull("other.allY", ServiceOtherToY.allY);
     assertEquals("other.allY count", 3, ServiceOtherToY.allY.length);
-    Collection<Inhabitant<?>> coll = h.getAllInhabitantsByContract(ContractY.class.getName());
+    Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(ContractY.class.getName());
     assertEquals("ContractY service count: " + coll, 3, coll.size());
     mustBeActive(coll, true);
     assertNotNull("other.zHolder", ServiceOtherToY.zHolder);

@@ -41,6 +41,7 @@ package org.jvnet.hk2.component;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.AnnotationTypeMismatchException;
+import java.lang.reflect.Type;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,6 +62,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.sun.hk2.component.*;
 import org.glassfish.hk2.Binding;
 import org.glassfish.hk2.ContractLocator;
 import org.glassfish.hk2.Descriptor;
@@ -70,6 +72,7 @@ import org.glassfish.hk2.ScopeInstance;
 import org.glassfish.hk2.ServiceLocator;
 import org.glassfish.hk2.Services;
 import org.glassfish.hk2.TypeLiteral;
+import org.glassfish.hk2.classmodel.reflect.Types;
 import org.glassfish.hk2.inject.Injector;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
@@ -79,15 +82,6 @@ import org.jvnet.hk2.component.InhabitantTracker.Callback;
 import org.jvnet.hk2.component.concurrent.Hk2Executor;
 import org.jvnet.hk2.component.concurrent.SameThreadExecutor;
 import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
-
-import com.sun.hk2.component.AbstractInhabitantImpl;
-import com.sun.hk2.component.ConstructorCreator;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
-import com.sun.hk2.component.FactoryCreator;
-import com.sun.hk2.component.InjectInjectionResolver;
-import com.sun.hk2.component.InjectionResolver;
-import com.sun.hk2.component.RunLevelInhabitantProvider;
-import com.sun.hk2.component.ScopeInstanceImpl;
 
 /**
  * A set of templates that constitute a world of objects.
@@ -936,20 +930,6 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
         };
     }
 
-    public Collection<Inhabitant<?>> getAllInhabitantsByContract(
-            String contractType) {
-        final List<NamedInhabitant> l = byContract.get(contractType);
-        return new AbstractList<Inhabitant<?>>() {
-            public Inhabitant<?> get(int index) {
-                return l.get(index).inhabitant;
-            }
-
-            public int size() {
-                return l.size();
-            }
-        };
-    }
-
     /**
      * Gets the object of the given type.
      *
@@ -966,16 +946,6 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
                 return l.size();
             }
         };
-    }
-
-    /**
-     * Gets all matching inhabitants given the type.
-     *
-     * @return can be empty but never null.
-     */
-    public <T> Collection<Inhabitant> getAllInhabitantsByType(Class<T> implType) {
-        final List<Inhabitant> l = byType.get(implType.getName());
-        return l;
     }
 
     /**
@@ -1043,7 +1013,7 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
     }
 
     @Override
-    public <T> Provider<T> getProvider(String fullQualifiedName, String name) {
+    public <T> Inhabitant<T> getProvider(String fullQualifiedName, String name) {
         if (name != null && name.length() == 0) {
             name = null;
         }
@@ -1130,16 +1100,33 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
     }
 
     /**
+     * Gets all the inhabitants for a spcial contract.
+     *
+     * FOR COMPATIBILITY REASONS
+     *
+     * @param type the contract type
+     * @param <T> the parameterized type
+     * @return
+     */
+    public <T> Collection<Inhabitant<? extends T>> getInhabitants(Class<T> type) {
+        List<Inhabitant<? extends T>> inhs = new ArrayList<Inhabitant<? extends T>>();
+        for (Inhabitant<T> inh : this.<T>getInhabitantsByContract(type)) {
+            inhs.add(inh);
+        }
+        return inhs;
+    }
+
+    /**
      * Gets all the inhabitants that has the given contract.
      */
-    public <T> Collection<Inhabitant<? extends T>> getInhabitants(
-            Class<T> contract) throws ComponentException {
+    public <T> Collection<Inhabitant<T>> getInhabitantsByContract(
+            Type contract) throws ComponentException {
 
         String contractName = BinderFactoryImpl.exploreType(contract);
 
         final List<NamedInhabitant> l = byContract.get(contractName);
-        return new AbstractList<Inhabitant<? extends T>>() {
-            public Inhabitant<? extends T> get(int index) {
+        return new AbstractList<Inhabitant<T>>() {
+            public Inhabitant<T> get(int index) {
                 return l.get(index).inhabitant;
             }
 
@@ -1308,7 +1295,7 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
         return _getInhabitants(contract, name);
     }
 
-    // intentionally not generified so that the getInhabitants methods can
+    // intentionally not generified so that the getInhabitantsByContract methods can
     // choose the right signature w/o error
     private Iterable _getInhabitants(final Class contract, final String name) {
         return new Iterable<Inhabitant>() {
@@ -1372,13 +1359,16 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
     }
 
     @Override
-    public <T> Provider<T> getProvider(Class<T> type, String name) {
-        Provider<T> provider = getInhabitant(type, name);
+    public <T> Inhabitant<T> getProvider(Type type, String name) {
+        Inhabitant<T> provider = getInhabitant(type, name);
         if (provider==null) {
             provider = getInhabitantByType(type);
-            if (provider==null && !type.isInterface()) {
-                Creator<T> creator =  Creators.create(type, this, new MultiMap<String, String>());
-                if (creator!=null) return creator;
+            if (provider==null) {
+                Class<T> typeClass = org.jvnet.tiger_types.Types.erasure(type);
+                if (!typeClass.isInterface()) {
+                    Creator<T> creator =  Creators.create(typeClass, this, new MultiMap<String, String>());
+                    if (creator!=null) return creator;
+                }
             }
         }
         return provider;
