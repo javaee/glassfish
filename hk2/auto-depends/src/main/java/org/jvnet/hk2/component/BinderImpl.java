@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.jvnet.hk2.component;
 
 import com.sun.hk2.component.AbstractCreatorImpl;
@@ -120,7 +119,8 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
                 while(itrClasses.hasNext() && contractType==null) {
                     contractType = itrClasses.next();
                 }
-                if (contractType==null) throw new RuntimeException("You must use a bind(Class contractType) API to bind a Provider");
+                if (contractType==null) 
+                    throw new RuntimeException("You must use a bind(Class contractType) API to bind a Provider");
                 Inhabitant<T> inh = new AbstractCreatorImpl<T>(contractType, habitat, metadataMap) {
                     @Override
                     public T create(Inhabitant onBehalfOf) throws ComponentException {
@@ -186,5 +186,9 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
 
     void addContract(String contractName) {
         contracts.put(contractName, null);
+    }
+    
+    void addContract(String contractName, Class<?> rawContractType) {
+        contracts.put(contractName, rawContractType);
     }
 }

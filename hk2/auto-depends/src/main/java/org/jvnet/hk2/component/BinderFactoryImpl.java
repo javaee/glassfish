@@ -99,7 +99,7 @@ class BinderFactoryImpl implements BinderFactory {
     @Override
     public <T> Binder<T> bind(TypeLiteral<T> typeLiteral) {
         BinderImpl<T> binder = new BinderImpl<T>(this);
-        binder.addContract(exploreType(typeLiteral));
+        binder.addContract(exploreType(typeLiteral), typeLiteral.getRawType());
         return binder;
     }
 
