@@ -38,44 +38,46 @@
  * holder.
  */
 if (typeof Console == 'undefined') {
+    $(document).ready(function () {
+        Console.Ajax.processLinks()
+    });
+
     Console = { };
-    $(document).ready(function () { Console.Ajax.processLinks() });
-}
 
-Console.Ajax = {
-    processLinks: function() {
-        $('#ajaxBody > a').click(function() {
-            var href = $(this).prop('href');
-            console.debug('Modifying ' + $(this).prop('id'));
-            if (href != '') {
-                Console.Ajax.loadPage(href);
-            }
+    Console.Ajax = {
+        processLinks: function() {
+            $('#ajaxBody > a').click(function() {
+                var href = $(this).prop('href');
+                console.debug('Modifying ' + $(this).prop('id'));
+                if (href != '') {
+                    Console.Ajax.loadPage(href);
+                }
 
+                return false;
+            });
+        },
+    
+        loadPage: function (url) {
+            document.getElementById('content').value = url;
+            document.getElementById('contentButton').click();
             return false;
-        });
-    },
+        },
     
-    loadPage: function (url) {
-        document.getElementById('content').value = url;
-        document.getElementById('contentButton').click();
-        return false;
-    },
+        ajaxCallback: function(data) {
+            if (data.status === 'success') {
+            //            alert('success!');
+            //            var context = {};
+            //            Console.Ajax.processElement(context, AUI().one("#ajaxBody"), true);
+            //            Console.Ajax.processScripts(context);
+            } else if (data.status === 'error') {
+                alert('error');
+                Console.Ajax.loadPage('/domain.xhtml');
+            }
+        },
     
-    ajaxCallback: function(data) {
-        if (data.status === 'success') {
-//            alert('success!');
-//            var context = {};
-//            Console.Ajax.processElement(context, AUI().one("#ajaxBody"), true);
-//            Console.Ajax.processScripts(context);
-        } else if (data.status === 'error') {
-            alert('error');
-            Console.Ajax.loadPage('/domain.xhtml');
-        }
-    },
-    
-    processElement : function (context, node, queueScripts) {
-        var recurse = true;
-        if (node.nodeName == 'A') {
+        processElement : function (context, node, queueScripts) {
+            var recurse = true;
+            if (node.nodeName == 'A') {
             /*
             // FIXME: For exteral URLs, we should not replace... however, we
             // FIXME: may want to ensure they have a _blank target.  May need
@@ -105,9 +107,9 @@ Console.Ajax = {
                 }
             }
             */
-        } else if (node.nodeName == 'IFRAME') {
-            recurse = false;
-        } else if (node.nodeName == 'INPUT') {
+            } else if (node.nodeName == 'IFRAME') {
+                recurse = false;
+            } else if (node.nodeName == 'INPUT') {
             /*
             if (((node.type == 'submit') || (node.type == 'image'))
                 && ((node.onclick === null) || (typeof(node.onclick) === 'undefined') || (node.onclick == ''))) {
@@ -120,7 +122,7 @@ Console.Ajax = {
                 };
             }
             */
-        /*
+            /*
         } else if (node.nodeName == 'FORM') {
             admingui.util.log("***** form action:  " + node.action);
             if (node.target == '') {
@@ -130,85 +132,125 @@ Console.Ajax = {
                 };
             }
 	    */
-        } else if (node.nodeName == 'TITLE') {
-            // bareLayout.xhtml handles this for ajax requests...
-            recurse = false;
-        } else if (node.nodeName == 'SCRIPT') {
-            recurse = false;  // don't walk scripts
-            if (queueScripts) {
-                // Queue it...
-                if (typeof(context.scriptQueue) === "undefined") {
-                    context.scriptQueue = new Array();
+            } else if (node.nodeName == 'TITLE') {
+                // bareLayout.xhtml handles this for ajax requests...
+                recurse = false;
+            } else if (node.nodeName == 'SCRIPT') {
+                recurse = false;  // don't walk scripts
+                if (queueScripts) {
+                    // Queue it...
+                    if (typeof(context.scriptQueue) === "undefined") {
+                        context.scriptQueue = new Array();
+                    }
+                    context.scriptQueue.push(node);
                 }
-                context.scriptQueue.push(node);
             }
-        }
 
-        // If recurse flag is true... recurse
-        if (recurse && node.childNodes) {
-            for (var i = 0; i < node.childNodes.length; i++) {
-                admingui.ajax.processElement(context, node.childNodes[i], queueScripts);
+            // If recurse flag is true... recurse
+            if (recurse && node.childNodes) {
+                for (var i = 0; i < node.childNodes.length; i++) {
+                    admingui.ajax.processElement(context, node.childNodes[i], queueScripts);
+                }
             }
+        },
+
+        _isTreeNodeControl : function (node) {
+            return isTreeNodeControl = (node.id.indexOf("_turner") > -1); // probably needs some work.  This will do for now.
+        },
+
+        processScripts : function(context) {
+            if (typeof(context.scriptQueue) === "undefined") {
+                // Nothing to do...
+                return;
+            }
+            globalEvalNextScript(context.scriptQueue);
         }
-    },
+    }
 
-    _isTreeNodeControl : function (node) {
-        return isTreeNodeControl = (node.id.indexOf("_turner") > -1); // probably needs some work.  This will do for now.
-    },
+    Console.UI = {
+        processServerTargets: function() {
+        
+            var convertOptionToDraggable = function (e, target) {
+                var li = $('<li>' + e.value + '</li>');
+                li.prop('source', e);
+                return li.draggable({ 
+                    opacity: 0.35, 
+                    revert: true, 
+                    revertDuration: 0, 
+                    helper: 'clone',
+                    scope: target
+                });
+            }
 
-    processScripts : function(context) {
-        if (typeof(context.scriptQueue) === "undefined") {
+            var handleDrop = function(ui, select, ul) {
+                select.append(ui.draggable.prop('source'));
+                ul.append(ui.draggable.clone());
+//                jsf.ajax.request
+            }
+            
+            $('#available > option').each(function(i,e) { 
+                $('#avul').append(convertOptionToDraggable(e, 'available'));
+            });
+            $('#selected > option').each(function(i,e) { 
+                $('#selul').append(convertOptionToDraggable(e, 'selected'));
+            });
+            
+            $('#avdiv').droppable({
+                scope: 'selected', 
+                drop : function (event, ui) {handleDrop (ui, $('#available'), $('#avul')); }
+            });
+            $('#seldiv').droppable({
+                scope: 'available', 
+                drop : function (event, ui) {handleDrop (ui, $('#selected'), $('#selul')); }
+            });
+        }
+    }
+
+    var globalEvalNextScript = function(scriptQueue) {
+        if (typeof(scriptQueue) === "undefined") {
             // Nothing to do...
             return;
         }
-        globalEvalNextScript(context.scriptQueue);
-    }
-}
-
-var globalEvalNextScript = function(scriptQueue) {
-    if (typeof(scriptQueue) === "undefined") {
-        // Nothing to do...
-        return;
-    }
-    var node = scriptQueue.shift();
-    if (typeof(node) == 'undefined') {
-        // Nothing to do...
-        return;
-    }
-    if (node.src === "") {
-        // use text...
-        globalEval(node.text);
-        globalEvalNextScript(scriptQueue);
-    } else {
-        // Get via Ajax
-        admingui.ajax.getResource(node.src, function(result) {
-            globalEval(result.content);
-            globalEvalNextScript(scriptQueue);
-        } );
-    // This gets a relative URL vs. a full URL with http://... needed
-    // when we properly serve resources w/ rlubke's recent fix that
-    // will be integrated soon.  We need to handle the response
-    // differently also.
-    //admingui.ajax.getResource(node.attributes['src'].value, function(result) { globalEval(result.content); globalEvalNextScript(scriptQueue);} );
-    }
-}
-
-var globalEval = function(src) {
-    if (window.execScript) {
-        try {
-            window.execScript(src);
-        } catch (error) {
-            if (console && console.log) {
-                console.log(error);
-            }
+        var node = scriptQueue.shift();
+        if (typeof(node) == 'undefined') {
+            // Nothing to do...
+            return;
         }
-        return;
+        if (node.src === "") {
+            // use text...
+            globalEval(node.text);
+            globalEvalNextScript(scriptQueue);
+        } else {
+            // Get via Ajax
+            admingui.ajax.getResource(node.src, function(result) {
+                globalEval(result.content);
+                globalEvalNextScript(scriptQueue);
+            } );
+        // This gets a relative URL vs. a full URL with http://... needed
+        // when we properly serve resources w/ rlubke's recent fix that
+        // will be integrated soon.  We need to handle the response
+        // differently also.
+        //admingui.ajax.getResource(node.attributes['src'].value, function(result) { globalEval(result.content); globalEvalNextScript(scriptQueue);} );
+        }
     }
-    var fn = function() {
-        window.eval.call(window, src);
+
+    var globalEval = function(src) {
+        if (window.execScript) {
+            try {
+                window.execScript(src);
+            } catch (error) {
+                if (console && console.log) {
+                    console.log(error);
+                }
+            }
+            return;
+        }
+        var fn = function() {
+            window.eval.call(window, src);
+        };
+        fn();
     };
-    fn();
-};
+}
 
 /*
 if (!Array.prototype.forEach) {
