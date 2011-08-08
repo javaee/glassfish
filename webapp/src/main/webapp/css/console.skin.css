@@ -40,34 +40,38 @@
 
 .AFDefaultFontFamily:alias {
     font-family: Tahoma,Verdana,Helvetica,sans-serif;
-}
-.AFDefaultFont:alias {
-    -tr-rule-ref:selector(".AFDefaultFontFamily:alias");
     font-size: 11px;
 }
 
+.AFDefaultFont:alias {
+    -tr-rule-ref:selector(".AFDefaultFontFamily:alias");
+}
+
 .AFTextForeground:alias {
-    color: #222;
+    color: #003d5b;
+    
 
 }
 
-.AFPanelBoxBody:alias {
+.AFPanelBox:alias {
+    border-bottom:1px solid #949494;
+    width: 100%;
+}
+
+af|panelBox::body {
     background: url("/images/dbcc.png")  repeat-x scroll 0 0 transparent;
+    padding:7px;
 }
 
 af|panelBox::header {
     color: #003D5B;
-    border-bottom:1px solid #949494;
-    padding:7px;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.AFHeaderText:alias {
-    font-size:16px;
-    color: #003d5b;
+    font-size:12px;
     font-weight: bold;
     overflow:hidden;
+}
+
+af|panelBox::content {
+    padding-top: 5px;
 }
 
 af|commandButton {

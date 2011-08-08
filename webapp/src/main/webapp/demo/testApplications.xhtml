@@ -47,16 +47,11 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ps="http://admingui.glassfish.org/console"
                 xmlns:tr="http://myfaces.apache.org/trinidad">
-    <div class="navObjectInfo">
-        <div class="title headerPageTitle">Applications</div>
-        <div class="subHeading">
-            <span>
+    <tr:panelBox background="medium" text="Applications">
                 Applications can be enterprise or web applications, or various kinds of modules. 
                 Restart an application or module by clicking on the reload link, this action will 
                 apply only to the targets that the application or module is enabled on.
-            </span>
-        </div>
-    </div>
+    </tr:panelBox>
     <tr:table var="app" value="#{sampleBean.applications}">
         <tr:column headerText="Name">
             #{app.name}

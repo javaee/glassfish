@@ -149,13 +149,6 @@ body {
     background: #d1d1d1;
 }
 
-body, table {
-    color: #333333;
-    font-family: Tahoma,Verdana,Helvetica,sans-serif;
-    font-size: 11px;
-    font-weight: normal;
-}
-
 #masthead {
     background: #fff;
     height: 33px;
@@ -288,7 +281,6 @@ body, table {
 }
 
 .navObjectInfo .subHeading, .dropDownWidget .subHeading {
-    color: #666666;
     font-size: 11px; 
     padding: 0;
 }
