@@ -100,7 +100,7 @@ public class ContractLocatorImpl<T> implements ContractLocator<T> {
     @Override
     public ContractLocator<T> named(String name) {
         this.name = name;
-        if (null != name && !byContract) {
+        if (null != name && !name.isEmpty() && !byContract) {
             warnOnUsage();
         }
         return this;
