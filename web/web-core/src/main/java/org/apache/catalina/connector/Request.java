@@ -3829,17 +3829,7 @@ public class Request
     public AsyncContext startAsync(ServletRequest servletRequest,
                                    ServletResponse servletResponse)
             throws IllegalStateException {
-        // If original or container-wrapped request and response,
-        // AsyncContext#hasOriginalRequestAndResponse must return true;
-        // false otherwise (i.e., if application-wrapped)
-        if ((servletRequest instanceof RequestFacade ||
-                servletRequest instanceof ApplicationHttpRequest) &&
-                (servletResponse instanceof ResponseFacade ||
-                servletResponse instanceof ApplicationHttpResponse)) {
-            return startAsync(servletRequest, servletResponse, true);
-        } else {
-            return startAsync(servletRequest, servletResponse, false);
-        }
+        return startAsync(servletRequest, servletResponse, false);
     }
 
     /**
@@ -3849,12 +3839,12 @@ public class Request
      * the AsyncContext
      * @param servletResponse the ServletResponse with which to initialize
      * the AsyncContext
-     * @param isOriginalRequestAndResponse true if the zero-arg version of
+     * @param isStartAsyncWithZeroArg true if the zero-arg version of
      * startAsync was called, false otherwise
      */
     private AsyncContext startAsync(ServletRequest servletRequest,
                 ServletResponse servletResponse,
-                boolean isOriginalRequestAndResponse)
+                boolean isStartAsyncWithZeroArg)
             throws IllegalStateException {
 
         if (servletRequest == null || servletResponse == null) {
@@ -3882,11 +3872,11 @@ public class Request
 
             // Reinitialize existing AsyncContext
             asyncContext.reinitialize(servletRequest, servletResponse,
-                    isOriginalRequestAndResponse);
+                    isStartAsyncWithZeroArg);
         } else {
             asyncContext = new AsyncContextImpl(this, servletRequest,
                     (Response) getResponse(), servletResponse,
-                    isOriginalRequestAndResponse);
+                    isStartAsyncWithZeroArg);
 
             CompletionHandler requestCompletionHandler =
                 new CompletionHandler<Request>() {
