@@ -39,6 +39,9 @@
  */
 package org.glassfish.hk2.tests.basic;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.glassfish.hk2.BinderFactory;
 import org.glassfish.hk2.ComponentException;
 import org.glassfish.hk2.Factory;
@@ -46,6 +49,7 @@ import org.glassfish.hk2.HK2;
 import org.glassfish.hk2.Module;
 import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.Services;
+import org.glassfish.hk2.TypeLiteral;
 import org.glassfish.hk2.inject.Injector;
 import org.glassfish.hk2.tests.basic.annotations.*;
 import org.glassfish.hk2.tests.basic.arbitrary.*;
@@ -461,6 +465,29 @@ public class BasicInjectionTest {
         // verifying null is returned for non-annotated binding that was not defined
         assertNull("No binding defined for the non-annotated contract. Provisioned instance should be null.", ci.c_default);
         assertTrue("No binding defined for the non-annotated contract. Provider or returned instance should be null.", ci.pc_default == null || ci.pc_default.get() == null);
+    }
+    
+    @Test
+    public void testTypeLiteralBoundToFactory() {
+        final List<String> expected = Arrays.asList(new String[] {"test"});
+        Services s = HK2.get().create(null, new Module() {
+
+            @Override
+            public void configure(BinderFactory binderFactory) {
+                binderFactory.bind(new TypeLiteral<List<String>>() {}).toFactory(new Factory<List<String>>() {
+
+                    @Override
+                    public List<String> get() throws ComponentException {
+                        return expected;
+                    }
+                    
+                });
+            }
+        });
+        
+        List<String> result;
+        result = s.forContract(new TypeLiteral<List<String>>() {}).get();
+        assertEquals(expected, result);
     }
     
     @Test
