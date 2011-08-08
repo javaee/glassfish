@@ -46,12 +46,177 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ps="http://admingui.glassfish.org/console"
-                xmlns:tr="http://myfaces.apache.org/trinidad">
+                xmlns:tr="http://myfaces.apache.org/trinidad"
+                xmlns:trh="http://myfaces.apache.org/trinidad/html">
+    <trh:head>
+        <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+  
+	
+        <style>
+            #available { float: left; width: 65%; min-height: 12em; } * html #available { height: 12em; } /* IE6 */
+            .available.custom-state-active { background: #eee; }
+            .available li { float: left; width: 96px; padding: 0.4em; margin: 0 0.4em 0.4em 0; text-align: center; }
+            .available li h5 { margin: 0 0 0.4em; cursor: move; }
+            .available li a { float: right; }
+            .available li a.ui-icon-zoomin { float: left; }
+            .available li img { width: 100%; cursor: move; }
+
+            #selected { float: right; width: 32%; min-height: 18em; padding: 1%;} * html #selected { height: 18em; } /* IE6 */
+            #selected h4 { line-height: 16px; margin: 0 0 0.4em; }
+            #selected h4 .ui-icon { float: left; }
+        </style>
+            <!-- #selected .available h5 { display: none; } -->
+
+        <script>
+            $(function() {
+                    var $available = $( "#available" ), $selected = $( "#selected" );
+
+                    var deploy_icon_class = "ui-icon-arrowthickstop-1-e";
+                    var undeploy_icon_class = "ui-icon-arrowrefresh-1-w";
+                    var deploy_icon = "<a href='link/to/trash/script/when/we/have/js/off' title='Deploy' class='ui-icon " + deploy_icon_class + "'>Deploy</a>";
+                    var undeploy_icon = "<a href='link/to/undeploy/script/when/we/have/js/off' title='Undeploy' class='ui-icon " + undeploy_icon_class + "'>Undeploy</a>";
+                    $('#available-applications').find('option').each(function(index) {
+                        var $item = createItem($(this).val(), deploy_icon);
+                        $('#available').append($item);
+                    });
+
+                    $('#selected-applications').find('option').each(function(index) {
+                        var $item = createItem($(this).val(), undeploy_icon);
+                        $( "ul.available", $selected ).append($item);
+                    });
+
+                    // let the applications be draggable
+                    $( "li", $available ).draggable({
+                            cancel: "a.ui-icon", // clicking an icon won't initiate dragging
+                            revert: "invalid", // when not dropped, the item will revert back to its initial position
+                            containment: $( "#demo-frame" ).length ? "#demo-frame" : "document", // stick to demo-frame if present
+                            helper: "clone",
+                            cursor: "move"
+                    });
+
+                    // let the server be droppable, accepting the applications
+                    $selected.droppable({
+                            accept: "#available > li",
+                            activeClass: "ui-state-highlight",
+                            drop: function( event, ui ) {
+                                    deploy( ui.draggable );
+                            }
+                    });
+
+                    // let the gallery be droppable as well, accepting items from the trash
+                    $available.droppable({
+                            accept: "#selected li",
+                            activeClass: "custom-state-active",
+                            drop: function( event, ui ) {
+                                    undeploy( ui.draggable );
+                            }
+                    });
+
+                    function createItem(value, a) {
+                        return "<li class='ui-widget-content ui-corner-tr'>" +
+                            "<h5 class='ui-widget-header'>" + value + "</h5>" +
+                            "<div style='width: 96px; height: 72px'>&nbsp;</div>" +
+                            "<a href='images/high_tatras.jpg' title='View larger image' class='ui-icon ui-icon-zoomin'>View Details</a>" +
+                            a +
+                        "</li>";
+                    }
+
+                    // select function
+                    function deploy( $item ) {
+                            $item.fadeOut(function() {
+                                    $item.find( "a." + deploy_icon_class ).remove();
+                                    $item.append( undeploy_icon ).appendTo( $( "ul.available", $selected ) ).fadeIn();
+                            });
+                    }
+
+                    // unselect function
+                    function undeploy ( $item ) {
+                            $item.fadeOut(function() {
+                                    $item
+                                            .find( "a." + undeploy_icon_class )
+                                                    .remove()
+                                            .end()
+                                            .css( "width", "96px")
+                                            .append( deploy_icon )
+                                            .find( "img" )
+                                                    .css( "height", "72px" )
+                                            .end()
+                                            .appendTo( $available )
+                                            .fadeIn();
+                            });
+                    }
+
+                    // image preview function, demonstrating the ui.dialog used as a modal window
+                    function viewLargerImage( $link ) {
+                            var src = $link.attr( "href" ),
+                                    title = $link.siblings( "img" ).attr( "alt" ),
+                                    $modal = $( "img[src$='" + src + "']" );
+
+                            if ( $modal.length ) {
+                                    $modal.dialog( "open" );
+                            } else {
+                                    var img = $( "<img alt='" + title + "' width='384' height='288' style='display: none; padding: 8px;' />" )
+                                            .attr( "src", src ).appendTo( "body" );
+                                    setTimeout(function() {
+                                            img.dialog({
+                                                    title: title,
+                                                    width: 400,
+                                                    modal: true
+                                            });
+                                    }, 1 );
+                            }
+                    }
+
+                    // resolve the icons behavior with event delegation
+                    $( "ul.available > li" ).click(function( event ) {
+                            var $item = $( this ),
+                                    $target = $( event.target );
+
+                            if ( $target.is( "a." + deploy_icon_class ) ) {
+                                    deploy( $item );
+                            } else if ( $target.is( "a.ui-icon-zoomin" ) ) {
+                                    viewLargerImage( $target );
+                            } else if ( $target.is( "a." + undeploy_icon_class ) ) {
+                                    undeploy( $item );
+                            }
+
+                            return false;
+                    });
+
+            });
+	</script>
+        
+    </trh:head>
     <tr:panelBox background="medium" text="Applications">
                 Applications can be enterprise or web applications, or various kinds of modules. 
                 Restart an application or module by clicking on the reload link, this action will 
                 apply only to the targets that the application or module is enabled on.
     </tr:panelBox>
+
+    <select id="available-applications" multiple="true">
+        <option name="console-demo">console-demo</option>
+        <option name="console-next">console-next</option>
+    </select>
+
+    <select id="selected-applications" multiple="true">
+        <option name="console">console</option>
+    </select>
+  
+<div class="demo ui-widget ui-helper-clearfix">
+
+    <ul id="available" class="available ui-helper-reset ui-helper-clearfix">
+    </ul>
+    
+    <div id="selected" class="ui-widget-content ui-state-default">
+        <h4 class="ui-widget-header"><span class="ui-icon ui-icon-folder-collapsed">Server1</span> Server1</h4>
+        <ul class='available ui-helper-reset'/>
+    </div>
+    
+
+</div><!-- End demo -->
+
     <tr:table var="app" value="#{sampleBean.applications}">
         <tr:column headerText="Name">
             #{app.name}
