@@ -57,12 +57,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.glassfish.hk2.Binding;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.DescriptorImpl;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantActivator;
@@ -130,7 +132,7 @@ public class RunLevelServiceTest {
     
     Collection<RunLevelService> coll2 = h.getAllByContract(RunLevelService.class);
     assertNotNull(coll2);
-    assertEquals(coll2.toString(), 2, coll2.size());  // a test one, and the real one
+    assertTrue(coll2.toString(), coll2.size() > 2);
     
     RunLevelService rls = h.getComponent(RunLevelService.class);
     assertNotNull(rls);
@@ -1273,6 +1275,17 @@ public class RunLevelServiceTest {
     }
     assertEquals("error count", 2, errCount);
   }
+
+//  /**
+//   * TODO
+//   */
+//  @Test
+//  public void obtainingRunLevelServiceForAnotherEnvironment() {
+//      DescriptorImpl descriptor = new DescriptorImpl(null, null);
+//      descriptor.addContract(RunLevelService.class.getName());
+//      Collection<Binding<?>> bindings = h.getBindings(descriptor);
+//      assertEquals(bindings.toString(), 3, bindings.size());
+//  }
   
   private void installTestRunLevelService(boolean async) {
     Inhabitant<RunLevelService> r = 

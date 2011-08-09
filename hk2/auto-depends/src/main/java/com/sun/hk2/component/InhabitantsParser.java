@@ -188,9 +188,9 @@ public class InhabitantsParser implements InhabitantStore {
 
     private void reportProblem(String typeName, Exception e) {
 //      throw new ComponentException("unable to create inhabitant for: " + typeName, e);
-      logger.log(Level.WARNING, "Unable to create inhabitant for {0} - and therefore ignoring it; check classpath; re: {1}", 
+      logger.log(Level.SEVERE, "Unable to create inhabitant for {0} - and therefore ignoring it; check classpath; re: {1}", 
           new Object[] {typeName, e.getMessage()});
-      logger.log(Level.FINER, "", e);
+      logger.log(Level.INFO, "root cause", e);
     }
 
     /**

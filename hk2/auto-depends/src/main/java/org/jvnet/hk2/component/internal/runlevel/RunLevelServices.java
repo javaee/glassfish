@@ -57,6 +57,7 @@ import org.jvnet.hk2.component.RunLevelService;
  * 
  * @author Jeff Trent
  */
+@SuppressWarnings({ "rawtypes" })
 public class RunLevelServices {
 
   private Map<Habitat, Map<String, RunLevelServiceStub>> map =
@@ -91,7 +92,6 @@ public class RunLevelServices {
     return rls;
   }
 
-  @SuppressWarnings("unchecked")
   static RunLevelService<?> getFromHabitat(Habitat habitat, String env) {
     if (null == habitat) {
       return null;

@@ -39,17 +39,16 @@
  */
 package org.jvnet.hk2.component;
 
-import com.sun.hk2.component.ConstructorCreator;
-import com.sun.hk2.component.FactoryCreator;
-import com.sun.hk2.component.InjectableParametizedConstructorCreator;
-import org.junit.Ignore;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+
 import org.jvnet.hk2.annotations.Factory;
 import org.jvnet.hk2.annotations.FactoryFor;
 import org.jvnet.hk2.annotations.Inject;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.security.cert.TrustAnchor;
+import com.sun.hk2.component.ConstructorCreator;
+import com.sun.hk2.component.FactoryCreator;
+import com.sun.hk2.component.InjectableParametizedConstructorCreator;
 
 /**
  * {@link Creator} factory.
@@ -100,6 +99,7 @@ public class Creators {
         if (noArgCtor!=null) {
             return new ConstructorCreator<T>(c,habitat,metadata);
         }
-        return null;
+        
+      throw new ComponentException("don't know how to create a Creator for: " + c + "; make sure there is a public ctor.");
     }
 }
