@@ -41,7 +41,6 @@ package org.jvnet.hk2.component;
 
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.RunLevel;
-import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 
 /**
  * Implementations of this contract are responsible for orchestration
@@ -75,7 +74,7 @@ import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
  * habitat resident {@link InhabitantActivator}(s) for the activation (i.e. get) and
  * deactivation (i.e., release) of the sorted inhabitants. 
  * 
- * @see DefaultRunLevelService
+ * @see AbstractRunLevelService
  * @see RunLevelListener
  * @see InhabitantSorter
  * @see InhabitantActivator

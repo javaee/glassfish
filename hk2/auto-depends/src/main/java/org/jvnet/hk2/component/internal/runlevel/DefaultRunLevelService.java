@@ -238,8 +238,11 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
   // the default name
   public static final String NAME = "default";
 
+  // the default environment
+  public static final Class<?> ENVIRONMENT = Void.class;
+  
   // the default mode - sync or async.
-  static final boolean ASYNC_ENABLED = false;
+  public static final boolean ASYNC_ENABLED = false;
   
   private static final Logger logger = Logger.getLogger(DefaultRunLevelService.class.getName());
   
@@ -290,12 +293,14 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
   }
 
   public DefaultRunLevelService(Habitat habitat) {
-    this(habitat, ASYNC_ENABLED, null, null, new LinkedHashMap<Integer, Recorder>());
+    this(habitat, ASYNC_ENABLED, null, null, null);
   }
 
-  protected DefaultRunLevelService(Habitat habitat, boolean async, 
-      String name, Class<?> targetEnv,
-      HashMap<Integer, Recorder> recorders) {
+  public DefaultRunLevelService(Habitat habitat,
+          boolean async, 
+          String name,
+          Class<?> targetEnv,
+          HashMap<Integer, Recorder> recorders) {
     this.habitat = habitat;
     assert (null != habitat);
     this.asyncMode = async;
@@ -315,8 +320,8 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
       this.exec = null;
     }
     this.name = (null == name) ? NAME : name;
-    this.targetEnv = (null == targetEnv) ? Void.class : targetEnv;
-    this.recorders = recorders;
+    this.targetEnv = (null == targetEnv) ? ENVIRONMENT : targetEnv;
+    this.recorders = (null == recorders) ? new LinkedHashMap<Integer, Recorder>() : recorders;
 
     // subscribe to events in the habitat since we cannot rely on PostConstruct.
     // This is because the complete habitat may not be initialized at the time of

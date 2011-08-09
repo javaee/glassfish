@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,54 +37,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.hk2.component;
+package org.jvnet.hk2.test.runlevel;
 
-import org.jvnet.hk2.component.Creator;
-import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.tracing.TracingThreadLocal;
-import org.jvnet.hk2.tracing.TracingUtilities;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.AbstractRunLevelService;
 
-/**
- * Specialized implementation of {@link ScopedInhabitant} for {@link org.glassfish.hk2.scopes.Singleton}.
- * @author Kohsuke Kawaguchi
- */
-public class SingletonInhabitant<T> extends AbstractCreatorInhabitantImpl<T> {
-  private volatile T object;
+@Service(name="x")
+public class AnotherNonDefaultRunLevelService extends AbstractRunLevelService<Long> {
 
-  public SingletonInhabitant(Creator<T> creator) {
-      super(creator);
-      assert(null != creator);
-  }
-
-  @SuppressWarnings("rawtypes")
-public T get(Inhabitant onBehalfOf) {
-      if(object==null) {
-          synchronized(this) {
-              if(object==null) {
-                try {
-                    if (TracingUtilities.isEnabled())
-                        TracingThreadLocal.get().push(this);
-                  object = creator.get(onBehalfOf);
-                  } finally {
-                          if (TracingUtilities.isEnabled())
-                              TracingThreadLocal.get().pop();
-                  }
-              }
-          }
-      }
-      return object;
-  }
-
-  public void release() {
-      if (object!=null) {
-          synchronized (this) {
-              dispose(object);
-              object=null;
-          }
-      }
-  }
-
-  public boolean isActive() {
-      return object!=null;
-  }
+    public AnotherNonDefaultRunLevelService() {
+        super(Long.class);
+    }
+    
 }
