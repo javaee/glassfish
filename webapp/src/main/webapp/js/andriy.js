@@ -59,24 +59,26 @@ $(function() {
         $item.fadeOut(function() {
             $item.find( "a." + deploy_icon_class ).remove();
             $item.append( undeploy_icon ).appendTo( $( "ul.available", selected ) ).fadeIn();
+            
+            var $text = $item.find("h5").text();
+            $("#available-applications > option[value='" + $text + "']").remove();
+            $('#selected-applications').append($('<option></option>').val($text).html($text));
+
         });
     }
 
     // unselect function
     function undeploy ( $item ) {
         $item.fadeOut(function() {
-            $item
-            .find( "a." + undeploy_icon_class )
-            .remove()
-            .end()
-            .css( "width", "96px")
-            .append( deploy_icon )
-            .find( "img" )
-            .css( "height", "72px" )
-            .end()
-            .appendTo( available )
-            .fadeIn();
+            $item.find( "a." + undeploy_icon_class ).remove().end()
+                .css( "width", "96px").append( deploy_icon )
+                .find( "img" ).css( "height", "72px" ).end()
+                .appendTo( available ).fadeIn();
         });
+
+        var $text = $item.find("h5").text();
+        $("#selected-applications > option[value='" + $text + "']").remove();
+        $('#available-applications').append($('<option></option>').val($text).html($text));
     }
 
     // image preview function, demonstrating the ui.dialog used as a modal window
