@@ -89,6 +89,7 @@ public class TreeBean {
                 add(new NavigationNode("JNDI"));
         }});
 
+        root.add(new NavigationNode("Demo", "/images/icons/instance.gif", "/demo/panelTabbed.jspx"));
         return root;
     }
 
