@@ -69,13 +69,13 @@
         <dependency>
             <groupId>javax.faces</groupId>
             <artifactId>jsf-api</artifactId>
-            <version>${jsf.version}</version>
+            <version>${version.jsf}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>${osgi.version}</version>
+            <version>${version.osgi}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
