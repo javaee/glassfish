@@ -100,6 +100,15 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
      */
     private static final int UMC_GMS_LISTENER_PORT = 9090;
 
+    /*
+     * Used only for user-managed clusters. This prop can be set
+     * on the group management service object to override the default
+     * behavior of dropping failed/stopped instances from the health
+     * history table.
+     */
+    private static final String KEEP_FORMER_MEMBER_HISTORY =
+        "KEEP_FORMER_MEMBER_HISTORY";
+
     // all set in postConstruct
     private String instanceName = null;
     private Cluster cluster = null;
@@ -252,13 +261,35 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
         }
     }
 
+    /*
+     * This is used in the user-managed cluster case where there
+     * is no cluster config bean and instances can come and
+     * go dynamically.
+     *
+     * In such a case, the history of failed/stopped instances
+     * can grow without bound, so we check a property to
+     * see if we should keep failed/stopped instances and
+     * pass this to the health history object. The default
+     * is to drop former members.
+     */
     private void initializeHealthHistory(String instanceName) {
+        boolean keepFormerMembers = false;
+
+        Property keepFormerMemberProp =
+            server.getConfig().getGroupManagementService().getProperty(
+                KEEP_FORMER_MEMBER_HISTORY);
+        if (keepFormerMemberProp != null) {
+            keepFormerMembers =
+                Boolean.parseBoolean(keepFormerMemberProp.getValue());
+        }
+        
+
         try {
             /*
              * Should not fail, but we need to make sure it doesn't
              * affect GMS just in case.
              */
-            hHistory = new HealthHistory(instanceName);
+            hHistory = new HealthHistory(instanceName, keepFormerMembers);
         } catch (Throwable t) {
             logger.log(Level.WARNING, "gmsexception.new.health.history",
                 t.getLocalizedMessage());
