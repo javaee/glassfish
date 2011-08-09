@@ -49,22 +49,24 @@
                 xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
 <!--    <trh:head>	-->
-        <style>
-            #available { float: left; width: 65%; min-height: 12em; } * html #available { height: 12em; } /* IE6 */
-            .available.custom-state-active { background: #eee; }
-            .available li { float: left; width: 96px; padding: 0.4em; margin: 0 0.4em 0.4em 0; text-align: center; }
-            .available li h5 { margin: 0 0 0.4em; cursor: move; }
-            .available li a { float: right; }
-            .available li a.ui-icon-zoomin { float: left; }
-            .available li img { width: 100%; cursor: move; }
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
 
-            #selected { float: right; width: 32%; min-height: 18em; padding: 1%;} * html #selected { height: 18em; } /* IE6 */
-            #selected h4 { line-height: 16px; margin: 0 0 0.4em; }
-            #selected h4 .ui-icon { float: left; }
-        </style>
-        <!-- #selected .available h5 { display: none; } -->
+    <style>
+        #available { float: left; width: 65%; min-height: 12em; } * html #available { height: 12em; } /* IE6 */
+        .available.custom-state-active { background: #eee; }
+        .available li { float: left; width: 96px; padding: 0.4em; margin: 0 0.4em 0.4em 0; text-align: center; }
+        .available li h5 { margin: 0 0 0.4em; cursor: move; }
+        .available li a { float: right; }
+        .available li a.ui-icon-zoomin { float: left; }
+        .available li img { width: 100%; cursor: move; }
 
-        <script src="#{request.contextPath}/js/andriy.js"/>
+        #selected { float: right; width: 32%; min-height: 18em; padding: 1%;} * html #selected { height: 18em; } /* IE6 */
+        #selected h4 { line-height: 16px; margin: 0 0 0.4em; }
+        #selected h4 .ui-icon { float: left; }
+    </style>
+    <!-- #selected .available h5 { display: none; } -->
+
+    <script src="#{request.contextPath}/js/andriy.js"/>
 
 <!--    </trh:head>-->
     <tr:panelBox background="medium" text="Applications">
@@ -73,14 +75,16 @@
         apply only to the targets that the application or module is enabled on.
     </tr:panelBox>
 
-    <select id="available-applications" multiple="true">
-        <option name="console-demo">console-demo</option>
-        <option name="console-next">console-next</option>
-    </select>
+    <div style="display: none">
+        <select id="available-applications" multiple="true">
+            <option name="console-demo">console-demo</option>
+            <option name="console-next">console-next</option>
+        </select>
 
-    <select id="selected-applications" multiple="true">
-        <option name="console">console</option>
-    </select>
+        <select id="selected-applications" multiple="true">
+            <option name="console">console</option>
+        </select>
+    </div>
 
     <div class="demo ui-widget ui-helper-clearfix">
 

@@ -4,7 +4,7 @@ $(function() {
     var deploy_icon_class = "ui-icon-arrowthickstop-1-e";
     var undeploy_icon_class = "ui-icon-arrowrefresh-1-w";
     var deploy_icon = '<a href="link/to/trash/script/when/we/have/js/off" title="Deploy" class="ui-icon ' + deploy_icon_class + '">Deploy</a>';
-    var undeploy_icon = '<a href="link/to/undeploy/script/when/we/have/js/off" title="Undeploy" class="ui-icon "' + undeploy_icon_class + '>Undeploy</a>';
+    var undeploy_icon = '<a href="link/to/undeploy/script/when/we/have/js/off" title="Undeploy" class="ui-icon ' + undeploy_icon_class + '">Undeploy</a>';
                     
     $('#available-applications').find('option').each(function(index) {
         var $item = createItem($(this).val(), deploy_icon);
@@ -17,15 +17,17 @@ $(function() {
     });
 
     // let the applications be draggable
-    $( "li", available ).draggable({
+    var $draggable = {
         cancel: "a.ui-icon", // clicking an icon won't initiate dragging
         revert: "invalid", // when not dropped, the item will revert back to its initial position
         containment: $( "#demo-frame" ).length ? "#demo-frame" : "document", // stick to demo-frame if present
         helper: "clone",
         cursor: "move"
-    });
+    };
+    $( "li", available ).draggable($draggable);
+    $( "li", selected ).draggable($draggable);
 
-    // let the server be droppable, accepting the applications
+    // let the server be droppable, accepting the available items
     selected.droppable({
         accept: "#available > li",
         activeClass: "ui-state-highlight",
@@ -34,7 +36,7 @@ $(function() {
         }
     });
 
-    // let the gallery be droppable as well, accepting items from the trash
+    // let the available be droppable as well, accepting items from the selected
     available.droppable({
         accept: "#selected li",
         activeClass: "custom-state-active",
