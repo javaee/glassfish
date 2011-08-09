@@ -40,54 +40,74 @@
 package org.glassfish.admingui.plugins.sample;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.bean.SessionScoped;
+import javax.faces.event.ValueChangeEvent;
+import javax.faces.model.SelectItem;
 
 /**
  *
  * @author jdlee
  */
 @ManagedBean
-@ViewScoped
+@SessionScoped
 public class SampleBean {
+
     private List<String> availableServers = new ArrayList<String>();
     private List<String> selectedServers = new ArrayList<String>();
 
     public SampleBean() {
         selectedServers.add("server1");
+
         availableServers.add("server2");
         availableServers.add("server3");
         availableServers.add("server4");
         availableServers.add("server5");
     }
-    
+
     public List<Application> getApplications() {
         List<Application> apps = new ArrayList<Application>();
-        
+
         apps.add(new Application("application1", true, "web"));
         apps.add(new Application("application2", false, "ejb, web"));
-        
+
         return apps;
     }
 
-    public List<String> getAvailableServers() {
-        return availableServers;
+    public String[] getAvailableServers() {
+        return availableServers.toArray(new String[]{});
     }
 
-    public void setAvailableServers(List<String> availableServers) {
-        this.availableServers = availableServers;
+    public String[] getSelectedServers() {
+        return selectedServers.toArray(new String[]{});
     }
 
-    public List<String> getSelectedServers() {
-        return selectedServers;
+    public void availableServerChanged(ValueChangeEvent vce) {
+        availableServers.clear();
+        Collections.addAll(availableServers, (String[])vce.getNewValue());
     }
 
-    public void setSelectedServers(List<String> selectedServers) {
-        this.selectedServers = selectedServers;
+    public void selectedServerChanged(ValueChangeEvent vce) {
+        selectedServers.clear();
+        Collections.addAll(selectedServers, (String[])vce.getNewValue());
+    }
+
+    public void setAvailableServers(String[] availableServers) {
+        System.out.println(availableServers);
+        this.availableServers.clear();
+        Collections.addAll(this.availableServers, availableServers);
+    }
+
+    public void setSelectedServers(String[] selectedServers) {
+        System.out.println(selectedServers);
+        this.selectedServers.clear();
+        Collections.addAll(this.selectedServers, selectedServers);
     }
     
     public static class Application {
+
         private String name;
         private Boolean enabled;
         private String engines;
@@ -97,7 +117,7 @@ public class SampleBean {
             this.enabled = enabled;
             this.engines = engines;
         }
-        
+
         public Boolean getEnabled() {
             return enabled;
         }

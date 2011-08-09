@@ -48,7 +48,7 @@
                 xmlns:ps="http://admingui.glassfish.org/console"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
-<!--    <trh:head>	-->
+    <!--    <trh:head>	-->
     <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
 
     <style>
@@ -68,7 +68,7 @@
 
     <script src="#{request.contextPath}/js/andriy.js"/>
 
-<!--    </trh:head>-->
+    <!--    </trh:head>-->
     <tr:panelBox background="medium" text="Applications">
         Applications can be enterprise or web applications, or various kinds of modules. 
         Restart an application or module by clicking on the reload link, this action will 
@@ -99,46 +99,4 @@
 
 
     </div><!-- End demo -->
-
-    <ui:remove>
-        <tr:table var="app" value="#{sampleBean.applications}">
-            <tr:column headerText="Name">
-                #{app.name}
-            </tr:column>
-            <tr:column headerText="Enabled">
-                #{app.enabled}
-            </tr:column>
-            <tr:column headerText="Engines">
-                #{app.enabled}
-            </tr:column>
-            <tr:column headerText="Actions">
-                Launch | Redeploy | Reload
-            </tr:column>
-        </tr:table>
-        <hr/>
-
-        <tr:form id="serverForm" prependId="false">
-            <tr:selectManyListbox id="available" size="10" value="#{sampleBean.availableServers}">
-                <f:selectItems value="#{sampleBean.availableServerItems}"/>
-            </tr:selectManyListbox>
-            <tr:selectManyListbox id="selected" size="10" value="#{sampleBean.selectedServers}">
-                <f:selectItems value="#{sampleBean.selectedServerItems}"/>
-            </tr:selectManyListbox>
-            <tr:commandButton id="button" text="Save">
-                <!--            <f:ajax execute="@form" render="@form"/>-->
-            </tr:commandButton>
-            <div id="serverarea" style="border: 1px solid #990000;">
-                <div id="avdiv" style="border: 1px solid #00FF00; min-height: 5px;">
-                    <ul id="avul"></ul>
-                </div>
-                <div id="seldiv" style="border: 1px solid #0000FF; min-height: 5px;">
-                    <ul id="selul"></ul>
-                </div>
-            </div>
-
-        </tr:form>
-        <script type="text/javascript">
-    //        Console.UI.processServerTargets();
-        </script>
-    </ui:remove>
 </ui:composition>

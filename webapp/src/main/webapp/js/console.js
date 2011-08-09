@@ -170,8 +170,8 @@ if (typeof Console == 'undefined') {
     Console.UI = {
         processServerTargets: function() {
         
-            var convertOptionToDraggable = function (e, target) {
-                var li = $('<li>' + e.value + '</li>');
+            var createDraggable = function (e, target) {
+                var li = $('<li>' + e + '</li>');
                 li.prop('source', e);
                 return li.draggable({ 
                     opacity: 0.35, 
@@ -182,26 +182,37 @@ if (typeof Console == 'undefined') {
                 });
             }
 
-            var handleDrop = function(ui, select, ul) {
-                select.append(ui.draggable.prop('source'));
-                ul.append(ui.draggable.clone());
-//                jsf.ajax.request
+            var handleDrop = function(li, from, to, ul) {
+                //1
+                var serverName = li.draggable.prop('source');
+
+                //2
+                from.prop('value', from.prop('value').replace(','+serverName, '').replace(serverName, ''));
+
+                // 3
+                li.draggable.context.parentNode.removeChild(li.draggable.context);
+
+                //4
+                to.prop('value', to.prop('value') + ',' + serverName);
+//                select.append(ui.draggable.prop('source'));
+                //5
+                ul.append(createDraggable(serverName, to.prop('id')));
             }
             
-            $('#available > option').each(function(i,e) { 
-                $('#avul').append(convertOptionToDraggable(e, 'available'));
+            $('#available').prop('value').split(',').forEach(function (element) {
+                $('#avul').append(createDraggable(element, 'available'));
             });
-            $('#selected > option').each(function(i,e) { 
-                $('#selul').append(convertOptionToDraggable(e, 'selected'));
+            $('#selected').prop('value').split(',').forEach(function (element) {
+                $('#selul').append(createDraggable(element, 'selected'));
             });
             
             $('#avdiv').droppable({
                 scope: 'selected', 
-                drop : function (event, ui) {handleDrop (ui, $('#available'), $('#avul')); }
+                drop : function (event, ui) {handleDrop (ui, $('#selected'), $('#available'), $('#avul'));}
             });
             $('#seldiv').droppable({
                 scope: 'available', 
-                drop : function (event, ui) {handleDrop (ui, $('#selected'), $('#selul')); }
+                drop : function (event, ui) {handleDrop (ui, $('#available'), $('#selected'), $('#selul'));}
             });
         }
     }
