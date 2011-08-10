@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,16 +37,28 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.test.runlevel;
+package org.jvnet.hk2.component;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.AbstractRunLevelService;
+/**
+ * A Simple Reference holder.
+ * 
+ * @author Jeff Trent
+ */
+public class Reference<T> {
+    private T val;
+    
+    public Reference() {
+    }
 
-@Service(name="x", metadata="environment=java.lang.Long")
-public class AnotherNonDefaultRunLevelService extends AbstractRunLevelService<Long> {
+    public Reference(T val) {
+        this.val = val;
+    }
 
-    public AnotherNonDefaultRunLevelService() {
-        super(Long.class);
+    public T get() {
+        return val;
     }
     
+    public void set(T val) {
+        this.val = val;
+    }
 }
