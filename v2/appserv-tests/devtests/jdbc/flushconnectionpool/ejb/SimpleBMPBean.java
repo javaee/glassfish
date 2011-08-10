@@ -9,6 +9,9 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
+import org.glassfish.embeddable.*;
+import org.glassfish.internal.api.Globals;
+import org.jvnet.hk2.component.Habitat;
 
 public class SimpleBMPBean implements EntityBean {
 
@@ -16,7 +19,6 @@ public class SimpleBMPBean implements EntityBean {
     protected final String poolName = "jdbc-flushconnectionpool-pool";
     public static final int JMX_PORT = 8686;
     public static final String HOST_NAME = "localhost";
-
 
     public void setEntityContext(EntityContext entityContext) {
         Context context = null;
@@ -126,6 +128,18 @@ public class SimpleBMPBean implements EntityBean {
     }
 
     private boolean flushConnectionPool() throws Exception {
+        Habitat habitat = Globals.getDefaultHabitat();
+	GlassFish gf = habitat.getComponent(GlassFish.class);
+	CommandRunner runner = gf.getCommandRunner();
+	CommandResult res = runner.run("flush-connection-pool", poolName);
+	System.out.println("res= " + res.getOutput());
+	if(res.getExitStatus() == CommandResult.ExitStatus.SUCCESS) {
+            return true;
+	}
+	return false;
+    }
+
+    private boolean amxFlushConnectionPool() throws Exception {
         final String urlStr = "service:jmx:rmi:///jndi/rmi://" + HOST_NAME + ":" + JMX_PORT + "/jmxrmi";
         final JMXServiceURL url = new JMXServiceURL(urlStr);
 	boolean result = false;
