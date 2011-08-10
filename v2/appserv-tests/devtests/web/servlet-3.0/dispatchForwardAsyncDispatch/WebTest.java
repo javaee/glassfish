@@ -71,8 +71,12 @@ public class WebTest {
         WebTest webTest = new WebTest(args);
 
         try {
-            webTest.doTest("/dispatchforward?forwardurl=/asyncdispatch", EXPECTED_RESPONSE_1);
-            webTest.doTest("/dispatchforward?forwardurl=/asyncdispatch&withargs=true", EXPECTED_RESPONSE_2);
+            webTest.doTest("/dispatchforward", EXPECTED_RESPONSE_1);
+            webTest.doTest("/dispatchforward?withargs=true", EXPECTED_RESPONSE_2);
+            // double dispatch
+            webTest.doTest("/dispatchforward0", EXPECTED_RESPONSE_1);
+            // named dispatch
+            webTest.doTest("/nameddispatchforward0", EXPECTED_RESPONSE_1);
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             ex.printStackTrace();

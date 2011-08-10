@@ -42,63 +42,28 @@ package test;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
+            
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-@WebServlet(urlPatterns={"/asyncdispatch"}, asyncSupported=true)
-public class AsyncDispatch extends HttpServlet {
+                
+@WebServlet(urlPatterns={"/dispatchforward0"}, asyncSupported=true)
+public class DispatchForward0 extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
+                    
+        String forwardUrl = "/dispatchforward";
 
-        System.out.println("AD: dispatcher type: " + req.getDispatcherType());
-        boolean withArgs = Boolean.parseBoolean(req.getParameter("withargs"));
-        boolean forceAsync = Boolean.parseBoolean(req.getParameter("forceasync"));
-        if (!req.getDispatcherType().equals(DispatcherType.ASYNC) ||
-                forceAsync) {
-
-            final AsyncContext ac =
-                ((withArgs)? req.startAsync(req, res) : req.startAsync());
-
-            ac.addListener(new AsyncListener() {
-                public void onComplete(AsyncEvent event) {
-                    System.out.println("AD: AsyncListener.onComplete");
-                }
-
-                public void onError(AsyncEvent event) {
-                    System.out.println("AD: AsyncListener.onError");
-                }
-
-                public void onStartAsync(AsyncEvent event) {
-                    System.out.println("AD: AsyncListener.onStartAsync");
-                }
-
-                public void onTimeout(AsyncEvent event) {
-                    System.out.println("AD: AsyncListener.onTimeout");
-                }
-            });
-
-            Timer timer = new Timer("AsyncTimer", true);
-            timer.schedule(
-                new TimerTask() {
-                    @Override
-                    public void run() {
-                        ac.dispatch();
-                    }
-                },
-                3000);
-        } else {
+        if (!req.getDispatcherType().equals(DispatcherType.ASYNC)) {
+            System.out.println("DF0: forwarding " + forwardUrl);
+            req.getRequestDispatcher(forwardUrl).forward(req, res);
+        } else {        
+            System.out.println("DF0: async dispatch type ...");
             PrintWriter writer = res.getWriter();
-            writer.write("Hello from AsyncDispatch\n");
-        }
-    }
+            writer.write("Hello from DispatchForward0\n");
+        } 
+    }       
 }

@@ -55,7 +55,7 @@ public class DispatchForward extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
                     
-        String forwardUrl = req.getParameter("forwardurl");
+        String forwardUrl = "/asyncdispatch";
         String withargs = req.getParameter("withargs");
         if (withargs != null) {
             forwardUrl = forwardUrl + "?withargs=" + withargs;
