@@ -46,9 +46,14 @@ package org.glassfish.hk2;
  * which are called contracts. Some services do not implement such
  * interfaces and are registered under their implementation type.
  *
+ * <p/>
  * When registering services using this programmatic API, it is not
  * necessary to use the HK2 annotations. Optional presence of such
  * annotations will be ignored when registering servics.
+ * 
+ * <p/>
+ * Important Note: A new binding is completed only after calling
+ * one of the "to*(...)" methods of {@link NamedBinder}.
  *
  * @author Jerome Dochez
  * @auhor Jeff Trent

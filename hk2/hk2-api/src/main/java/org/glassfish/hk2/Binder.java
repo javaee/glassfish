@@ -43,6 +43,7 @@ package org.glassfish.hk2;
  * A binder instance can be used to customize a binding
  * by providing a name for the bound service.
  *
+ * <p/>
  * The combination of contract interface fully qualified
  * class name and this name is unique in the registry of
  * services. If another service is already registered under
