@@ -39,7 +39,8 @@
  */
 if (typeof Console == 'undefined') {
     $(document).ready(function () {
-        Console.Ajax.processLinks()
+        Console.Ajax.processLinks();
+        Console.Ajax.validateForms();
     });
 
     Console = { };
@@ -48,7 +49,6 @@ if (typeof Console == 'undefined') {
         processLinks: function() {
             $('#ajaxBody > a').click(function() {
                 var href = $(this).prop('href');
-                console.debug('Modifying ' + $(this).prop('id'));
                 if (href != '') {
                     Console.Ajax.loadPage(href);
                 }
@@ -57,6 +57,20 @@ if (typeof Console == 'undefined') {
             });
         },
     
+        validateForms: function() { 
+            $('form').each(function(index, element) {
+                var form = $(element);
+                var span = form.children().filter('#tr_'+form.prop('id') +'_Postscript');
+                if (typeof span != 'undefined') {
+                    var vsSelector = 'input[name="javax.faces.ViewState"]';
+                    var input = span.children().filter(vsSelector).first();
+                    if (input.length == 0) {
+                        $(vsSelector).first().clone().appendTo(span);
+                    }
+                }
+            });
+        },
+
         loadPage: function (url) {
             document.getElementById('content').value = url;
             document.getElementById('contentButton').click();
@@ -69,6 +83,7 @@ if (typeof Console == 'undefined') {
                 try {
                 Console.Ajax.processElement(context, $("#ajaxBody")[0], true);
                 Console.Ajax.processScripts(context);
+                Console.Ajax.validateForms();
                 } catch (err) {
                     alert(err);
                 }
@@ -186,19 +201,10 @@ if (typeof Console == 'undefined') {
             }
 
             var handleDrop = function(li, from, to, ul) {
-                //1
                 var serverName = li.draggable.prop('source');
-
-                //2
                 from.prop('value', from.prop('value').replace(','+serverName, '').replace(serverName, ''));
-
-                // 3
                 li.draggable.context.parentNode.removeChild(li.draggable.context);
-
-                //4
                 to.prop('value', to.prop('value') + ',' + serverName);
-                //                select.append(ui.draggable.prop('source'));
-                //5
                 ul.append(createDraggable(serverName, to.prop('id')));
             }
             
