@@ -546,29 +546,34 @@ public class InjectionManager {
       throw new ComponentException(UnsatisfiedDependencyException.injection_failed_msg(injectionPoint, inject, e), e);
     }
 
+    /**
+     * jsr-330 rules are very forgiving.
+     */
     protected boolean allowInjection(Method method, Class<?>[] paramTypes) {
-      if (paramTypes.length > 1) {
-        error_InjectMethodHasMultipleParams(method);
-      }
-  
-      if (paramTypes.length == 0) {
-        error_InjectMethodHasNoParams(method);
-      }
-  
-      return true;
+        // let it all ride on black
+        return true;
+//      if (paramTypes.length > 1) {
+//        error_InjectMethodHasMultipleParams(method);
+//      }
+//  
+//      if (paramTypes.length == 0) {
+//        error_InjectMethodHasNoParams(method);
+//      }
+//  
+//      return true;
     }
 
-    protected void error_InjectMethodHasMultipleParams(Method method) {
-      throw new ComponentException(
-          "injection failed on %s : setter method takes more than 1 parameter",
-          method.toGenericString());
-    }
-
-    protected void error_InjectMethodHasNoParams(Method method) {
-      throw new ComponentException(
-          "injection failed on %s : setter method does not take a parameter",
-          method.toGenericString());
-    }
+//    protected void error_InjectMethodHasMultipleParams(Method method) {
+//      throw new ComponentException(
+//          "injection failed on %s : setter method takes more than 1 parameter",
+//          method.toGenericString());
+//    }
+//
+//    protected void error_InjectMethodHasNoParams(Method method) {
+//      throw new ComponentException(
+//          "injection failed on %s : setter method does not take a parameter",
+//          method.toGenericString());
+//    }
 
     protected void error_InjectMethodIsNotVoid(Method method) {
       throw new ComponentException("Injection failed on %s : setter method is not declared with a void return type", method.toGenericString());

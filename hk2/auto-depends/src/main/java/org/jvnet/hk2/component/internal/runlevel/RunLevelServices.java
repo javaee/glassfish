@@ -42,7 +42,10 @@ package org.jvnet.hk2.component.internal.runlevel;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.glassfish.hk2.MultiMap;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.HabitatListener;
@@ -97,17 +100,31 @@ public class RunLevelServices {
       return null;
     }
     
-    Collection<RunLevelService> coll = habitat.getAllByContract(RunLevelService.class);
+//    Collection<RunLevelService> coll = habitat.getAllByContract(RunLevelService.class);
+    Collection<Inhabitant<?>> coll = habitat.getInhabitantsByContract(RunLevelService.class.getName());
     RunLevelService<?> theOne = null;
-    for (RunLevelService<?> hrls : coll) {
-      if (null != hrls.getState() && 
-          hrls.getState().getEnvironment().equals(env)) {
-        if (null != theOne) {
-          throw new ComponentException("constraint violation - competing RunLevelServices: " +
-              theOne + " and " + hrls);
+    for (Inhabitant<?> rlsi : coll) {
+        if (!rlsi.isActive()) {
+//            MultiMap<String, String> mm = rlsi.getDescriptor().getMetadata();
+//            System.out.println(mm);
+            // TODO: we should be able to do this without activating!!  Need to fix the above - getting metadata from the inhabitant
+            try {
+                rlsi.get();
+            } catch (Exception e) {
+                Logger.getLogger(RunLevelServices.class.getName()).log(Level.WARNING, "unable to activate {0}", rlsi);
+            }
         }
-        theOne = hrls;
-      }
+        
+        if (rlsi.isActive()) {
+            RunLevelService<?> hrls = (RunLevelService<?>) rlsi.get();
+            if (null != hrls.getState() && hrls.getState().getEnvironment().equals(env)) {
+                if (null != theOne) {
+                    throw new ComponentException("constraint violation - competing RunLevelServices: " +
+                            theOne + " and " + hrls);
+                }
+                theOne = hrls;
+            }
+        }
     }
     
     return theOne;

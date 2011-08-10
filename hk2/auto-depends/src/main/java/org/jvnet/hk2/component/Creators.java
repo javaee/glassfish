@@ -40,7 +40,9 @@
 package org.jvnet.hk2.component;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
+import java.util.List;
 
 import org.jvnet.hk2.annotations.Factory;
 import org.jvnet.hk2.annotations.FactoryFor;
@@ -56,7 +58,8 @@ import com.sun.hk2.component.InjectableParametizedConstructorCreator;
  * @author Kohsuke Kawaguchi
  */
 public class Creators {
-    @SuppressWarnings("unchecked")
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Creator<T> create(Class<T> c, Habitat habitat, MultiMap<String,String> metadata) {
         Factory f = c.getAnnotation(Factory.class);
         if (f != null) {
@@ -64,42 +67,102 @@ public class Creators {
         }
 
         Inhabitant factory = habitat.getInhabitantByAnnotation(FactoryFor.class, c.getName());
-        if (factory!=null) {
+        if (factory != null) {
             return new FactoryCreator<T>(c,factory,habitat,metadata);
         }
-        Constructor[] ctors;
-        try {
-            ctors = c.getDeclaredConstructors();
-        } catch(Exception e) {
-            ctors = c.getConstructors();
+
+        Reference<Constructor<T>> defaultCtorRef = new Reference();
+        Reference<Constructor<T>> noArgCtorRef = new Reference();
+        qualifyingConstructors(c, null, defaultCtorRef, noArgCtorRef);
+        if (defaultCtorRef.get() != null) {
+            return new InjectableParametizedConstructorCreator<T>(c, defaultCtorRef.get(), habitat, metadata);
         }
-        Constructor<T> noArgCtor=null;
-        Constructor<T> defaultCtor=null;
-        for (Constructor ctor : ctors) {
-            if (ctor.getParameterTypes().length==0) {
-                noArgCtor = ctor;
-            } else {
-                Annotation[][] parametersAnnotations = ctor.getParameterAnnotations();
-                boolean allParametersInjected=true;
-                for (int i=0;i<parametersAnnotations.length;i++) {
-                    boolean foundInject=false;
-                    for (int j=0;j<parametersAnnotations[i].length;j++) {
-                        if (parametersAnnotations[i][j].annotationType().equals(Inject.class)) {
-                            foundInject=true;
-                        }
-                    }
-                    if (!foundInject) allParametersInjected=false;
-                }
-                if (allParametersInjected) defaultCtor=ctor;
-            }
-        }
-        if (defaultCtor!=null) {
-            return new InjectableParametizedConstructorCreator<T>(c, defaultCtor, habitat, metadata);
-        }
-        if (noArgCtor!=null) {
+        if (noArgCtorRef.get() != null) {
             return new ConstructorCreator<T>(c,habitat,metadata);
         }
         
-      throw new ComponentException("don't know how to create a Creator for: " + c + "; make sure there is a public ctor.");
+        throw new ComponentException("don't know how to create a Creator for: " + c + "; make sure there is a public ctor.");
+    }
+    
+    /**
+     * Returns all "eligible" constructors for injection. Eligibility is
+     * determined by:
+     * 
+     * (a) the no-arg constructor, or (b) @Inject annotated constructor.
+     * 
+     * </p>
+     * Note, however, that this does not verify that the arguments on the
+     * constructor are indeed injectable out of the habitat.
+     * 
+     * @param c
+     *      The class to find the constructors for
+     * @param defaultCtor
+     *      (optional) The "favored" default constructor reference; meaning that all arguments can be injected based on the contents of the habitat
+     * @param noArgCtor
+     *      (optional The no-arg constructor reference
+     * @return
+     *      The list of all eligible constructors
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> void qualifyingConstructors(Class<T> c,
+            List<Constructor<?>> allList,
+            Reference<Constructor<T>> defaultCtor,
+            Reference<Constructor<T>> noArgCtor) {
+        Constructor<T>[] ctors;
+        try {
+            ctors = (Constructor<T>[]) c.getDeclaredConstructors();
+        } catch(Exception e) {
+            ctors = (Constructor<T>[]) c.getConstructors();
+        }
+        
+        for (Constructor<T> ctor : ctors) {
+            if (0 == ctor.getParameterTypes().length) {
+                if (null != allList) {
+                    allList.add(ctor);
+                }
+                if (null != noArgCtor) {
+                    noArgCtor.set(ctor);
+                }
+            } else if (isInjectable(ctor)) {
+                if (null != allList) {
+                    allList.add(ctor);
+                }
+                if (null != defaultCtor && null == defaultCtor.get()) {
+                    defaultCtor.set(ctor);
+                }
+            } else {
+                boolean allInjectable = true;
+                for (Annotation[] a : ctor.getParameterAnnotations()) {
+                    if (!isInject(a)) {
+                        allInjectable = false;
+                        break;
+                    }
+                }
+                if (allInjectable) {
+                    if (null != allList) {
+                        allList.add(ctor);
+                    }
+                    if (null != defaultCtor && null == defaultCtor.get()) {
+                        defaultCtor.set(ctor);
+                    }
+                }
+            }
+        }
+    }
+    
+    private static boolean isInject(Annotation... a) {
+        for (Annotation ae : a) {
+            if (ae.annotationType().equals(Inject.class) ||
+                    ae.annotationType().equals(javax.inject.Inject.class)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    public static boolean isInjectable(AnnotatedElement ae) {
+        return (null != ae.getAnnotation(Inject.class) ||
+                null != ae.getAnnotation(javax.inject.Inject.class));
     }
 }

@@ -91,7 +91,6 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
                     result = getArrayInjectValue(habitat, component, onBehalfOf, target, genericType, type);
                 } else {
                     if (Types.isSubClassOf(type, org.glassfish.hk2.Factory.class)) {
-
                         result = getHolderInjectValue(habitat, component, onBehalfOf, target, genericType, type, inject);
                     } else {
                         if (genericType instanceof TypeVariable) {
@@ -105,12 +104,9 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
                                     String parameterizedType = onBehalfOf.metadata().get(InhabitantsFile.PARAMETERIZED_TYPE).get(i);
                                     try {
                                         Class<?> clazz = component.getClass().getClassLoader().loadClass(parameterizedType);
-                                        ContractLocatorImpl<V> contractLocator = new ContractLocatorImpl<V>(habitat, clazz, habitat.isContract(
-                                                clazz
-                                        ));
+                                        ContractLocatorImpl<V> contractLocator = new ContractLocatorImpl<V>(habitat, clazz, habitat.isContract(clazz));
                                         populateContractLocator(contractLocator, target, inject);
                                         result = contractLocator.get();
-
                                     } catch(ClassNotFoundException e) {
                                         Logger.getAnonymousLogger().warning("Cannot load class " + parameterizedType);
                                         return null;
@@ -118,9 +114,7 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
                                 }
                             }
                         } else {
-                            ContractLocatorImpl<V> contractLocator = new ContractLocatorImpl<V>(habitat, genericType, habitat.isContract(
-                                    genericType
-                            ));
+                            ContractLocatorImpl<V> contractLocator = new ContractLocatorImpl<V>(habitat, genericType, habitat.isContract(genericType));
                             populateContractLocator(contractLocator, target, inject);
                             result = contractLocator.get();
                         }
