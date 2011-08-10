@@ -65,10 +65,13 @@ if (typeof Console == 'undefined') {
     
         ajaxCallback: function(data) {
             if (data.status === 'success') {
-            //            alert('success!');
-            //            var context = {};
-            //            Console.Ajax.processElement(context, AUI().one("#ajaxBody"), true);
-            //            Console.Ajax.processScripts(context);
+                var context = {};
+                try {
+                Console.Ajax.processElement(context, $("#ajaxBody")[0], true);
+                Console.Ajax.processScripts(context);
+                } catch (err) {
+                    alert(err);
+                }
             } else if (data.status === 'error') {
                 alert('error');
                 Console.Ajax.loadPage('/domain.xhtml');
@@ -85,7 +88,7 @@ if (typeof Console == 'undefined') {
             // FIXME: b/c M$ makes it hard to determine relative URLs, and full
             // FIXME: URLs to the same host "might" want be valid for
             // FIXME: replacement.
-            if (!admingui.ajax._isTreeNodeControl(node) && (node.target == '')) { //  && (typeof node.onclick != 'function'))
+            if (!Console.Ajax._isTreeNodeControl(node) && (node.target == '')) { //  && (typeof node.onclick != 'function'))
                 var shouldReplace = true;
                 if ((typeof node.onclick == 'function') && (node.id.indexOf("treeForm:tree") == -1)) {
                     //admingui.util.log("*NOT* replacing href for " + node.id);
@@ -96,7 +99,7 @@ if (typeof Console == 'undefined') {
                     //node.href = "#";
                     var oldOnClick = node.onclick;
                     node.onclick = function() {
-                        admingui.ajax.loadPage({
+                        Console.Ajax.loadPage({
                             url : url,
                             target: document.getElementById('content'),
                             oldOnClickHandler: oldOnClick,
@@ -117,7 +120,7 @@ if (typeof Console == 'undefined') {
                 node.onclick = function() {
                     var args = {};
                     args[node.id] = node.id;
-                    admingui.ajax.postAjaxRequest(this, args);
+                    Console.Ajax.postAjaxRequest(this, args);
                     return false;
                 };
             }
@@ -127,7 +130,7 @@ if (typeof Console == 'undefined') {
             admingui.util.log("***** form action:  " + node.action);
             if (node.target == '') {
                 node.onsubmit = function () {
-                    admingui.ajax.submitFormAjax(node);
+                    Console.Ajax.submitFormAjax(node);
                     return false;
                 };
             }
@@ -149,7 +152,7 @@ if (typeof Console == 'undefined') {
             // If recurse flag is true... recurse
             if (recurse && node.childNodes) {
                 for (var i = 0; i < node.childNodes.length; i++) {
-                    admingui.ajax.processElement(context, node.childNodes[i], queueScripts);
+                    Console.Ajax.processElement(context, node.childNodes[i], queueScripts);
                 }
             }
         },
@@ -194,7 +197,7 @@ if (typeof Console == 'undefined') {
 
                 //4
                 to.prop('value', to.prop('value') + ',' + serverName);
-//                select.append(ui.draggable.prop('source'));
+                //                select.append(ui.draggable.prop('source'));
                 //5
                 ul.append(createDraggable(serverName, to.prop('id')));
             }
@@ -208,11 +211,15 @@ if (typeof Console == 'undefined') {
             
             $('#avdiv').droppable({
                 scope: 'selected', 
-                drop : function (event, ui) {handleDrop (ui, $('#selected'), $('#available'), $('#avul'));}
+                drop : function (event, ui) {
+                    handleDrop (ui, $('#selected'), $('#available'), $('#avul'));
+                }
             });
             $('#seldiv').droppable({
                 scope: 'available', 
-                drop : function (event, ui) {handleDrop (ui, $('#available'), $('#selected'), $('#selul'));}
+                drop : function (event, ui) {
+                    handleDrop (ui, $('#available'), $('#selected'), $('#selul'));
+                }
             });
         }
     }
@@ -233,7 +240,7 @@ if (typeof Console == 'undefined') {
             globalEvalNextScript(scriptQueue);
         } else {
             // Get via Ajax
-            admingui.ajax.getResource(node.src, function(result) {
+            Console.Ajax.getResource(node.src, function(result) {
                 globalEval(result.content);
                 globalEvalNextScript(scriptQueue);
             } );
@@ -241,7 +248,7 @@ if (typeof Console == 'undefined') {
         // when we properly serve resources w/ rlubke's recent fix that
         // will be integrated soon.  We need to handle the response
         // differently also.
-        //admingui.ajax.getResource(node.attributes['src'].value, function(result) { globalEval(result.content); globalEvalNextScript(scriptQueue);} );
+        //Console.Ajax.getResource(node.attributes['src'].value, function(result) { globalEval(result.content); globalEvalNextScript(scriptQueue);} );
         }
     }
 
