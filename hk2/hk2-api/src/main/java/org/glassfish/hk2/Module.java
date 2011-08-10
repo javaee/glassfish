@@ -47,13 +47,18 @@ import org.jvnet.hk2.annotations.Contract;
  * be registered under the name provided by the implementations of this contract
  * by using the annotation value as described in {@link org.jvnet.hk2.annotations.Service#name}
  *
+ * <p/>
  * Each module is isolated from each other, so modules that need to access services
  * offered by other modules must inject these {@link Module} instances in order
  * to lookup their services. Using injection ensures that modules dependencies are
  * managed.
  *
+ * </p>
  * Each {@link Module} must implement the {@link Module#configure(BinderFactory)} method
  * to configure its services.
+ * 
+ * @author Jerome Dochez
+ * @author Jeff Trent
  */
 @Contract
 public interface Module {
@@ -66,5 +71,9 @@ public interface Module {
      * @param binderFactory factory for adding services to the {@link Services} instance
      */
     void configure(BinderFactory binderFactory);
+    
+    // TODO: nice-to-have a callback when a service, any service, in this module has been activated -- jtrent
+    // And if activation fails, the services from it should be unavailable.
+//    void onActivated();
     
 }
