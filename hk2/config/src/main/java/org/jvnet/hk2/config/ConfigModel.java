@@ -623,6 +623,13 @@ public final class ConfigModel {
         }
 
         /**
+         * is is a reference ?
+         */
+        public boolean isReference() {
+            return false;
+        }
+
+        /**
          * Gets the value from {@link Dom} in the specified type.
          *
          * @param dom        The DOM instance to get the value from.
@@ -668,6 +675,11 @@ public final class ConfigModel {
     static final class ReferenceAttributeLeaf extends AttributeLeaf {
         ReferenceAttributeLeaf(String xmlName, String dataType) {
             super(xmlName, dataType);
+        }
+
+        @Override
+        public boolean isReference() {
+            return true;
         }
 
         @Override

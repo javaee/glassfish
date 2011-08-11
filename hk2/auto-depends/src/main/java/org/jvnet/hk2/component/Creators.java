@@ -56,7 +56,7 @@ import com.sun.hk2.component.InjectableParametizedConstructorCreator;
  * {@link Creator} factory.
  *
  * @author Kohsuke Kawaguchi
- */
+ */                                                                                                             D
 public class Creators {
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -80,8 +80,8 @@ public class Creators {
         if (noArgCtorRef.get() != null) {
             return new ConstructorCreator<T>(c,habitat,metadata);
         }
-        
-        throw new ComponentException("don't know how to create a Creator for: " + c + "; make sure there is a public ctor.");
+
+        return null;
     }
     
     /**
