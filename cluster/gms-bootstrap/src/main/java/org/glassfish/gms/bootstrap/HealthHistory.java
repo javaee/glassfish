@@ -137,6 +137,10 @@ public final class HealthHistory implements ConfigListener {
      * testing or debugging.
      */
     public HealthHistory(String instanceName, boolean keepFormerMembers) {
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE,
+                "KEEP_FORMER_MEMBER_HISTORY set to: " + keepFormerMembers);
+        }
         checkAndAddName(instanceName);
         this.keepFormerMembers = keepFormerMembers;
     }
