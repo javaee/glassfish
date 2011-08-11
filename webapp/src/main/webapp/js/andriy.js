@@ -30,7 +30,8 @@ $(function() {
     // let the server be droppable, accepting the available items
     selected.droppable({
         accept: "#available > li",
-        activeClass: "ui-state-highlight",
+        activeClass: "ui-state-active",
+        hoverClass: "ui-state-highlight",
         drop: function( event, ui ) {
             deploy( ui.draggable );
         }
@@ -39,7 +40,8 @@ $(function() {
     // let the available be droppable as well, accepting items from the selected
     available.droppable({
         accept: "#selected li",
-        activeClass: "custom-state-active",
+        activeClass: "ui-state-active",
+        hoverClass: "ui-state-highlight",
         drop: function( event, ui ) {
             undeploy( ui.draggable );
         }
