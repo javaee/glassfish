@@ -26,6 +26,9 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.tests.utils.Utils;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * This is a annotation testing code using JUnit.
@@ -50,6 +53,11 @@ public class AnnotationTest extends TestCase {
     protected ModuleType type = ModuleType.EJB;
     protected Set<String> componentClassNames = new HashSet<String>();
 
+    static {
+        final Habitat habitat = Utils.getNewHabitat();
+        Globals.setDefaultHabitat(habitat);
+    }
+    
     public AnnotationTest(String name) {
         super(name);
     }
