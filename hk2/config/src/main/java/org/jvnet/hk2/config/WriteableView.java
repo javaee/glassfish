@@ -670,9 +670,11 @@ private class ProtectedList extends AbstractList {
         Set<ConstraintViolation<?>> constraintViolations = new HashSet<ConstraintViolation<?>>();
         if (property instanceof ConfigModel.AttributeLeaf) {
             ConfigModel.AttributeLeaf al = (ConfigModel.AttributeLeaf)property;
-            ConstraintViolation cv = validateDataType(al, value.toString());
-            if (cv!=null) {
-                constraintViolations.add(cv);
+            if (!al.isReference()) {
+                ConstraintViolation cv = validateDataType(al, value.toString());
+                if (cv!=null) {
+                    constraintViolations.add(cv);
+                }
             }
         }
 
