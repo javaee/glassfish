@@ -49,39 +49,19 @@ import java.util.List;
  */
 public class NavigationNode implements Serializable {
 
+    private String id;
     private String label;
     private String link;
     private String icon;
     private List<NavigationNode> children;
 
-    public NavigationNode(String label) {
-        this(label, (String) null, (String) null);
-    }
-
-    public NavigationNode(String label, String icon) {
-        this(label, icon, (String) null);
-    }
-
-    public NavigationNode(String label, String icon, String link) {
+    public NavigationNode(String id, String label) {
+        this.id = id;
         this.label = label;
-        this.icon = icon;
-        this.link = link;
     }
 
-    public NavigationNode(String label, List<NavigationNode> children) {
-        this(label, null, (List<NavigationNode>) null);
-        this.children = children;
-    }
-
-    public NavigationNode(String label, String icon, List<NavigationNode> children) {
-        this(label, icon, (String) null);
-        this.children = children;
-    }
-
-    public NavigationNode(String label, String icon, String link, List<NavigationNode> children) {
-        this(label, icon, link);
-        this.children = children;
-
+    public String getId() {
+        return id;
     }
 
     public String getLabel() {
@@ -114,5 +94,14 @@ public class NavigationNode implements Serializable {
 
     public List<NavigationNode> getChildren() {
         return (children == null) ? null : Collections.unmodifiableList(children);
+    }
+
+    public static NavigationNode createNode(String id, String label, String icon, String link, List<NavigationNode> children) {
+        NavigationNode node = new NavigationNode(id, label);
+        node.setIcon(icon);
+        node.setLink(link);
+        node.setChildren(children);
+
+        return node;
     }
 }

@@ -9,6 +9,22 @@ if [ "$MODULE_DIR" == "" ] ; then
     export MODULE_DIR=$SERVER_DIR/glassfish/modules
 fi
 
+function usage() {
+    echo "install.sh usage:"
+    echo "   -c: Do a clean build (defaults to false)"
+    echo "   -d: Pause before installing the application to allow for attaching a debugger (defaults to false)"
+    exit 0
+}
+
+while getopts cd opt
+do
+    case "$opt" in
+        c) CLEAN=clean ;;
+        d) DEBUG=true ;;
+        ?) usage ;;
+    esac
+done;
+
 echo Stopping the server
 $SERVER_DIR/bin/asadmin undeploy admin-console
 $SERVER_DIR/bin/asadmin stop-domain 
@@ -20,7 +36,7 @@ echo Removing any existing demo plugins from $MODULE_DIR
 rm $MODULE_DIR/plugin*.jar 2>/dev/null
 
 echo Building....
-mvn clean install 
+mvn $CLEAN install
 
 if [ "$?" -ne 0 ] ; then
     echo "**** Error: build failed"
@@ -41,7 +57,9 @@ echo Starting the server
 $SERVER_DIR/bin/asadmin start-domain --debug=true
 
 echo Deploying the application
-read -p "Attach debugger if desired, then press Enter to deploy the web app"
+if [ "$DEBUG" == "true" ] ; then
+    read -p "Attach debugger if desired, then press Enter to deploy the web app"
+fi
 $SERVER_DIR/bin/asadmin deploy --force=true webapp/target/admin-console/
 
 echo Done.

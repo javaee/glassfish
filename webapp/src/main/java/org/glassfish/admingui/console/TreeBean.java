@@ -48,6 +48,7 @@ import org.apache.myfaces.trinidad.model.ChildPropertyTreeModel;
 import org.apache.myfaces.trinidad.model.TreeModel;
 import org.glassfish.admingui.plugins.ConsolePluginMetadata;
 import org.glassfish.admingui.plugins.NavigationNode;
+import static org.glassfish.admingui.plugins.NavigationNode.createNode;
 import org.glassfish.admingui.plugins.PluginService;
 import org.glassfish.admingui.plugins.jsf.PluginUtil;
 
@@ -70,26 +71,25 @@ public class TreeBean {
     private List<NavigationNode> getRoot() {
         List<NavigationNode> root = new ArrayList<NavigationNode>();
         
-        root.add(new NavigationNode("Home", null, "/welcome.xhtml"));
-        root.add(new NavigationNode("Domain", "/images/icons/domain.gif", "/demo/domain.xhtml"));
-        root.add(new NavigationNode("Admin Server", "/images/icons/instance.gif", "/demo/adminServer.xhtml"));
-        root.add(new NavigationNode("Clusters", "/images/icons/cluster.gif", "/demo/clusters.xhtml"));
-        root.add(new NavigationNode("Standalone Instances", "/images/icons/instance.gif", "/demo/instances.xhtml" ));
-        root.add(new NavigationNode("Applications", "/images/icons/instance.gif", "/demo/testApplications.xhtml"));
+        root.add(createNode("homeNode", "Home", null, "/welcome.xhtml", null));
+        root.add(createNode("domainNode", "Domain", "/images/icons/domain.gif", "/demo/domain.xhtml", null));
+        root.add(createNode("adminServerNode", "Admin Server", "/images/icons/instance.gif", "/demo/adminServer.xhtml", null));
+        root.add(createNode("clusterNode", "Clusters", "/images/icons/cluster.gif", "/demo/clusters.xhtml", null));
+        root.add(createNode("instancesNode", "Standalone Instances", "/images/icons/instance.gif", "/demo/instances.xhtml", null));
+        root.add(createNode("applicationsNode", "Applications", "/images/icons/instance.gif", "/demo/testApplications.xhtml", null));
         root.addAll(getRootNodes());
         
-        NavigationNode resources = new NavigationNode("Resources", "/images/icons/resources.gif");
-        root.add(resources);
-        resources.setChildren(new ArrayList<NavigationNode>() {{
-                add(new NavigationNode("JDBC", "/images/icons/jdbc.gif"));
-                add(new NavigationNode("Connectors", "/images/icons/connector.png"));
-                add(new NavigationNode("Resource Adapter Configs", "/images/icons/connector.png"));
-                add(new NavigationNode("JMS Resources"));
-                add(new NavigationNode("JavaMail Resources"));
-                add(new NavigationNode("JNDI"));
+        NavigationNode resources = createNode("resourcesNode", "Resources", null, "/images/icons/resources.gif", new ArrayList<NavigationNode>() {{
+                add(createNode("jdbcNode", "JDBC", null, "/images/icons/jdbc.gif", null));
+                add(createNode("connectorsNode", "Connectors", null, "/images/icons/connector.png", null));
+                add(createNode("raConfigsNode", "Resource Adapter Configs", null, "/images/icons/connector.png", null));
+                add(new NavigationNode("jsmResourcesNode", "JMS Resources"));
+                add(new NavigationNode("javaMailNode", "JavaMail Resources"));
+                add(new NavigationNode("jndiNode", "JNDI"));
         }});
+        root.add(resources);
 
-        root.add(new NavigationNode("Demo", "/images/icons/instance.gif", "/demo/panelTabbed.jspx"));
+        root.add(createNode("demoNode", "Demo", "/images/icons/instance.gif", "/demo/panelTabbed.jspx", null));
         return root;
     }
 

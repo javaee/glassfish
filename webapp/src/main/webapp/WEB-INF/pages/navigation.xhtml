@@ -50,13 +50,14 @@
     <tr:tree var="node" value="#{treeBean.model}">
         <f:facet name="nodeStamp">
             <span class="navLink">
-                <h:graphicImage url="#{node.icon}" rendered="#{!empty node.icon}" style="display: inline"/>
+                <h:graphicImage  id="#{node.id}_icon" url="#{node.icon}" rendered="#{!empty node.icon}" style="display: inline"/>
 
                 <h:panelGroup rendered="#{!empty node.link}">
-                    <a style="padding-left: 5px;" href="#{request.contextPath}#{node.link}" onclick="return Console.Ajax.loadPage('#{node.link}');">#{node.label}</a>
+                    <a id="#{node.id}" style="padding-left: 5px;" href="#{request.contextPath}#{node.link}"
+                       onclick="return Console.Ajax.loadPage('#{node.link}');">#{node.label}</a>
                 </h:panelGroup> 
                 <h:panelGroup rendered="#{empty node.link}">
-                    <span style="padding-left: 5px;">#{node.label}</span>
+                    <span id="#{node.id}" style="padding-left: 5px;">#{node.label}</span>
                 </h:panelGroup> 
             </span>
         </f:facet>

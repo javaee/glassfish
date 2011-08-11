@@ -46,5 +46,6 @@
               version="2.0">    
     <application>
         <default-render-kit-id>org.apache.myfaces.trinidad.core</default-render-kit-id>
+        <navigation-handler>org.glassfish.admingui.console.NavigationHandler</navigation-handler>
     </application>
 </faces-config>

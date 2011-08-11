@@ -42,6 +42,7 @@ package org.glassfish.admingui.plugins.sample;
 import java.util.ArrayList;
 import java.util.List;
 import org.glassfish.admingui.plugins.NavigationNode;
+import static org.glassfish.admingui.plugins.NavigationNode.*;
 import org.glassfish.admingui.plugins.annotations.ConsolePlugin;
 import org.glassfish.admingui.plugins.annotations.NavNodes;
 import org.glassfish.admingui.plugins.annotations.ViewFragment;
@@ -64,10 +65,11 @@ public class SamplePlugin implements ConsolePlugin {
     
     @NavNodes(parent="root")
     public static final List<NavigationNode> navNodes = new ArrayList<NavigationNode>() {{
-       add (new NavigationNode("Field Test 1", "/sample/icons/family-tree.jpg", "/sample/page1.xhtml",
-               new ArrayList<NavigationNode>() {{ 
-                   add (new NavigationNode("Field Test 1-1")); 
-               }}
+       add (createNode("fieldNode1",
+               "Nodes from a field Test 1",
+               "/sample/icons/family-tree.jpg",
+               "/sample/page1.xhtml",
+               new ArrayList<NavigationNode>() {{  add (new NavigationNode("fieldNode2", "Field Test 1-1")); }}
            )); 
     }};
 
@@ -75,19 +77,14 @@ public class SamplePlugin implements ConsolePlugin {
     public static List<NavigationNode> getNavNodes() {
         List<NavigationNode> nodes = new ArrayList<NavigationNode>();
 
-        nodes.add(new NavigationNode("Test 1"));
-        nodes.add(new NavigationNode("Test 2"));
-        nodes.add(new NavigationNode("Test 3"));
-        nodes.add(new NavigationNode("Test 4"));
-        nodes.add(new NavigationNode("Test 5"));
-        nodes.add(new NavigationNode("Test 6", new ArrayList<NavigationNode>() {{
-            add(new NavigationNode("Test 6-1"));
-            add(new NavigationNode("Test 6-2"));
-            add(new NavigationNode("Test 6-3"));
-            add(new NavigationNode("Test 6-4"));
-            add(new NavigationNode("Test 6-5"));
+        nodes.add(new NavigationNode("methodNode1", "Method Test 1"));
+        nodes.add(new NavigationNode("methodNode2", "Method Test 2"));
+        nodes.add(createNode("nestedNode6", "Nested Test 1", null, null, new ArrayList<NavigationNode>() {{
+            add(new NavigationNode("nestedNode7", "Nested Test 1-1"));
+            add(new NavigationNode("nestedNode8", "Nested Test 1-2"));
         }}));
 
+        nodes.add(createNode("navTest", "Form Nav Test", null, "/sample/navTest.xhtml", null));
 
         return nodes;
     }

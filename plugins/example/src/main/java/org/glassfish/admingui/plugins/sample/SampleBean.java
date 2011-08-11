@@ -84,16 +84,6 @@ public class SampleBean {
         return selectedServers.toArray(new String[]{});
     }
 
-    public void availableServerChanged(ValueChangeEvent vce) {
-        availableServers.clear();
-        Collections.addAll(availableServers, (String[])vce.getNewValue());
-    }
-
-    public void selectedServerChanged(ValueChangeEvent vce) {
-        selectedServers.clear();
-        Collections.addAll(selectedServers, (String[])vce.getNewValue());
-    }
-
     public void setAvailableServers(String[] availableServers) {
         System.out.println(availableServers);
         this.availableServers.clear();
@@ -105,7 +95,11 @@ public class SampleBean {
         this.selectedServers.clear();
         Collections.addAll(this.selectedServers, selectedServers);
     }
-    
+
+    public String navAction() {
+        return "/sample/navTest2";
+    }
+
     public static class Application {
 
         private String name;
