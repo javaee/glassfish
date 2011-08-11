@@ -56,7 +56,7 @@ import com.sun.hk2.component.InjectableParametizedConstructorCreator;
  * {@link Creator} factory.
  *
  * @author Kohsuke Kawaguchi
- */                                                                                                             D
+ */
 public class Creators {
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
