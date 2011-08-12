@@ -69,7 +69,7 @@
         <classpath>
           <pathelement path="${build.classes.dir}/client"/>
         </classpath>
-        <arg value="http://${http.host}:${http.port}/HelloService/Hello"/>
+        <arg value="http://${http.host}:${http.port}/HelloService/Hello?wsdl"/>
       </java>
     </target>
 

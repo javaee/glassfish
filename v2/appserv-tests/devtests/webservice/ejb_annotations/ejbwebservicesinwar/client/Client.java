@@ -30,10 +30,10 @@ public class Client {
                 String inputLine;
                 int index=0; 
                 while ((inputLine = in.readLine()) != null) {
-                   if ((index= inputLine.indexOf("href="))>0){
+                   if ((index= inputLine.indexOf("message="))>0){
 
-                      String url = inputLine.substring(index+1);  
-                      if (url.indexOf("http:")>0) {
+                      String url = inputLine.substring(index+7);  
+                      if (url.indexOf("sayHello")>0) {
                          stat.addStatus("ejbwebservicesinwar", stat.PASS);
                       } 
                       System.out.println(inputLine);
