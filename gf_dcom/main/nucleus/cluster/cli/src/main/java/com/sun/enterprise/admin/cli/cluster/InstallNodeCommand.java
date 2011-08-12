@@ -197,8 +197,34 @@ public class InstallNodeCommand extends NativeRemoteCommandsBase {
                 }
             });
             System.out.println("");
-            logger.fine("WROTE FILE TO REMOTE SYSTEM: " + SmartFile.sanitize(installDir + "/" + zipFileName));
-            //unpackOnHostsWindows(host, remotePassword, installDir);
+            String fullZipFileName = SmartFile.sanitize(installDir + "/" + zipFileName);
+            logger.fine("WROTE FILE TO REMOTE SYSTEM: " + fullZipFileName);
+
+			//
+			//
+			// NOT WORKING YET !!!  TODO FIXME
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			// unpackOnHostsWindows(host, remotePassword, installDir, fullZipFileName);
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
         }
     }
 
@@ -206,9 +232,10 @@ public class InstallNodeCommand extends NativeRemoteCommandsBase {
      * This is where it gets hairy.  We need to unpack the files on Windows...
      * This is NOT FINISHED OBVIOUSLY!!!!
      */
-    private void unpackOnHostsWindows(String host, String remotePassword, String installDir) throws IOException, InterruptedException {
+    private void unpackOnHostsWindows(String host, String remotePassword,
+            String installDir, String fullZipFileName) throws IOException, InterruptedException {
         WindowsRemoteLauncher launcher = new WindowsRemoteLauncher(host, dcomuser, remotePassword);
-        Process process = launcher.launch("dir", installDir);
+        Process process = launcher.launch("jar xf " + fullZipFileName, installDir);
         process.waitFor();
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
