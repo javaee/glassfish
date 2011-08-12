@@ -13,4 +13,14 @@ public interface Constants {
      */
     public static final String REST_TOKEN = "__rTkn__";
 
+    /**
+     *	The Session key for the REST Server Name.
+     */
+    public static final String REST_SERVER_NAME = "serverName";
+
+    /**
+     *	The Session key for the REST Server Port.
+     */
+    public static final String REST_SERVER_PORT = "serverPort";
+
 }
