@@ -39,11 +39,13 @@
  */
 package com.sun.enterprise.admin.cli.cluster;
 
+import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.process.WindowsRemoteLauncher;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.io.FileListerRelative;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.io.WindowsRemoteFile;
+import com.sun.enterprise.util.io.WindowsRemoteFileCopyProgress;
 import com.sun.enterprise.util.io.WindowsRemoteFileSystem;
 import com.sun.enterprise.util.zip.ZipFileException;
 import com.sun.enterprise.util.zip.ZipWriter;
@@ -177,15 +179,26 @@ public class InstallNodeCommand extends NativeRemoteCommandsBase {
     private void copyToHostsWindows(File zipFile)
             throws CommandException, MalformedURLException, UnknownHostException,
             SmbException, IOException, InterruptedException {
+        final String zipFileName = "glassfish_install.zip";
 
         for (String host : hosts) {
             String remotePassword = getDCOMPassword(host);
             WindowsRemoteFileSystem wrfs = new WindowsRemoteFileSystem(host, dcomuser, remotePassword);
             WindowsRemoteFile remoteInstallDir = new WindowsRemoteFile(wrfs, installDir);
             remoteInstallDir.mkdirs();
-            WindowsRemoteFile remoteZip = new WindowsRemoteFile(remoteInstallDir, "glassfish_install.zip");
-            remoteZip.copyFrom(zipFile);
-            unpackOnHostsWindows(host, remotePassword, installDir);
+            WindowsRemoteFile remoteZip = new WindowsRemoteFile(remoteInstallDir, zipFileName);
+            System.out.printf("Copying %d bytes", zipFile.length());
+            remoteZip.copyFrom(zipFile, new WindowsRemoteFileCopyProgress() {
+
+                @Override
+                public void callback(long numcopied, long numtotal) {
+                    //final int percent = (int)((double)numcopied / (double)numtotal * 100.0);
+                    System.out.print(".");
+                }
+            });
+            System.out.println("");
+            logger.fine("WROTE FILE TO REMOTE SYSTEM: " + SmartFile.sanitize(installDir + "/" + zipFileName));
+            //unpackOnHostsWindows(host, remotePassword, installDir);
         }
     }
 

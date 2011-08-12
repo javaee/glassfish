@@ -111,25 +111,27 @@ public final class WindowsRemoteFile {
         smbFile.mkdirs();
     }
 
-    public final void copyFrom(File from) throws SmbException, IOException {
+    public final void copyFrom(File from, WindowsRemoteFileCopyProgress progress) throws SmbException, IOException {
         if (from == null || !from.isFile())
             throw new IllegalArgumentException("copyFrom file arg is bad: " + from);
 
         if (!exists())
             createNewFile();
 
+        long filesize = from.length();
         OutputStream sout = new BufferedOutputStream(smbFile.getOutputStream());
         InputStream sin = new BufferedInputStream(new FileInputStream(from));
-        final int numbytes = 1048576;
-        byte[] buf = new byte[numbytes];
 
-        System.out.println("Writing ");
-        while (sin.read(buf) >= 0) {
+        final int bufsize = 1048576;
+        byte[] buf = new byte[bufsize];
+        long numBytes = 0;
+        long totalBytesCopied = 0;
+        
+        while ((numBytes = sin.read(buf)) >= 0) {
             sout.write(buf);
-            System.out.print(".");
+            totalBytesCopied += numBytes;
+            progress.callback(totalBytesCopied, filesize);
         }
-
-        System.out.println("");
 
         try {
             sin.close();
