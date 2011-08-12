@@ -138,5 +138,16 @@
     <welcome-file-list>
         <welcome-file>login.jsf</welcome-file>
     </welcome-file-list>
+    
+    <!--
+    <session-config>
+      <session-timeout>1</session-timeout>
+    </session-config>
+    -->
+    
+    <error-page>
+        <exception-type>javax.faces.application.ViewExpiredException</exception-type>
+        <location>/login.jsf</location>
+    </error-page>
 
 </web-app>

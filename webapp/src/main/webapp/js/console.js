@@ -41,6 +41,8 @@ if (typeof Console == 'undefined') {
     $(document).ready(function () {
         Console.Ajax.processLinks();
         Console.Ajax.validateForms();
+        
+        jsf.ajax.addOnError(Console.Ajax.onError);
     });
 
     Console = { };
@@ -76,14 +78,23 @@ if (typeof Console == 'undefined') {
             document.getElementById('contentButton').click();
             return false;
         },
+        
+        onError: function(data) {
+            if (data.errorName.indexOf("ViewExpiredException")){
+                window.location = window.location.href.replace("index", "login");
+            } else {
+                alert(data.errorMessage);
+            }
+            return false;
+        },
     
         ajaxCallback: function(data) {
             if (data.status === 'success') {
                 var context = {};
                 try {
-                Console.Ajax.processElement(context, $("#ajaxBody")[0], true);
-                Console.Ajax.processScripts(context);
-                Console.Ajax.validateForms();
+                    Console.Ajax.processElement(context, $("#ajaxBody")[0], true);
+                    Console.Ajax.processScripts(context);
+                    Console.Ajax.validateForms();
                 } catch (err) {
                     alert(err);
                 }
