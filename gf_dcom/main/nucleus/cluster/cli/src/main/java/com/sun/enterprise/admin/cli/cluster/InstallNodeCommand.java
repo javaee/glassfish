@@ -142,6 +142,7 @@ public class InstallNodeCommand extends NativeRemoteCommandsBase {
     @Override
     protected int executeCommand() throws CommandException {
         File zipFile = null;
+
         try {
             ArrayList<String> binDirFiles = new ArrayList<String>();
             zipFile = createZipFileIfNeeded(binDirFiles);
@@ -189,7 +190,6 @@ public class InstallNodeCommand extends NativeRemoteCommandsBase {
             WindowsRemoteFile remoteZip = new WindowsRemoteFile(remoteInstallDir, zipFileName);
             System.out.printf("Copying %d bytes", zipFile.length());
             remoteZip.copyFrom(zipFile, new WindowsRemoteFileCopyProgress() {
-
                 @Override
                 public void callback(long numcopied, long numtotal) {
                     //final int percent = (int)((double)numcopied / (double)numtotal * 100.0);
@@ -199,32 +199,8 @@ public class InstallNodeCommand extends NativeRemoteCommandsBase {
             System.out.println("");
             String fullZipFileName = SmartFile.sanitize(installDir + "/" + zipFileName);
             logger.fine("WROTE FILE TO REMOTE SYSTEM: " + fullZipFileName);
-
-			//
-			//
-			// NOT WORKING YET !!!  TODO FIXME
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			// unpackOnHostsWindows(host, remotePassword, installDir, fullZipFileName);
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
+            temp();
+            //unpackOnHostsWindows(host, remotePassword, installDir, fullZipFileName);
         }
     }
 
@@ -458,7 +434,7 @@ public class InstallNodeCommand extends NativeRemoteCommandsBase {
                 res = true;
             }
             else {
-                logger.finer(host + ":'" + cmd + "'" + " failed [" + outStream.toString() + "]");
+                logger.finer(host + ":'" + cmd + "'" + " fa iled [" + outStream.toString() + "]");
             }
         }
         catch (IOException ex) {
@@ -466,5 +442,43 @@ public class InstallNodeCommand extends NativeRemoteCommandsBase {
             throw new IOException(ex);
         }
         return res;
+    }
+
+    private void temp() {
+        try {// does Java exist?
+            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\nZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+            String host = hosts[0];
+            String pw = getDCOMPassword(host);
+            WindowsRemoteLauncher launcher = new WindowsRemoteLauncher(host, dcomuser, pw);
+            System.out.println("Checking if Java exists");
+            Process proc = launcher.launch("java -fullversion", "c:\\");
+            proc.getOutputStream().close();
+            System.out.println(toString(proc.getInputStream()));
+            proc.getInputStream().close();
+            int exitCode = proc.waitFor();
+            if (exitCode == 1) {// we'll get this error code if Java is not found
+                System.out.println("NO JDK FOUND!");
+            }
+            else
+                System.out.println("Amazingly it actually worked and the JDK **was** found!!");
+        }
+        catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public static String toString(InputStream ins) throws IOException {
+        StringWriter sw = new StringWriter();
+        InputStreamReader reader = new InputStreamReader(ins);
+
+        char[] buffer = new char[4096];
+        int n;
+        while ((n = reader.read(buffer)) >= 0)
+            sw.write(buffer, 0, n);
+
+        return sw.toString();
     }
 }
