@@ -42,24 +42,15 @@
 -->
 
 <skins xmlns="http://myfaces.apache.org/trinidad/skin">
-  <skin>
-    <id>console.desktop</id>
-    <family>console</family>
-    <!-- optional. If you want to version your skin, then you set the version. 
-      This is useful if you want to keep the skin-family the same name, but you 
-      have fixed bugs in the skin. The user can use the original version or the 
-      new version by specifying skin-version in trinidad-config.xml. -->
-    <version>
-      <name>v1</name>
-      <default>true</default>
-    </version>
-    <!-- if you want this skin to be for a pda, use org.apache.myfaces.trinidad.pda 
-      as the render-kit-id -->
-    <render-kit-id>org.apache.myfaces.trinidad.desktop</render-kit-id>
-    <style-sheet-name>/css/console.skin.css</style-sheet-name>
-    <!-- no need for this, extending default
-      <extends>xyz</extends> -->
-    <!-- no need for this in our skin
-      <bundle-name> org.apache.myfaces.trinidaddemo.resource.SkinBundle</bundle-name> -->
-  </skin>
+    <skin>
+        <id>console.desktop</id>
+        <family>console</family>
+        <version>
+            <name>v1</name>
+            <default>true</default>
+        </version>
+        <render-kit-id>org.apache.myfaces.trinidad.desktop</render-kit-id>
+        <style-sheet-name>/css/console.skin.css</style-sheet-name>
+        <extends>casablanca.desktop</extends> 
+    </skin>
 </skins>
