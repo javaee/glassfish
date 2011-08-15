@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://java.sun.com/jsf/composite"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="currentStep" required="true" type="java.lang.Integer"/>
+        <cc:attribute name="stepLabels" required="true" type="java.util.List"/>
+        <cc:attribute name="stepPages" required="true" type="java.util.List"/>
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <div id="#{cc.clientId}" style="height: 100%;">
+            <div id="#{cc.clientId}_nav" class="topRightRounded bottomRightRounded" 
+                 style="width: 15%; height: 100%; background-color: #014081; float: left; color: white; font-size: large; margin-right: 7px;">
+                <table width="100%">
+                    <ui:repeat var="label" value="#{cc.attrs.stepLabels}" varStatus="status">
+                        <tr>
+                            <td>
+                                <h:outputText rendered="#{status.index == cc.attrs.currentStep}" value="*"/>
+                            </td>
+                            <td>#{label}</td>
+                        </tr>
+                    </ui:repeat>
+                </table>
+            </div>
+            Wizard!
+        </div>
+    </cc:implementation>
+</html>

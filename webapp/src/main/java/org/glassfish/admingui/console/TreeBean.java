@@ -79,6 +79,9 @@ public class TreeBean {
         root.add(createNode("applicationsNode", "Applications", "/images/icons/instance.gif", "/demo/testApplications.xhtml", null));
         root.addAll(getRootNodes());
         
+        root.add(createNode("demoNode", "Demo", "/images/icons/instance.gif", "/demo/panelTabbed.jspx", null));
+        root.add(createNode("wizardNode", "Wizard Demo", null, "/demo/wizard.xhtml", null));
+
         NavigationNode resources = createNode("resourcesNode", "Resources", null, "/images/icons/resources.gif", new ArrayList<NavigationNode>() {{
                 add(createNode("jdbcNode", "JDBC", null, "/images/icons/jdbc.gif", null));
                 add(createNode("connectorsNode", "Connectors", null, "/images/icons/connector.png", null));
@@ -89,7 +92,6 @@ public class TreeBean {
         }});
         root.add(resources);
 
-        root.add(createNode("demoNode", "Demo", "/images/icons/instance.gif", "/demo/panelTabbed.jspx", null));
         return root;
     }
 

@@ -57,7 +57,8 @@
                        onclick="return Console.Ajax.loadPage('#{node.link}');">#{node.label}</a>
                 </h:panelGroup> 
                 <h:panelGroup rendered="#{empty node.link}">
-                    <span id="#{node.id}" style="padding-left: 5px;">#{node.label}</span>
+                    <a id="#{node.id}" style="padding-left: 5px;" href="#"
+                       onclick="return Console.Ajax.loadPage('#{node.link}');">#{node.label}</a>
                 </h:panelGroup> 
             </span>
         </f:facet>
