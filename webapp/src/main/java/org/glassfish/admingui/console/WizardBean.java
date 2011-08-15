@@ -18,7 +18,7 @@ import javax.faces.bean.ViewScoped;
 @ManagedBean
 @ViewScoped
 public class WizardBean {
-    private int step = 3;
+    private int step = 0;
     private List<String> stepLabels = Collections.unmodifiableList(new ArrayList<String>(){{ 
         add("Step 1");
         add("Step 2");
@@ -27,11 +27,11 @@ public class WizardBean {
         add("Step 5");
     }});
     private List<String> stepPages = Collections.unmodifiableList(new ArrayList<String>(){{ 
-        add("/demo/wizard/step1.xhml");
-        add("/demo/wizard/step2.xhml");
-        add("/demo/wizard/step3.xhml");
-        add("/demo/wizard/step4.xhml");
-        add("/demo/wizard/step5.xhml");
+        add("/demo/wizard/step1.xhtml");
+        add("/demo/wizard/step2.xhtml");
+        add("/demo/wizard/step3.xhtml");
+        add("/demo/wizard/step4.xhtml");
+        add("/demo/wizard/step5.xhtml");
     }});
 
     public int getStep() {
@@ -48,5 +48,15 @@ public class WizardBean {
 
     public List<String> getStepPages() {
         return stepPages;
+    }
+    
+    public String previous() {
+        step--;
+        return null;
+    }
+    
+    public String next() {
+        step++;
+        return null;
     }
 }

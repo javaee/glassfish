@@ -48,11 +48,14 @@
                 xmlns:gf="http://java.sun.com/jsf/composite/glassfish"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
-    <h3>Wizard Demo</h3>
+    <h3>Step 1</h3>
 
-    <tr:form>
-        <gf:wizard currentStep="#{wizardBean.step}" 
-                   stepPages="#{wizardBean.stepPages}"
-                   stepLabels="#{wizardBean.stepLabels}"/>
-    </tr:form>
+    You are on step 1.
+    <br/>
+    <h:commandButton value="&lt;&lt; Previous" action="#{wizardBean.previous}" disabled="true">
+        <f:ajax render="@form" execute="@form"/>
+    </h:commandButton>
+    <h:commandButton value="Next &gt;&gt;" action="#{wizardBean.next}">
+        <f:ajax render="@form" execute="@form"/>
+    </h:commandButton>
 </ui:composition>

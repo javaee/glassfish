@@ -22,14 +22,17 @@
                     <ui:repeat var="label" value="#{cc.attrs.stepLabels}" varStatus="status">
                         <tr>
                             <td>
-                                <h:outputText rendered="#{status.index == cc.attrs.currentStep}" value="*"/>
+                                <h:outputText rendered="#{status.index == cc.attrs.currentStep}" style="font-weight: bold" value="*"/>
                             </td>
-                            <td>#{label}</td>
+                            <td>
+                                <h:outputText rendered="#{status.index == cc.attrs.currentStep}" style="font-weight: bold" value="#{label}"/>
+                                <h:outputText rendered="#{status.index != cc.attrs.currentStep}" value="#{label}"/>
+                            </td>
                         </tr>
                     </ui:repeat>
                 </table>
             </div>
-            Wizard!
+            <ui:include src="#{cc.attrs.stepPages[cc.attrs.currentStep]}"/>
         </div>
     </cc:implementation>
 </html>
