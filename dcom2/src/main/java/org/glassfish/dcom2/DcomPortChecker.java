@@ -1,6 +1,6 @@
 /*
  *  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *  Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ *  Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  *  The contents of this file are subject to the terms of either the GNU
  *  General Public License Version 2 only ("GPL") or the Common Development
@@ -38,40 +38,47 @@
  */
 package org.glassfish.dcom2;
 
-import jcifs.smb.NtlmPasswordAuthentication;
+import java.io.*;
+import java.net.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * Wrap the implementation details for the way we get access to remote
- * Windows files.
+ *
  * @author Byron Nevins
  */
-public class WindowsRemoteFileSystem {
-    private final String host;
-    private final NtlmPasswordAuthentication authorization;
-
-    WindowsRemoteFileSystem(String host, NtlmPasswordAuthentication authorization) {
-        this.host = host;
-        this.authorization = authorization;
-    }
-
-    WindowsRemoteFileSystem(String host) {
-        this.host = host;
-        this.authorization = null;
-    }
-
+public class DcomPortChecker {
     /**
-     * @return the host
+     * @param args the command line arguments
      */
-    public String getHost() {
-        return host;
+    public static void main(String[] args) {
+        if (args.length < 1) {
+            args = new String[1];
+            args[0] = "localhost";
+            //args[0] = null;
+        }
+
+        for (String hostName : args) {
+            try {
+                InetAddress host = InetAddress.getByName(hostName);
+                checkPorts(host);
+            }
+            catch (UnknownHostException ex) {
+                Logger.getLogger(DcomPortChecker.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
-    /**
-     * @return the authorization
-     */
-    public NtlmPasswordAuthentication getAuthorization() {
-        return authorization;
+    private static void checkPorts(InetAddress host) {
+        for (int port : DCOM_PORTS) {
+            try {
+                Socket s = new Socket(host, 135);
+                System.out.printf("%s ==> %d -- OK!\n", host.toString(), port);
+            }
+            catch (IOException ex) {
+                System.out.printf("%s ==> %d -- BAD ==> %s\n", host.toString(), port, ex.toString());
+            }
+        }
     }
-
-
+    private final static int DCOM_PORTS[] = new int[]{80, 135, 139, 445};
 }

@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
+import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 
@@ -51,12 +52,12 @@ import jcifs.smb.SmbFile;
  *
  * @author Byron Nevins
  */
-public final class WinFile {
+final class WindowsRemoteFile {
     private SmbFile smbFile;
     private WindowsRemoteFileSystem wrfs;
     private String smbPath;
 
-    WinFile(WindowsRemoteFileSystem wrfs, String path) throws MalformedURLException, UnknownHostException {
+    WindowsRemoteFile(WindowsRemoteFileSystem wrfs, String path) throws MalformedURLException, UnknownHostException {
         if (wrfs == null || path == null || path.isEmpty())
             throw new NullPointerException();
 
@@ -80,14 +81,19 @@ public final class WinFile {
         smbPath = sb.toString();
         //SmbFile remoteRoot = new SmbFile("smb://" + name + "/" + path.replace('\\', '/').replace(':', '$')+"/",createSmbAuth());
 
-        smbFile = new SmbFile(smbPath, wrfs.getAuthorization());
+        NtlmPasswordAuthentication auth = wrfs.getAuthorization();
+        
+        if(auth != null)
+            smbFile = new SmbFile(smbPath, auth);
+        else
+            smbFile = new SmbFile(smbPath);
     }
 
-    public final boolean exists() throws SmbException {
+    final boolean exists() throws SmbException {
         return smbFile.exists();
     }
 
-    public final String[] list() throws SmbException {
+    final String[] list() throws SmbException {
         return smbFile.list();
     }
 
@@ -95,7 +101,7 @@ public final class WinFile {
         smbFile.createNewFile();
     }
 
-    void copyTo(WinFile wf) throws SmbException {
+    void copyTo(WindowsRemoteFile wf) throws SmbException {
         smbFile.copyTo(wf.smbFile);
     }
     void copyFrom(File from) throws SmbException, IOException {
@@ -124,5 +130,9 @@ public final class WinFile {
         catch(Exception e) {
             // nothing can be done!
         }
+    }
+
+    void delete() throws SmbException {
+        smbFile.delete();
     }
 }
