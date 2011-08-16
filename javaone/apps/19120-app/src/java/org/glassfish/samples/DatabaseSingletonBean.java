@@ -15,7 +15,6 @@ import org.glassfish.external.probe.provider.annotations.Probe;
 import org.glassfish.external.probe.provider.annotations.ProbeProvider;
 import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
-import org.glassfish.flashlight.provider.ProbeRegistry;
 
 /**
  *
@@ -28,13 +27,10 @@ import org.glassfish.flashlight.provider.ProbeRegistry;
 public class DatabaseSingletonBean {
     @PersistenceContext
     EntityManager em;
-    // Add business logic below. (Right-click in editor and choose
     @Resource
     private ProbeProviderFactory probeProviderFactory;
     @Resource
     private ProbeClientMediator listenerRegistrar;
-    @Resource
-    private ProbeRegistry probeRegistry;
 
     @PostConstruct
     @Probe(name = "initMovies")
@@ -57,7 +53,7 @@ public class DatabaseSingletonBean {
     }
 
     private void initMonitoring() {
-             if (probeProviderFactory == null)
+        if (probeProviderFactory == null)
             return;
 
         if (listenerRegistrar == null)
