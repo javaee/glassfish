@@ -5,11 +5,17 @@
 package org.glassfish.samples;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.ejb.Singleton;
 import javax.ejb.LocalBean;
 import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import org.glassfish.external.probe.provider.annotations.Probe;
+import org.glassfish.external.probe.provider.annotations.ProbeProvider;
+import org.glassfish.flashlight.client.ProbeClientMediator;
+import org.glassfish.flashlight.provider.ProbeProviderFactory;
+import org.glassfish.flashlight.provider.ProbeRegistry;
 
 /**
  *
@@ -18,13 +24,22 @@ import javax.persistence.PersistenceContext;
 @Singleton
 @LocalBean
 @Startup
+@ProbeProvider(moduleProviderName = "JavaOne", moduleName = "JavaOneSamples", probeProviderName = "DatabaseSingletonBean")
 public class DatabaseSingletonBean {
-
-    @PersistenceContext EntityManager em;
+    @PersistenceContext
+    EntityManager em;
     // Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Business Method")
+    @Resource
+    private ProbeProviderFactory probeProviderFactory;
+    @Resource
+    private ProbeClientMediator listenerRegistrar;
+    @Resource
+    private ProbeRegistry probeRegistry;
+
     @PostConstruct
-    private void init() {
+    @Probe(name = "initMovies")
+    public void init() {
+        initMonitoring();
         addMovie("Black Swan");
         addMovie("The Matrix");
         addMovie("Inception");
@@ -35,8 +50,26 @@ public class DatabaseSingletonBean {
         addMovie("Million Dollar Baby");
     }
 
-    private void addMovie(String name) {
+    @Probe(name = "addMovie")
+    public void addMovie(String name) {
         Movie m = new Movie(name);
         em.persist(m);
+    }
+
+    private void initMonitoring() {
+             if (probeProviderFactory == null)
+            return;
+
+        if (listenerRegistrar == null)
+            return;
+
+        try {
+            // need to get the probe provider registered before the listener!
+            probeProviderFactory.getProbeProvider(getClass());
+            listenerRegistrar.registerListener(new DatabaseSingletonBeanListener());
+        }
+        catch (Exception e) {
+            return;
+        }
     }
 }
