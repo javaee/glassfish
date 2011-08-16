@@ -51,7 +51,8 @@
     <h3>Wizard Demo</h3>
 
     <tr:form id="wizardForm" prependId="false">
-        <gf:wizard currentStep="#{wizardBean.step}" 
+        <gf:wizard title="Wizard Component Demo"
+                   currentStep="#{wizardBean.step}" 
                    stepPages="#{wizardBean.stepPages}"
                    stepLabels="#{wizardBean.stepLabels}"/>
     </tr:form>
