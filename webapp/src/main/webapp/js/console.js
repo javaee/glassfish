@@ -92,8 +92,9 @@ if (typeof Console == 'undefined') {
             if (data.status === 'success') {
                 var context = {};
                 try {
-                    Console.Ajax.processElement(context, $("#ajaxBody")[0], true);
-                    Console.Ajax.processScripts(context);
+//                    Console.Ajax.processElement(context, $("#ajaxBody")[0], true);
+//                    Console.Ajax.processScripts(context);
+                    Console.Ajax.processLinks();
                     Console.Ajax.validateForms();
                 } catch (err) {
                     alert(err);
