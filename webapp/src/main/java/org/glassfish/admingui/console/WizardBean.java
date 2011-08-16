@@ -20,18 +20,18 @@ import javax.faces.bean.ViewScoped;
 public class WizardBean {
     private int step = 0;
     private List<String> stepLabels = Collections.unmodifiableList(new ArrayList<String>(){{ 
-        add("Step 1");
-        add("Step 2");
-        add("Step 3");
-        add("Step 4");
-        add("Step 5");
+        add("Upload archive");
+        add("Pick Virtualization Template");
+        add("Configure Database");
+        add("Configure Load Balancer");
+        add("Configure Elasticity Settings");
     }});
     private List<String> stepPages = Collections.unmodifiableList(new ArrayList<String>(){{ 
-        add("/demo/wizard/step1.xhtml");
-        add("/demo/wizard/step2.xhtml");
-        add("/demo/wizard/step3.xhtml");
-        add("/demo/wizard/step4.xhtml");
-        add("/demo/wizard/step5.xhtml");
+        add("/demo/wizard/upload.xhtml");
+        add("/demo/wizard/template.xhtml");
+        add("/demo/wizard/database.xhtml");
+        add("/demo/wizard/lb.xhtml");
+        add("/demo/wizard/elasticity.xhtml");
     }});
 
     public int getStep() {
