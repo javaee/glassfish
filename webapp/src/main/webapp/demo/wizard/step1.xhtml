@@ -52,10 +52,10 @@
 
     You are on step 1.
     <br/>
-    <h:commandButton value="&lt;&lt; Previous" action="#{wizardBean.previous}" disabled="true">
+    <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{wizardBean.previous}" disabled="true">
         <f:ajax render="@form" execute="@form"/>
-    </h:commandButton>
-    <h:commandButton value="Next &gt;&gt;" action="#{wizardBean.next}">
-        <f:ajax render="@form" execute="@form"/>
-    </h:commandButton>
+    </tr:commandButton>
+    <tr:commandButton id="nextButton" text="Next &gt;&gt;" action="#{wizardBean.next}">
+        <f:ajax render=":ajaxBody" execute="@form"/>
+    </tr:commandButton>
 </ui:composition>

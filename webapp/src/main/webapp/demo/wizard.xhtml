@@ -50,7 +50,7 @@
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
     <h3>Wizard Demo</h3>
 
-    <tr:form>
+    <tr:form id="wizardForm" prependId="false">
         <gf:wizard currentStep="#{wizardBean.step}" 
                    stepPages="#{wizardBean.stepPages}"
                    stepLabels="#{wizardBean.stepLabels}"/>

@@ -90,3 +90,15 @@ af|commandButton {
     width: 100%;
     padding: 5px;
 }
+
+.af_commandButton {
+    display: inline;
+}
+
+.af_commandButton:hover {
+    display: inline;
+}
+
+.af_commandButton.p_AFDisabled {
+    display: inline;
+}
