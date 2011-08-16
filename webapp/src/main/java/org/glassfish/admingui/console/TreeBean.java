@@ -79,7 +79,7 @@ public class TreeBean {
         root.add(createNode("applicationsNode", "Applications", "/images/icons/instance.gif", "/demo/testApplications.xhtml", null));
         root.addAll(getRootNodes());
         
-        root.add(createNode("demoNode", "Demo", "/images/icons/instance.gif", "/demo/panelTabbed.jspx", null));
+        root.add(createNode("demoNode", "Demo", "/images/icons/instance.gif", "/demo/listApplications.xhtml", null));
         root.add(createNode("wizardNode", "Wizard Demo", null, "/demo/wizard.xhtml", null));
 
         NavigationNode resources = createNode("resourcesNode", "Resources", null, "/images/icons/resources.gif", new ArrayList<NavigationNode>() {{
