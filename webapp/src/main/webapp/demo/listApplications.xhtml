@@ -39,6 +39,15 @@
             </span>
         </div>
     </div>
+
+    <tr:panelHorizontalLayout inlineStyle="height:50px;">
+        <f:facet name="separator">
+            <tr:spacer width="20" height="1"/>
+        </f:facet>
+        <tr:goButton text="Deploy.." destination="demo/wizard.xhtml"/>
+        <tr:commandButton text="Undeploy"/>
+    </tr:panelHorizontalLayout>
+
     <tr:table var="app" value="#{listApplicationsBean.applications}">
         <tr:column headerText="Name">
             #{app.name}
