@@ -1,1 +1,2 @@
-asadmin undeploy Holla
+call asadmin undeploy Holla
+

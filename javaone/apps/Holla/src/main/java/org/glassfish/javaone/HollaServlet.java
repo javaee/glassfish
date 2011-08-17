@@ -40,16 +40,28 @@ package org.glassfish.javaone;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
+import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.glassfish.external.probe.provider.annotations.ProbeListener;
+import org.glassfish.flashlight.client.ProbeClientMediator;
 
 /**
  *
- * @author wnevins
+ * @author Byron Nevins
  */
 public class HollaServlet extends HttpServlet {
+    @Resource
+    private ProbeClientMediator listenerRegistrar;
+    private int moviesCount;
+    private long started;
+    private long elapsed;
+    private String[] movieNames;
+    private int numGetMovieCalls;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
@@ -67,13 +79,48 @@ public class HollaServlet extends HttpServlet {
             out.println("<title>Servlet HollaServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet HollaServlet at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet HollaServlet at " + request.getContextPath() + "</h1>");
+            out.println("Listening to 19120-app");
+            out.println("<h3>Number of calls to initMovies() so far: " + moviesCount + "</h3>");
+            out.println("<h3>Number of calls to getMovies() so far: " + numGetMovieCalls + "</h3>");
+            out.println("<h3>Latest time to run getMovies in nanoseconds: " + elapsed + "</h3>");
+            out.println("<h3>Current Movie List: " + Arrays.toString(movieNames) + "</h3>");
             out.println("</body>");
             out.println("</html>");
         }
         finally {
             out.close();
         }
+    }
+
+    @ProbeListener("JavaOne:JavaOneSamples:DatabaseSingletonBean:initMovies")
+    public void initMovies() {
+        System.out.println("initMovies LISTENER HERE.");
+        ++moviesCount;
+    }
+
+    @ProbeListener("JavaOne:JavaOneSamples:MovieSessionBean:currentMovieList")
+    public void currentMovieList(String[] names) {
+        movieNames = names;
+    }
+
+    @ProbeListener("JavaOne:JavaOneSamples:MovieSessionBean:getMovieStarted")
+    public void getMovieStarted() {
+        started = System.nanoTime();
+        ++numGetMovieCalls;
+    }
+
+    @ProbeListener("JavaOne:JavaOneSamples:MovieSessionBean:getMovieFinished")
+    public void getMovieFinished() {
+        elapsed = System.nanoTime() - started;
+    }
+
+    @Override
+    public void init() throws ServletException {
+        if (listenerRegistrar == null)
+            throw new ServletException("ProbeClientMediator was not injected.");
+
+        listenerRegistrar.registerListener(this);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
