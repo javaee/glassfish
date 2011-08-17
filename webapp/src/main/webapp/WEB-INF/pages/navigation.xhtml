@@ -53,11 +53,11 @@
                 <h:graphicImage  id="#{node.id}_icon" url="#{node.icon}" rendered="#{!empty node.icon}" style="display: inline"/>
 
                 <h:panelGroup rendered="#{!empty node.link}">
-                    <a id="#{node.id}" style="padding-left: 5px;" href="#{request.contextPath}#{node.link}"
+                    <a id="#{node.id}" style="border: 0; padding: 5px;" href="#{request.contextPath}#{node.link}"
                        onclick="return Console.Ajax.loadPage('#{node.link}');">#{node.label}</a>
                 </h:panelGroup> 
                 <h:panelGroup rendered="#{empty node.link}">
-                    <a id="#{node.id}" style="padding-left: 5px;" href="#"
+                    <a id="#{node.id}" style="border: 0; padding: 5px;" href="#"
                        onclick="return Console.Ajax.loadPage('#{node.link}');">#{node.label}</a>
                 </h:panelGroup> 
             </span>

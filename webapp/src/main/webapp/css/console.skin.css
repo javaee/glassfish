@@ -49,8 +49,6 @@
 
 .AFTextForeground:alias {
     color: #003d5b;
-    
-
 }
 
 .AFPanelBox:alias {
@@ -74,16 +72,36 @@ af|panelBox::content {
     padding-top: 5px;
 }
 
-af|commandButton {
-    background:url("/images/button_bg_ena.png") repeat-x scroll center top #CCD6E8;
-    border-color:#E0E3E8 #606974 #606974 #E0E3E8;
-    border-style:solid;
-    border-width:1px;
-    color:#000000;
-    margin:3px;
-    padding:3px 5px 1px 6px;
-    text-decoration:none;
-    white-space:nowrap;
+af|commandButton, af|commandButton:hover, af|commandButton.p_AFDisabled {
+    margin:5px;
+    padding:2px 5px 3px 5px;
+}
+
+.CBBorderStrongSolidLook:alias, .CBBorderStrongSolidLookHover:alias  {
+    -tr-rule-ref: selector(".CBBorderSolidLook:alias");
+    border: 1px solid #BBB1AA;
+}
+
+.CBButtonStrongLook:alias {
+    -tr-rule-ref: selector(".CBButtonLookCommon:alias");
+    -tr-rule-ref: selector(".CBBorderStrongSolidLook:alias");
+    background: #CCD6E8 url("/images/button_bg_ena.png") repeat-x scroll center top;
+}
+
+.CBButtonLookHover:alias {
+    background: #CCD6E8 url("/images/button_bg_ena.png") repeat-x scroll center top;
+}
+
+.CBButtonStrongLookHover:alias {
+    background: #CCD6E8 url("/adf/images/casablanca/backgrounds/buttonLikeHeadSelectedHover.png") repeat-x scroll center top;
+}
+
+.CBButtonStrongLookDisabled:alias {
+    -tr-rule-ref: selector(".CBButtonLookCommon:alias");
+    -tr-rule-ref: selector(".CBBorderStrongSolidLook:alias");
+    -tr-rule-ref: selector(".CBDefaulFontDisabledLook:alias");    
+    background: url("/images/button_bg_dis.png") repeat-x scroll center bottom #CCD6E8 !important;
+    cursor: default;
 }
 
 .af_table table {

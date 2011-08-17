@@ -23,7 +23,7 @@ call asadmin stop-domain
 
 echo Clearing the OSGi cache
 rm -R %GF_HOME%\glassfish\domains\domain1\osgi-cache
-rm -R %GF_HOME%\glassfish\domains\domain1\generated
+rm -Rf %GF_HOME%\glassfish\domains\domain1\generated
 
 echo Removing any existing demo plugins from %MODULES_DIR%
 rm %MODULES_DIR%/plugin-*.jar
