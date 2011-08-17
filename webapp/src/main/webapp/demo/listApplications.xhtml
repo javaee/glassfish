@@ -44,7 +44,9 @@
         <f:facet name="separator">
             <tr:spacer width="20" height="1"/>
         </f:facet>
-        <tr:goButton text="Deploy.." destination="demo/wizard.xhtml"/>
+        <tr:commandButton id="nextButton" text="Deploy.. " action="/demo/wizard" >
+            <f:ajax render=":ajaxBody" execute="@form"/>
+        </tr:commandButton>
         <tr:commandButton text="Undeploy"/>
     </tr:panelHorizontalLayout>
 

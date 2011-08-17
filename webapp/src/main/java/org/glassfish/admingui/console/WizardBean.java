@@ -21,7 +21,7 @@ public class WizardBean {
     private int step = 0;
     private List<String> stepLabels = Collections.unmodifiableList(new ArrayList<String>(){{ 
         add("1. Upload archive");
-        add("2. Pick Virtualization Template");
+        add("2. Select Template");
         add("3. Configure Database");
         add("4. Configure Load Balancer");
         add("5. Configure Elasticity Settings");
@@ -33,6 +33,7 @@ public class WizardBean {
         add("/demo/wizard/database.xhtml");
         add("/demo/wizard/lb.xhtml");
         add("/demo/wizard/elasticity.xhtml");
+        add("/demo/wizard/deploy.xhtml");
     }});
 
     public int getStep() {

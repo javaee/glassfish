@@ -55,7 +55,7 @@
     <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{wizardBean.previous}">
         <f:ajax render="@form" execute="@form"/>
     </tr:commandButton>
-    <tr:commandButton id="nextButton" text="Next &gt;&gt;" action="#{wizardBean.next}" disabled="true">
+    <tr:commandButton id="nextButton" text="Next &gt;&gt;" action="#{wizardBean.next}" >
         <f:ajax render=":ajaxBody" execute="@form"/>
     </tr:commandButton>
 </ui:composition>

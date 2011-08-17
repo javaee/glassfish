@@ -48,10 +48,35 @@
                 xmlns:gf="http://java.sun.com/jsf/composite/glassfish"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
-    <h3>Step 2</h3>
+    <h3>Step 2: Virtualization Template</h3>
 
-    Select Template.
-    <br/>
+    Select the virtualization template from the available list.  The one pre-selected is based on the glassfish-services.xml that is packaged
+    in the archive or derived.
+    <tr:spacer height="40px"/>
+    <tr:panelFormLayout labelAlignment="start">
+
+        <tr:selectOneListbox simple="false" value="3" label="Select template: " size="4">
+            <tr:selectItem label="Another" value="1"/>
+            <tr:selectItem label="GLASSFISH_MEDIUM" value="2"/>
+            <tr:selectItem label="GLASSFISH_SMALL" value="3" />
+            <tr:selectItem label="other" value="4"/>
+        </tr:selectOneListbox>
+        <tr:spacer height="40px"/>
+    </tr:panelFormLayout>
+
+    <tr:outputLabel value="Attributes of selected template: " inlineStyle="font-size:14px;"/>
+    <tr:spacer height="20px"/>
+    <tr:table var="templateIndex" value="#{templateIndexBean.indexes}" >
+        <tr:column headerText="Type" width="20%">
+            #{templateIndex.type}
+        </tr:column>
+        <tr:column headerText="Value" width="50%">
+            #{templateIndex.value}
+        </tr:column>
+    </tr:table>
+    <tr:spacer height="40px"/>
+    <tr:separator/>
+    <tr:spacer height="40px"/>
     <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{wizardBean.previous}">
         <f:ajax render="@form" execute="@form"/>
     </tr:commandButton>

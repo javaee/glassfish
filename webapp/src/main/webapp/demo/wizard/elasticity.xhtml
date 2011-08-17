@@ -48,14 +48,25 @@
                 xmlns:gf="http://java.sun.com/jsf/composite/glassfish"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
-    <h3>Step 5</h3>
+     <h3>Step 5: Configure Elasticity Settings</h3>
 
-    Configure Elasticity Settings.
-    <br/>
+     Specify information related to elasticity.  (TBD: what can user set ? )
+     <tr:spacer height="40px"/>
+
+        <tr:panelFormLayout rows="10" labelAlignment="start">
+
+            <tr:inputText label="# of instances: " columns="20"/>
+            <tr:inputText label="Response Time range : " columns="20"/>
+
+        </tr:panelFormLayout>
+
+    <tr:spacer height="40px"/>
+    <tr:separator/>
+    <tr:spacer height="40px"/>
     <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{wizardBean.previous}">
         <f:ajax render="@form" execute="@form"/>
     </tr:commandButton>
-    <tr:commandButton id="nextButton" text="Next &gt;&gt;" action="#{wizardBean.next}" disabled="true">
+    <tr:commandButton id="nextButton" text="Next &gt;&gt;" action="#{wizardBean.next}" >
         <f:ajax render="@form" execute="@form"/>
     </tr:commandButton>
 </ui:composition>
