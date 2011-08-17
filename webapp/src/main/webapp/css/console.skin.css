@@ -104,6 +104,12 @@ af|commandButton, af|commandButton:hover, af|commandButton.p_AFDisabled {
     cursor: default;
 }
 
+.CBDefaultStrongFontLook:alias {
+    -tr-rule-ref: selector(".AFDefaultFontFamily:alias");
+    -tr-rule-ref: selector(".AFTextForeground:alias");
+    font-weight: normal;
+}
+
 .af_table table {
     width: 100%;
     padding: 5px;

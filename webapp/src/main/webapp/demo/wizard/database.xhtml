@@ -50,8 +50,38 @@
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
     <h3>Step 3 : Configure Database Settings </h3>
 
+    To create a new application, enter the details of your application below.
     <tr:spacer height="40px"/>
-    <tr:separator/>
+
+    <tr:panelFormLayout rows="10" labelAlignment="start">
+
+        <tr:selectOneChoice label="Database: " contentStyle="width: 273px">
+            <f:selectItem itemLabel="--- none ---"/>
+            <f:selectItem itemLabel="--- external ---"/>
+            <f:selectItem itemLabel="derbyPool"/>
+            <f:selectItem itemLabel="mysqlPool"/>
+            <f:selectItem itemLabel="--- global ---"/>
+            <f:selectItem itemLabel="--- local ---"/>
+        </tr:selectOneChoice>
+        <span>Select existing or configure one  below.</span>
+        <tr:inputText id="dbName" label="Name:" columns="40"/>
+        <tr:selectOneChoice label="Resource Type: " contentStyle="width: 273px">
+            <f:selectItem itemLabel="javax.sql.DataSource"/>
+            <f:selectItem itemLabel="javax.sql.XADataSource"/>
+            <f:selectItem itemLabel="javax.sql.ConnectionPoolDataSource"/>
+            <f:selectItem itemLabel="java.sql.Driver"/>
+        </tr:selectOneChoice>
+        <span>Must be specified if the datasource class implements more than 1 of the interface.</span>
+        
+        <tr:selectOneChoice label="Database Driver Vendor: " contentStyle="width: 273px">
+            <f:selectItem itemLabel="Derby" itemValue="java.Derby"/>
+            <f:selectItem itemLabel="MySql" itemValue="java.MySQL"/>
+        </tr:selectOneChoice>
+        <span>Select database vendor or enter database driver classname below.</span>
+        <tr:inputText label="Classname:" columns="40"/>
+        <tr:inputText label="Description:  " columns="40"/>
+    </tr:panelFormLayout>
+
     <tr:spacer height="40px"/>
     <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{wizardBean.previous}">
         <f:ajax render="@form" execute="@form"/>
