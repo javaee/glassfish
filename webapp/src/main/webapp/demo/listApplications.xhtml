@@ -52,7 +52,7 @@
 
     <tr:table var="app" value="#{listApplicationsBean.applications}">
         <tr:column headerText="Name">
-            #{app.name}
+            <h:commandLink value="#{app.name}" action="/demo/editApplicationGeneral.xhtml" />
         </tr:column>
         <tr:column headerText="Enabled">
             #{app.enabled}
