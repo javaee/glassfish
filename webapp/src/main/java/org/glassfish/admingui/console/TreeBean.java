@@ -85,11 +85,11 @@ public class TreeBean {
         root.add(createNode("demoNode", "Drag&Drop Demo", null, "/demo/testApplications.xhtml", null));
         root.add(createNode("wizardNode", "Deployment Wizard Demo", null, "/demo/wizard.xhtml", null));
 /*
-        NavigationNode resources = createNode("resourcesNode", "Resources", null, "/images/icons/resources.gif", new ArrayList<NavigationNode>() {{
-                add(createNode("jdbcNode", "JDBC", null, "/images/icons/jdbc.gif", null));
-                add(createNode("connectorsNode", "Connectors", null, "/images/icons/connector.png", null));
-                add(createNode("raConfigsNode", "Resource Adapter Configs", null, "/images/icons/connector.png", null));
-                add(new NavigationNode("jsmResourcesNode", "JMS Resources"));
+        NavigationNode resources = createNode("resourcesNode", "Resources", "/images/icons/resources.gif", "/demo/resources.xhtml", new ArrayList<NavigationNode>() {{
+                add(createNode("jdbcNode", "JDBC", "/images/icons/JDBC.gif", "/demo/jdbcResources.xhtml", null));
+                add(createNode("connectorsNode", "Connectors", "/images/icons/connector.png", "/demo/connectorResources.xhtml", null));
+                add(createNode("raConfigsNode", "Resource Adapter Configs", null, "/demo/jdbcConnectionPools.xhtml", null));
+                add(createNode("jsmResourcesNode", "JMS Resources", null, "/demo/connectorConnectionPools.xhtml", null));
                 add(new NavigationNode("javaMailNode", "JavaMail Resources"));
                 add(new NavigationNode("jndiNode", "JNDI"));
         }});
