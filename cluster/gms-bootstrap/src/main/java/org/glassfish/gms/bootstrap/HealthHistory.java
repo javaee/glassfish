@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -88,7 +88,7 @@ public final class HealthHistory implements ConfigListener {
         public String toString() {
             return stringVal;
         }
-    };
+    }
 
     /**
      * Used when no time information is known, for instance at
@@ -96,35 +96,76 @@ public final class HealthHistory implements ConfigListener {
      */
     public static final long NOTIME = -1l;
     
-    private final ConcurrentMap<String, InstanceHealth> healthMap;
+    private final ConcurrentMap<String, InstanceHealth> healthMap =
+        new ConcurrentHashMap<String, InstanceHealth>();
 
     /*
+     * In the user-managed cluster case, the GMS adapter may
+     * want to set this to false to not keep old
+     */
+    private boolean keepFormerMembers = true;
+
+    /**
      * Creates a health history that knows about the expected
      * list of instances. This is called from the GMS adapter
-     * during initialization, before 
+     * during initialization.
+     *
+     * @param cluster Cluster config object containing the instances
      */
     public HealthHistory(Cluster cluster) {
-        healthMap = new ConcurrentHashMap<String, InstanceHealth>(
-            cluster.getInstances().size());
         for (Server server : cluster.getInstances()) {
             if (server.isDas()) {
                 continue;
             }
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, String.format(
-                    "instance name in HealthHistory constructor %s",
-                    server.getName()));
-            }
-            if (healthMap.putIfAbsent(server.getName(),
-                new InstanceHealth(STATE.NOT_RUNNING, NOTIME)) != null) {
-                logger.log(Level.WARNING,
-                    "duplicate.instance", server.getName());
-            }
+            checkAndAddName(server.getName());
         }
     }
 
     /**
+     * Creates a health history that contains only the given
+     * instance. This is used in the dynamic cluster case,
+     * and so a param is passed in to tell us whether or
+     * not we should keep instances that are no longer
+     * running.
+     *
+     * @param instanceName The name of the instance to add to the
+     * health table
+     * @param keepFormerMembers Specifies whether or not to keep
+     * former group members in the table when they have failed
+     * or stopped. This value should normally be false for a
+     * user-managed cluster unless the history is needed for
+     * testing or debugging.
+     */
+    public HealthHistory(String instanceName, boolean keepFormerMembers) {
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE,
+                "KEEP_FORMER_MEMBER_HISTORY set to: " + keepFormerMembers);
+        }
+        checkAndAddName(instanceName);
+        this.keepFormerMembers = keepFormerMembers;
+    }
+
+    /*
+     * Used by the constructors to add instance names.
+     */
+    private void checkAndAddName(String name) {
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, String.format(
+                "instance name in HealthHistory constructor %s",
+                name));
+        }
+        if (healthMap.putIfAbsent(name,
+            new InstanceHealth(STATE.NOT_RUNNING, NOTIME)) != null) {
+
+            // has yet to be observed in the wild
+            logger.log(Level.WARNING,
+                "duplicate.instance", name);
+        }
+    }
+    /**
      * Returns the state/time of a specific instance.
+     * @param name Name of the instance
+     * @return The instance health
      */
     public InstanceHealth getHealthByInstance(String name) {
         return healthMap.get(name);
@@ -133,7 +174,11 @@ public final class HealthHistory implements ConfigListener {
     /**
      * The returned list may be modified without affecting
      * the information in the HealthHistory object.
+     *
+     * @param targetState The desired state of the instances
+     * @return A list containing the names of the instances
      */
+    @SuppressWarnings({"UnusedDeclaration"})
     public List<String> getInstancesByState(STATE targetState) {
         List<String> retVal = new ArrayList<String>(healthMap.size());
         for (String name : healthMap.keySet()) {
@@ -145,7 +190,8 @@ public final class HealthHistory implements ConfigListener {
     }
 
     /**
-     * Returns a copy of the instance names. 
+     * Returns a copy of the instance names.
+     * @return An unmodifiable set of the instance names
      */
     public Set<String> getInstances() {
         return Collections.unmodifiableSet(healthMap.keySet());
@@ -154,7 +200,8 @@ public final class HealthHistory implements ConfigListener {
     /**
      * Called by GMS subsystem to update the health of an instance.
      *
-     * TODO: add try/catch around everything for safety
+     * @param signal The GMS signal passed in from the GMS adapter
+     * that is managing this object
      */
     public void updateHealth(Signal signal) {
         if (logger.isLoggable(Level.FINE)) {
@@ -162,7 +209,7 @@ public final class HealthHistory implements ConfigListener {
         }
         String name = signal.getMemberToken();
         long time = signal.getStartTime();
-        STATE state = null;
+        STATE state;
 
         // a little if-elsie....
         if (signal instanceof  JoinNotificationSignal) {
@@ -197,11 +244,19 @@ public final class HealthHistory implements ConfigListener {
                 time = sub.getGroupJoinTime();
             }
         } else if (signal instanceof FailureNotificationSignal) {
-            state = STATE.FAILURE;
-            time = System.currentTimeMillis();
+            if (keepFormerMembers) {
+                state = STATE.FAILURE;
+                time = System.currentTimeMillis();
+            } else {
+                state = null;
+            }
         } else if (signal instanceof PlannedShutdownSignal) {
-            state = STATE.SHUTDOWN;
-            time = System.currentTimeMillis();
+            if (keepFormerMembers) {
+                state = STATE.SHUTDOWN;
+                time = System.currentTimeMillis();
+            } else {
+                state = null;
+            }
         } else {
             if (logger.isLoggable(Level.FINE)) {
                 logger.log(Level.FINE, String.format(
@@ -210,6 +265,17 @@ public final class HealthHistory implements ConfigListener {
             }
             return;
         }
+
+        if (state == null) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, String.format(
+                    "Dropping health history for %s due to %s",
+                    name, signal.toString()));
+            }
+            deleteInstance(name);
+            return;
+        }
+
         InstanceHealth ih = new InstanceHealth(state, time);
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, String.format(

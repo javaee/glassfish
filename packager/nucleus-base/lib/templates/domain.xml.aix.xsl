@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -41,29 +41,26 @@
 
 -->
 
-<project name="glassfish jdbc package creation" default="create.package" basedir=".">
-    <import file="${basedir}/../common-targets.xml"/>
+<xsl:stylesheet version="1.0"
+xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <xsl:output method="xml"
+          indent="yes">
+  </xsl:output>
+  
+  <xsl:template match="/">
+      <xsl:apply-templates select="node()|@*"/>
+  </xsl:template>
+  <xsl:template match="node()|@*">
+    <xsl:copy>
+      <xsl:apply-templates select="node()|@*"/>
+    </xsl:copy>
+  </xsl:template> 
 
-   <target name="create.package">
-	   <property name="package.name" value="glassfish-jdbc"/> 
-           <property name="previous.package.name" value="glassfish-osgi-gui" />
-        
-       <antcall target="filter-module-artifacts"/>
-      
-       <stage-module-jars/>
-       <stage-distribution-fragments/>
+  <xsl:template match="java-config">
+    <xsl:copy>                    
+      <xsl:apply-templates select="node()|@*"/>
+      <jvm-options>-Dcom.ibm.xml.xlxp.support.dtd.compat.mode=false</jvm-options>
+    </xsl:copy>
+  </xsl:template>
 
-       <mkdir dir="target/stage/${install.dir.name}/glassfish/modules/autostart"/>
-
-       <move file="target/stage/${install.dir.name}/glassfish/modules/osgi-jdbc.jar" todir="target/stage/${install.dir.name}/glassfish/modules/autostart" failonerror="false"/>
-
-
-       <if test="${compression}">
-	       <antcall target="pack.compression" />
-       </if>
-
-       <antcall target="create-zip-artifact"/> 
-       <antcall target="create-list-artifact"/>
-   </target>
-</project>
-
+</xsl:stylesheet>

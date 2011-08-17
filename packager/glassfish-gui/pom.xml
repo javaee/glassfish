@@ -55,7 +55,7 @@
     <description>This pom describes how to assemble the GlassFish Admin GUI  package</description>
 
     <build>
-	<plugins>
+        <plugins>
             <plugin>
                 <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                 <artifactId>maven-antrun-extended-plugin</artifactId>
@@ -68,6 +68,28 @@
                     </tasks>
                 </configuration>               
              </plugin>
+             <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/artifacts</outputDirectory>
+                            <useSubDirectoryPerType>true</useSubDirectoryPerType>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>                            
+                            <includeScope>compile</includeScope>
+                            <includeScope>runtime</includeScope>
+                            <excludeArtifactIds>${packager.artifact.excludes}</excludeArtifactIds>
+                            <stripVersion>true</stripVersion>
+                        </configuration>
+                   </execution>                  
+               </executions>
+           </plugin>
         </plugins>
     </build>
 
@@ -122,7 +144,9 @@
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-jdbc</artifactId>
            <version>${project.version}</version>
-	   <type>zip</type>
+	   <classifier>artifacts</classifier>
+	   <type>properties</type>
+           <scope>provided</scope>
        </dependency>
     </dependencies>
 

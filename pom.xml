@@ -165,7 +165,7 @@
         <v3-docs.version>3.2-b03</v3-docs.version>
         <l10n.version>3.1.1-b10</l10n.version>
         <asm.version>3.1</asm.version>
-        <shoal.version>1.5.34</shoal.version>
+        <shoal.version>1.6.11</shoal.version>
         <ha-api.version>3.1.8</ha-api.version>
         <build.properties>maven-build-aix.properties</build.properties>
     </properties>

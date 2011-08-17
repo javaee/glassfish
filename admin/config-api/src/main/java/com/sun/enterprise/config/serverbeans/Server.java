@@ -105,6 +105,7 @@ import org.glassfish.api.admin.CommandRunner;
 public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer, Payload {
 
     String lbEnabledSystemProperty = "org.glassfish.lb-enabled-default";
+    public static final String CLUSTER_MEMBER_NAME_PROP = "cluster-member-name";
 
     @Param(name = OPERAND_NAME, primary = true)
     @Override
@@ -285,6 +286,9 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     boolean isDas();
 
     @DuckTyped
+    boolean isClusteredDas();
+
+    @DuckTyped
     @Override
     boolean isInstance();
 
@@ -293,6 +297,9 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
     @DuckTyped
     int getAdminPort();
+
+    @DuckTyped
+    String getClusterMemberName();
 
     @DuckTyped
     Config getConfig();
@@ -320,6 +327,14 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             return "server".equals(name);
         }
 
+        public static boolean isClusteredDas(Server server) {
+            boolean isClusteredDas = false;
+            if (isDas(server)) {
+                isClusteredDas = server.getProperty(CLUSTER_MEMBER_NAME_PROP) == null ? false : true;
+            }
+            return isClusteredDas;
+        }
+
         public static Cluster getCluster(Server server) {
             Dom serverDom = Dom.unwrap(server);
             Clusters clusters = serverDom.getHabitat().getComponent(Clusters.class);
@@ -333,6 +348,10 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 }
             }
             return null;
+        }
+
+        public static String getClusterMemberName(Server server) {
+            return server.getPropertyValue(CLUSTER_MEMBER_NAME_PROP);
         }
 
         public static String getReference(Server server) {

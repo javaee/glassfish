@@ -119,7 +119,7 @@ public class TraceUtil
    */
     public static void setCurrentTraceLevel(int traceLevel) throws InvalidTraceLevelException
     {
-        if(Configuration.traceOn)
+        if(Configuration.isTraceEnabled())
         {
             int i;
             boolean traceLevelSet = false;

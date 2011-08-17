@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -64,13 +64,19 @@ class LogDBHelper {
     Method getNonTxConnectionMethod = null;
     static final String insertStatement = 
 	         System.getProperty("com.sun.jts.dblogging.insertquery",
-                 "insert into  txn_log_table values ( ? , ? , ? )");
+                 "insert into  txn_log_table values ( ? , ? , ? , ? )");
     static final String deleteStatement = 
 	         System.getProperty("com.sun.jts.dblogging.deletequery",
                  "delete from txn_log_table where localtid = ? and servername = ? ");
     static final String selectStatement = 
 	         System.getProperty("com.sun.jts.dblogging.selectquery",
                  "select * from txn_log_table where servername = ? ");
+    static final String selectServerNameStatement = 
+	         System.getProperty("com.sun.jts.dblogging.selectservernamequery",
+                 "select distinct servername from txn_log_table where instancename = ? ");
+    static final String createTableStatement = 
+                 "create table txn_log_table (localtid varchar(20), servername varchar(150), instancename varchar(150), gtrid blob)";
+    static final boolean useNonTxConnectionForAddRecord = Boolean.getBoolean("com.sun.jts.dblogging.use.nontx.connection.for.add");
     static Logger _logger = LogDomains.getLogger(LogDBHelper.class, LogDomains.TRANSACTION_LOGGER);
     static LogDBHelper _instance = new LogDBHelper();
 
@@ -88,23 +94,39 @@ class LogDBHelper {
 	    Class cls = ds.getClass();
 	    getNonTxConnectionMethod = cls.getMethod("getNonTxConnection", null);
 
+            initTable();
+
         } catch (Throwable t) {
             _logger.log(Level.SEVERE,"jts.unconfigured_db_log_resource",resName);
             _logger.log(Level.SEVERE,"",t);
+        }
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("LogDBHelper.resName: " + resName);
+            _logger.fine("LogDBHelper.ds: " + ds);
+            _logger.fine("LogDBHelper.getNonTxConnectionMethod: " + getNonTxConnectionMethod);
         }
     }
 
 
     boolean addRecord(long localTID, byte[] data) {
         if (ds != null) {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("LogDBHelper.addRecord for localTID: " + localTID);
+                _logger.fine("LogDBHelper.addRecord for serverName: " + Configuration.getServerName());
+                _logger.fine("LogDBHelper.addRecord for instanceName: " + Configuration.getPropertyValue(Configuration.INSTANCE_NAME));
+            }
             Connection conn = null;
             PreparedStatement prepStmt1 = null;    
             try {
-                conn = ds.getConnection();
+                if (useNonTxConnectionForAddRecord)
+		    conn = (Connection)(getNonTxConnectionMethod.invoke(ds, null)); 
+                else 
+                    conn = ds.getConnection();
                 prepStmt1 = conn.prepareStatement(insertStatement);
-                prepStmt1.setLong(1,localTID);
+                prepStmt1.setString(1,Long.toString(localTID));
                 prepStmt1.setString(2,Configuration.getServerName());
-                prepStmt1.setBytes(3,data);
+                prepStmt1.setString(3,Configuration.getPropertyValue(Configuration.INSTANCE_NAME));
+                prepStmt1.setBytes(4,data);
                 prepStmt1 .executeUpdate();
                 return true;
             } catch (Throwable ex) {
@@ -112,10 +134,14 @@ class LogDBHelper {
                 return false;
             } finally {
                 try {
-                if (prepStmt1 != null) 
-                    prepStmt1.close();
-                if (conn != null)
-                    conn.close();
+                    if (prepStmt1 != null) 
+                        prepStmt1.close();
+                } catch (Exception ex1) {
+                    _logger.log(Level.SEVERE,"jts.exception_in_db_log_resource",ex1);
+                }
+                try {
+                    if (conn != null)
+                        conn.close();
                 } catch (Exception ex1) {
                     _logger.log(Level.SEVERE,"jts.exception_in_db_log_resource",ex1);
                 }
@@ -125,15 +151,22 @@ class LogDBHelper {
     }
 
     boolean deleteRecord(long localTID) {
+        return deleteRecord(localTID, Configuration.getServerName());
+    }
+
+    boolean deleteRecord(long localTID, String serverName) {
         if (ds != null) {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("LogDBHelper.deleteRecord for localTID: " + localTID + " and serverName: " + serverName);
+            }
             Connection conn = null;
             PreparedStatement prepStmt1 = null;    
             try {
 		 // To avoid compile time dependency to get NonTxConnection
 		conn = (Connection)(getNonTxConnectionMethod.invoke(ds, null)); 
                 prepStmt1 = conn.prepareStatement(deleteStatement);
-                prepStmt1.setLong(1,localTID);
-                prepStmt1.setString(2,Configuration.getServerName());
+                prepStmt1.setString(1,Long.toString(localTID));
+                prepStmt1.setString(2,serverName); //Configuration.getServerName());
                 prepStmt1 .executeUpdate();
                 return true;
             } catch (Exception ex) {
@@ -154,31 +187,54 @@ class LogDBHelper {
     }
 
     Map getGlobalTIDMap() {
+        return getGlobalTIDMap(Configuration.getServerName());
+    }
+
+    Map getGlobalTIDMap(String serverName) {
         Map gtidMap = new HashMap();
         if (ds != null) {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("LogDBHelper get records for serverName: " + serverName);
+            }
             Connection conn = null;
             PreparedStatement prepStmt1 = null;    
             ResultSet rs = null;
             try {
-                conn = ds.getConnection();
+                //conn = ds.getConnection();
+		conn = (Connection)(getNonTxConnectionMethod.invoke(ds, null)); 
                 prepStmt1 = conn.prepareStatement(selectStatement);
-                prepStmt1.setString(1,Configuration.getServerName());
+                prepStmt1.setString(1,serverName); //Configuration.getServerName());
                 rs = prepStmt1.executeQuery();
                 while (rs.next()) {
-                    Long localTID = new Long(rs.getLong(1));
-                    byte[] gtridbytes = rs.getBytes(3);
-                    gtidMap.put(GlobalTID.fromTIDBytes(rs.getBytes(3)), localTID);
+                    Long localTID = Long.valueOf(rs.getString(1));
+                    byte[] gtridbytes = rs.getBytes(4);
+                    if (gtridbytes != null) {
+                        // Skip mapping record
+                        if (_logger.isLoggable(Level.FINE)) {
+                            _logger.fine("LogDBHelper found record for localTID: " + localTID + " and serverName: " + serverName);
+                            _logger.fine("LogDBHelper GlobalTID for localTID: " + localTID + " : " + GlobalTID.fromTIDBytes(gtridbytes));
+                        }
+                        gtidMap.put(GlobalTID.fromTIDBytes(gtridbytes), localTID);
+                    }
                 }
             } catch (Exception ex) {
                 _logger.log(Level.SEVERE,"jts.exception_in_db_log_resource",ex);
             } finally {
                 try {
-                if (rs != null) 
-                    rs.close();
-                if (prepStmt1 != null) 
-                    prepStmt1.close();
-                if (conn != null)
-                    conn.close();
+                    if (rs != null) 
+                        rs.close();
+                } catch (Exception ex1) {
+                    _logger.log(Level.SEVERE,"jts.exception_in_db_log_resource",ex1);
+                }
+                try {
+                    if (prepStmt1 != null) 
+                        prepStmt1.close();
+                } catch (Exception ex1) {
+                    _logger.log(Level.SEVERE,"jts.exception_in_db_log_resource",ex1);
+                }
+                try {
+                    if (conn != null)
+                        conn.close();
                 } catch (Exception ex1) {
                     _logger.log(Level.SEVERE,"jts.exception_in_db_log_resource",ex1);
                 }
@@ -187,5 +243,82 @@ class LogDBHelper {
         return gtidMap;
     }
 
-    
+    String getServerNameForInstanceName(String instanceName) {
+        String serverName = null;
+        if (ds != null) {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("LogDBHelper get serverName for instanceName: " + instanceName);
+            }
+            Connection conn = null;
+            PreparedStatement prepStmt1 = null;    
+            ResultSet rs = null;
+            try {
+                //conn = ds.getConnection();
+		conn = (Connection)(getNonTxConnectionMethod.invoke(ds, null)); 
+                prepStmt1 = conn.prepareStatement(selectServerNameStatement);
+                prepStmt1.setString(1,instanceName);
+                rs = prepStmt1.executeQuery();
+                if (rs.next()) {
+                    serverName = rs.getString(1);
+                    if (_logger.isLoggable(Level.FINE)) {
+                        _logger.fine("LogDBHelper found serverName: " + serverName + " for instanceName: " + instanceName);
+                    }
+                }
+            } catch (Exception ex) {
+                _logger.log(Level.SEVERE,"jts.exception_in_db_log_resource",ex);
+            } finally {
+                try {
+                    if (rs != null) 
+                        rs.close();
+                } catch (Exception ex1) {
+                    _logger.log(Level.SEVERE,"jts.exception_in_db_log_resource",ex1);
+                }
+                try {
+                    if (prepStmt1 != null) 
+                        prepStmt1.close();
+                } catch (Exception ex1) {
+                    _logger.log(Level.SEVERE,"jts.exception_in_db_log_resource",ex1);
+                }
+                try {
+                    if (conn != null)
+                        conn.close();
+                } catch (Exception ex1) {
+                    _logger.log(Level.SEVERE,"jts.exception_in_db_log_resource",ex1);
+                }
+            }
+        }
+        return serverName;
+    }
+
+    private void initTable() {
+        if (ds != null) {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("LogDBHelper.initTable for serverName: " + Configuration.getServerName());
+                _logger.fine("LogDBHelper.initTable for instanceName: " + Configuration.getPropertyValue(Configuration.INSTANCE_NAME));
+            }
+            Connection conn = null;
+            Statement stmt1 = null;
+            try {
+                conn = (Connection)(getNonTxConnectionMethod.invoke(ds, null));
+                stmt1 = conn.createStatement();
+                stmt1.execute(createTableStatement);
+            } catch (Exception ex) {
+                _logger.log(Level.INFO,"jts.exception_in_db_log_resource_create");
+                _logger.log(Level.FINE,ex.getMessage(), ex);
+            } finally {
+                try {
+                if (stmt1 != null)
+                    stmt1.close();
+                if (conn != null)
+                    conn.close();
+                } catch (Exception ex1) {
+                    _logger.log(Level.SEVERE,"jts.exception_in_db_log_resource",ex1);
+                }
+            }
+            // Add a mapping between the serverName and the instanceName
+            if (getServerNameForInstanceName(Configuration.getPropertyValue(Configuration.INSTANCE_NAME)) == null) {
+                addRecord(0, null);
+            }
+        }
+    }   
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,8 +45,6 @@ import com.sun.enterprise.ee.cms.core.*;
 import com.sun.enterprise.ee.cms.core.AliveAndReadySignal;
 import com.sun.enterprise.ee.cms.core.GroupManagementService;
 import com.sun.enterprise.ee.cms.impl.client.*;
-import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
-import com.sun.enterprise.ee.cms.spi.MemberStates;
 import com.sun.enterprise.mgmt.transport.NetworkUtility;
 import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants;
 import com.sun.logging.LogDomains;
@@ -68,8 +66,6 @@ import org.jvnet.hk2.config.types.Property;
 
 import java.util.List;
 import java.util.Properties;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
@@ -95,9 +91,26 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
     private final static String SPECTATOR = "SPECTATOR";
     private final static String MEMBERTYPE_STRING = "MEMBER_TYPE";
 
+    /*
+     * Used only for user-managed clusters. This ties each cluster
+     * instance to port 9090 for GMS communication, so only
+     * one instance can be run per machine. For more information, including
+     * how we could let the user set this, see the usage in
+     * readGMSConfigProps().
+     */
+    private static final int UMC_GMS_LISTENER_PORT = 9090;
+
+    /*
+     * Used only for user-managed clusters. This prop can be set
+     * on the group management service object to override the default
+     * behavior of dropping failed/stopped instances from the health
+     * history table.
+     */
+    private static final String KEEP_FORMER_MEMBER_HISTORY =
+        "KEEP_FORMER_MEMBER_HISTORY";
+
     // all set in postConstruct
     private String instanceName = null;
-    private boolean isDas = false;
     private Cluster cluster = null;
     private String clusterName = null;
     private Config clusterConfig = null;
@@ -167,29 +180,35 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 return false;
             }
 
-            Domain domain = habitat.getComponent(Domain.class);
-            instanceName = env.getInstanceName();
-            isDas = env.isDas();
-            cluster = server.getCluster();
-            if (cluster == null && clusters != null) {
-                // must be the DAS since it not direclty considered a member of cluster by domain.xml.
-                // iterate over all clusters to find the cluster that has name passed in.
-                for (Cluster clusterI : clusters.getCluster()) {
-                    if (clusterName.compareTo(clusterI.getName()) == 0) {
-                        cluster = clusterI;
-                        break;
+            if (server.isClusteredDas()) {
+                // this is for the user-managed cluster case
+                instanceName = server.getClusterMemberName();
+                initializeHealthHistory(instanceName);
+                clusterConfig = server.getConfig();
+            } else {
+                Domain domain = habitat.getComponent(Domain.class);
+                instanceName = env.getInstanceName();
+                cluster = server.getCluster();
+                if (cluster == null && clusters != null) {
+                    // must be the DAS since it not direclty considered a member of cluster by domain.xml.
+                    // iterate over all clusters to find the cluster that has name passed in.
+                    for (Cluster clusterI : clusters.getCluster()) {
+                        if (clusterName.compareTo(clusterI.getName()) == 0) {
+                            cluster = clusterI;
+                            break;
+                        }
                     }
                 }
-            }
-            if (cluster == null) {
-                logger.log(Level.WARNING, "gmsservice.nocluster.warning");
-                return false;       //don't enable GMS
-            } else if (isDas) {
-                // only want to do this in the case of the DAS
-                initializeHealthHistory(cluster);
-            }
+                if (cluster == null) {
+                    logger.log(Level.WARNING, "gmsservice.nocluster.warning");
+                    return false;       //don't enable GMS
+                } else if (env.isDas()) {
+                    // only want to do this in the case of the DAS
+                    initializeHealthHistory(cluster);
+                }
 
-            clusterConfig = domain.getConfigNamed(clusterName + "-config");
+                clusterConfig = domain.getConfigNamed(clusterName + "-config");
+            }
             if (logger.isLoggable(Level.CONFIG)) {
                 logger.log(Level.CONFIG,
                     "clusterName=" + clusterName +
@@ -242,13 +261,59 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
         }
     }
 
+    /*
+     * This is used in the user-managed cluster case where there
+     * is no cluster config bean and instances can come and
+     * go dynamically.
+     *
+     * In such a case, the history of failed/stopped instances
+     * can grow without bound, so we check a property to
+     * see if we should keep failed/stopped instances and
+     * pass this to the health history object. The default
+     * is to drop former members.
+     */
+    private void initializeHealthHistory(String instanceName) {
+        boolean keepFormerMembers = false;
+
+        Property keepFormerMemberProp =
+            server.getConfig().getGroupManagementService().getProperty(
+                KEEP_FORMER_MEMBER_HISTORY);
+        if (keepFormerMemberProp != null) {
+            keepFormerMembers =
+                Boolean.parseBoolean(keepFormerMemberProp.getValue());
+        }
+        
+
+        try {
+            /*
+             * Should not fail, but we need to make sure it doesn't
+             * affect GMS just in case.
+             */
+            hHistory = new HealthHistory(instanceName, keepFormerMembers);
+        } catch (Throwable t) {
+            logger.log(Level.WARNING, "gmsexception.new.health.history",
+                t.getLocalizedMessage());
+        }
+    }
+
     private void readGMSConfigProps(Properties configProps) {
-        configProps.put(MEMBERTYPE_STRING, isDas ? SPECTATOR : CORE);
+        if (env.isDas() && !server.isClusteredDas()) {
+            configProps.put(MEMBERTYPE_STRING, SPECTATOR);
+        } else {
+            configProps.put(MEMBERTYPE_STRING, CORE);
+        }
+
+        // Next line should correspond with GlassFish default for grizzly.
+        // For GlassFish 3.1.2, that is grizzly 1.9.
+        // For GlassFish with Grizzly 2.0, just let this default to it.
+        configProps.put("SHOAL_GROUP_COMMUNICATION_PROVIDER", "grizzly1_9");
+        
         for (ServiceProviderConfigurationKeys key : ServiceProviderConfigurationKeys.values()) {
             String keyName = key.toString();
             try {
             switch (key) {
                 case MULTICASTADDRESS:
+                    // not supported in UMC case yet
                     if (cluster != null) {
                         String value = cluster.getGmsMulticastAddress();
                         if (value != null) {
@@ -258,6 +323,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                     break;
 
                 case MULTICASTPORT:
+                    // not supported in UMC case yet
                     if (cluster != null) {
                         String value = cluster.getGmsMulticastPort();
                         if (value != null) {
@@ -303,7 +369,8 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                     break;
 
                 case IS_BOOTSTRAPPING_NODE:
-                    configProps.put(keyName, isDas ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
+                    // TODO: check this isDas call. Need to check clustered DAS?
+                    configProps.put(keyName, env.isDas() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
                     break;
 
                 case VIRTUAL_MULTICAST_URI_LIST:
@@ -311,23 +378,27 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                     break;
 
                 case BIND_INTERFACE_ADDRESS:
-                    if (cluster != null) {
-                        String value = cluster.getGmsBindInterfaceAddress();
-                        if (value != null) {
-                            value = value.trim();
-                        }
-                        if (value != null && value.length() > 1 && value.charAt(0) != '$') {
+                    String addr = null;
+                    if (server.isClusteredDas()) {
+                        addr = clusterConfig.getPropertyValue(
+                            "GMS_BIND_INTERFACE_ADDRESS");
+                    } else if  (cluster != null) {
+                        addr = cluster.getGmsBindInterfaceAddress();
+                    }
+                    if (addr != null) {
+                        addr = addr.trim();
+                    }
+                    if (addr != null && addr.length() > 1 && addr.charAt(0) != '$') {
 
-                            // todo: remove check for value length greater than 1.
-                            // this value could be anything from IPv4 address, IPv6 address, hostname, network interface name.
-                            // Only supported IPv4 address in gf v2.
-                            if (NetworkUtility.isBindAddressValid(value)) {
-                                configProps.put(keyName, value);
-                            } else {
-                                logger.log(Level.SEVERE,
-                                    "gmsservice.bind.int.address.invalid",
-                                    value);
-                            }
+                        // todo: remove check for value length greater than 1.
+                        // this value could be anything from IPv4 address, IPv6 address, hostname, network interface name.
+                        // Only supported IPv4 address in gf v2.
+                        if (NetworkUtility.isBindAddressValid(addr)) {
+                            configProps.put(keyName, addr);
+                        } else {
+                            logger.log(Level.SEVERE,
+                                "gmsservice.bind.int.address.invalid",
+                                addr);
                         }
                     }
                     break;
@@ -396,10 +467,27 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             }
         } /* end for loop over ServiceProviderConfigurationKeys */
 
+        /*
+         * Special case for user-managed clusters. This is the equivalent
+         * of setting GMS_LISTENER_PORT on a cluster object (if there
+         * were one). This ties GMS to the same port on all instances.
+         * If we want to allow users to specify different ports for
+         * each instance, then we can look for this property in the
+         * server config instead (but that is more work for the user
+         * since s/he would need to include it in every address in the
+         * discovery uri list).
+         */
+        if (server.isClusteredDas()) {
+            configProps.put(GrizzlyConfigConstants.TCPSTARTPORT.toString(),
+                UMC_GMS_LISTENER_PORT);
+            configProps.put(GrizzlyConfigConstants.TCPENDPORT.toString(),
+                UMC_GMS_LISTENER_PORT);
+        }
+
         // check for Grizzly transport specific properties in GroupManagementService property list and then cluster property list.
         // cluster property is more specific than group-mangement-service, so allow cluster property to override group-management-service proeprty
         // if a GrizzlyConfigConstant property is in both list.
-        List<Property> props = null;
+        List<Property> props;
         if (clusterConfig != null) {
             props = clusterConfig.getGroupManagementService().getProperty();
             for (Property prop : props) {
@@ -421,21 +509,20 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                                 " since value is unresolved symbolic token=" +
                                 value);
                     }
-                } else if (name != null ) {
-                        if (logger.isLoggable(Level.CONFIG)) {
-                            logger.log(Level.CONFIG,
-                                "processing group-management-service property name=" +
-                                    name + " value= " + value);
-                        }
-                        if (name.startsWith(GMS_PROPERTY_PREFIX)) {
-                            name = name.replaceFirst(GMS_PROPERTY_PREFIX_REGEXP, "");
-                        }
-                        configProps.put(name, value);
-                        if (! validateGMSProperty(name)) {
-                            logger.log(Level.WARNING, "gmsexception.ignoring.property",
-                                           new Object [] {name, value, ""} );
-                        }
-
+                } else {
+                    if (logger.isLoggable(Level.CONFIG)) {
+                        logger.log(Level.CONFIG,
+                            "processing group-management-service property name=" +
+                                name + " value= " + value);
+                    }
+                    if (name.startsWith(GMS_PROPERTY_PREFIX)) {
+                        name = name.replaceFirst(GMS_PROPERTY_PREFIX_REGEXP, "");
+                    }
+                    configProps.put(name, value);
+                    if (!validateGMSProperty(name)) {
+                        logger.log(Level.WARNING, "gmsexception.ignoring.property",
+                            new Object[]{name, value, ""});
+                    }
                 }
             }
         }
@@ -444,7 +531,9 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             for (Property prop : props) {
                 String name = prop.getName().trim();
                 String value = prop.getValue().trim();
-                if (name == null || value == null) continue;
+                if (name == null || value == null) {
+                    continue;
+                }
                 if (logger.isLoggable(Level.CONFIG)) {
                     logger.log(Level.CONFIG,
                         "processing cluster property name=" + name +
@@ -458,31 +547,31 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                             value);
                     }
                 } else {
-                        if (name.startsWith(GMS_PROPERTY_PREFIX)) {
-                            name = name.replaceFirst(GMS_PROPERTY_PREFIX_REGEXP, "");
-                        }
-                        // undocumented property for testing purposes.
-                        // impossible to register handlers in a regular app before gms starts up.
-                        if (name.compareTo("ALIVEANDREADY_LOGGING") == 0){
-                            aliveAndReadyLoggingEnabled = Boolean.parseBoolean(value);
-                        } else if (name.compareTo("LISTENER_PORT") == 0 ) {
+                    if (name.startsWith(GMS_PROPERTY_PREFIX)) {
+                        name = name.replaceFirst(GMS_PROPERTY_PREFIX_REGEXP, "");
+                    }
+                    // undocumented property for testing purposes.
+                    // impossible to register handlers in a regular app before gms starts up.
+                    if (name.compareTo("ALIVEANDREADY_LOGGING") == 0) {
+                        aliveAndReadyLoggingEnabled = Boolean.parseBoolean(value);
+                    } else if (name.compareTo("LISTENER_PORT") == 0) {
 
-                            // special case mapping.  Glassfish Cluster property GMS_LISTENER_PORT maps to Grizzly Config Constants TCPSTARTPORT and TCPENDPORT.
-                            configProps.put(GrizzlyConfigConstants.TCPSTARTPORT.toString(), value);
-                            configProps.put(GrizzlyConfigConstants.TCPENDPORT.toString(), value);
-                        } else if (name.compareTo("TEST_FAILURE_RECOVERY") == 0) {
-                            testFailureRecoveryHandler = Boolean.parseBoolean(value);
-                        } else {
-                            // handle normal case.  one to one mapping.
-                            configProps.put(name, value);
-                            logger.log(Level.CONFIG,
-                        "processing cluster property name=" + name +
-                        " value= " + value);
-                            if (! validateGMSProperty(name)) {
-                                logger.log(Level.WARNING, "gmsexception.cluster.property.error",
-                                           new Object [] {name, value, ""} );
-                            }
+                        // special case mapping.  Glassfish Cluster property GMS_LISTENER_PORT maps to Grizzly Config Constants TCPSTARTPORT and TCPENDPORT.
+                        configProps.put(GrizzlyConfigConstants.TCPSTARTPORT.toString(), value);
+                        configProps.put(GrizzlyConfigConstants.TCPENDPORT.toString(), value);
+                    } else if (name.compareTo("TEST_FAILURE_RECOVERY") == 0) {
+                        testFailureRecoveryHandler = Boolean.parseBoolean(value);
+                    } else {
+                        // handle normal case.  one to one mapping.
+                        configProps.put(name, value);
+                        logger.log(Level.CONFIG,
+                            "processing cluster property name=" + name +
+                                " value= " + value);
+                        if (!validateGMSProperty(name)) {
+                            logger.log(Level.WARNING, "gmsexception.cluster.property.error",
+                                new Object[]{name, value, ""});
                         }
+                    }
                 }
             }
         }
@@ -494,12 +583,12 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
         try {
             key = GrizzlyConfigConstants.valueOf(propertyName);
             result = true;
-        } catch (Throwable t) {}
+        } catch (Throwable ignored) {}
         if (key == null) {
             try {
                 key = ServiceProviderConfigurationKeys.valueOf(propertyName);
                 result = true;
-            } catch (Throwable t) {}
+            } catch (Throwable ignored) {}
         }
         return key != null && result;
     }
@@ -529,7 +618,8 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 registerFailureSuspectedListener(this);
 
                 //fix gf it 12905
-                if (testFailureRecoveryHandler && ! env.isDas()) {
+                if (testFailureRecoveryHandler &&
+                    CORE.equals(configProps.getProperty(MEMBERTYPE_STRING))) {
 
                     // this must be here or appointed recovery server notification is not printed out for automated testing.
                     registerFailureRecoveryListener("GlassfishFailureRecoveryHandlerTest", this);
@@ -586,7 +676,9 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             logger.log(Level.INFO, "gmsservice.started",
                 new Object[] {instanceName, clusterName});
 
-        } else throw new GMSException("gms object is null.");
+        } else {
+            throw new GMSException("gms object is null.");
+        }
     }
 
     private void printProps(Properties prop) {
@@ -655,7 +747,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             logger.log(Level.INFO, "gmsservice.failurerecovery.start.notification", new Object[]{frsSignal.getComponentName(), frsSignal.getMemberToken()});
             try {
                 Thread.sleep(20 * 1000); // sleep 20 seconds. simulate wait time to allow instance to restart and do self recovery before another instance does it.
-            } catch (InterruptedException ie) {
+            } catch (InterruptedException ignored) {
             }
             logger.log(Level.INFO, "gmsservice.failurerecovery.completed.notification", new Object[]{frsSignal.getComponentName(), frsSignal.getMemberToken()});
         }

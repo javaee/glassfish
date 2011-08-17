@@ -95,6 +95,22 @@
                     }
                 }
             }
+            if ("!(#{pageSession.resChildType} = connector-resource)") {
+                setPageSessionAttribute(key="has2Objects" value="#{true}");
+                setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+                setPageSessionAttribute(key="selfUrl2", value="#{pageSession.parentUrl2}/#{pageSession.childType2}/#{pageSession.encodedName}");
+                gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl2}" exists="#{requestScope.hasAssociatedTarget}");
+                if (#{hasAssociatedTarget}) {
+                    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}", valueMap="#{pageSession.valueMap2}");
+                }
+                if (!#{hasAssociatedTarget}) {
+                    createMap(result="#{pageSession.valueMap2}");                    
+                    mapPut(map="#{pageSession.valueMap2}", key="enabled", value="#{pageSession.valueMap.enabled}");
+                }
+                if(#{reload}) {
+                    mapPut(map="#{pageSession.valueMap2}", key="enabled", value="#{status}");
+                }
+            }            
         }
     />
     <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" >

@@ -579,7 +579,7 @@ public class RecoveryManager {
                         // Synchronization objects.
 
                         TimeoutManager.setTimeout(
-                            new Long(coord.getLocalTID()),
+                            coord.getLocalTID(),
                             TimeoutManager.IN_DOUBT_TIMEOUT,
                             60);
 
@@ -1019,7 +1019,7 @@ public class RecoveryManager {
                         // is registered with the coordinator per transaction
                         // per RM.
                         
-                        String xidStr = stringifyXid(inDoubtXids[i]);
+                        //String xidStr = stringifyXid(inDoubtXids[i]);
                         if (!uniqueXids.contains(inDoubtXids[i])) { // unique xid
                             if(_logger.isLoggable(Level.FINE))
                             {
@@ -1182,8 +1182,17 @@ public class RecoveryManager {
             return;
         }
 
+        dbXARecovery(Configuration.getServerName(), xaResources);
+
+        try {
+        resyncComplete(false, false);
+        } catch (Throwable ex) { ex.printStackTrace(); }
+
+	}
+
+    static void dbXARecovery(String serverName, Enumeration xaResources) {
         // Get global TIDs
-        Map gtidMap = LogDBHelper.getInstance().getGlobalTIDMap();
+        Map gtidMap = LogDBHelper.getInstance().getGlobalTIDMap(serverName);
 
         Set uniqueXids = new HashSet();
 
@@ -1207,7 +1216,7 @@ public class RecoveryManager {
 
                     String branchQualifier =
                         new String(inDoubtXids[i].getBranchQualifier());
-                    String serverName = Configuration.getServerName();
+                    //String serverName = Configuration.getServerName();
                     
                     if (branchQualifier.startsWith(serverName)) {
 
@@ -1219,7 +1228,7 @@ public class RecoveryManager {
                         // is registered with the coordinator per transaction
                         // per RM.
                         
-                        String xidStr = stringifyXid(inDoubtXids[i]);
+                        //String xidStr = stringifyXid(inDoubtXids[i]);
                         if (!uniqueXids.contains(inDoubtXids[i])) { // unique xid
                             if(_logger.isLoggable(Level.FINE))
                             {
@@ -1239,7 +1248,7 @@ public class RecoveryManager {
                                  xaResource.rollback(inDoubtXids[i]);
                             } else {
                                  xaResource.commit(inDoubtXids[i], one_phase);
-                                 LogDBHelper.getInstance().deleteRecord(localTID.longValue());
+                                 LogDBHelper.getInstance().deleteRecord(localTID.longValue(), serverName);
                             }
                             } catch (Exception ex) { ex.printStackTrace(); }
                         } else {
@@ -1263,9 +1272,11 @@ public class RecoveryManager {
                     }
                 }
         }
+/**
         try {
         resyncComplete(false, false);
         } catch (Throwable ex) { ex.printStackTrace(); }
+**/
     }
 
 
@@ -1460,7 +1471,7 @@ public class RecoveryManager {
     }
 
     static void addToIncompleTx(CoordinatorImpl coord, boolean commit) {
-        inCompleteTxMap.put(coord, new Boolean(commit));
+        inCompleteTxMap.put(coord, commit);
     }
 
     public static Boolean isIncompleteTxRecoveryRequired() {
@@ -1515,7 +1526,7 @@ public class RecoveryManager {
                         // is registered with the coordinator per transaction
                         // per RM.
 
-                        String xidStr = stringifyXid(inDoubtXids[i]);
+                        //String xidStr = stringifyXid(inDoubtXids[i]);
                         if (!uniqueXids.contains(inDoubtXids[i])) { // unique xid
                             if(_logger.isLoggable(Level.FINE))
                             {
@@ -1630,7 +1641,7 @@ public class RecoveryManager {
 
     static void createRecoveryFile(String serverName) {
         try {
-            String logPath = getLogDirectory();
+            String logPath = LogControl.getLogPath();
             File recoveryFile = LogControl.recoveryIdentifierFile(serverName,logPath);
             RandomAccessFile raf = new RandomAccessFile(recoveryFile,"rw");
             raf.writeBytes(serverName);
@@ -1669,23 +1680,6 @@ public class RecoveryManager {
     }
 
     /**
-     * return transaction log directory
-     */
-    public static String getLogDirectory() {
-        int[] result = new int[1];
-        String logDir = Configuration.getDirectory(Configuration.LOG_DIRECTORY,
-                     Configuration.JTS_SUBDIRECTORY, result);
-        if( result[0] == Configuration.DEFAULT_USED ||
-                result[0] == Configuration.DEFAULT_INVALID ) {
-            if( result[0] == Configuration.DEFAULT_INVALID ) {
-                logDir = ".";
-            }
-        }
-
-        return logDir;
-    }
-
-    /**
      * return true if commit_one_phase should be used during recovery
      */
     private static boolean getCommitOnePhaseDuringRecovery() {
@@ -1703,11 +1697,10 @@ public class RecoveryManager {
         if (resyncThread == null) {
             initialise();
         }
-        if(_logger.isLoggable(Level.FINE)) {
+	if(_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE,"RecoveryManager.startResyncThread Configuration.isRecoverable? "
                     + Configuration.isRecoverable());
 	}
-
         if (Configuration.isRecoverable()) {
             resyncThread.start();
         }
@@ -1868,7 +1861,8 @@ class ResyncThread extends Thread  {
 	}
         try {
             if (Configuration.isDBLoggingEnabled()) {
-                RecoveryManager.dbXARecovery();
+                // DB recovery on startup fails to lookup the logging resource - GLASSFISH-16505
+                // RecoveryManager.dbXARecovery();
             } else {
                 if (RecoveryManager.recover()) {
                     RecoveryManager.resync();

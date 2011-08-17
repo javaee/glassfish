@@ -70,7 +70,7 @@
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
-        setSessionAttribute(key="secureCancelUrl" value="#{pageSession.selfPage}")
+
         setPageSessionAttribute(key="readOnly" value="#{false}" );
         if ("(#{pageSession.Name}=admin-listener)") {
             setPageSessionAttribute(key="readOnly" value="#{true}" );
@@ -80,6 +80,7 @@
         setPageSessionAttribute(key="showSSLTab" value="#{true}");
         setPageSessionAttribute(key="showHttpTab" value="#{true}");
         setPageSessionAttribute(key="showFileCacheTab" value="#{true}");
+        setPageSessionAttribute(key="disableSaveButton" value="#{false}");
         if (#{sessionScope.secureAdminEnabled}){
             gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/http-service/virtual-server/__asadmin" valueMap="#{requestScope.tvp}");
             setAttribute(key="listenerName" value="#{requestScope.tvp['networkListeners']}");
@@ -88,12 +89,14 @@
                 setPageSessionAttribute(key="showSSLTab" value="#{false}");
                 setPageSessionAttribute(key="showHttpTab" value="#{false}");
                 setPageSessionAttribute(key="showFileCacheTab" value="#{false}");
+                setPageSessionAttribute(key="disableSaveButton" value="#{true}");
             }
             //TODO: hardcoding this 2 protocol name. Should obtain through the protocol-finder.
             if (" (#{pageSession.Name}=sec-admin-listener) || (#{pageSession.Name}=admin-http-redirect)"){
                 setPageSessionAttribute(key="showSSLTab" value="#{false}");
                 setPageSessionAttribute(key="showHttpTab" value="#{false}");
                 setPageSessionAttribute(key="showFileCacheTab" value="#{false}");
+                setPageSessionAttribute(key="disableSaveButton" value="#{true}");
             }
         }
 
@@ -106,6 +109,17 @@
                 <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.protocolEditPageTitle}" helpText="$resource{i18n_web.grizzly.protocolEditPageTitleHelp}">
 <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
+            <sun:button id="saveButton" disabled="#{disableSaveButton}" text="$resource{i18n.button.Save}"
+                    onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
+                <!command
+                    prepareSuccessfulMsg();
+                    gf.createEntity(endpoint="#{pageSession.selfUrl}"
+                        attrs="#{pageSession.valueMap}"
+                        convertToFalse="#{pageSession.convertToFalseList}"
+                    );
+                    gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                />
+            </sun:button>
             <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
                 <!command
                     gf.redirect(page="#{parentPage}?configName=#{configName}");

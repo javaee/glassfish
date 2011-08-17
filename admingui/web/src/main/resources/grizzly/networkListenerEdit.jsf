@@ -84,7 +84,6 @@
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
 
-        setSessionAttribute(key="secureCancelUrl" value="#{pageSession.selfPage}")
         setPageSessionAttribute(key="readOnly" value="#{false}" );
         if ("(#{pageSession.Name}=admin-listener)") {
             setPageSessionAttribute(key="readOnly" value="#{true}" );

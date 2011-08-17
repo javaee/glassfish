@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,6 +51,7 @@ import com.sun.enterprise.config.serverbeans.AvailabilityService;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.transaction.api.RecoveryResourceRegistry;
@@ -64,6 +65,7 @@ import com.sun.xml.ws.tx.dev.WSATRuntimeConfig;
 import com.sun.xml.wss.impl.config.SecurityConfigProvider;
 
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.Deployer;
@@ -118,6 +120,8 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
     private AvailabilityService availabilityService;
     @Inject
     private SecurityService secService;
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Server server;
 
     @Override
     public void postConstruct() {
@@ -249,7 +253,7 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
     }
 
     private boolean isCluster() {
-        return !env.isDas() && !env.isEmbedded() && gmsAdapterService.isGmsEnabled();
+        return (!env.isDas() || server.isClusteredDas()) && !env.isEmbedded() && gmsAdapterService.isGmsEnabled();
     }
 
     private boolean isHaEnabled() {

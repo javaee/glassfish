@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -43,10 +43,12 @@
 
 <project name="common-targets">
     <property name="install.dir.name" value="glassfish3"/>
+
     <target name="init">
         <available property="present" 
                    file="target/stage/${install.dir.name}/glassfish/modules" type="dir" />
     </target> 
+
     <target name="pack.compression" depends="init" if="present">
 	<!-- pack200 compression -->
         <apply executable="pack200" 
@@ -71,70 +73,74 @@
             <fileset dir="target/stage/${install.dir.name}/glassfish/modules" 
                      includes="**/*.pack.gz"/>
         </delete>
- </target>
+   </target>
 
-
-
- <macrodef name="stage-distribution-fragments">
-        <attribute name="graphid" />
-        <sequential>
-		<resolveAll todir="target/fragments" tolerateBrokenPOMs="true" stripVersion="true">
-		<graphRef refid="@{graphid}"/>
-                <packaging value="distribution-fragment"/>
-             </resolveAll>
-
-	     <unzip dest="target/stage/${install.dir.name}">
+   <macrodef name="stage-distribution-fragments">
+        <sequential> 
+             <mkdir dir="target/artifacts/distribution-fragments"/>           
+             <unzip dest="target/stage/${install.dir.name}">
                 <patternset>
                     <exclude name="META-INF/**"/>
                 </patternset>
-                <fileset dir="target/fragments" includes="*.zip"/>
- 	     </unzip> 
-
+                <fileset dir="target/artifacts/distribution-fragments" includes="*.zip"/>
+             </unzip>
         </sequential>
-   </macrodef> 
+   </macrodef>
 
-    <macrodef name="stage-module-jars">
-	    <attribute name="graphid" />
-	    <sequential>
-                <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules" tolerateBrokenPOMs="true" stripVersion="true">
-		    <graphRef refid="@{graphid}"/>
-                </resolveAll>
 
-                <delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.zip" />   
-	        <delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.pom" />  
-	         <delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.war" />  
-        </sequential>
+   <macrodef name="stage-module-jars">
+       <sequential>
+                <copy todir="target/stage/${install.dir.name}/glassfish/modules" failonerror="false">
+                    <fileset dir="target/artifacts/jars" includes="*.jar"/>
+ 	        </copy>  
+       </sequential>
    </macrodef>
 
    <macrodef name="stage-lib-jars">
-            <attribute name="graphid" />
-            <sequential>
-                <resolveAll todir="target/stage/${install.dir.name}/glassfish/lib" tolerateBrokenPOMs="true" stripVersion="true">
-                    <graphRef refid="@{graphid}"/>
-                </resolveAll>
-
-                <delete dir="target/stage/${install.dir.name}/glassfish/lib" includes="*.zip" />
-                <delete dir="target/stage/${install.dir.name}/glassfish/lib" includes="*.pom" />
-                 <delete dir="target/stage/${install.dir.name}/glassfish/lib" includes="*.war" />
-        </sequential>
+       <sequential>
+                <copy todir="target/stage/${install.dir.name}/glassfish/lib" failonerror="false">
+                    <fileset dir="target/artifacts/jars" includes="*.jar"/>
+ 	        </copy>  
+       </sequential>
    </macrodef>
 
    <macrodef name="stage-module-autostart-jars">
-	    <attribute name="graphid" />
-	    <sequential>
-		<resolveAll todir="target/stage/${install.dir.name}/glassfish/modules/autostart" tolerateBrokenPOMs="true" stripVersion="true">
-		    <graphRef refid="@{graphid}"/>
-                </resolveAll>
+       <sequential>
+                <copy todir="target/stage/${install.dir.name}/glassfish/modules/autostart" failonerror="false">
+                    <fileset dir="target/artifacts/jars" includes="*.jar"/>
+ 	        </copy>  
+       </sequential>
+   </macrodef>
 
-		<delete dir="target/stage/${install.dir.name}/glassfish/modules/autostart" includes="*.zip" />   
-		<delete dir="target/stage/${install.dir.name}/glassfish/modules/autostart" includes="*.pom" />  
-		<delete dir="target/stage/${install.dir.name}/glassfish/modules/autostart" includes="*.war" />  
-            </sequential>
-      </macrodef>
+   <target name="filter-module-artifacts">
+       <resolveArtifact artifactId="${previous.package.name}" classifier="artifacts" type="properties"
+           property="artifacts.properties.file" />
+       <copy file="${artifacts.properties.file}" tofile="target/artifacts.properties"
+           overwrite="true" />
 
-      <target name="create-zip-artifact">
-	      <zip file="target/${package.name}.zip" basedir="target/stage"/>
+       <delete quiet="true">
+           <fileset dir="target/artifacts" includesfile="target/artifacts.properties" />
+       </delete>
+       
+   </target>
+
+   <target name="create-list-artifact">
+       <fileset id="package.artifacts" dir="target/artifacts" />
+               
+       <echo file="target/artifacts.properties" append="true" message=";${toString:package.artifacts}"/>
+
+       <replace file="target/artifacts.properties" token=";">
+           <replacevalue><![CDATA[
+]]></replacevalue>
+       </replace>
+
+       <attachArtifact file="target/artifacts.properties" classifier="artifacts" type="properties"/>             
+   </target>
+
+   <target name="create-zip-artifact">
+       <zip file="target/${package.name}.zip" basedir="target/stage"/>
            
-	      <attachArtifact file="target/${package.name}.zip"/>
-     </target>
+       <attachArtifact file="target/${package.name}.zip"/>
+   </target>
+
 </project>
