@@ -76,11 +76,11 @@ public class TreeBean {
         root.add(createNode("adminServerNode", "Admin Server", "/images/icons/instance.gif", "/demo/adminServer.xhtml", null));
         root.add(createNode("clusterNode", "Clusters", "/images/icons/cluster.gif", "/demo/clusters.xhtml", null));
         root.add(createNode("instancesNode", "Standalone Instances", "/images/icons/instance.gif", "/demo/instances.xhtml", null));
-        root.add(createNode("applicationsNode", "Applications", "/images/icons/instance.gif", "/demo/testApplications.xhtml", null));
+        root.add(createNode("applicationsNode", "Applications", "/images/icons/instance.gif", "/demo/listApplications.xhtml", null));
         root.addAll(getRootNodes());
         
-        root.add(createNode("demoNode", "Demo", "/images/icons/instance.gif", "/demo/listApplications.xhtml", null));
-        root.add(createNode("wizardNode", "Wizard Demo", null, "/demo/wizard.xhtml", null));
+        root.add(createNode("demoNode", "Drag&Drop Demo", null, "/demo/testApplications.xhtml", null));
+        root.add(createNode("wizardNode", "Deployment Wizard Demo", null, "/demo/wizard.xhtml", null));
 
         NavigationNode resources = createNode("resourcesNode", "Resources", null, "/images/icons/resources.gif", new ArrayList<NavigationNode>() {{
                 add(createNode("jdbcNode", "JDBC", null, "/images/icons/jdbc.gif", null));
