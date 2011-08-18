@@ -531,7 +531,7 @@ public final class ConfigModel {
          * @return
          *      Instance of the given 'returnType'
          */
-        protected static Object convertLeafValue(Class<?> returnType, String v) {
+        protected Object convertLeafValue(Dom parent, Class<?> returnType, String v) {
             if(v==null)
                 // TODO: default value handling
                 // TODO: if primitive types, report an error
@@ -552,13 +552,17 @@ public final class ConfigModel {
         private static final Set<String> BOOLEAN_TRUE = new HashSet<String>(Arrays.asList("true","yes","on","1"));
     }
 
-    static final class CollectionLeaf extends Leaf {
+    static class CollectionLeaf extends Leaf {
         CollectionLeaf(String xmlName) {
             super(xmlName);
         }
 
         public boolean isCollection() {
             return true;
+        }
+
+        String elementValue(Object element) {
+            return element.toString();
         }
 
         public Object get(final Dom dom, Type returnType) {
@@ -571,12 +575,12 @@ public final class ConfigModel {
             // return a live list
             return new AbstractList<Object>() {
                 public Object get(int index) {
-                    return convertLeafValue(itemType, v.get(index));
+                    return convertLeafValue(dom, itemType, v.get(index));
                 }
 
                 public void add(int index, Object element) {
                     // update the master children list, as well as this view 'v'
-                    dom.addLeafElement(xmlName, element.toString());
+                    dom.addLeafElement(xmlName, elementValue(element));
                     v.add(index, element.toString());
                 }
 
@@ -586,7 +590,7 @@ public final class ConfigModel {
                 }
 
                 public Object set(int index, Object element) {
-                    dom.changeLeafElement(xmlName, v.get(index), element.toString());
+                    dom.changeLeafElement(xmlName, v.get(index), elementValue(element));
                     return v.set(index, element.toString());
                 }
 
@@ -603,6 +607,28 @@ public final class ConfigModel {
             } else {//TODO -- I hope this is OK for now (km@dev.java.net 25 Mar 2008)
                 throw new UnsupportedOperationException();
             }
+        }
+    }
+
+    final class ReferenceCollectionLeaf extends CollectionLeaf {
+
+        ReferenceCollectionLeaf(String xmlName) {
+            super(xmlName);
+        }
+        protected Object convertLeafValue(Dom parent, Class<?> returnType, String v) {
+            // let's look first the fast way.
+            Object candidate = parent.getHabitat().getComponent(returnType, v);
+            if (candidate!=null) {
+                return returnType.cast(candidate);
+            }
+
+            parent = parent.getSymbolSpaceRoot(v);
+            return returnType.cast(parent.resolveReference(v,returnType.getName()).get());
+        }
+
+        @Override
+        String elementValue(Object element) {
+            return Dom.unwrap((ConfigBeanProxy) element).getKey();
         }
     }
 
@@ -639,7 +665,7 @@ public final class ConfigModel {
          */
         public Object get(Dom dom, Type returnType) {
             String v = dom.attribute(xmlName);
-            return convertLeafValue(Types.erasure(returnType), v);
+            return convertLeafValue(dom, Types.erasure(returnType), v);
         }
 
         /**
@@ -721,7 +747,7 @@ public final class ConfigModel {
         public Object get(Dom dom, Type returnType) {
             // leaf types
             String v = dom.leafElement(xmlName);
-            return convertLeafValue(Types.erasure(returnType), v);
+            return convertLeafValue(dom, Types.erasure(returnType), v);
         }
 
         public void set(Dom dom, Object arg) {
@@ -881,7 +907,7 @@ public final class ConfigModel {
         boolean reference = values.contains("reference");
         Property prop;
         if(value.equals("leaf")) {
-            prop = collection?new CollectionLeaf(elementName):
+            prop = collection?reference?new ReferenceCollectionLeaf(elementName):new CollectionLeaf(elementName):
                     reference?new ReferenceElementLeaf(elementName):new SingleLeaf(elementName);
         } else {
             // this element is a reference to another configured inhabitant.
