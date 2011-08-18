@@ -52,7 +52,7 @@
 
     <tr:table var="app" value="#{listApplicationsBean.applications}">
         <tr:column headerText="Name">
-            <h:commandLink value="#{app.name}" action="/demo/editApplicationGeneral.xhtml" />
+            <h:commandLink id="name" value="#{app.name}" onclick="location='#{request.contextPath}/demo/editApplicationGeneral.xhtml'" />
         </tr:column>
         <tr:column headerText="Enabled">
             #{app.enabled}
@@ -61,7 +61,7 @@
             #{app.engines}
         </tr:column>
         <tr:column headerText="Actions">
-            Launch 
+            <h:commandLink value="Launch"  />
         </tr:column>
     </tr:table>
 
