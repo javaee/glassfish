@@ -55,6 +55,7 @@ import com.sun.enterprise.deployment.util.AppClientValidator;
 import com.sun.enterprise.deployment.util.EjbBundleValidator;
 import com.sun.enterprise.deployment.util.EjbBundleVisitor;
 import com.sun.enterprise.deployment.util.WebBundleVisitor;
+import com.sun.enterprise.deployment.util.WebBundleValidator;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
@@ -188,7 +189,7 @@ public class StandaloneProcessor {
                         ebd.visit((EjbBundleVisitor)new EjbBundleValidator());
                     } else if (ModuleType.WAR.equals(type)) {
                         WebBundleDescriptor wbd = (WebBundleDescriptor)bundleDescriptor;
-                        wbd.visit((WebBundleVisitor)new ApplicationValidator());
+                        wbd.visit((WebBundleVisitor)new WebBundleValidator());
                     } else if (ModuleType.CAR.equals(type)) {
                         ApplicationClientDescriptor acbd = (ApplicationClientDescriptor)bundleDescriptor;
                         acbd.visit((AppClientVisitor)new AppClientValidator());
