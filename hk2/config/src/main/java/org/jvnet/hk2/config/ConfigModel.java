@@ -623,7 +623,12 @@ public final class ConfigModel {
             }
 
             parent = parent.getSymbolSpaceRoot(v);
-            return returnType.cast(parent.resolveReference(v,returnType.getName()).get());
+            Dom dom = parent.resolveReference(v,returnType.getName());
+            if (dom!=null) {
+                return returnType.cast(dom.get());
+            } else {
+                throw new IllegalArgumentException("Cannot find an instance of " + returnType + " named " + v);
+            }
         }
 
         @Override
