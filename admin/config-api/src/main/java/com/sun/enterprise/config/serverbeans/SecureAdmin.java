@@ -70,13 +70,13 @@ public interface SecureAdmin extends ConfigBeanProxy, Injectable {
     @Element
     @Create(value="enable-secure-admin-principal", decorator=SecureAdminPrincipal.CrDecorator.class, i18n=@I18n("enable.secure.admin.principal.command"))
     @Delete(value="disable-secure-admin-principal", resolver=SecureAdminPrincipal.Resolver.class, i18n=@I18n("disable.secure.admin.principal.command"))
-    @Listing(value="list-secure-admin-principals", resolver=SecureAdminPrincipal.Resolver.class, i18n=@I18n("list.secure.admin.principals.command"))
+    @Listing(value="list-secure-admin-principals", i18n=@I18n("list.secure.admin.principals.command"))
     public List<SecureAdminPrincipal> getSecureAdminPrincipal();
     
     @Element
     @Create(value="enable-secure-admin-internal-user", decorator=SecureAdminInternalUser.CrDecorator.class, i18n=@I18n("enable.secure.admin.internal.user.command"))
     @Delete(value="disable-secure-admin-internal-user", resolver=TypeAndNameResolver.class, i18n=@I18n("disable.secure.admin.internal.user.command"))
-    @Listing(value="list-secure-admin-internal-users", resolver=TypeAndNameResolver.class, i18n=@I18n("list.secure.admin.internal.user.command"))
+    @Listing(value="list-secure-admin-internal-users", i18n=@I18n("list.secure.admin.internal.user.command"))
     public List<SecureAdminInternalUser> getSecureAdminInternalUser();
 
     /**
