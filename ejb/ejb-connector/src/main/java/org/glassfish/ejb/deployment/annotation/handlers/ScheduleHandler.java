@@ -52,7 +52,7 @@ import javax.ejb.*;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.ScheduledTimerDescriptor;
-import com.sun.ejb.containers.TimerSchedule;
+//import com.sun.ejb.containers.TimerSchedule;
 
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotatedElementHandler;
@@ -116,6 +116,9 @@ public class ScheduleHandler extends AbstractAttributeHandler {
 
                     if (logger.isLoggable(Level.FINE)) {
                         logger.fine("@@@ Found Schedule on " + annMethod);
+                        
+                        /* Issue 17038, commented out for now since it references 
+                         * TimerSchedule class in ejb-container module.
                         TimerSchedule ts = new TimerSchedule(sd, 
                                 annMethod.getName(), annMethod.getParameterTypes().length);
 
@@ -123,6 +126,8 @@ public class ScheduleHandler extends AbstractAttributeHandler {
                         logger.fine("@@@ First timeout: " + 
                                 ((ts.isValid(date))? date.getTime() : "NEVER"));
                         logger.fine("@@@ Schedule : " + ts.getScheduleAsString());
+                         
+                         */
                         logger.fine("@@@ TimerConfig : " + 
                                 ((sd.getInfo() != null && !sd.getInfo().equals(""))? sd.getInfo() : null) + 
                                 " # " + sd.getPersistent());
