@@ -41,19 +41,42 @@
 
 -->
 <!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core">
-    <script src="#{request.contextPath}/js/jquery-1.6.2.min.js"/>
-    <script src="#{request.contextPath}/js/jquery-ui-1.8.15.js"/>
-    <script src="#{request.contextPath}/js/console.js"/>
-    <h:form id="serverForm" prependId="false">
-        <h:messages/>
-        <hr/>
+<trh:html xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:ui="http://java.sun.com/jsf/facelets"
+          xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:tr="http://myfaces.apache.org/trinidad"
+          xmlns:trh="http://myfaces.apache.org/trinidad/html"
+          xmlns:gf="http://java.sun.com/jsf/composite/glassfish">
 
-    </h:form>
-    <script type="text/javascript">
-        Console.UI.processServerTargets();
-    </script>
-</ui:composition>
+    <trh:head>
+        <script type="text/javascript" src="#{request.contextPath}/js/jquery-1.6.2.min.js"></script>
+        <script type="text/javascript" src="#{request.contextPath}/js/jquery-ui-1.8.15.js"></script>
+        <script type="text/javascript" src="#{request.contextPath}/js/console.js"></script>
+        <link href="#{request.contextPath}/css/td_main.css" rel="stylesheet" type="text/css"/>
+        <link type="image/x-icon" href="#{request.contextPath}/images/favicon.ico" rel="icon"/>
+        <link type="image/x-icon" href="#{request.contextPath}/images/favicon.ico" rel="shortcut icon"/>
+
+    </trh:head>
+
+    <trh:body>
+        <tr:form id="jasonForm">
+            <h:messages/>
+
+            #{myBean.text}
+            <br/>
+
+            <h:panelGroup id="dragMe">
+                Drag Me!
+                <gf:dragSource type="sample" value="Drag Me!"/>
+            </h:panelGroup>
+
+            <h:panelGroup id="dropHere" style="display: block; border:1px solid black; width: 100px; height: 100px;">
+                &#160;
+                <gf:dropTarget type="sample"
+                               dropListener="#{myBean.dropListener}"/>
+            </h:panelGroup>
+
+        </tr:form>
+    </trh:body>
+</trh:html>

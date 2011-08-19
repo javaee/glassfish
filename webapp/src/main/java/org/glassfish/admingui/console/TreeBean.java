@@ -96,6 +96,7 @@ public class TreeBean {
 
         root.add(resources);
 */
+        root.add(createNode("jason", "Jason", null, "/demo/jason.xhtml", null));
         return root;
     }
 
