@@ -96,7 +96,7 @@ public class TreeBean {
 
         root.add(resources);
 */
-        root.add(createNode("jason", "Jason", null, "/demo/jason.xhtml", null));
+        root.add(createNode("dragAndDrop", "DnD Component Demo", null, "/demo/dragAndDrop.xhtml", null));
         return root;
     }
 

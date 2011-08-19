@@ -1,0 +1,84 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.glassfish.admingui.console;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+
+/**
+ *
+ * @author jdlee
+ */
+@ManagedBean
+@SessionScoped
+public class DragAndDropBean {
+
+    private String text = "blargh!";
+    private List<String> available = new ArrayList<String>() {{
+        add("server1");
+        add("server2");
+        add("server3");
+        add("server4");
+        add("server5");
+    }};
+    private List<String> selected = new ArrayList<String>();
+
+    public DragAndDropBean() {
+        System.out.println("ARGH!");
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public List<String> getAvailable() {
+        return available;
+    }
+
+    public void setAvailable(List<String> available) {
+        this.available = available;
+    }
+
+    public List<String> getSelected() {
+        return selected;
+    }
+
+    public void setSelected(List<String> selected) {
+        this.selected = selected;
+    }
+
+    public String availableDropListener() {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        HttpServletRequest myRequest = (HttpServletRequest) fc.getExternalContext().getRequest();
+        String value = myRequest.getParameter("droppedValue");
+        available.add(value);
+        selected.remove(value);
+        Collections.sort(available);
+        Collections.sort(selected);
+
+        return null;
+    }
+
+    public String selectedDropListener() {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        HttpServletRequest myRequest = (HttpServletRequest) fc.getExternalContext().getRequest();
+        String value = myRequest.getParameter("droppedValue");
+        available.remove(value);
+        selected.add(value);
+        Collections.sort(available);
+        Collections.sort(selected);
+
+        return null;
+    }
+}

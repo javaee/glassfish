@@ -41,42 +41,46 @@
 
 -->
 <!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<trh:html xmlns="http://www.w3.org/1999/xhtml"
-          xmlns:ui="http://java.sun.com/jsf/facelets"
-          xmlns:h="http://java.sun.com/jsf/html"
-          xmlns:f="http://java.sun.com/jsf/core"
-          xmlns:tr="http://myfaces.apache.org/trinidad"
-          xmlns:trh="http://myfaces.apache.org/trinidad/html"
-          xmlns:gf="http://java.sun.com/jsf/composite/glassfish">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:tr="http://myfaces.apache.org/trinidad"
+                xmlns:trh="http://myfaces.apache.org/trinidad/html"
+                xmlns:gf="http://java.sun.com/jsf/composite/glassfish">
 
-    <trh:head>
-        <script type="text/javascript" src="#{request.contextPath}/js/jquery-1.6.2.min.js"></script>
-        <script type="text/javascript" src="#{request.contextPath}/js/jquery-ui-1.8.15.js"></script>
-        <script type="text/javascript" src="#{request.contextPath}/js/console.js"></script>
-        <link href="#{request.contextPath}/css/td_main.css" rel="stylesheet" type="text/css"/>
-        <link type="image/x-icon" href="#{request.contextPath}/images/favicon.ico" rel="icon"/>
-        <link type="image/x-icon" href="#{request.contextPath}/images/favicon.ico" rel="shortcut icon"/>
+    <tr:form id="jasonForm">
 
-    </trh:head>
+        <tr:panelBox id="availableServers" text="Available Servers:"
+                     background="light"
+                     inlineStyle="width: 30%; float: left">
+            <gf:dropTarget type="server"
+                           dropListener="#{dragAndDropBean.availableDropListener}"/>
+            <h:dataTable id="availableServersTable" value="#{dragAndDropBean.available}" var="server">
+                <h:column>
+                    <tr:panelBox id="server" text="#{server}"
+                                 inlineStyle="width: 150px;">
+                        Some details on the server!
+                        <gf:dragSource type="server" value="#{server}"/>
+                    </tr:panelBox>
+                </h:column>
+            </h:dataTable>
+        </tr:panelBox>
 
-    <trh:body>
-        <tr:form id="jasonForm">
-            <h:messages/>
-
-            #{myBean.text}
-            <br/>
-
-            <h:panelGroup id="dragMe">
-                Drag Me!
-                <gf:dragSource type="sample" value="Drag Me!"/>
-            </h:panelGroup>
-
-            <h:panelGroup id="dropHere" style="display: block; border:1px solid black; width: 100px; height: 100px;">
-                &#160;
-                <gf:dropTarget type="sample"
-                               dropListener="#{myBean.dropListener}"/>
-            </h:panelGroup>
-
-        </tr:form>
-    </trh:body>
-</trh:html>
+        <tr:panelBox id="selectedServers" text="Selected Servers:"
+                     background="light"
+                     inlineStyle="width: 30%;">
+            <gf:dropTarget type="server"
+                           dropListener="#{dragAndDropBean.selectedDropListener}"/>
+            <h:dataTable id="selectedServersTable" value="#{dragAndDropBean.selected}" var="server">
+                <h:column>
+                    <tr:panelBox id="server" text="#{server}"
+                                 inlineStyle="width: 150px;">
+                        Some details on the server!
+                        <gf:dragSource type="server" value="#{server}"/>
+                    </tr:panelBox>
+                </h:column>
+            </h:dataTable>
+        </tr:panelBox>
+    </tr:form>
+</ui:composition>
