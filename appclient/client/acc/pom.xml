@@ -363,6 +363,12 @@
      </dependency>
 
      <dependency>
+         <groupId>org.glassfish.webservices</groupId>
+         <artifactId>webservices-connector</artifactId>
+         <version>${project.version}</version>
+     </dependency>
+
+     <dependency>
          <scope>runtime</scope>
          <groupId>org.glassfish.persistence.cmp</groupId>
          <artifactId>cmp-internal-api</artifactId>
