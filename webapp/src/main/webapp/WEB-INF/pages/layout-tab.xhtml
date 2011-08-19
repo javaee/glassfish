@@ -53,7 +53,9 @@
             <h:form id="navForm" style="color: black;">
                 <h:panelGroup id="topTabs">
                     <tr:panelTabbed position ="above">
-                        <tr:showDetailItem text="Applications"/>
+                        <tr:showDetailItem text="Applications">
+                            <ui:include src="/demo/listApplications.xhtml"/>
+                        </tr:showDetailItem>
                         <tr:showDetailItem text="Services"/>
                         <tr:showDetailItem text="Templates"/>
                     </tr:panelTabbed>
