@@ -49,19 +49,16 @@
                 xmlns:tr="http://myfaces.apache.org/trinidad">
 
     <ui:define name="body">
-        <div id="navigation" style="top:20%;" class="window topLeftRounded bottomLeftRounded">
+        <div id="navi1" >
             <h:form id="navForm" style="color: black;">
                 <h:panelGroup id="topTabs">
-                    <tr:panelTabbed>
-                        <tr:showDetailItem text="Applications" disabled="true"/>
+                    <tr:panelTabbed position ="above">
+                        <tr:showDetailItem text="Applications"/>
                         <tr:showDetailItem text="Services"/>
                         <tr:showDetailItem text="Templates"/>
                     </tr:panelTabbed>
                 </h:panelGroup>
             </h:form>
-        </div>
-
-        <div style="bottom: 80%;" id="pageContainer" class="window">
             <h:panelGroup id="ajaxBody">
                 <ui:insert name="content">Default content</ui:insert>
             </h:panelGroup>
