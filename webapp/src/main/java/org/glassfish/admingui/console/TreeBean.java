@@ -72,30 +72,13 @@ public class TreeBean {
         List<NavigationNode> root = new ArrayList<NavigationNode>();
         
         root.add(createNode("homeNode", "Home", null, "/welcome.xhtml", null));
-/*        root.add(createNode("domainNode", "Domain", "/images/icons/domain.gif", "/demo/domain.xhtml", null));
-        root.add(createNode("adminServerNode", "Admin Server", "/images/icons/instance.gif", "/demo/adminServer.xhtml", null));
-        root.add(createNode("clusterNode", "Clusters", "/images/icons/cluster.gif", "/demo/clusters.xhtml", null));
-        root.add(createNode("instancesNode", "Standalone Instances", "/images/icons/instance.gif", "/demo/instances.xhtml", null));
-*/
         root.add(createNode("applicationsNode", "Applications", "/images/icons/instance.gif", "/demo/listApplications.xhtml", null));
         root.add(createNode("servicesNode", "Services", "/images/icons/instance.gif", "/demo/listServices.xhtml", null));
         root.add(createNode("templatesNode", "Templates", "/images/icons/instance.gif", "/demo/listTemplates.xhtml", null));
-  //      root.addAll(getRootNodes());
         
         root.add(createNode("demoNode", "Drag&Drop Demo", null, "/demo/testApplications.xhtml", null));
         root.add(createNode("wizardNode", "Deployment Wizard Demo", null, "/demo/wizard.xhtml", null));
-/*
-        NavigationNode resources = createNode("resourcesNode", "Resources", "/images/icons/resources.gif", "/demo/resources.xhtml", new ArrayList<NavigationNode>() {{
-                add(createNode("jdbcNode", "JDBC", "/images/icons/JDBC.gif", "/demo/jdbcResources.xhtml", null));
-                add(createNode("connectorsNode", "Connectors", "/images/icons/connector.png", "/demo/connectorResources.xhtml", null));
-                add(createNode("raConfigsNode", "Resource Adapter Configs", null, "/demo/jdbcConnectionPools.xhtml", null));
-                add(createNode("jsmResourcesNode", "JMS Resources", null, "/demo/connectorConnectionPools.xhtml", null));
-                add(new NavigationNode("javaMailNode", "JavaMail Resources"));
-                add(new NavigationNode("jndiNode", "JNDI"));
-        }});
 
-        root.add(resources);
-*/
         root.add(createNode("dragAndDrop", "DnD Component Demo", null, "/demo/dragAndDrop.xhtml", null));
         return root;
     }
