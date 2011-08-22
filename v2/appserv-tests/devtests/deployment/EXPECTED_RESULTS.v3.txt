@@ -3,11 +3,12 @@ Results of deployment dev tests with v3
 
 1. Running with PE installation and EE installation on DAS
 
-PASS: 255 
+PASS: 256 
 FAIL: 0
 UNKNOWN: 0
 
 [PASSED] servletonly : war/servletonly Test asadmin deploy (server)  
+[PASSED] servletonly : war/servletonly Test .reload (server)
 [PASSED] servletonly : war/servletonly Test asadmin redeploy (server)  
 [PASSED] servletonly : war/servletonly Test v3 asadmin redeploy (server)  
 [PASSED] servletonly : war/servletonly Test asadmin disable (server)  
