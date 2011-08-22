@@ -48,10 +48,11 @@ import javax.faces.bean.SessionScoped;
 public class AppHelper implements Serializable {
 
 //    private String navType = "tree";
-    private String contentPage = "welcome.xhtml";
+    private String contentPage = "/demo/listApplications.xhtml";
+    private String topNav = "/demo/topLevelTabs.xhtml";
 
     public String getNavType() {
-        return "tree";
+        return "blank";
     }
 
     /*
