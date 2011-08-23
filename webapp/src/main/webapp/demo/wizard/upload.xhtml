@@ -57,14 +57,20 @@
 
     <tr:panelFormLayout rows="10" labelAlignment="start">
 
-        <tr:inputFile label="Application Source:" columns="40" value="#{uploadBean.file}" />
+
+        <tr:inputFile label="Application Source:"
+                      columns="40"
+                      value="#{uploadBean.file}"
+                      valueChangeListener="#{uploadBean.fileUploaded}">
+            <f:converter converterId="org.glassfish.admingui.console.UploadedFileConverter"/>
+        </tr:inputFile>
         <tr:inputText label="Application Name: " columns="40"/>
         <tr:inputText label="Description:  " columns="40"/>
         <tr:inputText label="Context Root:  " columns="40"/>
 
     </tr:panelFormLayout>
 
-    
+
     <tr:spacer height="40px"/>
     <tr:separator/>
     <tr:spacer height="40px"/>

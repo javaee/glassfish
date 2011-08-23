@@ -48,6 +48,7 @@
         <default-render-kit-id>org.apache.myfaces.trinidad.core</default-render-kit-id>
         <navigation-handler>org.glassfish.admingui.console.NavigationHandler</navigation-handler>
     </application>
+    <!--
     <component>
         <component-type>org.glassfish.admingui.console.component.Draggable</component-type>
         <component-class>org.glassfish.admingui.console.component.dnd.Draggable</component-class>
@@ -70,5 +71,5 @@
             <renderer-class>org.glassfish.admingui.console.component.dnd.DroppableRenderer</renderer-class>
         </renderer>
     </render-kit>
-
+    -->
 </faces-config>

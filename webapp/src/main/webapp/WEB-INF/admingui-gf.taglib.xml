@@ -9,7 +9,7 @@
         <tag-name>draggable</tag-name>
         <component>
             <component-type>org.glassfish.admingui.console.component.Draggable</component-type>
-            <renderer-type>org.glassfish.admingui.console.component.DraggableRenderer</renderer-type>
+            <renderer-type>org.glassfish.admingui.console.component.Draggable</renderer-type>
         </component>
         <attribute>
             <description></description>
@@ -154,7 +154,7 @@
         <tag-name>droppable</tag-name>
         <component>
             <component-type>org.glassfish.admingui.console.component.Droppable</component-type>
-            <renderer-type>org.glassfish.admingui.console.component.DroppableRenderer</renderer-type>
+            <renderer-type>org.glassfish.admingui.console.component.Droppable</renderer-type>
             <handler-class>org.glassfish.admingui.console.component.dnd.DroppableHandler</handler-class>
         </component>
         <attribute>

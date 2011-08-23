@@ -45,14 +45,16 @@ import java.util.Map;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIData;
+import javax.faces.component.UIForm;
 import javax.faces.component.UINamingContainer;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
+import javax.faces.render.FacesRenderer;
 import javax.faces.render.Renderer;
 
-import org.apache.myfaces.trinidad.component.core.CoreForm;
 import org.glassfish.admingui.console.event.DragDropEvent;
 
+@FacesRenderer(componentFamily=Droppable.COMPONENT_FAMILY, rendererType=Droppable.COMPONENT_TYPE)
 public class DroppableRenderer extends Renderer {
 
     @Override
@@ -101,12 +103,30 @@ public class DroppableRenderer extends Renderer {
         writer.write("$(Console.escapeClientId('" + target + "'))");
         writer.write(".droppable({\n");
 
-        if(droppable.isDisabled()) writer.write("disabled:true,\n");
-        if(droppable.getHoverStyleClass() != null) writer.write("hoverClass:'" + droppable.getHoverStyleClass() + "',\n");
-        if(droppable.getActiveStyleClass() != null) writer.write("activeClass:'" + droppable.getActiveStyleClass() + "',\n");
-        if(droppable.getAccept() != null) writer.write("accept:'" + droppable.getAccept() + "',\n");
-        if(droppable.getScope() != null) writer.write("scope:'" + droppable.getScope() + "',\n");
-        if(droppable.getTolerance() != null) writer.write("tolerance:'" + droppable.getTolerance() + "',\n");
+        if(droppable.isDisabled()) {
+            writer.write("disabled:true,\n");
+        }
+
+        if(droppable.getHoverStyleClass() != null) {
+            writer.write("hoverClass:'" + droppable.getHoverStyleClass() + "',\n");
+        }
+
+        if(droppable.getActiveStyleClass() != null) {
+            writer.write("activeClass:'" + droppable.getActiveStyleClass() + "',\n");
+        }
+
+        if(droppable.getAccept() != null) {
+            writer.write("accept:'" + droppable.getAccept() + "',\n");
+        }
+
+        if(droppable.getScope() != null) {
+            writer.write("scope:'" + droppable.getScope() + "',\n");
+        }
+
+        if(droppable.getTolerance() != null) {
+            writer.write("tolerance:'" + droppable.getTolerance() + "',\n");
+        }
+
         if(droppable.getDropListener() != null && onDropUpdate != null) {
             UIComponent form = findParentForm(context, droppable);
             if (form == null) {
@@ -165,7 +185,7 @@ public class DroppableRenderer extends Renderer {
         UIComponent parent = component.getParent();
 
         while(parent != null) {
-            if(parent instanceof CoreForm) {
+            if ((parent instanceof UIForm) || (parent.getClass().getSimpleName().endsWith("Form"))) {
                 return parent;
             }
 

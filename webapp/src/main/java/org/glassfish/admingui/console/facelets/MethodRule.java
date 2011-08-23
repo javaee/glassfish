@@ -168,7 +168,6 @@ public class MethodRule extends MetaRule {
             }
         }
     }
-    
 
     private static class LegacyMethodBinding extends MethodBinding implements Serializable {
 

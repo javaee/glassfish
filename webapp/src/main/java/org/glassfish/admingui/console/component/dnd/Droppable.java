@@ -41,119 +41,94 @@ package org.glassfish.admingui.console.component.dnd;
 
 import javax.faces.component.UIComponentBase;
 import javax.faces.context.FacesContext;
-import javax.faces.component.UINamingContainer;
-import javax.el.ValueExpression;
 import javax.el.MethodExpression;
-import javax.faces.render.Renderer;
-import java.io.IOException;
-import javax.faces.component.UIComponent;
-import javax.faces.event.AbortProcessingException;
-import javax.faces.application.ResourceDependencies;
-import javax.faces.application.ResourceDependency;
 import java.util.List;
 import java.util.ArrayList;
-import org.glassfish.admingui.console.event.DragDropEvent;
 import javax.el.ValueExpression;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import javax.faces.component.UIComponent;
-import javax.faces.component.UIData;
-import javax.faces.event.FacesEvent;
-import javax.faces.event.AjaxBehaviorEvent;
-import javax.faces.FacesException;
-import org.glassfish.admingui.console.util.Constants;
+import javax.faces.component.FacesComponent;
 
+@FacesComponent(Droppable.COMPONENT_TYPE)
 public class Droppable extends UIComponentBase {
 
+    public static final String COMPONENT_TYPE = "org.glassfish.admingui.console.component.Droppable";
+    public static final String COMPONENT_FAMILY = COMPONENT_TYPE;
+    private static final String DEFAULT_RENDERER = COMPONENT_TYPE;
+    private static final String OPTIMIZED_PACKAGE = "org.glassfish.admingui.console.component.";
 
-	public static final String COMPONENT_TYPE = "org.glassfish.admingui.console.component.Droppable";
-	public static final String COMPONENT_FAMILY = "org.glassfish.admingui.console.component";
-	private static final String DEFAULT_RENDERER = "org.glassfish.admingui.console.component.DroppableRenderer";
-	private static final String OPTIMIZED_PACKAGE = "org.glassfish.admingui.console.component.";
+    protected enum PropertyKeys {
 
-	protected enum PropertyKeys {
+        widgetVar, forValue("for"), disabled, hoverStyleClass, activeStyleClass, onDropUpdate, dropListener, onDrop, accept, scope, tolerance, datasource;
+        String toString;
 
-		widgetVar
-		,forValue("for")
-		,disabled
-		,hoverStyleClass
-		,activeStyleClass
-        ,onDropUpdate
-        ,dropListener
-		,onDrop
-		,accept
-		,scope
-		,tolerance
-        ,datasource;
+        PropertyKeys(String toString) {
+            this.toString = toString;
+        }
 
-		String toString;
+        PropertyKeys() {
+        }
 
-		PropertyKeys(String toString) {
-			this.toString = toString;
-		}
+        public String toString() {
+            return ((this.toString != null) ? this.toString : super.toString());
+        }
+    }
 
-		PropertyKeys() {}
+    public Droppable() {
+        setRendererType(DEFAULT_RENDERER);
+    }
 
-		public String toString() {
-			return ((this.toString != null) ? this.toString : super.toString());
-}
-	}
+    public String getFamily() {
+        return COMPONENT_FAMILY;
+    }
 
-	public Droppable() {
-		setRendererType(DEFAULT_RENDERER);
-	}
+    public java.lang.String getWidgetVar() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.widgetVar, null);
+    }
 
-	public String getFamily() {
-		return COMPONENT_FAMILY;
-	}
+    public void setWidgetVar(java.lang.String _widgetVar) {
+        getStateHelper().put(PropertyKeys.widgetVar, _widgetVar);
+        handleAttribute("widgetVar", _widgetVar);
+    }
 
-	public java.lang.String getWidgetVar() {
-		return (java.lang.String) getStateHelper().eval(PropertyKeys.widgetVar, null);
-	}
-	public void setWidgetVar(java.lang.String _widgetVar) {
-		getStateHelper().put(PropertyKeys.widgetVar, _widgetVar);
-		handleAttribute("widgetVar", _widgetVar);
-	}
+    public java.lang.String getFor() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.forValue, null);
+    }
 
-	public java.lang.String getFor() {
-		return (java.lang.String) getStateHelper().eval(PropertyKeys.forValue, null);
-	}
-	public void setFor(java.lang.String _for) {
-		getStateHelper().put(PropertyKeys.forValue, _for);
-		handleAttribute("forValue", _for);
-	}
+    public void setFor(java.lang.String _for) {
+        getStateHelper().put(PropertyKeys.forValue, _for);
+        handleAttribute("forValue", _for);
+    }
 
-	public boolean isDisabled() {
-		return (java.lang.Boolean) getStateHelper().eval(PropertyKeys.disabled, false);
-	}
-	public void setDisabled(boolean _disabled) {
-		getStateHelper().put(PropertyKeys.disabled, _disabled);
-		handleAttribute("disabled", _disabled);
-	}
+    public boolean isDisabled() {
+        return (java.lang.Boolean) getStateHelper().eval(PropertyKeys.disabled, false);
+    }
 
-	public java.lang.String getHoverStyleClass() {
-		return (java.lang.String) getStateHelper().eval(PropertyKeys.hoverStyleClass, null);
-	}
-	public void setHoverStyleClass(java.lang.String _hoverStyleClass) {
-		getStateHelper().put(PropertyKeys.hoverStyleClass, _hoverStyleClass);
-		handleAttribute("hoverStyleClass", _hoverStyleClass);
-	}
+    public void setDisabled(boolean _disabled) {
+        getStateHelper().put(PropertyKeys.disabled, _disabled);
+        handleAttribute("disabled", _disabled);
+    }
 
-	public java.lang.String getActiveStyleClass() {
-		return (java.lang.String) getStateHelper().eval(PropertyKeys.activeStyleClass, null);
-	}
-	public void setActiveStyleClass(java.lang.String _activeStyleClass) {
-		getStateHelper().put(PropertyKeys.activeStyleClass, _activeStyleClass);
-		handleAttribute("activeStyleClass", _activeStyleClass);
-	}
+    public java.lang.String getHoverStyleClass() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.hoverStyleClass, null);
+    }
+
+    public void setHoverStyleClass(java.lang.String _hoverStyleClass) {
+        getStateHelper().put(PropertyKeys.hoverStyleClass, _hoverStyleClass);
+        handleAttribute("hoverStyleClass", _hoverStyleClass);
+    }
+
+    public java.lang.String getActiveStyleClass() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.activeStyleClass, null);
+    }
+
+    public void setActiveStyleClass(java.lang.String _activeStyleClass) {
+        getStateHelper().put(PropertyKeys.activeStyleClass, _activeStyleClass);
+        handleAttribute("activeStyleClass", _activeStyleClass);
+    }
 
     public java.lang.String getOnDropUpdate() {
         return (java.lang.String) getStateHelper().eval(PropertyKeys.onDropUpdate, null);
     }
+
     public void setOnDropUpdate(java.lang.String _onDropUpdate) {
         getStateHelper().put(PropertyKeys.onDropUpdate, _onDropUpdate);
         handleAttribute("onDropUpdate", _onDropUpdate);
@@ -162,42 +137,47 @@ public class Droppable extends UIComponentBase {
     public javax.el.MethodExpression getDropListener() {
         return (javax.el.MethodExpression) getStateHelper().eval(PropertyKeys.dropListener, null);
     }
+
     public void setDropListener(javax.el.MethodExpression _dropListener) {
         getStateHelper().put(PropertyKeys.dropListener, _dropListener);
         handleAttribute("dropListener", _dropListener);
     }
 
-	public java.lang.String getOnDrop() {
-		return (java.lang.String) getStateHelper().eval(PropertyKeys.onDrop, null);
-	}
-	public void setOnDrop(java.lang.String _onDrop) {
-		getStateHelper().put(PropertyKeys.onDrop, _onDrop);
-		handleAttribute("onDrop", _onDrop);
-	}
+    public java.lang.String getOnDrop() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.onDrop, null);
+    }
 
-	public java.lang.String getAccept() {
-		return (java.lang.String) getStateHelper().eval(PropertyKeys.accept, null);
-	}
-	public void setAccept(java.lang.String _accept) {
-		getStateHelper().put(PropertyKeys.accept, _accept);
-		handleAttribute("accept", _accept);
-	}
+    public void setOnDrop(java.lang.String _onDrop) {
+        getStateHelper().put(PropertyKeys.onDrop, _onDrop);
+        handleAttribute("onDrop", _onDrop);
+    }
 
-	public java.lang.String getScope() {
-		return (java.lang.String) getStateHelper().eval(PropertyKeys.scope, null);
-	}
-	public void setScope(java.lang.String _scope) {
-		getStateHelper().put(PropertyKeys.scope, _scope);
-		handleAttribute("scope", _scope);
-	}
+    public java.lang.String getAccept() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.accept, null);
+    }
 
-	public java.lang.String getTolerance() {
-		return (java.lang.String) getStateHelper().eval(PropertyKeys.tolerance, null);
-	}
-	public void setTolerance(java.lang.String _tolerance) {
-		getStateHelper().put(PropertyKeys.tolerance, _tolerance);
-		handleAttribute("tolerance", _tolerance);
-	}
+    public void setAccept(java.lang.String _accept) {
+        getStateHelper().put(PropertyKeys.accept, _accept);
+        handleAttribute("accept", _accept);
+    }
+
+    public java.lang.String getScope() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.scope, null);
+    }
+
+    public void setScope(java.lang.String _scope) {
+        getStateHelper().put(PropertyKeys.scope, _scope);
+        handleAttribute("scope", _scope);
+    }
+
+    public java.lang.String getTolerance() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.tolerance, null);
+    }
+
+    public void setTolerance(java.lang.String _tolerance) {
+        getStateHelper().put(PropertyKeys.tolerance, _tolerance);
+        handleAttribute("tolerance", _tolerance);
+    }
 
     public java.lang.String getDatasource() {
         return (java.lang.String) getStateHelper().eval(PropertyKeys.datasource, null);
@@ -215,32 +195,32 @@ public class Droppable extends UIComponentBase {
         MethodExpression me = getDropListener();
 
         if (me != null) {
-            me.invoke(facesContext.getELContext(), new Object[] {event});
+            me.invoke(facesContext.getELContext(), new Object[]{event});
         }
     }
 
-	protected FacesContext getFacesContext() {
-		return FacesContext.getCurrentInstance();
-	}
+    protected FacesContext getFacesContext() {
+        return FacesContext.getCurrentInstance();
+    }
 
-	public void handleAttribute(String name, Object value) {
-		List<String> setAttributes = (List<String>) this.getAttributes().get("javax.faces.component.UIComponentBase.attributesThatAreSet");
-		if(setAttributes == null) {
-			String cname = this.getClass().getName();
-			if(cname != null && cname.startsWith(OPTIMIZED_PACKAGE)) {
-				setAttributes = new ArrayList<String>(6);
-				this.getAttributes().put("javax.faces.component.UIComponentBase.attributesThatAreSet", setAttributes);
-			}
-		}
-		if(setAttributes != null) {
-			if(value == null) {
-				ValueExpression ve = getValueExpression(name);
-				if(ve == null) {
-					setAttributes.remove(name);
-				} else if(!setAttributes.contains(name)) {
-					setAttributes.add(name);
-				}
-			}
-		}
-	}
+    public void handleAttribute(String name, Object value) {
+        List<String> setAttributes = (List<String>) this.getAttributes().get("javax.faces.component.UIComponentBase.attributesThatAreSet");
+        if (setAttributes == null) {
+            String cname = this.getClass().getName();
+            if (cname != null && cname.startsWith(OPTIMIZED_PACKAGE)) {
+                setAttributes = new ArrayList<String>(6);
+                this.getAttributes().put("javax.faces.component.UIComponentBase.attributesThatAreSet", setAttributes);
+            }
+        }
+        if (setAttributes != null) {
+            if (value == null) {
+                ValueExpression ve = getValueExpression(name);
+                if (ve == null) {
+                    setAttributes.remove(name);
+                } else if (!setAttributes.contains(name)) {
+                    setAttributes.add(name);
+                }
+            }
+        }
+    }
 }

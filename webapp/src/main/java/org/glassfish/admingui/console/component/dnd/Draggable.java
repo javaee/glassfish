@@ -44,223 +44,225 @@ import javax.faces.context.FacesContext;
 import javax.el.ValueExpression;
 import java.util.List;
 import java.util.ArrayList;
+import javax.faces.component.FacesComponent;
 
+@FacesComponent(Draggable.COMPONENT_TYPE)
 public class Draggable extends UIComponentBase {
 
+    public static final String COMPONENT_TYPE = "org.glassfish.admingui.console.component.Draggable";
+    public static final String COMPONENT_FAMILY = COMPONENT_TYPE;
+    private static final String DEFAULT_RENDERER = COMPONENT_TYPE;
+    private static final String OPTIMIZED_PACKAGE = "org.glassfish.admingui.console.component.";
 
-	public static final String COMPONENT_TYPE = "org.glassfish.admingui.console.component.Draggable";
-	public static final String COMPONENT_FAMILY = "org.glassfish.admingui.console.component";
-	private static final String DEFAULT_RENDERER = "org.glassfish.admingui.console.component.DraggableRenderer";
-	private static final String OPTIMIZED_PACKAGE = "org.glassfish.admingui.console.component.";
+    protected enum PropertyKeys {
 
-	protected enum PropertyKeys {
+        proxy, dragOnly, forValue("for"), disabled, axis, containment, helper, revert, snap, snapMode, snapTolerance, zindex, handle, opacity, stack, grid, scope, cursor;
+        String toString;
 
-		proxy
-		,dragOnly
-		,forValue("for")
-		,disabled
-		,axis
-		,containment
-		,helper
-		,revert
-		,snap
-		,snapMode
-		,snapTolerance
-		,zindex
-		,handle
-		,opacity
-		,stack
-		,grid
-		,scope
-		,cursor;
+        PropertyKeys(String toString) {
+            this.toString = toString;
+        }
 
-		String toString;
+        PropertyKeys() {
+        }
 
-		PropertyKeys(String toString) {
-			this.toString = toString;
-		}
+        public String toString() {
+            return ((this.toString != null) ? this.toString : super.toString());
+        }
+    }
 
-		PropertyKeys() {}
+    public Draggable() {
+        setRendererType(DEFAULT_RENDERER);
+    }
 
-		public String toString() {
-			return ((this.toString != null) ? this.toString : super.toString());
-}
-	}
+    public String getFamily() {
+        return COMPONENT_FAMILY;
+    }
 
-	public Draggable() {
-		setRendererType(DEFAULT_RENDERER);
-	}
+    public boolean isProxy() {
+        return (java.lang.Boolean) getStateHelper().eval(PropertyKeys.proxy, false);
+    }
 
-	public String getFamily() {
-		return COMPONENT_FAMILY;
-	}
+    public void setProxy(boolean _proxy) {
+        getStateHelper().put(PropertyKeys.proxy, _proxy);
+        handleAttribute("proxy", _proxy);
+    }
 
-	public boolean isProxy() {
-		return (java.lang.Boolean) getStateHelper().eval(PropertyKeys.proxy, false);
-	}
-	public void setProxy(boolean _proxy) {
-		getStateHelper().put(PropertyKeys.proxy, _proxy);
-		handleAttribute("proxy", _proxy);
-	}
+    public boolean isDragOnly() {
+        return (java.lang.Boolean) getStateHelper().eval(PropertyKeys.dragOnly, false);
+    }
 
-	public boolean isDragOnly() {
-		return (java.lang.Boolean) getStateHelper().eval(PropertyKeys.dragOnly, false);
-	}
-	public void setDragOnly(boolean _dragOnly) {
-		getStateHelper().put(PropertyKeys.dragOnly, _dragOnly);
-		handleAttribute("dragOnly", _dragOnly);
-	}
+    public void setDragOnly(boolean _dragOnly) {
+        getStateHelper().put(PropertyKeys.dragOnly, _dragOnly);
+        handleAttribute("dragOnly", _dragOnly);
+    }
 
-	public java.lang.String getFor() {
-		return (java.lang.String) getStateHelper().eval(PropertyKeys.forValue, null);
-	}
-	public void setFor(java.lang.String _for) {
-		getStateHelper().put(PropertyKeys.forValue, _for);
-		handleAttribute("forValue", _for);
-	}
+    public java.lang.String getFor() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.forValue, null);
+    }
 
-	public boolean isDisabled() {
-		return (java.lang.Boolean) getStateHelper().eval(PropertyKeys.disabled, false);
-	}
-	public void setDisabled(boolean _disabled) {
-		getStateHelper().put(PropertyKeys.disabled, _disabled);
-		handleAttribute("disabled", _disabled);
-	}
+    public void setFor(java.lang.String _for) {
+        getStateHelper().put(PropertyKeys.forValue, _for);
+        handleAttribute("forValue", _for);
+    }
 
-	public java.lang.String getAxis() {
-		return (java.lang.String) getStateHelper().eval(PropertyKeys.axis, null);
-	}
-	public void setAxis(java.lang.String _axis) {
-		getStateHelper().put(PropertyKeys.axis, _axis);
-		handleAttribute("axis", _axis);
-	}
+    public boolean isDisabled() {
+        return (java.lang.Boolean) getStateHelper().eval(PropertyKeys.disabled, false);
+    }
 
-	public java.lang.String getContainment() {
-		return (java.lang.String) getStateHelper().eval(PropertyKeys.containment, null);
-	}
-	public void setContainment(java.lang.String _containment) {
-		getStateHelper().put(PropertyKeys.containment, _containment);
-		handleAttribute("containment", _containment);
-	}
+    public void setDisabled(boolean _disabled) {
+        getStateHelper().put(PropertyKeys.disabled, _disabled);
+        handleAttribute("disabled", _disabled);
+    }
 
-	public java.lang.String getHelper() {
-		return (java.lang.String) getStateHelper().eval(PropertyKeys.helper, null);
-	}
-	public void setHelper(java.lang.String _helper) {
-		getStateHelper().put(PropertyKeys.helper, _helper);
-		handleAttribute("helper", _helper);
-	}
+    public java.lang.String getAxis() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.axis, null);
+    }
 
-	public boolean isRevert() {
-		return (java.lang.Boolean) getStateHelper().eval(PropertyKeys.revert, false);
-	}
-	public void setRevert(boolean _revert) {
-		getStateHelper().put(PropertyKeys.revert, _revert);
-		handleAttribute("revert", _revert);
-	}
+    public void setAxis(java.lang.String _axis) {
+        getStateHelper().put(PropertyKeys.axis, _axis);
+        handleAttribute("axis", _axis);
+    }
 
-	public boolean isSnap() {
-		return (java.lang.Boolean) getStateHelper().eval(PropertyKeys.snap, false);
-	}
-	public void setSnap(boolean _snap) {
-		getStateHelper().put(PropertyKeys.snap, _snap);
-		handleAttribute("snap", _snap);
-	}
+    public java.lang.String getContainment() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.containment, null);
+    }
 
-	public java.lang.String getSnapMode() {
-		return (java.lang.String) getStateHelper().eval(PropertyKeys.snapMode, null);
-	}
-	public void setSnapMode(java.lang.String _snapMode) {
-		getStateHelper().put(PropertyKeys.snapMode, _snapMode);
-		handleAttribute("snapMode", _snapMode);
-	}
+    public void setContainment(java.lang.String _containment) {
+        getStateHelper().put(PropertyKeys.containment, _containment);
+        handleAttribute("containment", _containment);
+    }
 
-	public int getSnapTolerance() {
-		return (java.lang.Integer) getStateHelper().eval(PropertyKeys.snapTolerance, 20);
-	}
-	public void setSnapTolerance(int _snapTolerance) {
-		getStateHelper().put(PropertyKeys.snapTolerance, _snapTolerance);
-		handleAttribute("snapTolerance", _snapTolerance);
-	}
+    public java.lang.String getHelper() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.helper, null);
+    }
 
-	public int getZindex() {
-		return (java.lang.Integer) getStateHelper().eval(PropertyKeys.zindex, -1);
-	}
-	public void setZindex(int _zindex) {
-		getStateHelper().put(PropertyKeys.zindex, _zindex);
-		handleAttribute("zindex", _zindex);
-	}
+    public void setHelper(java.lang.String _helper) {
+        getStateHelper().put(PropertyKeys.helper, _helper);
+        handleAttribute("helper", _helper);
+    }
 
-	public java.lang.String getHandle() {
-		return (java.lang.String) getStateHelper().eval(PropertyKeys.handle, null);
-	}
-	public void setHandle(java.lang.String _handle) {
-		getStateHelper().put(PropertyKeys.handle, _handle);
-		handleAttribute("handle", _handle);
-	}
+    public boolean isRevert() {
+        return (java.lang.Boolean) getStateHelper().eval(PropertyKeys.revert, false);
+    }
 
-	public double getOpacity() {
-		return (java.lang.Double) getStateHelper().eval(PropertyKeys.opacity, 1.0);
-	}
-	public void setOpacity(double _opacity) {
-		getStateHelper().put(PropertyKeys.opacity, _opacity);
-		handleAttribute("opacity", _opacity);
-	}
+    public void setRevert(boolean _revert) {
+        getStateHelper().put(PropertyKeys.revert, _revert);
+        handleAttribute("revert", _revert);
+    }
 
-	public java.lang.String getStack() {
-		return (java.lang.String) getStateHelper().eval(PropertyKeys.stack, null);
-	}
-	public void setStack(java.lang.String _stack) {
-		getStateHelper().put(PropertyKeys.stack, _stack);
-		handleAttribute("stack", _stack);
-	}
+    public boolean isSnap() {
+        return (java.lang.Boolean) getStateHelper().eval(PropertyKeys.snap, false);
+    }
 
-	public java.lang.String getGrid() {
-		return (java.lang.String) getStateHelper().eval(PropertyKeys.grid, null);
-	}
-	public void setGrid(java.lang.String _grid) {
-		getStateHelper().put(PropertyKeys.grid, _grid);
-		handleAttribute("grid", _grid);
-	}
+    public void setSnap(boolean _snap) {
+        getStateHelper().put(PropertyKeys.snap, _snap);
+        handleAttribute("snap", _snap);
+    }
 
-	public java.lang.String getScope() {
-		return (java.lang.String) getStateHelper().eval(PropertyKeys.scope, null);
-	}
-	public void setScope(java.lang.String _scope) {
-		getStateHelper().put(PropertyKeys.scope, _scope);
-		handleAttribute("scope", _scope);
-	}
+    public java.lang.String getSnapMode() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.snapMode, null);
+    }
 
-	public java.lang.String getCursor() {
-		return (java.lang.String) getStateHelper().eval(PropertyKeys.cursor, "crosshair");
-	}
-	public void setCursor(java.lang.String _cursor) {
-		getStateHelper().put(PropertyKeys.cursor, _cursor);
-		handleAttribute("cursor", _cursor);
-	}
+    public void setSnapMode(java.lang.String _snapMode) {
+        getStateHelper().put(PropertyKeys.snapMode, _snapMode);
+        handleAttribute("snapMode", _snapMode);
+    }
 
-	protected FacesContext getFacesContext() {
-		return FacesContext.getCurrentInstance();
-	}
+    public int getSnapTolerance() {
+        return (java.lang.Integer) getStateHelper().eval(PropertyKeys.snapTolerance, 20);
+    }
 
-	public void handleAttribute(String name, Object value) {
-		List<String> setAttributes = (List<String>) this.getAttributes().get("javax.faces.component.UIComponentBase.attributesThatAreSet");
-		if(setAttributes == null) {
-			String cname = this.getClass().getName();
-			if(cname != null && cname.startsWith(OPTIMIZED_PACKAGE)) {
-				setAttributes = new ArrayList<String>(6);
-				this.getAttributes().put("javax.faces.component.UIComponentBase.attributesThatAreSet", setAttributes);
-			}
-		}
-		if(setAttributes != null) {
-			if(value == null) {
-				ValueExpression ve = getValueExpression(name);
-				if(ve == null) {
-					setAttributes.remove(name);
-				} else if(!setAttributes.contains(name)) {
-					setAttributes.add(name);
-				}
-			}
-		}
-	}
+    public void setSnapTolerance(int _snapTolerance) {
+        getStateHelper().put(PropertyKeys.snapTolerance, _snapTolerance);
+        handleAttribute("snapTolerance", _snapTolerance);
+    }
+
+    public int getZindex() {
+        return (java.lang.Integer) getStateHelper().eval(PropertyKeys.zindex, -1);
+    }
+
+    public void setZindex(int _zindex) {
+        getStateHelper().put(PropertyKeys.zindex, _zindex);
+        handleAttribute("zindex", _zindex);
+    }
+
+    public java.lang.String getHandle() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.handle, null);
+    }
+
+    public void setHandle(java.lang.String _handle) {
+        getStateHelper().put(PropertyKeys.handle, _handle);
+        handleAttribute("handle", _handle);
+    }
+
+    public double getOpacity() {
+        return (java.lang.Double) getStateHelper().eval(PropertyKeys.opacity, 1.0);
+    }
+
+    public void setOpacity(double _opacity) {
+        getStateHelper().put(PropertyKeys.opacity, _opacity);
+        handleAttribute("opacity", _opacity);
+    }
+
+    public java.lang.String getStack() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.stack, null);
+    }
+
+    public void setStack(java.lang.String _stack) {
+        getStateHelper().put(PropertyKeys.stack, _stack);
+        handleAttribute("stack", _stack);
+    }
+
+    public java.lang.String getGrid() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.grid, null);
+    }
+
+    public void setGrid(java.lang.String _grid) {
+        getStateHelper().put(PropertyKeys.grid, _grid);
+        handleAttribute("grid", _grid);
+    }
+
+    public java.lang.String getScope() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.scope, null);
+    }
+
+    public void setScope(java.lang.String _scope) {
+        getStateHelper().put(PropertyKeys.scope, _scope);
+        handleAttribute("scope", _scope);
+    }
+
+    public java.lang.String getCursor() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.cursor, "crosshair");
+    }
+
+    public void setCursor(java.lang.String _cursor) {
+        getStateHelper().put(PropertyKeys.cursor, _cursor);
+        handleAttribute("cursor", _cursor);
+    }
+
+    protected FacesContext getFacesContext() {
+        return FacesContext.getCurrentInstance();
+    }
+
+    public void handleAttribute(String name, Object value) {
+        List<String> setAttributes = (List<String>) this.getAttributes().get("javax.faces.component.UIComponentBase.attributesThatAreSet");
+        if (setAttributes == null) {
+            String cname = this.getClass().getName();
+            if (cname != null && cname.startsWith(OPTIMIZED_PACKAGE)) {
+                setAttributes = new ArrayList<String>(6);
+                this.getAttributes().put("javax.faces.component.UIComponentBase.attributesThatAreSet", setAttributes);
+            }
+        }
+        if (setAttributes != null) {
+            if (value == null) {
+                ValueExpression ve = getValueExpression(name);
+                if (ve == null) {
+                    setAttributes.remove(name);
+                } else if (!setAttributes.contains(name)) {
+                    setAttributes.add(name);
+                }
+            }
+        }
+    }
 }
