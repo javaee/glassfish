@@ -286,6 +286,15 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
   
   // @see Enableable
   private boolean enabled = true;
+
+  // the alternative, stand-in listener if any
+  private RunLevelListener listener;
+
+  // the alternative, stand-in sorter if any
+  private InhabitantSorter sorter;
+
+  // the alternative, stand-in activator if any
+  private InhabitantActivator activator;
   
   // used for eventing an {@link RunLevelListener}s
   private enum ListenerEvent {
@@ -333,6 +342,16 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
   public String toString() {
     return getClass().getSimpleName() + "-" + System.identityHashCode(this)
         + "(" + getDescription(false) + ", del: " + delegate + ")";
+  }
+  
+  public boolean isDefault() {
+      return ENVIRONMENT.equals(targetEnv);
+  }
+  
+  private void assertNotIsDefault() {
+      if (isDefault()) {
+          throw new IllegalStateException("this operation is not supported on the default RunLevelService");
+      }
   }
   
   public String getDescription(boolean extended) {
@@ -521,8 +540,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
       logger.log(Level.FINE, "Ignoring this notification!");
     } else {
       Interrupt lastInterrupt = null;
-      Collection<RunLevelListener> activeListeners = 
-          habitat.getAllByContract(RunLevelListener.class);
+      Collection<RunLevelListener> activeListeners = getListeners();
       for (RunLevelListener listener : activeListeners) {
         try {
           if (ListenerEvent.PROGRESS == event) {
@@ -549,6 +567,30 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
         }
       }
     }
+  }
+
+  /**
+   * Overrides the default behavior of getting all listeners from the habitat
+   * to use a stand-in listener instead. If set to null, the default behavior
+   * will be restored.
+   * 
+   * @param listener the alternative, stand-in listener
+   */
+  public synchronized void setListener(RunLevelListener listener) {
+      assertNotIsDefault();
+      this.listener = listener;
+  }
+  
+  protected synchronized Collection<RunLevelListener> getListeners() {
+      Collection<RunLevelListener> listeners;
+      
+      if (null == listener) {
+          listeners = habitat.getAllByContract(RunLevelListener.class);
+      } else {
+          listeners = Collections.singleton(listener);
+      }
+      
+      return listeners;
   }
   
   @Override
@@ -713,6 +755,18 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
   }
   
   /**
+   * Overrides the default behavior of getting the inhabitant sorter from the habitat
+   * to use a stand-in sorter instead. If set to null, the default behavior
+   * will be restored.
+   * 
+   * @param sorter the alternative, stand-in sorter
+   */
+  public synchronized void setInhabitantSorter(InhabitantSorter sorter) {
+      assertNotIsDefault();
+      this.sorter = sorter;
+  }
+
+  /**
    * Obtains the "best" InhabitantSorter, first looking up out of
    * the habitat any service registered under the same name as ourself,
    * then defaulting to the first one registered by type alone, followed
@@ -720,12 +774,28 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
    * 
    * @return an InhabitantActivator, defaulting to ourself
    */
-  protected InhabitantSorter getInhabitantSorter() {
+  protected synchronized InhabitantSorter getInhabitantSorter() {
+    if (null != sorter) {
+        return sorter;
+    }
+    
     InhabitantSorter is = habitat.getComponent(InhabitantSorter.class, getName());
     if (null == is) {
       is = habitat.getByContract(InhabitantSorter.class);
     }
     return (null == is) ? this : is;
+  }
+
+  /**
+   * Overrides the default behavior of getting the inhabitant activator from the habitat
+   * to use a stand-in activator instead. If set to null, the default behavior
+   * will be restored.
+   * 
+   * @param activator the alternative, stand-in activator
+   */
+  public synchronized void setInhabitantActivator(InhabitantActivator activator) {
+      assertNotIsDefault();
+      this.activator = activator;
   }
 
   /**
@@ -736,7 +806,11 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
    * 
    * @return an InhabitantActivator, defaulting to ourself
    */
-  protected InhabitantActivator getInhabitantActivator() {
+  protected synchronized InhabitantActivator getInhabitantActivator() {
+    if (null != activator) {
+        return activator;
+    }
+    
     InhabitantActivator ia = habitat.getComponent(InhabitantActivator.class, getName());
     if (null == ia) {
       ia = habitat.getByContract(InhabitantActivator.class);

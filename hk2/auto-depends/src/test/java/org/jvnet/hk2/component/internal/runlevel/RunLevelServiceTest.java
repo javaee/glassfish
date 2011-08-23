@@ -42,6 +42,7 @@ package org.jvnet.hk2.component.internal.runlevel;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -58,22 +59,28 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.glassfish.hk2.Binding;
+import org.glassfish.hk2.ManagedComponentProvider;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.RunLevel;
+import org.jvnet.hk2.component.AbstractRunLevelService;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.DescriptorImpl;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantActivator;
 import org.jvnet.hk2.component.InhabitantSorter;
+import org.jvnet.hk2.component.Reference;
 import org.jvnet.hk2.component.RunLevelListener;
 import org.jvnet.hk2.component.RunLevelService;
 import org.jvnet.hk2.component.RunLevelState;
+import org.jvnet.hk2.component.ServiceContext;
 import org.jvnet.hk2.junit.Hk2Runner;
 import org.jvnet.hk2.junit.Hk2RunnerOptions;
+import org.jvnet.hk2.test.runlevel.AnotherNonDefaultEnvServerService;
+import org.jvnet.hk2.test.runlevel.AnotherNonDefaultRunLevelService;
 import org.jvnet.hk2.test.runlevel.ExceptionRunLevelManagedService;
 import org.jvnet.hk2.test.runlevel.ExceptionRunLevelManagedService2b;
 import org.jvnet.hk2.test.runlevel.InterruptRunLevelManagedService1a;
@@ -1276,16 +1283,115 @@ public class RunLevelServiceTest {
     assertEquals("error count", 2, errCount);
   }
 
-//  /**
-//   * TODO
-//   */
-//  @Test
-//  public void obtainingRunLevelServiceForAnotherEnvironment() {
-//      DescriptorImpl descriptor = new DescriptorImpl(null, null);
-//      descriptor.addContract(RunLevelService.class.getName());
-//      Collection<Binding<?>> bindings = h.getBindings(descriptor);
-//      assertEquals(bindings.toString(), 3, bindings.size());
-//  }
+  /**
+   * Obtaining a non default run level service from the habitat
+   */
+  @Test
+  public void obtainingRunLevelServiceForAnotherEnvironment() {
+      DescriptorImpl descriptor = new DescriptorImpl(null, null);
+      descriptor.addContract(RunLevelService.class.getName());
+      descriptor.addMetadata("environment", "java.lang.Long");
+      Collection<Binding<?>> bindings = h.getBindings(descriptor);
+      assertEquals(bindings.toString(), 1, bindings.size());
+
+      Binding theOne = bindings.iterator().next();
+      assertTrue("should have been initialized now", ((ManagedComponentProvider)theOne.getProvider(null)).isActive());
+      assertEquals(AnotherNonDefaultRunLevelService.class, theOne.getProvider(null).get().getClass());
+      assertSame(theOne.getProvider(null).get().getClass(), theOne.getProvider(null).get().getClass());
+  }
+  
+  /**
+   * Attempting to activate the non default run level service when there exists
+   * a bad dependency (i.e., a dependency to another run level service
+   * environment type.
+   */
+  @Test
+  public void activatingRunLevelServiceForAnotherEnvironmentWithBadDependency() {
+      DescriptorImpl descriptor = new DescriptorImpl(null, AnotherNonDefaultEnvServerService.class.getName());
+      Collection<Binding<?>> bindings = h.getBindings(descriptor);
+      assertEquals(bindings.toString(), 1, bindings.size());
+      
+      Binding theInvalidOne = bindings.iterator().next();
+      assertFalse("should not have been initialized now",
+              ((ManagedComponentProvider)theInvalidOne.getProvider(null)).isActive());
+
+      descriptor = new DescriptorImpl(null, null);
+      descriptor.addContract(RunLevelService.class.getName());
+      descriptor.addMetadata("environment", "java.lang.Long");
+      bindings = h.getBindings(descriptor);
+      Binding theRls = bindings.iterator().next();
+      AbstractRunLevelService rls = (AbstractRunLevelService) theRls.getProvider(null).get();
+
+      final Reference<Boolean> cancelled = new Reference<Boolean>();
+      final Reference<Integer> progress = new Reference<Integer>(0);
+      final Reference<Throwable> error = new Reference<Throwable>();
+      
+      installTestRunLevelService(false);
+      
+      defRLlistener = (TestRunLevelListener) listener;
+      defRLlistener.calls.clear();
+
+      rls.setListener(new RunLevelListener() {
+        @Override
+        public void onCancelled(RunLevelState<?> state, ServiceContext ctx,
+                int previousProceedTo, boolean isInterrupt) {
+            cancelled.set(true);
+        }
+
+        @Override
+        public void onError(RunLevelState<?> state, ServiceContext context,
+                Throwable t, boolean willContinue) {
+            error.set(t);
+            assertTrue(willContinue);
+        }
+
+        @Override
+        public void onProgress(RunLevelState<?> state) {
+            progress.set(progress.get() + 1);
+        }
+      });
+      
+      rls.proceedTo(8);
+      assertFalse("should not have been initialized now - it has an invalid dependency",
+              ((ManagedComponentProvider)theInvalidOne.getProvider(null)).isActive());
+
+      assertNull(cancelled.get());
+      assertEquals("we start at -2", 9, progress.get());
+      assertNotNull("we expected the proceedTo to generate an error because of invalid injection", error.get());
+      assertEquals(0, defRLlistener.calls.size());
+      assertEquals(8, rls.getState().getCurrentRunLevel());
+      assertEquals(Long.class.getName(), rls.getState().getEnvironment());
+  }
+  
+  /**
+   * Attempting to tamper will the default run level service should be prevented.
+   */
+  @Test
+  public void tamperingWithDefaultRunLevelService() {
+      installTestRunLevelService(false);
+      defRLlistener = (TestRunLevelListener) listener;
+
+      try {
+          defRLS.setListener(defRLlistener);
+          fail("expected this to be illegal");
+      } catch (IllegalStateException e) {
+          // expected
+      }
+
+      try {
+          defRLS.setInhabitantActivator(null);
+          fail("expected this to be illegal");
+      } catch (IllegalStateException e) {
+          // expected
+      }
+
+      try {
+          defRLS.setInhabitantSorter(null);
+          fail("expected this to be illegal");
+      } catch (IllegalStateException e) {
+          // expected
+      }
+  }
   
   private void installTestRunLevelService(boolean async) {
     Inhabitant<RunLevelService> r = 
