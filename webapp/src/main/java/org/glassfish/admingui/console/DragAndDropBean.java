@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 @SessionScoped
 public class DragAndDropBean {
 
-    private String text = "blargh!";
     private List<String> available = new ArrayList<String>() {{
         add("server1");
         add("server2");
@@ -33,15 +32,6 @@ public class DragAndDropBean {
     private List<String> selected = new ArrayList<String>();
 
     public DragAndDropBean() {
-        System.out.println("ARGH!");
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
     }
 
     public List<String> getAvailable() {
@@ -60,6 +50,8 @@ public class DragAndDropBean {
         this.selected = selected;
     }
 
+    
+    /*
     public String availableDropListener() {
         FacesContext fc = FacesContext.getCurrentInstance();
         HttpServletRequest myRequest = (HttpServletRequest) fc.getExternalContext().getRequest();
@@ -85,7 +77,18 @@ public class DragAndDropBean {
 
         return null;
     }
+    */
 
+    public String availableDropListener(DragDropEvent event) {
+        String value = (String) event.getData();
+        available.add(value);
+        selected.remove(value);
+        Collections.sort(available);
+        Collections.sort(selected);
+
+        return null;
+    }
+    
     public String selectedDropListener(DragDropEvent event) {
         String value = (String) event.getData();
         available.remove(value);

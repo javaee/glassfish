@@ -90,7 +90,8 @@ public class Droppable extends UIComponentBase {
     }
 
     public java.lang.String getFor() {
-        return (java.lang.String) getStateHelper().eval(PropertyKeys.forValue, null);
+        final String id = (java.lang.String) getStateHelper().eval(PropertyKeys.forValue, null);
+        return (id != null) ? id : getParent().getId();
     }
 
     public void setFor(java.lang.String _for) {

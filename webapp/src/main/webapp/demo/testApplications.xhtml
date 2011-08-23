@@ -50,7 +50,6 @@
                 xmlns:ps="http://admingui.glassfish.org/console"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
-    <!--    <trh:head>	-->
     <link href="#{request.contextPath}/css/jquery-ui-base.css" rel="stylesheet" type="text/css"/>
 
     <style>
@@ -66,75 +65,88 @@
         #selected h4 { line-height: 16px; margin: 0 0 0.4em; }
         #selected h4 .ui-icon { float: left; }
     </style>
-    <!-- #selected .available h5 { display: none; } -->
+    <ui:remove>
+        <!--    <trh:head>	-->
+        <!-- #selected .available h5 { display: none; } -->
 
-    <script src="#{request.contextPath}/js/andriy.js"/>
+        <script src="#{request.contextPath}/js/andriy.js"/>
 
-    <!--    </trh:head>-->
-    <tr:panelBox background="medium" text="Applications">
-        Applications can be enterprise or web applications, or various kinds of modules. 
-        Restart an application or module by clicking on the reload link, this action will 
-        apply only to the targets that the application or module is enabled on.
-    </tr:panelBox>
+        <!--    </trh:head>-->
+        <tr:panelBox background="medium" text="Applications">
+            Applications can be enterprise or web applications, or various kinds of modules. 
+            Restart an application or module by clicking on the reload link, this action will 
+            apply only to the targets that the application or module is enabled on.
+        </tr:panelBox>
 
 
-    <div style="display: none">
-        <select id="available-applications" multiple="true">
-            <option value="console-demo">console-demo</option>
-            <option value="console-next">console-next</option>
-        </select>
+        <div style="display: none">
+            <select id="available-applications" multiple="true">
+                <option value="console-demo">console-demo</option>
+                <option value="console-next">console-next</option>
+            </select>
 
-        <select id="selected-applications" multiple="true">
-            <option name="console">console</option>
-        </select>
-    </div>
-
-    <div class="demo ui-widget ui-helper-clearfix" style="padding: 10px">
-
-        <ul id="available" class="available ui-helper-reset ui-helper-clearfix">
-        </ul>
-
-        <div id="selected" class="ui-widget-content ui-state-default">
-            <h4 class="ui-widget-header"><span class="ui-icon ui-icon-folder-collapsed">Server1</span> Server1</h4>
-            <ul class='available ui-helper-reset'/>
+            <select id="selected-applications" multiple="true">
+                <option name="console">console</option>
+            </select>
         </div>
 
+        <div class="demo ui-widget ui-helper-clearfix" style="padding: 10px">
 
-    </div><!-- End demo -->
+            <ul id="available" class="available ui-helper-reset ui-helper-clearfix">
+            </ul>
 
-     <tr:form id="jasonForm">
-        <tr:panelBox id="availableServers" text="Available Servers:"
+            <div id="selected" class="ui-widget-content ui-state-default">
+                <h4 class="ui-widget-header"><span class="ui-icon ui-icon-folder-collapsed">Server1</span> Server1</h4>
+                <ul class='available ui-helper-reset'/>
+            </div>
+
+
+        </div><!-- End demo -->
+    </ui:remove>
+
+    <tr:form id="dndForm">
+        <tr:panelBox id="availableServers" 
+                     text="Available Servers:"
                      background="light"
                      inlineStyle="width: 30%; float: left">
+            <g:droppable tolerance="touch"
+                         activeStyleClass="ui-state-highlight"
+                         datasource="selectedServersTable"
+                         dropListener="#{dragAndDropBean.availableDropListener}"
+                         onDropUpdate="availableServers selectedServers"
+                         scope="selected"
+                         />
             <h:dataTable id="availableServersTable" value="#{dragAndDropBean.available}" var="server">
                 <h:column>
                     <tr:panelBox id="server" text="#{server}"
                                  inlineStyle="width: 150px;">
+                        <g:draggable scope="available" opacity="0.35" revert="true" revertDuration="0" helper="clone" cursor="move"/>
                         Some details on the server!
                     </tr:panelBox>
-                    <g:draggable for="server" scope="server" opacity="0.35" revert="true" revertDuration="0" helper="clone" cursor="move"/>
                 </h:column>
             </h:dataTable>
         </tr:panelBox>
 
-         <tr:panelBox id="selectedServers" text="Selected Servers:"
-                      background="light"
-                      inlineStyle="width: 30%;">
-             <h:dataTable id="selectedServersTable" value="#{dragAndDropBean.selected}" var="server">
-                 <h:column>
-                     <tr:panelBox id="server" text="#{server}"
-                                  inlineStyle="width: 150px;">
-                         Some details on the server!
-                     </tr:panelBox>
-                 </h:column>
-             </h:dataTable>
-         </tr:panelBox>
-         <g:droppable for="selectedServers" tolerance="touch"
-             activeStyleClass="ui-state-highlight"
-             datasource="availableServersTable"
-             dropListener="#{dragAndDropBean.selectedDropListener}"
-             onDropUpdate="availableServers selectedServers"
-             scope="server"
-             />
-     </tr:form>
+        <tr:panelBox id="selectedServers" 
+                     text="Selected Servers:"
+                     background="light"
+                     inlineStyle="width: 30%;">
+            <g:droppable tolerance="touch"
+                         activeStyleClass="ui-state-highlight"
+                         datasource="availableServersTable"
+                         dropListener="#{dragAndDropBean.selectedDropListener}"
+                         onDropUpdate="availableServers selectedServers"
+                         scope="available"
+                         />
+            <h:dataTable id="selectedServersTable" value="#{dragAndDropBean.selected}" var="server">
+                <h:column>
+                    <tr:panelBox id="server" text="#{server}"
+                                 inlineStyle="width: 150px;">
+                        <g:draggable scope="selected" opacity="0.35" revert="true" revertDuration="0" helper="clone" cursor="move"/>
+                        Some details on the server!
+                    </tr:panelBox>
+                </h:column>
+            </h:dataTable>
+        </tr:panelBox>
+    </tr:form>
 </ui:composition>
