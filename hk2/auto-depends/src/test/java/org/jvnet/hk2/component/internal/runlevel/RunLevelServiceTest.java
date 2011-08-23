@@ -1305,6 +1305,7 @@ public class RunLevelServiceTest {
    * a bad dependency (i.e., a dependency to another run level service
    * environment type.
    */
+  @Ignore
   @Test
   public void activatingRunLevelServiceForAnotherEnvironmentWithBadDependency() {
       DescriptorImpl descriptor = new DescriptorImpl(null, AnotherNonDefaultEnvServerService.class.getName());
