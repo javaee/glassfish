@@ -1145,14 +1145,7 @@ public class WebappClassLoader
          * (1) Delegate to parent if requested, or if the requested resource
          * belongs to one of the packages that are part of the Java EE platform
          */
-        if (delegate
-                || (name.startsWith("javax") &&
-                    (!name.startsWith("javax.faces") || !useMyFaces))
-                || name.startsWith("sun")
-                || (name.startsWith("com/sun/faces") &&
-                    !name.startsWith("com/sun/faces/extensions") &&
-                    !useMyFaces)
-                || name.startsWith("org/apache/taglibs/standard")) {
+        if (isResourceDelegate(name)) {
             if (logger.isLoggable(Level.FINER))
                 logger.finer("  Delegating to parent classloader " + parent);
             ClassLoader loader = parent;
@@ -1238,12 +1231,7 @@ public class WebappClassLoader
          * (1) Delegate to parent if requested, or if the requested resource
          * belongs to one of the packages that are part of the Java EE platform
          */
-        if (delegate
-                || name.startsWith("javax")
-                || name.startsWith("sun")
-                || (name.startsWith("com/sun/faces")
-                    && !name.startsWith("com/sun/faces/extensions"))
-                || name.startsWith("org/apache/taglibs/standard")) {
+        if (isResourceDelegate(name)) {
             if (logger.isLoggable(Level.FINER))
                 logger.finer("  Delegating to parent classloader " + parent);
             ClassLoader loader = parent;
@@ -2743,5 +2731,21 @@ public class WebappClassLoader
         }
 
     }
-}
 
+    /**
+     * To determine whether one should delegate to parent for loading
+     * resource of the given resource name.
+     * 
+     * @param name
+     */
+    private boolean isResourceDelegate(String name) {
+        return (delegate
+                || (name.startsWith("javax") &&
+                    (!name.startsWith("javax.faces") || !useMyFaces))
+                || name.startsWith("sun")
+                || (name.startsWith("com/sun/faces") &&
+                    !name.startsWith("com/sun/faces/extensions") &&
+                    !useMyFaces)
+                || name.startsWith("org/apache/taglibs/standard"));
+    }
+}
