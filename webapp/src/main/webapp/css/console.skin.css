@@ -128,8 +128,12 @@ af|commandButton, af|commandButton:hover, af|commandButton.p_AFDisabled {
 }
 
 .af_panelBox_light .af_panelBox_body .af_panelBox_header {
-    background: #567CAB;
+    background: url('../images/dbcc.png') repeat-x scroll 0 0 #567CAB;
     color: white !important;
+}
+
+.af_panelBox_transparent, .af_panelBox_light, .af_panelBox_medium, .af_panelBox_dark {
+    border: 0px;
 }
 
 .dropAllowed {
