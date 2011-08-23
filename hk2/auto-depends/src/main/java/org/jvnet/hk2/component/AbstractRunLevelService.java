@@ -90,6 +90,48 @@ public abstract class AbstractRunLevelService<T> implements RunLevelService<T>{
         return (RunLevelService<T>) delegate;
     }
     
+    protected DefaultRunLevelService getDefault() {
+        RunLevelService<T> rls = getDelegate();
+        if (!DefaultRunLevelService.class.isInstance(rls)) {
+            throw new UnsupportedOperationException();
+        }
+
+        return DefaultRunLevelService.class.cast(rls);
+    }
+    
+    /**
+     * Overrides the default behavior of getting all listeners from the habitat
+     * to use a stand-in listener instead. If set to null, the default behavior
+     * will be restored.
+     * 
+     * @param listener the alternative, stand-in listener
+     */
+    public void setListener(RunLevelListener listener) {
+        getDefault().setListener(listener);
+    }
+    
+    /**
+     * Overrides the default behavior of getting the inhabitant sorter from the habitat
+     * to use a stand-in sorter instead. If set to null, the default behavior
+     * will be restored.
+     * 
+     * @param sorter the alternative, stand-in sorter
+     */
+    public void setInhabitantSorter(InhabitantSorter sorter) {
+        getDefault().setInhabitantSorter(sorter);
+    }
+
+    /**
+     * Overrides the default behavior of getting the inhabitant activator from the habitat
+     * to use a stand-in activator instead. If set to null, the default behavior
+     * will be restored.
+     * 
+     * @param activator the alternative, stand-in activator
+     */
+    public void setInhabitantActivator(InhabitantActivator activator) {
+        getDefault().setInhabitantActivator(activator);
+    }
+    
     @Override
     public RunLevelState<T> getState() {
         return getDelegate().getState();

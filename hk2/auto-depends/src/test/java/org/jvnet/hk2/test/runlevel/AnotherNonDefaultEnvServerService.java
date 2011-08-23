@@ -44,13 +44,13 @@ import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * We are environment==Long.class, so this is a problem!
+ * We are environment==Long.class, so this is a problem having the invalid injection below!
  */
 @Service
 @RunLevel(value=8, environment=Long.class)
 public class AnotherNonDefaultEnvServerService {
 
-    // this is injecting environment==Object.class
+    // this is injecting environment==Object.class; invalid!
     @Inject
     public ANonDefaultEnvServerService another;
     

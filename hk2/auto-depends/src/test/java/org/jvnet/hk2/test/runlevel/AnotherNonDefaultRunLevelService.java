@@ -42,7 +42,7 @@ package org.jvnet.hk2.test.runlevel;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.AbstractRunLevelService;
 
-@Service(name="x", metadata="environment=java.lang.Long")
+@Service(name="AnotherNonDefaultRunLevelService", metadata="environment=java.lang.Long")
 public class AnotherNonDefaultRunLevelService extends AbstractRunLevelService<Long> {
 
     public AnotherNonDefaultRunLevelService() {

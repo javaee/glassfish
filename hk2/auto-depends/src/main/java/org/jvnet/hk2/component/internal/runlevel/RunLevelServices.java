@@ -60,9 +60,10 @@ import org.jvnet.hk2.component.RunLevelService;
  * 
  * @author Jeff Trent
  */
-@SuppressWarnings({ "rawtypes" })
 public class RunLevelServices {
 
+  private static Logger logger = Logger.getLogger(RunLevelServices.class.getName());
+    
   private Map<Habitat, Map<String, RunLevelServiceStub>> map =
     new HashMap<Habitat, Map<String, RunLevelServiceStub>>();
 
@@ -105,13 +106,19 @@ public class RunLevelServices {
     RunLevelService<?> theOne = null;
     for (Inhabitant<?> rlsi : coll) {
         if (!rlsi.isActive()) {
-//            MultiMap<String, String> mm = rlsi.getDescriptor().getMetadata();
-//            System.out.println(mm);
-            // TODO: we should be able to do this without activating!!  Need to fix the above - getting metadata from the inhabitant
-            try {
-                rlsi.get();
-            } catch (Exception e) {
-                Logger.getLogger(RunLevelServices.class.getName()).log(Level.WARNING, "unable to activate {0}", rlsi);
+            // attempt to get the environment from the metadata
+            MultiMap<String, String> mm = rlsi.getDescriptor().getMetadata();
+            String rlsEnv = mm.getFirst("environment");
+            if (null == rlsEnv || rlsEnv.equals(env)) {
+                if (null == rlsEnv) {
+                    logger.log(Level.INFO, "{0} should ideally be annotated with metadata attribute 'environment'", rlsi);
+                }
+                
+                try {
+                    rlsi.get();
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, "unable to activate {0}", rlsi);
+                }
             }
         }
         
@@ -119,8 +126,7 @@ public class RunLevelServices {
             RunLevelService<?> hrls = (RunLevelService<?>) rlsi.get();
             if (null != hrls.getState() && hrls.getState().getEnvironment().equals(env)) {
                 if (null != theOne) {
-                    throw new ComponentException("constraint violation - competing RunLevelServices: " +
-                            theOne + " and " + hrls);
+                    throw new ComponentException("constraint violation - competing RunLevelServices: " + theOne + " and " + hrls);
                 }
                 theOne = hrls;
             }
