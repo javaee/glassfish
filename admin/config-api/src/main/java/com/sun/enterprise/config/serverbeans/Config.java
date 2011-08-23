@@ -183,6 +183,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link IiopService }
      */
     @Element(required=true)
+    @NotNull
     IiopService getIiopService();
 
     /**
@@ -287,6 +288,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @return possible object is
      *         {@link JmsService }
      */
+    @NotNull
     @Element
     JmsService getJmsService();
 

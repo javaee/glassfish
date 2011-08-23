@@ -102,7 +102,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute(defaultValue="EMBEDDED")
     @NotNull
     @Pattern(regexp="(LOCAL|EMBEDDED|REMOTE)")
     String getType();
