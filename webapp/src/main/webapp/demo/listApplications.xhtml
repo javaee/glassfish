@@ -54,7 +54,8 @@
 
     <tr:table var="app" value="#{listApplicationsBean.applications}">
         <tr:column headerText="Name">
-            <h:commandLink id="name" value="#{app.name}" onclick="location='#{request.contextPath}/demo/editApplicationGeneral.xhtml'" />
+            <h:commandLink id="name" value="#{app.name}"
+                           onclick="return Console.Ajax.loadPage('/demo/editApplicationGeneral.xhtml')"/>
         </tr:column>
         <tr:column headerText="Enabled">
             #{app.enabled}
