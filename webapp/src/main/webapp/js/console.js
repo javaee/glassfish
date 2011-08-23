@@ -45,7 +45,12 @@ if (typeof Console == 'undefined') {
         jsf.ajax.addOnError(Console.Ajax.onError);
     });
 
-    Console = { };
+    Console = {
+        escapeClientId : function(id) {
+            return "#" + id.replace(/:/g,"\\:");
+        },
+
+    };
 
     Console.Ajax = {
         processLinks: function() {
@@ -286,6 +291,7 @@ if (typeof Console == 'undefined') {
         };
         fn();
     };
+
 }
 
 /*

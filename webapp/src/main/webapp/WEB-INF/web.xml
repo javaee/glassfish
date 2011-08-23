@@ -107,12 +107,16 @@
         <param-value>client</param-value>
     </context-param>
 
-<!--
     <context-param>
-        <param-name>org.apache.myfaces.trinidad.ALTERNATE_VIEW_HANDLER</param-name>
-        <param-value>org.apache.myfaces.trinidadinternal.facelets.TrinidadFaceletViewHandler</param-value>
+        <param-name>javax.faces.FACELETS_LIBRARIES</param-name>
+        <param-value>/WEB-INF/admingui-gf.taglib.xml</param-value>
     </context-param>
--->
+    <!--
+        <context-param>
+            <param-name>org.apache.myfaces.trinidad.ALTERNATE_VIEW_HANDLER</param-name>
+            <param-value>org.apache.myfaces.trinidadinternal.facelets.TrinidadFaceletViewHandler</param-value>
+        </context-param>
+    -->
 
     <filter>
         <filter-name>trinidad</filter-name>

@@ -44,6 +44,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:gf="http://java.sun.com/jsf/composite/glassfish"
+                xmlns:g="http://java.sun.com/jsf/glassfish"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ps="http://admingui.glassfish.org/console"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
@@ -99,4 +101,40 @@
 
 
     </div><!-- End demo -->
+
+     <tr:form id="jasonForm">
+        <tr:panelBox id="availableServers" text="Available Servers:"
+                     background="light"
+                     inlineStyle="width: 30%; float: left">
+            <h:dataTable id="availableServersTable" value="#{dragAndDropBean.available}" var="server">
+                <h:column>
+                    <tr:panelBox id="server" text="#{server}"
+                                 inlineStyle="width: 150px;">
+                        Some details on the server!
+                    </tr:panelBox>
+                    <g:draggable for="server" scope="server" opacity="0.35" revert="true" revertDuration="0" helper="clone" cursor="move"/>
+                </h:column>
+            </h:dataTable>
+        </tr:panelBox>
+
+         <tr:panelBox id="selectedServers" text="Selected Servers:"
+                      background="light"
+                      inlineStyle="width: 30%;">
+             <h:dataTable id="selectedServersTable" value="#{dragAndDropBean.selected}" var="server">
+                 <h:column>
+                     <tr:panelBox id="server" text="#{server}"
+                                  inlineStyle="width: 150px;">
+                         Some details on the server!
+                     </tr:panelBox>
+                 </h:column>
+             </h:dataTable>
+         </tr:panelBox>
+         <g:droppable for="selectedServers" tolerance="touch"
+             activeStyleClass="ui-state-highlight"
+             datasource="availableServersTable"
+             dropListener="#{dragAndDropBean.selectedDropListener}"
+             onDropUpdate="availableServers selectedServers"
+             scope="server"
+             />
+     </tr:form>
 </ui:composition>

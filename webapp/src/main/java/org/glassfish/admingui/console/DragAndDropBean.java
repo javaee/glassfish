@@ -4,6 +4,8 @@
  */
 package org.glassfish.admingui.console;
 
+import org.glassfish.admingui.console.event.DragDropEvent;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -62,10 +64,12 @@ public class DragAndDropBean {
         FacesContext fc = FacesContext.getCurrentInstance();
         HttpServletRequest myRequest = (HttpServletRequest) fc.getExternalContext().getRequest();
         String value = myRequest.getParameter("droppedValue");
-        available.add(value);
-        selected.remove(value);
-        Collections.sort(available);
-        Collections.sort(selected);
+        if (!available.contains(value)) {
+            available.add(value);
+            selected.remove(value);
+            Collections.sort(available);
+            Collections.sort(selected);
+        }
 
         return null;
     }
@@ -74,6 +78,16 @@ public class DragAndDropBean {
         FacesContext fc = FacesContext.getCurrentInstance();
         HttpServletRequest myRequest = (HttpServletRequest) fc.getExternalContext().getRequest();
         String value = myRequest.getParameter("droppedValue");
+        available.remove(value);
+        selected.add(value);
+        Collections.sort(available);
+        Collections.sort(selected);
+
+        return null;
+    }
+
+    public String selectedDropListener(DragDropEvent event) {
+        String value = (String) event.getData();
         available.remove(value);
         selected.add(value);
         Collections.sort(available);
