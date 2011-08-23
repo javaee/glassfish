@@ -108,9 +108,9 @@
         <tr:panelBox id="availableServers" 
                      text="Available Servers:"
                      background="light"
-                     inlineStyle="width: 30%; float: left">
+                     inlineStyle="width: 30%; float: left; ">
             <g:droppable tolerance="touch"
-                         activeStyleClass="ui-state-highlight"
+                         activeStyleClass="dropAllowed"
                          datasource="selectedServersTable"
                          dropListener="#{dragAndDropBean.availableDropListener}"
                          onDropUpdate="availableServers selectedServers"
@@ -132,7 +132,7 @@
                      background="light"
                      inlineStyle="width: 30%;">
             <g:droppable tolerance="touch"
-                         activeStyleClass="ui-state-highlight"
+                         activeStyleClass="dropAllowed"
                          datasource="availableServersTable"
                          dropListener="#{dragAndDropBean.selectedDropListener}"
                          onDropUpdate="availableServers selectedServers"

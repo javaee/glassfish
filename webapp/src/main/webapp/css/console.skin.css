@@ -126,3 +126,12 @@ af|commandButton, af|commandButton:hover, af|commandButton.p_AFDisabled {
 .af_commandButton.p_AFDisabled {
     display: inline;
 }
+
+.af_panelBox_light .af_panelBox_body .af_panelBox_header {
+    background: #567CAB;
+    color: white !important;
+}
+
+.dropAllowed {
+    background-color: #CCD6E8;
+}
