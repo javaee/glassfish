@@ -1303,11 +1303,10 @@ public class RunLevelServiceTest {
   /**
    * Attempting to activate the non default run level service when there exists
    * a bad dependency (i.e., a dependency to another run level service
-   * environment type.
+   * environment type.)
    */
-  @Ignore
   @Test
-  public void activatingRunLevelServiceForAnotherEnvironmentWithBadDependency() {
+  public void activatingAnotherEnvironmentWithBadDependency() {
       DescriptorImpl descriptor = new DescriptorImpl(null, AnotherNonDefaultEnvServerService.class.getName());
       Collection<Binding<?>> bindings = h.getBindings(descriptor);
       assertEquals(bindings.toString(), 1, bindings.size());
@@ -1357,13 +1356,78 @@ public class RunLevelServiceTest {
               ((ManagedComponentProvider)theInvalidOne.getProvider(null)).isActive());
 
       assertNull(cancelled.get());
-      assertEquals("we start at -2", 9, progress.get());
+      assertTrue(progress.get() > 8);
       assertNotNull("we expected the proceedTo to generate an error because of invalid injection", error.get());
       assertEquals(0, defRLlistener.calls.size());
       assertEquals(8, rls.getState().getCurrentRunLevel());
       assertEquals(Long.class.getName(), rls.getState().getEnvironment());
   }
   
+//  /**
+//   * Attempting to activate the non default run level service when there exists
+//   * a bad dependency (i.e., a dependency to another run level service
+//   * environment type as well as upward dependencies) but through a Holder making
+//   * it all legitimate.
+//   */
+//  @Ignore
+//  @Test
+//  public void activatingAnotherEnvironmentWithBadDependencyWithHolder() {
+//      DescriptorImpl descriptor = new DescriptorImpl(null, AnotherNonDefaultEnvServerService.class.getName());
+//      Collection<Binding<?>> bindings = h.getBindings(descriptor);
+//      assertEquals(bindings.toString(), 1, bindings.size());
+//      
+//      Binding theInvalidOne = bindings.iterator().next();
+//      assertFalse("should not have been initialized now",
+//              ((ManagedComponentProvider)theInvalidOne.getProvider(null)).isActive());
+//
+//      descriptor = new DescriptorImpl(null, null);
+//      descriptor.addContract(RunLevelService.class.getName());
+//      descriptor.addMetadata("environment", "java.lang.Long");
+//      bindings = h.getBindings(descriptor);
+//      Binding theRls = bindings.iterator().next();
+//      AbstractRunLevelService rls = (AbstractRunLevelService) theRls.getProvider(null).get();
+//
+//      final Reference<Boolean> cancelled = new Reference<Boolean>();
+//      final Reference<Integer> progress = new Reference<Integer>(0);
+//      final Reference<Throwable> error = new Reference<Throwable>();
+//      
+//      installTestRunLevelService(false);
+//      
+//      defRLlistener = (TestRunLevelListener) listener;
+//      defRLlistener.calls.clear();
+//
+//      rls.setListener(new RunLevelListener() {
+//        @Override
+//        public void onCancelled(RunLevelState<?> state, ServiceContext ctx,
+//                int previousProceedTo, boolean isInterrupt) {
+//            cancelled.set(true);
+//        }
+//
+//        @Override
+//        public void onError(RunLevelState<?> state, ServiceContext context,
+//                Throwable t, boolean willContinue) {
+//            error.set(t);
+//            assertTrue(willContinue);
+//        }
+//
+//        @Override
+//        public void onProgress(RunLevelState<?> state) {
+//            progress.set(progress.get() + 1);
+//        }
+//      });
+//      
+//      rls.proceedTo(8);
+//      assertFalse("should not have been initialized now - it has an invalid dependency",
+//              ((ManagedComponentProvider)theInvalidOne.getProvider(null)).isActive());
+//
+//      assertNull(cancelled.get());
+//      assertEquals("we start at -2", 9, progress.get());
+//      assertNotNull("we expected the proceedTo to generate an error because of invalid injection", error.get());
+//      assertEquals(0, defRLlistener.calls.size());
+//      assertEquals(8, rls.getState().getCurrentRunLevel());
+//      assertEquals(Long.class.getName(), rls.getState().getEnvironment());
+//  }
+//  
   /**
    * Attempting to tamper will the default run level service should be prevented.
    */
