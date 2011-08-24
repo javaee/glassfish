@@ -42,6 +42,7 @@ package org.jvnet.hk2.test.runlevel;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.RunLevelService;
 import org.jvnet.hk2.component.RunLevelState;
+import org.jvnet.hk2.component.Scope;
 
 /**
  * A testing non-default RunLevelService.
@@ -85,7 +86,8 @@ public class ANonDefaultRunLevelService implements RunLevelService, RunLevelStat
 
   @Override
   public String getEnvironment() {
-    return Object.class.getName();
+      // whatever, it doesn't matter
+    return Scope.class.getName();
   }
 
   @Override

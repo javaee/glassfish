@@ -42,6 +42,7 @@ package com.sun.hk2.component;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantListener;
+import org.jvnet.hk2.component.RunLevelException;
 import org.jvnet.hk2.component.RunLevelState;
 import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 
@@ -122,7 +123,7 @@ public class RunLevelInhabitant<T, V> extends EventPublishingInhabitant<T> {
       Integer current = state.getCurrentRunLevel();
       current = (null == current) ? DefaultRunLevelService.KERNEL_RUNLEVEL : current;
       if (null == planned || runLevel > planned || runLevel > current + 1) {
-        throw new ComponentException("unable to activate " + this + "; minimum expected RunLevel is: " + runLevel +
+        throw new RunLevelException("unable to activate " + this + "; minimum expected RunLevel is: " + runLevel +
             "; planned is: " + planned + "; current is: " + current);
       }
     }

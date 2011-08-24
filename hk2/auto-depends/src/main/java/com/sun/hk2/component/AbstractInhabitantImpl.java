@@ -57,6 +57,7 @@ import org.glassfish.hk2.Provider;
 import org.jvnet.hk2.component.DescriptorImpl;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.RunLevelException;
 import org.jvnet.hk2.tracing.TracingThreadLocal;
 import org.jvnet.hk2.tracing.TracingUtilities;
 
@@ -123,7 +124,14 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T>, Bindin
             if (TracingUtilities.isEnabled()) {
                 TracingThreadLocal.get().push(this);
             }
-            return get(this);
+            try {
+                return get(this);
+            } catch (RunLevelException e) {
+                // we are a holder, so we need to allow for {@link RunLevelService} constraints
+                // not properly being met --- in such cases return null
+                logger.log(Level.FINER, "swallowing error", e);
+                return null;
+            }
         } finally {
             if (TracingUtilities.isEnabled()) {
                 TracingThreadLocal.get().pop();

@@ -50,6 +50,7 @@ import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantListener;
+import org.jvnet.hk2.component.RunLevelException;
 
 import com.sun.hk2.component.AbstractInhabitantImpl;
 
@@ -133,7 +134,7 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
           
           // verify it is not to a bad dependency
           if (rl.value() > runLevel) {
-            throw new ComponentException("Invalid RunLevel dependency to: " + inhabitant);
+            throw new RunLevelException("Invalid RunLevel dependency to: " + inhabitant);
           }
         }
       }

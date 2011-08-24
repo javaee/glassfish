@@ -66,6 +66,7 @@ import org.jvnet.hk2.component.InhabitantActivator;
 import org.jvnet.hk2.component.InhabitantListener;
 import org.jvnet.hk2.component.InhabitantSorter;
 import org.jvnet.hk2.component.MultiThreadedInhabitantActivator;
+import org.jvnet.hk2.component.RunLevelException;
 import org.jvnet.hk2.component.RunLevelListener;
 import org.jvnet.hk2.component.RunLevelService;
 import org.jvnet.hk2.component.RunLevelState;
@@ -569,7 +570,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
         } catch (Exception e) {
           // don't percolate the exception since it may negatively impact processing
           logger.log(Level.WARNING, "swallowing exception - " + getDescription(true),
-              new ComponentException(e));
+              new RunLevelException(e));
         }
       }
       
@@ -577,7 +578,8 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
         throw lastInterrupt;
       } else {
         if (null != error) {
-          logger.log(Level.FINE, "swallowing exception - " + context, new ComponentException(error));
+          logger.log(Level.FINE, "swallowing exception - " + context,
+              new RunLevelException(error));
         }
       }
     }
@@ -1195,7 +1197,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
       } else {
         // RLS must continue / fall out
         logger.log(Level.FINE, "swallowing exception - " + getDescription(true), 
-            new ComponentException(e));
+            new RunLevelException(e));
       }
     }
 

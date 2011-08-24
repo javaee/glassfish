@@ -43,11 +43,11 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.jvnet.hk2.annotations.RunLevel;
-import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.InhabitantListener;
 import org.jvnet.hk2.component.InhabitantProviderInterceptor;
 import org.jvnet.hk2.component.MultiMap;
+import org.jvnet.hk2.component.RunLevelException;
 import org.jvnet.hk2.component.RunLevelService;
 import org.jvnet.hk2.component.internal.runlevel.RunLevelServices;
 
@@ -96,7 +96,7 @@ public class RunLevelInhabitantProvider extends AbstractInhabitantProvider {
       try {
           rls = runLevelServices.get(habitat, runLevel, envStr);
       } catch (Exception e) {
-          throw new ComponentException("unable to find the RunLevelService appropriate for: " + envStr, e);
+          throw new RunLevelException("unable to find the RunLevelService appropriate for: " + envStr, e);
       }
       InhabitantListener listener = InhabitantListener.class.isInstance(rls) ?
           InhabitantListener.class.cast(rls) : null;
