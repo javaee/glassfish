@@ -60,6 +60,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.config.support.CommandTarget;
@@ -108,6 +109,7 @@ public class ListJMSResources implements AdminCommand {
        public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         ArrayList<String> list = new ArrayList();
+        Properties extraProperties = new Properties();
 
         Collection adminObjectResourceList = domain.getResources().getResources(AdminObjectResource.class);
         Collection connectorResourcesList = domain.getResources().getResources(ConnectorResource.class);
@@ -141,6 +143,7 @@ public class ListJMSResources implements AdminCommand {
                 final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
                 part.setMessage(localStrings.getLocalString("nothingToList",
                     "Nothing to list."));
+                extraProperties.put("jmsResources", list);
             } else {
 
                List <String> resourceList = null;
@@ -157,7 +160,9 @@ public class ListJMSResources implements AdminCommand {
                     final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
                     part.setMessage(jndiName);
                 }
+                extraProperties.put("jmsResources", resourceList);
             }
+            report.setExtraProperties(extraProperties);
         } catch (Exception e) {
             report.setMessage(localStrings.getLocalString("list.jms.resources.fail",
                     "Unable to list JMS Resources") + " " + e.getLocalizedMessage());
