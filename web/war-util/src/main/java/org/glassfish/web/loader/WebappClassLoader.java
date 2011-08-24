@@ -1874,6 +1874,7 @@ public class WebappClassLoader
                     Object value = field.get(instance);
                     if (null != value) {
                         Class<? extends Object> valueClass = value.getClass();
+                        if (!loadedByThisOrChild(valueClass)) {
                             if (logger.isLoggable(Level.FINE))  {
                                 logger.fine("Not setting field " + field.getName() +
                                         " to null in object of class " +
@@ -1884,11 +1885,12 @@ public class WebappClassLoader
                             }
                         } else {
                             field.set(instance, null);
-                             if (logger.isLoggable(Level.FINE))
+                            if (logger.isLoggable(Level.FINE))
                                 logger.fine("Set field " + field.getName()
                                         + " to null in class " + instance.getClass().getName());
                         }
                     }
+                }
             } catch (Throwable t) {
                 if (logger.isLoggable(Level.FINE)) {
                     logger.log(Level.FINE,"Could not set field " + field.getName()
