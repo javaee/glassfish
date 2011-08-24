@@ -39,6 +39,7 @@
  */
 package com.sun.hk2.component;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
@@ -158,6 +159,14 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
       throw new IllegalArgumentException();
     }
     
+    getListeners();
+    
+    if (!listeners.contains(listener)) {
+        listeners.add(listener);
+    }
+  }
+
+  private Collection<InhabitantListener> getListeners() {
     if (null == listeners) {
       synchronized (this) {
         if (null == listeners) {
@@ -166,8 +175,12 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
       }
     }
     
-    listeners.add(listener);
+    return listeners;
   }
+  
+//  public boolean hasListeners() {
+//      return (null != listeners && !listeners.isEmpty());
+//  }
 
   public boolean removeInhabitantListener(InhabitantListener listener) {
     return (null == listeners) ? false : listeners.remove(listener);

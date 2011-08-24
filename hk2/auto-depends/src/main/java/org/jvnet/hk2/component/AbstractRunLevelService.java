@@ -54,7 +54,8 @@ import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
  * 
  * @author Jeff Trent
  */
-public abstract class AbstractRunLevelService<T> implements RunLevelService<T>{
+public abstract class AbstractRunLevelService<T>
+        implements RunLevelService<T>, InhabitantListener {
 
     @Inject
     private Habitat habitat;
@@ -157,6 +158,11 @@ public abstract class AbstractRunLevelService<T> implements RunLevelService<T>{
     @Override
     public void interrupt(int runLevel) {
         getDelegate().interrupt(runLevel);
+    }
+
+    @Override
+    public boolean inhabitantChanged(EventType eventType, Inhabitant<?> inhabitant) {
+        return getDefault().inhabitantChanged(eventType, inhabitant);
     }
 
 }

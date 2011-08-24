@@ -79,6 +79,10 @@ import org.jvnet.hk2.component.RunLevelState;
 import org.jvnet.hk2.component.ServiceContext;
 import org.jvnet.hk2.junit.Hk2Runner;
 import org.jvnet.hk2.junit.Hk2RunnerOptions;
+import org.jvnet.hk2.test.runlevel.AHolderBasedRegularService1;
+import org.jvnet.hk2.test.runlevel.AHolderBasedServerService1;
+import org.jvnet.hk2.test.runlevel.AHolderBasedServerService2;
+import org.jvnet.hk2.test.runlevel.ANonDefaultEnvServerService;
 import org.jvnet.hk2.test.runlevel.AnotherNonDefaultEnvServerService;
 import org.jvnet.hk2.test.runlevel.AnotherNonDefaultRunLevelService;
 import org.jvnet.hk2.test.runlevel.ExceptionRunLevelManagedService;
@@ -1319,6 +1323,7 @@ public class RunLevelServiceTest {
       descriptor.addContract(RunLevelService.class.getName());
       descriptor.addMetadata("environment", "java.lang.Long");
       bindings = h.getBindings(descriptor);
+      assertEquals(1, bindings.size());
       Binding theRls = bindings.iterator().next();
       AbstractRunLevelService rls = (AbstractRunLevelService) theRls.getProvider(null).get();
 
@@ -1363,71 +1368,93 @@ public class RunLevelServiceTest {
       assertEquals(Long.class.getName(), rls.getState().getEnvironment());
   }
   
-//  /**
-//   * Attempting to activate the non default run level service when there exists
-//   * a bad dependency (i.e., a dependency to another run level service
-//   * environment type as well as upward dependencies) but through a Holder making
-//   * it all legitimate.
-//   */
-//  @Ignore
-//  @Test
-//  public void activatingAnotherEnvironmentWithBadDependencyWithHolder() {
-//      DescriptorImpl descriptor = new DescriptorImpl(null, AnotherNonDefaultEnvServerService.class.getName());
-//      Collection<Binding<?>> bindings = h.getBindings(descriptor);
-//      assertEquals(bindings.toString(), 1, bindings.size());
-//      
-//      Binding theInvalidOne = bindings.iterator().next();
-//      assertFalse("should not have been initialized now",
-//              ((ManagedComponentProvider)theInvalidOne.getProvider(null)).isActive());
-//
-//      descriptor = new DescriptorImpl(null, null);
-//      descriptor.addContract(RunLevelService.class.getName());
-//      descriptor.addMetadata("environment", "java.lang.Long");
-//      bindings = h.getBindings(descriptor);
-//      Binding theRls = bindings.iterator().next();
-//      AbstractRunLevelService rls = (AbstractRunLevelService) theRls.getProvider(null).get();
-//
-//      final Reference<Boolean> cancelled = new Reference<Boolean>();
-//      final Reference<Integer> progress = new Reference<Integer>(0);
-//      final Reference<Throwable> error = new Reference<Throwable>();
-//      
-//      installTestRunLevelService(false);
-//      
-//      defRLlistener = (TestRunLevelListener) listener;
-//      defRLlistener.calls.clear();
-//
-//      rls.setListener(new RunLevelListener() {
-//        @Override
-//        public void onCancelled(RunLevelState<?> state, ServiceContext ctx,
-//                int previousProceedTo, boolean isInterrupt) {
-//            cancelled.set(true);
-//        }
-//
-//        @Override
-//        public void onError(RunLevelState<?> state, ServiceContext context,
-//                Throwable t, boolean willContinue) {
-//            error.set(t);
-//            assertTrue(willContinue);
-//        }
-//
-//        @Override
-//        public void onProgress(RunLevelState<?> state) {
-//            progress.set(progress.get() + 1);
-//        }
-//      });
-//      
-//      rls.proceedTo(8);
-//      assertFalse("should not have been initialized now - it has an invalid dependency",
-//              ((ManagedComponentProvider)theInvalidOne.getProvider(null)).isActive());
-//
-//      assertNull(cancelled.get());
-//      assertEquals("we start at -2", 9, progress.get());
-//      assertNotNull("we expected the proceedTo to generate an error because of invalid injection", error.get());
-//      assertEquals(0, defRLlistener.calls.size());
-//      assertEquals(8, rls.getState().getCurrentRunLevel());
-//      assertEquals(Long.class.getName(), rls.getState().getEnvironment());
-//  }
-//  
+  /**
+   * Attempting to activate the non default run level service when there exists
+   * a bad dependency (i.e., a dependency to another run level service
+   * environment type as well as upward dependencies) but through a Holder making
+   * it all legitimate.
+   */
+  @SuppressWarnings("unchecked")
+  @Test
+  public void activatingAnotherEnvironmentWithBadDependencyWithHolder() {
+      DescriptorImpl descriptor = new DescriptorImpl();
+      descriptor.addContract(RunLevelService.class);
+      descriptor.addMetadata("environment", Long.class.getName());
+      Collection<Binding<?>> bindings = h.getBindings(descriptor);
+      assertEquals(1, bindings.size());
+      Binding theRls = bindings.iterator().next();
+      AbstractRunLevelService rls = (AbstractRunLevelService) theRls.getProvider(null).get();
+
+      rls.proceedTo(8);
+
+      descriptor = new DescriptorImpl(AHolderBasedRegularService1.class);
+      bindings = h.getBindings(descriptor);
+      assertEquals(1, bindings.size());
+      ManagedComponentProvider<AHolderBasedRegularService1> regService1Provider = 
+          (ManagedComponentProvider<AHolderBasedRegularService1>) bindings.iterator().next().getProvider(null);
+      assertNotNull(regService1Provider);
+      assertFalse(regService1Provider.isActive());
+      
+      AHolderBasedRegularService1 regService1 = regService1Provider.get();
+      assertNotNull(regService1);
+      assertTrue(regService1Provider.isActive());
+      
+      AHolderBasedServerService1 holder1 = regService1.service1.get();
+      assertNotNull("we've reached level 8", holder1);
+      assertSame(holder1, regService1.service1.get());
+
+      AHolderBasedServerService2 holder2 = regService1.service2.get();
+      assertNull("we've not reached level 9", holder2);
+      
+      ANonDefaultEnvServerService another1 = holder1.different1.get();
+      assertNull("the other run level service has not yet been started", another1);
+
+      // now, start the "different1" run level service to an adequate start level
+      descriptor = new DescriptorImpl();
+      descriptor.addContract(RunLevelService.class);
+      descriptor.addMetadata("environment", Object.class.getName());
+      bindings = h.getBindings(descriptor);
+      assertEquals(1, bindings.size());
+      Binding anotherRlsBinding = bindings.iterator().next();
+      RunLevelService<?> anotherRls = (RunLevelService<?>) anotherRlsBinding.getProvider(null).get();
+      anotherRls.proceedTo(7);
+      
+      // now re-check it
+      ManagedComponentProvider acp = (ManagedComponentProvider) holder1.different1;
+      assertTrue("proceeding to level 7 should have created demand for this service", acp.isActive());
+      
+      another1 = holder1.different1.get();
+      assertNotNull("the other run level service has now been started", another1);
+      assertSame(another1, holder1.different1.get());
+
+      // now, bring the "different1" runLevelService down again
+      anotherRls.proceedTo(6);
+      
+      // now re-check it again
+      assertNull("the other run level service has now been brought down", holder1.different1.get());
+
+      // bring it back up and make sure it's different
+      anotherRls.proceedTo(7);
+      
+      ANonDefaultEnvServerService newOne = holder1.different1.get();
+      assertNotNull("the other run level service has now been brought back up", newOne);
+      assertFalse("instance didn't get cleared when coming down", another1 == newOne);
+
+      // now take the original run level service, and bring it down
+      rls.proceedTo(0);
+      newOne = holder1.different1.get();
+      assertNotNull("should have no affect on a different run level service", newOne);
+      
+      assertTrue("the regular service should not have been affected", regService1Provider.isActive());
+      
+      // it's holder services, however, should be gone
+      holder1 = regService1.service1.get();
+      assertNull("we've gone down", holder1);
+
+      holder2 = regService1.service2.get();
+      assertNull("we've gone down", holder2);
+  }
+  
   /**
    * Attempting to tamper will the default run level service should be prevented.
    */

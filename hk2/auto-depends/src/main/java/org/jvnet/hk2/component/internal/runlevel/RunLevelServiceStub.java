@@ -137,14 +137,18 @@ import org.jvnet.hk2.component.RunLevelState;
   }
 
   @Override
-  public boolean inhabitantChanged(EventType eventType, Inhabitant<?> inhabitant) {
+  public synchronized boolean inhabitantChanged(EventType eventType, Inhabitant<?> inhabitant) {
     if (null == delegateListener) {
       if (null == delegate) {
         // we want to keep getting messages for now
         return true;
       } else {
-        // our delegate is not a listener, so we don't care anymore
-        return false;
+          if (InhabitantListener.class.isInstance(delegate)) {
+              delegateListener = InhabitantListener.class.cast(delegate);
+          } else {
+              // our delegate is not a listener, so we don't care anymore
+              return false;
+          }
       }
     }
 

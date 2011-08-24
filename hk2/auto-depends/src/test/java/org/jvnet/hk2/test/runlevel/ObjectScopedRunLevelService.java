@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,23 +39,14 @@
  */
 package org.jvnet.hk2.test.runlevel;
 
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.AbstractRunLevelService;
 
-import com.sun.hk2.component.Holder;
+@Service(metadata="environment=java.lang.Object")
+public class ObjectScopedRunLevelService extends AbstractRunLevelService<Object> {
 
-/**
- * A non-run level service dependent on RL-annotated services, but via Holders.
- * 
- * @see AHolderBasedServerService1
- */
-@Service
-public class AHolderBasedRegularService1 {
-
-    @Inject
-    public Holder<AHolderBasedServerService1> service1;
-
-    @Inject
-    public Holder<AHolderBasedServerService2> service2;
+    public ObjectScopedRunLevelService() {
+        super(Object.class);
+    }
     
 }

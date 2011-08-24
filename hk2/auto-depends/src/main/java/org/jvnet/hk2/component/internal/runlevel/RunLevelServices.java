@@ -50,6 +50,7 @@ import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.HabitatListener;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.RunLevelException;
 import org.jvnet.hk2.component.RunLevelService;
 
 /**
@@ -126,7 +127,7 @@ public class RunLevelServices {
             RunLevelService<?> hrls = (RunLevelService<?>) rlsi.get();
             if (null != hrls.getState() && hrls.getState().getEnvironment().equals(env)) {
                 if (null != theOne) {
-                    throw new ComponentException("constraint violation - competing RunLevelServices: " + theOne + " and " + hrls);
+                    throw new RunLevelException("constraint violation - competing RunLevelServices: " + theOne + " and " + hrls);
                 }
                 theOne = hrls;
             }

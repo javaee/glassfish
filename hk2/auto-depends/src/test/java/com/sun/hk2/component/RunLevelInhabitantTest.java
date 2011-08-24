@@ -50,7 +50,7 @@ import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.hk2.component.RunLevelState;
 import org.jvnet.hk2.junit.Hk2Runner;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 @RunWith(Hk2Runner.class)
 public class RunLevelInhabitantTest {
 
@@ -89,11 +89,12 @@ public class RunLevelInhabitantTest {
     assertFalse(i.isActive());
     RunLevelInhabitant rli = new RunLevelInhabitant(i, 15, state);
     assertEquals(getClass().getName(), rli.typeName());
+//    try {
+//        fail("expected exception but got: " + rli.get());
+//      } catch (ComponentException e) {
+//      }
     assertFalse(rli.isActive());
-    try {
-      fail("expected exception but got: " + rli.get());
-    } catch (ComponentException e) {
-    }
+    assertNull(rli.get());
     assertFalse(rli.isActive());
     assertFalse(i.isActive());
     assertSame(i.type(), rli.type());

@@ -64,6 +64,14 @@ public class DescriptorImpl implements Descriptor {
     
     private boolean readOnly;
 
+    public DescriptorImpl() {
+        this(null, null, null, null);
+    }
+    
+    public DescriptorImpl(Class<?> type) {
+        this(null, type.getName(), null, null);
+    }
+    
     public DescriptorImpl(String name, String typeName) {
         this(name, typeName, null, null);
     }
@@ -155,35 +163,37 @@ public class DescriptorImpl implements Descriptor {
     public void setReadOnly() {
         this.readOnly = true;
     }
-
-    public DescriptorImpl addName(String name) {
+    
+    protected void assertNotReadOnly() {
         if (readOnly) {
             throw new IllegalStateException();
         }
+    }
+
+    public DescriptorImpl addName(String name) {
+        assertNotReadOnly();
         names.add(name);
         return this;
     }
 
+    public DescriptorImpl addContract(Class<?> clazz) {
+        return addContract(clazz.getName());
+    }
+    
     public DescriptorImpl addContract(String contractFQCN) {
-        if (readOnly) {
-            throw new IllegalStateException();
-        }
+        assertNotReadOnly();
         contracts.add(contractFQCN);
         return this;
     }
 
     public DescriptorImpl addQualifierType(String annotation) {
-        if (readOnly) {
-            throw new IllegalStateException();
-        }
+        assertNotReadOnly();
         qualifiers.add(annotation);
         return this;
     }
 
     public DescriptorImpl addMetadata(String key, String value) {
-        if (readOnly) {
-            throw new IllegalStateException();
-        }
+        assertNotReadOnly();
         metadata.add(key, value);
         return this;
     }

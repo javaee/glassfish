@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,25 +37,27 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.test.runlevel;
-
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
-
-import com.sun.hk2.component.Holder;
+package org.jvnet.hk2.component;
 
 /**
- * A non-run level service dependent on RL-annotated services, but via Holders.
- * 
- * @see AHolderBasedServerService1
+ * Exception related to the operations of the {@link RunLevelService}.
+ *
+ * @author Jeff Trent
  */
-@Service
-public class AHolderBasedRegularService1 {
+public class RunLevelException extends ComponentException {
 
-    @Inject
-    public Holder<AHolderBasedServerService1> service1;
-
-    @Inject
-    public Holder<AHolderBasedServerService2> service2;
+    private static final long serialVersionUID = 1L;
     
+    public RunLevelException(String message) {
+        super(message);
+    }
+
+    public RunLevelException(Throwable origin) {
+      super(origin);
+    }
+
+    public RunLevelException(String message, Throwable origin) {
+        super(message, origin);
+    }
+
 }
