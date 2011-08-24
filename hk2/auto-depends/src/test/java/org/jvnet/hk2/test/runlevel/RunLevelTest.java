@@ -81,7 +81,7 @@ public class RunLevelTest extends Hk2Test {
     @Test
     public void run() {
         HashSet<Inhabitant<?>> annotated = new HashSet<Inhabitant<?>>(habitat.getInhabitantsByContract(RunLevel.class.getName()));
-        assertEquals(annotated.toString(), 26, annotated.size());
+        assertTrue(annotated.toString(), annotated.size() >= 26);
         for (Inhabitant<?> i : annotated) {
             Logger.getAnonymousLogger().fine(i.typeName() + " is annotated with " + RunLevel.class.getName());
 

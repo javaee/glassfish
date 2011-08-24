@@ -74,7 +74,8 @@ public class Hk2Runner extends Runner {
 
     final Class<?> testClass;
     final Description description;
-    final Map<Description, Method> testMethods = 
+    final List<Method> testMethods = new ArrayList<Method>();
+    final Map<Description, Method> descriptionToTestMethods = 
           new LinkedHashMap<Description, Method>();
     final List<Method> beforeMethods =
           new ArrayList<Method>();
@@ -84,18 +85,26 @@ public class Hk2Runner extends Runner {
     private Object instance;
 
     private final Hk2RunnerOptions options;
+    
+    private final String testMethodRegEx;
 
     
     public Hk2Runner(Class<?> testClass) {
         this.testClass = testClass;
         this.options = AbstractInhabitantImpl.getAnnotation(testClass, Hk2RunnerOptions.class, true);
         this.description = Description.createSuiteDescription(testClass);
+        testMethodRegEx = System.getProperty("test.method");
         
         for (Method m : testClass.getDeclaredMethods()) {
             if (m.getAnnotation(Test.class)!=null) {
-                Description testDescription = Description.createTestDescription(testClass, m.getName());
-                description.addChild(testDescription);
-                testMethods.put(testDescription, m);
+                String mName = m.getName();
+                if (null == testMethodRegEx || mName.matches(testMethodRegEx)) {
+                    testMethods.add(m);
+                    
+                    Description testDescription = Description.createTestDescription(testClass, m.getName());
+                    description.addChild(testDescription);
+                    descriptionToTestMethods.put(testDescription, m);
+                }
             }
             
             if (m.getAnnotation(Before.class) != null) {
@@ -149,7 +158,7 @@ public class Hk2Runner extends Runner {
         while (iter.hasNext()) {
             Description testDescription = iter.next();
             
-            Method m = testMethods.get(testDescription);
+            Method m = descriptionToTestMethods.get(testDescription);
             if (m.isAnnotationPresent(Ignore.class)) {
                 notifier.fireTestIgnored(testDescription);
                 continue;
