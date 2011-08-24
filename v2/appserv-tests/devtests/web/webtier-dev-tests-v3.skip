@@ -2,3 +2,4 @@ singleengine # comment out until https://glassfish.dev.java.net/issues/show_bug.
 servletSSLRequestAttributes # IT 16818
 accessLoggingBadRequests # supported in 3.1.1
 portUnification 
+genDocSchema
