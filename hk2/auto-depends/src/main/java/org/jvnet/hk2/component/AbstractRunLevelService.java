@@ -72,6 +72,11 @@ public abstract class AbstractRunLevelService<T> implements RunLevelService<T>{
         this.targetEnv = targetEnvironment;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getName() + "-" + System.identityHashCode(this) + "(" + delegate + ")";
+    }
+    
     @SuppressWarnings("unchecked")
     protected RunLevelService<T> getDelegate() {
         if (null == delegate) {
@@ -82,7 +87,9 @@ public abstract class AbstractRunLevelService<T> implements RunLevelService<T>{
             synchronized (this) {
                 if (null == delegate) {
                     delegate = new DefaultRunLevelService(habitat, 
-                            DefaultRunLevelService.ASYNC_ENABLED, targetEnv.getName(), targetEnv, null);
+                            DefaultRunLevelService.ASYNC_ENABLED,
+                            targetEnv.getName(), targetEnv, null);
+                    delegate.setParent(this);
                 }
             }
         }

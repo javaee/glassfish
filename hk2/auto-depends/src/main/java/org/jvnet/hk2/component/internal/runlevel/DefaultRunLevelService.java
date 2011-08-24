@@ -295,6 +295,9 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
 
   // the alternative, stand-in activator if any
   private InhabitantActivator activator;
+
+  // the parent, when facade/delegation is used
+  private RunLevelService<?> parent;
   
   // used for eventing an {@link RunLevelListener}s
   private enum ListenerEvent {
@@ -341,7 +344,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
   @Override
   public String toString() {
     return getClass().getSimpleName() + "-" + System.identityHashCode(this)
-        + "(" + getDescription(false) + ", del: " + delegate + ")";
+        + "(" + getDescription(false) + "delegate: " + delegate + ")";
   }
   
   public boolean isDefault() {
@@ -361,7 +364,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
     b.append("plan=").append(getPlannedRunLevel()).append(", ");
     b.append("env=").append(getEnvironment()).append(", ");
     if (extended) {
-      b.append("thrd=").append(Thread.currentThread());
+      b.append("thrd=").append(Thread.currentThread()).append(", ");
     }
     return b.toString();
   }
@@ -370,6 +373,15 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
   private void setDelegate(RunLevelState<Void> stateProvider) {
     assert (this != stateProvider);
     this.delegate = stateProvider;
+  }
+  
+  public void setParent(RunLevelService<?> parent) {
+      assertNotIsDefault();
+      this.parent = parent;
+  }
+  
+  public RunLevelService<?> getParent() {
+      return parent;
   }
   
   public String getName() {
@@ -456,7 +468,9 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
     if (state != this && RunLevelServiceStub.class.isInstance(state)) {
       RunLevelService<?> delegate = ((RunLevelServiceStub)state).getDelegate();
       if (null != delegate) {
-        assert(this == delegate);
+        assert(this == delegate || getParent() == delegate) : "delegate was " + delegate + 
+          " but was instead expected to be either " + this + 
+          " or " + getParent() + " for " + rli;
       } else {
         ((RunLevelServiceStub)state).activate(this);
       }
