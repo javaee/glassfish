@@ -47,17 +47,17 @@ package org.jvnet.hk2.component;
 public interface RunLevelState<T> {
 
   /**
-   * The environment value for this state.
+   * The scope value for this state.
    * 
    * @return 
-   *  the class type name used to uniquely identify the environment in context.
+   *  the class type name used to uniquely identify the scope in context.
    */
-  String getEnvironment();
+  String getScopeName();
 
   /**
    * The current run level state.  This represents the last run level
    * successfully achieved by the underlying RunLevelService responsible
-   * for this environment.
+   * for this scope.
    * 
    * @return the current run level, or null if no run level has been
    * been achieved.

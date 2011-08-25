@@ -53,6 +53,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Retention(RUNTIME)
 @Contract
-@RunLevel(value=7, environment=Object.class)
+@RunLevel(value=7, runLevelScope=Object.class)
 public @interface ANonDefaultEnvRunLevel {
 }

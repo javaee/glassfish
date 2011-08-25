@@ -48,12 +48,12 @@ import org.glassfish.hk2.PostConstruct;
 import org.jvnet.hk2.component.RunLevelService;
 
 /**
- * Used in testing interrupt handling, also belonging to another RunLevel environment.
+ * Used in testing interrupt handling, also belonging to another RunLevel scope.
  * 
  * @author Jeff Trent
  */
 @Service
-@RunLevel(value=1, environment=String.class)  // use of "String" is arbitrary --- just need a unique namespace
+@RunLevel(value=1, runLevelScope=String.class)  // use of "String" is arbitrary --- just need a unique namespace
 public class InterruptRunLevelManagedService1a implements RunLevelContract, PostConstruct {
 
   public static RunLevelService<?> rls;

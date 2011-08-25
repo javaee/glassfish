@@ -150,7 +150,7 @@ public class RunLevelServiceTest {
     assertNotNull(rls.getState());
     assertEquals(-1, rls.getState().getCurrentRunLevel());
     assertEquals(null, rls.getState().getPlannedRunLevel());
-    assertEquals(Void.class.getName(), rls.getState().getEnvironment());
+    assertEquals(DefaultRunLevelService.DEFAULT_SCOPE.getName(), rls.getState().getScopeName());
     
     RunLevelService rls2 = h.getComponent(RunLevelService.class, "default");
     assertSame(rls, rls2);
@@ -182,7 +182,7 @@ public class RunLevelServiceTest {
       assertNotNull(i.metadata());
       String val = i.metadata().getOne("runLevel");
       assertNotNull(i.toString(), val);
-      assertTrue(i + " runLevel val=" + val, Integer.valueOf(val) >= DefaultRunLevelService.KERNEL_RUNLEVEL);
+      assertTrue(i + " runLevel val=" + val, Integer.valueOf(val) >= RunLevel.KERNEL_RUNLEVEL);
     }
     assertTrue(String.valueOf(count), count >= 5);
   }
@@ -587,7 +587,7 @@ public class RunLevelServiceTest {
 
   /**
    * RLS supports other subcomponent lifecycle through what is known as
-   * "environments".  This tests another environment startup.
+   * "run level scopes".  This tests another run level scope startup.
    * 
    * @throws Exception
    */
@@ -1291,10 +1291,10 @@ public class RunLevelServiceTest {
    * Obtaining a non default run level service from the habitat
    */
   @Test
-  public void obtainingRunLevelServiceForAnotherEnvironment() {
+  public void obtainingRunLevelServiceForAnotherScope() {
       DescriptorImpl descriptor = new DescriptorImpl(null, null);
       descriptor.addContract(RunLevelService.class.getName());
-      descriptor.addMetadata("environment", "java.lang.Long");
+      descriptor.addMetadata(RunLevel.META_SCOPE_TAG, "java.lang.Long");
       Collection<Binding<?>> bindings = h.getBindings(descriptor);
       assertEquals(bindings.toString(), 1, bindings.size());
 
@@ -1307,10 +1307,10 @@ public class RunLevelServiceTest {
   /**
    * Attempting to activate the non default run level service when there exists
    * a bad dependency (i.e., a dependency to another run level service
-   * environment type.)
+   * scope type.)
    */
   @Test
-  public void activatingAnotherEnvironmentWithBadDependency() {
+  public void activatingAnotherScopeWithBadDependency() {
       DescriptorImpl descriptor = new DescriptorImpl(null, AnotherNonDefaultEnvServerService.class.getName());
       Collection<Binding<?>> bindings = h.getBindings(descriptor);
       assertEquals(bindings.toString(), 1, bindings.size());
@@ -1321,7 +1321,7 @@ public class RunLevelServiceTest {
 
       descriptor = new DescriptorImpl(null, null);
       descriptor.addContract(RunLevelService.class.getName());
-      descriptor.addMetadata("environment", "java.lang.Long");
+      descriptor.addMetadata(RunLevel.META_SCOPE_TAG, "java.lang.Long");
       bindings = h.getBindings(descriptor);
       assertEquals(1, bindings.size());
       Binding theRls = bindings.iterator().next();
@@ -1365,21 +1365,21 @@ public class RunLevelServiceTest {
       assertNotNull("we expected the proceedTo to generate an error because of invalid injection", error.get());
       assertEquals(0, defRLlistener.calls.size());
       assertEquals(8, rls.getState().getCurrentRunLevel());
-      assertEquals(Long.class.getName(), rls.getState().getEnvironment());
+      assertEquals(Long.class.getName(), rls.getState().getScopeName());
   }
   
   /**
    * Attempting to activate the non default run level service when there exists
    * a bad dependency (i.e., a dependency to another run level service
-   * environment type as well as upward dependencies) but through a Holder making
+   * scope type as well as upward dependencies) but through a Holder making
    * it all legitimate.
    */
   @SuppressWarnings("unchecked")
   @Test
-  public void activatingAnotherEnvironmentWithBadDependencyWithHolder() {
+  public void activatingAnotherScopeWithBadDependencyWithHolder() {
       DescriptorImpl descriptor = new DescriptorImpl();
       descriptor.addContract(RunLevelService.class);
-      descriptor.addMetadata("environment", Long.class.getName());
+      descriptor.addMetadata(RunLevel.META_SCOPE_TAG, Long.class.getName());
       Collection<Binding<?>> bindings = h.getBindings(descriptor);
       assertEquals(1, bindings.size());
       Binding theRls = bindings.iterator().next();
@@ -1412,7 +1412,7 @@ public class RunLevelServiceTest {
       // now, start the "different1" run level service to an adequate start level
       descriptor = new DescriptorImpl();
       descriptor.addContract(RunLevelService.class);
-      descriptor.addMetadata("environment", Object.class.getName());
+      descriptor.addMetadata(RunLevel.META_SCOPE_TAG, Object.class.getName());
       bindings = h.getBindings(descriptor);
       assertEquals(1, bindings.size());
       Binding anotherRlsBinding = bindings.iterator().next();
@@ -1495,7 +1495,7 @@ public class RunLevelServiceTest {
     DefaultRunLevelService oldRLS = ((DefaultRunLevelService)rls);
     
     recorders = new LinkedHashMap<Integer, Recorder>();
-    rls = new TestDefaultRunLevelService(h, async, Void.class, recorders); 
+    rls = new TestDefaultRunLevelService(h, async, DefaultRunLevelService.DEFAULT_SCOPE, recorders); 
     r = new ExistingSingletonInhabitant<RunLevelService>(RunLevelService.class, rls);
     h.add(r);
     h.addIndex(r, RunLevelService.class.getName(), "default");
@@ -1530,7 +1530,7 @@ public class RunLevelServiceTest {
         if (ai.toString().contains("Invalid")) {
           assertFalse("expect not instantiated: " + ai, ai.isActive());
         } else {
-          if (Void.class == rl.environment()) {
+          if (DefaultRunLevelService.DEFAULT_SCOPE == rl.runLevelScope()) {
             assertTrue("expect instantiated: " + ai, ai.isActive());
           } else {
             assertFalse("expect instantiated: " + ai, ai.isActive());
@@ -1627,16 +1627,16 @@ public class RunLevelServiceTest {
    */
   private void assertRecorderState() {
     assertFalse(recorders.toString(), recorders.isEmpty());
-    assertEquals("Belongs to a different environment", 0, ExceptionRunLevelManagedService.constructCount);
-    assertEquals("Belongs to a different environment", 0, ExceptionRunLevelManagedService.destroyCount);
+    assertEquals("Belongs to a different scope", 0, ExceptionRunLevelManagedService.constructCount);
+    assertEquals("Belongs to a different scope", 0, ExceptionRunLevelManagedService.destroyCount);
     // we could really do more here...
   }
   
   
   private static class TestDefaultRunLevelService extends DefaultRunLevelService {
-    TestDefaultRunLevelService(Habitat habitat, boolean async, Class<?> targetEnv,
+    TestDefaultRunLevelService(Habitat habitat, boolean async, Class<?> targetScope,
         HashMap<Integer, Recorder> recorders) {
-      super(habitat, async, null, targetEnv, recorders);
+      super(habitat, async, null, targetScope, recorders);
     }
   }
   

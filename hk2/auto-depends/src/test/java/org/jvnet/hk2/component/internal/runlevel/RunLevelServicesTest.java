@@ -78,7 +78,7 @@ public class RunLevelServicesTest {
     RunLevelServices rlss = new RunLevelServices();
     RunLevel rl = ARunLevel.class.getAnnotation(RunLevel.class);
     RunLevelService<?> rls = 
-      rlss.get(h, rl.value(), rl.environment());
+      rlss.get(h, rl.value(), rl.runLevelScope());
     assertNotNull(rls);
     assertEquals(DefaultRunLevelService.class, rls.getClass());
   }
@@ -89,7 +89,7 @@ public class RunLevelServicesTest {
     assertSame(stub, stub.getState());
     assertNull(stub.getCurrentRunLevel());
     assertNull(stub.getPlannedRunLevel());
-    assertEquals(String.class.getName(), stub.getEnvironment());
+    assertEquals(String.class.getName(), stub.getScopeName());
     
     try {
       stub.proceedTo(1);
@@ -106,7 +106,7 @@ public class RunLevelServicesTest {
     RunLevelServices rlss = new RunLevelServices();
     RunLevel rl = ANonExistantEnvRunLevel.class.getAnnotation(RunLevel.class);
     RunLevelService<?> rls = 
-      rlss.get(h, rl.value(), rl.environment());
+      rlss.get(h, rl.value(), rl.runLevelScope());
     assertNotNull(rls);
     assertEquals(RunLevelServiceStub.class, rls.getClass());
     RunLevelState<?> state = rls.getState();
@@ -135,7 +135,7 @@ public class RunLevelServicesTest {
         state, stub.getState());
     assertEquals("should delegate", 42, stub.getCurrentRunLevel());
     assertEquals("should delegate", 24, stub.getPlannedRunLevel());
-    assertEquals("should not delegate", Integer.class.getName(), stub.getEnvironment());
+    assertEquals("should not delegate", Integer.class.getName(), stub.getScopeName());
     
     // force another call to the listener - should be passed along
     rli.notify(EventType.INHABITANT_ACTIVATED);
@@ -152,7 +152,7 @@ public class RunLevelServicesTest {
     RunLevelServices rlss = new RunLevelServices();
     RunLevel rl = ANonExistantEnvRunLevel.class.getAnnotation(RunLevel.class);
     RunLevelService<?> rls = 
-      rlss.get(h, rl.value(), rl.environment());
+      rlss.get(h, rl.value(), rl.runLevelScope());
     assertNotNull(rls);
     assertEquals(RunLevelServiceStub.class, rls.getClass());
   }
@@ -163,7 +163,7 @@ public class RunLevelServicesTest {
     RunLevel rl = ANonExistantEnvRunLevel.class.getAnnotation(RunLevel.class);
     try {
       RunLevelService<?> rls = 
-        rlss.get(h, rl.value(), rl.environment());
+        rlss.get(h, rl.value(), rl.runLevelScope());
       fail("expected exception but got: " + rls);
     } catch (ComponentException e) {
       // expected
@@ -177,7 +177,7 @@ public class RunLevelServicesTest {
     assertFalse(h.isInitialized());
 
     // now create the first run level service
-    RunLevelService rls = new SomeOtherRunLevelService();
+    RunLevelService<?> rls = new SomeOtherRunLevelService();
     ExistingSingletonInhabitant<RunLevelService> rlsI = 
       new ExistingSingletonInhabitant<RunLevelService>(RunLevelService.class, rls);
     h.add(rlsI);
@@ -195,7 +195,7 @@ public class RunLevelServicesTest {
     RunLevelServices rlss = new RunLevelServices();
     RunLevel rl = ANonExistantEnvRunLevel.class.getAnnotation(RunLevel.class);
     try {
-      rls = rlss.get(h, rl.value(), rl.environment());
+      rls = rlss.get(h, rl.value(), rl.runLevelScope());
       fail("expected exception but got: " + rls);
     } catch (ComponentException e) {
       // expected

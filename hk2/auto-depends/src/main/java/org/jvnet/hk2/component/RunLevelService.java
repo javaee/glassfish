@@ -39,6 +39,7 @@
  */
 package org.jvnet.hk2.component;
 
+import org.glassfish.hk2.RunLevelDefaultScope;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.RunLevel;
 
@@ -47,13 +48,13 @@ import org.jvnet.hk2.annotations.RunLevel;
  * lifecycle events (i.e., start levels) in Hk2.
  * <p>
  * Each resident run level service is responsible for a particular
- * class of <code>RunLevel</code> that is identified by an environment value.
+ * class of <code>RunLevel</code> that is identified by a scope value.
  * <p>
  * Implementations of this service are responsible for orchestrating
  * lifecycle events for services annotated with <code>RunLevel</code>. This
  * consists of inhabitant activations (i.e., get) and deactivations (i.e., release).
  * <p>
- * The default RunLevelService uses T==Void.class, and is registered in
+ * The default RunLevelService uses T=={@link RunLevelDefaultScope}, and is registered in
  * the habitat with the name "default" and is the primary service instance
  * responsible for the "platform".
  * <p>
@@ -93,7 +94,7 @@ public interface RunLevelService<T> {
 
   /**
    * Causes this RunLevelService to move to the specified run level for
-   * all RunLevel instances (identified by environment), orchestrating
+   * all RunLevel instances (identified by scope), orchestrating
    * the appropriate lifecycle events based on the given implementation
    * strategy.  See the javadoc for each implementation for specific
    * details.

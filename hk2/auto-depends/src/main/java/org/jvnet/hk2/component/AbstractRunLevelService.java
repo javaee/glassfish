@@ -39,7 +39,9 @@
  */
 package org.jvnet.hk2.component;
 
+import org.glassfish.hk2.RunLevelDefaultScope;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 
 /**
@@ -47,7 +49,7 @@ import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
  * provides can derive from to provide their own component-related lifecycle.
  * 
  * <p/>
- * The targetEnvironment is a placeholder type to represent a sub-component
+ * The targetScope is a placeholder type to represent a sub-component
  * set of {@link RunLevel}-gated services.  It can be anything of the caller's
  * choosing as long as it is kept unique and does not clash with the
  * default internal run level service.
@@ -60,17 +62,17 @@ public abstract class AbstractRunLevelService<T>
     @Inject
     private Habitat habitat;
 
-    private final Class<?> targetEnv;
+    private final Class<?> targetScope;
     
     private volatile DefaultRunLevelService delegate;
     
 
-    protected AbstractRunLevelService(Class<?> targetEnvironment) {
-        if (null == targetEnvironment || DefaultRunLevelService.ENVIRONMENT == targetEnvironment) {
-            throw new IllegalStateException("invalid target environment");
+    protected AbstractRunLevelService(Class<?> targetScope) {
+        if (null == targetScope || RunLevelDefaultScope.class == targetScope) {
+            throw new IllegalStateException("invalid target scope");
         }
         
-        this.targetEnv = targetEnvironment;
+        this.targetScope = targetScope;
     }
 
     @Override
@@ -88,8 +90,8 @@ public abstract class AbstractRunLevelService<T>
             synchronized (this) {
                 if (null == delegate) {
                     delegate = new DefaultRunLevelService(habitat, 
-                            DefaultRunLevelService.ASYNC_ENABLED,
-                            targetEnv.getName(), targetEnv, null);
+                            DefaultRunLevelService.DEFAULT_ASYNC_ENABLED,
+                            targetScope.getName(), targetScope, null);
                     delegate.setParent(this);
                 }
             }

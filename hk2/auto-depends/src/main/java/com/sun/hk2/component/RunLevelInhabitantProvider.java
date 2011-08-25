@@ -85,8 +85,8 @@ public class RunLevelInhabitantProvider extends AbstractInhabitantProvider {
       String runLevelStr = md.getOne(RunLevel.META_VAL_TAG);
       assert(null != runLevelStr) : "expected a " + RunLevel.META_VAL_TAG + " value on " + i;
       
-      String envStr = i.metadata().getOne(RunLevel.META_ENV_TAG);
-      assert(null != envStr) : "expected a " + RunLevel.META_ENV_TAG + " value on " + i;
+      String scopeStr = i.metadata().getOne(RunLevel.META_SCOPE_TAG);
+      assert(null != scopeStr) : "expected a " + RunLevel.META_SCOPE_TAG + " value on " + i;
 
 //    int runLevel = rl.value();
       int runLevel = Integer.valueOf(runLevelStr);
@@ -94,9 +94,9 @@ public class RunLevelInhabitantProvider extends AbstractInhabitantProvider {
       // get the appropriate RLS for this RunLevel
       RunLevelService<?> rls;
       try {
-          rls = runLevelServices.get(habitat, runLevel, envStr);
+          rls = runLevelServices.get(habitat, runLevel, scopeStr);
       } catch (Exception e) {
-          throw new RunLevelException("unable to find the RunLevelService appropriate for: " + envStr, e);
+          throw new RunLevelException("unable to find the RunLevelService appropriate for: " + scopeStr, e);
       }
       InhabitantListener listener = InhabitantListener.class.isInstance(rls) ?
           InhabitantListener.class.cast(rls) : null;

@@ -43,11 +43,11 @@ import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * Used in testing exception handling, also belonging to another RunLevel environment.
+ * Used in testing exception handling, also belonging to another RunLevel scope.
  * 
  * @author Jeff Trent
  */
 @Service
-@RunLevel(value=2, environment=Exception.class)
+@RunLevel(value=2, runLevelScope=Exception.class)
 public class ExceptionRunLevelManagedService2a implements RunLevelContract {
 }

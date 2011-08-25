@@ -56,6 +56,7 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 
+import org.glassfish.hk2.RunLevelDefaultScope;
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Enableable;
@@ -233,17 +234,14 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
   // the initial run level
   public static final int INITIAL_RUNLEVEL = -2;
   
-  // the "kernel" run level
-  public static final int KERNEL_RUNLEVEL = -1;
-  
   // the default name
-  public static final String NAME = "default";
+  public static final String DEFAULT_NAME = "default";
 
-  // the default environment
-  public static final Class<?> ENVIRONMENT = Void.class;
-  
   // the default mode - sync or async.
-  public static final boolean ASYNC_ENABLED = false;
+  public static final boolean DEFAULT_ASYNC_ENABLED = false;
+  
+  // the default scope
+  public static final Class<?> DEFAULT_SCOPE = RunLevelDefaultScope.class;
   
   private static final Logger logger = Logger.getLogger(DefaultRunLevelService.class.getName());
   
@@ -264,11 +262,11 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
   // async mode.
   private final ExecutorService exec;
 
-  // the name for this instance, defaulting to NAME
+  // the name for this instance, defaulting to {@link DEFAULT_NAME}
   protected final String name;
   
-  // the target environment, defaulting to Void.class
-  private final Class<?> targetEnv;
+  // the target scope, defaulting to {@link DEFAULT_SCOPE}
+  private final Class<?> targetScope;
 
   // the habitat for this instance of the RunLevelService
   private final Habitat habitat;
@@ -306,13 +304,13 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
   }
 
   public DefaultRunLevelService(Habitat habitat) {
-    this(habitat, ASYNC_ENABLED, null, null, null);
+    this(habitat, DEFAULT_ASYNC_ENABLED, null, null, null);
   }
 
   public DefaultRunLevelService(Habitat habitat,
           boolean async, 
           String name,
-          Class<?> targetEnv,
+          Class<?> targetScope,
           HashMap<Integer, Recorder> recorders) {
     this.habitat = habitat;
     assert (null != habitat);
@@ -332,8 +330,8 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
     } else {
       this.exec = null;
     }
-    this.name = (null == name) ? NAME : name;
-    this.targetEnv = (null == targetEnv) ? ENVIRONMENT : targetEnv;
+    this.name = (null == name) ? DEFAULT_NAME : name;
+    this.targetScope = (null == targetScope) ? RunLevelDefaultScope.class : targetScope;
     this.recorders = (null == recorders) ? new LinkedHashMap<Integer, Recorder>() : recorders;
 
     // subscribe to events in the habitat since we cannot rely on PostConstruct.
@@ -349,7 +347,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
   }
   
   public boolean isDefault() {
-      return ENVIRONMENT.equals(targetEnv);
+      return RunLevelDefaultScope.class.equals(targetScope);
   }
   
   private void assertNotIsDefault() {
@@ -363,7 +361,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
     b.append("curr=").append(getCurrentRunLevel()).append(", ");
     b.append("act=").append(getActivatingRunLevel()).append(", ");
     b.append("plan=").append(getPlannedRunLevel()).append(", ");
-    b.append("env=").append(getEnvironment()).append(", ");
+    b.append("scope=").append(getScopeName()).append(", ");
     if (extended) {
       b.append("thrd=").append(Thread.currentThread()).append(", ");
     }
@@ -395,8 +393,8 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
   }
 
   @Override
-  public String getEnvironment() {
-    return (null == delegate) ? targetEnv.getName() : delegate.getEnvironment();
+  public String getScopeName() {
+    return (null == delegate) ? targetScope.getName() : delegate.getScopeName();
   }
 
   @Override
@@ -454,7 +452,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
 
     // avoid loading of the class until we have to ... at this point we have to
     RunLevel rl = i.getAnnotation(RunLevel.class);
-    return (rl.value() == activeRunLevel && rl.environment() == targetEnv);
+    return (rl.value() == activeRunLevel && rl.runLevelScope() == targetScope);
   }
   
   /**
@@ -627,7 +625,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
         synchronized (lock) {
           activeRecorder = recorders.get(activeRunLevel);
           if (null == activeRecorder) {
-            activeRecorder = new Recorder(activeRunLevel, getEnvironment());
+            activeRecorder = new Recorder(activeRunLevel, getScopeName());
             recorders.put(activeRunLevel, activeRecorder);
           }
         }
@@ -673,7 +671,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
       Habitat habitat, Inhabitant<?> inhabitant) {
     if (org.jvnet.hk2.component.HabitatListener.EventType.HABITAT_INITIALIZED == eventType) {
       if (isEnabled()) {
-        proceedTo(KERNEL_RUNLEVEL);
+        proceedTo(RunLevel.KERNEL_RUNLEVEL);
       }
     }
     return !habitat.isInitialized();
@@ -706,7 +704,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
       throw new IllegalStateException("disabled state");
     }
     
-    if (null != runLevel && runLevel < KERNEL_RUNLEVEL) {
+    if (null != runLevel && runLevel < RunLevel.KERNEL_RUNLEVEL) {
       throw new IllegalArgumentException();
     }
 

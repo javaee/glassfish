@@ -166,7 +166,7 @@ public class TestRunLevelListener implements RunLevelListener {
       this.type = type;
       this.current = rls.getCurrentRunLevel();
       this.planned = rls.getPlannedRunLevel();
-      this.env = rls.getEnvironment();
+      this.env = rls.getScopeName();
       this.previousProceedTo = prv;
       this.context = ctx;
       this.error = error;

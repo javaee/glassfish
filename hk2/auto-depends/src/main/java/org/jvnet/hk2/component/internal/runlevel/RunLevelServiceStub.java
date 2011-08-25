@@ -51,21 +51,21 @@ import org.jvnet.hk2.component.RunLevelState;
  * 
  * @author Jeff Trent
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 /*public*/ class RunLevelServiceStub implements RunLevelService, RunLevelState, InhabitantListener {
 
   private final Habitat h;
   
-  private final String env;
+  private final String scopeName;
   
   // We are waiting for this guy to come around
   private RunLevelService delegate;
   private InhabitantListener delegateListener;
   
   
-  /*public*/ RunLevelServiceStub(Habitat habitat, String env) {
+  /*public*/ RunLevelServiceStub(Habitat habitat, String scopeName) {
     this.h = habitat;
-    this.env = env;
+    this.scopeName = scopeName;
   }
 
   public RunLevelService getDelegate() {
@@ -102,8 +102,8 @@ import org.jvnet.hk2.component.RunLevelState;
   }
 
   @Override
-  public String getEnvironment() {
-    return env;
+  public String getScopeName() {
+    return scopeName;
   }
 
   @Override

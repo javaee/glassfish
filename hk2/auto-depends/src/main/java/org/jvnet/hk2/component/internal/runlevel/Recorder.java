@@ -47,7 +47,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jvnet.hk2.annotations.RunLevel;
-import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantListener;
 import org.jvnet.hk2.component.RunLevelException;
@@ -71,21 +70,21 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
   
   private final int runLevel;
   private final Stack<Inhabitant<?>> activations;
-  private final String targetEnv;
+  private final String targetScopeName;
   
-  Recorder(int runLevel, String targetEnv) {
-    this(new ArrayList<Inhabitant<?>>(), runLevel, targetEnv);
+  Recorder(int runLevel, String targetScopeName) {
+    this(new ArrayList<Inhabitant<?>>(), runLevel, targetScopeName);
   }
   
   Recorder(List<Inhabitant<?>> list, int runLevel) {
-    this(new ArrayList<Inhabitant<?>>(), runLevel, Void.class.getName());
+    this(new ArrayList<Inhabitant<?>>(), runLevel, DefaultRunLevelService.DEFAULT_SCOPE.getName());
   }
   
-  Recorder(List<Inhabitant<?>> list, int runLevel, String targetEnv) {
+  Recorder(List<Inhabitant<?>> list, int runLevel, String targetScopeName) {
     this.activations = new Stack<Inhabitant<?>>();
     this.activations.addAll(list);
     this.runLevel = runLevel;
-    this.targetEnv = targetEnv;
+    this.targetScopeName = targetScopeName;
   }
 
   public int getRunLevel() {
@@ -129,7 +128,7 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
       RunLevel rl = ((AbstractInhabitantImpl<?>)inhabitant).getAnnotation(RunLevel.class);
       // actually, it should really never be null (in real life we could consider tossing an exception)
       if (null != rl) {
-        if (targetEnv.equals(rl.environment().getName())) {
+        if (targetScopeName.equals(rl.runLevelScope().getName())) {
           push(inhabitant);
           
           // verify it is not to a bad dependency

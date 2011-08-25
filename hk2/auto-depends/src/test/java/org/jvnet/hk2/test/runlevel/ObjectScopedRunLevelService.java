@@ -39,10 +39,11 @@
  */
 package org.jvnet.hk2.test.runlevel;
 
+import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.AbstractRunLevelService;
 
-@Service(metadata="environment=java.lang.Object")
+@Service(metadata = RunLevel.META_SCOPE_TAG + "=java.lang.Object")
 public class ObjectScopedRunLevelService extends AbstractRunLevelService<Object> {
 
     public ObjectScopedRunLevelService() {

@@ -47,7 +47,7 @@ import com.sun.hk2.component.Holder;
 
 /**
  * This is an example that "breaks the rules" for the RLS:
- *  - it injects services of a different environment scope
+ *  - it injects services of a different scope
  *  - it injects services at a higher run level value
  *  
  * It's all allowed to work because it is using Holder injection
@@ -57,10 +57,10 @@ import com.sun.hk2.component.Holder;
  * @see AHolderBasedRegularService1
  */
 @Service
-@RunLevel(value=8, environment=Long.class)
+@RunLevel(value=8, runLevelScope=Long.class)
 public class AHolderBasedServerService1 {
 
-    // this is injecting environment==Object.class; normally invalid but valid here because it uses holder 
+    // this is injecting scope==Object.class; normally invalid but valid here because it uses holder 
     @Inject
     public Holder<ANonDefaultEnvServerService> different1;
     

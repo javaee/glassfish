@@ -49,7 +49,7 @@ import org.jvnet.hk2.annotations.Service;
  * 
  * @author Jeff Trent
  */
-@RunLevel(value=1, environment=OptionalRunLevelTstEnv.class)
+@RunLevel(value=1, runLevelScope=OptionalRunLevelTstEnv.class)
 @Service(name="ok.case2")
 public class RunLevelService_withOkOptionalsCase2 implements ShouldBeActivateable1 {
 
