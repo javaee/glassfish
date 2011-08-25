@@ -49,8 +49,6 @@ import org.jvnet.hk2.annotations.Contract;
  * @see RunLevelService
  * 
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 @Contract
 public interface InhabitantSorter {

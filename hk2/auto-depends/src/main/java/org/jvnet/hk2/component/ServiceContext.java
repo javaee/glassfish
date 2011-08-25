@@ -51,8 +51,6 @@ package org.jvnet.hk2.component;
  * @See RunLevelListener
  * 
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 public interface ServiceContext {
   

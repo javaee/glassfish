@@ -55,8 +55,6 @@ import org.jvnet.hk2.component.MultiMap;
  * of listeners to notify for interesting changes of the underlying delegate.
  * 
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
 

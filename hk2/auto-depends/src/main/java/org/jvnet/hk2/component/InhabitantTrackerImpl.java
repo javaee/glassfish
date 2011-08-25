@@ -47,8 +47,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * Default implementation of InhabitantTracker 
  * 
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 /*public*/ class InhabitantTrackerImpl implements InhabitantTracker, HabitatListener {
 

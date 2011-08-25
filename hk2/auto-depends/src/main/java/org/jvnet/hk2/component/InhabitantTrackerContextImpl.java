@@ -46,8 +46,6 @@ import java.util.Set;
  * Default implementation of InhabitantTrackerContext.
  * 
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 public class InhabitantTrackerContextImpl implements InhabitantTrackerContext {
 

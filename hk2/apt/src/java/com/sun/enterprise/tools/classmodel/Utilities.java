@@ -53,7 +53,6 @@ import org.jvnet.hk2.component.MultiMap;
  * Utilities
  * 
  * @author Jeff Trent
- * @since 3.1
  */
 public class Utilities {
 

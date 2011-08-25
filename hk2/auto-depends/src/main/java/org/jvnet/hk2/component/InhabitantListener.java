@@ -43,8 +43,6 @@ package org.jvnet.hk2.component;
  * For Listening to an Inhabitant.
  * 
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 public interface InhabitantListener {
   public enum EventType {

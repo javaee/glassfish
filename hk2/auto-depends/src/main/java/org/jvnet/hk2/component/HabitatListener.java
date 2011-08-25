@@ -52,8 +52,6 @@ import org.jvnet.hk2.component.Inhabitant;
  * @see org.jvnet.hk2.component.Habitat#removeHabitatListener(HabitatListener)
  * 
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 @Contract
 public interface HabitatListener extends EventListener {

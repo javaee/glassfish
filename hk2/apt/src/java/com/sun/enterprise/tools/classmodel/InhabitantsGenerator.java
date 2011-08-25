@@ -71,7 +71,6 @@ import com.sun.hk2.component.InhabitantsParser;
  * @see InhabitantFileBasedParser
  * 
  * @author Jeff Trent
- * @since 3.1
  */
 public class InhabitantsGenerator extends Constants {
 

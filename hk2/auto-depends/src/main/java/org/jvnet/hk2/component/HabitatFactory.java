@@ -41,8 +41,6 @@ package org.jvnet.hk2.component;
 
 /**
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 public interface HabitatFactory {
   

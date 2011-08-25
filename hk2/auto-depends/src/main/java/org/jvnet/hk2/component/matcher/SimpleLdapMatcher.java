@@ -55,8 +55,6 @@ import org.jvnet.hk2.component.MultiMap;
 /**
  * This thing filters things based on the input LDAP style string. Note that
  * this is restricted LDAP, in that it only handles "&".
- * 
- * @since 3.1
  */
 public class SimpleLdapMatcher {
   private static final char LEFT = '(';

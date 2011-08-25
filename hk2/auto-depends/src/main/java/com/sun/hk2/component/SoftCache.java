@@ -50,7 +50,6 @@ import java.util.logging.Logger;
  * without imposing on heap.
  * 
  * @author Jeff Trent
- * @since 3.1
  */
 public class SoftCache<K, V> {
 

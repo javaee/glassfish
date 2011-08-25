@@ -87,7 +87,6 @@ import com.sun.hk2.component.InhabitantsScanner;
  *
  * @author Jerome Dochez
  * @author Jeff Trent
- * @since 3.1
  */
 public abstract class InhabitantsParsingContextGenerator implements Closeable {
 

@@ -81,8 +81,6 @@ import org.jvnet.hk2.annotations.RunLevel;
  * @see InhabitantActivator
  * 
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 @Contract
 public interface RunLevelService<T> {
