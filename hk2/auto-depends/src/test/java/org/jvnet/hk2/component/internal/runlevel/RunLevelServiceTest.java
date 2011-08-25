@@ -1299,9 +1299,9 @@ public class RunLevelServiceTest {
       assertEquals(bindings.toString(), 1, bindings.size());
 
       Binding theOne = bindings.iterator().next();
-      assertTrue("should have been initialized now", ((ManagedComponentProvider)theOne.getProvider(null)).isActive());
-      assertEquals(AnotherNonDefaultRunLevelService.class, theOne.getProvider(null).get().getClass());
-      assertSame(theOne.getProvider(null).get().getClass(), theOne.getProvider(null).get().getClass());
+      assertTrue("should have been initialized now", ((ManagedComponentProvider)theOne.getProvider()).isActive());
+      assertEquals(AnotherNonDefaultRunLevelService.class, theOne.getProvider().get().getClass());
+      assertSame(theOne.getProvider().get().getClass(), theOne.getProvider().get().getClass());
   }
   
   /**
@@ -1317,7 +1317,7 @@ public class RunLevelServiceTest {
       
       Binding theInvalidOne = bindings.iterator().next();
       assertFalse("should not have been initialized now",
-              ((ManagedComponentProvider)theInvalidOne.getProvider(null)).isActive());
+              ((ManagedComponentProvider)theInvalidOne.getProvider()).isActive());
 
       descriptor = new DescriptorImpl(null, null);
       descriptor.addContract(RunLevelService.class.getName());
@@ -1325,7 +1325,7 @@ public class RunLevelServiceTest {
       bindings = h.getBindings(descriptor);
       assertEquals(1, bindings.size());
       Binding theRls = bindings.iterator().next();
-      AbstractRunLevelService rls = (AbstractRunLevelService) theRls.getProvider(null).get();
+      AbstractRunLevelService rls = (AbstractRunLevelService) theRls.getProvider().get();
 
       final Reference<Boolean> cancelled = new Reference<Boolean>();
       final Reference<Integer> progress = new Reference<Integer>(0);
@@ -1358,7 +1358,7 @@ public class RunLevelServiceTest {
       
       rls.proceedTo(8);
       assertFalse("should not have been initialized now - it has an invalid dependency",
-              ((ManagedComponentProvider)theInvalidOne.getProvider(null)).isActive());
+              ((ManagedComponentProvider)theInvalidOne.getProvider()).isActive());
 
       assertNull(cancelled.get());
       assertTrue(progress.get() > 8);
@@ -1383,7 +1383,7 @@ public class RunLevelServiceTest {
       Collection<Binding<?>> bindings = h.getBindings(descriptor);
       assertEquals(1, bindings.size());
       Binding theRls = bindings.iterator().next();
-      AbstractRunLevelService rls = (AbstractRunLevelService) theRls.getProvider(null).get();
+      AbstractRunLevelService rls = (AbstractRunLevelService) theRls.getProvider().get();
 
       rls.proceedTo(8);
 
@@ -1391,7 +1391,7 @@ public class RunLevelServiceTest {
       bindings = h.getBindings(descriptor);
       assertEquals(1, bindings.size());
       ManagedComponentProvider<AHolderBasedRegularService1> regService1Provider = 
-          (ManagedComponentProvider<AHolderBasedRegularService1>) bindings.iterator().next().getProvider(null);
+          (ManagedComponentProvider<AHolderBasedRegularService1>) bindings.iterator().next().getProvider();
       assertNotNull(regService1Provider);
       assertFalse(regService1Provider.isActive());
       
@@ -1416,7 +1416,7 @@ public class RunLevelServiceTest {
       bindings = h.getBindings(descriptor);
       assertEquals(1, bindings.size());
       Binding anotherRlsBinding = bindings.iterator().next();
-      RunLevelService<?> anotherRls = (RunLevelService<?>) anotherRlsBinding.getProvider(null).get();
+      RunLevelService<?> anotherRls = (RunLevelService<?>) anotherRlsBinding.getProvider().get();
       anotherRls.proceedTo(7);
       
       // now re-check it

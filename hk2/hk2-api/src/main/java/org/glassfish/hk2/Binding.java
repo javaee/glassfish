@@ -81,4 +81,13 @@ public interface Binding<T> {
      */
     Provider<T> getProvider(Context ctx);
 
+    /**
+     * Return a {@link Provider} with providing contextual information
+     * on how the provider will be used. Equivalent to calling 
+     * <i>getProvider(null)</i>.
+     * 
+     * @return a non-null component provider instance
+     */
+    Provider<T> getProvider();
+    
 }

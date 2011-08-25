@@ -99,6 +99,11 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T>, Bindin
         return this;
     }
     
+    @Override
+    public Provider<T> getProvider() {
+        return getProvider(null);
+    }
+    
     public boolean matches(Descriptor matchTo) {
         if (null == matchTo) {
             return true;
