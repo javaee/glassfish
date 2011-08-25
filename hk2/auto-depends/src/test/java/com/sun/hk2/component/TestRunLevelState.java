@@ -51,7 +51,7 @@ import org.jvnet.hk2.component.RunLevelState;
 public class TestRunLevelState implements RunLevelState<Object> {
   Integer current;
   Integer planned;
-  String env;
+  String scope;
 
   public TestRunLevelState(Integer current, Integer planned) {
     this(current, planned, null);
@@ -60,7 +60,7 @@ public class TestRunLevelState implements RunLevelState<Object> {
   public TestRunLevelState(Integer current, Integer planned, String env) {
     this.current = current;
     this.planned = planned;
-    this.env = env;
+    this.scope = env;
   }
   
   @Override
@@ -69,8 +69,8 @@ public class TestRunLevelState implements RunLevelState<Object> {
   }
 
   @Override
-  public String getEnvironment() {
-    return env;
+  public String getScopeName() {
+    return scope;
   }
 
   @Override

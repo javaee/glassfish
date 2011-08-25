@@ -46,7 +46,7 @@ import org.jvnet.hk2.annotations.Service;
  * @see AHolderBasedServerService1
  */
 @Service
-@RunLevel(value=9, environment=Long.class)
+@RunLevel(value=9, runLevelScope=Long.class)
 public class AHolderBasedServerService2 {
 
 }

@@ -47,12 +47,12 @@ import org.glassfish.hk2.PostConstruct;
 import org.glassfish.hk2.PreDestroy;
 
 /**
- * Used in testing exception handling, also belonging to another RunLevel environment.
+ * Used in testing exception handling, also belonging to another RunLevel scope.
  * 
  * @author Jeff Trent
  */
 @Service
-@RunLevel(value=1, environment=Exception.class)
+@RunLevel(value=1, runLevelScope=Exception.class)
 public class ExceptionRunLevelManagedService implements RunLevelContract, PostConstruct, PreDestroy {
 
   public static Constructor<RuntimeException> exceptionCtor;

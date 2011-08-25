@@ -230,7 +230,7 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
                 RunLevelService.class, rls);
         add(rlsI);
         addIndex(rlsI, RunLevelService.class.getName(),
-                DefaultRunLevelService.NAME);
+                DefaultRunLevelService.DEFAULT_NAME);
     }
 
     @Override

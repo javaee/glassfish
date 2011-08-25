@@ -46,6 +46,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.glassfish.hk2.MultiMap;
+import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.HabitatListener;
@@ -72,32 +73,32 @@ public class RunLevelServices {
   /**
    * Find the RunLevelService appropriate for the specified RunLevel
    */
-  public synchronized RunLevelService<?> get(Habitat habitat, int rl, Class<?> env) {
-    return get(habitat, rl, env.getName());
+  public synchronized RunLevelService<?> get(Habitat habitat, int rl, Class<?> scope) {
+    return get(habitat, rl, scope.getName());
   }
   
-  public synchronized RunLevelService<?> get(Habitat habitat, int rl, String env) {
-    assert(null != env);
+  public synchronized RunLevelService<?> get(Habitat habitat, int rl, String scopeName) {
+    assert(null != scopeName);
 
     // if any inhabitants are already being managed, use same RLS stub.
     // we especially want to do this because we don't want to activate
     // the RunLevelservice before all of the inhabitants are present.
-    RunLevelService<?> rls = getFromMap(habitat, env);
+    RunLevelService<?> rls = getFromMap(habitat, scopeName);
     
     // next, check to see if we have it from the habitat
     if (null == rls) {
-      rls = getFromHabitat(habitat, env);
+      rls = getFromHabitat(habitat, scopeName);
     }
 
     // create the stub if we didn't find it anywhere
     if (null == rls) {
-      rls = create(habitat, rl, env);
+      rls = create(habitat, rl, scopeName);
     }
     
     return rls;
   }
 
-  static RunLevelService<?> getFromHabitat(Habitat habitat, String env) {
+  static RunLevelService<?> getFromHabitat(Habitat habitat, String scopeName) {
     if (null == habitat) {
       return null;
     }
@@ -107,12 +108,13 @@ public class RunLevelServices {
     RunLevelService<?> theOne = null;
     for (Inhabitant<?> rlsi : coll) {
         if (!rlsi.isActive()) {
-            // attempt to get the environment from the metadata
+            // attempt to get the scope from the metadata
             MultiMap<String, String> mm = rlsi.getDescriptor().getMetadata();
-            String rlsEnv = mm.getFirst("environment");
-            if (null == rlsEnv || rlsEnv.equals(env)) {
-                if (null == rlsEnv) {
-                    logger.log(Level.INFO, "{0} should ideally be annotated with metadata attribute 'environment'", rlsi);
+            String rlsScopeName = mm.getFirst(RunLevel.META_SCOPE_TAG);
+            if (null == rlsScopeName || rlsScopeName.equals(scopeName)) {
+                if (null == rlsScopeName) {
+                    logger.log(Level.INFO, 
+                        "{0} should ideally be annotated with metadata attribute '" + RunLevel.META_SCOPE_TAG + "'", rlsi);
                 }
                 
                 try {
@@ -125,7 +127,7 @@ public class RunLevelServices {
         
         if (rlsi.isActive()) {
             RunLevelService<?> hrls = (RunLevelService<?>) rlsi.get();
-            if (null != hrls.getState() && hrls.getState().getEnvironment().equals(env)) {
+            if (null != hrls.getState() && hrls.getState().getScopeName().equals(scopeName)) {
                 if (null != theOne) {
                     throw new RunLevelException("constraint violation - competing RunLevelServices: " + theOne + " and " + hrls);
                 }
@@ -138,42 +140,42 @@ public class RunLevelServices {
   }
 
 
-  private RunLevelService<?> getFromMap(Habitat habitat, String env) {
-    Map<String, RunLevelServiceStub> envMap;
+  private RunLevelService<?> getFromMap(Habitat habitat, String scopeName) {
+    Map<String, RunLevelServiceStub> scopeMap;
     synchronized (map) {
-      envMap = map.get(habitat);
-      if (null == envMap) {
+      scopeMap = map.get(habitat);
+      if (null == scopeMap) {
         return null;
       }
     }
     
     RunLevelService<?> rls;
-    synchronized (envMap) {
-      rls = envMap.get(env);
+    synchronized (scopeMap) {
+      rls = scopeMap.get(scopeName);
     }
     
     return rls;
   }
   
   
-  private RunLevelService<?> create(Habitat habitat, int rl, String env) {
-    initialize(habitat, rl, env);
+  private RunLevelService<?> create(Habitat habitat, int rl, String scopeName) {
+    initialize(habitat, rl, scopeName);
     
-    Map<String, RunLevelServiceStub> envMap;
+    Map<String, RunLevelServiceStub> scopeMap;
     synchronized (map) {
-      envMap = map.get(habitat);
-      if (null == envMap) {
-        envMap = new HashMap<String, RunLevelServiceStub>();
-        map.put(habitat, envMap);
+      scopeMap = map.get(habitat);
+      if (null == scopeMap) {
+        scopeMap = new HashMap<String, RunLevelServiceStub>();
+        map.put(habitat, scopeMap);
       }
     }
     
     RunLevelServiceStub rls;
-    synchronized (envMap) {
-      rls = envMap.get(env);
+    synchronized (scopeMap) {
+      rls = scopeMap.get(scopeName);
       if (null == rls) {
-        rls = new RunLevelServiceStub(habitat, env);
-        envMap.put(env, rls);
+        rls = new RunLevelServiceStub(habitat, scopeName);
+        scopeMap.put(scopeName, rls);
       }
     }
     
@@ -181,14 +183,14 @@ public class RunLevelServices {
   }
 
 
-  private void initialize(Habitat habitat, int rl, String env) {
+  private void initialize(Habitat habitat, int rl, String scopeName) {
     if (null == habitat) {
       return;
     }
     
     if (habitat.isInitialized()) {
       throw new ComponentException(
-          "no RunLevelService found appropriate for RunLevel: (" + rl + "," + env + ")");
+          "no RunLevelService found appropriate for RunLevel: (" + rl + "," + scopeName + ")");
     }
     
     habitat.addHabitatListener(new HabitatListener() {
@@ -202,7 +204,7 @@ public class RunLevelServices {
           if (null != rlss) {
             // we must have some runlevel inhabitants under management
             for (RunLevelServiceStub rls : rlss.values()) {
-              RunLevelService<?> realRls = getFromHabitat(rls.getHabitat(), rls.getEnvironment());
+              RunLevelService<?> realRls = getFromHabitat(rls.getHabitat(), rls.getScopeName());
               rls.activate(realRls);
             }
           }

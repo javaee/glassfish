@@ -43,12 +43,12 @@ import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * Used in testing interrupt handling, also belonging to another RunLevel environment.
+ * Used in testing interrupt handling, also belonging to another RunLevel scope.
  * 
  * @author Jeff Trent
  */
 @Service
-@RunLevel(value=2, environment=String.class)  // use of "String" is arbitrary --- just need a unique namespace
+@RunLevel(value=2, runLevelScope=String.class)  // use of "String" is arbitrary --- just need a unique namespace
 public class InterruptRunLevelManagedService2a implements RunLevelContract {
 
 }

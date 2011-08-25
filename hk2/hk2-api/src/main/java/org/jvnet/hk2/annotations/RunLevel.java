@@ -43,13 +43,15 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.glassfish.hk2.RunLevelDefaultScope;
+
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Defines the notion of a run level a la Unix.
- *
+ * Defines the notion of a run/start level.
+ * 
  * @author Jerome Dochez
  * @author Jeff Trent
  */
@@ -59,28 +61,35 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Contract
 public @interface RunLevel {
 
-    public static final String META_ENV_TAG = "env";
+    public static final String META_SCOPE_TAG = "runLevelScope";
     public static final String META_VAL_TAG = "runLevel";
+    
+    // the "kernel" (aka immediate) run level
+    public static final int KERNEL_RUNLEVEL = -1;
+
+    // TODO: problem compiling (w/ Sun(?))
+//    // the default scope
+//    public static final Class<?> DEFAULT_SCOPE = RunLevelDefaultScope.class;
 
     /**
-     * Defines the environment in which this RunLevel applies.
-     * <p>
-     * An Environment is any type used to segregate the application / system 
-     * namespace.
-     * <p>
-     * A null environment is considered a valid value and will be used as
-     * the default value mapping to Void.class.
-     *
-     * @return the environment type this annotation value applies in.
+     * Defines the run level scope in which this RunLevel applies.
+     * <p/>
+     * 
+     * The run level scope is any type used to segregate the
+     * application / system namespace.
+     * <p/>
+     * 
+     * @return the run level scope type this annotation value applies
      */
-    @InhabitantMetadata(META_ENV_TAG)
-    Class<?> environment() default Void.class;
+    @InhabitantMetadata(META_SCOPE_TAG)
+    Class<?> runLevelScope() default RunLevelDefaultScope.class;
 
     /**
-     * defines the run level, must be greater than 0
+     * Defines the run level.
      *
-     * @return the run level.
+     * @return the run level
      */
     @InhabitantMetadata(META_VAL_TAG)
     int value() default 0;
+    
 }

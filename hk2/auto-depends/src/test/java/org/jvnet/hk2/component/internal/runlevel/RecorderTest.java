@@ -73,7 +73,7 @@ import com.sun.hk2.component.TestRunLevelState;
  * 
  * @author Jeff Trent
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 @RunWith(Hk2Runner.class)
 public class RecorderTest {
 
@@ -156,7 +156,7 @@ public class RecorderTest {
   }
   
   @Test
-  public void anotherEnvironment() {
+  public void anotherScope() {
     List<Inhabitant<?>> list = new ArrayList<Inhabitant<?>>();
     Recorder recorder = new Recorder(list, 10);
     RunLevelState rlState = new TestRunLevelState(10, 10, Integer.class.getName());

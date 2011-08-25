@@ -47,6 +47,7 @@ import java.util.Set;
 
 import javax.inject.Named;
 
+import org.glassfish.hk2.PostConstruct;
 import org.glassfish.hk2.Scope;
 import org.glassfish.hk2.scopes.PerLookup;
 import org.glassfish.hk2.scopes.Singleton;
@@ -57,8 +58,6 @@ import org.jvnet.hk2.component.Constants;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
-import org.glassfish.hk2.PostConstruct;
-import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.Holder;
@@ -82,7 +81,7 @@ import com.sun.hk2.jsr330.spi.Jsr330Processor;
  */
 //TODO: need to implement service ranking in Hk2
 @Service(metadata=org.jvnet.hk2.component.Constants.SERVICE_RANKING + "=" + Integer.MIN_VALUE)
-@RunLevel(DefaultRunLevelService.KERNEL_RUNLEVEL)
+@RunLevel(RunLevel.KERNEL_RUNLEVEL)
 public class Jsr330ProcessorImpl implements Jsr330Processor, PostConstruct {
 
   @Inject
