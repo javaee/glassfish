@@ -48,8 +48,6 @@ import org.jvnet.hk2.annotations.Contract;
  * @see InhabitantTrackerContext
  * 
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 @Contract
 public interface InhabitantFilter {

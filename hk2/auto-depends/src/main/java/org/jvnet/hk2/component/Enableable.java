@@ -55,7 +55,6 @@ package org.jvnet.hk2.component;
  * perform the gated operation (as in the case for run() above).
  * 
  * @author Jeff Trent
- * @since 3.1
  */
 public interface Enableable {
 

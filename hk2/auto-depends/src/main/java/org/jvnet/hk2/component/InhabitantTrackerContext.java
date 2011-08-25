@@ -48,8 +48,6 @@ import java.util.Set;
  * @see Habitat#trackFuture(InhabitantTrackerContext, Boolean)
  * 
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 public interface InhabitantTrackerContext {
 

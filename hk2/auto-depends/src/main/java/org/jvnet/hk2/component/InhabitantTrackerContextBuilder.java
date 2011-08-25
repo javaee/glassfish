@@ -50,8 +50,6 @@ import org.jvnet.hk2.component.matcher.SimpleLdapMatcher;
  * Builder for constructing InhabitantTrackerContext types.
  * 
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 public class InhabitantTrackerContextBuilder {
 

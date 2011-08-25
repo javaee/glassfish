@@ -52,8 +52,6 @@ import org.jvnet.hk2.component.InhabitantTracker.Callback;
  * @see Habitat#trackFuture(InhabitantTrackerContext)
  * 
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 /*public*/class InhabitantTrackerJob implements Future<InhabitantTracker>,
     Callable<InhabitantTracker>, Callback {

@@ -50,8 +50,6 @@ import org.jvnet.hk2.component.Inhabitant;
  * is GC'ed.
  *
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 public class HabitatListenerWeakProxy implements HabitatListener {
 

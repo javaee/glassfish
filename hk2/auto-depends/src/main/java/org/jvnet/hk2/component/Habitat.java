@@ -382,7 +382,6 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
      * @param listener The habitat Listener to be added
      * @see {@link #addHabitatListener(HabitatListener, String...)} is
      *      recommended for most cases
-     * @since 3.1
      */
     public void addHabitatListener(HabitatListener listener) {
         addHabitatListener(listener, DEFAULT_NAME);
@@ -396,7 +395,6 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
      *
      * @param listener  The habitat Listener to be added
      * @param typeNames The contracts to filter on; this should be non-null
-     * @since 3.1
      */
     public void addHabitatListener(HabitatListener listener,
                                    String... typeNames) {
@@ -437,7 +435,6 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
      *
      * @param listener The habitat Listener to be removed
      * @return true; if the listener was indeed removed
-     * @since 3.1
      */
     public boolean removeHabitatListener(HabitatListener listener) {
         List<Inhabitant> list = byType._get(HabitatListener.class.getName());
@@ -504,7 +501,6 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
      * @param callback Optionally the callback.
      * @return The tracker
      * @throws ComponentException
-     * @since 3.1
      */
     public InhabitantTracker track(InhabitantTrackerContext itc,
                                    Callback callback) throws ComponentException {
@@ -528,7 +524,6 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
      * @param itc The tracking criteria.
      * @return The tracker
      * @throws ComponentException
-     * @since 3.1
      */
     public Future<InhabitantTracker> trackFuture(InhabitantTrackerContext itc)
             throws ComponentException {

@@ -53,7 +53,6 @@ import org.jvnet.hk2.component.classmodel.ClassPath;
  * CodeSourceFilter is used for determining if classes are in the ClassPath.
  * 
  * @author Jeff Trent
- * @since 3.1
  */
 public class CodeSourceFilter {
 

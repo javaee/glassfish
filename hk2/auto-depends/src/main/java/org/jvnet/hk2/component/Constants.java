@@ -43,8 +43,6 @@ package org.jvnet.hk2.component;
  * Common metadata properties used by the inhabitant / habitat.
  * 
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 public class Constants {
 

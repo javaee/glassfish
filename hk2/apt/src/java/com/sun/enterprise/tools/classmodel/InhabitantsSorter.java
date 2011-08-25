@@ -49,7 +49,6 @@ import com.sun.enterprise.tools.InhabitantsDescriptor;
  * Provides ability to sort an inhabitants file.
  * 
  * @author Jeff Trent
- * @since 3.1
  */
 public class InhabitantsSorter extends Constants {
 

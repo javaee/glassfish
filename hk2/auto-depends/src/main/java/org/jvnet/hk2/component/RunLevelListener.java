@@ -62,8 +62,6 @@ import org.jvnet.hk2.annotations.Contract;
  * their interest.
  * 
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 @Contract
 public interface RunLevelListener {

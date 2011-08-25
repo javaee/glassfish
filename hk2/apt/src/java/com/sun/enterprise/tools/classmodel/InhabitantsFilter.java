@@ -58,7 +58,6 @@ import com.sun.enterprise.tools.InhabitantsDescriptor;
  * is designated by a specified classpath.
  * 
  * @author Jeff Trent
- * @since 3.1
  */
 public class InhabitantsFilter extends Constants {
 

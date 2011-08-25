@@ -43,8 +43,6 @@ import com.sun.hk2.component.InhabitantsParser;
 
 /**
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 public interface InhabitantsParserFactory {
 

@@ -43,8 +43,6 @@ package org.jvnet.hk2.component.matcher;
  * Simple wildcard matcher used as part of RFC 2254 type LDAP searches.
  *
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 public class WildcardMatcher {
 

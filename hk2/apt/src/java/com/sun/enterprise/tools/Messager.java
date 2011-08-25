@@ -43,8 +43,6 @@ package com.sun.enterprise.tools;
  * Abstraction for a Messager
  * 
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 public interface Messager {
 

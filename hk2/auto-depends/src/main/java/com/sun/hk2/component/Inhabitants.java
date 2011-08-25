@@ -62,8 +62,6 @@ import org.jvnet.hk2.component.Creators;
  * Factory for Inhabitants.
  * 
  * @author Jeff Trent
- *
- * @since 3.1
  */
 // TODO: Make all Inhabitant types package private (especially ctors)
 public class Inhabitants {
