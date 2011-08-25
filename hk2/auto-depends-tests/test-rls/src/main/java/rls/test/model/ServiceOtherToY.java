@@ -39,16 +39,14 @@
  */
 package rls.test.model;
 
+import org.glassfish.hk2.PostConstruct;
 import org.jvnet.hk2.annotations.Inject;
-
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
-import org.glassfish.hk2.PostConstruct;
-import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 
 import com.sun.hk2.component.Holder;
 
-@RunLevel(DefaultRunLevelService.KERNEL_RUNLEVEL)
+@RunLevel(RunLevel.KERNEL_RUNLEVEL)
 @Service(name="other")
 public class ServiceOtherToY implements PostConstruct {
 
