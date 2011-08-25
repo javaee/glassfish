@@ -178,10 +178,6 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
     return listeners;
   }
   
-//  public boolean hasListeners() {
-//      return (null != listeners && !listeners.isEmpty());
-//  }
-
   public boolean removeInhabitantListener(InhabitantListener listener) {
     return (null == listeners) ? false : listeners.remove(listener);
   }
