@@ -78,17 +78,24 @@ if (typeof Console == 'undefined') {
             });
         },
 
-        loadPage: function (url) {
-            document.getElementById('content').value = url;
-            document.getElementById('contentButton').click();
-            return false;
+        loadPage: function (url, source, event) {
+            if (source == undefined) source = $('#content')[0];
+            $('#content').val(url);
+            jsf.ajax.request(source, event, {
+                    execute:'@form',
+                    render:'ajaxBody',
+                    onevent: Console.Ajax.ajaxCallback
+            });
+            return true;
         },
         
         onError: function(data) {
-            if (data.errorName.indexOf("ViewExpiredException")){
+            if (data.errorName != undefined && data.errorName.indexOf("ViewExpiredException")){
                 window.location = window.location.href.replace("index", "login");
-            } else {
+            } else if (data.errorMessage != undefined) {
                 alert(data.errorMessage);
+            } else {
+                alert(data.description);
             }
             return false;
         },

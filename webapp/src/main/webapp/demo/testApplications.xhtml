@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8' ?>
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes" ?>
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -44,70 +44,11 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:gf="http://java.sun.com/jsf/composite/glassfish"
                 xmlns:g="http://java.sun.com/jsf/glassfish"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ps="http://admingui.glassfish.org/console"
-                xmlns:tr="http://myfaces.apache.org/trinidad"
-                xmlns:trh="http://myfaces.apache.org/trinidad/html">
-    <link href="#{request.contextPath}/css/jquery-ui-base.css" rel="stylesheet" type="text/css"/>
-
-    <style>
-        #available { float: left; width: 65%; min-height: 12em; } * html #available { height: 12em; } /* IE6 */
-        .available.custom-state-active { background: #eee; }
-        .available li { float: left; width: 96px; padding: 0.4em; margin: 0 0.4em 0.4em 0; text-align: center; }
-        .available li h5 { margin: 0 0 0.4em; cursor: move; }
-        .available li a { float: right; }
-        .available li a.ui-icon-zoomin { float: left; }
-        .available li img { width: 100%; cursor: move; }
-
-        #selected { float: right; width: 32%; min-height: 18em; padding: 1%;} * html #selected { height: 18em; } /* IE6 */
-        #selected h4 { line-height: 16px; margin: 0 0 0.4em; }
-        #selected h4 .ui-icon { float: left; }
-    </style>
-    <ui:include src="topLevelTabs.xhtml" />
-
-    <ui:remove>
-        <!--    <trh:head>	-->
-        <!-- #selected .available h5 { display: none; } -->
-
-        <script src="#{request.contextPath}/js/andriy.js"/>
-
-        <!--    </trh:head>-->
-        <tr:panelBox background="medium" text="Applications">
-            Applications can be enterprise or web applications, or various kinds of modules. 
-            Restart an application or module by clicking on the reload link, this action will 
-            apply only to the targets that the application or module is enabled on.
-        </tr:panelBox>
-
-
-        <div style="display: none">
-            <select id="available-applications" multiple="true">
-                <option value="console-demo">console-demo</option>
-                <option value="console-next">console-next</option>
-            </select>
-
-            <select id="selected-applications" multiple="true">
-                <option name="console">console</option>
-            </select>
-        </div>
-
-        <div class="demo ui-widget ui-helper-clearfix" style="padding: 10px">
-
-            <ul id="available" class="available ui-helper-reset ui-helper-clearfix">
-            </ul>
-
-            <div id="selected" class="ui-widget-content ui-state-default">
-                <h4 class="ui-widget-header"><span class="ui-icon ui-icon-folder-collapsed">Server1</span> Server1</h4>
-                <ul class='available ui-helper-reset'/>
-            </div>
-
-
-        </div><!-- End demo -->
-    </ui:remove>
+                xmlns:tr="http://myfaces.apache.org/trinidad">
 
     <tr:form id="dndForm">
-        <tr:panelBox id="availableServers" 
+        <tr:panelBox id="availableServers"
                      text="Available Servers:"
                      background="light"
                      inlineStyle="width: 30%; float: left; ">
@@ -118,18 +59,18 @@
                          onDropUpdate="availableServers selectedServers"
                          scope="selected"
                          />
-            <h:dataTable id="availableServersTable" value="#{dragAndDropBean.available}" var="server">
-                <h:column>
+            <tr:table id="availableServersTable" var="server" value="#{dragAndDropBean.available}">
+                <tr:column>
                     <tr:panelBox id="server" text="#{server}"
                                  inlineStyle="width: 150px;">
                         <g:draggable scope="available" opacity="0.35" revert="true" revertDuration="0" helper="clone" cursor="move"/>
                         Some details on the server!
                     </tr:panelBox>
-                </h:column>
-            </h:dataTable>
+                </tr:column>
+            </tr:table>
         </tr:panelBox>
 
-        <tr:panelBox id="selectedServers" 
+        <tr:panelBox id="selectedServers"
                      text="Selected Servers:"
                      background="light"
                      inlineStyle="width: 30%;">
@@ -140,15 +81,15 @@
                          onDropUpdate="availableServers selectedServers"
                          scope="available"
                          />
-            <h:dataTable id="selectedServersTable" value="#{dragAndDropBean.selected}" var="server">
-                <h:column>
+            <tr:table id="selectedServersTable" value="#{dragAndDropBean.selected}" var="server">
+                <tr:column>
                     <tr:panelBox id="server" text="#{server}"
                                  inlineStyle="width: 150px;">
                         <g:draggable scope="selected" opacity="0.35" revert="true" revertDuration="0" helper="clone" cursor="move"/>
                         Some details on the server!
                     </tr:panelBox>
-                </h:column>
-            </h:dataTable>
+                </tr:column>
+            </tr:table>
         </tr:panelBox>
     </tr:form>
 </ui:composition>

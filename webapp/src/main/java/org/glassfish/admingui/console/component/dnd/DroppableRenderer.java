@@ -52,6 +52,7 @@ import javax.faces.context.ResponseWriter;
 import javax.faces.render.FacesRenderer;
 import javax.faces.render.Renderer;
 
+import org.apache.myfaces.trinidad.component.core.data.CoreTable;
 import org.glassfish.admingui.console.event.DragDropEvent;
 
 @FacesRenderer(componentFamily=Droppable.COMPONENT_FAMILY, rendererType=Droppable.COMPONENT_TYPE)
@@ -70,7 +71,7 @@ public class DroppableRenderer extends Renderer {
             DragDropEvent event = null;
 
             if(datasourceId != null) {
-                UIData datasource = findDatasource(context, droppable, datasourceId);
+                CoreTable datasource = findDatasource(context, droppable, datasourceId);
                 String[] idTokens = dragId.split(String.valueOf(UINamingContainer.getSeparatorChar(context)));
                 int rowIndex = Integer.parseInt(idTokens[idTokens.length - 2]);
                 datasource.setRowIndex(rowIndex);
@@ -172,13 +173,14 @@ public class DroppableRenderer extends Renderer {
         }
     }
 
-    protected UIData findDatasource(FacesContext context, Droppable droppable, String datasourceId) {
+    protected CoreTable findDatasource(FacesContext context, Droppable droppable, String datasourceId) {
         UIComponent datasource = droppable.findComponent(datasourceId);
 
-        if(datasource == null)
+        if(datasource == null) {
             throw new FacesException("Cannot find component \"" + datasourceId + "\" in view.");
-        else
-            return (UIData) datasource;
+        } else {
+            return (CoreTable) datasource;
+        }
     }
 
     protected static UIComponent findParentForm(FacesContext context, UIComponent component) {

@@ -82,12 +82,10 @@
                 </div>
                 <div style="float: right; margin-top: 5px;">
                     <tr:form id="ajaxNavForm" prependId="false" >
-                        <div style="display: inline; visibility: hidden;">
-                            <h:inputText id="content" value="#{appHelper.contentPage}"/>
-                            <tr:commandButton id="contentButton">
-                                <f:ajax execute="@form" render=":ajaxBody" onevent="Console.Ajax.ajaxCallback" />
-                            </tr:commandButton>
-                        </div>
+                        <h:inputHidden id="content" value="#{appHelper.contentPage}"/>
+                        <!-- tr:commandButton id="contentButton">
+                            <f:ajax execute="@form" render=":ajaxBody" onevent="Console.Ajax.ajaxCallback" />
+                        </tr:commandButton -->
                         <span class="actionLink mastheadButton">
                             <a href="#{request.contextPath}/login.jsf">Logout</a>
                         </span>
