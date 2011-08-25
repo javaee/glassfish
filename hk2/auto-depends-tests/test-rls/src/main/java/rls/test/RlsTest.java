@@ -39,19 +39,21 @@
  */
 package rls.test;
 
-import java.util.Collection;
-import java.util.HashSet;
-
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertSame;
+import static junit.framework.Assert.fail;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 
 import rls.test.infra.MultiThreadedInhabitantActivator;
 import rls.test.infra.RandomInhabitantSorter;
@@ -191,7 +193,7 @@ public class RlsTest implements ModuleStartup {
       assertNotNull(i.metadata());
       String val = i.metadata().getOne("runLevel");
       assertNotNull(i.toString(), val);
-      assertTrue(i + " runLevel val=" + val, Integer.valueOf(val) >= DefaultRunLevelService.KERNEL_RUNLEVEL);
+      assertTrue(i + " runLevel val=" + val, Integer.valueOf(val) >= RunLevel.KERNEL_RUNLEVEL);
     }
     assertTrue(String.valueOf(count), count >= 5);
   }
