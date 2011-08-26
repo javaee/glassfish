@@ -40,6 +40,7 @@
 package org.jvnet.hk2.annotations;
 
 import java.lang.annotation.Documented;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -58,6 +59,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Target({TYPE, ANNOTATION_TYPE})
 @Documented
+@Inherited
 @Contract
 public @interface RunLevel {
 
