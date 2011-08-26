@@ -39,17 +39,23 @@
  */
 package org.jvnet.hk2.component;
 
-import org.easymock.EasyMock;
-import org.glassfish.hk2.Provider;
-import org.junit.*;
-import org.jvnet.hk2.test.contracts.Simple;
-import org.jvnet.hk2.test.impl.OneSimple;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.assertSame;
+import org.easymock.EasyMock;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.jvnet.hk2.test.contracts.DummyContract;
+import org.jvnet.hk2.test.contracts.Simple;
+import org.jvnet.hk2.test.impl.OneSimple;
 
 public class ContractLocatorImplTest {
     static LogHandler logHandler = new LogHandler();
@@ -165,4 +171,41 @@ public class ContractLocatorImplTest {
         ContractLocatorImpl<Simple> locator = new ContractLocatorImpl<Simple>(mock, Simple.class.getName(), false);
         runTypeKind(mock, simple, locator);
     }
+    
+    /**
+     * Ensure that warning messages are not issued when there is no contracts found in habitat.
+     * Motivated by http://java.net/jira/browse/HK2-22
+     */
+    @Test
+    public void serviceImplNotFound() {
+        Habitat h = new Habitat();
+        ContractLocatorImpl<DummyContract> locator = new ContractLocatorImpl<DummyContract>(h, DummyContract.class, true);
+        DummyContract service = locator.get();
+        assertNull(service);
+        assertEquals(logHandler.publishedRecords.toString(),
+                0, logHandler.publishedRecords.size());
+        
+        boolean isContractExt = h.isContractExt(DummyContract.class);
+        assertTrue("a weaker test - see javadoc", isContractExt);
+        assertEquals(logHandler.publishedRecords.toString(),
+                0, logHandler.publishedRecords.size());
+    
+        locator = new ContractLocatorImpl<DummyContract>(h, DummyContract.class, isContractExt);
+        locator.named("whatever");
+        service = locator.get();
+        assertEquals(logHandler.publishedRecords.toString(),
+                0, logHandler.publishedRecords.size());
+        
+        boolean isContract = h.isContract(DummyContract.class);
+        assertFalse("according to javadoc, even though DummyContract is a Contract it does not exist in habitat", isContract);
+        assertEquals(logHandler.publishedRecords.toString(),
+                0, logHandler.publishedRecords.size());
+
+        locator = new ContractLocatorImpl<DummyContract>(h, DummyContract.class, isContract);
+        locator.named("whatever");
+        service = locator.get();
+        assertEquals(logHandler.publishedRecords.toString(),
+                1, logHandler.publishedRecords.size());
+    }
+    
 }

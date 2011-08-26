@@ -114,7 +114,7 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
                                 }
                             }
                         } else {
-                            ContractLocatorImpl<V> contractLocator = new ContractLocatorImpl<V>(habitat, genericType, habitat.isContract(genericType));
+                            ContractLocatorImpl<V> contractLocator = new ContractLocatorImpl<V>(habitat, genericType, habitat.isContractExt(genericType));
                             populateContractLocator(contractLocator, target, inject);
                             result = contractLocator.get();
                         }

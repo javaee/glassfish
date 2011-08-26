@@ -52,7 +52,7 @@ import com.sun.hk2.component.ScopedInhabitant;
 import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.ContractLocator;
 import org.glassfish.hk2.Scope;
-import org.glassfish.hk2.classmodel.reflect.Types;
+import org.glassfish.hk2.TypeLiteral;
 
 /**
  * Implementation of the {@link ContractLocator} interface.
@@ -94,7 +94,17 @@ public class ContractLocatorImpl<T> implements ContractLocator<T> {
     }
 
     private void warnOnUsage() {
-        logger.log(Level.WARNING, "name and scope are currently only appropriate for byContract usage");
+        logger.log(Level.WARNING,
+                "name and scope are currently only appropriate for byContract usage; (name: {0}; type: {1})",
+                new Object[] {name, getTypeName()});
+    }
+    
+    public String getTypeName() {
+        if (null == type) {
+            return typeName;
+        }
+        
+        return TypeLiteral.getRawType(type).getName();
     }
 
     @Override
