@@ -897,11 +897,25 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
     public boolean isContract(java.lang.reflect.Type type) {
         return byContract.containsKey(BinderFactoryImpl.exploreType(type));
     }
-
+    
     public boolean isContract(String fullyQualifiedClassName) {
         return byContract.containsKey(fullyQualifiedClassName);
     }
 
+    /**
+     * A weaker test than {@link #isContract(Type)}.
+     * 
+     * <p/>
+     * This will return true if either the type argument
+     * is annotated with {@link Contract} or if the
+     * {@link #isContract(Type)} returns true.
+     */
+    public boolean isContractExt(java.lang.reflect.Type type) {
+        Class clazz = TypeLiteral.getRawType(type);
+        return (null != clazz.getAnnotation(Contract.class) ||
+                isContract(type));
+    }
+    
     /**
      * Gets all the inhabitants registered under the given {@link Contract}.
      * This is an example of heterogeneous type-safe container.
