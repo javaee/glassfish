@@ -1621,11 +1621,11 @@ public class Response
             return (false);
         }
 
-        // Does this URL match down to (and including) the context path
-        // or the location is a https with same host, context path?
+        // Does this URL match down to (and including) the context path?
+        if (!hreq.getScheme().equalsIgnoreCase(url.getProtocol()))
+            return (false);
         if (!hreq.getServerName().equalsIgnoreCase(url.getHost()))
             return (false);
-
         int serverPort = hreq.getServerPort();
         if (serverPort == -1) {
             if ("https".equals(hreq.getScheme()))
@@ -1634,18 +1634,14 @@ public class Response
                 serverPort = 80;
         }
         int urlPort = url.getPort();
-        boolean httpsLocation = "https".equals(url.getProtocol());
         if (urlPort == -1) {
-            if (httpsLocation)
+            if ("https".equals(url.getProtocol()))
                 urlPort = 443;
             else
                 urlPort = 80;
         }
-        if (!((hreq.getScheme().equalsIgnoreCase(url.getProtocol()) &&
-                serverPort == urlPort) ||
-                httpsLocation)) {
-            return false;
-        }
+        if (serverPort != urlPort)
+            return (false);
 
         Context ctx = getContext();
         if (ctx != null) {
