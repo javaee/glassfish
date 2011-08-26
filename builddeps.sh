@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 if [ -e trinidad ] ; then
     svn up trinidad
@@ -8,7 +9,7 @@ else
     patch -p0 < ../trinidad.patch
     cd trinidad-build
     mvn -Dmaven.test.skip=true install
-    cd ../..
+    cd -
 fi
 
 cd trinidad
