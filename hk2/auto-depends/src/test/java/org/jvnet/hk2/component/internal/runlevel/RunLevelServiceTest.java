@@ -87,6 +87,8 @@ import org.jvnet.hk2.test.runlevel.AnotherNonDefaultEnvServerService;
 import org.jvnet.hk2.test.runlevel.AnotherNonDefaultRunLevelService;
 import org.jvnet.hk2.test.runlevel.ExceptionRunLevelManagedService;
 import org.jvnet.hk2.test.runlevel.ExceptionRunLevelManagedService2b;
+import org.jvnet.hk2.test.runlevel.InitService1;
+import org.jvnet.hk2.test.runlevel.InitService2;
 import org.jvnet.hk2.test.runlevel.InterruptRunLevelManagedService1a;
 import org.jvnet.hk2.test.runlevel.InterruptRunLevelManagedService2b;
 import org.jvnet.hk2.test.runlevel.NonRunLevelWithRunLevelDepService;
@@ -156,6 +158,36 @@ public class RunLevelServiceTest {
     assertSame(rls, rls2);
     assertSame(this.rls, rls);
     assertTrue(rls instanceof DefaultRunLevelService);
+  }
+  
+  /**
+   * The Init-based services exercises inheritance-based RunLevel startup
+   * with @RunLevel(-1) instead of using @Immediate.
+   */
+  @Ignore(/* ignored because annotation @RunLevel currently does not get inherited on the Service) */)
+  @Test
+  public void initBasedServiceUsingRunLevelDirectly() {
+      DescriptorImpl descriptor = new DescriptorImpl(InitService2.class);
+      Collection<Binding<?>> bindings = h.getBindings(descriptor);
+      assertEquals(bindings.toString(), 1, bindings.size());
+      ManagedComponentProvider<?> provider = 
+          (ManagedComponentProvider<?>) bindings.iterator().next().getProvider();
+      assertTrue("expected active: " + provider, provider.isActive());
+  }
+  
+  /**
+   * The Init-based services exercises inheritance-based RunLevel startup
+   * combined with @Immediate (kernel level) startup.
+   */
+  @Ignore(/* ignored because meta-annotation @Immediate currently does not get inherited on the Service) */)
+  @Test
+  public void initBasedServiceUsingImmediate() {
+      DescriptorImpl descriptor = new DescriptorImpl(InitService1.class);
+      Collection<Binding<?>> bindings = h.getBindings(descriptor);
+      assertEquals(bindings.toString(), 1, bindings.size());
+      ManagedComponentProvider<?> provider = 
+          (ManagedComponentProvider<?>) bindings.iterator().next().getProvider();
+      assertTrue("expected active: " + provider, provider.isActive());
   }
   
   /**
