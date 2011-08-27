@@ -109,7 +109,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "enable-secure-admin")
 @Scoped(PerLookup.class)
 @I18n("enable.secure.admin.command")
-@ExecuteOn(RuntimeType.DAS)
+@ExecuteOn({RuntimeType.DAS,RuntimeType.INSTANCE})
 public class EnableSecureAdminCommand extends SecureAdminCommand {
 
     @Param(optional = true)

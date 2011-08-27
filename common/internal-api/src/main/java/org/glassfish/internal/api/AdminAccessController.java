@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,8 +59,8 @@ public interface AdminAccessController {
      * <ul>
      * <li>FULL - the connection should be permitted full admin access, including
      * the ability to change the configuration
-     * <li>MONITORING - the connection should be permitted to monitor the 
-     * server but not to change any configuration
+     * <li>FORBIDDEN - the connection is rejected because it is remote, secure admin
+     * is not enabled, and the connection is not from the DAS to an instance
      * <li>NONE - no access permitted
      * </ul>
      * The calling logic is responsible for enforcing any restrictions as to
@@ -72,7 +72,7 @@ public interface AdminAccessController {
      */
     public static enum Access {
         FULL,
-        MONITORING,
+        FORBIDDEN,
         NONE
     }
 

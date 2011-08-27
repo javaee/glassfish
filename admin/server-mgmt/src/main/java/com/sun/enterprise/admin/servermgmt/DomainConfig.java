@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -93,6 +93,11 @@ public class DomainConfig extends RepositoryConfig
     
     public static final int K_FLAG_START_DOMAIN_NEEDS_ADMIN_USER = 0x1;    
     public static final String KEYTOOLOPTIONS = "keytooloptions";
+    
+    public static final String K_ADMIN_CERT_DN = "domain.admin.cert.dn";
+    public static final String K_INSTANCE_CERT_DN = "domain.instance.cert.dn";
+    public static final String K_SECURE_ADMIN_IDENTIFIER = "domain.indicator";
+    
     /**
      * The DomainConfig always contains the K_DOMAINS_ROOT and K_HOST_NAME
      * attributes.

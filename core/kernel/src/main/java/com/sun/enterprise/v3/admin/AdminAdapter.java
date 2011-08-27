@@ -314,10 +314,10 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
             case FULL:
                 return true;
 
-            case MONITORING:
+            case FORBIDDEN:
                 /*
                  * The request authenticated OK but it is remote and this is the DAS;
-                 * that's why MONITORING rather than FULL came back.
+                 * that's why FORBIDDEN rather than FULL came back.
                  * 
                  * For user-friendliness respond with Forbidden.
                  */
