@@ -176,36 +176,8 @@
         <jvm-options>-Djdbc.drivers=org.apache.derby.jdbc.ClientDriver</jvm-options>
 		<jvm-options>-DANTLR_USE_DIRECT_CLASS_LOADING=true</jvm-options>
         <jvm-options>-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory</jvm-options>
-        <!-- Configure post startup bundle list here. This is a comma separated list of bundle sybolic names.
-                  The remote shell bundle has been disabled by default for das, cluster and remote instances. -->
-        <jvm-options>-Dorg.glassfish.additionalOSGiBundlesToStart=org.apache.felix.shell,org.apache.felix.gogo.runtime,org.apache.felix.gogo.shell,org.apache.felix.gogo.command,org.apache.felix.fileinstall</jvm-options>
-        <!-- Configuration of various third-party OSGi bundles like
-             Felix Remote Shell, FileInstall, etc. -->
-        <!-- Port on which remote shell listens for connections.-->
-        <jvm-options>-Dosgi.shell.telnet.port=%%%OSGI_SHELL_TELNET_PORT%%%</jvm-options>
-        <!-- How many concurrent users can connect to this remote shell -->
-        <jvm-options>-Dosgi.shell.telnet.maxconn=1</jvm-options>
-        <!-- From which hosts users can connect -->
-        <jvm-options>-Dosgi.shell.telnet.ip=127.0.0.1</jvm-options>
-        <!-- Gogo shell configuration -->
-        <jvm-options>-Dgosh.args=--nointeractive</jvm-options>
-        <!-- Directory being watched by fileinstall. -->
-        <jvm-options>-Dfelix.fileinstall.dir=${com.sun.aas.installRoot}/modules/autostart/</jvm-options>
-        <!-- Time period fileinstaller thread in ms. -->
-        <jvm-options>-Dfelix.fileinstall.poll=5000</jvm-options>
-        <!-- log level: 1 for error, 2 for warning, 3 for info and 4 for debug. -->
-        <jvm-options>-Dfelix.fileinstall.log.level=2</jvm-options>
-        <!-- should new bundles be started or installed only? 
-             true => start, false => only install 
-        -->
-        <jvm-options>-Dfelix.fileinstall.bundles.new.start=true</jvm-options>
-        <!-- should watched bundles be started transiently or persistently -->
-        <jvm-options>-Dfelix.fileinstall.bundles.startTransient=true</jvm-options>
-        <!-- Should changes to configuration be saved in corresponding cfg file? false: no, true: yes
-             If we don't set false, everytime server starts from clean osgi cache, the file gets rewritten.
-        -->
-        <jvm-options>-Dfelix.fileinstall.disableConfigSave=false</jvm-options>
-        <!-- End of OSGi bundle configurations -->
+        <!-- Turn off optional OSGi bundles by running at level 1 -->
+        <jvm-options>-Dglassfish.osgi.start.level.final=1</jvm-options>
         <jvm-options>-XX:NewRatio=2</jvm-options>
       </java-config>
       <network-config>
@@ -356,34 +328,8 @@
              <jvm-options>-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory</jvm-options>
              <jvm-options>-XX:NewRatio=2</jvm-options>
              <jvm-options>-Xmx512m</jvm-options>
-             <!-- Configure post startup bundle list here. This is a comma separated list of bundle sybolic names.
-                  The remote shell bundle has been disabled by default for das, cluster and remote instances. -->
-             <jvm-options>-Dorg.glassfish.additionalOSGiBundlesToStart=org.apache.felix.shell,org.apache.felix.gogo.runtime,org.apache.felix.gogo.shell,org.apache.felix.gogo.command,org.apache.felix.fileinstall</jvm-options>
-             <!-- Port on which remote shell listens for connections.-->
-             <jvm-options>-Dosgi.shell.telnet.port=${OSGI_SHELL_TELNET_PORT}</jvm-options>
-             <!-- How many concurrent users can connect to this remote shell -->
-             <jvm-options>-Dosgi.shell.telnet.maxconn=1</jvm-options>
-             <!-- From which hosts users can connect -->
-             <jvm-options>-Dosgi.shell.telnet.ip=127.0.0.1</jvm-options>
-             <!-- Gogo shell configuration -->
-             <jvm-options>-Dgosh.args=--noshutdown -c noop=true</jvm-options>
-             <!-- Directory being watched by fileinstall. -->
-             <jvm-options>-Dfelix.fileinstall.dir=${com.sun.aas.installRoot}/modules/autostart/</jvm-options>
-             <!-- Time period fileinstaller thread in ms. -->
-             <jvm-options>-Dfelix.fileinstall.poll=5000</jvm-options>
-             <!-- log level: 1 for error, 2 for warning, 3 for info and 4 for debug. -->
-             <jvm-options>-Dfelix.fileinstall.log.level=3</jvm-options>
-             <!-- should new bundles be started or installed only?
-                 true => start, false => only install
-             -->
-             <jvm-options>-Dfelix.fileinstall.bundles.new.start=true</jvm-options>
-             <!-- should watched bundles be started transiently or persistently -->
-             <jvm-options>-Dfelix.fileinstall.bundles.startTransient=true</jvm-options>
-             <!-- Should changes to configuration be saved in corresponding cfg file? false: no, true: yes
-                  If we don't set false, everytime server starts from clean osgi cache, the file gets rewritten.
-             -->
-             <jvm-options>-Dfelix.fileinstall.disableConfigSave=false</jvm-options>
-             <!-- End of OSGi bundle configurations -->
+             <!-- Turn off optional OSGi bundles by running at level 1 -->
+             <jvm-options>-Dglassfish.osgi.start.level.final=1</jvm-options>
         </java-config>
          <availability-service>
              <web-container-availability/>
