@@ -41,12 +41,12 @@
 package org.glassfish.admin.amx.intf.config;
 
 @Deprecated
-public interface SecureAdminPrincipal {
+public interface SecureAdminPrincipal extends ConfigElement {
 
 
     public String getName();
 
-    public void setName();
+    public void setName(String param1);
 
     public String getType();
 

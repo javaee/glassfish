@@ -40,35 +40,15 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import java.util.List;
 
 @Deprecated
-public interface SecureAdmin extends ConfigElement {
+public interface SecureAdminInternalUser extends ConfigElement {
 
 
-    public String getEnabled();
-
-    public void setEnabled(String param1);
-
-    public String getSpecialAdminIndicator();
-
-    public void setSpecialAdminIndicator(String param1);
-
-    public String dasAlias();
-
-    public void setDasAlias(String param1);
-
-    public String instanceAlias();
-
-    public void setInstanceAlias(String param1);
-
-//    public String getInstanceAlias();
-//
-//    public String getDasAlias();
-//
-//    public boolean isEnabled();
+    public String getUsername();
+    public void setUsername(String param);
     
-    public List<SecureAdminPrincipal> getSecureAdminPrincipal();
-    public List<SecureAdminInternalUser> getSecureAdminInternalUser();
+    public String getPasswordAlias();
+    public void setPasswordAlias(String param);
 
 }
