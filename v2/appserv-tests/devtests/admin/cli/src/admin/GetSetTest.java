@@ -156,6 +156,8 @@ public class GetSetTest extends AdminBaseDevTest {
         if (line.contains("jvm-options")) return null;
         // bug ????? - there currently is no set method for this, remove once the bug is fixed
         if (line.contains("ssl.ssl-inactivity-timeout")) return null;
+        // cannot set a list
+        if (line.contains("secure-admin-principal")) return null;
 
         // escape the "." in some property names
         final String[] dottedprops = { 
