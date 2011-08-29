@@ -17,6 +17,7 @@ import javax.faces.bean.SessionScoped;
 @ManagedBean
 @SessionScoped
 public class UploadBean {
+    private UploadedFile _file;
 
     public void fileUploaded(ValueChangeEvent event) {
         System.out.println("in filUploade");
@@ -48,5 +49,4 @@ public class UploadBean {
         // ... and process it in some way
         return "/demo/domain";
     }
-    private UploadedFile _file;
 }

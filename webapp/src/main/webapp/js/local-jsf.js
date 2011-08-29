@@ -1358,6 +1358,7 @@ if (!((jsf && jsf.specversion && jsf.specversion >= 20000 ) &&
                             collapsed: true,
                             style: 'display:none'
                         });
+                        document.body.appendChild(frame);
                     }
                 }
 
