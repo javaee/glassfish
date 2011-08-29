@@ -1356,9 +1356,9 @@ if (!((jsf && jsf.specversion && jsf.specversion >= 20000 ) &&
                             name: this.FRAME_ID,
                             type: "content",
                             collapsed: true,
-                            style: 'display:none'
+                            style: {display:'none'}
                         });
-                        document.body.appendChild(frame);
+//                        document.body.appendChild(frame);
                     }
                 }
 
@@ -1391,7 +1391,15 @@ if (!((jsf && jsf.specversion && jsf.specversion >= 20000 ) &&
                     el = document.createElement(type);
 
                     for (key in attrs) {
-                        el[key] = attrs[key];
+                        if (key !== 'style') {
+                            el[key] = attrs[key];
+                        }
+                    }
+                    
+                    if (attrs.style) {
+                        for (key in attrs.style) {
+                                el.style[key] = attrs.style[key];
+                        }
                     }
 
                     parent.appendChild(el);
@@ -1402,13 +1410,13 @@ if (!((jsf && jsf.specversion && jsf.specversion >= 20000 ) &&
             }
 
             req.addAjaxParameters = function(form, args) {
-                this.createElement(form, "input", {id: 'Faces-Request', name: 'Faces-Request', value:'partial/ajax'});
-                this.createElement(form, "input", {id: 'javax.faces.partial.execute', name: 'javax.faces.partial.execute', value: args["javax.faces.partial.execute"]});
-                this.createElement(form, "input", {id: 'javax.faces.partial.render', name: 'javax.faces.partial.render', value: args["javax.faces.partial.render"]});
-                this.createElement(form, "input", {id: 'javax.faces.partial.ajax', name: 'javax.faces.partial.ajax', value: args["javax.faces.partial.ajax"]});
-                this.createElement(form, "input", {id: 'javax.faces.partial.event', name: 'javax.faces.partial.event', value: args["javax.faces.partial.event"]});
-                this.createElement(form, "input", {id: 'javax.faces.behavior.event', name: 'javax.faces.behavior.event', value: args["javax.faces.behavior.event"]});
-                this.createElement(form, "input", {id: 'javax.faces.source', name: 'javax.faces.source', value: args["javax.faces.source"]});
+                this.createElement(form, "input", {id: 'Faces-Request', name: 'Faces-Request', value:'partial/ajax', style: {display:'none'}});
+                this.createElement(form, "input", {id: 'javax.faces.partial.execute', name: 'javax.faces.partial.execute', value: args["javax.faces.partial.execute"], style: {display:'none'}});
+                this.createElement(form, "input", {id: 'javax.faces.partial.render', name: 'javax.faces.partial.render', value: args["javax.faces.partial.render"], style: {display:'none'}});
+                this.createElement(form, "input", {id: 'javax.faces.partial.ajax', name: 'javax.faces.partial.ajax', value: args["javax.faces.partial.ajax"], style: {display:'none'}});
+                this.createElement(form, "input", {id: 'javax.faces.partial.event', name: 'javax.faces.partial.event', value: args["javax.faces.partial.event"], style: {display:'none'}});
+                this.createElement(form, "input", {id: 'javax.faces.behavior.event', name: 'javax.faces.behavior.event', value: args["javax.faces.behavior.event"], style: {display:'none'}});
+                this.createElement(form, "input", {id: 'javax.faces.source', name: 'javax.faces.source', value: args["javax.faces.source"], style: {display:'none'}});
             }
 
             req.removeAjaxParameters = function(form) {
