@@ -200,8 +200,8 @@ public class RandomInhabitantSorter implements InhabitantSorter {
    */
   @Override
   public List<Inhabitant<?>> sort(List<Inhabitant<?>> arg0) {
-    called = true;
-    
+    RandomInhabitantSorter.called = true;
+
     if (!doRandom) return arg0;
     if (arg0 == null || arg0.size() <= 0) return arg0;
     
