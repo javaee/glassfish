@@ -90,8 +90,8 @@ import com.sun.hk2.component.InjectionResolverQuery;
 
   @SuppressWarnings("unchecked")
   @Override
-  protected InjectionResolver[] getInjectionResolvers(Habitat h) {
-    InjectionResolver[] resolvers = super.getInjectionResolvers(h);
+  protected InjectionResolver[] getInjectionResolvers(T t,Habitat h) {
+    InjectionResolver[] resolvers = super.getInjectionResolvers(t, h);
     if (null != resolvers) {
       // replace the inject injection resolver with one that has a view into the transaction
       for (int i = 0; i < resolvers.length; i++) {

@@ -133,6 +133,7 @@ public class HK2ProviderImpl implements HK2Provider {
         BinderFactoryImpl binderFactory = new BinderFactoryImpl(parentBinder);
 
         for (Module module : modules) {
+            habitat.inject(module);
             module.configure(binderFactory);
             if (parentBinder!=null) {
                 parentBinder.commit();

@@ -46,16 +46,14 @@ import java.lang.reflect.Type;
 import javax.inject.Named;
 import javax.inject.Qualifier;
 
-import org.glassfish.hk2.BinderFactory;
-import org.glassfish.hk2.ComponentException;
-import org.glassfish.hk2.ContractLocator;
-import org.glassfish.hk2.Module;
-import org.glassfish.hk2.Services;
+import org.glassfish.hk2.*;
 
+import org.glassfish.hk2.inject.Injector;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Inhabitant;
 
 import com.sun.hk2.component.InjectionResolver;
+import org.jvnet.tiger_types.Types;
 
 /**
  *
@@ -70,13 +68,25 @@ public class ContextInjectionResolver extends InjectionResolver<Context> {
     }
 
     @Override
+    public boolean isOptional(AnnotatedElement annotated, Context annotation) {
+        return true; // seems like all @Context are optional so far...
+    }
+
+    @Override
     public <V> V getValue(
             Object component,
             Inhabitant<?> onBehalfOf,
             AnnotatedElement annotated,
             Type genericType,
             Class<V> type) throws ComponentException {
-        ContractLocator<V> locator = services.forContract(type);
+
+        Class<V> targetType;
+        if (Types.isSubClassOf(type, org.glassfish.hk2.Factory.class)) {
+            targetType = Types.erasure(Types.getTypeArgument(genericType, 0));
+        } else {
+            targetType = type;
+        }
+        ContractLocator<V> locator = services.forContract(targetType);
 
         for (Annotation a : annotated.getAnnotations()) {
             final Class<? extends Annotation> ac = a.annotationType();
@@ -89,8 +99,21 @@ public class ContextInjectionResolver extends InjectionResolver<Context> {
             // todo: what to do about scopes?                
         }
 
-        return locator.get();
+        Provider<?> provider = locator.getProvider();
+        if (provider==null) {
+            if (Types.isSubClassOf(type, org.glassfish.hk2.Factory.class)) {
+                return (V) services.byType(targetType).getProvider();
+            } else {
+                return services.byType(targetType).get();
+            }
+        }
+        if (Types.isSubClassOf(type, org.glassfish.hk2.Factory.class)) {
+            return (V) provider;
+        } else {
+            return (V) provider.get();
+        }
     }
+
 
     public static class ContextInjectionModule implements Module {
 

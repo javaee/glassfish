@@ -200,11 +200,9 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
 
         // add the set of injection resolvers
         InjectInjectionResolver injectresolver = new InjectInjectionResolver(this);
-        add(new ExistingSingletonInhabitant<InjectionResolver>(
-                InjectionResolver.class, injectresolver));
         addIndex(new ExistingSingletonInhabitant<InjectionResolver>(
                     InjectionResolver.class, injectresolver),
-                InjectionResolver.class.getName(), null);
+                InjectionResolver.class.getName(), "Inject");
 
         // make the habitat itself available
         Inhabitant<Habitat> habitatInh = new ExistingSingletonInhabitant<Habitat>(Habitat.class, this);

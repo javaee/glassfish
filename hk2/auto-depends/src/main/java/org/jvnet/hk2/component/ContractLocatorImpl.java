@@ -153,9 +153,7 @@ public class ContractLocatorImpl<T> implements ContractLocator<T> {
         List<Provider<T>> providers = new ArrayList<Provider<T>>();
 
         if (qualifiers.isEmpty()) {
-            Provider<T> provider = getNonQualifiedInhabitant();
-            if (provider!=null) providers.add(provider);
-            return providers;
+            return getNonQualifiedInhabitants(stopAtFirstMatch);
         } else {
             List<String> tmpQualifiers = new ArrayList<String>();
             for (Class<? extends Annotation> annotation : qualifiers) {
@@ -203,6 +201,33 @@ public class ContractLocatorImpl<T> implements ContractLocator<T> {
             }
         }
         return null;
+    }
+
+    private Collection<Provider<T>> getNonQualifiedInhabitants(boolean stopOnFirst) {
+        List<Provider<T>> inhabitants = new ArrayList<Provider<T>>();
+        if (name!=null && !name.isEmpty()) {
+            Inhabitant<T> provider = provider();
+            if (provider!=null) {
+                inhabitants.add(provider);
+                if (stopOnFirst) return inhabitants;
+            }
+        }
+        Inhabitant<T> inh = provider();
+        if (inh==null) return inhabitants;
+        if (inh.metadata().get(InhabitantsFile.QUALIFIER_KEY).isEmpty()) {
+            inhabitants.add(inh);
+            if (stopOnFirst) return inhabitants;
+        }
+        // we should find the inhabitant with no qualifier.
+        for (Inhabitant<T> inhabitant : inhabitants()) {
+            if (inhabitant.metadata().get(InhabitantsFile.QUALIFIER_KEY).isEmpty()) {
+                if (inhabitant.getDescriptor().getNames().isEmpty()) {
+                    inhabitants.add(inhabitant);
+                    if (stopOnFirst) return inhabitants;
+                }
+            }
+        }
+        return inhabitants;
     }
 
     private Inhabitant<T> provider() {

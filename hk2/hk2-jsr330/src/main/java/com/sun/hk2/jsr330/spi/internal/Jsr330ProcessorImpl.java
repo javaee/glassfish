@@ -104,8 +104,9 @@ public class Jsr330ProcessorImpl implements Jsr330Processor, PostConstruct {
   public void postConstruct() {
     // TODO: this should not be necessary
     if (!installed) {
-      habitat.add(new ExistingSingletonInhabitant<InjectionResolver>(InjectionResolver.class,
-        new Jsr330InjectionResolver(habitat)));
+      habitat.addIndex(new ExistingSingletonInhabitant<InjectionResolver>(InjectionResolver.class,
+                new Jsr330InjectionResolver(habitat)),
+                InjectionResolver.class.getName(), null);
       installed = true;
     }
   

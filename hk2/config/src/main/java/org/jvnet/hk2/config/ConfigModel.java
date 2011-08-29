@@ -623,7 +623,7 @@ public final class ConfigModel {
             }
 
             parent = parent.getSymbolSpaceRoot(v);
-            Dom dom = parent.resolveReference(v,returnType.getName());
+            Dom dom = parent==null?null:parent.resolveReference(v,returnType.getName());
             if (dom!=null) {
                 return returnType.cast(dom.get());
             } else {
