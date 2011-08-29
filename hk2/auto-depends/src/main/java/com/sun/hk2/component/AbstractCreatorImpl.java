@@ -39,21 +39,14 @@
  */
 package com.sun.hk2.component;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jvnet.hk2.component.ComponentException;
-import org.jvnet.hk2.component.Constants;
-import org.jvnet.hk2.component.Creator;
-import org.jvnet.hk2.component.DescriptorImpl;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.InhabitantRequested;
-import org.jvnet.hk2.component.InjectionManager;
-import org.jvnet.hk2.component.MultiMap;
+import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.tracing.TracingThreadLocal;
 import org.jvnet.hk2.tracing.TracingUtilities;
 
@@ -63,7 +56,7 @@ import org.jvnet.hk2.tracing.TracingUtilities;
 @SuppressWarnings("rawtypes")
 public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator<T> {
     private final static Logger logger = Logger.getLogger(AbstractCreatorImpl.class.getName());
-  
+
     protected final Class<? extends T> type;
     protected final Habitat habitat;
 
@@ -129,7 +122,7 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
         logger.log(Level.FINER, "injection starting on {0}", t);
 
         InjectionManager injectionMgr = createInjectionManager();
-        InjectionResolver[] targets = getInjectionResolvers(habitat);
+        InjectionResolver[] targets = getInjectionResolvers(t, habitat);
         ExecutorService es = getExecutorService(habitat, onBehalfOf);
         injectionMgr.inject(t, onBehalfOf, es, targets);
 
@@ -138,18 +131,28 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
             logger.log(Level.FINER, "calling PostConstruct on {0}", t);
             ((org.glassfish.hk2.PostConstruct) t).postConstruct();
         }
-        
+
         logger.log(Level.FINER, "injection finished on {0}", t);
     }
 
     protected InjectionManager createInjectionManager() {
       return new InjectionManager();
     }
-    
-    protected InjectionResolver[] getInjectionResolvers(Habitat h) {
-      Collection<InjectionResolver> targets = habitat.getAllByType(InjectionResolver.class);
-      assert(!targets.isEmpty());
-      return targets.toArray(new InjectionResolver[targets.size()]);    
+
+    protected InjectionResolver[] getInjectionResolvers(T t, Habitat h) {
+        Collection<Inhabitant<? extends InjectionResolver>> targets = Creators.getAllInjectionResolvers(h);
+        List<InjectionResolver> result = new ArrayList<InjectionResolver>();
+        for (Inhabitant<? extends InjectionResolver> injectionResolverInhabitant : targets) {
+            if (t!=null && t instanceof InjectionResolver) {
+                if (injectionResolverInhabitant.isActive()) {
+                    result.add(injectionResolverInhabitant.get());
+                }
+            } else {
+                result.add(injectionResolverInhabitant.get());
+            }
+        }
+        assert (!result.isEmpty());
+        return result.toArray(new InjectionResolver[result.size()]);
     }
 
     // TODO: toggle this to turn multi-threaded injection on or off
@@ -157,11 +160,11 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
       return h.getComponent(ExecutorService.class, Constants.EXECUTOR_INHABITANT_INJECTION_MANAGER);
 //      return null;
     }
-    
+
 //    @Override
 //    public void manage(Inhabitant<?> managedInhabitant) {
 //      // TODO: test me
 //      // NOP; creators should not manage anything!  Doing so may likely result in a memory leak.
 //    }
-    
+
 }

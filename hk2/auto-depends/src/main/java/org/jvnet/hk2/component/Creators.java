@@ -42,15 +42,16 @@ package org.jvnet.hk2.component;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import com.sun.hk2.component.*;
+import org.glassfish.hk2.Provider;
 import org.jvnet.hk2.annotations.Factory;
 import org.jvnet.hk2.annotations.FactoryFor;
 import org.jvnet.hk2.annotations.Inject;
-
-import com.sun.hk2.component.ConstructorCreator;
-import com.sun.hk2.component.FactoryCreator;
-import com.sun.hk2.component.InjectableParametizedConstructorCreator;
 
 /**
  * {@link Creator} factory.
@@ -73,7 +74,7 @@ public class Creators {
 
         Reference<Constructor<T>> defaultCtorRef = new Reference();
         Reference<Constructor<T>> noArgCtorRef = new Reference();
-        qualifyingConstructors(c, null, defaultCtorRef, noArgCtorRef);
+        qualifyingConstructors(c, null, getInjectionAnnotations(habitat), defaultCtorRef, noArgCtorRef);
         if (defaultCtorRef.get() != null) {
             return new InjectableParametizedConstructorCreator<T>(c, defaultCtorRef.get(), habitat, metadata);
         }
@@ -83,7 +84,48 @@ public class Creators {
 
         return null;
     }
-    
+
+    /**
+     * Returns all currently available injection annotations
+     *
+     */
+    private static Set<Class<? extends Annotation>> getInjectionAnnotations(Habitat habitat) {
+
+        Set<Class<? extends Annotation>> annotations = new HashSet<Class<? extends Annotation>>();
+        for (Inhabitant<? extends InjectionResolver> resolver : getAllInjectionResolvers(habitat)) {
+            annotations.add(resolver.get().type);
+        }
+        return annotations;
+    }
+
+    /**
+     * Returns all currently available injection annotations
+     * @param habitat the service registry
+     * @return the list of injection resolvers registered in this service registry in its parent.
+     *
+     */
+    public static List<Inhabitant<? extends InjectionResolver>> getAllInjectionResolvers(Habitat habitat) {
+
+        List<Inhabitant<? extends InjectionResolver>> resolvers = new ArrayList<Inhabitant<? extends InjectionResolver>>();
+
+        // we treat the @Inject injection resolver specially as the other injectors might be
+        // using default HK2 injection themselves.
+        Inhabitant<InjectionResolver> specialResolver = habitat.getInhabitant(InjectionResolver.class, "Inject");
+        specialResolver.get(); // force initialization
+        resolvers.add(specialResolver);
+        for (Inhabitant<? extends InjectionResolver> injectionResolver : habitat.getInhabitants(InjectionResolver.class)) {
+            if (injectionResolver!=specialResolver)
+                resolvers.add(injectionResolver);
+        }
+
+        if (habitat.getDefault()!=habitat) {
+            for (Provider<? extends InjectionResolver> injectionResolver : habitat.getDefault().forContract(InjectionResolver.class).all()) {
+                resolvers.add((Inhabitant<? extends InjectionResolver>) injectionResolver);
+            }
+        }
+        return resolvers;
+    }
+
     /**
      * Returns all "eligible" constructors for injection. Eligibility is
      * determined by:
@@ -106,6 +148,7 @@ public class Creators {
     @SuppressWarnings("unchecked")
     public static <T> void qualifyingConstructors(Class<T> c,
             List<Constructor<?>> allList,
+            Set<Class<? extends Annotation>> injectionAnnotations,
             Reference<Constructor<T>> defaultCtor,
             Reference<Constructor<T>> noArgCtor) {
         Constructor<T>[] ctors;
@@ -123,7 +166,7 @@ public class Creators {
                 if (null != noArgCtor) {
                     noArgCtor.set(ctor);
                 }
-            } else if (isInjectable(ctor)) {
+            } else if (isInjectable(injectionAnnotations, ctor)) {
                 if (null != allList) {
                     allList.add(ctor);
                 }
@@ -133,7 +176,7 @@ public class Creators {
             } else {
                 boolean allInjectable = true;
                 for (Annotation[] a : ctor.getParameterAnnotations()) {
-                    if (!isInject(a)) {
+                    if (!isInject(injectionAnnotations, a)) {
                         allInjectable = false;
                         break;
                     }
@@ -150,9 +193,9 @@ public class Creators {
         }
     }
     
-    private static boolean isInject(Annotation... a) {
+    private static boolean isInject(Set<Class<? extends Annotation>> injectionAnnotations, Annotation... a) {
         for (Annotation ae : a) {
-            if (ae.annotationType().equals(Inject.class) ||
+            if (injectionAnnotations.contains(ae.annotationType()) ||
                     ae.annotationType().equals(javax.inject.Inject.class)) {
                 return true;
             }
@@ -161,7 +204,10 @@ public class Creators {
         return false;
     }
 
-    public static boolean isInjectable(AnnotatedElement ae) {
+    public static boolean isInjectable(Set<Class<? extends Annotation>> injectionAnnotations,AnnotatedElement ae) {
+        for (Class<? extends Annotation> injectionAnnotation : injectionAnnotations) {
+            if (ae.getAnnotation(injectionAnnotation)!=null) return true;
+        }
         return (null != ae.getAnnotation(Inject.class) ||
                 null != ae.getAnnotation(javax.inject.Inject.class));
     }

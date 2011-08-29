@@ -36,7 +36,6 @@
  */
 package com.sun.hk2.component;
 
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.*;
 
 import java.lang.annotation.Annotation;
@@ -68,46 +67,42 @@ public class InjectableParametizedConstructorCreator<T> extends ConstructorCreat
         for (int i=0;i<genericParamTypes.length;i++) {
             Class paramType = paramTypes[i+firstIndex];
             final Annotation paramAnnotations[] = paramsAnnotations[i];
-            for (Annotation a : paramAnnotations) {
-                if (a.annotationType().equals(Inject.class)) {
-                    for (InjectionResolverQuery resolver : getInjectionResolvers(habitat)) {
+            boolean nonOptionalInjection = false;
+            for (Inhabitant<? extends InjectionResolver> resolverInhabitant : Creators.getAllInjectionResolvers(habitat)) {
+                InjectionResolver resolver = resolverInhabitant.get();
+                final Annotation a = getAnnotation(resolver.type, paramAnnotations);
+                if (a == null) continue;
 
-                        AnnotatedElement annotatedElement = new AnnotatedElement() {
-                            @Override
-                            public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
-                                return getAnnotation(annotationClass)!=null;
-                            }
-
-                            @Override
-                            public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-                                for (Annotation a : paramAnnotations) {
-                                    if (a.annotationType().equals(annotationClass)) {
-                                        return (T) a;
-                                    }
-                                }
-                                return null;
-                            }
-
-                            @Override
-                            public Annotation[] getAnnotations() {
-                                return paramAnnotations;
-                            }
-
-                            @Override
-                            public Annotation[] getDeclaredAnnotations() {
-                                return paramAnnotations;
-                            }
-                        };
-                        Object value = resolver.getValue(this, onBehalfOf, annotatedElement, genericParamTypes[i], paramType);
-                        if (value!=null) {
-                            paramValues[i+firstIndex] = value;
-                            break;
-                        }
+                AnnotatedElement annotatedElement = new AnnotatedElement() {
+                    @Override
+                    public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
+                        return getAnnotation(annotationClass) != null;
                     }
-                    if ((paramValues[i+firstIndex] == null) && !((Inject) a).optional()) {
-                        throw new UnsatisfiedDependencyException(ctor, a, new UnsatisfiedDependencyException(ctor.getParameterTypes()[i+firstIndex], a));
+
+                    @Override
+                    public <T extends Annotation> T getAnnotation(final Class<T> annotationClass) {
+                        return InjectableParametizedConstructorCreator.this.getAnnotation(annotationClass, paramAnnotations);
                     }
+
+                    @Override
+                    public Annotation[] getAnnotations() {
+                        return paramAnnotations;
+                    }
+
+                    @Override
+                    public Annotation[] getDeclaredAnnotations() {
+                        return paramAnnotations;
+                    }
+                };
+                Object value = resolver.getValue(this, onBehalfOf, annotatedElement, genericParamTypes[i], paramType);
+                if (value != null) {
+                    paramValues[i + firstIndex] = value;
+                    break;
                 }
+                nonOptionalInjection = !resolver.isOptional(annotatedElement, a);
+            }
+            if ((paramValues[i + firstIndex] == null && nonOptionalInjection)) {
+                throw new UnsatisfiedDependencyException(ctor, null, new UnsatisfiedDependencyException(ctor.getParameterTypes()[i + firstIndex], null));
             }
         }
         try {
@@ -129,5 +124,17 @@ public class InjectableParametizedConstructorCreator<T> extends ConstructorCreat
         } catch (RuntimeException e) {
             throw new ComponentException("Failed to create "+type,e);
         }
+    }
+
+
+    private <U extends Annotation>  U getAnnotation(Class<U> annotationType, Annotation paramAnnotation[]) {
+        if (ctor.isAnnotationPresent(annotationType)) {
+            return ctor.getAnnotation(annotationType);
+        }
+        for (Annotation a : paramAnnotation) {
+            if (a.annotationType().equals(annotationType))
+                return annotationType.cast(a);
+        }
+        return null;
     }
 }

@@ -66,7 +66,6 @@ import org.junit.Test;
  * 
  * @author Marek Potociar (marek.potociar at oracle.com)
  */
-@Ignore
 public class CustomInjectionTest {
 
     public static InstanceBoundContract boundContractInstance = new InstanceBoundContract() {
@@ -259,6 +258,7 @@ public class CustomInjectionTest {
             binderFactory.bind(ContractB.class).annotatedWith(MarkerA.class).to(ServiceB1.class);
             binderFactory.bind().to(ServiceC.class);
             binderFactory.bind().to(ServiceD.class);
+            binderFactory.bind().to(ClassX.class);
 
             // instance bindings
             binderFactory.bind(InstanceBoundContract.class).toInstance(boundContractInstance);
@@ -312,7 +312,7 @@ public class CustomInjectionTest {
 
     @Test
     public void testTypeBindingFieldInjection() {
-        final FieldInjectedTypeBinidngTestClass fi = services.forContract(FieldInjectedTypeBinidngTestClass.class).get();
+        final FieldInjectedTypeBinidngTestClass fi = services.byType(FieldInjectedTypeBinidngTestClass.class).get();
         assertInjectedInstance(ServiceC.class, fi.sc);
         assertInjectedInstance(ClassX.class, fi.cx);
 
@@ -339,7 +339,7 @@ public class CustomInjectionTest {
     public void testTypeBindingConstructorInjection() {
         Services s = HK2.get().create(services, new ConstructorInjectionTestModule());
         
-        final ConstructorInjectedTypeBinidngTestClass ci = s.forContract(ConstructorInjectedTypeBinidngTestClass.class).get();
+        final ConstructorInjectedTypeBinidngTestClass ci = s.byType(ConstructorInjectedTypeBinidngTestClass.class).get();
         assertInjectedInstance(ServiceC.class, ci.sc);
         assertInjectedInstance(ClassX.class, ci.cx);
 
@@ -423,7 +423,7 @@ public class CustomInjectionTest {
 
     @Test
     public void testFactoryProvidedContractFieldInjection() {
-        final FieldInjectedFactoryBindingTestClass fi = services.forContract(FieldInjectedFactoryBindingTestClass.class).get();
+        final FieldInjectedFactoryBindingTestClass fi = services.byType(FieldInjectedFactoryBindingTestClass.class).get();
         // binding defined using (annonymous) factory instance         
         assertInjectedInstance(FactoryProvidedContractAImpl.class, fi.a);
         assertInjectedFactory(FactoryProvidedContractAImpl.class, fi.pa);
@@ -444,7 +444,7 @@ public class CustomInjectionTest {
     @Test
     public void testFactoryProvidedContractConstructorInjection() {
         Services s = HK2.get().create(services, new ConstructorInjectionTestModule());        
-        final ConstructorInjectedFactoryBindingTestClass ci = s.forContract(ConstructorInjectedFactoryBindingTestClass.class).get();
+        final ConstructorInjectedFactoryBindingTestClass ci = s.byType(ConstructorInjectedFactoryBindingTestClass.class).get();
         // binding defined using (annonymous) factory instance         
         assertInjectedInstance(FactoryProvidedContractAImpl.class, ci.a);
         assertInjectedFactory(FactoryProvidedContractAImpl.class, ci.pa);

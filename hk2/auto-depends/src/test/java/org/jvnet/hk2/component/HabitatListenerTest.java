@@ -119,7 +119,7 @@ public class HabitatListenerTest extends TestCase {
     hl.calls.clear();
 
     h.release();
-    assertEquals("calls: " + hl.calls, 7, hl.calls.size());
+    assertEquals("calls: " + hl.calls, 6, hl.calls.size());
   }
 
   /**
@@ -169,7 +169,7 @@ public class HabitatListenerTest extends TestCase {
     h.release();
     assertEquals("calls", 0, hl_none.calls.size());
     assertEquals("calls", 0, hl_filtered.calls.size());
-    assertEquals("calls: " + hl_all.calls, 10, hl_all.calls.size());
+    assertEquals("calls: " + hl_all.calls, 9, hl_all.calls.size());
   }
 
   public void testForcedListenerRemoval() throws Exception {

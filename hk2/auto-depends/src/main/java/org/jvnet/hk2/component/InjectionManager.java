@@ -175,6 +175,8 @@ public class InjectionManager {
                 // get the list of the instances variable
                 for (Field field : currentClass.getDeclaredFields()) {
 
+                    Annotation nonOptionalAnnotation=null;
+                    boolean injected = false;
                     for (InjectionResolver target : targets) {
                         Annotation inject = field.getAnnotation(target.type);
                         if (inject == null)     continue;
@@ -187,9 +189,11 @@ public class InjectionManager {
                                 field.setAccessible(true);
                                 field.set(component, value);
                                 handleInjectable(component, value);
+                                injected = true;
+                                break;
                             } else {
                                 if (!target.isOptional(field, inject)) {
-                                    throw new UnsatisfiedDependencyException(field, inject);
+                                    nonOptionalAnnotation = inject;
                                 }
                             }
                         } catch (ComponentException e) {
@@ -200,7 +204,12 @@ public class InjectionManager {
                             error_injectionException(target, inject, field, e);
                         }
                     }
+                    // exhausted all injection managers,
+                    if (!injected && nonOptionalAnnotation!=null) {
+                        throw new UnsatisfiedDependencyException(field, nonOptionalAnnotation);
+                    }
                 }
+
 
                 for (Method method : currentClass.getDeclaredMethods()) {
                     for (InjectionResolver target : targets) {
