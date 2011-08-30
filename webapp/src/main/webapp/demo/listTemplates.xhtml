@@ -35,6 +35,18 @@
                 Manage Templates.
             </span>
         </div>
+
+        <tr:table var="templates" >
+            <tr:column headerText="Name">
+                #{app.name}
+            </tr:column>
+            <tr:column headerText="Enabled">
+                #{app.enabled}
+            </tr:column>
+            <tr:column headerText="Type">
+                #{app.engines}
+            </tr:column>
+        </tr:table>
     </div>
 
     <tr:panelHorizontalLayout inlineStyle="height:50px;">
@@ -47,16 +59,5 @@
         <tr:commandButton text="Delete"/>
     </tr:panelHorizontalLayout>
 
-    <tr:table var="templates" >
-        <tr:column headerText="Name">
-            #{app.name}
-        </tr:column>
-        <tr:column headerText="Enabled">
-            #{app.enabled}
-        </tr:column>
-        <tr:column headerText="Type">
-            #{app.engines}
-        </tr:column>
-    </tr:table>
 
 </ui:composition>

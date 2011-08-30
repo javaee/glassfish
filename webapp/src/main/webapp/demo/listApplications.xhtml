@@ -31,7 +31,7 @@
     <div>
         <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
             <div class="title headerPageTitle">Applications</div>
-                <div style="margin: 5px; ">List of currently deployed applications</div>
+                <div class="subHeading">List of currently deployed applications</div>
                 <tr:table var="app" value="#{listApplicationsBean.applications}" horizontalGridVisible="false">
                     <tr:column>
                         <h:commandLink id="name" value="#{app.name}"
@@ -49,7 +49,7 @@
                 </tr:panelHorizontalLayout>
         </div>
 
-        <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
+        <div class="navObjectInfo">
             <div class="title headerPageTitle">General</div>
             <tr:panelFormLayout rows="10" labelAlignment="start">
 
@@ -60,7 +60,7 @@
                     <h:commandLink value="trinidad-demo.oraclepaas.com"/>
                 </tr:panelLabelAndMessage>
                 <tr:inputNumberSpinbox label="Memory limit:" value="512" minimum="512" maximum="2048" stepSize="512" columns="4"/>
-                <tr:inputNumberSpinbox label="Memory limit:" value="2" minimum="1" maximum="4"/>
+                <tr:inputNumberSpinbox label="Instances:" value="2" minimum="1" maximum="4"/>
                 <f:facet name="footer">
                     <tr:panelHorizontalLayout inlineStyle="height:50px;">
                        <tr:commandButton id="start" text="Start"/>
@@ -72,10 +72,10 @@
         </div>
     </div>
     <div>
-        <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
+        <div class="navObjectInfo">
             <div class="title headerPageTitle">Services</div>
         </div>
-        <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
+        <div class="navObjectInfo">
             <div class="title headerPageTitle">Instances</div>
             <tr:table var="app" value="#{listApplicationsBean.applications}">
                 <tr:column headerText="Host">

@@ -269,6 +269,10 @@ body {
 .navObjectInfo {
     padding: 5px;
     border-top: 1px solid #949494;
+    width: 555px;
+    display: inline-block;
+    margin:  20px;
+    vertical-align: top;
 }
 
 .navObjectInfo .objectName, .headerPageTitle, .dropDownWidget .objectName {
@@ -283,6 +287,7 @@ body {
 .navObjectInfo .subHeading, .dropDownWidget .subHeading {
     font-size: 11px; 
     padding: 0;
+    margin: 5px;
 }
 
 #navigation .treeNodesContainer {

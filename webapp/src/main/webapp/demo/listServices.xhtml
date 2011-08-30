@@ -31,12 +31,22 @@
     <div class="navObjectInfo">
         <div class="title headerPageTitle">Services</div>
         <div class="subHeading">
-            <span>
-                Manage External and global services.
-                External services: these are not provisioned by the orchestrator, but created and managed by an external user.
-                Global Provisioned services: Services that are created by a DAS administrator that are provisioned and managed by the orchestrator.
-            </span>
+            Manage External and global services.
+            External services: these are not provisioned by the orchestrator, but created and managed by an external user.
+            Global Provisioned services: Services that are created by a DAS administrator that are provisioned and managed by the orchestrator.
         </div>
+        <tr:table var="services" >
+            <tr:column headerText="Name">
+                #{app.name}
+            </tr:column>
+            <tr:column headerText="Enabled">
+                #{app.enabled}
+            </tr:column>
+            <tr:column headerText="Type">
+                #{app.engines}
+            </tr:column>
+        </tr:table>
+
     </div>
 
     <tr:panelHorizontalLayout inlineStyle="height:50px;">
@@ -49,16 +59,6 @@
         <tr:commandButton text="Delete"/>
     </tr:panelHorizontalLayout>
 
-    <tr:table var="services" >
-        <tr:column headerText="Name">
-            #{app.name}
-        </tr:column>
-        <tr:column headerText="Enabled">
-            #{app.enabled}
-        </tr:column>
-        <tr:column headerText="Type">
-            #{app.engines}
-        </tr:column>
-    </tr:table>
+
 
 </ui:composition>
