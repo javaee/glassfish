@@ -50,7 +50,7 @@
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
 
 
-    <h3>Step 1:  Upload Archive </h3>
+    <h3>Step 1:  Upload Application </h3>
 
     To create a new application, enter the details of your application below.
     <tr:spacer height="40px"/>
@@ -63,9 +63,9 @@
                       value="#{uploadBean.file}"
                       valueChangeListener="#{uploadBean.fileUploaded}">
         </tr:inputFile>
-        <tr:inputText label="Application Name: " columns="40"/>
-        <tr:inputText label="Description:  " columns="40"/>
-        <tr:inputText label="Context Root:  " columns="40"/>
+        <tr:inputText label="Application Name: " value="#{uploadBean.appName}" columns="40"/>
+        <tr:inputText label="Description:  " value="#{uploadBean.description}" columns="40"/>
+        <tr:inputText label="Context Root:  " value="#{uploadBean.contextRoot}"  columns="40"/>
 
     </tr:panelFormLayout>
 

@@ -53,7 +53,12 @@
     Select the virtualization template from the available list.  The one pre-selected is based on the glassfish-services.xml that is packaged
     in the archive or derived.
     <tr:spacer height="40px"/>
-    You uploaded #{uploadBean.file.filename}.
+
+    <tr:panelHorizontalLayout halign="left" >
+            <tr:outputLabel value="Application uploaded: " />
+            <tr:outputText value="#{uploadBean.file.filename}"/>
+    </tr:panelHorizontalLayout>
+
     <tr:spacer height="40px"/>
     <tr:panelFormLayout labelAlignment="start">
 

@@ -48,22 +48,22 @@
                 xmlns:gf="http://java.sun.com/jsf/composite/glassfish"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
-    <h3>Step 6: Review and Deploy Application</h3>
+    <h3>Step 3: Review and Deploy Application</h3>
 
     Review the information below and click Deploy
 
     <tr:spacer height="40px"/>
     <tr:panelHorizontalLayout halign="left" >
             <tr:outputLabel value="Application Name: " />
-            <tr:outputText value="hello"/>
+            <tr:outputText value="#{deployApp.appName}"/>
     </tr:panelHorizontalLayout>
     <tr:panelHorizontalLayout halign="left" >
-            <tr:outputLabel value="Application Source: " />
-            <tr:outputText value="/Application/hello.war"/>
+            <tr:outputLabel value="Context Root: " />
+            <tr:outputText value="#{deployApp.contextRoot} "/>
     </tr:panelHorizontalLayout>
     <tr:panelHorizontalLayout halign="left" >
             <tr:outputLabel value="Description: " />
-            <tr:outputText value="My first sample"/>
+            <tr:outputText value="#{deployApp.description}"/>
     </tr:panelHorizontalLayout>
     <tr:separator/>
     <tr:panelHorizontalLayout halign="left" >

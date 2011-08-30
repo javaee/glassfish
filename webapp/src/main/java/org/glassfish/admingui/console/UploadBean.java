@@ -4,11 +4,15 @@
  */
 package org.glassfish.admingui.console;
 
+
+import java.io.File;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import org.apache.myfaces.trinidad.model.UploadedFile;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+
+import org.glassfish.admingui.console.util.FileUtil;
 
 /**
  *
@@ -18,23 +22,34 @@ import javax.faces.bean.SessionScoped;
 @SessionScoped
 public class UploadBean {
     private UploadedFile _file;
+    private File tmpFile;
+    private String appName;
+    private String desc;
+    private String contextRoot;
+
 
     public void fileUploaded(ValueChangeEvent event) {
-        System.out.println("in filUploade");
+        System.out.println("------ in filUploaded");
         UploadedFile file = (UploadedFile) event.getNewValue();
-        if (file != null) {
-            FacesContext context = FacesContext.getCurrentInstance();
-            //FacesMessage message = new FacesMessage( "Successfully uploaded file " + file.getFilename() + " (" + file.getLength() + " bytes)");
-            //context.addMessage(event.getComponent().getClientId(context), message);
-            // Here's where we could call file.getInputStream()
-            System.out.println("getFilename=" + file.getFilename());
-            System.out.println("getLength=" + file.getLength());
-            System.out.println("getContentType=" + file.getContentType());
+        try{
+            if (file != null) {
+                //FacesContext context = FacesContext.getCurrentInstance();
+                //FacesMessage message = new FacesMessage( "Successfully uploaded file " + file.getFilename() + " (" + file.getLength() + " bytes)");
+                //context.addMessage(event.getComponent().getClientId(context), message);
+                // Here's where we could call file.getInputStream()
+                System.out.println("getFilename=" + file.getFilename());
+                System.out.println("getLength=" + file.getLength());
+                System.out.println("getContentType=" + file.getContentType());
+                File tf = FileUtil.inputStreamToFile(file.getInputStream(), file.getFilename());
+                tmpFile = tf;
+            }
+        }catch(Exception ex){
+            ex.printStackTrace();
         }
     }
 
     public UploadedFile getFile() {
-        System.out.println("------------- in getFile");
+        System.out.println("------------- in getFile " + _file);
         return _file;
     }
 
@@ -43,10 +58,31 @@ public class UploadBean {
         _file = file;
     }
 
-    public String doUpload() {
-        System.out.println("---- in doUpload");
-        UploadedFile file = getFile();
-        // ... and process it in some way
-        return "/demo/domain";
+
+    public String doDeploy(){
+       System.out.println("----------- doDeploy");
+       return "/demo/listApplications";
     }
+
+    public String getAppName(){
+        return appName;
+    }
+    public void setAppName(String nm){
+        this.appName = nm;
+    }
+
+    public String getDescription(){
+        return desc;
+    }
+    public void setDescription(String description){
+        this.desc = description;
+    }
+
+    public String getContextRoot(){
+        return contextRoot;
+    }
+    public void setContextRoot(String ctxRoot){
+        this.contextRoot = ctxRoot;
+    }
+
 }
