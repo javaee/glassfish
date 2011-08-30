@@ -186,13 +186,13 @@ public class StandaloneProcessor {
                     ProcessingResult result = ap.process(ctx);
                     if (ModuleType.EJB.equals(type)) {
                         EjbBundleDescriptor ebd = (EjbBundleDescriptor)bundleDescriptor;
-                        ebd.visit((EjbBundleVisitor)new EjbBundleValidator());
+                        ebd.visit(new EjbBundleValidator());
                     } else if (ModuleType.WAR.equals(type)) {
                         WebBundleDescriptor wbd = (WebBundleDescriptor)bundleDescriptor;
-                        wbd.visit((WebBundleVisitor)new WebBundleValidator());
+                        wbd.visit(new WebBundleValidator());
                     } else if (ModuleType.CAR.equals(type)) {
                         ApplicationClientDescriptor acbd = (ApplicationClientDescriptor)bundleDescriptor;
-                        acbd.visit((AppClientVisitor)new AppClientValidator());
+                        acbd.visit(new AppClientValidator());
                     }
                     // display the result ejb bundle...
                     // AnnotationUtils.getLogger().info("Resulting " + bundleDescriptor);
