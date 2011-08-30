@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,9 +41,13 @@
 package com.sun.enterprise.server.logging.commands;
 
 import com.sun.common.util.logging.LoggingConfigImpl;
-import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.config.serverbeans.Cluster;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -59,6 +63,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 
 /**
@@ -98,13 +103,6 @@ public class SetLogLevel implements AdminCommand {
     @Inject
     Domain domain;
 
-    @Inject
-    Servers servers;
-
-    @Inject
-    Clusters clusters;
-
-
     String[] validLevels = {"ALL", "OFF", "SEVERE", "WARNING", "INFO", "CONFIG", "FINE", "FINER", "FINEST"};
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(SetLogLevel.class);
@@ -117,15 +115,16 @@ public class SetLogLevel implements AdminCommand {
         boolean isCluster = false;
         boolean isDas = false;
         boolean isInstance = false;
-        String successMsg = "";
+        StringBuffer successMsg = new StringBuffer();
         boolean success = false;
         boolean invalidLogLevels = false;
         boolean isConfig = false;
         String targetConfigName = "";
 
         Map<String, String> m = new HashMap<String, String>();
+
         try {
-            for (final Object key : properties.keySet()) {
+                for (final Object key : properties.keySet()) {
                 final String logger_name = (String) key;
                 final String level = (String) properties.get(logger_name);
                 // that is is a valid level
@@ -134,8 +133,8 @@ public class SetLogLevel implements AdminCommand {
                     if (s.equals(level)) {
                         m.put(logger_name + ".level", level);
                         vlvl = true;
-                        successMsg += localStrings.getLocalString(
-                                "set.log.level.properties", "{0} package set with log level {1}.\n", logger_name, level);
+                        successMsg.append(localStrings.getLocalString(
+                                "set.log.level.properties", "{0} package set with log level {1}.\n", logger_name, level));
                     }
                 }
                 if (!vlvl) {
@@ -156,7 +155,7 @@ public class SetLogLevel implements AdminCommand {
                     isConfig = true;
 
                     Server targetServer = domain.getServerNamed(SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME);
-                    if (targetServer!=null && targetServer.getConfigRef().equals(target)) {
+                    if (targetServer != null && targetServer.getConfigRef().equals(target)) {
                         isDas = true;
                     }
                     targetServer = null;
@@ -203,9 +202,9 @@ public class SetLogLevel implements AdminCommand {
                 }
 
                 if (success) {
-                    successMsg += localStrings.getLocalString(
-                            "set.log.level.success", "These logging levels are set for {0}.", target);
-                    report.setMessage(successMsg);
+                    successMsg.append(localStrings.getLocalString(
+                            "set.log.level.success", "These logging levels are set for {0}.", target));
+                    report.setMessage(successMsg.toString());
                     report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
                 }
             }
@@ -216,48 +215,4 @@ public class SetLogLevel implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
         }
     }
-
-    /**
-     * Find the rightmost unescaped occurrence of specified character in target
-     * string.
-     * <p/>
-     * XXX Doesn't correctly interpret escaped backslash characters, e.g. foo\\.bar
-     *
-     * @param target string to search
-     * @param ch     a character
-     * @return index index of last unescaped occurrence of specified character
-     *         or -1 if there are no unescaped occurrences of this character.
-     */
-    private static int trueLastIndexOf(String target, char ch) {
-        int i = target.lastIndexOf(ch);
-        while (i > 0) {
-            if (target.charAt(i - 1) == '\\') {
-                i = target.lastIndexOf(ch, i - 1);
-            } else {
-                break;
-            }
-        }
-        return i;
-    }
-
-    /**
-     * Indicate in the action report that the command failed.
-     */
-    private static void fail(AdminCommandContext context, String msg,
-                             Exception ex) {
-        context.getActionReport().setActionExitCode(
-                ActionReport.ExitCode.FAILURE);
-        if (ex != null)
-            context.getActionReport().setFailureCause(ex);
-        context.getActionReport().setMessage(msg);
-    }
-
-    /**
-     * Indicate in the action report that the command failed.
-     */
-    private static void fail(AdminCommandContext context, String msg) {
-        fail(context, msg, null);
-    }
-
-
 }
