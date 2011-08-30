@@ -81,7 +81,7 @@ public @interface Service {
 }
 +-----+
 
-    see {{{auto-depends/apidocs/org/jvnet/hk2/annotations/Service.html}Service}} for complete reference
+    see {{{./auto-depends/apidocs/org/jvnet/hk2/annotations/Service.html}Service}} for complete reference
 
 
 * Runtime
@@ -102,7 +102,7 @@ public abstract class Scope {
 }
 +------------+
 
-    Example of scoping for service to the predefined {{{org.glassfish.hk2.scopes.Singleton.html}Singleton}} Scope
+    Example of scoping for service to the predefined {{{./hk2-api/apidocs/org/glassfish/hk2/scopes/Singleton.html}Singleton}} Scope
 
 +--------------+
 @Service
@@ -127,7 +127,7 @@ tied to that scope.
 
     In the IoC world, components are not instantiated using a new () method call. Components are retrieved using the
 ComponentManager instance. The simplest way is to do that is through a getComponent(Class<T> contract) call although there are more
-APIs available at {{{auto-depends/apidocs/org/jvnet/hk2/compinent/ComponentManager.html}ComponentManager}}
+APIs available at {{{./auto-depends/apidocs/org/jvnet/hk2/component/ComponentManager.html}ComponentManager}}
 
 +-----------+
     /**
@@ -152,8 +152,8 @@ APIs available at {{{auto-depends/apidocs/org/jvnet/hk2/compinent/ComponentManag
 
 ** Lifecycle
 
-    Components can attach behaviours to their construction and destruction events by implementing the {{{auto-depends/apidocs/org/jvnet/hk2/component/PostContruct.html}PostConstruct}} and/or
-the {{{auto-depends/apidocs/org/jvnet/hk2/component/PreDestroy.html}PreDestroy}} interfaces. Interfaces have been used rather than annotations for performance as it is faster to cast component instance to any of these interfaces to check if the component has implemented one of them rather than using
+    Components can attach behaviours to their construction and destruction events by implementing the {{{./auto-depends/apidocs/org/jvnet/hk2/component/PostConstruct.html}PostConstruct}} and/or
+the {{{./auto-depends/apidocs/org/jvnet/hk2/component/PreDestroy.html}PreDestroy}} interfaces. Interfaces have been used rather than annotations for performance as it is faster to cast component instance to any of these interfaces to check if the component has implemented one of them rather than using
 reflection on all methods to find if they are annotated.
 
 
@@ -163,7 +163,7 @@ Inversion of Control
 
     Services usually rely of other services to perform their tasks and the model described above can easily be extended
 to have the HK2 runtime identify the @Contract implementations required by a service. This call for a new annotation
-{{{auto-depends/apidocs/org/jvnet/hk2/annotations/Inject.html}Inject}} which can be placed on fields or setter methods of
+{{{./auto-depends/apidocs/org/jvnet/hk2/annotations/Inject.html}Inject}} which can be placed on fields or setter methods of
 any Service instantiated by the HK2 runtime and have that Service retrieved and injected during the service's instantiation
 by the component manager.
 
@@ -186,25 +186,7 @@ AdminCommand deployCommand;
 +----------+
 
 
-* Extraction
-
-    Although all Services are automatically placed into the Scope for later retrieval, it is conceivable that a component
-want to extract more than itself. One pratical way of doing so is to use a Factory service, however, for simplicity, the HK2
-runtime will also extract all fields or getter methods annotated with {{{auto-depends/apidocs/org/jvnet/hk2/annotations/Extract.html}Extract}}
-
-+----------+
-Field :
-@Extract
-ConfigService config;
-
-Getter method :
-@Extract
-public ConfigService getConfigService() {..}
-+----------+
-
-    Extraction can also use the name and scope annotation fields to further qualify the extracted Contract implementation.
-
-* Instantiation cascading
+* Instantiation Cascading
 
     Injection of instances which have not been already instantiated triggers more instantiation. In a sense, you can see this
 as a components instantiation cascading where some code requests for a high level Service will in turn throuh @Inject
