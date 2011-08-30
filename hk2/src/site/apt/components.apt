@@ -1,4 +1,4 @@
-
+﻿
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
     Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
@@ -40,11 +40,11 @@
 
 Introduction
 
-    With the HK2 module system, the module system is already responsible for instanciating many classes that constitute the application functionality.
+    With the HK2 module system, the module system is already responsible for instantiating many classes that constitute the application functionality.
 
     HK2 components runtime will complement the module system so that it creates objects, but it configures such objects by:
 
-    * injecting other objects that are needed by a newly instanciated object.
+    * injecting other objects that are needed by a newly instantiated object.
 
     * injecting configuration information needed for that object.
 
@@ -54,12 +54,12 @@ Services
 
     HK2 relies on the notion of Service to identify the building blocks or the extension points of an application. Services are just POJO :
 
-    * implementating an interface
+    * implementing an interface
 
     * declared in jar with the META-INF/services file
 
-    To clearly separatethe contract interface and its implementation, the HK2 runtime needs to understand what interfaces
-are contract and what implemenations of such interfaces are services, so this call for an annotation describing
+    To clearly separate the contract interface and its implementation, the HK2 runtime needs to understand what interfaces
+are contract and what implementations of such interfaces are services, so this call for an annotation describing
 interfaces as a service contract.
 
 
@@ -150,11 +150,20 @@ APIs available at {{{./auto-depends/apidocs/org/jvnet/hk2/component/ComponentMan
     public <T> T getComponent(Class<T> clazz) throws ComponentException
 +--------------+
 
+    HK2 employs a "lazy instantiation" model. Only after demand exists for a component does that component get instantiated. Demand can come from either injection
+(@Inject) or through programmatic calls to the ComponentManager.  Note, however, that the Scope of the service also plays a role on the instantiation of the
+given component.
+
 ** Lifecycle
 
-    Components can attach behaviours to their construction and destruction events by implementing the {{{./auto-depends/apidocs/org/jvnet/hk2/component/PostConstruct.html}PostConstruct}} and/or
-the {{{./auto-depends/apidocs/org/jvnet/hk2/component/PreDestroy.html}PreDestroy}} interfaces. Interfaces have been used rather than annotations for performance as it is faster to cast component instance to any of these interfaces to check if the component has implemented one of them rather than using
-reflection on all methods to find if they are annotated.
+    Components can attach behaviors to their construction and destruction events by implementing the {{{./auto-depends/apidocs/org/jvnet/hk2/component/PostConstruct.html}PostConstruct}} and/or
+the {{{./auto-depends/apidocs/org/jvnet/hk2/component/PreDestroy.html}PreDestroy}} interfaces. Interfaces have been used rather than annotations for performance as it is faster to cast component instance to any of these interfaces to check if the component has implemented one of them rather than using reflection on all methods to find if they are annotated.
+
+* Run Level Based Lifecycle
+
+    Components can also use a {{{./hk2-api/apidocs/org/jvnet/hk2/annotations/RunLevel}RunLevel}} form of lifecycle. As stated previously, HK2 employs a “lazy instantiation” model for component creation.  However, there are situations where the developer may want the instantiation to occur either immediately upon HK2 initialization or otherwise on some more regimented schedule.
+
+    see {{{./runlevelservices.html}run level services}} for complete reference
 
 
 Inversion of Control
@@ -185,7 +194,6 @@ public void set(ConfigService svc) {..}
 AdminCommand deployCommand;
 +----------+
 
-
 * Instantiation Cascading
 
     Injection of instances which have not been already instantiated triggers more instantiation. In a sense, you can see this
@@ -194,7 +202,7 @@ annotation requires more injection/instantiation of lower level Services. This i
 the implementation as private as possible while relying on interfaces and separation of contract/providers.
 
     Below is the example of how the instantiation of DeploymentService as a Startup contract implementation will trigger
-    the instantiation of the ConfigService.
+the instantiation of the ConfigService.
     
 +----------+
 @Contract
