@@ -62,6 +62,9 @@ public class WrongTransportSSL extends BaseDevTest {
     private static final String TEST_NAME = "wrongTransportSSL";
     private String redirectURL;
     private String clusterName;
+    private String puName = "pu-protocol-test";
+    private String finderName = "http-finder-test";
+
 
     public WrongTransportSSL(final String clusterName, final String host, final String port, final String path) {
         this.clusterName = clusterName;
@@ -120,22 +123,22 @@ public class WrongTransportSSL extends BaseDevTest {
         //  pu-protocol
         report("create-pu-protocol", asadmin("create-protocol",
             "--target", clusterName,
-            "pu-protocol"));
+            puName));
         report("create-protocol-finder-http-finder", asadmin("create-protocol-finder",
             "--target", clusterName,
-            "--protocol", "pu-protocol",
+            "--protocol", puName,
             "--targetprotocol", "http-listener-1",
             "--classname", HttpProtocolFinder.class.getName(),
-            "http-finder"));
+            finderName));
         report("create-protocol-finder-https-redirect", asadmin("create-protocol-finder",
             "--target", clusterName,
-            "--protocol", "pu-protocol",
+            "--protocol", puName,
             "--targetprotocol", "https-redirect",
             "--classname", HttpProtocolFinder.class.getName(),
             "https-redirect"));
         // reset listener
         report("set-https-listener-protocol", asadmin("set",
-            "configs.config." + clusterName + "-config.network-config.network-listeners.network-listener.http-listener-2.protocol=pu-protocol"));
+            "configs.config." + clusterName + "-config.network-config.network-listeners.network-listener.http-listener-2.protocol="+puName));
         report("enable-https-listener", asadmin("set",
             "configs.config." + clusterName + "-config.network-config.network-listeners.network-listener.http-listener-2.enabled=true"));
     }
@@ -146,7 +149,7 @@ public class WrongTransportSSL extends BaseDevTest {
             "configs.config." + clusterName + "-config.network-config.network-listeners.network-listener.http-listener-2.protocol=http-listener-2"));
         report("delete-pu-protocol", asadmin("delete-protocol",
             "--target", clusterName,
-            "pu-protocol"));
+            puName));
         report("delete-https-redirect", asadmin("delete-protocol",
             "--target", clusterName,
             "https-redirect"));

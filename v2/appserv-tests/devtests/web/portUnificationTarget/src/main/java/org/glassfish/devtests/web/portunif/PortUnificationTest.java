@@ -59,8 +59,9 @@ import org.glassfish.grizzly.http.HttpServerFilter;
  */
 public class PortUnificationTest extends BaseDevTest {
     private int port = Integer.valueOf(antProp("http.port"));
-    private String puName = "pu-protocol";
+    private String puName = "pu-protocol-test";
     private String httpName = "pu-http-protocol";
+    private String finderName = "http-finder-test";
     private String dummyName = "pu-dummy-protocol";
     private String clusterName = null;
 
@@ -101,7 +102,7 @@ public class PortUnificationTest extends BaseDevTest {
             report("list-protocol-filters", aReturn.out.contains("http-filter"));
 
             aReturn = asadminWithOutput("list-protocol-finders", "--target", clusterName, puName);
-            report("list-protocol-finders", aReturn.out.contains("http-finder"));
+            report("list-protocol-finders", aReturn.out.contains(finderName));
 
             //report("disable-listener", asadmin("set",
             //    "configs.config." + clusterName + "-config.network-config.network-listeners.network-listener.http-listener-2.enabled=false"));
@@ -188,7 +189,7 @@ public class PortUnificationTest extends BaseDevTest {
             "--protocol", puName,
             "--targetprotocol", httpName,
             "--classname", HttpProtocolFinder.class.getName(),
-            "http-finder"));
+            finderName));
         report("create-protocol-filter-http", asadmin("create-protocol-filter",
             "--target", clusterName,
             "--protocol", httpName,
@@ -200,7 +201,7 @@ public class PortUnificationTest extends BaseDevTest {
         report("delete-protocol-finder-http", asadmin("delete-protocol-finder",
             "--target", clusterName,
             "--protocol", puName,
-            "http-finder"));
+            finderName));
 //        report("delete-protocol-filter-http", asadmin("delete-protocol-filter",
 //            "--target", clusterName,
 //            "--protocol", httpName,
