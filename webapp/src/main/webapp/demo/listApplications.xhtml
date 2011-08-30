@@ -28,41 +28,73 @@
                 xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
 
-<div class="navObjectInfo">
-        <div class="title headerPageTitle">Applications</div>
-        <div class="subHeading">
-            <span>
-                Applications can be enterprise or web applications, or various kinds of modules.
-                Restart an application or module by clicking on the reload link, this action will
-                apply only to the targets that the application or module is enabled on.
-            </span>
+    <div>
+        <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
+            <div class="title headerPageTitle">Applications</div>
+                <div style="margin: 5px; ">List of currently deployed applications</div>
+                <tr:table var="app" value="#{listApplicationsBean.applications}" horizontalGridVisible="false">
+                    <tr:column>
+                        <h:commandLink id="name" value="#{app.name}"
+                                       onclick="return Console.Ajax.loadPage('/demo/editApplicationGeneral.xhtml')"/>
+                    </tr:column>
+                </tr:table>
+                <tr:panelHorizontalLayout inlineStyle="height:50px;">
+                    <f:facet name="separator">
+                        <tr:spacer width="20" height="1"/>
+                    </f:facet>
+                    <tr:commandButton id="nextButton" text="Deploy.. " action="/demo/wizard" >
+                        <f:ajax render=":ajaxBody" execute="@form"/>
+                    </tr:commandButton>
+                    <tr:commandButton text="Undeploy"/>
+                </tr:panelHorizontalLayout>
+        </div>
+
+        <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
+            <div class="title headerPageTitle">General</div>
+            <tr:panelFormLayout rows="10" labelAlignment="start">
+
+                <tr:panelLabelAndMessage label="Name:">
+                    trinidad-demo-2.0.0
+                </tr:panelLabelAndMessage>
+                <tr:panelLabelAndMessage label="Mapped Urls:">
+                    <h:commandLink value="trinidad-demo.oraclepaas.com"/>
+                </tr:panelLabelAndMessage>
+                <tr:inputNumberSpinbox label="Memory limit:" value="512" minimum="512" maximum="2048" stepSize="512" columns="4"/>
+                <tr:inputNumberSpinbox label="Memory limit:" value="2" minimum="1" maximum="4"/>
+                <f:facet name="footer">
+                    <tr:panelHorizontalLayout inlineStyle="height:50px;">
+                       <tr:commandButton id="start" text="Start"/>
+                       <tr:commandButton text="Stop"/>
+                        <tr:commandButton text="Restart"/>
+                    </tr:panelHorizontalLayout>
+                </f:facet>
+            </tr:panelFormLayout>
         </div>
     </div>
-
-    <tr:panelHorizontalLayout inlineStyle="height:50px;">
-        <f:facet name="separator">
-            <tr:spacer width="20" height="1"/>
-        </f:facet>
-        <tr:commandButton id="nextButton" text="Deploy.. " action="/demo/wizard" >
-            <f:ajax render=":ajaxBody" execute="@form"/>
-        </tr:commandButton>
-        <tr:commandButton text="Undeploy"/>
-    </tr:panelHorizontalLayout>
-
-    <tr:table var="app" value="#{listApplicationsBean.applications}">
-        <tr:column headerText="Name">
-            <h:commandLink id="name" value="#{app.name}"
-                           onclick="return Console.Ajax.loadPage('/demo/editApplicationGeneral.xhtml')"/>
-        </tr:column>
-        <tr:column headerText="Enabled">
-            #{app.enabled}
-        </tr:column>
-        <tr:column headerText="Engines">
-            #{app.engines}
-        </tr:column>
-        <tr:column headerText="Actions">
-            <h:commandLink value="Launch"  />
-        </tr:column>
-    </tr:table>
+    <div>
+        <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
+            <div class="title headerPageTitle">Services</div>
+        </div>
+        <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
+            <div class="title headerPageTitle">Instances</div>
+            <tr:table var="app" value="#{listApplicationsBean.applications}">
+                <tr:column headerText="Host">
+                    171.30.49.213
+                </tr:column>
+                <tr:column headerText="CPU">
+                    2,0% (4)
+                </tr:column>
+                <tr:column headerText="Memory">
+                    92M (512M)
+                </tr:column>
+                <tr:column headerText="Disk">
+                    8M (512M)
+                </tr:column>
+                <tr:column headerText="Uptime">
+                    0h:1m:56s
+                </tr:column>
+            </tr:table>
+        </div>
+    </div>
 
 </ui:composition>
