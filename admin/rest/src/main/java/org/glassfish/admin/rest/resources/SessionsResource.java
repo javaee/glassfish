@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,18 +43,29 @@ package org.glassfish.admin.rest.resources;
 
 
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
+import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.SessionManager;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
+import org.glassfish.internal.api.AdminAccessController;
+import org.jvnet.hk2.component.Habitat;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response;
+import java.util.HashMap;
+
+import static javax.ws.rs.core.Response.Status.OK;
+import static javax.ws.rs.core.Response.Status.FORBIDDEN;
+import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+
 
 /**
  * Represents sessions with GlassFish Rest service
@@ -74,6 +85,9 @@ public class SessionsResource {
     @Context
     private ThreadLocal<GrizzlyRequest> request;
 
+    @Context
+    protected Habitat habitat;
+
 
     /**
      * Get a new session with GlassFish Rest service
@@ -83,17 +97,39 @@ public class SessionsResource {
      */
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-    public ActionReportResult create() {
+    @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML,"text/html;qs=2"})
+    public Response create(HashMap<String, String> data) {
+        Response.ResponseBuilder responseBuilder = Response.status(UNAUTHORIZED);
         RestActionReporter ar = new RestActionReporter();
         GrizzlyRequest grizzlyRequest = request.get();
 
-	// Check to see if the username has been set (anonymous user case)
-	String username = (String) grizzlyRequest.getAttribute("restUser");
-	if (username != null) {
-	    ar.getExtraProperties().put("username", username);
-	}
-        ar.getExtraProperties().put("token", sessionManager.createSession(grizzlyRequest));
-        return new ActionReportResult(ar);
+        // If the call flow reached here, the request has been authenticated by logic in RestAdapater.
+        // We authenticate here once again with supplied remoteHostName to see if the authentication needs to happen
+        // as coming from it. This is to support admin gui to authenticate as if coming from remoteHostName that
+        // original request to it originated from.
+        String hostName = data.get("remoteHostName");
+        AdminAccessController.Access access = AdminAccessController.Access.NONE;
+        try {
+            access = (hostName == null ? AdminAccessController.Access.FULL : ResourceUtil.authenticateViaAdminRealm(habitat, grizzlyRequest, hostName) ) ;
+        } catch (Exception e) {
+            ar.setMessage("Error while authenticating " + e);
+        }
+
+        if (access == AdminAccessController.Access.FULL) {
+            responseBuilder.status(OK);
+
+            // Check to see if the username has been set (anonymous user case)
+            String username = (String) grizzlyRequest.getAttribute("restUser");
+            if (username != null) {
+                ar.getExtraProperties().put("username", username);
+            }
+            ar.getExtraProperties().put("token", sessionManager.createSession(grizzlyRequest));
+
+        } else if (access == AdminAccessController.Access.FORBIDDEN) {
+            responseBuilder.status(FORBIDDEN);
+        }
+
+        return responseBuilder.entity(new ActionReportResult(ar)).build();
     }
 
     @Path("{sessionId}/")

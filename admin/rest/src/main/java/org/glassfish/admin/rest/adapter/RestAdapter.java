@@ -42,10 +42,8 @@ package org.glassfish.admin.rest.adapter;
 
 import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.enterprise.v3.admin.adapter.AdminEndpointDecider;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
@@ -60,9 +58,9 @@ import javax.security.auth.login.LoginException;
 import java.util.logging.Logger;
 
 import org.glassfish.admin.rest.LazyJerseyInterface;
+import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.SessionManager;
-import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.Adapter;
 import org.glassfish.api.container.EndpointRegistrationException;
@@ -75,8 +73,6 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 
 import java.net.HttpURLConnection;
-import java.security.Principal;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -153,7 +149,6 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                 reportError(req, res, HttpURLConnection.HTTP_UNAVAILABLE, msg);
                 return;
             } else {
-
                 if(serverEnvironment.isInstance()) {
                     if(!"GET".equalsIgnoreCase(req.getRequest().method().getString() ) ) {
                         String msg = localStrings.getLocalString("rest.resource.only.GET.on.instance", "Only GET requests are allowed on an instance that is not DAS.");
@@ -162,35 +157,33 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                     }
                 }
 
-                if (!authenticate(req)) {
-                    //Could not authenticate throw error
-                    String msg = localStrings.getLocalString("rest.adapter.auth.userpassword", "Invalid user name or password");
-                    res.setHeader("WWW-Authenticate", "BASIC");
-                    reportError(req, res, HttpURLConnection.HTTP_UNAUTHORIZED, msg);
-                    return;
-                }
-
-                //Use double checked locking to lazily initialize adapter
-                if (adapter == null) {
-                    synchronized(com.sun.grizzly.tcp.Adapter.class) {
-                        if(adapter == null) {
-                            exposeContext();  //Initializes adapter
+                AdminAccessController.Access access = authenticate(req);
+                if (access == AdminAccessController.Access.FULL) {
+                    //Use double checked locking to lazily initialize adapter
+                    if (adapter == null) {
+                        synchronized(com.sun.grizzly.tcp.Adapter.class) {
+                            if(adapter == null) {
+                                exposeContext();  //Initializes adapter
+                            }
                         }
                     }
+                    //delegate to adapter managed by Jersey.
+                    ((GrizzlyAdapter)adapter).service(req, res);
 
-                }
+                } else { // Access != FULL
 
-                //delegate to adapter managed by Jersey.
-                ((GrizzlyAdapter)adapter).service(req, res);
-                int status = res.getStatus();
-                if (status < 200 || status > 299) {
-                    String message = httpStatus.get(status);
-                    if (message == null) {
-                        // i18n
-                        message = "Request returned " + status;
+                    String msg;
+                    int status;
+                    if(access == AdminAccessController.Access.NONE) {
+                        status = HttpURLConnection.HTTP_UNAUTHORIZED;
+                        msg = localStrings.getLocalString("rest.adapter.auth.userpassword", "Invalid user name or password");
+                        res.setHeader("WWW-Authenticate", "BASIC");
+                    } else {
+                        assert access == AdminAccessController.Access.FORBIDDEN;
+                        status = HttpURLConnection.HTTP_FORBIDDEN;
+                        msg = localStrings.getLocalString("rest.adapter.auth.forbidden", "Remote access not allowed. If you desire remote access, please turn on secure admin");
                     }
-
-//                    reportError(req, res, status, message);
+                    reportError(req, res, status, msg);
                 }
             }
         } catch(InterruptedException e) {
@@ -218,48 +211,27 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         }
     }
 
-    private boolean authenticate(GrizzlyRequest req) throws LoginException, IOException {
-        boolean authenticated = authenticateViaAnonymousUser(req);
-
-        if (!authenticated) {
-	    authenticated = authenticateViaLocalPassword(req);
-	    if (!authenticated) {
-		authenticated = authenticateViaRestToken(req);
-		if (!authenticated) {
-		    authenticated = authenticateViaAdminRealm(req);
-		}
-	    }
-	}
-
-        return authenticated;
-    }
-
     /**
-     *	<p> This method should return <code>true</code> if there is an
-     *	    <em>anonymous user</em>.  It should also set an attribute called
-     *	    "<code>restUser</code>" on the <code>GrizzlyRequest</code>
-     *	    containing the username of the anonymous user.  If the anonymous
-     *	    user is not valid, then this method should return
-     *	    <code>false</code>.</p>
+     * Authenticate given request
+     * @return Access as determined by authentication process.
+     *         If authentication succeeds against local password or rest token FULL access is granted
+     *         else the access is as returned by admin authenticator
+     * @see ResourceUtil.authenticateViaAdminRealm(Habitat, Request)
      *
-     *	<p> The <em>anonymous user</em> exists when there is only 1 admin user,
-     *	    and that admin user's password is set to the empty string ("").  In
-     *	    this case, the user should not be prompted for a username &amp;
-     *	    password, but instead access should be automatically granted.</p>
      */
-    private boolean authenticateViaAnonymousUser(GrizzlyRequest req) {
-// FIXME: Implement according to JavaDoc above...
-	/*
-	if (anonymousUser) {
-	    String anonUser =
-	    req.setAttribute("restUser", anonUser);
-	    return true;
-	}
-	*/
-	return false;
+    private AdminAccessController.Access authenticate(GrizzlyRequest req) throws LoginException, IOException {
+        AdminAccessController.Access access = AdminAccessController.Access.FULL;
+        boolean authenticated = authenticateViaLocalPassword(req);
+        if (!authenticated) {
+            authenticated = authenticateViaRestToken(req);
+            if (!authenticated) {
+                access = ResourceUtil.authenticateViaAdminRealm(habitat, req);
+            }
+        }
+        return access;
     }
 
-    private boolean authenticateViaRestToken(GrizzlyRequest req) { 
+    private boolean authenticateViaRestToken(GrizzlyRequest req) {
         boolean authenticated = false;
         Cookie[] cookies = req.getCookies();
         String restToken = null;
@@ -294,44 +266,6 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
             }
         }
         return authenticated;
-    }
-
-
-    private static final String DAS_LOOK_FOR_CERT_PROPERTY_NAME = "org.glassfish.admin.DASCheckAdminCert";
-
-    private boolean authenticateViaAdminRealm(GrizzlyRequest req) throws LoginException, IOException  {
-        String[] up = AdminAdapter.getUserPassword(req.getRequest());
-        String user = up[0];
-        String password = up.length > 1 ? up[1] : "";
-        AdminAccessController authenticator = habitat.getByContract(AdminAccessController.class);
-        if (authenticator != null) {
-            // This is temporary workaround for a Grizzly issue that prohibits uploading (deploy)  files larger than 2MB when secure admin is enabled.
-            // The workaround will not be required in trunk when the corresponding Grizzly issue is fixed.
-            // Please see http://java.net/jira/browse/GLASSFISH-16665 for details
-            // The workaround duplicates code from AdminAdapter.
-           final Principal sslPrincipal = ! serverEnvironment.isDas() || Boolean.getBoolean(DAS_LOOK_FOR_CERT_PROPERTY_NAME) ? req.getUserPrincipal() : null;
-
-            return authenticator.loginAsAdmin(user, password, as.getAuthRealmName(), req.getRemoteHost(),
-                    getAuthRelatedHeaders(req), sslPrincipal) != AdminAccessController.Access.NONE;
-        }
-        return true;   //if the authenticator is not available, allow all access - per Jerome
-    }
-
-    /**
-     * Extract authentication related headers from Grizzly request.
-     * This headers enables us to authenticate a request coming from DAS without a password.
-     * The headers will be present if secured admin is not turned on and a request is sent from DAS to an instance.
-     * @param req
-     * @return Authentication related headers
-     */
-    private Map<String, String> getAuthRelatedHeaders(GrizzlyRequest req) {
-        Map<String, String> authRelatedHeaders = Collections.EMPTY_MAP;
-        String adminIndicatorHeader = req.getHeader(SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME);
-        if(adminIndicatorHeader != null) {
-            authRelatedHeaders = new HashMap<String, String>(1);
-            authRelatedHeaders.put(SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME, adminIndicatorHeader);
-        }
-        return authRelatedHeaders;
     }
 
 
