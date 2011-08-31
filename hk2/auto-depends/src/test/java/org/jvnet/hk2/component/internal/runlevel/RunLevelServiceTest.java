@@ -49,6 +49,7 @@ import static org.junit.Assert.fail;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -93,6 +94,7 @@ import org.jvnet.hk2.test.runlevel.InterruptRunLevelManagedService1a;
 import org.jvnet.hk2.test.runlevel.InterruptRunLevelManagedService2b;
 import org.jvnet.hk2.test.runlevel.NonRunLevelWithRunLevelDepService;
 import org.jvnet.hk2.test.runlevel.OptionalRunLevelTstEnv;
+import org.jvnet.hk2.test.runlevel.PriorityServiceTypeA;
 import org.jvnet.hk2.test.runlevel.RunLevelContract;
 import org.jvnet.hk2.test.runlevel.RunLevelServiceBase;
 import org.jvnet.hk2.test.runlevel.RunLevelServiceNegOne;
@@ -1515,6 +1517,28 @@ public class RunLevelServiceTest {
       } catch (IllegalStateException e) {
           // expected
       }
+  }
+  
+  /**
+   * Priority is optionally supported on runlevel-annotated services. This verifies the correct
+   * ordering when it is used.
+   */
+  @Test
+  public void priorityBased() {
+      if (PriorityServiceTypeA.priorityBasedStartups.isEmpty()) {
+          DescriptorImpl descriptor = new DescriptorImpl();
+          descriptor.addContract(RunLevelService.class);
+          descriptor.addMetadata(RunLevel.META_SCOPE_TAG, Object.class.getName());
+          Collection<Binding<?>> bindings = h.getBindings(descriptor);
+          assertEquals(1, bindings.size());
+          Binding anotherRlsBinding = bindings.iterator().next();
+          RunLevelService<?> rls = (RunLevelService<?>) anotherRlsBinding.getProvider().get();
+          rls.proceedTo(1);
+      }
+      
+      List<String> expected = 
+          new ArrayList<String>(Arrays.asList("PriorityServiceTypeB", "PriorityServiceTypeA", "PriorityServiceTypeC"));
+      assertEquals(expected, PriorityServiceTypeA.priorityBasedStartups);
   }
   
   private void installTestRunLevelService(boolean async) {

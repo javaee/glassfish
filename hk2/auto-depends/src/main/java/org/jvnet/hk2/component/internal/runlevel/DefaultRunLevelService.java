@@ -42,6 +42,7 @@ package org.jvnet.hk2.component.internal.runlevel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -57,6 +58,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 
 import org.glassfish.hk2.RunLevelDefaultScope;
+import org.jvnet.hk2.annotations.Priority;
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Enableable;
@@ -735,7 +737,8 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
    */
   @Override
   public List<Inhabitant<?>> sort(List<Inhabitant<?>> inhabitants) {
-    return inhabitants;
+      Collections.sort(inhabitants, getInhabitantComparator());
+      return inhabitants;
   }
 
   /**
@@ -1322,4 +1325,23 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
   }
 
 
+  static Comparator<Inhabitant<?>> getInhabitantComparator() {
+      return new Comparator<Inhabitant<?>>() {
+          public int compare(Inhabitant<?> o1, Inhabitant<?> o2) {
+              int o1level = (o1.type().getAnnotation(Priority.class)!=null?
+                      o1.type().getAnnotation(Priority.class).value():5);
+              int o2level = (o2.type().getAnnotation(Priority.class)!=null?
+                      o2.type().getAnnotation(Priority.class).value():5);
+              if (o1level==o2level) {
+                  return 0;
+              } else if (o1level<o2level) {
+                  return -1;
+              } else {
+                  return 1;
+              }
+          }
+      };
+  }
+
+  
 }
