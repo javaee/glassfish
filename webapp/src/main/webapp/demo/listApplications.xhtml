@@ -37,7 +37,7 @@
 
             </div>
                 <div class="subHeading">List of currently deployed applications</div>
-                <tr:table var="app" value="#{listApplicationsBean.applications}" horizontalGridVisible="false" verticalGridVisible="false">
+                <tr:table var="app" value="#{listApplicationsBean.applications}" horizontalGridVisible="false" verticalGridVisible="false" rowBandingInterval="1">
                     <tr:column>
                         <tr:commandLink id="applicationName" text="#{app.name}">
                             <f:setPropertyActionListener target="#{listApplicationsBean.selectedApplication}" value="#{app}"/>
@@ -52,14 +52,9 @@
 
         <div class="navObjectInfo">
             <div class="title headerPageTitle">General</div>
-            <tr:panelFormLayout  id="applicationDetails" rows="10" labelAlignment="start">
-
-                <tr:panelLabelAndMessage label="Name:">
-                    #{listApplicationsBean.selectedApplication.name}
-                </tr:panelLabelAndMessage>
-                <tr:panelLabelAndMessage label="Mapped Urls:">
-                    <h:commandLink value="trinidad-demo.oraclepaas.com"/>
-                </tr:panelLabelAndMessage>
+            <tr:panelFormLayout  id="applicationDetails">
+                <tr:inputText label="Name:" value="#{listApplicationsBean.selectedApplication.name}" readOnly="false"/>
+                <tr:inputText label="Mapped Urls:" value="oraclepaas.com" readOnly="false"/>
                 <tr:inputNumberSpinbox label="Memory limit:" value="512" minimum="512" maximum="2048" stepSize="512" columns="4"/>
                 <tr:inputNumberSpinbox label="Instances:" value="2" minimum="1" maximum="4"/>
                 <f:facet name="footer">

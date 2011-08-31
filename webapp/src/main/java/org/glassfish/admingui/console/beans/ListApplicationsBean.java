@@ -21,7 +21,7 @@ public class ListApplicationsBean {
         applications = getApplications();
     }
 
-    Application selectedApplication;
+    Application selectedApplication = new Application();
 
     public Application getSelectedApplication() {
         return selectedApplication;
@@ -47,6 +47,9 @@ public class ListApplicationsBean {
         private Boolean enabled;
         private String engines;
 
+        public Application() {
+        }
+
         public Application(String name, Boolean enabled, String engines) {
             this.name = name;
             this.enabled = enabled;
@@ -55,6 +58,10 @@ public class ListApplicationsBean {
 
         public String getName() {
             return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
 
         public Boolean getEnabled() {

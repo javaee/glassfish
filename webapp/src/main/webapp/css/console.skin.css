@@ -139,3 +139,15 @@ af|commandButton, af|commandButton:hover, af|commandButton.p_AFDisabled {
 .dropAllowed {
     background-color: #CCD6E8;
 }
+
+.AFTableCellDataBandedBackgroundColor:alias {
+    background-color: #FBFCFD;
+    padding: 4px 6px;
+}
+
+af|inputText:read-only::content {
+    width: 212px;
+    padding: 4px 0 3px 2px;
+    background: #FBFCFD;
+    border:  0;
+}
