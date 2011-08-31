@@ -60,10 +60,6 @@ public class ListApplicationsBean {
             return name;
         }
 
-        public void setName(String name) {
-            this.name = name;
-        }
-
         public Boolean getEnabled() {
             return enabled;
         }
