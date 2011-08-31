@@ -140,6 +140,17 @@ af|commandButton, af|commandButton:hover, af|commandButton.p_AFDisabled {
     background-color: #CCD6E8;
 }
 
+/* Tab color overrides */
+
+.af_navigationPane_tabs-active .af_navigationPane_tabs-mid a, .af_panelTabbed_orientation-top .af_panelTabbed_tab-selected a {
+    background: url('../images/dbcc.png') repeat-x scroll 0 0 #567CAB;
+    color: white !important;
+}
+
+.af_navigationPane_tabs-inactive .af_navigationPane_tabs-mid a, .af_panelTabbed_orientation-top .af_panelTabbed_tab a {
+    background: url("/adf/images/casablanca/backgrounds/buttonLikeHeadSelected.png") repeat-x scroll left top white;
+    color: black !important;
+}
 .AFTableCellDataBandedBackgroundColor:alias {
     background-color: #FBFCFD;
     padding: 4px 6px;
