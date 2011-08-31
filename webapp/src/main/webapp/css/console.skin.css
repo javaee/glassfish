@@ -140,6 +140,16 @@ af|commandButton, af|commandButton:hover, af|commandButton.p_AFDisabled {
     background-color: #CCD6E8;
 }
 
+.af_separator {
+    background-color: #567CAB;
+    border-color: #567CAB;
+    border-style: solid;
+    border-width: 1px 0 0;
+    color: #567CAB;
+    height: auto;
+    margin: 15px 0 0;
+}
+
 /* Tab color overrides */
 
 .af_navigationPane_tabs-active .af_navigationPane_tabs-mid a, .af_panelTabbed_orientation-top .af_panelTabbed_tab-selected a {
