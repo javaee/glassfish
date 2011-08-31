@@ -80,7 +80,18 @@
     </antcall>
 </target>
 
-<target name="create-web-distributions" depends="create-nucleus-distributions"> 
+<target name="create-minnow-distributions" depends="create-nucleus-distributions"> 
+    <ant antfile="../minnow/minnow-distributions.xml"/>
+    <mkdir dir="${image.root}"/>
+    <mkdir dir="${installer.image.dir}"/>
+    <antcall target="remove-default-domain"/>
+    <antcall target="create-distributions"> 
+         <param name="image.name" value="minnow"/>
+    </antcall>
+    <antcall target="restore-default-domain"/>
+</target>
+
+<target name="create-web-distributions" depends="create-minnow-distributions"> 
     <ant antfile="../web/web-distributions.xml"/>
     <mkdir dir="${image.root}"/>
     <mkdir dir="${installer.image.dir}"/>
@@ -326,6 +337,14 @@
     <copy file="${image.dir}/pkg/lib/pkg-bootstub.bat" tofile="${image.dir}/bin/updatetool.bat"/>
 </target>
 
+<target name="remove-default-domain">
+    <mkdir dir="${basedir}/domains_bak"/>
+    <move file="${glassfish.image.dir}/glassfish/domains/domain1" todir="${basedir}/domains_bak"/>
+</target>
+
+<target name="restore-default-domain">
+    <move file="${basedir}/domains_bak/domain1" todir="${glassfish.image.dir}/glassfish/domains"/>
+</target>
 
 <!-- Create Domain -->
 <target name="create-domain"
