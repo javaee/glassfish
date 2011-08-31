@@ -339,11 +339,11 @@
 
 <target name="remove-default-domain">
     <mkdir dir="${basedir}/domains_bak"/>
-    <move file="${glassfish.image.dir}/glassfish/domains/domain1" todir="${basedir}/domains_bak"/>
+    <move file="${glassfish.image.dir}/${install.dir.name}/glassfish/domains/domain1" todir="${basedir}/domains_bak"/>
 </target>
 
 <target name="restore-default-domain">
-    <move file="${basedir}/domains_bak/domain1" todir="${glassfish.image.dir}/glassfish/domains"/>
+    <move file="${basedir}/domains_bak/domain1" todir="${glassfish.image.dir}/${install.dir.name}/glassfish/domains"/>
 </target>
 
 <!-- Create Domain -->
