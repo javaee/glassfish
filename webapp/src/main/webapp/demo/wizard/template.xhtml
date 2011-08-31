@@ -54,35 +54,59 @@
     in the archive or derived.
     <tr:spacer height="40px"/>
 
-    <tr:panelHorizontalLayout halign="left" >
+    <div>
+        <tr:panelBox text="Selected Services" inlineStyle="float: left; width: 25%; margin: 7px;">
+            <tr:panelBox text="Database">
+                &#160;
+            </tr:panelBox>
+            <tr:panelBox text="Load Balancer">
+                &#160;
+            </tr:panelBox>
+            <tr:panelBox text="Java EE Template">
+                &#160;
+            </tr:panelBox>
+        </tr:panelBox>
+        <tr:panelBox text="Available Services" inlineStyle="float: left; width: 25%; margin: 7px;">
+            <tr:panelBox text="External Services">
+                &#160;
+            </tr:panelBox>
+            <tr:panelBox text="Global Services">
+                &#160;
+            </tr:panelBox>
+        </tr:panelBox>
+    </div>
+    <ui:remove>
+
+        <tr:panelHorizontalLayout halign="left" >
             <tr:outputLabel value="Application uploaded: " />
             <tr:outputText value="#{uploadBean.file.filename}"/>
-    </tr:panelHorizontalLayout>
+        </tr:panelHorizontalLayout>
 
-    <tr:spacer height="40px"/>
-    <tr:panelFormLayout labelAlignment="start">
-
-        <tr:selectOneListbox simple="false" value="3" label="Select template: " size="4">
-            <tr:selectItem label="Another" value="1"/>
-            <tr:selectItem label="GLASSFISH_MEDIUM" value="2"/>
-            <tr:selectItem label="GLASSFISH_SMALL" value="3" />
-            <tr:selectItem label="other" value="4"/>
-        </tr:selectOneListbox>
         <tr:spacer height="40px"/>
-    </tr:panelFormLayout>
+        <tr:panelFormLayout labelAlignment="start">
 
-    <tr:outputLabel value="Attributes of selected template: " inlineStyle="font-size:14px;"/>
-    <tr:spacer height="20px"/>
-    <tr:table var="templateIndex" value="#{templateIndexBean.indexes}" >
-        <tr:column headerText="Type" width="20%">
-            #{templateIndex.type}
-        </tr:column>
-        <tr:column headerText="Value" width="50%">
-            #{templateIndex.value}
-        </tr:column>
-    </tr:table>
-    <tr:spacer height="40px"/>
-    <tr:separator/>
+            <tr:selectOneListbox simple="false" value="3" label="Select template: " size="4">
+                <tr:selectItem label="Another" value="1"/>
+                <tr:selectItem label="GLASSFISH_MEDIUM" value="2"/>
+                <tr:selectItem label="GLASSFISH_SMALL" value="3" />
+                <tr:selectItem label="other" value="4"/>
+            </tr:selectOneListbox>
+            <tr:spacer height="40px"/>
+        </tr:panelFormLayout>
+
+        <tr:outputLabel value="Attributes of selected template: " inlineStyle="font-size:14px;"/>
+        <tr:spacer height="20px"/>
+        <tr:table var="templateIndex" value="#{templateIndexBean.indexes}" >
+            <tr:column headerText="Type" width="20%">
+                #{templateIndex.type}
+            </tr:column>
+            <tr:column headerText="Value" width="50%">
+                #{templateIndex.value}
+            </tr:column>
+        </tr:table>
+        <tr:spacer height="40px"/>
+    </ui:remove>
+    <tr:separator inlineStyle="clear: both;"/>
     <tr:spacer height="40px"/>
     <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{wizardBean.previous}">
         <f:ajax render="@form" execute="@form"/>
