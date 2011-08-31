@@ -30,23 +30,22 @@
 
     <div>
         <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
-            <div class="title headerPageTitle">Applications</div>
+            <div class="title headerPageTitle">Applications
+                <h:commandLink id="add" onclick="return Console.Ajax.loadPage('/demo/wizard.xhtml')">
+                    <span class="ui-icon ui-icon-plus" style="display: inline-block; float: right">Add new</span>
+                </h:commandLink>
+
+            </div>
                 <div class="subHeading">List of currently deployed applications</div>
-                <tr:table var="app" value="#{listApplicationsBean.applications}" horizontalGridVisible="false">
+                <tr:table var="app" value="#{listApplicationsBean.applications}" horizontalGridVisible="false" verticalGridVisible="false">
                     <tr:column>
                         <h:commandLink id="name" value="#{app.name}"
                                        onclick="return Console.Ajax.loadPage('/demo/editApplicationGeneral.xhtml')"/>
                     </tr:column>
+                    <tr:column width="20px">
+                        <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="return false;"/>
+                    </tr:column>
                 </tr:table>
-                <tr:panelHorizontalLayout inlineStyle="height:50px;">
-                    <f:facet name="separator">
-                        <tr:spacer width="20" height="1"/>
-                    </f:facet>
-                    <tr:commandButton id="nextButton" text="Deploy.. " action="/demo/wizard" >
-                        <f:ajax render=":ajaxBody" execute="@form"/>
-                    </tr:commandButton>
-                    <tr:commandButton text="Undeploy"/>
-                </tr:panelHorizontalLayout>
         </div>
 
         <div class="navObjectInfo">
