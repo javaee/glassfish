@@ -63,14 +63,16 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MultivaluedMap;
 
-import java.util.logging.Logger;
-import org.glassfish.admingui.common.util.GuiUtil;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.glassfish.admingui.common.util.RestResponse;
 import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.security.SecurityServicesUtil;
+import java.util.logging.Logger;
+import org.glassfish.admingui.common.util.GuiUtil;
 import com.sun.grizzly.config.dom.NetworkListener;
 import org.glassfish.admingui.common.util.RestUtil;
 
@@ -249,7 +251,10 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
         RestUtil.initialize(client2);
         WebResource webResource = client2.resource(restURL);
         webResource.addFilter(new HTTPBasicAuthFilter(username, password));
-        ClientResponse resp = webResource.accept(RESPONSE_TYPE).post(ClientResponse.class);
+        MultivaluedMap payLoad = new MultivaluedMapImpl();
+        payLoad.putSingle("remoteHostName", request.getRemoteHost());
+
+        ClientResponse resp = webResource.accept(RESPONSE_TYPE).post(ClientResponse.class, payLoad);
         RestResponse restResp = RestResponse.getRestResponse(resp);
 
         // Check to see if successful..
