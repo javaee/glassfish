@@ -110,7 +110,7 @@ public MyService4 implements MyContract {
 +--------------+
 
     In this example, assuming we start from run level vlaue 0, a call to rls.proceedTo(2) will first instantiate (MyService1 | MyService2). While both services
-will eventually be instantiated, it is non-deterministic which of the two will actually come first.
+will eventually be instantiated, it is non-deterministic which of the two will actually come first (more on this later).
 
     After all services annotated with the value of 1 in the default/global run level scope is located and instantiated from the HK2 service registry the system will
 proceed to run level value 2. This case is different in that the start order is deterministic - at least with respect to MyService3 and MyService4.  MyService3 must
@@ -162,11 +162,11 @@ delegates part of its work to other services it attempts to find from the HK2 se
 {{{./auto-depends/apidocs/org/jvnet/hk2/component/InhabitantActivator}InhabitantActivator}}.
 
 
-* The Inhabitant Sorter
+* The Inhabitant Sorter and Priority
 
-    Earlier it was suggested that the start order of services in the same run level is non-deterministics. That was partially true. When no InhabitantActivator is found
-in the HK2 service registry the start order can be assumed to be non-deterministic. However, callers can declare a service implementing this contract and the default
-RunLevelService will delegate to it when sorting the services before instantiation occurs.
+    Earlier it was suggested that the start order of services in the same run level is non-deterministics. This is a partially true statement because the services were unrelated to one another. The "real" answer is as follows. The start order can be established within a given run level when either there is (a) an InhabitantActivator applied, or (b) the default inhabitant activator is used in conjunction with {{{./hk2-api/apidocs/org/jvnet/hk2/annotations/Priority}Priority}} annotation being applied to the service. Otherwise the start order can be assumed to be non-deterministic.
+
+    Callers can declare a service implementing the InhabitantActivator or apply the Priority annotations to affect the behavior of the default RunLevelService.
 
 
 * The Inhabitant Activator
