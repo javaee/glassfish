@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,31 +37,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.annotations;
+package org.jvnet.hk2.test.runlevel;
 
-import java.lang.annotation.*;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import org.jvnet.hk2.annotations.RunLevel;
+import org.jvnet.hk2.annotations.Service;
 
-/**
- * Annotation to define a service priority level. These levels are not yet part of the components
- * resolution or lookups, meaning that habitat lookups that return multiple services implementation
- * will not order such services based on a potential level value. It is the responsibility of the
- * receiver of such services to order these appropriately if needed.
- * 
- * <p>
- * Priority is supported with respect to the default RunLevelService and lifecycle startup events.
- * 
- * @deprecated Not fully supported in Hk2
- */
-@Retention(RUNTIME)
-@Target(TYPE)
-@Documented
-public @interface Priority {
-
-    /**
-     * level value, should be between 1 (highest) and 9 (lowest).
-     * @return the level
-     */
-    int value() default 5;
+//@Priority(5) -- the default
+@RunLevel(value=1, runLevelScope=Object.class)
+@Service
+public class PriorityServiceTypeC {
+    
+    public PriorityServiceTypeC() {
+        PriorityServiceTypeA.priorityBasedStartups.add(getClass().getSimpleName());
+    }
+    
 }
