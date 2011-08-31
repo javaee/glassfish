@@ -244,6 +244,7 @@ body {
     right: 7px;
     top: 38px;
     background-color: #ffffff;
+    overflow: auto;
 }
 
 #navigation {
