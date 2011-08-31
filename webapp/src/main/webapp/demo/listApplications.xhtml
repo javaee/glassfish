@@ -39,8 +39,10 @@
                 <div class="subHeading">List of currently deployed applications</div>
                 <tr:table var="app" value="#{listApplicationsBean.applications}" horizontalGridVisible="false" verticalGridVisible="false">
                     <tr:column>
-                        <h:commandLink id="name" value="#{app.name}"
-                                       onclick="return Console.Ajax.loadPage('/demo/editApplicationGeneral.xhtml')"/>
+                        <tr:commandLink id="applicationName" text="#{app.name}">
+                            <f:setPropertyActionListener target="#{listApplicationsBean.selectedApplication}" value="#{app}"/>
+                            <f:ajax render=":applicationDetails :applicationServices :applicationInstances" />
+                         </tr:commandLink>
                     </tr:column>
                     <tr:column width="20px">
                         <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="return false;"/>
@@ -50,10 +52,10 @@
 
         <div class="navObjectInfo">
             <div class="title headerPageTitle">General</div>
-            <tr:panelFormLayout rows="10" labelAlignment="start">
+            <tr:panelFormLayout  id="applicationDetails" rows="10" labelAlignment="start">
 
                 <tr:panelLabelAndMessage label="Name:">
-                    trinidad-demo-2.0.0
+                    #{listApplicationsBean.selectedApplication.name}
                 </tr:panelLabelAndMessage>
                 <tr:panelLabelAndMessage label="Mapped Urls:">
                     <h:commandLink value="trinidad-demo.oraclepaas.com"/>
@@ -73,10 +75,15 @@
     <div>
         <div class="navObjectInfo">
             <div class="title headerPageTitle">Services</div>
+            <tr:table id="applicationServices" var="app" value="#{listApplicationsBean.applications}">
+                <tr:column headerText="Name">
+                    Database
+                </tr:column>
+            </tr:table>
         </div>
         <div class="navObjectInfo">
             <div class="title headerPageTitle">Instances</div>
-            <tr:table var="app" value="#{listApplicationsBean.applications}">
+            <tr:table id="applicationInstances" var="app" value="#{listApplicationsBean.applications}">
                 <tr:column headerText="Host">
                     171.30.49.213
                 </tr:column>

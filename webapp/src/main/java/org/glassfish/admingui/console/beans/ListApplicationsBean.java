@@ -21,6 +21,16 @@ public class ListApplicationsBean {
         applications = getApplications();
     }
 
+    Application selectedApplication;
+
+    public Application getSelectedApplication() {
+        return selectedApplication;
+    }
+
+    public void setSelectedApplication(Application selectedApplication) {
+        this.selectedApplication = selectedApplication;
+    }
+
     public List<Application> getApplications() {
         List<Application> apps = new ArrayList<Application>();
         String endPoint = "http://localhost:4848/management/domain/applications/list-applications";
