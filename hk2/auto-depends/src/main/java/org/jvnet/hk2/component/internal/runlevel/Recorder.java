@@ -127,7 +127,7 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
    
       RunLevel rl = ((AbstractInhabitantImpl<?>)inhabitant).getAnnotation(RunLevel.class);
       // actually, it should really never be null (in real life we could consider tossing an exception)
-      if (null != rl) {
+      if (null != rl && rl.strict()) {
         if (targetScopeName.equals(rl.runLevelScope().getName())) {
           push(inhabitant);
           

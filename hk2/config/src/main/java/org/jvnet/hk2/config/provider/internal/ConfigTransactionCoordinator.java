@@ -203,7 +203,7 @@ public class ConfigTransactionCoordinator
     if (null != activator) {
       try {
         activator.awaitCompletion();
-      } catch (InterruptedException e) {
+      } catch (Exception e) {
         throw new ComponentException(e);
       }
     }

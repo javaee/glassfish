@@ -123,8 +123,12 @@ public class RunLevelInhabitant<T, V> extends EventPublishingInhabitant<T> {
       Integer current = state.getCurrentRunLevel();
       current = (null == current) ? RunLevel.KERNEL_RUNLEVEL : current;
       if (null == planned || runLevel > planned || runLevel > current + 1) {
-        throw new RunLevelException("unable to activate " + this + "; minimum expected RunLevel is: " + runLevel +
-            "; planned is: " + planned + "; current is: " + current);
+          // only toss exception for strict mode
+          RunLevel rl = type().getAnnotation(RunLevel.class);
+          if (null == rl || rl.strict()) {
+              throw new RunLevelException("unable to activate " + this + "; minimum expected RunLevel is: " + runLevel +
+                "; planned is: " + planned + "; current is: " + current);
+          }
       }
     }
   }

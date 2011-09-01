@@ -78,6 +78,7 @@ public class TestRunLevelListener implements RunLevelListener {
       ServiceContext context,
       int previousProceedTo,
       boolean isHard) {
+    Logger.getLogger(TestRunLevelListener.class.getName()).log(Level.INFO, "cancel event: {0}", state);
     calls.add(Call.onCancelled(state, context, previousProceedTo, isHard));
     if (null != cancel_proceedToGoTo &&
         null != cancel_proceedToRls) {
@@ -92,6 +93,7 @@ public class TestRunLevelListener implements RunLevelListener {
       ServiceContext context,
       Throwable error,
       boolean willContinue) {
+    Logger.getLogger(TestRunLevelListener.class.getName()).log(Level.INFO, "error event", error);
     calls.add(Call.onError(state, context, error, willContinue));
     if (null != error_proceedToGoTo &&
         null != error_proceedToRls) {
