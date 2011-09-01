@@ -41,6 +41,9 @@ public class ListApplicationsBean {
         return apps;
     }
 
+    //get list of services for the specified application
+    
+
     public static class Application {
         private String name;
         private Boolean enabled;
@@ -65,6 +68,38 @@ public class ListApplicationsBean {
 
         public String getEngines() {
             return engines;
+        }
+
+        public List<Map> getServices() {
+            //TODO: This should get the list of Services thats provisoned for this application.
+            //list-services appName.
+            List<Map> allServices = new ArrayList();
+            Map<String, String> sMap = new HashMap();
+            sMap.put("name", name+":mycluster.mycluster-1");
+            sMap.put("type", name+"ClusterInstance");
+
+            allServices.add(sMap);
+            Map<String, String> sMap2 = new HashMap();
+            sMap2.put("name", name+":default-derby-dbs");
+            sMap2.put("type", name+"database");
+            allServices.add(sMap2);
+            return allServices;
+        }
+
+        public List<Map> instances() {
+            //TODO: This should get the list of targets for this application
+	    //can call DeployUtil getRefEndpoints(String name, String ref) and get the Map key.
+            List<Map> allServices = new ArrayList();
+            Map<String, String> sMap = new HashMap();
+            sMap.put("name", name+"mycluster.mycluster-1");
+            sMap.put("type", name+"ClusterInstance");
+
+            allServices.add(sMap);
+            Map<String, String> sMap2 = new HashMap();
+            sMap2.put("name", name+"default-derby-dbs");
+            sMap2.put("type", name+"database");
+            allServices.add(sMap2);
+            return allServices;
         }
 
     }
