@@ -76,12 +76,12 @@ public class ListApplicationsBean {
             List<Map> allServices = new ArrayList();
             Map<String, String> sMap = new HashMap();
             sMap.put("name", name+":mycluster.mycluster-1");
-            sMap.put("type", name+"ClusterInstance");
+            sMap.put("type", "ClusterInstance");
 
             allServices.add(sMap);
             Map<String, String> sMap2 = new HashMap();
             sMap2.put("name", name+":default-derby-dbs");
-            sMap2.put("type", name+"database");
+            sMap2.put("type", "database");
             allServices.add(sMap2);
             return allServices;
         }
@@ -92,12 +92,12 @@ public class ListApplicationsBean {
             List<Map> allServices = new ArrayList();
             Map<String, String> sMap = new HashMap();
             sMap.put("name", name+"mycluster.mycluster-1");
-            sMap.put("type", name+"ClusterInstance");
+            sMap.put("type", "ClusterInstance");
 
             allServices.add(sMap);
             Map<String, String> sMap2 = new HashMap();
             sMap2.put("name", name+"default-derby-dbs");
-            sMap2.put("type", name+"database");
+            sMap2.put("type", "database");
             allServices.add(sMap2);
             return allServices;
         }
