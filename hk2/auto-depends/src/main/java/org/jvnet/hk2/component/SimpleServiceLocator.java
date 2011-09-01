@@ -39,8 +39,6 @@
  */
 package org.jvnet.hk2.component;
 
-import org.glassfish.hk2.Provider;
-
 import java.lang.reflect.Type;
 import java.util.Collection;
 

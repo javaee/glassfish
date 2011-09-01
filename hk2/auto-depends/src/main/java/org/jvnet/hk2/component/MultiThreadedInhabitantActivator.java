@@ -36,6 +36,7 @@
  */
 package org.jvnet.hk2.component;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -51,6 +52,7 @@ import org.jvnet.hk2.component.concurrent.WorkManager;
 public class MultiThreadedInhabitantActivator implements InhabitantActivator {
 
   private WorkManager wm;
+  private final AsyncWaiter waiter = new AsyncWaiter();
   
   @Inject(name=Constants.EXECUTOR_INHABITANT_ACTIVATOR, optional=true)
   public void setExecutorService(Executor es) {
@@ -67,6 +69,8 @@ public class MultiThreadedInhabitantActivator implements InhabitantActivator {
           inhabitant.get();
         }
       });
+
+      waiter.watchIfNecessary(inhabitant);
     }
   }
 
@@ -85,13 +89,23 @@ public class MultiThreadedInhabitantActivator implements InhabitantActivator {
   }
 
   @Override
-  public void awaitCompletion() {
+  public void awaitCompletion() throws InterruptedException, ExecutionException, TimeoutException {
     wm.awaitCompletion();
+    waiter.waitForDone();
   }
 
   @Override
-  public void awaitCompletion(long timeout, TimeUnit unit) throws TimeoutException {
-    wm.awaitCompletion(timeout, unit);
+  public void awaitCompletion(long timeout, TimeUnit unit) throws ExecutionException, InterruptedException, TimeoutException {
+      long millisTimeout = unit.toMillis(timeout);
+
+      long start = System.currentTimeMillis();
+      wm.awaitCompletion(timeout, unit);
+      long end = System.currentTimeMillis();
+      
+      millisTimeout -= (end - start);
+      if (millisTimeout > 0) {
+        waiter.waitForDone(millisTimeout, TimeUnit.MILLISECONDS);
+      }
   }
 
 }

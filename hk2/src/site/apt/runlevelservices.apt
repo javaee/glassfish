@@ -161,6 +161,8 @@ delegates part of its work to other services it attempts to find from the HK2 se
 {{{./auto-depends/apidocs/org/jvnet/hk2/component/InhabitantSorter}InhabitantSorter}} and the 
 {{{./auto-depends/apidocs/org/jvnet/hk2/component/InhabitantActivator}InhabitantActivator}}.
 
+    In addition to delegating work to the sorter and activator, the default RunLevelService sends certain events to it's RunLevelListener(s).
+
 
 * The Inhabitant Sorter and Priority
 
@@ -173,6 +175,19 @@ delegates part of its work to other services it attempts to find from the HK2 se
 
     The InhabitantActivator service is another service that can be optionally declared in order to have the default RunlevelService delegate the actually instantiation/
 activation during startup and also the release/deactivation during shutdown.
+
+
+* The RunLevelListener
+
+    The set of {{{./auto-depends/apidocs/org/jvnet/hk2/component/RunLevelListener}RunLevelListener}}s associated with the default RunLevelService will be notified of
+important events during it's operations. It is important to note that the default RunLevelService captures most Throwable types and sends them to the listeners - in
+general Exceptions are not emitted out to the caller of the default RunLevelService.  The listeners are also notified of progress and cancellation events.
+
+
+** Interruption
+
+    In the event the listener encounters a critical error and it is desirable for the operations of the default RunLevelService to be aborted, then an interrupt() could
+be called on the RunLevelService instance. The implementation is thread safe so that interrupt() can be called from the listener or by some other monitoring thread.
 
 
 Extensions
@@ -201,6 +216,10 @@ public class MySubsystemRunLevelService extends AbstractRunLevelService<MySubsys
     }
 }
 +--------------+
+
+    The same approach for setting the metadata having RunLevel.META_SCOPE_TAG should also be used when creating custom activators, sorters, and listeners. Any instance
+of these types that are not annotated in this way will be assumed to belong to the default RunLevelService. The AbstractRunLevelService provides setters to override
+some of this default functionality - see the javadoc for details.
 
 
 Constraint Rules
@@ -236,8 +255,9 @@ an instance of MyService4. Now, if shutdown occurs (i.e., proceedTo(0)) then the
 
     <<All rules are enforced at runtime.>>
 
-    There is one exception that is provided to these constraint rules. Holder-style injection bypasses the normal constraint rules above.
+    There are two exceptions that are provided to get around these constraint rules:
 
+    * Holder-style injection bypasses the normal constraint rules.
 
     The Holder will act as a proxy to the service and be set to null when the service has not been activated, and a non-null value when it has been instantiated.
 
@@ -256,4 +276,12 @@ public MyService4 implements MyContract {
 
     It is important to note, however, that the service instance obtained from the Holder should never be cached or otherwise held unto for extended periods of time
 (i.e., not carried in a class field) since the run level annotated service can eventually be nulled when the run level service responsible for that service is shutting down.  Also be careful to perform null checks at all times.
+
+    * RunLevel(strict=false)
+
+    See the javadoc for details.
+
+    []
+
+
 

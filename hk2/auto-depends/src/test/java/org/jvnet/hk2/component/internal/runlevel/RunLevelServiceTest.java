@@ -84,8 +84,13 @@ import org.jvnet.hk2.test.runlevel.AHolderBasedRegularService1;
 import org.jvnet.hk2.test.runlevel.AHolderBasedServerService1;
 import org.jvnet.hk2.test.runlevel.AHolderBasedServerService2;
 import org.jvnet.hk2.test.runlevel.ANonDefaultEnvServerService;
+import org.jvnet.hk2.test.runlevel.AnotherInhabitantActivator;
+import org.jvnet.hk2.test.runlevel.AnotherInhabitantListener;
+import org.jvnet.hk2.test.runlevel.AnotherInhabitantSorter;
 import org.jvnet.hk2.test.runlevel.AnotherNonDefaultEnvServerService;
 import org.jvnet.hk2.test.runlevel.AnotherNonDefaultRunLevelService;
+import org.jvnet.hk2.test.runlevel.AsyncFakeService1;
+import org.jvnet.hk2.test.runlevel.AsyncFakeService2;
 import org.jvnet.hk2.test.runlevel.ExceptionRunLevelManagedService;
 import org.jvnet.hk2.test.runlevel.ExceptionRunLevelManagedService2b;
 import org.jvnet.hk2.test.runlevel.InitService1;
@@ -93,6 +98,8 @@ import org.jvnet.hk2.test.runlevel.InitService2;
 import org.jvnet.hk2.test.runlevel.InterruptRunLevelManagedService1a;
 import org.jvnet.hk2.test.runlevel.InterruptRunLevelManagedService2b;
 import org.jvnet.hk2.test.runlevel.NonRunLevelWithRunLevelDepService;
+import org.jvnet.hk2.test.runlevel.NotStrictRunLevelService1;
+import org.jvnet.hk2.test.runlevel.NotStrictRunLevelService2;
 import org.jvnet.hk2.test.runlevel.OptionalRunLevelTstEnv;
 import org.jvnet.hk2.test.runlevel.PriorityServiceTypeA;
 import org.jvnet.hk2.test.runlevel.RunLevelContract;
@@ -1539,6 +1546,74 @@ public class RunLevelServiceTest {
       List<String> expected = 
           new ArrayList<String>(Arrays.asList("PriorityServiceTypeB", "PriorityServiceTypeA", "PriorityServiceTypeC"));
       assertEquals(expected, PriorityServiceTypeA.priorityBasedStartups);
+  }
+  
+  /**
+   * Async service types
+   */
+  @Test
+  public void asyncBased() {
+      DescriptorImpl descriptor = new DescriptorImpl();
+      descriptor.addContract(RunLevelService.class);
+      descriptor.addMetadata(RunLevel.META_SCOPE_TAG, Object.class.getName());
+      Collection<Binding<?>> bindings = h.getBindings(descriptor);
+      assertEquals(1, bindings.size());
+      Binding anotherRlsBinding = bindings.iterator().next();
+      RunLevelService<?> rls = (RunLevelService<?>) anotherRlsBinding.getProvider().get();
+      assertNotNull(rls.getState());
+      rls.proceedTo(4);
+      assertTrue(rls.getState().getCurrentRunLevel() < 5);
+
+      AsyncFakeService1.waitFor = 1000L;
+      assertFalse(AsyncFakeService1.waited);
+      rls.proceedTo(5);
+      assertTrue(AsyncFakeService1.waited);
+      
+      // now do it with an error involved
+//      AsyncFakeService2.waitFor = DefaultRunLevelService.DEFAULT_ASYNC_WAIT + 500;
+      assertFalse(AsyncFakeService2.waited);
+      rls.proceedTo(6);
+      assertTrue(AsyncFakeService2.waited);
+  }
+
+  /**
+   * This test checks to ensure that spurious calls are not made to Inhabitant activators, sorters, or listeners
+   */
+  @Test
+  public void narrowing() {
+      rls.proceedTo(0);
+      
+      assertFalse(AnotherInhabitantActivator.called);
+      assertFalse(AnotherInhabitantSorter.called);
+      assertFalse(AnotherInhabitantListener.called);
+  }
+
+  @Test
+  public void unstrict() {
+      Inhabitant<?> i1 = h.getInhabitantByType(NotStrictRunLevelService1.class);
+      assertNotNull(i1);
+      assertFalse(i1.isActive());
+      assertNotNull(i1.get());
+      assertTrue(i1.isActive());
+      
+      Inhabitant<?> i2 = h.getInhabitantByType(NotStrictRunLevelService2.class);
+      assertNotNull(i2);
+      assertFalse(i2.isActive());
+      
+      DescriptorImpl descriptor = new DescriptorImpl();
+      descriptor.addContract(RunLevelService.class);
+      descriptor.addMetadata(RunLevel.META_SCOPE_TAG, Object.class.getName());
+      Collection<Binding<?>> bindings = h.getBindings(descriptor);
+      assertEquals(1, bindings.size());
+      Binding anotherRlsBinding = bindings.iterator().next();
+      RunLevelService<?> rls = (RunLevelService<?>) anotherRlsBinding.getProvider().get();
+
+      rls.proceedTo(3);
+      assertTrue(i2.isActive());
+  
+      rls.proceedTo(0);
+      assertTrue(i1.isActive());
+      assertTrue(i2.isActive());
   }
   
   private void installTestRunLevelService(boolean async) {

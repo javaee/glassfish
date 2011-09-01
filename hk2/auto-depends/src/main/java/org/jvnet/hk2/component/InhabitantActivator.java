@@ -39,6 +39,7 @@
  */
 package org.jvnet.hk2.component;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -89,7 +90,7 @@ public interface InhabitantActivator {
    * <p/>
    * Generally, there is one awaitCompletion() call per RunLevel being processed.
    */
-  void awaitCompletion() throws InterruptedException;
+  void awaitCompletion() throws ExecutionException, InterruptedException, TimeoutException;
 
   /**
    * Called after all {@link #activate(Inhabitant)} and {@link #deactivate(Inhabitant)}
@@ -99,6 +100,6 @@ public interface InhabitantActivator {
    * <p/>
    * Generally, there is one awaitCompletion() call per RunLevel being processed.
    */
-  void awaitCompletion(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException;
+  void awaitCompletion(long timeout, TimeUnit unit) throws ExecutionException, InterruptedException, TimeoutException;
 
 }

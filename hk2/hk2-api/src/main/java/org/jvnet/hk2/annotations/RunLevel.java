@@ -51,7 +51,7 @@ import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Defines the notion of a run/start level.
+ * Defines a run/start level.
  * 
  * @author Jerome Dochez
  * @author Jeff Trent
@@ -94,4 +94,23 @@ public @interface RunLevel {
     @InhabitantMetadata(META_VAL_TAG)
     int value() default 0;
     
+    /**
+     * Determines whether strict constraint rules should be followed.
+     * 
+     * <p/>
+     * When set to true these rules apply:
+     * <li> The RunLevelService is the one responsible for instantiation a service once the proper run level is reached during startup.
+     * <li> The RunLevelService will release the service during shutdown.
+     * <li> A non-RunLevel service cannot depend (i.e., be injected) with a RunLevel service.
+     * <li> A RunLevel service with scope X cannot depend on a RunLevel service with scope Y when X != Y
+     * <li> A RunLevel service having run level value of N can not depend (i.e., be injected) with a RunLevel service having value M when M > N. 
+     * 
+     * <p>
+     * When set to false these rules apply:
+     * <li> The RunLevelService will not manage / release the service.
+     * <li> Any demand for the service will cause the service to be instantiated.
+     * 
+     * @return true if strict constraint rules should be followed
+     */
+    boolean strict() default true;
 }
