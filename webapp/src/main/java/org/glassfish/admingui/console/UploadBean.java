@@ -5,14 +5,15 @@
 package org.glassfish.admingui.console;
 
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import org.apache.myfaces.trinidad.model.UploadedFile;
+import org.glassfish.admingui.console.event.DragDropEvent;
 
-import org.glassfish.admingui.console.util.FileUtil;
 
 /**
  *
@@ -22,45 +23,46 @@ import org.glassfish.admingui.console.util.FileUtil;
 @SessionScoped
 public class UploadBean {
     private UploadedFile _file;
-    private File tmpFile;
     private String appName;
     private String desc;
     private String contextRoot;
 
+    private String database;
+    private String eeTemplate;
+    private String loadBalancer;
+
+    private List<String> javaEeTemplates = new ArrayList<String>() {{
+        add("GlassFish Small");
+        add("GlassFish Medium");
+        add("GlassFish Large");
+    }};
+
+    private List<String> databases = new ArrayList<String>() {{
+        add("Derby");
+        add("MySQL");
+        add("Oracle");
+    }};
+
+    private List<String> loadBalancers = new ArrayList<String>() {{
+        add("foo");
+        add("bar");
+        add("baz");
+    }};
 
     public void fileUploaded(ValueChangeEvent event) {
         System.out.println("------ in filUploaded");
         UploadedFile file = (UploadedFile) event.getNewValue();
-        try{
-            if (file != null) {
-                //FacesContext context = FacesContext.getCurrentInstance();
-                //FacesMessage message = new FacesMessage( "Successfully uploaded file " + file.getFilename() + " (" + file.getLength() + " bytes)");
-                //context.addMessage(event.getComponent().getClientId(context), message);
-                // Here's where we could call file.getInputStream()
-                System.out.println("getFilename=" + file.getFilename());
-                System.out.println("getLength=" + file.getLength());
-                System.out.println("getContentType=" + file.getContentType());
-                File tf = FileUtil.inputStreamToFile(file.getInputStream(), file.getFilename());
-                tmpFile = tf;
-            }
-        }catch(Exception ex){
-            ex.printStackTrace();
-        }
     }
 
     public UploadedFile getFile() {
-        System.out.println("------------- in getFile " + _file);
         return _file;
     }
 
     public void setFile(UploadedFile file) {
-        System.out.println("----- in setFile");
         _file = file;
     }
 
-
     public String doDeploy(){
-       System.out.println("----------- doDeploy");
        return "/demo/listApplications";
     }
 
@@ -85,4 +87,51 @@ public class UploadBean {
         this.contextRoot = ctxRoot;
     }
 
+    public String getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(String database) {
+        this.database = database;
+    }
+
+    public String getEeTemplate() {
+        return eeTemplate;
+    }
+
+    public void setEeTemplate(String eeTemplate) {
+        this.eeTemplate = eeTemplate;
+    }
+
+    public String getLoadBalancer() {
+        return loadBalancer;
+    }
+
+    public void setLoadBalancer(String loadBalancer) {
+        this.loadBalancer = loadBalancer;
+    }
+
+    public List<String> getJavaEeTemplates() {
+        return javaEeTemplates;
+    }
+
+    public List<String> getDatabases() {
+        return databases;
+    }
+
+    public List<String> getLoadBalancers() {
+        return loadBalancers;
+    }
+
+    public String databaseDropListener(DragDropEvent event) {
+        String value = (String) event.getData();
+        if (database != null) {
+            databases.add(database);
+        }
+        database = value;
+        databases.remove(database);
+        Collections.sort(databases);
+
+        return null;
+    }
 }

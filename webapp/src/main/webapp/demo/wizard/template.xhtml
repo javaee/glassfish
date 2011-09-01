@@ -46,6 +46,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:gf="http://java.sun.com/jsf/composite/glassfish"
+                xmlns:g="http://java.sun.com/jsf/glassfish"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
     <h3>Step 2: Virtualization Template</h3>
@@ -55,9 +56,15 @@
     <tr:spacer height="40px"/>
 
     <div>
-        <tr:panelBox text="Selected Services" inlineStyle="float: left; width: 25%; margin: 7px;">
-            <tr:panelBox text="Database">
-                &#160;
+        <tr:panelBox id="selectedServices" text="Selected Services" inlineStyle="float: left; width: 25%; margin1: 7px;">
+            <tr:panelBox id="selectedDatabases" text="Database">
+                <g:droppable tolerance="touch"
+                             activeStyleClass="dropAllowed"
+                             datasource="databasesTable"
+                             dropListener="#{uploadBean.databaseDropListener}"
+                             onDropUpdate="availableServices selectedDatabases"
+                             scope="databases"/>
+                #{uploadBean.database}
             </tr:panelBox>
             <tr:panelBox text="Load Balancer">
                 &#160;
@@ -66,46 +73,29 @@
                 &#160;
             </tr:panelBox>
         </tr:panelBox>
-        <tr:panelBox text="Available Services" inlineStyle="float: left; width: 25%; margin: 7px;">
-            <tr:panelBox text="External Services">
+        <tr:panelBox id="availableServices" text="Available Services" inlineStyle="float: left; width: 25%; margin1: 7px;">
+            <tr:panelBox id="availableDatabases" text="Databases">
+                <tr:table id="databasesTable" value="#{uploadBean.databases}" var="db">
+                    <tr:column>
+                        <tr:panelBox id="database" text="#{db}"
+                                     inlineStyle="width: 150px;">
+                            <g:draggable scope="databases" opacity="0.35" revert="true" revertDuration="0" helper="clone" cursor="move"/>
+                        </tr:panelBox>
+                    </tr:column>
+                </tr:table>
+            </tr:panelBox>
+            <tr:panelBox text="Load Balancers">
                 &#160;
             </tr:panelBox>
-            <tr:panelBox text="Global Services">
+            <tr:panelBox text="Java EE Templates">
                 &#160;
             </tr:panelBox>
         </tr:panelBox>
+        <tr:panelBox text="Properties" inlineStyle="float: right; min-height: 200px;">
+            <br/>
+        </tr:panelBox>
     </div>
-    <ui:remove>
 
-        <tr:panelHorizontalLayout halign="left" >
-            <tr:outputLabel value="Application uploaded: " />
-            <tr:outputText value="#{uploadBean.file.filename}"/>
-        </tr:panelHorizontalLayout>
-
-        <tr:spacer height="40px"/>
-        <tr:panelFormLayout labelAlignment="start">
-
-            <tr:selectOneListbox simple="false" value="3" label="Select template: " size="4">
-                <tr:selectItem label="Another" value="1"/>
-                <tr:selectItem label="GLASSFISH_MEDIUM" value="2"/>
-                <tr:selectItem label="GLASSFISH_SMALL" value="3" />
-                <tr:selectItem label="other" value="4"/>
-            </tr:selectOneListbox>
-            <tr:spacer height="40px"/>
-        </tr:panelFormLayout>
-
-        <tr:outputLabel value="Attributes of selected template: " inlineStyle="font-size:14px;"/>
-        <tr:spacer height="20px"/>
-        <tr:table var="templateIndex" value="#{templateIndexBean.indexes}" >
-            <tr:column headerText="Type" width="20%">
-                #{templateIndex.type}
-            </tr:column>
-            <tr:column headerText="Value" width="50%">
-                #{templateIndex.value}
-            </tr:column>
-        </tr:table>
-        <tr:spacer height="40px"/>
-    </ui:remove>
     <tr:separator inlineStyle="clear: both;"/>
     <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{wizardBean.previous}">
         <f:ajax render="@form" execute="@form"/>

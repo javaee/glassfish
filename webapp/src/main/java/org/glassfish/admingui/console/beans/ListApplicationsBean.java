@@ -14,14 +14,13 @@ import org.glassfish.admingui.console.rest.RestUtil;
 @ManagedBean(name="listApplicationsBean")
 @SessionScoped
 public class ListApplicationsBean {
-    public List applications;
-    Map appData;
+    private Application selectedApplication = new Application();
+    private List applications;
+    private Map appData;
 
     public ListApplicationsBean() {
         applications = getApplications();
     }
-
-    Application selectedApplication = new Application();
 
     public Application getSelectedApplication() {
         return selectedApplication;

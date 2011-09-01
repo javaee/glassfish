@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.bean.SessionScoped;
 
 /**
  *
@@ -16,7 +16,7 @@ import javax.faces.bean.ViewScoped;
  */
 
 @ManagedBean
-@ViewScoped
+@SessionScoped
 public class WizardBean {
     private int step = 0;
     private List<String> stepLabels = Collections.unmodifiableList(new ArrayList<String>(){{ 

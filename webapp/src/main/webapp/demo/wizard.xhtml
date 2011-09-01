@@ -51,7 +51,7 @@
     <h3>Application Deployment</h3>
 
     <tr:form id="wizardForm" prependId="false" usesUpload="true">
-        <gf:wizard title="Deploy Application to cloud"
+        <gf:wizard id="wizard" title="Deploy Application to cloud"
                    currentStep="#{wizardBean.step}" 
                    stepPages="#{wizardBean.stepPages}"
                    stepLabels="#{wizardBean.stepLabels}"/>

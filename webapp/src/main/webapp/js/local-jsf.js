@@ -2022,7 +2022,8 @@ if (!((jsf && jsf.specversion && jsf.specversion >= 20000 ) &&
                     formid : form.id,
                     render : args["javax.faces.partial.render"]
                 }
-                if (form.encoding == "multipart/form-data") {
+//                if (form.encoding == "multipart/form-data") {
+                if (jsf.util.isFileUpload(form)) {
                     var iframeEngine = new IframeEngine(context);
                     iframeEngine.sendRequest(form, args);
                 } else {
@@ -2454,6 +2455,19 @@ if (!((jsf && jsf.specversion && jsf.specversion >= 20000 ) &&
         return true;
 
     };
+
+    jsf.util.isFileUpload = function (form) {
+        for (var i = 0; i < form.elements.length; i++) {
+            var el = form.elements[i];
+            if ((el.tagName.toLowerCase() == 'input')) {
+                if (el.type.toLowerCase() == 'file') {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
     /**
      * <p>An integer specifying the specification version that this file implements.

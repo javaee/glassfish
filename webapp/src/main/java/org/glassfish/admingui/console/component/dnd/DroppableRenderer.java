@@ -44,14 +44,15 @@ import java.util.Map;
 
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
-import javax.faces.component.UIData;
 import javax.faces.component.UIForm;
 import javax.faces.component.UINamingContainer;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.render.FacesRenderer;
 import javax.faces.render.Renderer;
 
+import javax.servlet.http.HttpServletRequest;
 import org.apache.myfaces.trinidad.component.core.data.CoreTable;
 import org.glassfish.admingui.console.event.DragDropEvent;
 
@@ -60,14 +61,15 @@ public class DroppableRenderer extends Renderer {
 
     @Override
     public void decode(FacesContext context, UIComponent component) {
-        Map<String, String> params = context.getExternalContext().getRequestParameterMap();
+        final ExternalContext externalContext = context.getExternalContext();
+        HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
+        Map<String, String> params = externalContext.getRequestParameterMap();
         Droppable droppable = (Droppable) component;
-        String clientId = droppable.getClientId(context);
         String datasourceId = droppable.getDatasource();
 
-        if(params.containsKey(clientId)) {
-            String dragId = params.get(clientId + "_dragId");
-            String dropId = params.get(clientId + "_dropId");
+        if(params.containsKey("dnd")) {
+            String dragId = params.get("dragId");
+            String dropId = params.get("dropId");
             DragDropEvent event = null;
 
             if(datasourceId != null) {
@@ -140,16 +142,19 @@ public class DroppableRenderer extends Renderer {
             } else {
                 writer.write("ui.draggable.fadeOut('fast');\n");
             }
+
+            /*
             writer.write("var params = {" + clientId + ": '" + clientId + "',\n");
             writer.write(clientId + "_dragId: ui.draggable.attr('id'),\n");
             writer.write(clientId + "_dropId: '" + target + "'};\n");
+            */
 
             writer.write("jsf.ajax.request('" + target + "', event, {\n");
             writer.write("execute:'" + clientId + "',\n");
             writer.write("render:'@form',\n");
-            writer.write(clientId + ": '" + clientId + "',\n");
-            writer.write(clientId + "_dragId: ui.draggable.attr('id'),\n");
-            writer.write(clientId + "_dropId: '" + target + "'\n");
+            writer.write("dnd: '" + clientId + "',\n");
+            writer.write("dragId: ui.draggable.attr('id'),\n");
+            writer.write("dropId: '" + target + "'\n");
             writer.write("});\n");
             writer.write("}\n");
         }
