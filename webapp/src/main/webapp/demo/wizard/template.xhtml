@@ -56,42 +56,72 @@
     <tr:spacer height="40px"/>
 
     <div>
-        <tr:panelBox id="selectedServices" text="Selected Services" inlineStyle="float: left; width: 25%; margin1: 7px;">
-            <tr:panelBox id="selectedDatabases" text="Database">
-                <g:droppable tolerance="touch"
-                             activeStyleClass="dropAllowed"
-                             datasource="databasesTable"
-                             dropListener="#{uploadBean.databaseDropListener}"
-                             onDropUpdate="availableServices selectedDatabases"
-                             scope="databases"/>
-                #{uploadBean.database}
-            </tr:panelBox>
-            <tr:panelBox text="Load Balancer">
-                &#160;
-            </tr:panelBox>
-            <tr:panelBox text="Java EE Template">
-                &#160;
-            </tr:panelBox>
-        </tr:panelBox>
+        <style type="text/css">
+            .draggable {
+            }
+        </style>
         <tr:panelBox id="availableServices" text="Available Services" inlineStyle="float: left; width: 25%; margin1: 7px;">
             <tr:panelBox id="availableDatabases" text="Databases">
                 <tr:table id="databasesTable" value="#{uploadBean.databases}" var="db">
                     <tr:column>
-                        <tr:panelBox id="database" text="#{db}"
-                                     inlineStyle="width: 150px;">
+                        <h:panelGroup id="database" layout="block" class="draggable">
+                            #{db}
                             <g:draggable scope="databases" opacity="0.35" revert="true" revertDuration="0" helper="clone" cursor="move"/>
-                        </tr:panelBox>
+                        </h:panelGroup>
                     </tr:column>
                 </tr:table>
             </tr:panelBox>
             <tr:panelBox text="Load Balancers">
-                &#160;
+                <tr:table id="lbTable" value="#{uploadBean.loadBalancers}" var="lb">
+                    <tr:column>
+                        <h:panelGroup id="loadbalancer" layout="block" class="draggable">
+                            #{lb}
+                            <g:draggable scope="loadbalancers" opacity="0.35" revert="true" revertDuration="0" helper="clone" cursor="move"/>
+                        </h:panelGroup>
+                    </tr:column>
+                </tr:table>
             </tr:panelBox>
             <tr:panelBox text="Java EE Templates">
-                &#160;
+                <tr:table id="eeTemplateTable" value="#{uploadBean.eeTemplates}" var="eet">
+                    <tr:column>
+                        <h:panelGroup id="eeTemplate" layout="block" class="draggable">
+                            #{eet}
+                            <g:draggable scope="eeTemplates" opacity="0.35" revert="true" revertDuration="0" helper="clone" cursor="move"/>
+                        </h:panelGroup>
+                    </tr:column>
+                </tr:table>
             </tr:panelBox>
         </tr:panelBox>
-        <tr:panelBox text="Properties" inlineStyle="float: right; min-height: 200px;">
+        <tr:panelBox id="selectedServices" text="Selected Services" inlineStyle="float: left; width: 25%; margin1: 7px;">
+            <tr:panelBox id="selectedDatabase" text="Database">
+                <g:droppable tolerance="touch"
+                             activeStyleClass="dropAllowed"
+                             datasource="databasesTable"
+                             dropListener="#{uploadBean.databaseDropListener}"
+                             onDropUpdate="availableServices selectedServices"
+                             scope="databases"/>
+                #{uploadBean.database}
+            </tr:panelBox>
+            <tr:panelBox id="selectedLoadBalancer" text="Load Balancer">
+                <g:droppable tolerance="touch"
+                             activeStyleClass="dropAllowed"
+                             datasource="lbTable"
+                             dropListener="#{uploadBean.loadBalancerDropListener}"
+                             onDropUpdate="availableServices selectedServices"
+                             scope="loadbalancers"/>
+                #{uploadBean.loadBalancer}
+            </tr:panelBox>
+            <tr:panelBox id="selectedEeTemplate" text="Java EE Template">
+                <g:droppable tolerance="touch"
+                             activeStyleClass="dropAllowed"
+                             datasource="eeTemplateTable"
+                             dropListener="#{uploadBean.eeTemplateDropListener}"
+                             onDropUpdate="availableServices selectedServices"
+                             scope="eeTemplates"/>
+                #{uploadBean.eeTemplate}
+            </tr:panelBox>
+        </tr:panelBox>
+        <tr:panelBox text="Properties" inlineStyle="float: left; width: 50%; margin1: 7px;">
             <br/>
         </tr:panelBox>
     </div>

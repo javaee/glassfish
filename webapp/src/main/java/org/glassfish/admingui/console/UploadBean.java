@@ -31,7 +31,7 @@ public class UploadBean {
     private String eeTemplate;
     private String loadBalancer;
 
-    private List<String> javaEeTemplates = new ArrayList<String>() {{
+    private List<String> eeTemplates = new ArrayList<String>() {{
         add("GlassFish Small");
         add("GlassFish Medium");
         add("GlassFish Large");
@@ -111,8 +111,8 @@ public class UploadBean {
         this.loadBalancer = loadBalancer;
     }
 
-    public List<String> getJavaEeTemplates() {
-        return javaEeTemplates;
+    public List<String> getEeTemplates() {
+        return eeTemplates;
     }
 
     public List<String> getDatabases() {
@@ -131,6 +131,30 @@ public class UploadBean {
         database = value;
         databases.remove(database);
         Collections.sort(databases);
+
+        return null;
+    }
+
+    public String loadBalancerDropListener(DragDropEvent event) {
+        String value = (String) event.getData();
+        if (loadBalancer != null) {
+            loadBalancers.add(loadBalancer);
+        }
+        loadBalancer = value;
+        loadBalancers.remove(loadBalancer);
+        Collections.sort(loadBalancers);
+
+        return null;
+    }
+
+    public String eeTemplateDropListener(DragDropEvent event) {
+        String value = (String) event.getData();
+        if (eeTemplate != null) {
+            eeTemplates.add(eeTemplate);
+        }
+        eeTemplate = value;
+        eeTemplates.remove(eeTemplate);
+        Collections.sort(eeTemplates);
 
         return null;
     }
