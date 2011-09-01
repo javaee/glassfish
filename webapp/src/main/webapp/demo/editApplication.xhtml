@@ -29,34 +29,29 @@
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
 
     <div>
-        <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
-            <div class="title headerPageTitle">View Application Details
-                <tr:panelHorizontalLayout halign="left" >
-                    <tr:outputLabel value="Application Name : " />
-                    <tr:outputText value="#{listApplicationsBean.selectedApplication.name}"/>
-                </tr:panelHorizontalLayout>
-            </div>
-        </div>
-    </div>
         <div class="navObjectInfo">
             <div class="title headerPageTitle">General</div>
             <tr:panelFormLayout  id="applicationDetails">
-                <tr:inputText label="Name:" value="#{listApplicationsBean.selectedApplication.name}" readOnly="true"/>
-                <tr:inputText label="Context Root" value="contextRoot" readOnly="true"/>
-                <tr:inputText label="Description" value="description" readOnly="true"/>
-
-                <tr:inputNumberSpinbox label="Memory limit:" value="512" minimum="512" maximum="2048" stepSize="512" columns="4"/>
-                <tr:inputNumberSpinbox label="Instances:" value="2" minimum="1" maximum="4"/>
+                <tr:inputText label="Name" value="#{listApplicationsBean.selectedApplication.name}" readOnly="true"/>
+                <tr:inputText label="Context Root" value="/hello" readOnly="true"/>
+                <tr:inputText label="Description" value="a sample web application" readOnly="true"/>
+                <tr:inputText label="Status" value="Enabled" readOnly="true"/>
                 <f:facet name="footer">
                     <tr:panelHorizontalLayout inlineStyle="height:50px;">
-                       <tr:commandButton id="start" text="Start"/>
-                       <tr:commandButton text="Stop"/>
-                        <tr:commandButton text="Restart"/>
+                       <tr:commandButton id="Enable" text="Enable"/>
+                       <tr:commandButton text="Disable"/>
                     </tr:panelHorizontalLayout>
                 </f:facet>
             </tr:panelFormLayout>
         </div>
-
+        <div class="navObjectInfo">
+            <div class="title headerPageTitle">Elasticity Settings</div>
+            <tr:panelFormLayout  id="elasiticitySettings">
+                <tr:inputNumberSpinbox label="Memory limit:" value="512" minimum="512" maximum="2048" stepSize="512" columns="4"/>
+                <tr:inputNumberSpinbox label="Instances:" value="2" minimum="1" maximum="4"/>
+            </tr:panelFormLayout>
+        </div>
+    </div>
     <div>
         <div class="navObjectInfo">
             <div class="title headerPageTitle">Services</div>
