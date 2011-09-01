@@ -39,8 +39,8 @@
  */
 package org.glassfish.hk2.tests.basic;
 
+import org.junit.Ignore;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.glassfish.hk2.BinderFactory;
 import org.glassfish.hk2.ComponentException;
@@ -54,15 +54,16 @@ import org.glassfish.hk2.inject.Injector;
 import org.glassfish.hk2.tests.basic.annotations.*;
 import org.glassfish.hk2.tests.basic.arbitrary.*;
 import org.glassfish.hk2.tests.basic.contracts.*;
+import org.glassfish.hk2.tests.basic.injected.*;
 import org.glassfish.hk2.tests.basic.scopes.*;
 import org.glassfish.hk2.tests.basic.services.*;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hk2.annotations.Inject;
 
 import static org.junit.Assert.*;
+import static org.glassfish.hk2.tests.basic.AssertionUtils.*;
 
 /**
  * This is a test of basic injection features. To avoid the potential influence
@@ -71,175 +72,33 @@ import static org.junit.Assert.*;
  * 
  * @author Marek Potociar (marek.potociar at oracle.com)
  */
+@Ignore
 public class BasicInjectionTest {
-    public static InstanceBoundContract boundContractInstance = new InstanceBoundContract(){};
+
+    public static InstanceBoundContract boundContractInstance = new InstanceBoundContract() {
+    };
     public static InstanceBoundService boundServiceInstance = new InstanceBoundService();
-    
-    static class FieldInjectedTypeBinidngTestClass {
-        @Inject ServiceC sc;
-        @Inject ClassX cx;
-        @Inject ContractB cb;
-        @Inject ContractA ca;
-        @Inject Factory<ServiceC> scp;
-        @Inject Factory<ClassX> cxp;
-        @Inject Factory<ContractB> cbp;
-        @Inject Factory<ContractA> cap;
-    }
-    
-    static class ConstructorInjectedTypeBinidngTestClass {
-        final ServiceC sc;
-        final ClassX cx;
-        final ContractB cb;
-        final ContractA ca;
-        final Factory<ServiceC> scp;
-        final Factory<ClassX> cxp;
-        final Factory<ContractB> cbp;
-        final Factory<ContractA> cap;
-
-        public ConstructorInjectedTypeBinidngTestClass(
-                @Inject ServiceC sc, 
-                @Inject ClassX cx, 
-                @Inject ContractB cb, 
-                @Inject ContractA ca, 
-                @Inject Factory<ServiceC> scp, 
-                @Inject Factory<ClassX> cxp, 
-                @Inject Factory<ContractB> cbp, 
-                @Inject Factory<ContractA> cap) {
-            this.sc = sc;
-            this.cx = cx;
-            this.cb = cb;
-            this.ca = ca;
-            this.scp = scp;
-            this.cxp = cxp;
-            this.cbp = cbp;
-            this.cap = cap;
-        }        
-    }
-    
-    static class FieldInjectedInstanceBinidngTestClass {
-        @Inject InstanceBoundContract i;
-        @Inject Factory<InstanceBoundContract> ip;
-        @Inject InstanceBoundService s;
-        @Inject Factory<InstanceBoundService> sp;
-    }
-    
-    static class ConstructorInjectedInstanceBindingTestClass {
-        final InstanceBoundContract i;
-        final Factory<InstanceBoundContract> ip;
-        final InstanceBoundService s;
-        final Factory<InstanceBoundService> sp;
-
-        public ConstructorInjectedInstanceBindingTestClass(
-                @Inject InstanceBoundContract i, 
-                @Inject Factory<InstanceBoundContract> ip, 
-                @Inject InstanceBoundService s, 
-                @Inject Factory<InstanceBoundService> sp) {
-            this.i = i;
-            this.ip = ip;
-            this.s = s;
-            this.sp = sp;
-        }
-    }
-
-    static class FactoryProvidedContractAImpl implements FactoryProvidedContractA {
-    }
-
-    static class FactoryProvidedContractBImpl implements FactoryProvidedContractB {
-    }
-
-    static class FactoryProvidedContractBFactory implements Factory<FactoryProvidedContractB> {
-
-        @Override
-        public FactoryProvidedContractB get() throws ComponentException {
-            return new FactoryProvidedContractBImpl();
-        }
-    }
-
-    static class FactoryProvidedContractCAImpl implements FactoryProvidedContractC {
-    }
-
-    static class FactoryProvidedContractCFactory implements Factory<FactoryProvidedContractC> {
-
-        @Override
-        public FactoryProvidedContractC get() throws ComponentException {
-            return new FactoryProvidedContractCAImpl();
-        }
-    }
-
-    static class FactoryProvidedContractCBImpl implements FactoryProvidedContractC {
-    }
-
-    static class FieldInjectedFactoryBindingTestClass {
-
-        @Inject FactoryProvidedContractA a;
-        @Inject FactoryProvidedContractB b;
-        @Inject @MarkerA FactoryProvidedContractC c_a;
-        @Inject @MarkerB FactoryProvidedContractC c_b;
-        @Inject(optional = true) FactoryProvidedContractC c_default=null;
-        @Inject Factory<FactoryProvidedContractA> pa;
-        @Inject Factory<FactoryProvidedContractB> pb;
-        @Inject @MarkerA Factory<FactoryProvidedContractC> pc_a;
-        @Inject @MarkerB Factory<FactoryProvidedContractC> pc_b;
-        @Inject(optional=true) Factory<FactoryProvidedContractC> pc_default=null;
-    }
-
-    static class ConstructorInjectedFactoryBindingTestClass {
-
-        final FactoryProvidedContractA a;
-        final FactoryProvidedContractB b;
-        final FactoryProvidedContractC c_a;
-        final FactoryProvidedContractC c_b;
-        final FactoryProvidedContractC c_default;
-        final Factory<FactoryProvidedContractA> pa;
-        final Factory<FactoryProvidedContractB> pb;
-        final Factory<FactoryProvidedContractC> pc_a;
-        final Factory<FactoryProvidedContractC> pc_b;
-        final Factory<FactoryProvidedContractC> pc_default;
-
-        ConstructorInjectedFactoryBindingTestClass(
-                @Inject FactoryProvidedContractA a,
-                @Inject FactoryProvidedContractB b,
-                @Inject @MarkerA FactoryProvidedContractC c_a,
-                @Inject @MarkerB FactoryProvidedContractC c_b,
-                @Inject(optional=true) FactoryProvidedContractC c_default,
-                @Inject Factory<FactoryProvidedContractA> pa,
-                @Inject Factory<FactoryProvidedContractB> pb,
-                @Inject @MarkerA Factory<FactoryProvidedContractC> pc_a,
-                @Inject @MarkerB Factory<FactoryProvidedContractC> pc_b,
-                @Inject(optional=true) Factory<FactoryProvidedContractC> pc_default) {
-
-            this.a = a;
-            this.b = b;
-            this.c_a = c_a;
-            this.c_b = c_b;
-            this.c_default = c_default;
-            this.pa = pa;
-            this.pb = pb;
-            this.pc_a = pc_a;
-            this.pc_b = pc_b;
-            this.pc_default = pc_default;
-        }
-    }
 
     public static class TestModule implements Module {
 
         @Override
         public void configure(BinderFactory binderFactory) {
-            // basic & qualified bindings
+            // basic, generic & qualified bindings
             binderFactory.bind(ContractA.class).to(ServiceA.class);
             binderFactory.bind(ContractB.class).to(ServiceB.class);
             binderFactory.bind(ContractB.class).annotatedWith(MarkerA.class).to(ServiceB1.class);
             binderFactory.bind().to(ServiceC.class);
             binderFactory.bind().to(ServiceD.class);
-            
+            binderFactory.bind(new TypeLiteral<GenericContract<String>>() {}).to(GenericContractStringImpl.class);
+
             // instance bindings
             binderFactory.bind(InstanceBoundContract.class).toInstance(boundContractInstance);
             binderFactory.bind().toInstance(boundServiceInstance);
-            
+
             // scoped bindings
             binderFactory.bind(CustomScope.class).toInstance(new CustomScope());
             binderFactory.bind().to(CustomScopeInjectedClass.class).in(CustomScope.class);
-            
+
             // factory provided bindings
             binderFactory.bind(FactoryProvidedContractA.class).toFactory(new Factory<FactoryProvidedContractA>() {
 
@@ -257,7 +116,7 @@ public class BasicInjectionTest {
                     return new FactoryProvidedContractCBImpl();
                 }
             });
-            
+
             // injected test class bindings
             binderFactory.bind().to(FieldInjectedTypeBinidngTestClass.class);
             binderFactory.bind().to(ConstructorInjectedTypeBinidngTestClass.class);
@@ -278,10 +137,10 @@ public class BasicInjectionTest {
     public void testTypeBindingProvisioningViaServicesApi() {
         final ServiceC sc = services.forContract(ServiceC.class).get();
         assertInjectedInstance(ServiceC.class, sc);
-        
+
         final ClassX cx = services.forContract(ClassX.class).get();
         assertInjectedInstance(ClassX.class, cx);
- 
+
         final ContractB cb = services.forContract(ContractB.class).get();
         assertInjectedInstance(ServiceB.class, cb);
         assertInjectedInstance(ClassX.class, cb.getX());
@@ -290,13 +149,13 @@ public class BasicInjectionTest {
         assertInjectedInstance(ServiceA.class, ca);
         assertInjectedInstance(ServiceB.class, ca.getB());
         assertInjectedInstance(ClassX.class, ca.getB().getX());
-        
+
         final Provider<ServiceC> scp = services.forContract(ServiceC.class).getProvider();
         assertInjectedProvider(ServiceC.class, scp);
-        
+
         final Provider<ClassX> cxp = services.forContract(ClassX.class).getProvider();
         assertInjectedProvider(ClassX.class, cxp);
- 
+
         final Provider<ContractB> cbp = services.forContract(ContractB.class).getProvider();
         assertInjectedProvider(ServiceB.class, cbp);
         assertInjectedInstance(ClassX.class, cbp.get().getX());
@@ -310,48 +169,10 @@ public class BasicInjectionTest {
     @Test
     public void testTypeBindingInjection() {
         final FieldInjectedTypeBinidngTestClass fi = services.forContract(FieldInjectedTypeBinidngTestClass.class).get();
-        assertInjectedInstance(ServiceC.class, fi.sc);
-        assertInjectedInstance(ClassX.class, fi.cx);
- 
-        assertInjectedInstance(ServiceB.class, fi.cb);
-        assertInjectedInstance(ClassX.class, fi.cb.getX());
+        fi.assertInjection();
 
-        assertInjectedInstance(ServiceA.class, fi.ca);
-        assertInjectedInstance(ServiceB.class, fi.ca.getB());
-        assertInjectedInstance(ClassX.class, fi.ca.getB().getX());
-        
-        assertInjectedFactory(ServiceC.class, fi.scp);
-        
-        assertInjectedFactory(ClassX.class, fi.cxp);
- 
-        assertInjectedFactory(ServiceB.class, fi.cbp);
-        assertInjectedInstance(ClassX.class, fi.cbp.get().getX());
-
-        assertInjectedFactory(ServiceA.class, fi.cap);
-        assertInjectedInstance(ServiceB.class, fi.cap.get().getB());
-        assertInjectedInstance(ClassX.class, fi.cap.get().getB().getX());
-        
         final ConstructorInjectedTypeBinidngTestClass ci = services.forContract(ConstructorInjectedTypeBinidngTestClass.class).get();
-        assertInjectedInstance(ServiceC.class, ci.sc);
-        assertInjectedInstance(ClassX.class, ci.cx);
- 
-        assertInjectedInstance(ServiceB.class, ci.cb);
-        assertInjectedInstance(ClassX.class, ci.cb.getX());
-
-        assertInjectedInstance(ServiceA.class, ci.ca);
-        assertInjectedInstance(ServiceB.class, ci.ca.getB());
-        assertInjectedInstance(ClassX.class, ci.ca.getB().getX());
-        
-        assertInjectedFactory(ServiceC.class, ci.scp);
-        
-        assertInjectedFactory(ClassX.class, ci.cxp);
- 
-        assertInjectedFactory(ServiceB.class, ci.cbp);
-        assertInjectedInstance(ClassX.class, ci.cbp.get().getX());
-
-        assertInjectedFactory(ServiceA.class, ci.cap);
-        assertInjectedInstance(ServiceB.class, ci.cap.get().getB());
-        assertInjectedInstance(ClassX.class, ci.cap.get().getB().getX());
+        ci.assertInjection();
     }
 
     @Test
@@ -360,7 +181,7 @@ public class BasicInjectionTest {
         final InstanceBoundContract i2 = services.forContract(InstanceBoundContract.class).getProvider().get();
         assertSame("Provisioned contract instance not the same as the one used in instance binding definition", boundContractInstance, i1);
         assertSame("Provisioned contract instance not the same as the one used in instance binding definition", boundContractInstance, i2);
-        
+
         final InstanceBoundService s1 = services.forContract(InstanceBoundService.class).get();
         final InstanceBoundService s2 = services.forContract(InstanceBoundService.class).getProvider().get();
         assertSame("Provisioned service instance not the same as the one used in instance binding definition", boundServiceInstance, s1);
@@ -370,18 +191,10 @@ public class BasicInjectionTest {
     @Test
     public void testInstanceBindingInjection() {
         final FieldInjectedInstanceBinidngTestClass fi = services.forContract(FieldInjectedInstanceBinidngTestClass.class).get();
-        assertSame("Provisioned contract instance not the same as the one used in instance binding definition", boundContractInstance, fi.i);
-        assertSame("Provisioned contract instance not the same as the one used in instance binding definition", boundContractInstance, fi.ip.get());
-        
-        assertSame("Provisioned service instance not the same as the one used in instance binding definition", boundServiceInstance, fi.s);
-        assertSame("Provisioned service instance not the same as the one used in instance binding definition", boundServiceInstance, fi.sp.get());
+        fi.assertInjection();
 
         final ConstructorInjectedInstanceBindingTestClass ci = services.forContract(ConstructorInjectedInstanceBindingTestClass.class).get();
-        assertSame("Provisioned contract instance not the same as the one used in instance binding definition", boundContractInstance, ci.i);
-        assertSame("Provisioned contract instance not the same as the one used in instance binding definition", boundContractInstance, ci.ip.get());
-        
-        assertSame("Provisioned service instance not the same as the one used in instance binding definition", boundServiceInstance, ci.s);
-        assertSame("Provisioned service instance not the same as the one used in instance binding definition", boundServiceInstance, ci.sp.get());
+        ci.assertInjection();
     }
 
     @Test
@@ -391,7 +204,7 @@ public class BasicInjectionTest {
         assertQualifierInjectedContent(services.forContract(QualifierInjectedClass.class).get());
         assertQualifierInjectedContent(services.forContract(ConstructorQualifierInjectedClass.class).get());
     }
-    
+
     @Test
     public void testFactoryProvidedContractProvisioningViaServicesApi() {
         // binding defined using (annonymous) factory instance 
@@ -433,227 +246,91 @@ public class BasicInjectionTest {
     @Test
     public void testFactoryProvidedContractInjection() {
         final FieldInjectedFactoryBindingTestClass fi = services.forContract(FieldInjectedFactoryBindingTestClass.class).get();
-        // binding defined using (annonymous) factory instance         
-        assertInjectedInstance(FactoryProvidedContractAImpl.class, fi.a);
-        assertInjectedFactory(FactoryProvidedContractAImpl.class, fi.pa);
-        // binding defined using factory class
-        assertInjectedInstance(FactoryProvidedContractBImpl.class, fi.b);
-        assertInjectedFactory(FactoryProvidedContractBImpl.class, fi.pb);
-        // binding defined using factory class and qualifier annotation
-        assertInjectedInstance(FactoryProvidedContractCAImpl.class, fi.c_a);
-        assertInjectedFactory(FactoryProvidedContractCAImpl.class, fi.pc_a);
-        // binding defined using factory instance and qualifier annotation
-        assertInjectedInstance(FactoryProvidedContractCBImpl.class, fi.c_b);
-        assertInjectedFactory(FactoryProvidedContractCBImpl.class, fi.pc_b);
-        // verifying null is returned for non-annotated binding that was not defined
-        assertNull("No binding defined for the non-annotated contract. Provisioned instance should be null.", fi.c_default);
-        assertTrue("No binding defined for the non-annotated contract. Provider or returned instance should be null.", fi.pc_default == null || fi.pc_default.get() == null);
-        
+        fi.assertInjection();
+
         final ConstructorInjectedFactoryBindingTestClass ci = services.forContract(ConstructorInjectedFactoryBindingTestClass.class).get();
-        // binding defined using (annonymous) factory instance         
-        assertInjectedInstance(FactoryProvidedContractAImpl.class, ci.a);
-        assertInjectedFactory(FactoryProvidedContractAImpl.class, ci.pa);
-        // binding defined using factory class
-        assertInjectedInstance(FactoryProvidedContractBImpl.class, ci.b);
-        assertInjectedFactory(FactoryProvidedContractBImpl.class, ci.pb);
-        // binding defined using factory class and qualifier annotation
-        assertInjectedInstance(FactoryProvidedContractCAImpl.class, ci.c_a);
-        assertInjectedFactory(FactoryProvidedContractCAImpl.class, ci.pc_a);
-        // binding defined using factory instance and qualifier annotation
-        assertInjectedInstance(FactoryProvidedContractCBImpl.class, ci.c_b);
-        assertInjectedFactory(FactoryProvidedContractCBImpl.class, ci.pc_b);
-        // verifying null is returned for non-annotated binding that was not defined
-        assertNull("No binding defined for the non-annotated contract. Provisioned instance should be null.", ci.c_default);
-        assertTrue("No binding defined for the non-annotated contract. Provider or returned instance should be null.", ci.pc_default == null || ci.pc_default.get() == null);
+        ci.assertInjection();
     }
-    
+
     @Test
     public void testTypeLiteralBoundToFactory() {
-        final List<String> expected = Arrays.asList(new String[] {"test"});
+        final List<String> expected = Arrays.asList(new String[]{"test"});
         Services s = HK2.get().create(null, new Module() {
 
             @Override
             public void configure(BinderFactory binderFactory) {
-                binderFactory.bind(new TypeLiteral<List<String>>() {}).toFactory(new Factory<List<String>>() {
+                binderFactory.bind(new TypeLiteral<List<String>>() {
+                }).toFactory(new Factory<List<String>>() {
 
                     @Override
                     public List<String> get() throws ComponentException {
                         return expected;
                     }
-                    
                 });
             }
         });
-        
+
         List<String> result;
-        result = s.forContract(new TypeLiteral<List<String>>() {}).get();
+        result = s.forContract(new TypeLiteral<List<String>>() {
+        }).get();
         assertEquals(expected, result);
     }
-    
+
     @Test
     public void testScopes() {
         final CustomScope customScope = services.forContract(CustomScope.class).get();
 
         CustomScopeInjectedClass customScopeInjectedClass;
-        
+
         customScope.enter();
         customScopeInjectedClass = services.forContract(CustomScopeInjectedClass.class).get();
         assertNotNull("Instance not provisioned", customScopeInjectedClass);
         customScope.leave();
-        
+
         try {
             customScopeInjectedClass = services.forContract(CustomScopeInjectedClass.class).get();
         } catch (IllegalStateException ex) {
             assertEquals(ex.getMessage(), CustomScope.OUT_OF_SCOPE_MESSAGE);
             return;
         }
-        
+
         fail("IllegalStateException expected to be raised when trying to access a custom-scoped biding outside of the scope.");
     }
-    
+
     @Test
-    public void testInjector() {        
+    public void testInjector() {
         Injector injector = services.forContract(Injector.class).get();
-        
-        class FieldInjectedTestClass {
-            @Inject ServiceC sc;
-            @Inject ClassX cx;
-            @Inject ContractB cb;
-            @Inject ContractA ca;
-            @Inject Factory<ServiceC> scp;
-            @Inject Factory<ClassX> cxp;
-            @Inject Factory<ContractB> cbp;
-            @Inject Factory<ContractA> cap;            
-        }        
-        FieldInjectedTestClass fi = new FieldInjectedTestClass();
+        FieldInjectedTypeBinidngTestClass fi = new FieldInjectedTypeBinidngTestClass();
         injector.inject(fi);
-        
-        assertInjectedInstance(ServiceC.class, fi.sc);
-        assertInjectedInstance(ClassX.class, fi.cx);
- 
-        assertInjectedInstance(ServiceB.class, fi.cb);
-        assertInjectedInstance(ClassX.class, fi.cb.getX());
+        fi.assertInjection();
 
-        assertInjectedInstance(ServiceA.class, fi.ca);
-        assertInjectedInstance(ServiceB.class, fi.ca.getB());
-        assertInjectedInstance(ClassX.class, fi.ca.getB().getX());
-        
-        assertInjectedFactory(ServiceC.class, fi.scp);
-        
-        assertInjectedFactory(ClassX.class, fi.cxp);
- 
-        assertInjectedFactory(ServiceB.class, fi.cbp);
-        assertInjectedInstance(ClassX.class, fi.cbp.get().getX());
-
-        assertInjectedFactory(ServiceA.class, fi.cap);
-        assertInjectedInstance(ServiceB.class, fi.cap.get().getB());
-        assertInjectedInstance(ClassX.class, fi.cap.get().getB().getX());                
-        
-        ConstructorInjectedTestClass ci = injector.inject(ConstructorInjectedTestClass.class);
-        
-        assertInjectedInstance(ServiceC.class, ci.sc);
-        assertInjectedInstance(ClassX.class, ci.cx);
- 
-        assertInjectedInstance(ServiceB.class, ci.cb);
-        assertInjectedInstance(ClassX.class, ci.cb.getX());
-
-        assertInjectedInstance(ServiceA.class, ci.ca);
-        assertInjectedInstance(ServiceB.class, ci.ca.getB());
-        assertInjectedInstance(ClassX.class, ci.ca.getB().getX());
-        
-        assertInjectedFactory(ServiceC.class, ci.scp);
-        
-        assertInjectedFactory(ClassX.class, ci.cxp);
- 
-        assertInjectedFactory(ServiceB.class, ci.cbp);
-        assertInjectedInstance(ClassX.class, ci.cbp.get().getX());
-
-        assertInjectedFactory(ServiceA.class, ci.cap);
-        assertInjectedInstance(ServiceB.class, ci.cap.get().getB());
-        assertInjectedInstance(ClassX.class, ci.cap.get().getB().getX());                        
+        ConstructorInjectedTypeBinidngTestClass ci = injector.inject(ConstructorInjectedTypeBinidngTestClass.class);
+        ci.assertInjection();
     }
-    
-    static class ConstructorInjectedTestClass { 
-        // must be declared as a static class as HK2 cannot inject non-static 
-        // inner classes using constructor-based injection
-        final ServiceC sc;
-        final ClassX cx;
-        final ContractB cb;
-        final ContractA ca;
-        final Factory<ServiceC> scp;
-        final Factory<ClassX> cxp;
-        final Factory<ContractB> cbp;
-        final Factory<ContractA> cap;
 
-        public ConstructorInjectedTestClass(
-                @Inject ServiceC sc, 
-                @Inject ClassX cx, 
-                @Inject ContractB cb, 
-                @Inject ContractA ca, 
-                @Inject Factory<ServiceC> scp, 
-                @Inject Factory<ClassX> cxp, 
-                @Inject Factory<ContractB> cbp, 
-                @Inject Factory<ContractA> cap) {
-            this.sc = sc;
-            this.cx = cx;
-            this.cb = cb;
-            this.ca = ca;
-            this.scp = scp;
-            this.cxp = cxp;
-            this.cbp = cbp;
-            this.cap = cap;
-        }        
-    }
-    
     @Test
     public void testConstructorBasedInjectionOnNonStaticInnerClass() {
         Injector injector = services.forContract(Injector.class).get();
-        class TestClass { 
+        class TestClass {
+
             final ContractA ca;
             final Factory<ContractA> cap;
 
             public TestClass(
-                    @Inject ContractA ca, 
+                    @Inject ContractA ca,
                     @Inject Factory<ContractA> cap) {
                 this.ca = ca;
                 this.cap = cap;
-            }        
+            }
         }
         TestClass ci = injector.inject(TestClass.class);
 
         assertInjectedInstance(ServiceA.class, ci.ca);
         assertInjectedInstance(ServiceB.class, ci.ca.getB());
         assertInjectedInstance(ClassX.class, ci.ca.getB().getX());
-        
+
         assertInjectedFactory(ServiceA.class, ci.cap);
         assertInjectedInstance(ServiceB.class, ci.cap.get().getB());
-        assertInjectedInstance(ClassX.class, ci.cap.get().getB().getX());                
-    }
-
-    private void assertQualifierInjectedContent(QualifierInjected instance) throws ComponentException {
-        assertNotNull("Instance not provisioned", instance);
-        assertNotNull("Qualified injection point null", instance.getQb());
-        // the .getSimpleName() bellow is meant to avoid the long, package-poluted JUnit assertion reports
-        assertEquals("Qualified injection point of unexepceted type", ServiceB1.class.getSimpleName(), instance.getQb().getClass().getSimpleName());
-        assertNotNull("Qualified injection provider not provisioned", instance.getQbf());
-        assertNotNull("Qualified injection provider returned null", instance.getQbf().get());
-        assertEquals("Qualified injection provider returned instance of unexpected type", ServiceB1.class.getSimpleName(), instance.getQbf().get().getClass().getSimpleName());
-    }
-
-    private <T> void assertInjectedInstance(Class<? extends T> expectedType, T instance) {
-        assertNotNull("Provisioned instance is null.", instance);
-        assertEquals("Provisioned instance unexpected type.", expectedType.getSimpleName(), instance.getClass().getSimpleName());
-    }
-
-    private <T> void assertInjectedProvider(Class<? extends T> expectedType, Provider<T> provider) {
-        assertNotNull("Provisioned instance provider is null.", provider);
-        assertNotNull("Provider returned null instance.", provider.get());
-        assertEquals("Provider returned instance of unexpected type.", expectedType.getSimpleName(), provider.get().getClass().getSimpleName());
-    }
-
-    private <T> void assertInjectedFactory(Class<? extends T> expectedType, Factory<T> provider) {
-        assertNotNull("Injected instance factory is null.", provider);
-        assertNotNull("Factory returned null instance.", provider.get());
-        assertEquals("Factory returned instance of unexpected type.", expectedType.getSimpleName(), provider.get().getClass().getSimpleName());
+        assertInjectedInstance(ClassX.class, ci.cap.get().getB().getX());
     }
 }
