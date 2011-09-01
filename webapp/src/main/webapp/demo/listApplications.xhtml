@@ -70,9 +70,12 @@
     <div>
         <div class="navObjectInfo">
             <div class="title headerPageTitle">Services</div>
-            <tr:table id="applicationServices" var="app" value="#{listApplicationsBean.applications}">
+            <tr:table id="applicationServices" var="services" value="#{listApplicationsBean.selectedApplication.services}">
                 <tr:column headerText="Name">
-                    Database
+                    #{services.name}
+                </tr:column>
+                <tr:column headerText="Type">
+                    #{services.type}
                 </tr:column>
             </tr:table>
         </div>
