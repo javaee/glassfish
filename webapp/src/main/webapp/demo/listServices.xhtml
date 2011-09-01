@@ -28,37 +28,50 @@
                 xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
 
-    <div class="navObjectInfo">
-        <div class="title headerPageTitle">Services</div>
-        <div class="subHeading">
-            Manage External and global services.
-            External services: these are not provisioned by the orchestrator, but created and managed by an external user.
-            Global Provisioned services: Services that are created by a DAS administrator that are provisioned and managed by the orchestrator.
-        </div>
-        <tr:table var="services" >
-            <tr:column headerText="Name">
-                #{app.name}
-            </tr:column>
-            <tr:column headerText="Enabled">
-                #{app.enabled}
-            </tr:column>
-            <tr:column headerText="Type">
-                #{app.engines}
-            </tr:column>
-        </tr:table>
-
-    </div>
-
-    <tr:panelHorizontalLayout inlineStyle="height:50px;">
-        <f:facet name="separator">
-            <tr:spacer width="20" height="1"/>
-        </f:facet>
-        <tr:commandButton id="createButton" text="Create.. " >
-            <f:ajax render=":ajaxBody" execute="@form"/>
-        </tr:commandButton>
-        <tr:commandButton text="Delete"/>
-    </tr:panelHorizontalLayout>
-
-
+        <tr:form>
+            <tr:panelAccordion inlineStyle="width: 1000px">
+                <tr:showDetailItem text="RDBMS">
+                    <tr:table var="database" value="#{listServicesBean.databases}" horizontalGridVisible="false"
+                              verticalGridVisible="false" rowBandingInterval="1" inlineStyle="width: 200px; display: inline-block; vertical-align: top">
+                        <tr:column>
+                            <tr:commandLink id="databaseName" text="#{database.name}">
+                                <f:setPropertyActionListener target="#{listServicesBean.selectedDatabase}" value="#{database}"/>
+                                <f:ajax render=":databaseDetails" />
+                             </tr:commandLink>
+                        </tr:column>
+                        <tr:column width="20px">
+                            <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="return false;"/>
+                        </tr:column>
+                    </tr:table>
+                    <tr:panelFormLayout id="databaseDetails" inlineStyle="width: 200px; display: inline-block;">
+                        <tr:inputText label="Database Name:" value="#{listServicesBean.selectedDatabase.name}" />
+                        <tr:inputText label="User:" value="#{listServicesBean.selectedDatabase.user}" />
+                        <tr:inputText label="Password:" value="#{listServicesBean.selectedDatabase.password}"  secret="true"/>
+                        <tr:inputText label="JNDI Name:" value="#{listServicesBean.selectedDatabase.jndiName}"/>
+                    </tr:panelFormLayout>
+                </tr:showDetailItem>
+                <tr:showDetailItem text="Java EE">
+                    <tr:table var="template" value="#{listServicesBean.templates}" horizontalGridVisible="false"
+                              verticalGridVisible="false" rowBandingInterval="1" inlineStyle="width: 200px; display: inline-block; vertical-align: top">
+                        <tr:column>
+                            <tr:commandLink id="templateName" text="#{template.name}">
+                                <f:setPropertyActionListener target="#{listServicesBean.selectedTemplate}" value="#{template}"/>
+                                <f:ajax render=":templateDetails" />
+                             </tr:commandLink>
+                        </tr:column>
+                        <tr:column width="20px">
+                            <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="return false;"/>
+                        </tr:column>
+                    </tr:table>
+                    <tr:panelFormLayout  id="templateDetails" inlineStyle="width: 200px; display: inline-block;">
+                        <tr:inputText label="Template Name:" value="#{listServicesBean.selectedTemplate.name}" />
+                        <tr:inputText id="amount" label="Min-Max # of Incances:" value="#{listServicesBean.selectedTemplate.minMaxInstances}" />
+                        <div id="slider-range"></div>
+                    </tr:panelFormLayout>
+                </tr:showDetailItem>
+                <tr:showDetailItem text="Load Balancer"  disabled="true">
+                </tr:showDetailItem>
+            </tr:panelAccordion>
+        </tr:form>
 
 </ui:composition>
