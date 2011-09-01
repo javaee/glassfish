@@ -39,10 +39,10 @@
                 <div class="subHeading">List of currently deployed applications</div>
                 <tr:table var="app" value="#{listApplicationsBean.applications}" horizontalGridVisible="false" verticalGridVisible="false" rowBandingInterval="1">
                     <tr:column>
-                        <tr:commandLink id="applicationName" text="#{app.name}">
+                        <h:commandLink id="applicationName" value="#{app.name}"
+                                       onclick="return Console.Ajax.loadPage('/demo/editApplication.xhtml')">
                             <f:setPropertyActionListener target="#{listApplicationsBean.selectedApplication}" value="#{app}"/>
-                            <f:ajax render=":applicationDetails :applicationServices :applicationInstances" />
-                         </tr:commandLink>
+                        </h:commandLink>
                     </tr:column>
                     <tr:column width="20px">
                         <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="return false;"/>
