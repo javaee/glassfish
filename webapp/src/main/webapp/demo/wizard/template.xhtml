@@ -60,6 +60,8 @@
             .draggable {
             }
         </style>
+        <tr:inputText label="Application Name: " value="#{uploadBean.appName}" columns="40" readOnly="true"/>
+
         <tr:panelBox id="availableServices" text="Available Services" inlineStyle="float: left; width: 25%; margin1: 7px;">
             <tr:panelBox id="availableDatabases" text="Databases">
                 <tr:table id="databasesTable" value="#{uploadBean.databases}" var="db">
