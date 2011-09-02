@@ -73,7 +73,7 @@ public class TreeBean {
         
         root.add(createNode("homeNode", "Home", null, "/welcome.xhtml", null));
         root.add(createNode("applicationsNode", "Applications", "/images/icons/instance.gif", "/demo/listApplications.xhtml", null));
-        root.add(createNode("servicesNode", "Services", "/images/icons/instance.gif", "/demo/services.xhtml", null));
+        root.add(createNode("servicesNode", "Services", "/images/icons/instance.gif", "/demo/listServices.xhtml", null));
         root.add(createNode("templatesNode", "Templates", "/images/icons/instance.gif", "/demo/listTemplates.xhtml", null));
         
         root.add(createNode("demoNode", "Drag&Drop Demo", null, "/demo/testApplications.xhtml", null));
