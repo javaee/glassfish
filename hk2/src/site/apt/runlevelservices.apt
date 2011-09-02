@@ -55,11 +55,11 @@ Introduction
 
 Overview
 
-    The HK2 component system uses {{{./hk2-api/apidocs/org/jvnet/hk2/annotations/RunLevel}RunLevel}} to form higher levels of component lifecycle. HK2 normally employs a “lazy instantiation” model for component creation.  However, there are situations where the developer may want the instantiation to occur either immediately upon HK2 initialization or otherwise on some more regimented schedule. This can be accomplished using the RunLevel annotation.
+    The HK2 component system uses {{{./hk2-api/apidocs/org/jvnet/hk2/annotations/RunLevel.html}RunLevel}} to form higher levels of component lifecycle. HK2 normally employs a “lazy instantiation” model for component creation.  However, there are situations where the developer may want the instantiation to occur either immediately upon HK2 initialization or otherwise on some more regimented schedule. This can be accomplished using the RunLevel annotation.
 
 * RunLevel's
 
-    The {{{./hk2-api/apidocs/org/jvnet/hk2/annotations/RunLevel}RunLevel}} is a declarative form of annotation that you place on your Service class as shown in this example.
+    The {{{./hk2-api/apidocs/org/jvnet/hk2/annotations/RunLevel.html}RunLevel}} is a declarative form of annotation that you place on your Service class as shown in this example.
 
 +--------------+
 @RunLevel(1)
@@ -73,7 +73,7 @@ public MyService implements MyContract {
 
 * RunLevelService
 
-    The {{{./auto-depends/apidocs/org/jvnet/hk2/component/RunLevelService}RunLevelService}} is the controller responsible for (automatically) instantiating services annotated with the RunLevel annotation using the proceedTo() method on the RunLevelService interface.
+    The {{{./auto-depends/apidocs/org/jvnet/hk2/component/RunLevelService.html}RunLevelService}} is the controller responsible for (automatically) instantiating services annotated with the RunLevel annotation using the proceedTo() method on the RunLevelService interface.
 
 +--------------+
 ...
@@ -128,7 +128,7 @@ be started before MyService4 because MyService4 depends upon (i.e., injects) MyS
 
 * Runtime Stop Order
 
-    The {{{./auto-depends/apidocs/org/jvnet/hk2/component/RunLevelService}RunLevelService}} can also be used to shutdown / release services that were previously
+    The {{{./auto-depends/apidocs/org/jvnet/hk2/component/RunLevelService.html}RunLevelService}} can also be used to shutdown / release services that were previously
 instantiated. Continuing from the previous example, a call to proceedTo(0) will release MyService1 - MyService4. Note that shutdown will occur in the reverse order
 from the instantiation order.  So the shutdown order will therefore be MyService4, MyService3, (MyService1 | MyService2).
 
@@ -167,15 +167,15 @@ The Default RunLevelService
 
     HK2 comes configured with a default RunLevelService responsible for the services that are using the default, or global, RunLevel scope. The default RunLevel Service 
 delegates part of its work to other services it attempts to find from the HK2 service registry. These services include the
-{{{./auto-depends/apidocs/org/jvnet/hk2/component/InhabitantSorter}InhabitantSorter}} and the 
-{{{./auto-depends/apidocs/org/jvnet/hk2/component/InhabitantActivator}InhabitantActivator}}.
+{{{./auto-depends/apidocs/org/jvnet/hk2/component/InhabitantSorter.html}InhabitantSorter}} and the 
+{{{./auto-depends/apidocs/org/jvnet/hk2/component/InhabitantActivator.html}InhabitantActivator}}.
 
     In addition to delegating work to the sorter and activator, the default RunLevelService sends certain events to it's RunLevelListener(s).
 
 
 * The Inhabitant Sorter and Priority
 
-    Earlier it was suggested that the start order of services in the same run level is non-deterministics. This is a partially true statement because the services were unrelated to one another. The "real" answer is as follows. The start order can be established within a given run level when either there is (a) an InhabitantActivator applied, or (b) the default inhabitant activator is used in conjunction with {{{./hk2-api/apidocs/org/jvnet/hk2/annotations/Priority}Priority}} annotation being applied to the service. Otherwise the start order can be assumed to be non-deterministic.
+    Earlier it was suggested that the start order of services in the same run level is non-deterministics. This is a partially true statement because the services were unrelated to one another. The "real" answer is as follows. The start order can be established within a given run level when either there is (a) an InhabitantActivator applied, or (b) the default inhabitant activator is used in conjunction with {{{./hk2-api/apidocs/org/jvnet/hk2/annotations/Priority.html}Priority}} annotation being applied to the service. Otherwise the start order can be assumed to be non-deterministic.
 
     Callers can declare a service implementing the InhabitantActivator or apply the Priority annotations to affect the behavior of the default RunLevelService.
 
@@ -188,7 +188,7 @@ activation during startup and also the release/deactivation during shutdown.
 
 * The RunLevelListener
 
-    The set of {{{./auto-depends/apidocs/org/jvnet/hk2/component/RunLevelListener}RunLevelListener}}s associated with the default RunLevelService will be notified of
+    The set of {{{./auto-depends/apidocs/org/jvnet/hk2/component/RunLevelListener.html}RunLevelListener}}s associated with the default RunLevelService will be notified of
 important events during it's operations. It is important to note that the default RunLevelService captures most Throwable types and sends them to the listeners - in
 general Exceptions are not emitted out to the caller of the default RunLevelService.  The listeners are also notified of progress and cancellation events.
 
@@ -214,8 +214,8 @@ public MySubsystemService implements MyContract {
 run levels as well.
 
     It is important to note that if you are using run level scoping extensions, you will also be responsible for implementing a
-{{{./auto-depends/apidocs/org/jvnet/hk2/component/RunLevelService}RunLevelService}} associated with your scope.  Fortunately, HK2 provides an easy way to do this by
-extending the {{{./auto-depends/apidocs/org/jvnet/hk2/component/AbstractRunLevelService}AbstractRunLevelService}}.
+{{{./auto-depends/apidocs/org/jvnet/hk2/component/RunLevelService.html}RunLevelService}} associated with your scope.  Fortunately, HK2 provides an easy way to do this by
+extending the {{{./auto-depends/apidocs/org/jvnet/hk2/component/AbstractRunLevelService.html}AbstractRunLevelService}}.
 
 +--------------+
 @Service(metadata=RunLevel.META_SCOPE_TAG + "=...package-to...MySubsystemScope")
