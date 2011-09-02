@@ -16,7 +16,7 @@
     KIND, either express or implied.  See the License for the
     specific language governing permissions and limitations
     under the License.
-	   
+
 -->
 
 <!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -26,21 +26,22 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ps="http://admingui.glassfish.org/console"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
-                xmlns:trh="http://myfaces.apache.org/trinidad/html">
+                xmlns:trh="http://myfaces.apache.org/trinidad/html"
+                template="/layout.xhtml">
+    <ui:define name="content">
+        <trh:head>
+        </trh:head>
 
-    <trh:head>
-    </trh:head>
-
-    <tr:form>
+        <tr:form>
             <tr:panelAccordion inlineStyle="width: 1000px">
                 <tr:showDetailItem text="RDBMS" id="databaseDetails">
                     <tr:table var="database" value="#{listServicesBean.databases}" horizontalGridVisible="false"
-                              verticalGridVisible="false" rowBandingInterval="1" inlineStyle="width: 200px; display: inline-block; vertical-align: top">
+                              verticalGridVisible="false" rowBandingInterval="" inlineStyle="width: 200px; display: inline-block; vertical-align: top">
                         <tr:column>
                             <tr:commandLink id="databaseName" text="#{database.name}" inlineStyle="#{database.name.equals(listServicesBean.selectedDatabase.name)? 'font-weight: bold' : ''}">
                                 <f:setPropertyActionListener target="#{listServicesBean.selectedDatabase}" value="#{database}"/>
                                 <f:ajax render=":databaseDetails" />
-                             </tr:commandLink>
+                            </tr:commandLink>
                         </tr:column>
                     </tr:table>
                     <tr:panelFormLayout inlineStyle="width: 200px; display: inline-block;">
@@ -57,7 +58,7 @@
                             <tr:commandLink id="templateName" text="#{template.name}"  inlineStyle="#{template.name.equals(listServicesBean.selectedTemplate.name)? 'font-weight: bold' : ''}">
                                 <f:setPropertyActionListener target="#{listServicesBean.selectedTemplate}" value="#{template}"/>
                                 <f:ajax render=":templateDetails" />
-                             </tr:commandLink>
+                            </tr:commandLink>
                         </tr:column>
                     </tr:table>
                     <tr:panelFormLayout inlineStyle="width: 200px; display: inline-block;">
@@ -85,5 +86,5 @@
                 </tr:showDetailItem>
             </tr:panelAccordion>
         </tr:form>
-
+    </ui:define>
 </ui:composition>

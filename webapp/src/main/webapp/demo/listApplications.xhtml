@@ -16,7 +16,7 @@
     KIND, either express or implied.  See the License for the
     specific language governing permissions and limitations
     under the License.
-	   
+
 -->
 
 <!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -26,15 +26,17 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ps="http://admingui.glassfish.org/console"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
-                xmlns:trh="http://myfaces.apache.org/trinidad/html">
-    <div>
-        <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
-            <div class="title headerPageTitle">Applications
-                <h:commandLink id="add" onclick="return Console.Ajax.loadPage('/demo/wizard.xhtml')">
-                    <span class="ui-icon ui-icon-plus" style="display: inline-block; float: right">Add new</span>
-                </h:commandLink>
+                xmlns:trh="http://myfaces.apache.org/trinidad/html"
+                template="/layout.xhtml">
+    <ui:define name="content">
+        <div>
+            <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
+                <div class="title headerPageTitle">Applications
+                    <h:commandLink id="add1" onclick="return Console.Ajax.loadPage('/demo/wizard.xhtml')">
+                        <span class="ui-icon ui-icon-plus" style="display: inline-block; float: right">Add new</span>
+                    </h:commandLink>
 
-            </div>
+                </div>
                 <div class="subHeading">List of currently deployed applications</div>
                 <tr:table var="app" value="#{listApplicationsBean.applications}" horizontalGridVisible="false" verticalGridVisible="false" rowBandingInterval="1">
                     <tr:column>
@@ -53,23 +55,57 @@
                         <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="return false;"/>
                     </tr:column>
                 </tr:table>
-        </div>
+            </div>
 
-        <div class="navObjectInfo">
-            <div class="title headerPageTitle">General</div>
-            <tr:panelFormLayout  id="applicationDetails">
-                <tr:inputText label="Name:" value="#{listApplicationsBean.selectedApplication.name}" readOnly="true"/>
-                <tr:inputText label="Mapped Urls:" value="oraclepaas.com" readOnly="true"/>
-                <tr:inputNumberSpinbox label="Memory limit:" value="512" minimum="512" maximum="2048" stepSize="512" columns="4"/>
-                <tr:inputNumberSpinbox label="Instances:" value="2" minimum="1" maximum="4"/>
-                <f:facet name="footer">
-                    <tr:panelHorizontalLayout inlineStyle="height:50px;">
-                       <tr:commandButton id="start" text="Start"/>
-                       <tr:commandButton text="Stop"/>
-                        <tr:commandButton text="Restart"/>
-                    </tr:panelHorizontalLayout>
-                </f:facet>
-            </tr:panelFormLayout>
+            <div class="navObjectInfo">
+                <div class="title headerPageTitle">General</div>
+                <tr:panelFormLayout  id="applicationDetails">
+                    <tr:inputText label="Name:" value="#{listApplicationsBean.selectedApplication.name}" readOnly="true"/>
+                    <tr:inputText label="Mapped Urls:" value="oraclepaas.com" readOnly="true"/>
+                    <tr:inputNumberSpinbox label="Memory limit:" value="512" minimum="512" maximum="2048" stepSize="512" columns="4"/>
+                    <tr:inputNumberSpinbox label="Instances:" value="2" minimum="1" maximum="4"/>
+                    <f:facet name="footer">
+                        <tr:panelHorizontalLayout inlineStyle="height:50px;">
+                            <tr:commandButton id="start" text="Start"/>
+                            <tr:commandButton text="Stop"/>
+                            <tr:commandButton text="Restart"/>
+                        </tr:panelHorizontalLayout>
+                    </f:facet>
+                </tr:panelFormLayout>
+            </div>
         </div>
-    </div>
+        <div>
+            <div class="navObjectInfo">
+                <div class="title headerPageTitle">Services</div>
+                <tr:table id="applicationServices" var="services" value="#{listApplicationsBean.selectedApplication.services}">
+                    <tr:column headerText="Name">
+                        #{services.name}
+                    </tr:column>
+                    <tr:column headerText="Type">
+                        #{services.type}
+                    </tr:column>
+                </tr:table>
+            </div>
+            <div class="navObjectInfo">
+                <div class="title headerPageTitle">Instances</div>
+                <tr:table id="applicationInstances" var="app" value="#{listApplicationsBean.applications}">
+                    <tr:column headerText="Host">
+                        171.30.49.213
+                    </tr:column>
+                    <tr:column headerText="CPU">
+                        2,0% (4)
+                    </tr:column>
+                    <tr:column headerText="Memory">
+                        92M (512M)
+                    </tr:column>
+                    <tr:column headerText="Disk">
+                        8M (512M)
+                    </tr:column>
+                    <tr:column headerText="Uptime">
+                        0h:1m:56s
+                    </tr:column>
+                </tr:table>
+            </div>
+        </div>
+    </ui:define>
 </ui:composition>

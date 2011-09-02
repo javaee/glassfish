@@ -47,13 +47,17 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:gf="http://java.sun.com/jsf/composite/glassfish"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
-                xmlns:trh="http://myfaces.apache.org/trinidad/html">
-    <h3>Application Deployment</h3>
+                xmlns:trh="http://myfaces.apache.org/trinidad/html"
+                template="/layout.xhtml">
 
-    <tr:form id="wizardForm" prependId="false" usesUpload="true">
-        <gf:wizard id="wizard" title="Deploy Application to cloud"
-                   currentStep="#{wizardBean.step}" 
-                   stepPages="#{wizardBean.stepPages}"
-                   stepLabels="#{wizardBean.stepLabels}"/>
-    </tr:form>
+    <ui:define name="content">
+        <h3>Application Deployment</h3>
+
+        <tr:form id="wizardForm" prependId="false" usesUpload="true">
+            <gf:wizard id="wizard" title="Deploy Application to cloud"
+                       currentStep="#{wizardBean.step}"
+                       stepPages="#{wizardBean.stepPages}"
+                       stepLabels="#{wizardBean.stepLabels}"/>
+        </tr:form>
+    </ui:define>
 </ui:composition>

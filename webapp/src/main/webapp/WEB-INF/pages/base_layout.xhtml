@@ -70,7 +70,12 @@
             .navButtons {
                 padding: 0px;
             }
+
+            .af_panelTabbed_body {
+                padding: 0px;
+            }
         </style>
+        <ui:insert name="head"/>
     </trh:head>
 
     <trh:body>
@@ -84,6 +89,7 @@
                 </div>
                 <div style="float: right; margin-top: 5px;">
                     <tr:form id="ajaxNavForm" prependId="false" >
+                        <h:inputHidden id="currentTab" value="#{appHelper.currentTab}"/>
                         <h:inputHidden id="content" value="#{appHelper.contentPage}"/>
                         <!-- tr:commandButton id="contentButton">
                             <f:ajax execute="@form" render=":ajaxBody" onevent="Console.Ajax.ajaxCallback" />
@@ -96,8 +102,8 @@
             </div>
             <div id="infoBar"></div>
             <div id="mainContent" class="topRightRounded bottomRightRounded topLeftRounded bottomLeftRounded">
+                <ui:include src="/demo/topLevelTabs.xhtml" />
                 <ui:insert name="body"/>
-
             </div>
         </div>
         <ui:remove>

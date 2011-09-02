@@ -44,10 +44,13 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
-                template="./layout.xhtml">
+                template="/layout.xhtml">
 
+    <ui:define name="head">
+        <meta http-equiv="Refresh" content="0; URL=demo/overview.jsf"/>
+    </ui:define>
     <ui:define name="content">
-        <ui:include src="#{appHelper.contentPage}"/>
+<!--        <h3>Loading application...</h3>-->
     </ui:define>
 
 </ui:composition>

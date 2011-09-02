@@ -43,30 +43,27 @@ import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
-@ManagedBean(eager = true)
+@ManagedBean
 @SessionScoped
 public class AppHelper implements Serializable {
-
-//    private String navType = "tree";
     private String contentPage = "/demo/overview.xhtml";
-    private String topNav = "/demo/topLevelTabs.xhtml";
+    private String currentTab = "Overview";
 
     public String getNavType() {
         return "blank";
     }
 
-    /*
-    public void setNavType(String layoutType) {
-        this.navType = layoutType;
+    public boolean isActiveTab(String tab) {
+        return tab.equalsIgnoreCase(currentTab);
     }
 
-    public SelectItem[] getSupportedNavTypes() {
-        return new SelectItem[]{
-                    //            new SelectItem("accordion")
-                    new SelectItem("tree"), new SelectItem("tabs")
-                };
+    public String getCurrentTab() {
+        return currentTab;
     }
-    */
+
+    public void setCurrentTab(String currentTab) {
+        this.currentTab = currentTab;
+    }
 
     public String getContentPage() {
         return contentPage;

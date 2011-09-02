@@ -45,51 +45,53 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:g="http://java.sun.com/jsf/glassfish"
-                xmlns:tr="http://myfaces.apache.org/trinidad">
+                xmlns:tr="http://myfaces.apache.org/trinidad"
+                template="/layout.xhtml">
+    <ui:define name="content">
+        <tr:form id="dndForm">
+            <tr:panelBox id="availableServers"
+                         text="Available Servers:"
+                         background="light"
+                         inlineStyle="width: 30%; float: left; ">
+                <g:droppable tolerance="touch"
+                             activeStyleClass="dropAllowed"
+                             datasource="selectedServersTable"
+                             dropListener="#{dragAndDropBean.availableDropListener}"
+                             onDropUpdate="availableServers selectedServers"
+                             scope="selected"
+                             />
+                <tr:table id="availableServersTable" var="server" value="#{dragAndDropBean.available}">
+                    <tr:column>
+                        <tr:panelBox id="server" text="#{server}"
+                                     inlineStyle="width: 150px;">
+                            <g:draggable scope="available" opacity="0.35" revert="true" revertDuration="0" helper="clone" cursor="move"/>
+                            Some details on the server!
+                        </tr:panelBox>
+                    </tr:column>
+                </tr:table>
+            </tr:panelBox>
 
-    <tr:form id="dndForm">
-        <tr:panelBox id="availableServers"
-                     text="Available Servers:"
-                     background="light"
-                     inlineStyle="width: 30%; float: left; ">
-            <g:droppable tolerance="touch"
-                         activeStyleClass="dropAllowed"
-                         datasource="selectedServersTable"
-                         dropListener="#{dragAndDropBean.availableDropListener}"
-                         onDropUpdate="availableServers selectedServers"
-                         scope="selected"
-                         />
-            <tr:table id="availableServersTable" var="server" value="#{dragAndDropBean.available}">
-                <tr:column>
-                    <tr:panelBox id="server" text="#{server}"
-                                 inlineStyle="width: 150px;">
-                        <g:draggable scope="available" opacity="0.35" revert="true" revertDuration="0" helper="clone" cursor="move"/>
-                        Some details on the server!
-                    </tr:panelBox>
-                </tr:column>
-            </tr:table>
-        </tr:panelBox>
-
-        <tr:panelBox id="selectedServers"
-                     text="Selected Servers:"
-                     background="light"
-                     inlineStyle="width: 30%;">
-            <g:droppable tolerance="touch"
-                         activeStyleClass="dropAllowed"
-                         datasource="availableServersTable"
-                         dropListener="#{dragAndDropBean.selectedDropListener}"
-                         onDropUpdate="availableServers selectedServers"
-                         scope="available"
-                         />
-            <tr:table id="selectedServersTable" value="#{dragAndDropBean.selected}" var="server">
-                <tr:column>
-                    <tr:panelBox id="server" text="#{server}"
-                                 inlineStyle="width: 150px;">
-                        <g:draggable scope="selected" opacity="0.35" revert="true" revertDuration="0" helper="clone" cursor="move"/>
-                        Some details on the server!
-                    </tr:panelBox>
-                </tr:column>
-            </tr:table>
-        </tr:panelBox>
-    </tr:form>
+            <tr:panelBox id="selectedServers"
+                         text="Selected Servers:"
+                         background="light"
+                         inlineStyle="width: 30%;">
+                <g:droppable tolerance="touch"
+                             activeStyleClass="dropAllowed"
+                             datasource="availableServersTable"
+                             dropListener="#{dragAndDropBean.selectedDropListener}"
+                             onDropUpdate="availableServers selectedServers"
+                             scope="available"
+                             />
+                <tr:table id="selectedServersTable" value="#{dragAndDropBean.selected}" var="server">
+                    <tr:column>
+                        <tr:panelBox id="server" text="#{server}"
+                                     inlineStyle="width: 150px;">
+                            <g:draggable scope="selected" opacity="0.35" revert="true" revertDuration="0" helper="clone" cursor="move"/>
+                            Some details on the server!
+                        </tr:panelBox>
+                    </tr:column>
+                </tr:table>
+            </tr:panelBox>
+        </tr:form>
+    </ui:define>
 </ui:composition>

@@ -39,8 +39,8 @@
  */
 if (typeof Console == 'undefined') {
     $(document).ready(function () {
-        Console.Ajax.processLinks();
-        Console.Ajax.validateForms();
+//        Console.Ajax.processLinks();
+//        Console.Ajax.validateForms();
         
         jsf.ajax.addOnError(Console.Ajax.onError);
     });
@@ -91,11 +91,12 @@ if (typeof Console == 'undefined') {
         
         onError: function(data) {
             if (data.errorName != undefined && data.errorName.indexOf("ViewExpiredException")){
+                console.debug(data.errorMessage);
                 window.location = window.location.href.replace("index", "login");
             } else if (data.errorMessage != undefined) {
-                alert(data.errorMessage);
+                console.debug(data.errorMessage);
             } else {
-                alert(data.description);
+                console.debug(data.description);
             }
             return false;
         },
@@ -210,6 +211,23 @@ if (typeof Console == 'undefined') {
     }
 
     Console.UI = {
+        switchTabs : function (tab, dest, event) {
+            var source = $('#currentTab')[0];
+            $('#currentTab').val(tab);
+            jsf.ajax.request(source, event, {
+                    execute:'@form',
+                    onevent: function(data) {
+                        if (data.status === 'success') {
+                            var path = window.location.pathname;
+                            var index = path.indexOf("/", 1);
+                            dest = path.substring(0, index) + dest.replace(".xhtml", ".jsf");
+                            window.location.pathname = dest;
+                        }
+                    }
+            });
+            return true;
+        },
+
         processServerTargets: function() {
         
             var createDraggable = function (e, target) {
