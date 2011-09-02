@@ -198,6 +198,10 @@ general Exceptions are not emitted out to the caller of the default RunLevelServ
     In the event the listener encounters a critical error and it is desirable for the operations of the default RunLevelService to be aborted, then an interrupt() could
 be called on the RunLevelService instance. The implementation is thread safe so that interrupt() can be called from the listener or by some other monitoring thread.
 
+** AsyncPostConstruct
+
+    In some situations, a component / service acts in such a way that it spawns threads to complete other internal initialization operations.  In such situations it is recommended that the service implements {{{./hk2-api/apidocs/org/glassfish/hk2/AsyncPostConstruct.html}AsyncPostConstruct}} instead of the standard PostConstruct contract.  The default RunLevelService will wait for all asynchronous operations to complete at a given run level before attempting to continue the startup process proceeding to subsequent run levels.
+
 
 Extensions
 
