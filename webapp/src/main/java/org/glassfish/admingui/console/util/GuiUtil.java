@@ -733,6 +733,20 @@ public class GuiUtil {
     }
 
 
+     public static List<String> getListFromMapKey(List<Map<String, String>> props, String... ids) {
+        List<String> keyList = new ArrayList<String>();
+        String id = "name";
+        if (ids != null) {
+            id = ids.length > 0 ? ids[0] : "name";
+        }
+        if (props != null) {
+            for (Map<String, String> oneProp : props) {
+                keyList.add(oneProp.get(id));
+            }
+        }
+        return keyList;
+    }
+
     public static final String I18N_RESOURCE_BUNDLE = "__i18n_resource_bundle";
     public static final String RESOURCE_NAME = "org.glassfish.admingui.core.Strings";
     public static final String COMMON_RESOURCE_NAME = "org.glassfish.common.admingui.Strings";

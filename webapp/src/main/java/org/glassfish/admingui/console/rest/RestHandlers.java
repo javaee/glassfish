@@ -5,13 +5,9 @@
 
 package org.glassfish.admingui.console.rest;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 import java.util.*;
 import org.glassfish.admingui.console.util.GuiUtil;
 
-@ManagedBean(eager = true)
-@SessionScoped
 public class RestHandlers {
 
     public Map restRequest(String endPoint, Map attrs, Object data, String contentType, String method, boolean quiet,
