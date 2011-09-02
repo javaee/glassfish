@@ -46,16 +46,16 @@
 
 Introduction
 
-    The RunLevelService was designed to offer lifecycle controller mechanisms to a system. Lifecycle involves the starting or stopping of a system in phases, known as run levels.
+    The RunLevelService was designed to offer life cycle controller mechanisms to a system. Life cycle involves the starting or stopping of a system in phases, known as run levels.
 
-    This is a departure from the traditional, ternary style of system lifecycle which was represented by the state machine (NotStarted_or_Shutdown <--> Starting_or_Stopping <--> Running). The issue with the traditional approach is that it doesn't offer the proper granularity to target more nuanced features. For example, consider an application server that wants to startup to a level where it can managed by a systems administrator but before it is made available for general public use. By adding an "admin run level" the state machine for the application server now becomes (NotStarted_or_Shutdown <--> Starting_or_Stopping <--> <<Admin>> <--> Running).
+    This is a departure from the traditional, ternary style of system life cycle which was represented by the state machine (NotStarted_or_Shutdown <--> Starting_or_Stopping <--> Running). The issue with the traditional approach is that it doesn't offer the proper granularity to target more nuanced features. For example, consider an application server that wants to startup to a level where it can managed by a systems administrator but before it is made available for general public use. By adding an "admin run level" the state machine for the application server now becomes (NotStarted_or_Shutdown <--> Starting_or_Stopping <--> <<Admin>> <--> Running).
 
-    The RunLevelService was also designed to support sub-systems within the global system, where the same lifecycle controllers can be used, but having a different set of run levels that are meaningful to that sub-system.
+    The RunLevelService was also designed to support sub-systems within the global system, where the same life cycle controllers can be used, but having a different set of run levels that are meaningful to that sub-system.
 
 
 Overview
 
-    The HK2 component system uses {{{./hk2-api/apidocs/org/jvnet/hk2/annotations/RunLevel.html}RunLevel}} to form higher levels of component lifecycle. HK2 normally employs a “lazy instantiation” model for component creation.  However, there are situations where the developer may want the instantiation to occur either immediately upon HK2 initialization or otherwise on some more regimented schedule. This can be accomplished using the RunLevel annotation.
+    The HK2 component system uses {{{./hk2-api/apidocs/org/jvnet/hk2/annotations/RunLevel.html}RunLevel}} to form higher levels of component life cycle. HK2 normally employs a “lazy instantiation” model for component creation.  However, there are situations where the developer may want the instantiation to occur either immediately upon HK2 initialization or otherwise on some more regimented schedule. This can be accomplished using the RunLevel annotation.
 
 * RunLevel's
 
@@ -157,7 +157,7 @@ public @interface Immediate {}
 occur. When not declared on the RunLevel annotation, the default, or global, run level scope is implied. A class type is used to represent the run level scope and
 will default to {{{./hk2-api/apidocs/org/glassfish/hk2/RunLevelDefaultScope.html}RunLevelDefaultScope}} unless otherwise specified.
 
-    RunLevel scoping is useful for modeling lifecycle for sub-systems which span more than a single service (e.g., "the ejb container",
+    RunLevel scoping is useful for modeling life cycle for sub-systems which span more than a single service (e.g., "the ejb container",
 "the logging sub system", etc.).
 
     See {{Extensions}} for more information
@@ -201,7 +201,7 @@ be called on the RunLevelService instance. The implementation is thread safe so 
 
 Extensions
 
-    As shown previously, run level scoping can be used useful for modeling lifecycle of sub-systems. Here is an example of how run level scope can be declared on a service.
+    As shown previously, run level scoping can be used useful for modeling life cycle of sub-systems. Here is an example of how run level scope can be declared on a service.
 
 +--------------+
 @RunLevel(2, runLevelScope=MySubsystemScope.class)
@@ -233,7 +233,7 @@ some of this default functionality - see the javadoc for details.
 
 Constraint Rules
 
-    RunLevel annotated services are different from normal services because they are governed by different lifecycle rules. Imagine a situation where a non-RunLevel annotated service declares an injection point of a RunLevel annotated service.
+    RunLevel annotated services are different from normal services because they are governed by different life cycle rules. Imagine a situation where a non-RunLevel annotated service declares an injection point of a RunLevel annotated service.
 
 +--------------+
 @Service
