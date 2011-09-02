@@ -85,8 +85,7 @@ import com.sun.hk2.component.InhabitantsScanner;
  * There are two ways to close this instance, either through {@link #getContext()}
  * or through calling {@link #close()} directly.
  *
- * @author Jerome Dochez
- * @author Jeff Trent
+ * @author Jerome Dochez, Jeff Trent
  */
 public abstract class InhabitantsParsingContextGenerator implements Closeable {
 

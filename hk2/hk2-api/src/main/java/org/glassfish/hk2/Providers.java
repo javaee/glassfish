@@ -48,9 +48,7 @@ import java.util.Collection;
  * This is often times produced by {@link ContractLocator} and {@link
  * ServiceLocator}.
  * 
- * @author Jerome Dochez
- * @author Jeff Trent
- * @author Mason Taube
+ * @author Jerome Dochez, Jeff Trent, Mason Taube
  */
 public interface Providers<T> {
 

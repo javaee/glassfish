@@ -53,8 +53,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Defines a run/start level.
  * 
- * @author Jerome Dochez
- * @author Jeff Trent
+ * @author Jerome Dochez, Jeff Trent
  */
 @Retention(RUNTIME)
 @Target({TYPE, ANNOTATION_TYPE})

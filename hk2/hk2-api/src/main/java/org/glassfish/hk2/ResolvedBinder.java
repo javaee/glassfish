@@ -43,10 +43,9 @@ package org.glassfish.hk2;
  * This contract is used to apply scope to an otherwise described / resolved
  * {@link Binder}.
  * 
- * @see NamedBinder
+ * @author Jerome Dochez, @author Jeff Trent
  * 
- * @author Jerome Dochez
- * @author Jeff Trent
+ * @see NamedBinder
  */
 public interface ResolvedBinder<T> {
 

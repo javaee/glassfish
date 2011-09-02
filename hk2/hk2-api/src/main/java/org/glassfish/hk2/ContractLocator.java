@@ -53,9 +53,7 @@ import java.lang.annotation.Annotation;
  * This interface provides a builder like pattern that can be used to
  * refine the criteria for the {@link Providers} it will return.
  * 
- * @author Jerome Dochez
- * @author Jeff Trent
- * @author Mason Taube
+ * @author Jerome Dochez, Jeff Trent, Mason Taube
  * 
  * @see Locator
  * @see Providers

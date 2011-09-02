@@ -45,8 +45,7 @@ import java.util.Collection;
 /**
  * Provide a simple abstraction for getting services by contract or type.
  *
- * @author Jerome Dochez
- * @author Jeff Trent
+ * @author Jerome Dochez, Jeff Trent
  */
 public interface SimpleServiceLocator {
 

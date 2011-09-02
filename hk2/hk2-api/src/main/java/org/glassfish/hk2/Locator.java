@@ -59,9 +59,7 @@ import org.jvnet.hk2.annotations.Contract;
  * for most developers to avoid programmatic service resolution, 
  * and to instead rely upon DI wherever possible.
  * 
- * @author Jerome Dochez
- * @author Jeff Trent
- * @author Mason Taube
+ * @author Jerome Dochez, Jeff Trent, Mason Taube
  */
 public interface Locator {
 

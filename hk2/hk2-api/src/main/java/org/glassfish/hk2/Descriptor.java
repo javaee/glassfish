@@ -50,9 +50,7 @@ import java.util.Collection;
  * A service is required to minimally have a type name representing the
  * concrete (i.e., byType) definition.
  * 
- * @author Jerome Dochez
- * @author Jeff Trent
- * @author Mason Taube
+ * @author Jerome Dochez, Jeff Trent, Mason Taube
  */
 public interface Descriptor {
 

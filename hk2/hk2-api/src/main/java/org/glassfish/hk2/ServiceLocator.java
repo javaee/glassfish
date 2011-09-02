@@ -95,9 +95,7 @@ package org.glassfish.hk2;
  * <p>
  * See {@link ContractLocator} for more detail.
  * 
- * @author Jerome Dochez 
- * @author Jeff Trent
- * @author Mason Taube
+ * @author Jerome Dochez, Jeff Trent, Mason Taube
  * 
  * @see ContractLocator
  */

@@ -55,8 +55,7 @@ package org.glassfish.hk2;
  * Important Note: A new binding is completed only after calling
  * one of the "to*(...)" methods of {@link NamedBinder}.
  *
- * @author Jerome Dochez
- * @auhor Jeff Trent
+ * @author Jerome Dochez, Jeff Trent
  */
 public interface BinderFactory {
 
