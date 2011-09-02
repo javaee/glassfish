@@ -46,7 +46,16 @@
 
 Introduction
 
-    The HK2 component system uses {{{./hk2-api/apidocs/org/jvnet/hk2/annotations/RunLevel}RunLevel}} to form higher levels of component lifecycle. HK2 normally employs a “lazy instantiation” model for component creation. However, there are situations where the developer may want the instantiation to occur either immediately upon HK2 initialization or otherwise on some more regimented schedule.
+    The RunLevelService was designed to offer lifecycle controller mechanisms to a system. Lifecycle involves the starting or stopping of a system in phases, known as run levels.
+
+    This is a departure from the traditional, ternary style of system lifecycle which was represented by the state machine (NotStarted_or_Shutdown <--> Starting_or_Stopping <--> Running). The issue with the traditional approach is that it doesn't offer the proper granularity to target more nuanced features. For example, consider an application server that wants to startup to a level where it can managed by a systems administrator but before it is made available for general public use. By adding an "admin run level" the state machine for the application server now becomes (NotStarted_or_Shutdown <--> Starting_or_Stopping <--> <<Admin>> <--> Running).
+
+    The RunLevelService was also designed to support sub-systems within the global system, where the same lifecycle controllers can be used, but having a different set of run levels that are meaningful to that sub-system.
+
+
+Overview
+
+    The HK2 component system uses {{{./hk2-api/apidocs/org/jvnet/hk2/annotations/RunLevel}RunLevel}} to form higher levels of component lifecycle. HK2 normally employs a “lazy instantiation” model for component creation.  However, there are situations where the developer may want the instantiation to occur either immediately upon HK2 initialization or otherwise on some more regimented schedule. This can be accomplished using the RunLevel annotation.
 
 * RunLevel's
 
@@ -204,7 +213,7 @@ public MySubsystemService implements MyContract {
     Here, MySubsystemService is now mapped to the MySubsystemScope run level scope.  Note that it's perfectly fine to also declare meta-annotations for scoped
 run levels as well.
 
-    It is important that if you are using run level scoping extensions, you will also be responsible for implementing a
+    It is important to note that if you are using run level scoping extensions, you will also be responsible for implementing a
 {{{./auto-depends/apidocs/org/jvnet/hk2/component/RunLevelService}RunLevelService}} associated with your scope.  Fortunately, HK2 provides an easy way to do this by
 extending the {{{./auto-depends/apidocs/org/jvnet/hk2/component/AbstractRunLevelService}AbstractRunLevelService}}.
 
@@ -217,7 +226,7 @@ public class MySubsystemRunLevelService extends AbstractRunLevelService<MySubsys
 }
 +--------------+
 
-    The same approach for setting the metadata having RunLevel.META_SCOPE_TAG should also be used when creating custom activators, sorters, and listeners. Any instance
+    The RunLevel.META_SCOPE_TAG set in the metadata of the system is the important point to remember. The same approach for setting the metadata having RunLevel.META_SCOPE_TAG should also be used when creating custom activators, sorters, and listeners. Any instance
 of these types that are not annotated in this way will be assumed to belong to the default RunLevelService. The AbstractRunLevelService provides setters to override
 some of this default functionality - see the javadoc for details.
 
@@ -240,22 +249,22 @@ public MyService4 implements MyContract {
 +--------------+
 
     If someone attempt to obtain (or be injected with) a StandardService, it is ambiguous whether or not the operation can be successful since it depends on the state of the default run level service. If the current run level is 0 then the StandardService cannot be instantiated because it needs a MyService4 instance that is not permitted to be
-created until run level value 2 is reached.  Furthermore, assume that the run level is current at 3, and it HK2 permitted the acquisition of StandardService injected with
-an instance of MyService4. Now, if shutdown occurs (i.e., proceedTo(0)) then the StandardService#myService4 instance becomes an orphan from the Habitat.
+created until run level value 2 is reached.  Furthermore, assume that the run level is current at 3, and HK2 permitted the acquisition of StandardService injected with
+an instance of MyService4. Now, if partial shutdown occurs (i.e., proceedTo(1)) then the StandardService#myService4 instance becomes an orphan from the Habitat and may cause an error.
 
-    These issues are avoided by certain semantic rules put in force when using RunLevel annotated services.  These rules include:
+    These issues are avoided by three semantical constraints placed on the use of RunLevel annotated services.  These rules include:
 
     * A standard, non-RunLevel annotated service can not be injected with a RunLevel annotated service.
 
     * A RunLevel annotated service with run level value N can not be injected with a RunLevel annotated service with value M when M > N.
 
-    * A RunLevel annotated service in run level scope X cannot be injected with a a RunLevel annotated service in run level scope Y when X != Y.
+    * A RunLevel annotated service in run level scope X cannot be injected with a RunLevel annotated service in run level scope Y when X != Y.
 
     []
 
     <<All rules are enforced at runtime.>>
 
-    There are two exceptions that are provided to get around these constraint rules:
+    There are two exceptions that are provided to bypass these constraint rules:
 
     * Holder-style injection bypasses the normal constraint rules.
 
@@ -275,13 +284,13 @@ public MyService4 implements MyContract {
 +--------------+
 
     It is important to note, however, that the service instance obtained from the Holder should never be cached or otherwise held unto for extended periods of time
-(i.e., not carried in a class field) since the run level annotated service can eventually be nulled when the run level service responsible for that service is shutting down.  Also be careful to perform null checks at all times.
+(i.e., not carried in a class field) since the run level annotated service can eventually be nulled when the run level service responsible for that service is shutting down. Also be careful to perform null checks at all times.
 
     * RunLevel(strict=false)
 
-    See the javadoc for details.
+    Declaring the run level with strict=false simply provides a means to create demand for the service when reaching the given run level. It will NOT, however, be managed / released as part of shutdown processing.
+
+    See the javadoc for additional details.
 
     []
-
-
 
