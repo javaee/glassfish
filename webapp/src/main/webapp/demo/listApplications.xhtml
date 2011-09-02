@@ -44,6 +44,12 @@
                             <f:setPropertyActionListener target="#{listApplicationsBean.selectedApplication}" value="#{app}"/>
                         </h:commandLink>
                     </tr:column>
+                    <tr:column>
+                        <h:commandLink id="launch" value="launch"
+                                onclick="return Console.Ajax.loadPage('/demo/webApplicationLinks.xhtml')">
+                            <f:setPropertyActionListener target="#{listApplicationsBean.selectedApplication}" value="#{app}"/>
+                        </h:commandLink>
+                    </tr:column>
                     <tr:column width="20px">
                         <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="return false;"/>
                     </tr:column>
@@ -65,39 +71,6 @@
                     </tr:panelHorizontalLayout>
                 </f:facet>
             </tr:panelFormLayout>
-        </div>
-    </div>
-    <div>
-        <div class="navObjectInfo">
-            <div class="title headerPageTitle">Services</div>
-            <tr:table id="applicationServices" var="services" value="#{listApplicationsBean.selectedApplication.services}">
-                <tr:column headerText="Name">
-                    #{services.name}
-                </tr:column>
-                <tr:column headerText="Type">
-                    #{services.type}
-                </tr:column>
-            </tr:table>
-        </div>
-        <div class="navObjectInfo">
-            <div class="title headerPageTitle">Instances</div>
-            <tr:table id="applicationInstances" var="app" value="#{listApplicationsBean.applications}">
-                <tr:column headerText="Host">
-                    171.30.49.213
-                </tr:column>
-                <tr:column headerText="CPU">
-                    2,0% (4)
-                </tr:column>
-                <tr:column headerText="Memory">
-                    92M (512M)
-                </tr:column>
-                <tr:column headerText="Disk">
-                    8M (512M)
-                </tr:column>
-                <tr:column headerText="Uptime">
-                    0h:1m:56s
-                </tr:column>
-            </tr:table>
         </div>
     </div>
 

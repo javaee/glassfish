@@ -91,5 +91,13 @@ public class ListApplicationsBean {
             return allServices;
         }
 
+        public List<Map> getLaunchLinks() {
+            List<Map> launchLinks = new ArrayList();
+            Map<String, String> sMap = new HashMap();
+            sMap.put("URL", "localhost:8080/admin-console");
+
+            launchLinks.add(sMap);
+            return launchLinks;
+        }
     }
 }
