@@ -85,8 +85,12 @@ public class DraggableRenderer extends Renderer {
             writer.write(",helper:'" + draggable.getHelper() + "'");
         }
 
-        if (draggable.isRevert()) {
-            writer.write(",revert:'invalid'");
+        if (draggable.getRevert() != null) {
+            final String revert = draggable.getRevert();
+
+            writer.write(",revert:" + 
+                    (("true".equalsIgnoreCase(revert) || "false".equals(revert)) ?
+                    revert : "'" + revert + "'"));
         }
 
         if (draggable.getZindex() != -1) {
@@ -99,6 +103,10 @@ public class DraggableRenderer extends Renderer {
 
         if (draggable.getOpacity() != 1.0) {
             writer.write(",opacity:" + draggable.getOpacity());
+        }
+
+        if (draggable.getRevertDuration() != null) {
+            writer.write(",revertDuration:" + draggable.getRevertDuration());
         }
 
         if (draggable.getStack() != null) {

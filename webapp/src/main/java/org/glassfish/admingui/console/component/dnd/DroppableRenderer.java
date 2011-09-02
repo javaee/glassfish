@@ -143,12 +143,6 @@ public class DroppableRenderer extends Renderer {
                 writer.write("ui.draggable.fadeOut('fast');\n");
             }
 
-            /*
-            writer.write("var params = {" + clientId + ": '" + clientId + "',\n");
-            writer.write(clientId + "_dragId: ui.draggable.attr('id'),\n");
-            writer.write(clientId + "_dropId: '" + target + "'};\n");
-            */
-
             writer.write("jsf.ajax.request('" + target + "', event, {\n");
             writer.write("execute:'" + clientId + "',\n");
             writer.write("render:'@form',\n");

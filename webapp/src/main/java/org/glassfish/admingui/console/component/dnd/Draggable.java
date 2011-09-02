@@ -56,7 +56,26 @@ public class Draggable extends UIComponentBase {
 
     protected enum PropertyKeys {
 
-        proxy, dragOnly, forValue("for"), disabled, axis, containment, helper, revert, snap, snapMode, snapTolerance, zindex, handle, opacity, stack, grid, scope, cursor;
+        proxy, 
+        dragOnly, 
+        forValue("for"), 
+        disabled, 
+        axis, 
+        containment, 
+        helper, 
+        revert, 
+        snap, 
+        snapMode, 
+        snapTolerance, 
+        zindex, 
+        handle, 
+        opacity, 
+        stack, 
+        grid, 
+        scope, 
+        cursor,
+        revertDuration;
+        
         String toString;
 
         PropertyKeys(String toString) {
@@ -135,7 +154,7 @@ public class Draggable extends UIComponentBase {
     }
 
     public java.lang.String getHelper() {
-        return (java.lang.String) getStateHelper().eval(PropertyKeys.helper, null);
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.helper, "clone");
     }
 
     public void setHelper(java.lang.String _helper) {
@@ -143,11 +162,11 @@ public class Draggable extends UIComponentBase {
         handleAttribute("helper", _helper);
     }
 
-    public boolean isRevert() {
-        return (java.lang.Boolean) getStateHelper().eval(PropertyKeys.revert, false);
+    public String getRevert() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.revert, "false");
     }
 
-    public void setRevert(boolean _revert) {
+    public void setRevert(String _revert) {
         getStateHelper().put(PropertyKeys.revert, _revert);
         handleAttribute("revert", _revert);
     }
@@ -177,6 +196,15 @@ public class Draggable extends UIComponentBase {
     public void setSnapTolerance(int _snapTolerance) {
         getStateHelper().put(PropertyKeys.snapTolerance, _snapTolerance);
         handleAttribute("snapTolerance", _snapTolerance);
+    }
+
+    public Integer getRevertDuration() {
+        return (java.lang.Integer) getStateHelper().eval(PropertyKeys.revertDuration, null);
+    }
+
+    public void setRevertDuration(Integer _revertDuration) {
+        getStateHelper().put(PropertyKeys.revertDuration, _revertDuration);
+        handleAttribute("revertDuration", _revertDuration);
     }
 
     public int getZindex() {
