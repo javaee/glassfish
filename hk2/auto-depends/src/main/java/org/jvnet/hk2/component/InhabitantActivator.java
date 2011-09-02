@@ -53,7 +53,7 @@ import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
  * 
  * @see RunLevelService
  * 
- * @author Jeff trent
+ * @author Jeff Trent
  */
 @Contract
 public interface InhabitantActivator {

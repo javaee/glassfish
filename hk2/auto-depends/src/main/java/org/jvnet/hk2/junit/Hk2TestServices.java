@@ -65,8 +65,7 @@ import java.util.logging.Logger;
  * <p>
  * Caller's can optionally use a caching scheme using the system property -Dhk2testservices.file.caching=true .
  *
- * @author Jerome Dochez
- * @uathor Jeff Trent
+ * @author Jerome Dochez, Jeff Trent
  */
 public class Hk2TestServices {
 

@@ -57,8 +57,7 @@ import org.jvnet.hk2.annotations.Contract;
  * Each {@link Module} must implement the {@link Module#configure(BinderFactory)} method
  * to configure its services.
  * 
- * @author Jerome Dochez
- * @author Jeff Trent
+ * @author Jerome Dochez, Jeff Trent
  */
 @Contract
 public interface Module {

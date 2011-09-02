@@ -50,8 +50,7 @@ package org.glassfish.hk2;
  * this interface name and this name, this binding will
  * replace the service in the registry.
  *
- * @author Jerome Dochez
- * @author Jeff Trent
+ * @author Jerome Dochez, Jeff Trent
  */
 public interface Binder<T> extends NamedBinder<T> {
 

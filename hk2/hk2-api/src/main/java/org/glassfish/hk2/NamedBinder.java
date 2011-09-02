@@ -55,9 +55,7 @@ import java.lang.annotation.Annotation;
  * provided - the target is the actual implementation strategy behing the
  * binding (e.g., class name to load reflectively, a factory, etc.).
  * 
- * @param <U> TODO javadoc.
- * @author Jerome Dochez
- * @author Jeff Trent
+ * @author Jerome Dochez, Jeff Trent
  */
 public interface NamedBinder<U>  {
 

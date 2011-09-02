@@ -53,9 +53,7 @@ import java.util.Collection;
  * registered {@link Binding} entry in the correct context appropriate for
  * the caller.
  * 
- * @author Jerome Dochez
- * @author Jeff Trent
- * @author Mason Taube
+ * @author Jerome Dochez, Jeff Trent, Mason Taube
  *  
  * @see ManagedComponentProvider
  */

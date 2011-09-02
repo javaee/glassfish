@@ -43,8 +43,7 @@ package org.glassfish.hk2;
  * Sub interfaces of the {@link BinderFactory} to allow dynamic registration
  * of services.
  *
- * @author Jerome Dochez
- * @author Jeff Trent
+ * @author Jerome Dochez, Jeff Trent
  */
 public interface DynamicBinderFactory extends BinderFactory {
 

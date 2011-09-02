@@ -58,8 +58,7 @@ import org.jvnet.hk2.component.Habitat;
 /**
  * Helper for creating classpath approximating SE behavior.
  * 
- * @author Jerome Dochez
- * @author Jeff Trent
+ * @author Jerome Dochez, Jeff Trent
  */
 public abstract class ClassPath {
 

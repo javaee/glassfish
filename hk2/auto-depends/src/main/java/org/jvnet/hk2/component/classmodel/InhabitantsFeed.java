@@ -58,8 +58,7 @@ import com.sun.hk2.component.IntrospectionScanner;
  * Responsible for feeding inhabitants into a habitat, thru the
  * provided {@link InhabitantsParser}.
  *
- * @author Jerome Dochez
- * @author Jeff Trent
+ * @author Jerome Dochez, Jeff Trent
  */
 public abstract class InhabitantsFeed {
 

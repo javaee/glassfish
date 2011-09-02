@@ -68,8 +68,7 @@ import org.jvnet.hk2.component.MultiMap;
  * 
  * @see InhabitantFileBasedParser
  * 
- * @author Kohsuke Kawaguchi
- * @author Jeff Trent
+ * @author Kohsuke Kawaguchi, Jeff Trent
  */
 @SuppressWarnings("serial")
 public class InhabitantsDescriptor extends HashMap<String, String> {

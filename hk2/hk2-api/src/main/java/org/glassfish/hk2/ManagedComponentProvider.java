@@ -60,8 +60,7 @@ package org.glassfish.hk2;
  * 	<li> (d) once released, a call to get() will return a newly created
  * 			instance.   
  * 
- * @author Jerome Dochez
- * @author Jeff Trent
+ * @author Jerome Dochez, Jeff Trent
  */
 public interface ManagedComponentProvider<T> extends Provider<T> {
 

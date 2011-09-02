@@ -45,9 +45,7 @@ import org.glassfish.hk2.inject.InjectionPoint;
  * Used by {@link Binding} to describe how the Binding's {@link
  * Provider} will be used.
  * 
- * @author Jerome Dochez
- * @author Jeff Trent
- * @author Mason Taube
+ * @author Jerome Dochez, Jeff Trent, Mason Taube
  */
 public interface Context {
 

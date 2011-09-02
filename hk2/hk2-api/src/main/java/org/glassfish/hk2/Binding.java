@@ -48,9 +48,7 @@ package org.glassfish.hk2;
  * a {@link Provider} provides the runtime services for the given registered
  * Binding entry in the correct context appropriate for the caller.
  *  
- * @author Jerome Dochez
- * @author Jeff Trent
- * @author Mason Taube
+ * @author Jerome Dochez, Jeff Trent, Mason Taube
  */
 public interface Binding<T> {
 

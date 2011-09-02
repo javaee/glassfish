@@ -75,9 +75,7 @@ package org.glassfish.hk2;
  * JSR-330/299, on the other hand, will be released when its parent
  * component/service/bean is released (i.e., goes out of scope).
  *
- * @author Jerome Dochez
- * @author Jeff Trent
- * @author Mason Taube
+ * @author Jerome Dochez, Jeff Trent, Mason Taube
  */
 public interface Factory<T> {
 
