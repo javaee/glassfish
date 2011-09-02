@@ -62,7 +62,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.sun.hk2.component.*;
 import org.glassfish.hk2.Binding;
 import org.glassfish.hk2.ContractLocator;
 import org.glassfish.hk2.Descriptor;
@@ -72,7 +71,6 @@ import org.glassfish.hk2.ScopeInstance;
 import org.glassfish.hk2.ServiceLocator;
 import org.glassfish.hk2.Services;
 import org.glassfish.hk2.TypeLiteral;
-import org.glassfish.hk2.classmodel.reflect.Types;
 import org.glassfish.hk2.inject.Injector;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
@@ -82,6 +80,15 @@ import org.jvnet.hk2.component.InhabitantTracker.Callback;
 import org.jvnet.hk2.component.concurrent.Hk2Executor;
 import org.jvnet.hk2.component.concurrent.SameThreadExecutor;
 import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
+
+import com.sun.hk2.component.AbstractInhabitantImpl;
+import com.sun.hk2.component.ConstructorCreator;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
+import com.sun.hk2.component.FactoryCreator;
+import com.sun.hk2.component.InjectInjectionResolver;
+import com.sun.hk2.component.InjectionResolver;
+import com.sun.hk2.component.RunLevelInhabitantProvider;
+import com.sun.hk2.component.ScopeInstanceImpl;
 
 /**
  * A set of templates that constitute a world of objects.
@@ -403,8 +410,11 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
                 new HashSet<String>(Arrays.asList(typeNames)));
     }
 
-    protected void addHabitatListener(HabitatListener listener,
-                                      Set<String> typeNames) {
+    protected void addHabitatListener(HabitatListener listener, Set<String> typeNames) {
+        if (null == listener) {
+            throw new IllegalArgumentException();
+        }
+        
         ExistingSingletonInhabitant<HabitatListener> inhabitant = new ExistingSingletonInhabitant<HabitatListener>(
                 HabitatListener.class, listener, metaData(typeNames));
         add(inhabitant);
@@ -440,7 +450,7 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
         Iterator<Inhabitant> iter = list.iterator();
         while (iter.hasNext()) {
             Inhabitant existing = iter.next();
-            if (existing.get() == listener) {
+            if (null != existing && existing.get() == listener) {
                 releaseList.add(existing);
                 if (concurrencyControls) {
                     list.remove(existing);
