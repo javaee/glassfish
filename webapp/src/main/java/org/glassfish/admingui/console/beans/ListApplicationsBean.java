@@ -10,6 +10,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import java.util.*;
 import org.glassfish.admingui.console.rest.RestUtil;
+import org.glassfish.admingui.console.util.CommandUtil;
 
 @ManagedBean(name="listApplicationsBean")
 @SessionScoped
@@ -71,19 +72,7 @@ public class ListApplicationsBean {
         }
 
         public List<Map> getServices() {
-            //TODO: This should get the list of Services thats provisoned for this application.
-            //list-services appName.
-            List<Map> allServices = new ArrayList();
-            Map<String, String> sMap = new HashMap();
-            sMap.put("name", name+":mycluster.mycluster-1");
-            sMap.put("type", "ClusterInstance");
-
-            allServices.add(sMap);
-            Map<String, String> sMap2 = new HashMap();
-            sMap2.put("name", name+":default-derby-dbs");
-            sMap2.put("type", "database");
-            allServices.add(sMap2);
-            return allServices;
+            return CommandUtil.listServices(name, null, null);
         }
 
         public List<Map> instances() {

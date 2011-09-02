@@ -5,6 +5,7 @@
 package org.glassfish.admingui.console;
 
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,6 +14,7 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.event.ValueChangeEvent;
 import org.apache.myfaces.trinidad.model.UploadedFile;
 import org.glassfish.admingui.console.event.DragDropEvent;
+import org.glassfish.admingui.console.util.FileUtil;
 
 
 /**
@@ -23,6 +25,7 @@ import org.glassfish.admingui.console.event.DragDropEvent;
 @SessionScoped
 public class UploadBean {
     private UploadedFile _file;
+    private File tmpFile;
     private String appName;
     private String desc;
     private String contextRoot;
@@ -52,7 +55,23 @@ public class UploadBean {
     public void fileUploaded(ValueChangeEvent event) {
         System.out.println("------ in filUploaded");
         UploadedFile file = (UploadedFile) event.getNewValue();
+        try{
+            if (file != null) {
+                //FacesContext context = FacesContext.getCurrentInstance();
+                //FacesMessage message = new FacesMessage( "Successfully uploaded file " + file.getFilename() + " (" + file.getLength() + " bytes)");
+                //context.addMessage(event.getComponent().getClientId(context), message);
+                // Here's where we could call file.getInputStream()
+                System.out.println("getFilename=" + file.getFilename());
+                System.out.println("getLength=" + file.getLength());
+                System.out.println("getContentType=" + file.getContentType());
+                File tf = FileUtil.inputStreamToFile(file.getInputStream(), file.getFilename());
+                tmpFile = tf;
+            }
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
     }
+
 
     public UploadedFile getFile() {
         return _file;
