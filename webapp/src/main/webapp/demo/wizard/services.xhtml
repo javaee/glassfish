@@ -32,8 +32,10 @@
     </trh:head>
 
     <tr:form>
-            <tr:panelAccordion inlineStyle="width: 1000px">
-                <tr:showDetailItem text="RDBMS" id="databaseDetails">
+        <tr:panelBox text="RDBMS"
+             background="light"
+             inlineStyle = "width: 600px"
+             id="databaseDetails">
                     <tr:table var="database" value="#{listServicesBean.databases}" horizontalGridVisible="false"
                               verticalGridVisible="false" rowBandingInterval="1" inlineStyle="width: 200px; display: inline-block; vertical-align: top">
                         <tr:column>
@@ -49,8 +51,11 @@
                         <tr:inputText label="Password:" value="#{listServicesBean.selectedDatabase.password}"  secret="true"/>
                         <tr:inputText label="JNDI Name:" value="#{listServicesBean.selectedDatabase.jndiName}"/>
                     </tr:panelFormLayout>
-                </tr:showDetailItem>
-                <tr:showDetailItem text="Java EE" id="templateDetails">
+        </tr:panelBox>
+        <tr:panelBox text="Templates"
+             background="light"
+             inlineStyle = "width: 600px;"
+             id="templateDetails">
                     <tr:table var="template" value="#{listServicesBean.templates}" horizontalGridVisible="false"
                               verticalGridVisible="false" rowBandingInterval="1" inlineStyle="width: 200px; display: inline-block; vertical-align: top">
                         <tr:column>
@@ -80,10 +85,11 @@
                             });
                         </script>
                     </tr:panelFormLayout>
-                </tr:showDetailItem>
-                <tr:showDetailItem text="Load Balancer"  disabled="true">
-                </tr:showDetailItem>
-            </tr:panelAccordion>
+        </tr:panelBox>
+        <tr:panelBox text="Services"
+             background="light"
+             inlineStyle = "width: 600px">
+        </tr:panelBox>
         </tr:form>
 
 </ui:composition>
