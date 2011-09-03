@@ -17,9 +17,17 @@ import org.glassfish.admingui.console.rest.RestUtil;
  */
 public class CommandUtil {
 
-
-    //appName, type and scope are all optional argument to list-services.
-    //pass in null if you don't need this option in the list-services command.
+    /**
+     *	<p> This method returns the list of Services. </p>
+     *
+     *	@param	appName	    Name of Application. This is optional parameter, can be set to NULL.
+     *	@param	type        Service type. Possible value is "Cluster", "ClusterInstance", "database".
+     *                      This is optional parameter, can be set to Null.
+     *  @param  scope       Scope of services.  Possible value is "external", "shared", "application".
+     *                      This is optional parameter, can be set to NULL.
+     *
+     *	@return	<code>List<Map></code>  Each map represents one Service.
+     */
     public static List<Map> listServices(String appName, String type, String scope){
 
         List<Map>services = null;
@@ -31,15 +39,8 @@ public class CommandUtil {
         putOptionalAttrs(attrs, "type", type);
         putOptionalAttrs(attrs, "scope", scope);
 
-        try{
-            Map responseMap = RestUtil.restRequest( endpoint , attrs, "GET" , null, null, false, true);
-            Map extraPropertiesMap = (Map)((Map)responseMap.get("data")).get("extraProperties");
-            if (extraPropertiesMap != null){
-                services = (List)extraPropertiesMap.get("list");
-            }
-        }catch (Exception ex){
-            GuiUtil.getLogger().severe("cannot List Services");
-        }
+
+        services = getListFromREST(endpoint, attrs);
         if (services == null){
             services = new ArrayList();
             //temp, just put in some dummy data.
@@ -71,14 +72,66 @@ public class CommandUtil {
             services.add(m3);
         }
         return services;
-
     }
+
+
+    /**
+     *	<p> This method returns the list of Names of the existing Templates. </p>
+     *
+     *	@param	serviceType Acceptable value is "JavaEE", "Database" "LoadBalancer".
+     *                      If set to NULL, all service type will be returned.
+     *	@return	<code>List<String></code>  Returns the list of names of the template.
+     */
+    public static List<String> listTemplates(String serviceType){
+
+        List<String>list = new ArrayList();
+        //String endpoint = GuiUtil.getSessionValue("REST_URL")+"/list-templates";
+        String endpoint = "http://localhost:4848/management/domain/list-templates";
+        Map attrs = new HashMap();
+        putOptionalAttrs(attrs, "type", serviceType);
+        //templates = getListFromREST(endpoint, attrs);
+
+        //provide dummy data as list-templates endpoint is not available yet.
+        if ((serviceType == null) || serviceType.equals("JavaEE")){
+            list.add("Native");
+            list.add("GLASSFISH_SMALL");
+            list.add("GLASSFISH_TINY");
+        }
+        if ((serviceType == null) || serviceType.equals("Datebase")){
+            list.add("NDBative");
+            list.add("DBSql");
+        }
+        if ((serviceType == null) || serviceType.equals("LB")){
+            list.add("LBBative");
+            list.add("MyLB");
+        }
+        return list;
+    }
+    
+    // TODO: provide util method to get default service and its properties.
+
+
+
 
     private static void putOptionalAttrs(Map attrs, String key, String value){
-            if (!GuiUtil.isEmpty(value)){
-                attrs.put(key, value);
-            }
+        if (!GuiUtil.isEmpty(value)){
+            attrs.put(key, value);
+        }
     }
 
+
+    private static List<Map> getListFromREST(String endpoint, Map attrs){
+        List result = null;
+        try{
+            Map responseMap = RestUtil.restRequest( endpoint , attrs, "GET" , null, null, false, true);
+            Map extraPropertiesMap = (Map)((Map)responseMap.get("data")).get("extraProperties");
+            if (extraPropertiesMap != null){
+                result = (List)extraPropertiesMap.get("list");
+            }
+        }catch (Exception ex){
+            GuiUtil.getLogger().severe("cannot List Services");
+        }
+        return result;
+    }
 
 }
