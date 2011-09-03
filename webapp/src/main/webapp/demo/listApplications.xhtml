@@ -32,9 +32,9 @@
         <div>
             <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
                 <div class="title headerPageTitle">Applications
-                    <h:commandLink id="add">
+                    <a id="add" href="#{request.contextPath}/demo/wizard.jsf">
                         <span class="ui-icon ui-icon-plus" style="display: inline-block; float: right">Add new</span>
-                    </h:commandLink>
+                    </a>
 
                 </div>
                 <div class="subHeading">List of currently deployed applications</div>
@@ -50,11 +50,7 @@
                             <f:setPropertyActionListener target="#{listApplicationsBean.selectedApplication}" value="#{app}"/>
                         </h:commandLink>
                     </tr:column>
-                    <tr:column>
-                        <h:commandLink id="launch" value="launch">
-                            <f:setPropertyActionListener target="#{listApplicationsBean.selectedApplication}" value="#{app}"/>
-                        </h:commandLink>
-                    </tr:column>                    <tr:column width="20px">
+                    <tr:column width="20px">
                         <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="return false;"/>
                     </tr:column>
                 </tr:table>
