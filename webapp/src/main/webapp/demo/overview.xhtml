@@ -33,9 +33,9 @@
         <div>
             <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
                 <div class="title headerPageTitle">Applications
-                    <h:commandLink id="add" onclick="return Console.Ajax.loadPage('/demo/wizard.xhtml')">
-                        <span class="ui-icon ui-icon-plus" style="display: inline-block; float: right">Add new</span>
-                    </h:commandLink>
+                    <a id="add" href="#{request.contextPath}/demo/wizard.jsf">
+                        <span style="display: inline-block; float: right">Add new</span>
+                    </a>
 
                 </div>
                 <div class="subHeading">List of currently deployed applications</div>
