@@ -34,7 +34,9 @@ public class ListApplicationsBean {
     public List<Application> getApplications() {
         List<Application> apps = new ArrayList<Application>();
         String endPoint = "http://localhost:4848/management/domain/applications/list-applications";
-        appData = (Map)RestUtil.restRequest(endPoint, new HashMap(), "GET", null, null, false, true).get("data");
+        Map attrs = new HashMap();
+        attrs.put("target", "domain");  //specify domain to get Paas deployed app.
+        appData = (Map)RestUtil.restRequest(endPoint, attrs, "GET", null, null, false, true).get("data");
         Map<String, String> props = (Map)appData.get("properties");
         for (String prop : props.keySet()) {
             apps.add(new Application(prop, true, props.get(prop)));

@@ -30,7 +30,6 @@
                 template="/layout.xhtml">
     <ui:define name="content">
 
-        <div>
             <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
                 <div class="title headerPageTitle">Applications
                     <a id="add" href="#{request.contextPath}/demo/wizard.jsf">
@@ -41,9 +40,7 @@
                 <div class="subHeading">List of currently deployed applications</div>
                 <tr:table var="app" value="#{listApplicationsBean.applications}" horizontalGridVisible="false" verticalGridVisible="false" rowBandingInterval="1">
                     <tr:column>
-                        <tr:commandLink id="applicationName" text="#{app.name}"
-                                        onclick="return Console.Ajax.loadPage('/demo/editApplication.xhtml')" >
-                        </tr:commandLink>
+                        <a id="applicationName"  href="#{request.contextPath}/demo/editApplication.jsf?appName=#{app.name}" > #{app.name} </a>
                     </tr:column>
                     <tr:column width="20px">
                         <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="return false;"/>
@@ -54,18 +51,18 @@
             <div class="navObjectInfo">
                 <div class="title headerPageTitle">Services</div>
                 <div class="subHeading">List of all services provisioned</div>
-                <tr:table id="services" var="services" value="#{overview.services}">
+                <tr:table id="services" var="svs" value="#{overview.services}">
                     <tr:column headerText="Name">
-                        #{services.serviceName}
+                        #{svs.serviceName}
                     </tr:column>
                     <tr:column headerText="Type">
-                        #{services.type}
+                        #{svs.serverType}
                     </tr:column>
                     <tr:column headerText="Scope">
-                        #{services.scope}
+                        #{svs.SCOPE}
                     </tr:column>
-                    <tr:column headerText="Application Name">
-                        #{services.applicationName}
+                    <tr:column headerText="State">
+                        <tr:image source="#{svs.stateImage}" shortDesc="#{svs.STATE}"/>
                     </tr:column>
                 </tr:table>
             </div>
@@ -84,6 +81,5 @@
                     </tr:column>
                 </tr:table>
             </div>
-        </div>
     </ui:define>
 </ui:composition>

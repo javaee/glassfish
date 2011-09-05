@@ -19,6 +19,7 @@
 	   
 -->
 
+
 <!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
@@ -26,8 +27,10 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ps="http://admingui.glassfish.org/console"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
-                xmlns:trh="http://myfaces.apache.org/trinidad/html">
+                xmlns:trh="http://myfaces.apache.org/trinidad/html"
+                template="/layout.xhtml">
 
+<ui:define name="content">
     <div>
         <div class="navObjectInfo">
             <div class="title headerPageTitle">General</div>
@@ -60,10 +63,13 @@
                     #{services.serviceName}
                 </tr:column>
                 <tr:column headerText="Type">
-                    #{services.type}
+                    #{services.serverType}
                 </tr:column>
                 <tr:column headerText="Scope">
                     #{services.scope}
+                </tr:column>
+                <tr:column headerText="State">
+                    <tr:image source="#{services.stateImage}" shortDesc="#{services.STATE}"/>
                 </tr:column>
             </tr:table>
         </div>
@@ -88,5 +94,5 @@
             </tr:table>
         </div>
     </div>
-
+ </ui:define>
 </ui:composition>

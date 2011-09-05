@@ -70,7 +70,16 @@ public class CommandUtil {
             m3.put("ip-address", "127.0.0.2");
             m3.put("instance-id", "3");
             services.add(m3);
+        }else
+        { for(Map oneS : services){
+              oneS.put("serviceName" , oneS.get("SERVICE-NAME"));
+              oneS.put("serverType", oneS.get("SERVER-TYPE"));
+              if ("Running".equals(oneS.get("STATE"))){
+                  oneS.put("stateImage", "/images/running_small.gif");
+              }
+          }
         }
+        System.out.println("======== services = " + services);
         return services;
     }
 
@@ -123,14 +132,19 @@ public class CommandUtil {
     private static List<Map> getListFromREST(String endpoint, Map attrs){
         List result = null;
         try{
+            System.out.println("endpoint=" + endpoint);
+            System.out.println("attrs=" + attrs);
             Map responseMap = RestUtil.restRequest( endpoint , attrs, "GET" , null, null, false, true);
+             System.out.println("responseMap=" + responseMap);
             Map extraPropertiesMap = (Map)((Map)responseMap.get("data")).get("extraProperties");
+            System.out.println("responseMap=" + responseMap);
             if (extraPropertiesMap != null){
                 result = (List)extraPropertiesMap.get("list");
             }
         }catch (Exception ex){
             GuiUtil.getLogger().severe("cannot List Services");
         }
+        System.out.println("result, list=" + result);
         return result;
     }
 
