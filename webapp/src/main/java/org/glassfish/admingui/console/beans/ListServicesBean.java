@@ -40,31 +40,34 @@
 
 package org.glassfish.admingui.console.beans;
 
+import org.glassfish.admingui.console.util.CommandUtil;
+
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.model.SelectItem;
 import java.util.*;
 
 @ManagedBean(name="listServicesBean")
 @SessionScoped
 public class ListServicesBean {
     public List<Database> databases;
-    public List<Template> templates;
+    public List<JavaEE> javaEE;
 
     public ListServicesBean() {
-        databases = getDatabases();
-        templates = getTeamplates();
+        databases = loadDatabases();
+        javaEE = loadTemplates();
     }
 
-    public List<Template> getTemplates() {
-        return templates;
+    public List<Database> getDatabases() {
+        return databases;
     }
 
-    public void setTemplates(List<Template> templates) {
-        this.templates = templates;
+    public List<JavaEE> getJavaEE() {
+        return javaEE;
     }
 
     Database selectedDatabase = new Database();
-    Template selectedTemplate = new Template();
+    JavaEE selectedJavaEE = new JavaEE();
 
     public Database getSelectedDatabase() {
         return selectedDatabase;
@@ -74,15 +77,31 @@ public class ListServicesBean {
         this.selectedDatabase = selectedDatabase;
     }
 
-    public Template getSelectedTemplate() {
-        return selectedTemplate;
+    public JavaEE getSelectedJavaEE() {
+        return selectedJavaEE;
     }
 
-    public void setSelectedTemplate(Template selectedTemplate) {
-        this.selectedTemplate = selectedTemplate;
+    public void setSelectedJavaEE(JavaEE selectedJavaEE) {
+        this.selectedJavaEE = selectedJavaEE;
     }
 
-    public List<Database> getDatabases() {
+    public String getSelectedDatabaseName() {
+        return selectedDatabase.name;
+    }
+
+    public void setSelectedDatabaseName(String selectedDatabaseName) {
+        this.selectedDatabase.name = selectedDatabaseName;
+    }
+
+    public String getSelectedJavaEEName() {
+        return selectedJavaEE.name;
+    }
+
+    public void setSelectedJavaEEName(String selectedJavaEEName) {
+        this.selectedJavaEE.name = selectedJavaEEName;
+    }
+
+    public List<Database> loadDatabases() {
         List<Database> databases = new ArrayList<Database>();
         databases.add(new Database("MySQL", "root", "", "jdbc/_mysql_cloud_sample"));
         databases.add(new Database("Oracle", "system", "manager", "jdbc/_oracle_cloud_sample"));
@@ -90,14 +109,32 @@ public class ListServicesBean {
         return databases;
     }
 
-    private List<Template> getTeamplates() {
-        List<Template> tempaltes = new ArrayList<Template>();
-        tempaltes.add(new Template("GlassFish Small", "1-5"));
-        tempaltes.add(new Template("GF Medium", "1-5"));
+    public List<SelectItem> getDatabaseSelectItems() {
+        List<String> templates = CommandUtil.listTemplates(CommandUtil.SERVICE_TYPE_RDMBS);
+        List<SelectItem> databases = new ArrayList<SelectItem>(templates.size());
+        for (String template : templates) {
+            databases.add(new SelectItem(template));
+        }
+        return databases;
+    }
+
+    public List<SelectItem> getJavaEESelectItems() {
+        List<String> templates = CommandUtil.listTemplates(CommandUtil.SERVICE_TYPE_JAVAEE);
+        List<SelectItem> javaEE = new ArrayList<SelectItem>(templates.size());
+        for (String template : templates) {
+            javaEE.add(new SelectItem(template));
+        }
+        return javaEE;
+    }
+
+    private List<JavaEE> loadTemplates() {
+        List<JavaEE> tempaltes = new ArrayList<JavaEE>();
+        tempaltes.add(new JavaEE("GlassFish Small", "1-5"));
+        tempaltes.add(new JavaEE("GF Medium", "1-5"));
         return tempaltes;
     }
 
-    public static class Database {
+    public static class Database extends SelectItem {
         private String name;
         private String user;
         private String password;
@@ -111,6 +148,16 @@ public class ListServicesBean {
             this.user = user;
             this.password = password;
             this.jndiName = jndiName;
+        }
+
+        @Override
+        public String getLabel() {
+            return name;
+        }
+
+        @Override
+        public Object getValue() {
+            return name;
         }
 
         public String getName() {
@@ -148,14 +195,14 @@ public class ListServicesBean {
 
     }
 
-    public static class Template {
+    public static class JavaEE {
         private String name;
-        private String minMaxInstances;
+        private String minMaxInstances = "1 - 5";
 
-        public Template() {
+        public JavaEE() {
         }
 
-        public Template(String name, String minMaxInstances) {
+        public JavaEE(String name, String minMaxInstances) {
             this.name = name;
             this.minMaxInstances = minMaxInstances;
         }

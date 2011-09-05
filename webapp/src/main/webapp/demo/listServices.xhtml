@@ -29,8 +29,6 @@
                 xmlns:trh="http://myfaces.apache.org/trinidad/html"
                 template="/layout.xhtml">
     <ui:define name="content">
-        <trh:head>
-        </trh:head>
 
         <tr:form>
             <tr:panelAccordion inlineStyle="width: 1000px">
@@ -51,19 +49,19 @@
                         <tr:inputText label="JNDI Name:" value="#{listServicesBean.selectedDatabase.jndiName}"/>
                     </tr:panelFormLayout>
                 </tr:showDetailItem>
-                <tr:showDetailItem text="Java EE" id="templateDetails">
-                    <tr:table var="template" value="#{listServicesBean.templates}" horizontalGridVisible="false"
+                <tr:showDetailItem text="Java EE" id="javaEEDetails">
+                    <tr:table var="javaEE" value="#{listServicesBean.javaEE}" horizontalGridVisible="false"
                               verticalGridVisible="false" rowBandingInterval="1" inlineStyle="width: 200px; display: inline-block; vertical-align: top">
                         <tr:column>
-                            <tr:commandLink id="templateName" text="#{template.name}"  inlineStyle="#{template.name.equals(listServicesBean.selectedTemplate.name)? 'font-weight: bold' : ''}">
-                                <f:setPropertyActionListener target="#{listServicesBean.selectedTemplate}" value="#{template}"/>
-                                <f:ajax render=":templateDetails" />
+                            <tr:commandLink id="templateName" text="#{javaEE.name}" inlineStyle="#{javaEE.name.equals(listServicesBean.selectedJavaEE.name)? 'font-weight: bold' : ''}">
+                                <f:setPropertyActionListener target="#{listServicesBean.selectedJavaEE}" value="#{javaEE}"/>
+                                <f:ajax render=":javaEEDetails" execute="@this"/>
                             </tr:commandLink>
                         </tr:column>
                     </tr:table>
                     <tr:panelFormLayout inlineStyle="width: 200px; display: inline-block;">
-                        <tr:inputText label="Template Name:" value="#{listServicesBean.selectedTemplate.name}" />
-                        <tr:inputText id="amount" label="Min-Max # of Incances:" value="#{listServicesBean.selectedTemplate.minMaxInstances}" />
+                        <tr:inputText label="Template Name:" value="#{listServicesBean.selectedJavaEE.name}" />
+                        <tr:inputText id="amount" label="Min-Max # of Incances:" value="#{listServicesBean.selectedJavaEE.minMaxInstances}" />
                         <div id="slider-range"></div>
                         <script type="text/javascript">
                             $(function() {

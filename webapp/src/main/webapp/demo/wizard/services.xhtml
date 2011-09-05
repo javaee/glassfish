@@ -27,47 +27,35 @@
                 xmlns:ps="http://admingui.glassfish.org/console"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
-
-    <trh:head>
-    </trh:head>
-
     <tr:form>
         <tr:panelBox text="RDBMS"
              background="light"
              inlineStyle = "width: 600px"
              id="databaseDetails">
-                    <tr:table var="database" value="#{listServicesBean.databases}" horizontalGridVisible="false"
-                              verticalGridVisible="false" rowBandingInterval="1" inlineStyle="width: 200px; display: inline-block; vertical-align: top">
-                        <tr:column>
-                            <tr:commandLink id="databaseName" text="#{database.name}" inlineStyle="#{database.name.equals(listServicesBean.selectedDatabase.name)? 'font-weight: bold' : ''}">
-                                <f:setPropertyActionListener target="#{listServicesBean.selectedDatabase}" value="#{database}"/>
-                                <f:ajax render=":databaseDetails" />
-                             </tr:commandLink>
-                        </tr:column>
-                    </tr:table>
-                    <tr:panelFormLayout inlineStyle="width: 200px; display: inline-block;">
+                    <tr:selectOneListbox value="#{listServicesBean.selectedDatabaseName}" inlineStyle="display: inline-block;"
+                                         contentStyle="width: 187px;" size="6">
+                        <f:selectItems value="#{listServicesBean.databaseSelectItems}" />
+                        <f:ajax render=":databaseDetails"/>
+                    </tr:selectOneListbox>
+                    <tr:panelFormLayout inlineStyle="width: 200px; display: inline-block; vertical-align: top">
                         <tr:inputText label="Database Name:" value="#{listServicesBean.selectedDatabase.name}" />
                         <tr:inputText label="User:" value="#{listServicesBean.selectedDatabase.user}" />
                         <tr:inputText label="Password:" value="#{listServicesBean.selectedDatabase.password}"  secret="true"/>
                         <tr:inputText label="JNDI Name:" value="#{listServicesBean.selectedDatabase.jndiName}"/>
                     </tr:panelFormLayout>
         </tr:panelBox>
-        <tr:panelBox text="Templates"
+        <tr:panelBox text="JavaEE"
              background="light"
              inlineStyle = "width: 600px;"
-             id="templateDetails">
-                    <tr:table var="template" value="#{listServicesBean.templates}" horizontalGridVisible="false"
-                              verticalGridVisible="false" rowBandingInterval="1" inlineStyle="width: 200px; display: inline-block; vertical-align: top">
-                        <tr:column>
-                            <tr:commandLink id="templateName" text="#{template.name}"  inlineStyle="#{template.name.equals(listServicesBean.selectedTemplate.name)? 'font-weight: bold' : ''}">
-                                <f:setPropertyActionListener target="#{listServicesBean.selectedTemplate}" value="#{template}"/>
-                                <f:ajax render=":templateDetails" />
-                             </tr:commandLink>
-                        </tr:column>
-                    </tr:table>
-                    <tr:panelFormLayout inlineStyle="width: 200px; display: inline-block;">
-                        <tr:inputText label="Template Name:" value="#{listServicesBean.selectedTemplate.name}" />
-                        <tr:inputText id="amount" label="Min-Max # of Incances:" value="#{listServicesBean.selectedTemplate.minMaxInstances}" />
+             id="javaEEDetails">
+                    <tr:selectOneListbox value="#{listServicesBean.selectedJavaEEName}" inlineStyle="display: inline-block;"
+                                         contentStyle="width: 187px;" size="6">
+                        <f:selectItems value="#{listServicesBean.javaEESelectItems}" />
+                        <f:ajax render=":javaEEDetails"/>
+                    </tr:selectOneListbox>
+                    <tr:panelFormLayout inlineStyle="width: 200px; display: inline-block; vertical-align: top">
+                        <tr:inputText label="Template Name:" value="#{listServicesBean.selectedJavaEE.name}" />
+                        <tr:inputText id="amount" label="Min-Max # of Incances:" value="#{listServicesBean.selectedJavaEE.minMaxInstances}" />
                         <div id="slider-range"></div>
                         <script type="text/javascript">
                             $(function() {
@@ -86,10 +74,9 @@
                         </script>
                     </tr:panelFormLayout>
         </tr:panelBox>
-        <tr:panelBox text="Services"
+        <tr:panelBox text="Load Balancer"
              background="light"
              inlineStyle = "width: 600px">
         </tr:panelBox>
         </tr:form>
-
 </ui:composition>

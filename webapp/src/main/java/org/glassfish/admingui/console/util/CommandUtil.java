@@ -5,10 +5,8 @@
 
 package org.glassfish.admingui.console.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import org.glassfish.admingui.console.rest.RestUtil;
 
 /**
@@ -16,6 +14,10 @@ import org.glassfish.admingui.console.rest.RestUtil;
  * @author anilam
  */
 public class CommandUtil {
+    public static String SERVICE_TYPE_RDMBS = "Datebase";
+    public static final String SERVICE_TYPE_JAVAEE = "JavaEE";
+    private static final String SERVICE_TYPE_LB = "LB";
+
 
     /**
      *	<p> This method returns the list of Services. </p>
@@ -94,23 +96,23 @@ public class CommandUtil {
     public static List<String> listTemplates(String serviceType){
 
         List<String>list = new ArrayList();
-        //String endpoint = GuiUtil.getSessionValue("REST_URL")+"/list-templates";
-        String endpoint = "http://localhost:4848/management/domain/list-templates";
+        //String endpoint = GuiUtil.getSessionValue("REST_URL")+"/list-javaEE";
+        String endpoint = "http://localhost:4848/management/domain/list-javaEE";
         Map attrs = new HashMap();
         putOptionalAttrs(attrs, "type", serviceType);
-        //templates = getListFromREST(endpoint, attrs);
+        //javaEE = getListFromREST(endpoint, attrs);
 
-        //provide dummy data as list-templates endpoint is not available yet.
-        if ((serviceType == null) || serviceType.equals("JavaEE")){
+        //provide dummy data as list-javaEE endpoint is not available yet.
+        if (SERVICE_TYPE_JAVAEE.equals(serviceType)){
             list.add("Native");
             list.add("GLASSFISH_SMALL");
             list.add("GLASSFISH_TINY");
         }
-        if ((serviceType == null) || serviceType.equals("Datebase")){
+        if (SERVICE_TYPE_RDMBS.equals(serviceType)){
             list.add("NDBative");
             list.add("DBSql");
         }
-        if ((serviceType == null) || serviceType.equals("LB")){
+        if (SERVICE_TYPE_LB.equals(serviceType)){
             list.add("LBBative");
             list.add("MyLB");
         }
