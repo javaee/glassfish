@@ -35,7 +35,7 @@
         <div class="navObjectInfo">
             <div class="title headerPageTitle">General</div>
             <tr:panelFormLayout  id="applicationDetails">
-                <tr:inputText label="Name" value="#{listApplicationsBean.selectedApplication.name}" readOnly="true"/>
+                <tr:inputText label="Name" value="#{param['appName']}" readOnly="true"/>
                 <tr:inputText label="Context Root" value="/hello" readOnly="true"/>
                 <tr:inputText label="Description" value="a sample web application" readOnly="true"/>
                 <tr:inputText label="Status" value="Enabled" readOnly="true"/>
