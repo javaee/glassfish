@@ -8,13 +8,18 @@ package org.glassfish.admingui.console;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.event.ValueChangeEvent;
 import org.apache.myfaces.trinidad.model.UploadedFile;
 import org.glassfish.admingui.console.event.DragDropEvent;
+import org.glassfish.admingui.console.rest.RestUtil;
 import org.glassfish.admingui.console.util.FileUtil;
+import org.glassfish.admingui.console.util.GuiUtil;
+import org.glassfish.admingui.console.util.TargetUtil;
 
 
 /**
@@ -82,7 +87,27 @@ public class UploadBean {
     }
 
     public String doDeploy(){
-       return "/demo/listApplications";
+        System.out.println("=================== doDeploy()");
+        Map payload = new HashMap();
+        payload.put("id", this.tmpFile.getAbsolutePath());
+        if (!GuiUtil.isEmpty(this.appName)){
+            payload.put("name", this.appName);
+        }
+        if (!GuiUtil.isEmpty(this.contextRoot)){
+            payload.put("contextroot", this.contextRoot);
+        }
+        /*
+        if (!GuiUtil.isEmpty(this.desc)){
+            payload.put("name", this.desc);
+        }
+         *
+         */
+        try {
+            RestUtil.restRequest("http://localhost:4848/management/domain/applications/application", payload, "post", null, null, false, true);
+            return "/demo/listApplications";
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
     public String getAppName(){
