@@ -65,11 +65,12 @@
             </tr:panelFormLayout>
         </div>
         <div class="navObjectInfo">
-            <div class="title headerPageTitle">Elasticity Settings</div>
-            <tr:panelFormLayout  id="elasiticitySettings">
-                <tr:inputNumberSpinbox label="Memory limit:" value="512" minimum="512" maximum="2048" stepSize="512" columns="4"/>
-                <tr:inputNumberSpinbox label="Instances:" value="2" minimum="1" maximum="4"/>
-            </tr:panelFormLayout>
+            <div class="title headerPageTitle">Environment(s)</div>
+            <tr:table id="applicationInstances" var="cluster" value="#{applicationBean.instances}">
+                <tr:column headerText="Environment">
+                    #{cluster}
+                </tr:column>
+            </tr:table>
         </div>
     </div>
     <div>
@@ -92,12 +93,11 @@
             </tr:table>
         </div>
         <div class="navObjectInfo">
-            <div class="title headerPageTitle">Clusters to which this application is deployed</div>
-            <tr:table id="applicationInstances" var="cluster" value="#{applicationBean.instances}">
-                <tr:column headerText="cluster">
-                    #{cluster}
-                </tr:column>
-            </tr:table>
+            <div class="title headerPageTitle">Elasticity Settings</div>
+            <tr:panelFormLayout  id="elasiticitySettings">
+                <tr:inputNumberSpinbox label="Memory limit:" value="512" minimum="512" maximum="2048" stepSize="512" columns="4"/>
+                <tr:inputNumberSpinbox label="Instances:" value="2" minimum="1" maximum="4"/>
+            </tr:panelFormLayout>
         </div>
     </div>
     </f:view>
