@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes" ?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+	   
+-->
+
+
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ps="http://admingui.glassfish.org/console"
+                xmlns:tr="http://myfaces.apache.org/trinidad"
+                xmlns:trh="http://myfaces.apache.org/trinidad/html"
+                template="/layout.xhtml">
+
+<ui:define name="content">
+    <f:view>
+    <div>
+        <div class="navObjectInfo">
+            <div class="title headerPageTitle">General</div>
+            <tr:panelFormLayout  id="applicationDetails">
+                <tr:inputText label="Name" value="#{param['appName']}" readOnly="true"/>
+                <tr:inputText label="Context Root" value="#{param['appName']}" readOnly="true"/>
+<!--
+                <tr:commandLink id="URL"  text="localhost:8080/#{param['appName']}">
+                    <a id="add" href="localhost:8080/#{param['appName']}">
+                        <span class="ui-icon ui-icon-plus" style="display: inline-block; float: right">Launch Application</span>
+                    </a>
+                </tr:commandLink>
+-->
+                <tr:inputText label="Status" value="Enabled" readOnly="true"/>
+                <f:facet name="footer">
+                    <tr:panelHorizontalLayout inlineStyle="height:50px;">
+                       <tr:commandButton id="Enable" text="Enable"/>
+                       <tr:commandButton text="Disable"/>
+                    </tr:panelHorizontalLayout>
+                </f:facet>
+            </tr:panelFormLayout>
+        </div>
+        <div class="navObjectInfo">
+            <div class="title headerPageTitle">Elasticity Settings</div>
+            <tr:panelFormLayout  id="elasiticitySettings">
+                <tr:inputNumberSpinbox label="Memory limit:" value="512" minimum="512" maximum="2048" stepSize="512" columns="4"/>
+                <tr:inputNumberSpinbox label="Instances:" value="2" minimum="1" maximum="4"/>
+            </tr:panelFormLayout>
+        </div>
+    </div>
+    <div>
+        <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
+            <div class="title headerPageTitle">Services</div>
+            <div class="subHeading">List of all services provisioned</div>
+            <tr:table id="services" var="svs" value="#{editApplicationBean.services}">
+                <tr:column headerText="Name">
+                    #{svs.serviceName}
+                </tr:column>
+                <tr:column headerText="Type">
+                    #{svs.serverType}
+                </tr:column>
+                <tr:column headerText="Scope">
+                    #{svs.SCOPE}
+                </tr:column>
+                <tr:column headerText="State">
+                    <tr:image source="#{svs.stateImage}" shortDesc="#{svs.STATE}"/>
+                </tr:column>
+            </tr:table>
+        </div>
+        <div class="navObjectInfo">
+            <div class="title headerPageTitle">Instances</div>
+            <tr:table id="applicationInstances" var="app" value="#{listApplicationsBean.applications}">
+                <tr:column headerText="Host">
+                    171.30.49.213
+                </tr:column>
+                <tr:column headerText="CPU">
+                    2,0% (4)
+                </tr:column>
+                <tr:column headerText="Memory">
+                    92M (512M)
+                </tr:column>
+                <tr:column headerText="Disk">
+                    8M (512M)
+                </tr:column>
+                <tr:column headerText="Uptime">
+                    0h:1m:56s
+                </tr:column>
+            </tr:table>
+        </div>
+    </div>
+    </f:view>
+ </ui:define>
+</ui:composition>
