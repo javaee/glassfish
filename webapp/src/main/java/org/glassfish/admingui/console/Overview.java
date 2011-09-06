@@ -28,12 +28,6 @@ public class Overview  {
     }
 
     public List<Map>getEnvironments(){
-        List envs = new ArrayList();
-        
-        Map m1 = new HashMap();
-        m1.put("name", "mycluster");
-        m1.put("instanceCount", "2");
-        envs.add(m1);
-        return envs;
+        return CommandUtil.getEnvironments();
     }
 }
