@@ -55,7 +55,7 @@ import static org.glassfish.hk2.tests.basic.AssertionUtils.*;
  *
  * @author Marek Potociar (marek.potociar at oracle.com)
  */
-public class FieldInjectedTypeBinidngTestClass {
+public class FieldInjectedTypeBindingTestClass {
 
     @Inject
     ServiceC sc;
@@ -75,8 +75,8 @@ public class FieldInjectedTypeBinidngTestClass {
     Factory<ContractB> cbp;
     @Inject
     Factory<ContractA> cap;
-    @Inject
-    Factory<GenericContract<String>> gcp;
+//    @Inject
+//    Factory<GenericContract<String>> gcp;
 
     public void assertInjection() {
         assertInjectedInstance(ServiceC.class, this.sc);
@@ -94,6 +94,6 @@ public class FieldInjectedTypeBinidngTestClass {
         assertInjectedFactory(ServiceA.class, this.cap);
         assertInjectedInstance(ServiceB.class, this.cap.get().getB());
         assertInjectedInstance(ClassX.class, this.cap.get().getB().getX());
-        assertInjectedFactory(GenericContractStringImpl.class, this.gcp);
+//        assertInjectedFactory(GenericContractStringImpl.class, this.gcp);
     }
 }

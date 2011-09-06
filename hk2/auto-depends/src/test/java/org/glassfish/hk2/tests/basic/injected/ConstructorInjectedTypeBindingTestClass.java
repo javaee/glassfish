@@ -55,7 +55,7 @@ import static org.glassfish.hk2.tests.basic.AssertionUtils.*;
  *
  * @author Marek Potociar (marek.potociar at oracle.com)
  */
-public class ConstructorInjectedTypeBinidngTestClass {
+public class ConstructorInjectedTypeBindingTestClass {
 
     final ServiceC sc;
     final ClassX cx;
@@ -68,7 +68,7 @@ public class ConstructorInjectedTypeBinidngTestClass {
     final Factory<ContractA> cap;
     final Factory<GenericContract<String>> gcp;
 
-    public ConstructorInjectedTypeBinidngTestClass(@Inject ServiceC sc, @Inject ClassX cx, @Inject ContractB cb, @Inject ContractA ca, @Inject GenericContract<String> gc, @Inject Factory<ServiceC> scp, @Inject Factory<ClassX> cxp, @Inject Factory<ContractB> cbp, @Inject Factory<ContractA> cap, @Inject Factory<GenericContract<String>> gcp) {
+    public ConstructorInjectedTypeBindingTestClass(@Inject ServiceC sc, @Inject ClassX cx, @Inject ContractB cb, @Inject ContractA ca, @Inject GenericContract<String> gc, @Inject Factory<ServiceC> scp, @Inject Factory<ClassX> cxp, @Inject Factory<ContractB> cbp, @Inject Factory<ContractA> cap, @Inject Factory<GenericContract<String>> gcp) {
         this.sc = sc;
         this.cx = cx;
         this.cb = cb;
