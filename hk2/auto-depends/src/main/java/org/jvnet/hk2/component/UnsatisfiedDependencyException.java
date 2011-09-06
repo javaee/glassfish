@@ -43,6 +43,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Member;
+import java.lang.reflect.Type;
 import java.lang.annotation.Annotation;
 
 import org.jvnet.hk2.annotations.Inject;
@@ -74,12 +75,12 @@ public class UnsatisfiedDependencyException extends ComponentException {
         this.member = target;
     }
 
-    public UnsatisfiedDependencyException(Field target, Annotation inject, Throwable cause) {
-      super(injection_failed_msg(target, inject, cause), cause);
-      this.member = target;
+    public UnsatisfiedDependencyException(Type target, Class<?> targetClass, Annotation inject, Throwable cause) {
+        super(injection_failed_msg(target, inject, null), inject, cause);
+        this.member = targetClass;
     }
-    
-    static String injection_failed_msg(AnnotatedElement t, Annotation inject, Throwable cause) {
+
+    static String injection_failed_msg(Object t, Annotation inject, Throwable cause) {
       String name = (Inject.class.isInstance(inject)) ? Inject.class.cast(inject).name() : null;
       name = (null == name || name.isEmpty()) ? null : name;
       String msg;
