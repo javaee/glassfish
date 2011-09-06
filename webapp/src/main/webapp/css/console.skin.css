@@ -172,3 +172,8 @@ af|inputText:read-only::content {
     background: #FBFCFD;
     border:  0;
 }
+
+.af_navigationPane_tabs-active .af_navigationPane_tabs-mid a:hover, .af_panelTabbed_orientation-top .af_panelTabbed_tab-selected a:hover {
+    background: url('../images/dbcc.png') repeat-x scroll 0 0 #567CAB;
+    color: white !important;
+}
