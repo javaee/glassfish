@@ -661,7 +661,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
         Collection<T> services = new ArrayList<T>();
         for (Inhabitant<?> i : inhabs) {
             String scope = i.metadata().getFirst(RunLevel.META_SCOPE_TAG);
-            if (null == scope || scope.equals(targetScope)) {
+            if (null == scope || scope.equals(targetScope.getName())) {
                 services.add((T) i.get());
             }
         }

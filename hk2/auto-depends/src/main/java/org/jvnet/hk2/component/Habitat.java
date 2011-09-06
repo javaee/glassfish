@@ -768,7 +768,7 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
         contextualFactoriesPresentHere = (null != getInhabitantByContract(ContextualFactory.class
                 .getName()));
         if (contextualFactoriesPresentHere) {
-            contextualFactoriesPresentAnywhere = true;
+            Habitat.contextualFactoriesPresentAnywhere = true;
         }
 
         notify(null, EventType.HABITAT_INITIALIZED, null, null);

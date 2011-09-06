@@ -100,6 +100,7 @@ import org.jvnet.hk2.test.runlevel.InterruptRunLevelManagedService2b;
 import org.jvnet.hk2.test.runlevel.NonRunLevelWithRunLevelDepService;
 import org.jvnet.hk2.test.runlevel.NotStrictRunLevelService1;
 import org.jvnet.hk2.test.runlevel.NotStrictRunLevelService2;
+import org.jvnet.hk2.test.runlevel.ObjectScopedRunLevelListener;
 import org.jvnet.hk2.test.runlevel.OptionalRunLevelTstEnv;
 import org.jvnet.hk2.test.runlevel.PriorityServiceTypeA;
 import org.jvnet.hk2.test.runlevel.RunLevelContract;
@@ -131,7 +132,7 @@ public class RunLevelServiceTest {
   @Inject(name="default")
   RunLevelService<?> rls;
   
-  @Inject
+  @Inject(name="test")
   RunLevelListener listener;
 
   private TestRunLevelListener defRLlistener;
@@ -146,11 +147,9 @@ public class RunLevelServiceTest {
    */
   @Test
   public void validInitialHabitatState() {
-    Collection<RunLevelListener> coll1 = h.getAllByContract(RunLevelListener.class);
-    assertNotNull(coll1);
-    assertEquals(1, coll1.size());
-    assertSame(listener, coll1.iterator().next());
-    assertTrue(coll1.iterator().next() instanceof TestRunLevelListener);
+    RunLevelListener testListener = h.getComponent(RunLevelListener.class, "test");
+    assertNotNull(testListener);
+    assertSame(listener, testListener);
     
     Collection<RunLevelService> coll2 = h.getAllByContract(RunLevelService.class);
     assertNotNull(coll2);
@@ -1581,13 +1580,32 @@ public class RunLevelServiceTest {
    */
   @Test
   public void narrowing() {
+      ObjectScopedRunLevelListener.called = false;
+      
       rls.proceedTo(0);
       
       assertFalse(AnotherInhabitantActivator.called);
       assertFalse(AnotherInhabitantSorter.called);
       assertFalse(AnotherInhabitantListener.called);
-  }
+      
+      assertFalse(ObjectScopedRunLevelListener.called);
+      
+      DescriptorImpl descriptor = new DescriptorImpl();
+      descriptor.addContract(RunLevelService.class);
+      descriptor.addMetadata(RunLevel.META_SCOPE_TAG, Object.class.getName());
+      Collection<Binding<?>> bindings = h.getBindings(descriptor);
+      assertEquals(1, bindings.size());
+      Binding anotherRlsBinding = bindings.iterator().next();
+      RunLevelService<?> rls = (RunLevelService<?>) anotherRlsBinding.getProvider().get();
+      rls.proceedTo(0);
 
+      assertFalse(AnotherInhabitantActivator.called);
+      assertFalse(AnotherInhabitantSorter.called);
+      assertFalse(AnotherInhabitantListener.called);
+      
+      assertTrue(ObjectScopedRunLevelListener.called);
+  }
+  
   @Test
   public void unstrict() {
       Inhabitant<?> i1 = h.getInhabitantByType(NotStrictRunLevelService1.class);
