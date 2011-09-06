@@ -55,24 +55,24 @@
     <tr:spacer height="40px"/>
     <tr:panelHorizontalLayout halign="left" >
             <tr:outputLabel value="Application Name: " />
-            <tr:outputText value="#{deployApp.appName}"/>
+            <tr:outputText value="#{uploadBean.appName}"/>
     </tr:panelHorizontalLayout>
     <tr:panelHorizontalLayout halign="left" >
             <tr:outputLabel value="Context Root: " />
-            <tr:outputText value="#{deployApp.contextRoot} "/>
+            <tr:outputText value="#{uploadBean.contextRoot} "/>
     </tr:panelHorizontalLayout>
     <tr:panelHorizontalLayout halign="left" >
             <tr:outputLabel value="Description: " />
-            <tr:outputText value="#{deployApp.description}"/>
+            <tr:outputText value="#{uploadBean.description}"/>
     </tr:panelHorizontalLayout>
     <tr:separator/>
     <tr:panelHorizontalLayout halign="left" >
             <tr:outputLabel value="Template Name:" />
-            <tr:outputText value="GLASSFISH-SMALL"/>
+            <tr:outputText value="Native"/>
     </tr:panelHorizontalLayout>
     <tr:panelHorizontalLayout halign="left" >
             <tr:outputLabel value="Database:" />
-            <tr:outputText value="mySQL"/>
+            <tr:outputText value="DBNative"/>
     </tr:panelHorizontalLayout>
    
     <tr:spacer height="40px"/>
@@ -81,7 +81,7 @@
     <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{wizardBean.previous}">
         <f:ajax render="@form" execute="@form"/>
     </tr:commandButton>
-    <tr:commandButton id="nextButton" text=" Deploy " action="/demo/listApplications" >
+    <tr:commandButton id="nextButton" text=" Deploy " action="#{uploadBean.doDeploy}" >
         <f:ajax render=":ajaxBody" execute="@form"/>
     </tr:commandButton>
 </ui:composition>
