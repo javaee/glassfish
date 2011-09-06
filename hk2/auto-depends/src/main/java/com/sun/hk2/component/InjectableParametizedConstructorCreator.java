@@ -102,7 +102,8 @@ public class InjectableParametizedConstructorCreator<T> extends ConstructorCreat
                 nonOptionalInjection = !resolver.isOptional(annotatedElement, a);
             }
             if ((paramValues[i + firstIndex] == null && nonOptionalInjection)) {
-                throw new UnsatisfiedDependencyException(ctor, null, new UnsatisfiedDependencyException(ctor.getParameterTypes()[i + firstIndex], null));
+                throw new UnsatisfiedDependencyException(ctor, null, 
+                        new UnsatisfiedDependencyException(genericParamTypes[i + firstIndex], paramTypes[i + firstIndex], null, null));
             }
         }
         try {

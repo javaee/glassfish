@@ -259,7 +259,7 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
     }
 
 
-    void populateContractLocator(ContractLocatorImpl contractLocator, AnnotatedElement target, Inject inject) {
+    void populateContractLocator(ContractLocatorImpl<?> contractLocator, AnnotatedElement target, Inject inject) {
         Named named = target.getAnnotation(Named.class);
         String name = inject.name();
         if (named!=null && !inject.name().isEmpty()) {
@@ -271,7 +271,7 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
         }
         contractLocator.named(name);
 
-        // now we need to obtain all qualifiers on the injection target so we narraw the search.
+        // now we need to obtain all qualifiers on the injection target so we narrow the search.
         Annotation[] targetAnnotations = target.getAnnotations();
 
         // if there is only one annotation, it's @Inject, we can ignore qualifiers narrowing
