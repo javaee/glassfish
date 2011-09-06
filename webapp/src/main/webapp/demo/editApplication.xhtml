@@ -66,7 +66,7 @@
         <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
             <div class="title headerPageTitle">Services</div>
             <div class="subHeading">List of all services provisioned</div>
-            <tr:table id="services" var="svs" value="#{ApplicationBean.services}">
+            <tr:table id="services" var="svs" value="#{applicationBean.services}">
                 <tr:column headerText="Name">
                     #{svs.serviceName}
                 </tr:column>
