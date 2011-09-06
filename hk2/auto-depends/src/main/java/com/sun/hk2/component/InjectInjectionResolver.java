@@ -168,9 +168,8 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
                                          final Inject inject) throws ComponentException {
 
         final Type t = Types.getTypeArgument(genericType, 0);
-        final Class<?> finalType = Types.erasure(t);
 
-        if (habitat.isContract(finalType)) {
+        if (habitat.isContractExt(t)) {
             ContractLocatorImpl<V> contractLocator = new ContractLocatorImpl<V>(habitat, t, true);
             populateContractLocator(contractLocator, target, inject);
             return type.cast(contractLocator.getProvider());
@@ -178,6 +177,7 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
 
         // the receiver maybe requesting the inhabitant pointing to itself to have
         // access to its own metadata.
+        final Class<?> finalType = Types.erasure(t);
         try {
             if (finalType.cast(component) != null) {
                 return type.cast(onBehalfOf);

@@ -50,7 +50,7 @@ import static org.junit.Assert.*;
  *
  * @author Marek Potociar (marek.potociar at oracle.com)
  */
-public class FieldInjectedInstanceBinidngTestClass {
+public class FieldInjectedInstanceBindingTestClass {
 
     @Inject
     InstanceBoundContract i;
