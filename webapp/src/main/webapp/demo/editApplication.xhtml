@@ -55,11 +55,11 @@
                 </f:facet>
                 <tr:outputText value="URL(s) to launch the application : "/>
                 <tr:table id="urls" var="urls" value="#{applicationBean.urls}">
-                    <tr:column>
-                        <a id="applicationName"  href="#{urls.url}" > #{urls.url} </a>
-                    </tr:column>
                     <tr:column headerText="Instance">
                         #{urls.target}
+                    </tr:column>
+                    <tr:column headerText ="URL">
+                        <a id="applicationName"  href="#{urls.url}" > #{urls.url} </a>
                     </tr:column>
                 </tr:table>
             </tr:panelFormLayout>
@@ -93,21 +93,9 @@
         </div>
         <div class="navObjectInfo">
             <div class="title headerPageTitle">Instances</div>
-            <tr:table id="applicationInstances" var="app" value="#{listApplicationsBean.applications}">
-                <tr:column headerText="Host">
-                    171.30.49.213
-                </tr:column>
-                <tr:column headerText="CPU">
-                    2,0% (4)
-                </tr:column>
-                <tr:column headerText="Memory">
-                    92M (512M)
-                </tr:column>
-                <tr:column headerText="Disk">
-                    8M (512M)
-                </tr:column>
-                <tr:column headerText="Uptime">
-                    0h:1m:56s
+            <tr:table id="applicationInstances" var="instance" value="#{applicationBean.instances}">
+                <tr:column headerText="Instance">
+                    #{instance}
                 </tr:column>
             </tr:table>
         </div>

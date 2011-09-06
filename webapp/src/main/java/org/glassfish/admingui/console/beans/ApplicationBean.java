@@ -25,6 +25,7 @@ public class ApplicationBean {
         Map requestMap =
                 FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         appName = (String)requestMap.get("appName");
+        List l = getInstances();
     }
 
     public String getDescription() {
@@ -38,5 +39,10 @@ public class ApplicationBean {
     public List<Map> getServices() {
         return CommandUtil.listServices(appName, null, "application");
     }
+
+    public List getInstances() {
+        return DeployUtil.getApplicationTarget(appName, "application-ref");
+    }
+
 
 }
