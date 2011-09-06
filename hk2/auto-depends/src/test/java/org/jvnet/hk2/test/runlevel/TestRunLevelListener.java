@@ -56,7 +56,7 @@ import org.jvnet.hk2.component.ServiceContext;
  * 
  * @author Jeff Trent
  */
-@Service
+@Service(name="test")
 @Ignore
 public class TestRunLevelListener implements RunLevelListener {
 
