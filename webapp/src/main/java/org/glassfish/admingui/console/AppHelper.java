@@ -42,12 +42,23 @@ package org.glassfish.admingui.console;
 import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import java.util.Map;
 
 @ManagedBean
 @SessionScoped
 public class AppHelper implements Serializable {
     private String contentPage = "/demo/overview.xhtml";
     private String currentTab = "Overview";
+
+    public AppHelper() {
+        ExternalContext externalCtx = FacesContext.getCurrentInstance().getExternalContext();
+        Map<String, Object> sessionMap = externalCtx.getSessionMap();
+        sessionMap.put("REST_URL", "http://localhost:4848/management/domain");
+        sessionMap.put("_SESSION_INITIALIZED", true);
+
+    }
 
     public String getNavType() {
         return "blank";
