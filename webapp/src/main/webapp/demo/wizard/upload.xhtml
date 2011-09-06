@@ -64,8 +64,8 @@
                       valueChangeListener="#{uploadBean.fileUploaded}">
         </tr:inputFile>
         <tr:inputText label="Application Name: " value="#{uploadBean.appName}" columns="40"/>
-        <tr:inputText label="Description:  " value="#{uploadBean.description}" columns="40"/>
         <tr:inputText label="Context Root:  " value="#{uploadBean.contextRoot}"  columns="40"/>
+        <tr:inputText label="Description:  " value="#{uploadBean.description}" columns="40"/>
     </tr:panelFormLayout>
     <tr:separator/>
     <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{wizardBean.previous}" disabled="true">
