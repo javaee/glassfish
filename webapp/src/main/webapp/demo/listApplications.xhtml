@@ -42,6 +42,9 @@
                           verticalGridVisible="false" rowBandingInterval="1">
                     <tr:column>
                         <h:commandLink id="applicationName" value="#{app.name}">
+                    <a id="add" href="#{request.contextPath}/demo/wizard.jsf">
+                        <span class="ui-icon ui-icon-plus" style="display: inline-block; float: right">Add new</span>
+                    </a>
                             <f:setPropertyActionListener target="#{listApplicationsBean.selectedApplication}" value="#{app}"/>
                         </h:commandLink>
                     </tr:column>
