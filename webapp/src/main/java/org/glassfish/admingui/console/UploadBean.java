@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.event.ValueChangeEvent;
 import org.apache.myfaces.trinidad.model.UploadedFile;
 import org.glassfish.admingui.console.event.DragDropEvent;
@@ -27,7 +28,7 @@ import org.glassfish.admingui.console.util.TargetUtil;
  * @author anilam
  */
 @ManagedBean
-@SessionScoped
+@ViewScoped
 public class UploadBean {
     private UploadedFile _file;
     private File tmpFile;
@@ -104,8 +105,11 @@ public class UploadBean {
          */
         try {
             RestUtil.restRequest("http://localhost:4848/management/domain/applications/application", payload, "post", null, null, false, true);
-            return "/demo/listApplications";
+            System.out.println("--------------- doDeploy returns /demo/overview");
+            return "/demo/overview";
         } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("------------- do Deploy returns NULL");
             return null;
         }
     }

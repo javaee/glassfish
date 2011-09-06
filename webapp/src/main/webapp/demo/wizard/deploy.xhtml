@@ -53,30 +53,19 @@
     Review the information below and click Deploy
 
     <tr:spacer height="40px"/>
-    <tr:panelHorizontalLayout halign="left" >
-            <tr:outputLabel value="Application Name: " />
-            <tr:outputText value="#{uploadBean.appName}"/>
-    </tr:panelHorizontalLayout>
-    <tr:panelHorizontalLayout halign="left" >
-            <tr:outputLabel value="Context Root: " />
-            <tr:outputText value="#{uploadBean.contextRoot} "/>
-    </tr:panelHorizontalLayout>
-    <tr:panelHorizontalLayout halign="left" >
-            <tr:outputLabel value="Description: " />
-            <tr:outputText value="#{uploadBean.description}"/>
-    </tr:panelHorizontalLayout>
+    <tr:panelFormLayout  id="appInfo">
+        <tr:inputText label="Application Name: " value="#{uploadBean.appName}" readOnly="true"/>
+        <tr:inputText label="Context Root: " value="#{uploadBean.contextRoot}" readOnly="true"/>
+        <tr:inputText label="Description: " value="#{uploadBean.description}" readOnly="true"/>
+    </tr:panelFormLayout>
     <tr:separator/>
-    <tr:panelHorizontalLayout halign="left" >
-            <tr:outputLabel value="Template Name:" />
-            <tr:outputText value="Native"/>
-    </tr:panelHorizontalLayout>
-    <tr:panelHorizontalLayout halign="left" >
-            <tr:outputLabel value="Database:" />
-            <tr:outputText value="DBNative"/>
-    </tr:panelHorizontalLayout>
-   
+    <tr:panelFormLayout  id="templateInfo">
+        <tr:inputText label="Template Name: " value="Native" readOnly="true"/>
+        <tr:inputText label="Database: " value="DBNative" readOnly="true"/>
+    </tr:panelFormLayout>
     <tr:spacer height="40px"/>
     <tr:separator/>
+    <!--img src="#{request.contextPath}/images/progress.gif" alt="Deploying .... " border="0"/  -->
     <tr:spacer height="40px"/>
     <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{wizardBean.previous}">
         <f:ajax render="@form" execute="@form"/>
@@ -84,4 +73,7 @@
     <tr:commandButton id="nextButton" text=" Deploy " action="#{uploadBean.doDeploy}" >
         <f:ajax render=":ajaxBody" execute="@form"/>
     </tr:commandButton>
+    <!--
+    <tr:image id="progressBar" source="/images/progress.gif" shortDesc="Deploying Applicaiton .... " />
+    -->
 </ui:composition>
