@@ -18,7 +18,7 @@ import com.sun.enterprise.deployment.io.AppClientDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.EjbDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
-import com.sun.enterprise.deployment.io.WebServicesDeploymentDescriptorFile;
+import org.glassfish.webservices.io.WebServicesDeploymentDescriptorFile;
 
 import junit.extensions.TestSetup;
 import junit.framework.Assert;
