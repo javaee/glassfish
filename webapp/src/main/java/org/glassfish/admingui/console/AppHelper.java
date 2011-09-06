@@ -45,6 +45,7 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
 import java.util.Map;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ComponentSystemEvent;
 
 @ManagedBean
 @SessionScoped
