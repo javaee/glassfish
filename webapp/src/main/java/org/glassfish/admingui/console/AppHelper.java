@@ -40,12 +40,11 @@
 package org.glassfish.admingui.console;
 
 import java.io.Serializable;
+import java.util.Map;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
-import java.util.Map;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ComponentSystemEvent;
 
 @ManagedBean
 @SessionScoped
@@ -58,7 +57,7 @@ public class AppHelper implements Serializable {
         sessionMap.put("REST_URL", "http://localhost:4848/management/domain");
         sessionMap.put("_SESSION_INITIALIZED", true);
     }
-
+    
     public String getNavType() {
         return "blank";
     }
