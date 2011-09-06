@@ -73,12 +73,13 @@
                 <div class="subHeading">List of all provisioned Environment</div>
                 <tr:table id="envs" var="envs" value="#{overview.environments}">
                     <tr:column headerText="Name">
-                        <tr:commandLink id="namelink" text="#{envs.name}"
-                                        onclick="return Console.Ajax.loadPage('/demo/envGeneral.xhtml')" >
-                        </tr:commandLink>
+                        #{envs.clusterName}
                     </tr:column>
                     <tr:column headerText="# of instancess">
                         #{envs.instanceCount}
+                    </tr:column>
+                    <tr:column headerText="Template">
+                        #{envs.template}
                     </tr:column>
                 </tr:table>
             </div>
