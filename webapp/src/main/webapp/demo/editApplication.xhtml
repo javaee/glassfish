@@ -38,7 +38,8 @@
             <tr:panelFormLayout  id="applicationDetails">
                 <tr:inputText label="Name" value="#{param['appName']}" readOnly="true"/>
                 <tr:inputText label="Context Root" value="#{param['appName']}" readOnly="true"/>
-<!--
+
+                <!--
                 <tr:commandLink id="URL"  text="localhost:8080/#{param['appName']}">
                     <a id="add" href="localhost:8080/#{param['appName']}">
                         <span class="ui-icon ui-icon-plus" style="display: inline-block; float: right">Launch Application</span>
@@ -52,6 +53,15 @@
                        <tr:commandButton text="Disable"/>
                     </tr:panelHorizontalLayout>
                 </f:facet>
+                <tr:outputText value="URL(s) to launch the application : "/>
+                <tr:table id="urls" var="urls" value="#{applicationBean.urls}">
+                    <tr:column>
+                        <a id="applicationName"  href="#{urls.url}" > #{urls.url} </a>
+                    </tr:column>
+                    <tr:column headerText="Instance">
+                        #{urls.target}
+                    </tr:column>
+                </tr:table>
             </tr:panelFormLayout>
         </div>
         <div class="navObjectInfo">

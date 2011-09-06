@@ -327,7 +327,7 @@ public class DeployUtil {
         return URLs;
     }
 
-    public static List<String> getTargetURLList(String appID, String contextRoot) {
+    public static List<Map<String, String>> getTargetURLList(String appID, String contextRoot) {
         String ctxRoot = calContextRoot(contextRoot);
         Set<String> URLs = new TreeSet();
         List<String> targetList = DeployUtil.getApplicationTarget(appID, "application-ref");
@@ -356,7 +356,7 @@ public class DeployUtil {
 
 	Iterator it = URLs.iterator();
 	String url = null;
-        ArrayList list = new ArrayList();
+        ArrayList<Map<String, String>> list = new ArrayList();
 
 	while (it.hasNext()) {
 	    url = (String)it.next();
