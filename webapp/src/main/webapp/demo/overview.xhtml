@@ -43,7 +43,7 @@
                         <a id="applicationName"  href="#{request.contextPath}/demo/editApplication.jsf?appName=#{app.name}" > #{app.name} </a>
                     </tr:column>
                     <tr:column width="20px">
-                        <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="confirm('Are you sure?');"/>
+                        <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="confirm('Application will be deleted.  Continue ? ');"/>
                     </tr:column>
                 </tr:table>
             </div>
