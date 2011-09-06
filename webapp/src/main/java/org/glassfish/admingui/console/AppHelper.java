@@ -43,8 +43,8 @@ import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 import java.util.Map;
+import javax.faces.context.FacesContext;
 
 @ManagedBean
 @SessionScoped
