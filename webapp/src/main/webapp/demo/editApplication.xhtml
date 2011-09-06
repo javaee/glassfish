@@ -92,10 +92,10 @@
             </tr:table>
         </div>
         <div class="navObjectInfo">
-            <div class="title headerPageTitle">Instances</div>
-            <tr:table id="applicationInstances" var="instance" value="#{applicationBean.instances}">
-                <tr:column headerText="Instance">
-                    #{instance}
+            <div class="title headerPageTitle">Clusters to which this application is deployed</div>
+            <tr:table id="applicationInstances" var="cluster" value="#{applicationBean.instances}">
+                <tr:column headerText="cluster">
+                    #{cluster}
                 </tr:column>
             </tr:table>
         </div>

@@ -51,12 +51,6 @@ import javax.faces.context.FacesContext;
 public class AppHelper implements Serializable {
     private String contentPage = "/demo/overview.xhtml";
 
-    public AppHelper() {
-        ExternalContext externalCtx = FacesContext.getCurrentInstance().getExternalContext();
-        Map<String, Object> sessionMap = externalCtx.getSessionMap();
-        sessionMap.put("REST_URL", "http://localhost:4848/management/domain");
-        sessionMap.put("_SESSION_INITIALIZED", true);
-    }
     
     public String getNavType() {
         return "blank";

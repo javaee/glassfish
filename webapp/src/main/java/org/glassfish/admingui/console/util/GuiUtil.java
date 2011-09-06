@@ -117,7 +117,7 @@ public class GuiUtil {
         return msg;
     }
 
-    
+   
     public static void initSessionAttributes(){
 
         Logger logger = GuiUtil.getLogger();
@@ -218,6 +218,8 @@ public class GuiUtil {
 
     public static Object getSessionValue(String key){
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+        if ("REST_URL".equals(key))
+            return "http://localhost:4848/management/domain";
         if (sessionMap.get("_SESSION_INITIALIZED") == null){
             initSessionAttributes();
         }
