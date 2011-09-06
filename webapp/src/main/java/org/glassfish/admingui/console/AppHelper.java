@@ -50,30 +50,16 @@ import java.util.Map;
 @SessionScoped
 public class AppHelper implements Serializable {
     private String contentPage = "/demo/overview.xhtml";
-    private String currentTab = "Overview";
 
     public AppHelper() {
         ExternalContext externalCtx = FacesContext.getCurrentInstance().getExternalContext();
         Map<String, Object> sessionMap = externalCtx.getSessionMap();
         sessionMap.put("REST_URL", "http://localhost:4848/management/domain");
         sessionMap.put("_SESSION_INITIALIZED", true);
-
     }
 
     public String getNavType() {
         return "blank";
-    }
-
-    public boolean isActiveTab(String tab) {
-        return tab.equalsIgnoreCase(currentTab);
-    }
-
-    public String getCurrentTab() {
-        return currentTab;
-    }
-
-    public void setCurrentTab(String currentTab) {
-        this.currentTab = currentTab;
     }
 
     public String getContentPage() {

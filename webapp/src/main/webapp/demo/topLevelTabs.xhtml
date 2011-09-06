@@ -42,30 +42,36 @@
 -->
 <!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition 
-                xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:tr="http://myfaces.apache.org/trinidad">
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:tr="http://myfaces.apache.org/trinidad">
 
-            <h:form id="topLevelTabsForm" style="color: black;">
-                <h:panelGroup id="topTabs">
-                    <tr:panelTabbed id="topLevelTabs" position ="above" inlineStyle="padding: 0px;">
-                        <tr:showDetailItem text="Overview"
-                                           disclosed="#{appHelper.isActiveTab('Overview')}"
-                                           onclick="return Console.UI.switchTabs('Overview', '/demo/overview.xhtml')"/>
-                        <tr:showDetailItem text="Applications"
-                                           disclosed="#{appHelper.isActiveTab('Applications')}"
-                                           onclick="return Console.UI.switchTabs('Applications', '/demo/listApplications.xhtml')"/>
-                        <tr:showDetailItem text="Services"
-                                           disclosed="#{appHelper.isActiveTab('Services')}"
-                                           onclick="return Console.UI.switchTabs('Services', '/demo/listServices.xhtml')"/>
-                        <tr:showDetailItem text="Templates"
-                                           disclosed="#{appHelper.isActiveTab('Templates')}"
-                                           onclick="return Console.UI.switchTabs('Templates','/demo/listTemplates.xhtml')"/>
-                    </tr:panelTabbed>
-                </h:panelGroup>
-            </h:form>
+    <ui:define name="head">
+        <f:metadata>
+            <f:event type="postAddToView" listener="#{tabBean.pageLoadListener}"/>
+        </f:metadata>
+    </ui:define>
+
+    <h:form id="topLevelTabsForm" style="color: black;">
+        <h:panelGroup id="topTabs">
+            <tr:panelTabbed id="topLevelTabs" position ="above" inlineStyle="padding: 0px;">
+                <tr:showDetailItem text="Overview"
+                                   disclosed="#{tabBean.isActiveTab('/demo/overview.jsf')}"
+                                   onclick="window.location = '#{request.contextPath}/demo/overview.jsf'; return false;"/>
+                <tr:showDetailItem text="Applications"
+                                   disclosed="#{tabBean.isActiveTab('/demo/listApplications.jsf')}"
+                                   onclick="window.location = '#{request.contextPath}/demo/listApplications.jsf'; return false;"/>
+                <tr:showDetailItem text="Services"
+                                   disclosed="#{tabBean.isActiveTab('/demo/listServices.jsf')}"
+                                   onclick="window.location = '#{request.contextPath}/demo/listServices.jsf'; return false;"/>
+                <tr:showDetailItem text="Templates"
+                                   disclosed="#{tabBean.isActiveTab('/demo/listTemplates.jsf')}"
+                                   onclick="window.location = '#{request.contextPath}/demo/listTemplates.jsf'; return false;"/>
+            </tr:panelTabbed>
+        </h:panelGroup>
+    </h:form>
 
 </ui:composition>
 

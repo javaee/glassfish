@@ -89,8 +89,10 @@
                 </div>
                 <div style="float: right; margin-top: 5px;">
                     <tr:form id="ajaxNavForm" prependId="false" >
-                        <h:inputHidden id="currentTab" value="#{appHelper.currentTab}"/>
-                        <h:inputHidden id="content" value="#{appHelper.contentPage}"/>
+                        <ui:remove>
+                            <h:inputHidden id="currentTab" value="#{appHelper.currentTab}"/>
+                            <h:inputHidden id="content" value="#{appHelper.contentPage}"/>
+                        </ui:remove>
                         <!-- tr:commandButton id="contentButton">
                             <f:ajax execute="@form" render=":ajaxBody" onevent="Console.Ajax.ajaxCallback" />
                         </tr:commandButton -->

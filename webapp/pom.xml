@@ -30,14 +30,16 @@
         <finalName>admin-console</finalName>
     </build>
     <dependencies>
-            <dependency>
-                <groupId>org.apache.myfaces.trinidad</groupId>
-                <artifactId>trinidad-api</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.myfaces.trinidad</groupId>
-                <artifactId>trinidad-impl</artifactId>
-            </dependency>
+        <dependency>
+            <groupId>org.apache.myfaces.trinidad</groupId>
+            <artifactId>trinidad-api</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.myfaces.trinidad</groupId>
+            <artifactId>trinidad-impl</artifactId>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>plugin-system-jsf</artifactId>
@@ -64,12 +66,12 @@
             <artifactId>jsf-impl</artifactId>
         </dependency>
 
-       <dependency>
+        <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>3.2-SNAPSHOT</version>
         </dependency>
-       <dependency>
+        <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>config-api</artifactId>
             <version>3.2-SNAPSHOT</version>
