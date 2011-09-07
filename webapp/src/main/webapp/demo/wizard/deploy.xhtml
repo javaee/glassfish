@@ -68,7 +68,7 @@
     <tr:spacer height="40px"/>
     <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{wizardBean.previous}">
     </tr:commandButton>
-    <tr:commandButton id="nextButton" text=" Deploy " action="/demo/overview"
+    <tr:commandButton id="nextButton" text=" Deploy " action="#{uploadBean.doDeploy}"
                       onclick="document.getElementById('wizard:progressBar').style.visibility='visible';return true;">
     </tr:commandButton>
     <tr:image id="progressBar" inlineStyle="padding-left: 99px; visibility:hidden;" source="/images/progress.gif" shortDesc="Deploying Applicaiton .... " />
