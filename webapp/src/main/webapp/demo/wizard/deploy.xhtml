@@ -48,7 +48,7 @@
                 xmlns:gf="http://java.sun.com/jsf/composite/glassfish"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
-    <h3>Step 3: Review and Deploy Application</h3>
+    <h3>Step 2: Review and Deploy Application</h3>
 
     Review the information below and click Deploy
 
@@ -65,15 +65,11 @@
     </tr:panelFormLayout>
     <tr:spacer height="40px"/>
     <tr:separator/>
-    <!--img src="#{request.contextPath}/images/progress.gif" alt="Deploying .... " border="0"/  -->
     <tr:spacer height="40px"/>
     <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{wizardBean.previous}">
-        <f:ajax render="@form" execute="@form"/>
     </tr:commandButton>
-    <tr:commandButton id="nextButton" text=" Deploy " action="#{uploadBean.doDeploy}" >
-        <f:ajax render=":ajaxBody" execute="@form"/>
+    <tr:commandButton id="nextButton" text=" Deploy " action="/demo/overview"
+                      onclick="document.getElementById('wizard:progressBar').style.visibility='visible';return true;">
     </tr:commandButton>
-    <!--
-    <tr:image id="progressBar" source="/images/progress.gif" shortDesc="Deploying Applicaiton .... " />
-    -->
+    <tr:image id="progressBar" inlineStyle="padding-left: 99px; visibility:hidden;" source="/images/progress.gif" shortDesc="Deploying Applicaiton .... " />
 </ui:composition>
