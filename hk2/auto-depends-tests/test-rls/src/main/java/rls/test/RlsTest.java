@@ -92,8 +92,8 @@ public class RlsTest implements ModuleStartup {
   public static void runTests() {
     assert h.isInitialized() : "Sanity check";
     
-    assertTrue("Sorter should be called", RandomInhabitantSorter.called);
-    assertTrue("Activator should be called", MultiThreadedInhabitantActivator.called);
+    assertTrue("Sorter should be called", RandomInhabitantSorter.wasCalled());
+    assertTrue("Activator should be called", MultiThreadedInhabitantActivator.wasCalled());
     
 //    assertNull("can't support dependencies to a non RLS", y);
 //    assertNull("can't support dependencies to a non RLS", other);
