@@ -400,4 +400,11 @@
         </plugins>
     </reporting>
 
+    <distributionManagement>
+        <site>
+            <id>local</id>
+            <url>file:../www/</url>
+        </site>
+     </distributionManagement>
+
 </project>
