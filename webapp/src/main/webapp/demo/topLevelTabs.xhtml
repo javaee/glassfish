@@ -63,12 +63,17 @@
                 <tr:showDetailItem text="Applications"
                                    disclosed="#{tabBean.isActiveTab('/demo/listApplications.jsf')}"
                                    onclick="window.location = '#{request.contextPath}/demo/listApplications.jsf'; return false;"/>
+                <tr:showDetailItem text="Environments"
+                                   disclosed="#{tabBean.isActiveTab('/demo/environments.jsf')}"
+                                   onclick="window.location = '#{request.contextPath}/demo/environments.jsf'; return false;"/>
+                <!--
                 <tr:showDetailItem text="Services"
                                    disclosed="#{tabBean.isActiveTab('/demo/listServices.jsf')}"
                                    onclick="window.location = '#{request.contextPath}/demo/listServices.jsf'; return false;"/>
                 <tr:showDetailItem text="Templates"
                                    disclosed="#{tabBean.isActiveTab('/demo/listTemplates.jsf')}"
                                    onclick="window.location = '#{request.contextPath}/demo/listTemplates.jsf'; return false;"/>
+                -->
             </tr:panelTabbed>
         </h:panelGroup>
     </h:form>

@@ -45,36 +45,6 @@ public class CommandUtil {
         services = getListFromREST(endpoint, attrs, "list");
         if (services == null){
             services = new ArrayList();
-            /*
-            //temp, just put in some dummy data.
-            Map m1 = new HashMap();
-            m1.put("serviceName", "admin-console-service");
-            m1.put("applicationName", "admin-console");
-            m1.put("type", "Cluster");
-            m1.put("scope", "application");
-            m1.put("ip-address", "NA");
-            m1.put("instance-id", "1");
-            services.add(m1);
-
-            Map m2 = new HashMap();
-            m2.put("serviceName", "admin-console-service.instance-1");
-            m2.put("applicationName", "admin-console");
-            m2.put("type", "ClusterInstance");
-            m2.put("scope", "application");
-            m2.put("ip-address", "127.0.0.1");
-            m2.put("instance-id", "2");
-            services.add(m2);
-
-            Map m3 = new HashMap();
-            m3.put("serviceName", "admin-console-service.instance-2");
-            m3.put("applicationName", "admin-console");
-            m3.put("type", "ClusterInstance");
-            m3.put("scope", "application");
-            m3.put("ip-address", "127.0.0.2");
-            m3.put("instance-id", "3");
-            services.add(m3);
-             * 
-             */
         }else {
             for(Map oneS : services){
                 oneS.put("serviceName" , oneS.get("SERVICE-NAME"));
