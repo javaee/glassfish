@@ -26,15 +26,17 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ps="http://admingui.glassfish.org/console"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
-                xmlns:trh="http://myfaces.apache.org/trinidad/html">
-
+                xmlns:trh="http://myfaces.apache.org/trinidad/html"
+                template="/layout.xhtml">
+<ui:define name="content">
+    <f:view>
     <h3>General Information for Environment </h3>
 
 
     <tr:spacer height="40px"/>
     <tr:panelHorizontalLayout halign="left" >
-            <tr:outputLabel value="Environment Name: " />
-            <tr:outputText value="????????"/>
+            <tr:inputText label="Environment Name: " value="#{param['envName']}" readOnly="true"/>
     </tr:panelHorizontalLayout>
-
+</f:view>
+ </ui:define>
 </ui:composition>
