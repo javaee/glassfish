@@ -25,8 +25,11 @@ public class TabBean {
     private List<String> tabs = new ArrayList<String>() {{
         add("/demo/overview.xhtml");
         add("/demo/listApplications.xhtml");
+        add("/demo/environments.xhtml");
+        /*
         add("/demo/listServices.xhtml");
         add("/demo/listTemplates.xhtml");
+         */
     }};
     
     public boolean isActiveTab(String tab) {
