@@ -54,7 +54,7 @@ import org.jvnet.hk2.component.InhabitantSorter;
 
 @Service
 public class RandomInhabitantSorter implements InhabitantSorter {
-  public static boolean called;
+  private static boolean called;
   
   private final static String DO_RANDOM = "com.oracle.hk2.debug.RandomizeServerServices";
   private final static String DO_RANDOM_SEED_FILE = "com.oracle.hk2.debug.RandomizeServerServices.filename";
@@ -200,7 +200,7 @@ public class RandomInhabitantSorter implements InhabitantSorter {
    */
   @Override
   public List<Inhabitant<?>> sort(List<Inhabitant<?>> arg0) {
-    RandomInhabitantSorter.called = true;
+    setCalled();
 
     if (!doRandom) return arg0;
     if (arg0 == null || arg0.size() <= 0) return arg0;
@@ -216,4 +216,13 @@ public class RandomInhabitantSorter implements InhabitantSorter {
     
     return retVal;
   }
+
+  private static void setCalled() {
+      called = true;
+  }
+  
+  public static boolean wasCalled() {
+      return called;
+  }
+  
 }

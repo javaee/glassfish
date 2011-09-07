@@ -52,7 +52,7 @@ public class MultiThreadedInhabitantActivator
     extends org.jvnet.hk2.component.MultiThreadedInhabitantActivator 
     implements PostConstruct {
 
-  public static boolean called;
+  private static boolean called;
   
   @Override
   public void postConstruct() {
@@ -72,6 +72,15 @@ public class MultiThreadedInhabitantActivator
   @Override
   public void activate(final Inhabitant<?> inhabitant) {
     super.activate(inhabitant);
-    called = true;
+    setCalled();
   }
+  
+  private static void setCalled() {
+      called = true;
+  }
+  
+  public static boolean wasCalled() {
+      return called;
+  }
+  
 }
