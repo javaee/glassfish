@@ -87,5 +87,20 @@
                 </tr:column>
             </tr:table>
         </div>
+
+        <div class="navObjectInfo">
+            <div class="title headerPageTitle">Monitoring</div>
+            <div class="subHeading">Monitoring data for PAAS Environment</div>
+            <tr:panelGroupLayout>
+                <tr:panelHorizontalLayout>
+                    <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="line" inlineStyle="width:350px; height:150px;"/>
+                    <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="pie" inlineStyle="width:350px; height:150px;"/>
+                </tr:panelHorizontalLayout>
+                <tr:panelHorizontalLayout>
+                    <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="barLine" inlineStyle="width:350px; height:150px;"/>
+                    <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="bar" inlineStyle="width:350px; height:150px;"/>
+                </tr:panelHorizontalLayout>
+            </tr:panelGroupLayout>
+        </div>
     </ui:define>
 </ui:composition>
