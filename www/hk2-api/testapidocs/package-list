@@ -1,0 +1,3 @@
+org.glassfish.hk2.tests
+org.glassfish.hk2.tests.contracts
+org.glassfish.hk2.tests.services

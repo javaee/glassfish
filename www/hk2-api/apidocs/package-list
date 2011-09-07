@@ -1,0 +1,5 @@
+org.glassfish.hk2
+org.glassfish.hk2.inject
+org.glassfish.hk2.scopes
+org.glassfish.hk2.spi
+org.jvnet.hk2.annotations
