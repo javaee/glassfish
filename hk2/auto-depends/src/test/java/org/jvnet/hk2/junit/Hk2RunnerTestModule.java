@@ -39,62 +39,14 @@
  */
 package org.jvnet.hk2.junit;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.util.HashSet;
+import org.glassfish.hk2.BinderFactory;
+import org.glassfish.hk2.Module;
 
-import org.glassfish.hk2.Services;
-import org.junit.Ignore;
-import org.junit.runner.RunWith;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.ComponentException;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.HabitatFactory;
-import org.jvnet.hk2.component.TestHabitat;
-
-/**
- * Testing Hk2Runner & Hk2RunnerOptions when annotations reside on parent class
- * 
- * @author Jeff Trent
- */
-@RunWith(Hk2Runner.class)
-@Hk2RunnerOptions(habitatFactory=TestHabitatFactory.class, 
-    enableDefaultRunLevelService=false,
-    classpathFilter=ClasspathFilter.class)
-public abstract class Hk2RunnerTestBase {
-
-  @Inject Habitat hParent;
-  
-}
-
-
-
-@Ignore
-class TestHabitatFactory implements HabitatFactory {
-    @Override
-    public Habitat newHabitat() throws ComponentException {
-        return new TestHabitat();
-    }
+public class Hk2RunnerTestModule implements Module {
 
     @Override
-    public Habitat newHabitat(Services parent, String name) throws ComponentException {
-        assert(null == parent);
-        assert(null == name);
-        return new TestHabitat();
+    public void configure(BinderFactory binderFactory) {
+        binderFactory.bind("myHk2RunnerTestModule").toInstance(this);
     }
-}
-
-
-class ClasspathFilter implements FileFilter {
-  public static HashSet<File> calls = new HashSet<File>();
-  
-  public ClasspathFilter() {
-    calls.add(null);
-  }
-  
-  @Override
-  public boolean accept(File f) {
-    calls.add(f);
-    return true;
-  }
+    
 }

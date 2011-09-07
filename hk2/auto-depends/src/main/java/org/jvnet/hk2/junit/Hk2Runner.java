@@ -255,7 +255,8 @@ public class Hk2Runner extends Runner {
                 null == options ? null : options.inhabitantsParserFactory(),
                 null == options ? true : options.enableDefaultRunLevelService(),
                 null == options ? true : options.enableRunLevelConstraints(),
-                null == options ? null : options.classpathFilter());
+                null == options ? null : options.classpathFilter(),
+                null == options ? null : options.module());
 
         Habitat habitat = singleton.getHabitat();
         // so far we don't support extra meta-data on our tests.

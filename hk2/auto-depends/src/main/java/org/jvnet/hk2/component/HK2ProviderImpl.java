@@ -57,10 +57,37 @@ import java.util.List;
  */
 public class HK2ProviderImpl implements HK2Provider {
 
+    private final HabitatFactory hFactory;
+    
+    public HK2ProviderImpl() {
+        this(null);
+    }
+    
+    public HK2ProviderImpl(HabitatFactory factory) {
+        if (null == factory) {
+            this.hFactory = new HabitatFactory() {
+                @Override
+                public Habitat newHabitat() throws ComponentException {
+                    return new Habitat();
+                }
+
+                @Override
+                public Habitat newHabitat(Services parent, String name) throws ComponentException {
+                    return new Habitat(parent, name);
+                }
+            };
+        } else {
+            this.hFactory = factory; 
+        }
+    }
+    
     @Override
     public Services create(Services parent, Class<? extends Module>... moduleTypes) {
-
-        final Habitat habitat = new Habitat(parent, moduleTypes.length>0?getModuleName(moduleTypes[0]):null);
+        final Habitat habitat = hFactory.newHabitat(parent, moduleTypes.length>0?getModuleName(moduleTypes[0]):null);
+        if (null == moduleTypes || 0 == moduleTypes.length) {
+            return habitat;
+        }
+        
         final DynamicBinderFactory parentBinder = (parent==null?null:parent.bindDynamically());
         final BinderFactoryImpl binderFactory = new BinderFactoryImpl(parentBinder);
 
@@ -127,8 +154,11 @@ public class HK2ProviderImpl implements HK2Provider {
     }
 
     public Services create(Services parent, Module... modules) {
-
-        Habitat habitat = new Habitat(parent, modules.length>0?getModuleName(modules[0].getClass()):null);
+        Habitat habitat = hFactory.newHabitat(parent, modules.length>0?getModuleName(modules[0].getClass()):null);
+        if (null == modules || 0 == modules.length) {
+            return habitat;
+        }
+        
         DynamicBinderFactory parentBinder = (parent==null?null:parent.bindDynamically());
         BinderFactoryImpl binderFactory = new BinderFactoryImpl(parentBinder);
 
@@ -140,6 +170,7 @@ public class HK2ProviderImpl implements HK2Provider {
             }
             binderFactory.registerIn(habitat);
         }
+        
         return habitat;
     }
 

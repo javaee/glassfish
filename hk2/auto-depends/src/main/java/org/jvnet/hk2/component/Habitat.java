@@ -169,7 +169,7 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
         this(null, null, null);
     }
 
-    Habitat(Services parent, String name) {
+    public Habitat(Services parent, String name) {
         this(parent, name, null);
     }
 

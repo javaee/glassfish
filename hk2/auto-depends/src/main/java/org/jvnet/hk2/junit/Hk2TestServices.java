@@ -41,8 +41,10 @@ package org.jvnet.hk2.junit;
 
 import com.sun.hk2.component.*;
 
+import org.glassfish.hk2.Module;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Enableable;
+import org.jvnet.hk2.component.HK2ProviderImpl;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.HabitatFactory;
 import org.jvnet.hk2.component.Inhabitant;
@@ -85,14 +87,16 @@ public class Hk2TestServices {
     private FileFilter classpathFilter;
     
     public Hk2TestServices() {
-        this(null, null, true, true, null);
+        this(null, null, true, true, null, null);
     }
 
+    @SuppressWarnings("unchecked")
     protected Hk2TestServices(Class<? extends HabitatFactory> habitatFactoryClass,
         Class<? extends InhabitantsParserFactory> ipFactoryClass,
         boolean defaultRLSEnabled,
         boolean rlsConstraintsEnabled,
-        Class<? extends FileFilter> classpathFilter) {
+        Class<? extends FileFilter> classpathFilter,
+        Class<? extends Module> module) {
       if (null == habitatFactoryClass || habitatFactoryClass.isInterface()) {
           this.habitatFactory = null;
       } else {
@@ -125,15 +129,25 @@ public class Hk2TestServices {
       if (null == classpathFilter && extendedFileCaching) {
         this.classpathFilter = new FileCachingClassPathAdvisor();
       }
+
+      module = (null != module && (Module.class == module)) ? null : module;
       
       this.defaultRLSEnabled = defaultRLSEnabled;
       RunLevelInhabitant.enable(rlsConstraintsEnabled);
       
       logger.log(Level.FINER, "Singleton created");
 
+      // this is the base habitat (minus any module extensions - that will come later)
       habitat = createHabitat();
       InhabitantsParser ip = createInhabitantsParser(habitat);
       populateHabitat(habitat, ip);
+      
+      // now, create the real habitat if we were given a module to layer over it...
+      if (null != module) {
+          HK2ProviderImpl provider = new HK2ProviderImpl(habitatFactory);
+          habitat = (Habitat) provider.create(habitat, module);
+      }
+      
       preInitialized();
       habitat.initialized();
     }
