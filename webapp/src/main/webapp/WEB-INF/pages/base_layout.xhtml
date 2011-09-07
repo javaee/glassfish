@@ -45,6 +45,7 @@
           xmlns:ui="http://java.sun.com/jsf/facelets"
           xmlns:h="http://java.sun.com/jsf/html"
           xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:gf="http://java.sun.com/jsf/glassfish"
           xmlns:tr="http://myfaces.apache.org/trinidad"
           xmlns:trh="http://myfaces.apache.org/trinidad/html">
 
@@ -54,7 +55,7 @@
         <h:outputScript library="glassfish/js" name="jquery-ui-1.8.15.js"/>
         <link href="#{request.contextPath}/css/td_main.css" rel="stylesheet" type="text/css"/>
         <h:outputStylesheet library="glassfish/css" name="jquery-ui-base.css" />
-        
+
         <link type="image/x-icon" href="#{request.contextPath}/images/favicon.ico" rel="icon"/>
         <link type="image/x-icon" href="#{request.contextPath}/images/favicon.ico" rel="shortcut icon"/>
 
@@ -106,6 +107,11 @@
             <div id="infoBar"></div>
             <div id="mainContent" class="topRightRounded bottomRightRounded topLeftRounded bottomLeftRounded">
                 <ui:include src="/demo/topLevelTabs.xhtml" />
+<!--                <tr:form id="lazy">
+                    <gf:lazyLoad style="display: block; width: 250px; height: 250px; border: 1px solid #990000;">
+                        #{appHelper.lazyText}
+                    </gf:lazyLoad>
+                </tr:form>-->
                 <ui:insert name="body"/>
             </div>
         </div>

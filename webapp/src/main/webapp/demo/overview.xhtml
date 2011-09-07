@@ -24,83 +24,89 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ps="http://admingui.glassfish.org/console"
+                xmlns:gf="http://java.sun.com/jsf/glassfish"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:trh="http://myfaces.apache.org/trinidad/html"
                 template="/layout.xhtml">
     <ui:define name="content">
-        <div style="width: 1300px">
-            <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
-                <div class="title headerPageTitle">Applications
-                    <a id="add" href="#{request.contextPath}/demo/wizard.jsf">
-                        <span style="display: inline-block; float: right">Add new</span>
-                    </a>
+        <tr:form id="overview">
+            <div style="width: 1300px">
+                <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
+                    <div class="title headerPageTitle">Applications
+                        <a id="add" href="#{request.contextPath}/demo/wizard.jsf">
+                            <span style="display: inline-block; float: right">Add new</span>
+                        </a>
 
+                    </div>
+                    <div class="subHeading">List of currently deployed applications</div>
+                    <gf:lazyLoad>
+                        <tr:table var="app" value="#{overview.applications}" horizontalGridVisible="false" verticalGridVisible="false" rowBandingInterval="1">
+                            <tr:column>
+                                <tr:panelHorizontalLayout  halign="left">
+                                    <tr:image id="progressBar" source="/images/progress.gif" shortDesc="Deploying Applicaiton .... " rendered="#{app.notExist}"/>
+                                    <a id="applicationName"  href="#{request.contextPath}/demo/editApplication.jsf?appName=#{app.appName}" > #{app.appName} </a>
+                                </tr:panelHorizontalLayout>
+                            </tr:column>
+                            <tr:column width="20px">
+                                <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="confirm('Application will be deleted.  Continue ? ');"/>
+                            </tr:column>
+                        </tr:table>
+                    </gf:lazyLoad>
                 </div>
-                <div class="subHeading">List of currently deployed applications</div>
-                <tr:table var="app" value="#{overview.applications}" horizontalGridVisible="false" verticalGridVisible="false" rowBandingInterval="1">
-                    <tr:column>
-                        <tr:panelHorizontalLayout  halign="left">
-                        <tr:image id="progressBar" source="/images/progress.gif" shortDesc="Deploying Applicaiton .... " rendered="#{app.notExist}"/>
-                        <a id="applicationName"  href="#{request.contextPath}/demo/editApplication.jsf?appName=#{app.appName}" > #{app.appName} </a>
-                        </tr:panelHorizontalLayout>
-                    </tr:column>
-                    <tr:column width="20px">
-                        <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="confirm('Application will be deleted.  Continue ? ');"/>
-                    </tr:column>
-                </tr:table>
+
+                <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
+                    <div class="title headerPageTitle">Services</div>
+                    <div class="subHeading">List of all services provisioned</div>
+                    <tr:table id="services" var="svs" value="#{overview.services}">
+                        <tr:column headerText="Name">
+                            #{svs.serviceName}
+                        </tr:column>
+                        <tr:column headerText="Type">
+                            #{svs.serverType}
+                        </tr:column>
+                        <tr:column headerText="Scope">
+                            #{svs.SCOPE}
+                        </tr:column>
+                        <tr:column headerText="State">
+                            <tr:image source="#{svs.stateImage}" shortDesc="#{svs.STATE}"/>
+                        </tr:column>
+                    </tr:table>
+                </div>
             </div>
 
-            <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
-                <div class="title headerPageTitle">Services</div>
-                <div class="subHeading">List of all services provisioned</div>
-                <tr:table id="services" var="svs" value="#{overview.services}">
+            <div class="navObjectInfo">
+                <div class="title headerPageTitle">Environment</div>
+                <div class="subHeading">List of all provisioned Environment</div>
+                <tr:table id="envs" var="envs" value="#{overview.environments}">
                     <tr:column headerText="Name">
-                        #{svs.serviceName}
+                        <a id="clusterName"  href="#{request.contextPath}/demo/envGeneral.jsf?envName=#{envs.clusterName}" > #{envs.clusterName} </a>
+
                     </tr:column>
-                    <tr:column headerText="Type">
-                        #{svs.serverType}
+                    <tr:column headerText="# of instancess">
+                        #{envs.instanceCount}
                     </tr:column>
-                    <tr:column headerText="Scope">
-                        #{svs.SCOPE}
-                    </tr:column>
-                    <tr:column headerText="State">
-                        <tr:image source="#{svs.stateImage}" shortDesc="#{svs.STATE}"/>
+                    <tr:column headerText="Template">
+                        #{envs.template}
                     </tr:column>
                 </tr:table>
             </div>
-        </div>
 
-        <div class="navObjectInfo">
-            <div class="title headerPageTitle">Environment</div>
-            <div class="subHeading">List of all provisioned Environment</div>
-            <tr:table id="envs" var="envs" value="#{overview.environments}">
-                <tr:column headerText="Name">
-                    <a id="clusterName"  href="#{request.contextPath}/demo/envGeneral.jsf?envName=#{envs.clusterName}" > #{envs.clusterName} </a>
-
-                </tr:column>
-                <tr:column headerText="# of instancess">
-                    #{envs.instanceCount}
-                </tr:column>
-                <tr:column headerText="Template">
-                    #{envs.template}
-                </tr:column>
-            </tr:table>
-        </div>
-
-        <div class="navObjectInfo">
-            <div class="title headerPageTitle">Monitoring</div>
-            <div class="subHeading">Monitoring data for PAAS Environment</div>
-            <tr:panelGroupLayout>
-                <tr:panelHorizontalLayout>
-                    <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="line" inlineStyle="width:350px; height:150px;"/>
-                    <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="pie" inlineStyle="width:350px; height:150px;"/>
-                </tr:panelHorizontalLayout>
-                <tr:panelHorizontalLayout>
-                    <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="barLine" inlineStyle="width:350px; height:150px;"/>
-                    <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="bar" inlineStyle="width:350px; height:150px;"/>
-                </tr:panelHorizontalLayout>
-            </tr:panelGroupLayout>
-        </div>
+            <gf:lazyLoad>
+                <div class="navObjectInfo">
+                    <div class="title headerPageTitle">Monitoring</div>
+                    <div class="subHeading">Monitoring data for PAAS Environment</div>
+                    <tr:panelGroupLayout>
+                        <tr:panelHorizontalLayout>
+                            <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="line" inlineStyle="width:350px; height:150px;"/>
+                            <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="pie" inlineStyle="width:350px; height:150px;"/>
+                        </tr:panelHorizontalLayout>
+                        <tr:panelHorizontalLayout>
+                            <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="barLine" inlineStyle="width:350px; height:150px;"/>
+                            <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="bar" inlineStyle="width:350px; height:150px;"/>
+                        </tr:panelHorizontalLayout>
+                    </tr:panelGroupLayout>
+                </div>
+            </gf:lazyLoad>
+        </tr:form>
     </ui:define>
 </ui:composition>

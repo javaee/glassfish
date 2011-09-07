@@ -6,6 +6,13 @@
     <namespace>http://java.sun.com/jsf/glassfish</namespace>
 
     <tag>
+        <tag-name>lazyLoad</tag-name>
+        <component>
+            <component-type>org.glassfish.admingui.console.component.LazyLoad</component-type>
+            <renderer-type>org.glassfish.admingui.console.component.LazyLoad</renderer-type>
+        </component>
+    </tag>
+    <tag>
         <tag-name>draggable</tag-name>
         <component>
             <component-type>org.glassfish.admingui.console.component.Draggable</component-type>

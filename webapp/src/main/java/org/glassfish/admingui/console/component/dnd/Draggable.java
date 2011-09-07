@@ -44,9 +44,16 @@ import javax.faces.context.FacesContext;
 import javax.el.ValueExpression;
 import java.util.List;
 import java.util.ArrayList;
+import javax.faces.application.ResourceDependencies;
+import javax.faces.application.ResourceDependency;
 import javax.faces.component.FacesComponent;
 
 @FacesComponent(Draggable.COMPONENT_TYPE)
+@ResourceDependencies({
+    @ResourceDependency(library="glassfish/js", name="jquery-1.6.2.min.js", target="head"),
+    @ResourceDependency(library="glassfish/js", name="jquery-ui-1.8.15.min.js", target="head"),
+    @ResourceDependency(library="glassfish/js", name="jquery-ui-base.css", target="head")
+})
 public class Draggable extends UIComponentBase {
 
     public static final String COMPONENT_TYPE = "org.glassfish.admingui.console.component.Draggable";
