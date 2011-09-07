@@ -39,11 +39,23 @@
  */
 package org.jvnet.hk2.component;
 
+import org.glassfish.hk2.Services;
+
 /**
+ * Contract responsible for habitat creation.
+ * 
  * @author Jeff Trent
  */
 public interface HabitatFactory {
   
-  Habitat newHabitat() throws ComponentException;
+    /**
+     * Create a new Habitat without a parent or name.
+     */
+    Habitat newHabitat() throws ComponentException;
 
+    /**
+     * Create a new Habitat optionally providing a parent Services as well as a name.
+     */
+    Habitat newHabitat(Services parent, String name) throws ComponentException;
+  
 }

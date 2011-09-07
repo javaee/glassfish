@@ -39,62 +39,35 @@
  */
 package org.jvnet.hk2.junit;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.util.HashSet;
+import static org.junit.Assert.*;
 
-import org.glassfish.hk2.Services;
-import org.junit.Ignore;
+import org.glassfish.hk2.PostConstruct;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.HabitatFactory;
-import org.jvnet.hk2.component.TestHabitat;
+import org.jvnet.hk2.component.Inhabitant;
 
-/**
- * Testing Hk2Runner & Hk2RunnerOptions when annotations reside on parent class
- * 
- * @author Jeff Trent
- */
 @RunWith(Hk2Runner.class)
-@Hk2RunnerOptions(habitatFactory=TestHabitatFactory.class, 
-    enableDefaultRunLevelService=false,
-    classpathFilter=ClasspathFilter.class)
-public abstract class Hk2RunnerTestBase {
-
-  @Inject Habitat hParent;
-  
-}
-
-
-
-@Ignore
-class TestHabitatFactory implements HabitatFactory {
-    @Override
-    public Habitat newHabitat() throws ComponentException {
-        return new TestHabitat();
+@Hk2RunnerOptions(module=Hk2RunnerTestModule.class)
+public class Hk2RunnerTestModuleTest implements PostConstruct {
+    
+    @Inject
+    Habitat h;
+    
+    @Test
+    public void testIt() {
+        assertNotNull(h);
+        assertNotNull(h.getDefault());
+        assertNotSame(h, h.getDefault());
+        
+        Inhabitant<?> i = h.getInhabitantByContract("myHk2RunnerTestModule", null);
+        assertNotNull(i);
     }
 
     @Override
-    public Habitat newHabitat(Services parent, String name) throws ComponentException {
-        assert(null == parent);
-        assert(null == name);
-        return new TestHabitat();
+    public void postConstruct() {
+        int dummy = 0;
     }
-}
-
-
-class ClasspathFilter implements FileFilter {
-  public static HashSet<File> calls = new HashSet<File>();
-  
-  public ClasspathFilter() {
-    calls.add(null);
-  }
-  
-  @Override
-  public boolean accept(File f) {
-    calls.add(f);
-    return true;
-  }
+    
 }

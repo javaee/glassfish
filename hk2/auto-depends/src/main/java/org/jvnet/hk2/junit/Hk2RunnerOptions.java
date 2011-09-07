@@ -47,6 +47,7 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.glassfish.hk2.Module;
 import org.jvnet.hk2.component.HabitatFactory;
 import org.jvnet.hk2.component.InhabitantsParserFactory;
 
@@ -97,5 +98,10 @@ public @interface Hk2RunnerOptions {
    * also supports the use of full {@link ClassPathAdvisor} interface.
    */
   Class<? extends FileFilter> classpathFilter() default FileFilter.class;
+  
+  /**
+   * The {@link Module} to automatically include in the habitat.
+   */
+  Class<? extends Module> module() default Module.class;
   
 }

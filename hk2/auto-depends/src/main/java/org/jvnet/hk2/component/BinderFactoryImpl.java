@@ -40,16 +40,19 @@
 
 package org.jvnet.hk2.component;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 import org.glassfish.hk2.Binder;
 import org.glassfish.hk2.BinderFactory;
 import org.glassfish.hk2.NamedBinder;
 import org.glassfish.hk2.TypeLiteral;
-
-import java.io.StringWriter;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.WildcardType;
-import java.util.*;
 
 /**
  * Implementation of the {@link org.glassfish.hk2.BinderFactory} interface.

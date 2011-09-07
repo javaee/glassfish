@@ -41,6 +41,7 @@ package org.jvnet.hk2.junit;
 
 import static org.junit.Assert.*;
 
+import org.glassfish.hk2.Services;
 import org.junit.Test;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
@@ -74,7 +75,7 @@ public class Hk2TestServicesTest {
   static class TestHk2TestServices extends Hk2TestServices {
     public TestHk2TestServices(Class<? extends HabitatFactory> habitatFactoryClass,
         Class<? extends InhabitantsParserFactory> ipFactoryClass) {
-      super(habitatFactoryClass, ipFactoryClass, true, true, null);
+      super(habitatFactoryClass, ipFactoryClass, true, true, null, null);
     }
     
     @Override
@@ -88,8 +89,16 @@ public class Hk2TestServicesTest {
     
     @Override
     public Habitat newHabitat() throws ComponentException {
-      calls++;
-      return new Habitat();
+        calls++;
+        return new Habitat();
+    }
+
+    @Override
+    public Habitat newHabitat(Services parent, String name) throws ComponentException {
+        assertNull(parent);
+        assertNull(name);
+        calls++;
+        return new Habitat();
     }
   }
 

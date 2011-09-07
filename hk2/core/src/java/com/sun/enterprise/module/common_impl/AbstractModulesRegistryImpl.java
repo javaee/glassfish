@@ -50,6 +50,8 @@ import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.hk2.component.InhabitantsParser;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
+
+import org.glassfish.hk2.Services;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.InhabitantsParserFactory;
@@ -116,6 +118,15 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
      */
     public Habitat newHabitat() throws ComponentException {
         Habitat habitat = new Habitat();
+        initializeHabitat(habitat);
+        return habitat;
+    }
+    
+    /**
+     * Create a new Habitat optionally providing a parent Services as well as a name.
+     */
+    public Habitat newHabitat(Services parent, String name) throws ComponentException {
+        Habitat habitat = new Habitat(parent, name);
         initializeHabitat(habitat);
         return habitat;
     }
