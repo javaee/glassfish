@@ -38,9 +38,12 @@
 
                 </div>
                 <div class="subHeading">List of currently deployed applications</div>
-                <tr:table var="app" value="#{listApplicationsBean.applications}" horizontalGridVisible="false" verticalGridVisible="false" rowBandingInterval="1">
+                <tr:table var="app" value="#{overview.applications}" horizontalGridVisible="false" verticalGridVisible="false" rowBandingInterval="1">
                     <tr:column>
-                        <a id="applicationName"  href="#{request.contextPath}/demo/editApplication.jsf?appName=#{app.name}" > #{app.name} </a>
+                        <tr:panelHorizontalLayout  halign="left">
+                        <tr:image id="progressBar" source="/images/progress.gif" shortDesc="Deploying Applicaiton .... " rendered="#{app.notExist}"/>
+                        <a id="applicationName"  href="#{request.contextPath}/demo/editApplication.jsf?appName=#{app.appName}" > #{app.appName} </a>
+                        </tr:panelHorizontalLayout>
                     </tr:column>
                     <tr:column width="20px">
                         <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="confirm('Application will be deleted.  Continue ? ');"/>
@@ -73,7 +76,8 @@
             <div class="subHeading">List of all provisioned Environment</div>
             <tr:table id="envs" var="envs" value="#{overview.environments}">
                 <tr:column headerText="Name">
-                    #{envs.clusterName}
+                    <a id="clusterName"  href="#{request.contextPath}/demo/envGeneral.jsf?envName=#{envs.clusterName}" > #{envs.clusterName} </a>
+
                 </tr:column>
                 <tr:column headerText="# of instancess">
                     #{envs.instanceCount}

@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
+import org.glassfish.admingui.console.rest.RestUtil;
 import org.glassfish.admingui.console.util.CommandUtil;
 
 /**
@@ -22,6 +24,37 @@ import org.glassfish.admingui.console.util.CommandUtil;
 @ManagedBean
 @SessionScoped
 public class Overview  {
+
+    public List<Map> getApplications() {
+        List<Map> apps = new ArrayList();
+        Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+        List<String> deployingApps = (List)sessionMap.get("_deployingApps");
+        String endPoint = "http://localhost:4848/management/domain/applications/list-applications";
+        Map attrs = new HashMap();
+        attrs.put("target", "domain");  //specify domain to get Paas deployed app.
+        Map appData = (Map)RestUtil.restRequest(endPoint, attrs, "GET", null, null, false, true).get("data");
+        Map<String, String> props = (Map)appData.get("properties");
+        if (props != null){
+            for (String appName : props.keySet()) {
+                Map app = new HashMap();
+                app.put("appName", appName);
+                app.put("notExist", false);
+                apps.add(app);
+                if (deployingApps != null && deployingApps.contains(appName)){
+                    deployingApps.remove(appName);
+                }
+            }
+        }
+        if (deployingApps != null){
+            for(String one :deployingApps){
+                Map app = new HashMap();
+                app.put("appName", one);
+                app.put("notExist", true);
+                apps.add(app);
+            }
+        }
+        return apps;
+    }
 
     public List<Map> getServices() {
         List services =  CommandUtil.listServices(null, null, null);

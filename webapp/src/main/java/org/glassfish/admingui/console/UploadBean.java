@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import org.apache.myfaces.trinidad.model.UploadedFile;
 import org.glassfish.admingui.console.event.DragDropEvent;
@@ -103,11 +104,20 @@ public class UploadBean {
         }
          *
          */
+        Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+        List deployingApps = (List)sessionMap.get("_deployingApps");
         try {
+            if (deployingApps == null ){
+                deployingApps = new ArrayList();
+                sessionMap.put("_deployingApps", deployingApps);
+            }
+            deployingApps.add(this.appName);
             RestUtil.restRequest("http://localhost:4848/management/domain/applications/application", payload, "post", null, null, false, true);
-            System.out.println("--------------- doDeploy returns /demo/overview");
             return "/demo/overview";
         } catch (Exception ex) {
+            if (deployingApps != null && deployingApps.contains(this.appName)){
+                deployingApps.remove(this.appName);
+            }
             ex.printStackTrace();
             System.out.println("------------- do Deploy returns NULL");
             return null;
