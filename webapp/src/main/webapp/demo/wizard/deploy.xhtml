@@ -69,7 +69,12 @@
     <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{wizardBean.previous}">
     </tr:commandButton>
     <tr:commandButton id="nextButton" text=" Deploy " action="#{uploadBean.doDeploy}"
-                      onclick="document.getElementById('wizard:progressBar').style.visibility='visible';return true;">
+                      onclick="document.getElementById('wizard:prevButton').disabled=true;
+                          document.getElementById('wizard:nextButton').disabled=true;
+                          document.getElementById('wizard:progressBar').style.visibility='visible';
+                          document.getElementById('wizard:progressText').style.visibility='visible';
+                          return true;">
     </tr:commandButton>
-    <tr:image id="progressBar" inlineStyle="padding-left: 99px; visibility:hidden;" source="/images/progress.gif" shortDesc="Deploying Applicaiton .... " />
+    <tr:image id="progressBar" inlineStyle="padding-left: 20px; visibility:hidden;" source="/images/progress.gif" shortDesc="Deploying Applicaiton .... " />
+    <tr:outputText id="progressText" value="Creating Application, this may take a few minutes ......" inlineStyle="visibility:hidden" />
 </ui:composition>
