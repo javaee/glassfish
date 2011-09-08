@@ -57,12 +57,9 @@
     <h:form id="topLevelTabsForm" style="color: black;">
         <h:panelGroup id="topTabs">
             <tr:panelTabbed id="topLevelTabs" position ="above" inlineStyle="padding: 0px;">
-                <tr:showDetailItem text="Overview"
-                                   disclosed="#{tabBean.isActiveTab('/demo/overview.jsf')}"
-                                   onclick="window.location = '#{request.contextPath}/demo/overview.jsf'; return false;"/>
                 <tr:showDetailItem text="Applications"
-                                   disclosed="#{tabBean.isActiveTab('/demo/listApplications.jsf')}"
-                                   onclick="window.location = '#{request.contextPath}/demo/listApplications.jsf'; return false;"/>
+                                   disclosed="#{tabBean.isActiveTab('/demo/applications.jsf')}"
+                                   onclick="window.location = '#{request.contextPath}/demo/applications.jsf'; return false;"/>
                 <tr:showDetailItem text="Environments"
                                    disclosed="#{tabBean.isActiveTab('/demo/environments.jsf')}"
                                    onclick="window.location = '#{request.contextPath}/demo/environments.jsf'; return false;"/>
