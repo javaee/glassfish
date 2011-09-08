@@ -75,8 +75,8 @@ public class FieldInjectedTypeBindingTestClass {
     Factory<ContractB> cbp;
     @Inject
     Factory<ContractA> cap;
-//    @Inject
-//    Factory<GenericContract<String>> gcp;
+    @Inject
+    Factory<GenericContract<String>> gcp;
 
     public void assertInjection() {
         assertInjectedInstance(ServiceC.class, this.sc);
@@ -94,6 +94,6 @@ public class FieldInjectedTypeBindingTestClass {
         assertInjectedFactory(ServiceA.class, this.cap);
         assertInjectedInstance(ServiceB.class, this.cap.get().getB());
         assertInjectedInstance(ClassX.class, this.cap.get().getB().getX());
-//        assertInjectedFactory(GenericContractStringImpl.class, this.gcp);
+        assertInjectedFactory(GenericContractStringImpl.class, this.gcp);
     }
 }
