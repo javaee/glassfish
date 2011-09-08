@@ -39,7 +39,7 @@
 
                     </div>
                     <div class="subHeading">List of currently deployed applications</div>
-                    <gf:lazyLoad>
+<!--                    <gf:lazyLoad>-->
                         <tr:table var="app" value="#{overview.applications}" horizontalGridVisible="false" verticalGridVisible="false" rowBandingInterval="1">
                             <tr:column>
                                 <tr:panelHorizontalLayout  halign="left">
@@ -51,7 +51,7 @@
                                 <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="confirm('Application will be deleted.  Continue ? ');"/>
                             </tr:column>
                         </tr:table>
-                    </gf:lazyLoad>
+<!--                    </gf:lazyLoad>-->
                 </div>
 
                 <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
@@ -91,23 +91,21 @@
                 </tr:table>
             </div>
 
-            <gf:lazyLoad>
-                <div class="navObjectInfo">
-                    <div class="title headerPageTitle">Monitoring</div>
-                    <div class="subHeading">Monitoring data for PAAS Environment</div>
-                    <tr:panelGroupLayout>
-                        <tr:panelHorizontalLayout>
-                            <tr:poll id="poller" interval="5000" pollListener="#{monitoringBean.onPoll}" immediate="#{true}"/>
-                            <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="line" inlineStyle="width:350px; height:150px;" partialTriggers="poller"/>
-                            <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="pie" inlineStyle="width:350px; height:150px;"/>
-                        </tr:panelHorizontalLayout>
-                        <tr:panelHorizontalLayout>
-                            <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="barLine" inlineStyle="width:350px; height:150px;"/>
-                            <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="bar" inlineStyle="width:350px; height:150px;"/>
-                        </tr:panelHorizontalLayout>
-                    </tr:panelGroupLayout>
-                </div>
-            </gf:lazyLoad>
+            <div class="navObjectInfo">
+                <div class="title headerPageTitle">Monitoring</div>
+                <div class="subHeading">Monitoring data for PaaS Environment</div>
+                <tr:poll id="poller" interval="5000" pollListener="#{monitoringBean.onPoll}" immediate="#{true}"/>
+                <tr:panelGroupLayout partialTriggers="poller">
+                    <tr:panelHorizontalLayout>
+                        <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="line" inlineStyle="width:350px; height:150px;"/>
+                        <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="pie" inlineStyle="width:350px; height:150px;"/>
+                    </tr:panelHorizontalLayout>
+                    <tr:panelHorizontalLayout>
+                        <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="barLine" inlineStyle="width:350px; height:150px;"/>
+                        <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="bar" inlineStyle="width:350px; height:150px;"/>
+                    </tr:panelHorizontalLayout>
+                </tr:panelGroupLayout>
+            </div>
         </tr:form>
     </ui:define>
 </ui:composition>

@@ -49,8 +49,37 @@ import org.apache.myfaces.trinidad.model.ChartModel;
 @ManagedBean(name = "monitoringBean")
 @SessionScoped
 public class MonitoringChartBean {
+    private final int MAX_SIZE = 10;
+    private MyChartModel value = new MyChartModel();
 
+    public ChartModel getValue() {        
+        return value;
+    }
+
+    public void onPoll(PollEvent e) {
+        if (value != null) { // && value.isUpdate()) {
+            value.updateLabelsAndValues();
+        }
+    }
+    
     private class MyChartModel extends ChartModel {
+        private List<String> _groupLabels = new ArrayList<String>();
+        private List<String> _seriesLabels = Arrays.asList(new String[]{"Request Count", "Error Count"});
+        private List<List<Double>> _chartYValues;
+        private List<List<Double>> _chartXValues;
+        Date minDate, maxDate;
+
+        public MyChartModel() {
+            _chartYValues = new ArrayList<List<Double>>();
+            _chartYValues.add(Arrays.asList(new Double[]{2.0, 1.0}));
+            _chartYValues.add(Arrays.asList(new Double[]{5.0, 2.0}));
+            _chartYValues.add(Arrays.asList(new Double[]{10.0, 4.0}));
+            _chartYValues.add(Arrays.asList(new Double[]{15.0, 6.0}));
+            _chartYValues.add(Arrays.asList(new Double[]{20.0, 2.0}));
+
+            _chartXValues = new ArrayList<List<Double>>();
+            setLabelsAndValues();
+        }
 
         @Override
         public List<String> getSeriesLabels() {
@@ -107,25 +136,7 @@ public class MonitoringChartBean {
         public String getFootNote() {
             return "";
         }
-        private final List<String> _groupLabels = new ArrayList<String>();
-        private final List<String> _seriesLabels =
-                Arrays.asList(new String[]{"Request Count", "Error Count"});
-        private final ArrayList<List<Double>> _chartYValues;
-        private final ArrayList<List<Double>> _chartXValues;
-        Date minDate, maxDate;
-
-        {
-            _chartYValues = new ArrayList<List<Double>>();
-            _chartYValues.add(Arrays.asList(new Double[]{2.0, 1.0}));
-            _chartYValues.add(Arrays.asList(new Double[]{5.0, 2.0}));
-            _chartYValues.add(Arrays.asList(new Double[]{10.0, 4.0}));
-            _chartYValues.add(Arrays.asList(new Double[]{15.0, 6.0}));
-            _chartYValues.add(Arrays.asList(new Double[]{20.0, 2.0}));
-
-            _chartXValues = new ArrayList<List<Double>>();
-            setLabelsAndValues();
-        }
-
+        
         private void setLabelsAndValues() {
             Calendar cal = Calendar.getInstance();
             Date dt = new Date(2000, 7, 23, 10, 10, 10);
@@ -142,7 +153,10 @@ public class MonitoringChartBean {
             cal.add(Calendar.HOUR, 2);
             maxDate = cal.getTime();
         }
+        
         public void updateLabelsAndValues() {
+            Random generator = new Random();
+            
             Calendar cal = Calendar.getInstance();
             cal.setTime(maxDate);
             SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
@@ -150,26 +164,15 @@ public class MonitoringChartBean {
             String formattedStr = sdf.format(cal.getTime());
             _groupLabels.add(formattedStr);
             _chartXValues.add(Arrays.asList(new Double[]{Double.longBitsToDouble(cal.getTimeInMillis())}));
-            _chartYValues.add(Arrays.asList(new Double[]{10.0, 5.0}));
+            _chartYValues.add(Arrays.asList(new Double[]{generator.nextDouble()*20+10, generator.nextDouble()*10}));
             cal.add(Calendar.HOUR, 2);
             maxDate = cal.getTime();
-        }
-        public Boolean isUpdate() {
-            if (_chartYValues != null && _chartYValues.size() < 10) {
-                return true;
+            
+            if (_chartYValues.size() > MAX_SIZE) {
+                _chartYValues = _chartYValues.subList(_chartYValues.size()-MAX_SIZE, _chartYValues.size());
+                _chartXValues = _chartXValues.subList(_chartXValues.size()-MAX_SIZE, _chartXValues.size());
+                _groupLabels = _groupLabels.subList(_groupLabels.size()-MAX_SIZE, _groupLabels.size());
             }
-            return false;
-        }
-    }
-    MyChartModel value = new MyChartModel();
-
-    public ChartModel getValue() {        
-        return value;
-    }
-
-    public void onPoll(PollEvent e) {
-        if (value != null && value.isUpdate()) {
-            value.updateLabelsAndValues();
         }
     }
 }
