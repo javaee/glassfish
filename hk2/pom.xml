@@ -351,6 +351,7 @@
         <asm.version>3.3</asm.version>
         <findbugs.exclude />
         <findbugs.threshold>High</findbugs.threshold>
+        <site.url>file:../www/</site.url>
     </properties>
 
   <reporting>
@@ -403,7 +404,7 @@
     <distributionManagement>
         <site>
             <id>local</id>
-            <url>file:../www/</url>
+            <url>${site.url}</url>
         </site>
      </distributionManagement>
 
