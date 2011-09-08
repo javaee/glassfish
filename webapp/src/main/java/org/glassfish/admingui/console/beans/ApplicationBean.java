@@ -32,6 +32,10 @@ public class ApplicationBean {
         return appName;
     }
 
+    public String getAppName() {
+        return appName;
+    }
+    
     public List<Map<String, String>> getUrls() {
         return DeployUtil.getTargetURLList(appName, appName);
     }
