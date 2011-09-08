@@ -20,11 +20,10 @@ import javax.faces.event.ComponentSystemEvent;
 // This is an ugly, ugly hack. Post-OOW, when we hopefully are using a better
 // component set, this can be made "right".
 public class TabBean {
-    private String currentTab = "/demo/overview.jsf";
+    private String currentTab = "/demo/applications.jsf";
 
     private List<String> tabs = new ArrayList<String>() {{
-        add("/demo/overview.xhtml");
-        add("/demo/listApplications.xhtml");
+        add("/demo/applications.xhtml");
         add("/demo/environments.xhtml");
         /*
         add("/demo/listServices.xhtml");
