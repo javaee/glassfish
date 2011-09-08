@@ -48,28 +48,4 @@
         <default-render-kit-id>org.apache.myfaces.trinidad.core</default-render-kit-id>
 <!--        <navigation-handler>org.glassfish.admingui.console.NavigationHandler</navigation-handler>-->
     </application>
-    <!--
-    <component>
-        <component-type>org.glassfish.admingui.console.component.Draggable</component-type>
-        <component-class>org.glassfish.admingui.console.component.dnd.Draggable</component-class>
-    </component>
-
-    <component>
-        <component-type>org.glassfish.admingui.console.component.Droppable</component-type>
-        <component-class>org.glassfish.admingui.console.component.dnd.Droppable</component-class>
-    </component>
-
-    <render-kit>
-        <renderer>
-            <component-family>org.glassfish.admingui.console.component</component-family>
-            <renderer-type>org.glassfish.admingui.console.component.DraggableRenderer</renderer-type>
-            <renderer-class>org.glassfish.admingui.console.component.dnd.DraggableRenderer</renderer-class>
-        </renderer>
-        <renderer>
-            <component-family>org.glassfish.admingui.console.component</component-family>
-            <renderer-type>org.glassfish.admingui.console.component.DroppableRenderer</renderer-type>
-            <renderer-class>org.glassfish.admingui.console.component.dnd.DroppableRenderer</renderer-class>
-        </renderer>
-    </render-kit>
-    -->
 </faces-config>

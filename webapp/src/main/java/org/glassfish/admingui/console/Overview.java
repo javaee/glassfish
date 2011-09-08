@@ -4,6 +4,7 @@
  */
 package org.glassfish.admingui.console;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,10 +22,10 @@ import org.glassfish.admingui.console.util.CommandUtil;
  */
 @ManagedBean
 @ViewScoped
-public class Overview {
+public class Overview implements Serializable {
 
-    private List<Map> services;
-    private final List<Map> apps = new ArrayList<Map>();
+    transient private List<Map> services;
+    transient private final List<Map> apps = new ArrayList<Map>();
 
     public List<Map> getApplications() {
         synchronized (apps) {
@@ -66,14 +67,16 @@ public class Overview {
                 services = CommandUtil.listServices(null, null, null);
 
                 //In the overview page, we don't want to show clusterInstance type.
-                Iterator iter = services.iterator();
-                while (iter.hasNext()) {
-                    Map oneEntry = (Map) iter.next();
-                    if ("ClusterInstance".equals(oneEntry.get("serverType"))) {
-                        iter.remove();
-                    }
-                    if ("Cluster".equals(oneEntry.get("serverType"))) {
-                        oneEntry.put("serverType", "JavaEE");
+                if (!services.isEmpty()) {
+                    Iterator iter = services.iterator();
+                    while (iter.hasNext()) {
+                        Map oneEntry = (Map) iter.next();
+                        if ("ClusterInstance".equals(oneEntry.get("serverType"))) {
+                            iter.remove();
+                        }
+                        if ("Cluster".equals(oneEntry.get("serverType"))) {
+                            oneEntry.put("serverType", "JavaEE");
+                        }
                     }
                 }
             }

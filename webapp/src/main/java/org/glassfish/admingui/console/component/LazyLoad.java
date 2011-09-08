@@ -24,7 +24,7 @@ import javax.faces.context.ResponseWriter;
 @FacesComponent(LazyLoad.COMPONENT_TYPE)
 @ResourceDependencies({
     @ResourceDependency(library = "glassfish/js", name = "jquery-1.6.2.min.js", target = "head"),
-    @ResourceDependency(library = "glassfish/js", name = "glassfish.js", target = "head")
+    @ResourceDependency(library = "glassfish/js", name = "glassfish.js")
 })
 public class LazyLoad extends UIComponentBase {
 
@@ -52,6 +52,7 @@ public class LazyLoad extends UIComponentBase {
             ResponseWriter writer = fc.getResponseWriter();
             writer.startElement("span", this);
             writer.writeAttribute("id", getClientId(), "id");
+            writer.writeAttribute("class", "__lazyload", "class");
             writer.writeAttribute("style", getStyle(), "style");
             writer.startElement("img", this);
             writer.writeAttribute("src", ajaxLoader.getRequestPath(), "src");
@@ -75,10 +76,16 @@ public class LazyLoad extends UIComponentBase {
     public void encodeEnd(FacesContext fc) throws IOException {
         if (!isAjaxRequest(fc)) {
             ResponseWriter writer = fc.getResponseWriter();
+            Resource javascript = fc.getApplication().getResourceHandler().createResource("glassfish.js", "glassfish/js");
             writer.endElement("span");
             writer.startElement("script", this);
             writer.writeAttribute("type", "text/javascript", "type");
-            writer.write("lazyLoadElements.push('" + getClientId() + "');");
+            writer.writeAttribute("src", javascript.getRequestPath(), "src");
+            writer.endElement("script");
+            writer.startElement("script", this);
+            writer.writeAttribute("type", "text/javascript", "type");
+            writer.write("doLazyLoad();");
+//            writer.write("\n$(document).ready(\nfunction(){\nlazyLoadElements.push('" + getClientId() + "');\ndoLazyLoad()\n});");
             writer.endElement("script");
         } else {
         }

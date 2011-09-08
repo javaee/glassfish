@@ -10,6 +10,7 @@ function doLazyLoad() {
         return ((elemTop + ((elemBottom - elemTop)/2)) >= docViewTop && ((elemTop + ((elemBottom - elemTop)/2)) <= docViewBottom));
     }
 
+    /*
     for (var i = 0; i < lazyLoadElements.length; i++) {
         var el = document.getElementById(lazyLoadElements[i]);
         if (el) {
@@ -20,6 +21,12 @@ function doLazyLoad() {
             }
         }
     }
+    */
+    $('.__lazyload').each(function(el) {
+        if (isScrolledIntoView($(this))) {
+            jsf.ajax.request($(this).prop('id'), null, {render:'@form'});
+        }
+    });
 }
 
 $(document).scroll(doLazyLoad);
