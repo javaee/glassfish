@@ -38,7 +38,9 @@
             <tr:table id="envs" var="envs" value="#{overview.environments}">
                 <tr:column headerText="Name">
                     <a id="clusterName"  href="#{request.contextPath}/demo/environmentGeneral.jsf?envName=#{envs.clusterName}" > #{envs.clusterName} </a>
-
+                </tr:column>
+                <tr:column headerText="Applications">
+                    admin-console
                 </tr:column>
                 <tr:column headerText="# of instancess">
                     #{envs.instanceCount}
