@@ -48,11 +48,17 @@ import javax.inject.Qualifier;
 
 import org.glassfish.hk2.*;
 
-import org.glassfish.hk2.inject.Injector;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Inhabitant;
 
 import com.sun.hk2.component.InjectionResolver;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.WildcardType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import org.jvnet.tiger_types.Types;
 
 /**
@@ -61,7 +67,8 @@ import org.jvnet.tiger_types.Types;
  */
 public class ContextInjectionResolver extends InjectionResolver<Context> {
 
-    @Inject Services services;
+    @Inject
+    Services services;
 
     public ContextInjectionResolver() {
         super(Context.class);
@@ -73,21 +80,17 @@ public class ContextInjectionResolver extends InjectionResolver<Context> {
     }
 
     @Override
-    public <V> V getValue(
-            Object component,
-            Inhabitant<?> onBehalfOf,
-            AnnotatedElement annotated,
-            Type genericType,
-            Class<V> type) throws ComponentException {
+    @SuppressWarnings("unchecked")
+    public <V> V getValue(Object component, Inhabitant<?> onBehalfOf, AnnotatedElement annotated, Type genericType, Class<V> type) throws ComponentException {
+        final boolean isHk2Factory = Types.isSubClassOf(type, org.glassfish.hk2.Factory.class);
 
-        Class<V> targetType;
-        if (Types.isSubClassOf(type, org.glassfish.hk2.Factory.class)) {
-            targetType = Types.erasure(Types.getTypeArgument(genericType, 0));
+        String targetTypeName;
+        if (isHk2Factory) {
+            targetTypeName = exploreType(Types.getTypeArgument(genericType, 0));
         } else {
-            targetType = type;
+            targetTypeName = exploreType(genericType);
         }
-        ContractLocator<V> locator = services.forContract(targetType);
-
+        ContractLocator<?> locator = services.forContract(targetTypeName);
         for (Annotation a : annotated.getAnnotations()) {
             final Class<? extends Annotation> ac = a.annotationType();
             if (Named.class.isAssignableFrom(ac)) {
@@ -95,16 +98,14 @@ public class ContextInjectionResolver extends InjectionResolver<Context> {
             } else if (ac.isAnnotationPresent(Qualifier.class)) {
                 locator = locator.annotatedWith(ac);
             }
-
-            // todo: what to do about scopes?                
+            // todo: what to do about scopes?
         }
-
         Provider<?> provider = locator.getProvider();
-        if (provider==null) {
-            if (Types.isSubClassOf(type, org.glassfish.hk2.Factory.class)) {
-                return (V) services.byType(targetType).getProvider();
+        if (provider == null) {
+            if (isHk2Factory) {
+                return (V) services.byType(targetTypeName).getProvider();
             } else {
-                return services.byType(targetType).get();
+                return (V) services.byType(targetTypeName).get();
             }
         }
         if (Types.isSubClassOf(type, org.glassfish.hk2.Factory.class)) {
@@ -113,7 +114,44 @@ public class ContextInjectionResolver extends InjectionResolver<Context> {
             return (V) provider.get();
         }
     }
+    
+    
+    // TODO: Replace with HK2 API call
+    private static void exploreType(Type type, StringBuilder builder) {
+        if (type instanceof ParameterizedType) {
+            builder.append(TypeLiteral.getRawType(type).getName());
 
+            // we ignore wildcard types.
+            Collection<Type> types = Arrays.asList(((ParameterizedType) type).getActualTypeArguments());
+            Iterator<Type> typesEnum = types.iterator();
+            List<Type> nonWildcards = new ArrayList<Type>();
+            while (typesEnum.hasNext()) {
+                Type genericType = typesEnum.next();
+                if (!(genericType instanceof WildcardType)) {
+                    nonWildcards.add(genericType);
+                }
+            }
+            if (!nonWildcards.isEmpty()) {
+                builder.append("<");
+                Iterator<Type> typesItr = nonWildcards.iterator();
+                while (typesItr.hasNext()) {
+                    exploreType(typesItr.next(), builder);
+                    if (typesItr.hasNext()) {
+                        builder.append(",");
+                    }
+                }
+                builder.append(">");
+            }
+        } else {
+            builder.append(TypeLiteral.getRawType(type).getName());
+        }
+    }
+
+    private static String exploreType(Type type) {
+        StringBuilder builder = new StringBuilder();
+        exploreType(type, builder);
+        return builder.toString();
+    }
 
     public static class ContextInjectionModule implements Module {
 
