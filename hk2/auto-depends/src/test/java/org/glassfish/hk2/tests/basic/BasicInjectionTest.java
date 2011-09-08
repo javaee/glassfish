@@ -199,6 +199,9 @@ public class BasicInjectionTest {
         assertInjectedProvider(ServiceA.class, cap);
         assertInjectedInstance(ServiceB.class, cap.get().getB());
         assertInjectedInstance(ClassX.class, cap.get().getB().getX());
+        
+        final Provider<GenericContract<String>> gcp = services.forContract(new TypeLiteral<GenericContract<String>>(){}).getProvider();
+        assertInjectedProvider(GenericContractStringImpl.class, gcp);
     }
 
     @Test
