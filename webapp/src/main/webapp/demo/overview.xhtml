@@ -97,7 +97,8 @@
                     <div class="subHeading">Monitoring data for PAAS Environment</div>
                     <tr:panelGroupLayout>
                         <tr:panelHorizontalLayout>
-                            <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="line" inlineStyle="width:350px; height:150px;"/>
+                            <tr:poll id="poller" interval="5000" pollListener="#{monitoringBean.onPoll}" immediate="#{true}"/>
+                            <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="line" inlineStyle="width:350px; height:150px;" partialTriggers="poller"/>
                             <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="pie" inlineStyle="width:350px; height:150px;"/>
                         </tr:panelHorizontalLayout>
                         <tr:panelHorizontalLayout>

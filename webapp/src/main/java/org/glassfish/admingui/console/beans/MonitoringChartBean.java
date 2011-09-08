@@ -42,11 +42,12 @@ package org.glassfish.admingui.console.beans;
 import java.text.SimpleDateFormat;
 import javax.faces.bean.ManagedBean;
 import java.util.*;
-import javax.faces.bean.RequestScoped;
+import javax.faces.bean.SessionScoped;
+import org.apache.myfaces.trinidad.event.PollEvent;
 import org.apache.myfaces.trinidad.model.ChartModel;
 
 @ManagedBean(name = "monitoringBean")
-@RequestScoped
+@SessionScoped
 public class MonitoringChartBean {
 
     private class MyChartModel extends ChartModel {
@@ -141,10 +142,34 @@ public class MonitoringChartBean {
             cal.add(Calendar.HOUR, 2);
             maxDate = cal.getTime();
         }
+        public void updateLabelsAndValues() {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(maxDate);
+            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
+            cal.add(Calendar.HOUR, 2);
+            String formattedStr = sdf.format(cal.getTime());
+            _groupLabels.add(formattedStr);
+            _chartXValues.add(Arrays.asList(new Double[]{Double.longBitsToDouble(cal.getTimeInMillis())}));
+            _chartYValues.add(Arrays.asList(new Double[]{10.0, 5.0}));
+            cal.add(Calendar.HOUR, 2);
+            maxDate = cal.getTime();
+        }
+        public Boolean isUpdate() {
+            if (_chartYValues != null && _chartYValues.size() < 10) {
+                return true;
+            }
+            return false;
+        }
     }
-    ChartModel value = new MyChartModel();
+    MyChartModel value = new MyChartModel();
 
-    public ChartModel getValue() {
+    public ChartModel getValue() {        
         return value;
+    }
+
+    public void onPoll(PollEvent e) {
+        if (value != null && value.isUpdate()) {
+            value.updateLabelsAndValues();
+        }
     }
 }
