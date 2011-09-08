@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes" ?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ps="http://admingui.glassfish.org/console"
+                xmlns:tr="http://myfaces.apache.org/trinidad"
+                xmlns:trh="http://myfaces.apache.org/trinidad/html"
+                template="/layout.xhtml">
+
+
+    <ui:define name="content">
+        <div>
+            <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
+                <div class="title headerPageTitle">Applications
+                    <a id="add" href="#{request.contextPath}/demo/wizard.jsf">
+                        <span style="display: inline-block; float: right">Add new</span>
+                    </a>
+                </div>
+                <div class="subHeading">List of deployed applications</div>
+                <tr:table var="app" value="#{overview.applications}" horizontalGridVisible="false" verticalGridVisible="false" rowBandingInterval="1">
+                    <tr:column headerText="Name">
+                        <tr:panelHorizontalLayout  halign="left">
+                        <tr:image id="progressBar" source="/images/progress.gif" shortDesc="Deploying Applicaiton .... " rendered="#{app.notExist}"/>
+                        <a id="applicationName"  href="#{request.contextPath}/demo/applicationGeneral.jsf?appName=#{app.appName}" > #{app.appName} </a>
+                        </tr:panelHorizontalLayout>
+                    </tr:column>
+                    <tr:column headerText="Environments">
+                        xyz
+                    </tr:column>
+                    <tr:column headerText="Engines">
+                        web
+                    </tr:column>
+                    <tr:column headerText="Status">
+                        Enabled
+                    </tr:column>
+
+                    <tr:column width="20px">
+                        <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="confirm('Application will be deleted.  Continue ? ');"/>
+                    </tr:column>
+                </tr:table>
+            </div>
+        </div>
+
+    </ui:define>
+</ui:composition>
