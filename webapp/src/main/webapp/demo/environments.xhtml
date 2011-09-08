@@ -28,6 +28,8 @@
                 xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:trh="http://myfaces.apache.org/trinidad/html"
                 template="/layout.xhtml">
+
+
     <ui:define name="content">
 
         <div class="navObjectInfo">
@@ -35,7 +37,7 @@
             <div class="subHeading">List of all provisioned Environment</div>
             <tr:table id="envs" var="envs" value="#{overview.environments}">
                 <tr:column headerText="Name">
-                    <a id="clusterName"  href="#{request.contextPath}/demo/envGeneral.jsf?envName=#{envs.clusterName}" > #{envs.clusterName} </a>
+                    <a id="clusterName"  href="#{request.contextPath}/demo/environmentGeneral.jsf?envName=#{envs.clusterName}" > #{envs.clusterName} </a>
 
                 </tr:column>
                 <tr:column headerText="# of instancess">
