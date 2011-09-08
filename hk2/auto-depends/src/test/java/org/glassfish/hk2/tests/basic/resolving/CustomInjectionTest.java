@@ -39,7 +39,6 @@
  */
 package org.glassfish.hk2.tests.basic.resolving;
 
-import org.junit.Ignore;
 import org.glassfish.hk2.tests.basic.resolving.injected.*;
 import org.glassfish.hk2.BinderFactory;
 import org.glassfish.hk2.ComponentException;
@@ -69,7 +68,6 @@ import static org.glassfish.hk2.tests.basic.AssertionUtils.*;
  * 
  * @author Marek Potociar (marek.potociar at oracle.com)
  */
-@Ignore
 public class CustomInjectionTest {
 
     public static InstanceBoundContract boundContractInstance = new InstanceBoundContract() {
@@ -87,7 +85,8 @@ public class CustomInjectionTest {
             binderFactory.bind().to(ServiceC.class);
             binderFactory.bind().to(ServiceD.class);
             binderFactory.bind().to(ClassX.class);
-            binderFactory.bind(new TypeLiteral<GenericContract<String>>() {}).to(GenericContractStringImpl.class);
+            binderFactory.bind(new TypeLiteral<GenericContract<String>>() {
+            }).to(GenericContractStringImpl.class);
 
             // instance bindings
             binderFactory.bind(InstanceBoundContract.class).toInstance(boundContractInstance);
