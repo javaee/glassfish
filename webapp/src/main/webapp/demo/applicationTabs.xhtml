@@ -59,10 +59,10 @@
             <tr:panelTabbed id="applicationTabsPanel" position ="above" inlineStyle="padding: 0px;">
                 <tr:showDetailItem text="Configuration"
                                    disclosed="#{tabBean.isActiveTab('/demo/listApplications.jsf')}"
-                                   onclick="window.location = '#{request.contextPath}/demo/applicationGeneral.jsf'; return false;"/>
+                                   onclick="window.location = '#{request.contextPath}/demo/applicationGeneral.jsf?appName=#{applicationBean.appName}'; return false;"/>
                 <tr:showDetailItem text="Monitoring"
                                    disclosed="#{tabBean.isActiveTab('/demo/environments.jsf')}"
-                                   onclick="window.location = '#{request.contextPath}/demo/applicationMonitoring.jsf'; return false;"/>
+                                   onclick="window.location = '#{request.contextPath}/demo/applicationMonitoring.jsf?appName=#{applicationBean.appName}'; return false;"/>
             </tr:panelTabbed>
         </h:panelGroup>
     </h:form>
