@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -76,7 +76,6 @@ public class LruSessionCache
     public int passivationCount = 0;
     protected Object passivationCountLock = new Object();
     
-    private Object numPassLock = new Object();
     private int numVictimsAccessed = 0;
     
     protected SFSBContainerCallback     container;
@@ -359,18 +358,37 @@ public class LruSessionCache
         
         return null;
     }
+    
+    /**
+     * Called by StatefulSessionContainer before passivation to determine whether
+     * or not removal-timeout has elapsed for a cache item.  If so, it will be
+     * directly removed instead of passivated.  See issue 16188.
+     */
+    public boolean eligibleForRemovalFromCache(StatefulEJBContext ctx, Serializable sessionKey) {
+        if (removeIfIdle) {
+            long idleThreshold = System.currentTimeMillis()
+                    - removalTimeoutInSeconds * 1000L;
+            if (ctx.getLastAccessTime() <= idleThreshold) {
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, cacheName
+                            + ": Removing session "
+                            + " instead of passivating for key: " + sessionKey);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
 
     // Called by Cache implementation thru container, on Recycler's thread
     // The container has already acquired the lock on the StatefulEJBContext
     public boolean passivateEJB(StatefulEJBContext ctx, Serializable sessionKey)
 	throws java.io.NotSerializableException
     {
-
         try {
             int hashCode = hash(sessionKey);
             int index = getIndex(hashCode);
             
-            boolean itemRemoved = false;
             CacheItem prev = null, item = null;
             synchronized (bucketLocks[index]) {
                 for (item = buckets[index]; item != null; item = item.next) {
@@ -392,35 +410,6 @@ public class LruSessionCache
                     //Could have been removed
                     return true; //???????
                 }
-
-                if (removeIfIdle) {
-                    long idleThreshold = System.currentTimeMillis() - 
-                        removalTimeoutInSeconds*1000L;
-                    //XXX: Avoid currentTimeMillis
-                    if (ctx.getLastAccessTime() <= idleThreshold) {
-                        if(_logger.isLoggable(Level.FINE)) {
-                            _logger.log(Level.FINE, cacheName + 
-                                ": Removing session "
-                                + " instead of passivating for key: " + sessionKey);
-                        }
-
-                    	if (prev == null) {
-                            buckets[index] = item.next;
-                    	} else {
-                            prev.next = item.next;
-                    	}
-                    	item.next = null;
-                        itemRemoved = true;
-                        //TODO::store.incrementExpiredSessionsRemoved();
-                    }
-                }
-
-            }
-
-            if (itemRemoved) {
-                decrementEntryCount();
-                incrementRemovalCount();
-                return true;
             }
 
             if (saveStateToStore(sessionKey, ctx) == false) {
@@ -505,7 +494,7 @@ public class LruSessionCache
 	
 	if (data != null) {
 	    SimpleMetadata beanState = new SimpleMetadata(
-		ctx.getVersion(), ctx.getLastAccessTime(), removalTimeoutInSeconds*1000, data);
+		ctx.getVersion(), ctx.getLastAccessTime(), removalTimeoutInSeconds*1000L, data);
         
         //Note: Don't increment the version here because
         //  this is called on an async thread and the client

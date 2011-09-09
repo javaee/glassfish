@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -138,12 +138,12 @@ public final class StatefulSessionContainer
     // We do not want too many ORB task for passivation
     public static final int MIN_PASSIVATION_BATCH_COUNT = 8;
 
-    private final long CONCURRENCY_NOT_ALLOWED = 0;
-    private final long BLOCK_INDEFINITELY = -1;
+    private final static long CONCURRENCY_NOT_ALLOWED = 0;
+    private final static long BLOCK_INDEFINITELY = -1;
 
     private long instanceCount = 1;
 
-    protected ArrayList passivationCandidates = new ArrayList();
+    private ArrayList passivationCandidates = new ArrayList();
     private Object asyncTaskSemaphore = new Object();
 
 
@@ -160,7 +160,7 @@ public final class StatefulSessionContainer
     private SFSBUUIDUtil uuidGenerator;
     private ArrayList scheduledTimerTasks = new ArrayList();
 
-    protected int statMethodReadyCount = 0;
+    private int statMethodReadyCount = 0;
 
     private Level TRACE_LEVEL = Level.FINE;
 
@@ -206,8 +206,6 @@ public final class StatefulSessionContainer
         super(conType, desc, loader);
         super.createCallFlowAgent(ComponentType.SFSB);
         this.ejbName = desc.getName();
-
-        EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) desc;
 
         this.traceInfoPrefix = "sfsb-" + ejbName + ": ";
     }
@@ -1221,7 +1219,6 @@ public final class StatefulSessionContainer
             if (ctx.getState() != BeanState.INVOKING) {
                 try {
                     // call ejbRemove on the bean
-                    Object ejb = ctx.getEJB();
                     ctx.setInEjbRemove(true);
                     interceptorManager.intercept(
                             CallbackType.PRE_DESTROY, ctx);
@@ -1283,12 +1280,12 @@ public final class StatefulSessionContainer
 
     EJBObjectImpl getEJBObjectImpl(byte[] instanceKey) {
         SessionContextImpl sc = _getContextForInstance(instanceKey);
-        return (sc != null) ? sc.getEJBObjectImpl() : null;
+        return sc.getEJBObjectImpl();
     }
 
     EJBObjectImpl getEJBRemoteBusinessObjectImpl(byte[] instanceKey) {
         SessionContextImpl sc = _getContextForInstance(instanceKey);
-        return (sc != null) ? sc.getEJBRemoteBusinessObjectImpl() : null;
+        return sc.getEJBRemoteBusinessObjectImpl();
     }
 
     /**
@@ -1427,8 +1424,8 @@ public final class StatefulSessionContainer
         }
 
         MethodLockInfo lockInfo = inv.invocationInfo.methodLockInfo;
-        boolean allowSerializedAccess = (lockInfo == null) ||
-                ( (lockInfo != null) && ( lockInfo.getTimeout() != CONCURRENCY_NOT_ALLOWED ));
+        boolean allowSerializedAccess = 
+                (lockInfo == null) || (lockInfo.getTimeout() != CONCURRENCY_NOT_ALLOWED);
 
         if( allowSerializedAccess ) {
 
@@ -1864,7 +1861,6 @@ public final class StatefulSessionContainer
         }
 
         SessionContextImpl sc = (SessionContextImpl) context;
-        Object ejb = sc.getEJB();
         boolean committed = (status == Status.STATUS_COMMITTED)
                 || (status == Status.STATUS_NO_TRANSACTION);
 
@@ -1941,7 +1937,7 @@ public final class StatefulSessionContainer
                     byte[] serializedState = IOUtils.serializeObject(sc, true);
                     simpleMetadata = new SimpleMetadata(sc.getVersion(),
                             System.currentTimeMillis(),
-                            removalGracePeriodInSeconds*1000, serializedState);
+                            removalGracePeriodInSeconds*1000L, serializedState);
                     simpleMetadata.setVersion(newCtxVersion);
                     interceptorManager.intercept(
                             CallbackType.POST_ACTIVATE, sc);
@@ -2083,30 +2079,39 @@ public final class StatefulSessionContainer
                     if (!sc.canBePassivated()) {
                         return false;
                     }
-
-                    // passivate the EJB
-                    sc.setState(BeanState.PASSIVATED);
-                    decrementMethodReadyStat();
-                    interceptorManager.intercept(
-                            CallbackType.PRE_PASSIVATE, sc);
-                    sc.setLastPersistedAt(System.currentTimeMillis());
-                    boolean saved = false;
-                    try {
-                        saved = sessionBeanCache.passivateEJB(sc, (Serializable) sc.getInstanceKey());
-                    } catch (EMNotSerializableException emNotSerEx) {
-                        _logger.log(Level.WARNING, "Extended EM not serializable. "
-                                + "Exception: " + emNotSerEx);
-                        _logger.log(Level.FINE, "Extended EM not serializable", emNotSerEx);
-                        saved = false;
-                    }
-                    if (!saved) {
+                    
+                    Serializable instanceKey = (Serializable) sc.getInstanceKey();
+                    if (sessionBeanCache.eligibleForRemovalFromCache(sc, instanceKey)) {
+                        // remove the EJB since removal-timeout has elapsed
+                        sc.setState(BeanState.DESTROYED);
+                        interceptorManager.intercept(CallbackType.PRE_DESTROY, sc);
+                        sessionBeanCache.remove(instanceKey, sc.existsInStore());
+                    } else {
+                        // passivate the EJB
+                        sc.setState(BeanState.PASSIVATED);
+                        decrementMethodReadyStat();
                         interceptorManager.intercept(
-                                CallbackType.POST_ACTIVATE, sc);
-                        sc.setState(BeanState.READY);
-                        incrementMethodReadyStat();
-                        return false;
+                                CallbackType.PRE_PASSIVATE, sc);
+                        sc.setLastPersistedAt(System.currentTimeMillis());
+                        boolean saved = false;
+                        try {
+                            saved = sessionBeanCache.passivateEJB(sc, instanceKey);
+                        } catch (EMNotSerializableException emNotSerEx) {
+                            _logger.log(Level.WARNING, "Extended EM not serializable. "
+                                    + "Exception: " + emNotSerEx);
+                            _logger.log(Level.FINE, "Extended EM not serializable", emNotSerEx);
+                            saved = false;
+                        }
+                        if (!saved) {
+                            interceptorManager.intercept(
+                                    CallbackType.POST_ACTIVATE, sc);
+                            sc.setState(BeanState.READY);
+                            incrementMethodReadyStat();
+                            return false;
+                        }
                     }
-                    // TODO sfsbStoreMonitor.incrementPassivationCount(true);
+                    
+                    // V2: sfsbStoreMonitor.incrementPassivationCount(true);
                     cacheProbeNotifier.ejbBeanPassivatedEvent(getContainerId(),
                             containerInfo.appName, containerInfo.modName,
                             containerInfo.ejbName, true);
@@ -2175,7 +2180,7 @@ public final class StatefulSessionContainer
                         logTraceInfo(sc, "Successfully passivated");
                     }
                 } catch (java.io.NotSerializableException nsEx) {
-                    // TODO sfsbStoreMonitor.incrementPassivationCount(false);
+                    // V2: sfsbStoreMonitor.incrementPassivationCount(false);
                     cacheProbeNotifier.ejbBeanPassivatedEvent(getContainerId(),
                             containerInfo.appName, containerInfo.modName,
                             containerInfo.ejbName, false);
@@ -2189,7 +2194,7 @@ public final class StatefulSessionContainer
                         _logger.log(Level.FINE, "error destroying bean", e);
                     }
                 } catch (Throwable ex) {
-                    // TODO sfsbStoreMonitor.incrementPassivationCount(false);
+                    // V2: sfsbStoreMonitor.incrementPassivationCount(false);
                     cacheProbeNotifier.ejbBeanPassivatedEvent(getContainerId(),
                             containerInfo.appName, containerInfo.modName,
                             containerInfo.ejbName, false);
@@ -2208,7 +2213,7 @@ public final class StatefulSessionContainer
                     if (passStartTime != -1) {
                         long timeSpent = System.currentTimeMillis()
                                 - passStartTime;
-                        // TODO sfsbStoreMonitor.setPassivationTime(timeSpent);
+                        // V2: sfsbStoreMonitor.setPassivationTime(timeSpent);
                     }
                 }
             } //synchronized
@@ -2774,12 +2779,12 @@ public final class StatefulSessionContainer
                 // We need to set the context class loader for
                 // this (deamon) thread!!
                 if (System.getSecurityManager() == null) {
-                    currentThread.setContextClassLoader(loader);
+                    currentThread.setContextClassLoader(myClassLoader);
                 } else {
                     java.security.AccessController.doPrivileged
                             (new java.security.PrivilegedAction() {
                                 public java.lang.Object run() {
-                                    currentThread.setContextClassLoader(loader);
+                                    currentThread.setContextClassLoader(myClassLoader);
                                     return null;
                                 }
                             });
@@ -2849,7 +2854,7 @@ public final class StatefulSessionContainer
             _logger.log(Level.FINE, "StatefulContainer Removing expired sessions....");
             long val = 0;
             if (backingStore != null) {
-                val = backingStore.removeExpired(this.removalGracePeriodInSeconds * 1000);
+                val = backingStore.removeExpired(this.removalGracePeriodInSeconds * 1000L);
             }
 
             if (cacheProbeNotifier != null) {
@@ -2920,7 +2925,7 @@ public final class StatefulSessionContainer
                     //TODO sc.getInstanceKey(), version);
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "Added [synced] version: "
-                        + sc.getVersion() + " for key: " + sc.getInstanceKey());
+                        + version + " for key: " + sc.getInstanceKey());
             }
         }
     }
@@ -2987,7 +2992,7 @@ public final class StatefulSessionContainer
                         SimpleMetadata beanState =
                                new SimpleMetadata(
                                         sc.getVersion(), sc.getLastAccessTime(),
-                                        removalGracePeriodInSeconds*1000, serializedState);
+                                        removalGracePeriodInSeconds*1000L, serializedState);
                         beanState.setVersion(newCtxVersion);
                         backingStore.save((Serializable) sc.getInstanceKey(), beanState, !sc.existsInStore());
 
