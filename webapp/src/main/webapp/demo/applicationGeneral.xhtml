@@ -38,9 +38,9 @@
 
     <ui:define name="content">
         <h:form id="applicationTabsForm" style="color: black;">
-            <div>
-                <tr:inputText label="Application Name" value="#{applicationBean.appName}" readOnly="true"/>
-            </div>
+            <tr:spacer height="10px"/>
+            <tr:inputText label="Application Name" value="#{applicationBean.appName}" readOnly="true" contentStyle="font-weight: bold;"/>
+            <tr:spacer height="10px"/>
             
             <h:panelGroup id="applicationTabs">
                 <tr:panelTabbed id="applicationTabsPanel" position ="above" inlineStyle="background-color:#d0e4fe;padding: 0px;">
