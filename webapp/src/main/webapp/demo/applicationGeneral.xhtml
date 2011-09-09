@@ -39,11 +39,14 @@
     <ui:define name="content">
         <h:form id="applicationTabsForm" style="color: black;">
             <tr:spacer height="10px"/>
-            <tr:inputText label="Application Name" value="#{applicationBean.appName}" readOnly="true" contentStyle="font-weight: bold;"/>
+            <div class="subHeading">
+                <tr:inputText label="Application Name" value="#{applicationBean.appName}" readOnly="true" contentStyle="font-size=10px;font-weight: bold;"/>
+            </div>
             <tr:spacer height="10px"/>
             
             <h:panelGroup id="applicationTabs">
-                <tr:panelTabbed id="applicationTabsPanel" position ="above" inlineStyle="background-color:#d0e4fe;padding: 0px;">
+                    <tr:panelTabbed id="applicationTabsPanel" position ="above"  
+                                    inlineStyle="font-size: 05px;color: #C0C0C0;padding: 1px 10px;">
                     <tr:showDetailItem text="Configuration">
                         <div>
                             <div class="navObjectInfo">

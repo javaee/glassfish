@@ -276,6 +276,15 @@ body {
     vertical-align: top;
 }
 
+.subtab {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 09px;
+    color: #C0C0C0;
+    padding: 1px 10px;
+    cursor: pointer;
+}
+
 .navObjectInfo .objectName, .headerPageTitle, .dropDownWidget .objectName {
     font-size:14px;
     color: #003d5b;
