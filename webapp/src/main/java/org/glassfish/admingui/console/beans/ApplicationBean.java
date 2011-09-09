@@ -14,7 +14,7 @@ import org.glassfish.admingui.console.util.DeployUtil;
 import org.glassfish.admingui.console.util.CommandUtil;
 
 @ManagedBean(name="applicationBean")
-@RequestScoped
+@ViewScoped
 public class ApplicationBean {
 
     private String appName;
@@ -25,7 +25,10 @@ public class ApplicationBean {
         Map requestMap =
                 FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         appName = (String)requestMap.get("appName");
-        List l = getInstances();
+    }
+
+    public ApplicationBean(String appName) {
+        this.appName = appName;
     }
 
     public String getDescription() {
