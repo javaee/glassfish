@@ -38,14 +38,17 @@
 
     <ui:define name="content">
         <h:form id="applicationTabsForm" style="color: black;">
+            <div>
+                <tr:inputText label="Application Name" value="#{applicationBean.appName}" readOnly="true"/>
+            </div>
+            
             <h:panelGroup id="applicationTabs">
-                <tr:panelTabbed id="applicationTabsPanel" position ="above" inlineStyle="padding: 0px;">
+                <tr:panelTabbed id="applicationTabsPanel" position ="above" inlineStyle="background-color:#d0e4fe;padding: 0px;">
                     <tr:showDetailItem text="Configuration">
                         <div>
                             <div class="navObjectInfo">
                                 <div class="title headerPageTitle">General</div>
                                 <tr:panelFormLayout  id="applicationDetails">
-                                    <tr:inputText label="Name" value="#{applicationBean.appName}" readOnly="true"/>
                                     <tr:inputText label="Context Root" value="#{applicationBean.appName}" readOnly="true"/>
 
                                     <tr:inputText label="Status" value="Enabled" readOnly="true"/>
