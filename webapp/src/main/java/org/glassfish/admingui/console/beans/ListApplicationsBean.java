@@ -20,15 +20,7 @@ public class ListApplicationsBean {
     private Map appData;
 
     public ListApplicationsBean() {
-        applications = getApplications();
-    }
-
-    public Application getSelectedApplication() {
-        return selectedApplication;
-    }
-
-    public void setSelectedApplication(Application selectedApplication) {
-        this.selectedApplication = selectedApplication;
+//        applications = getApplications();
     }
 
     public List<Application> getApplications() {
@@ -56,6 +48,7 @@ public class ListApplicationsBean {
         }
 
         public Application(String name, Boolean enabled, String engines) {
+
             this.name = name;
             this.enabled = enabled;
             this.engines = engines;
@@ -78,6 +71,7 @@ public class ListApplicationsBean {
         }
 
         public List<Map> instances() {
+//            return DeployUtil.getApplicationTarget(name, "application-ref");
             //TODO: This should get the list of targets for this application
 	    //can call DeployUtil getRefEndpoints(String name, String ref) and get the Map key.
             List<Map> allServices = new ArrayList();
@@ -93,13 +87,11 @@ public class ListApplicationsBean {
             return allServices;
         }
 
-        public List<Map> getLaunchLinks() {
-            List<Map> launchLinks = new ArrayList();
-            Map<String, String> sMap = new HashMap();
-            sMap.put("URL", "localhost:8080/admin-console");
-
-            launchLinks.add(sMap);
-            return launchLinks;
+        public String getEnvironment() {
+            List<Map> environments = CommandUtil.getEnvironments();
+            if (environments.size() == 0) return null;
+            return (String)environments.get(0).get("Name");
         }
+
     }
 }

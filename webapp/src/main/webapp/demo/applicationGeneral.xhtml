@@ -45,16 +45,9 @@
                             <div class="navObjectInfo">
                                 <div class="title headerPageTitle">General</div>
                                 <tr:panelFormLayout  id="applicationDetails">
-                                    <tr:inputText label="Name" value="#{param['appName']}" readOnly="true"/>
-                                    <tr:inputText label="Context Root" value="#{param['appName']}" readOnly="true"/>
+                                    <tr:inputText label="Name" value="#{applicationBean.appName}" readOnly="true"/>
+                                    <tr:inputText label="Context Root" value="#{applicationBean.appName}" readOnly="true"/>
 
-                                    <!--
-                                    <tr:commandLink id="URL"  text="localhost:8080/#{param['appName']}">
-                                        <a id="add" href="localhost:8080/#{param['appName']}">
-                                            <span class="ui-icon ui-icon-plus" style="display: inline-block; float: right">Launch Application</span>
-                                        </a>
-                                    </tr:commandLink>
-                                    -->
                                     <tr:inputText label="Status" value="Enabled" readOnly="true"/>
                                     <f:facet name="footer">
                                         <tr:panelHorizontalLayout inlineStyle="height:50px;">

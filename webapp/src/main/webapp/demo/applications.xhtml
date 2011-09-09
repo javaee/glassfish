@@ -29,13 +29,12 @@
                 xmlns:trh="http://myfaces.apache.org/trinidad/html"
                 template="/layout.xhtml">
 
-
     <ui:define name="content">
         <div>
             <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
                 <div class="title headerPageTitle">Applications
                     <a id="add" href="#{request.contextPath}/demo/wizard.jsf">
-                        <span style="display: inline-block; float: right">Add new</span>
+                        <span style="display: inline-block; float: right">Add...</span>
                     </a>
                 </div>
                 <div class="subHeading">List of deployed applications</div>
@@ -47,7 +46,7 @@
                         </tr:panelHorizontalLayout>
                     </tr:column>
                     <tr:column headerText="Environments">
-                        xyz
+                        <a id="environmentName"  href="#{request.contextPath}/demo/environmentGeneral.jsf?envName=#{app.environment}" > #{app.environment} </a>
                     </tr:column>
                     <tr:column headerText="Engines">
                         web
