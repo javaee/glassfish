@@ -311,7 +311,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="jsf.download" description="Download JSF" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.jsf">
-          <dependency groupId="com.sun.faces" artifactId="jsf-api" version="2.1.0-b11"/>
+          <dependency groupId="javax.faces" artifactId="javax.faces-api" version="2.1"/>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>

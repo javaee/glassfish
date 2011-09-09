@@ -315,13 +315,12 @@
         \lib\
         jstl-impl.jar
         el-impl.jar
+        javax.faces.jar
         javax.servlet.jar
         javax.servlet.jsp.jar
         javax.servlet.jsp.jstl.jar
         javax.jms.jar
-        jsf-api.jar
         jsp-impl.jar
-        jsf-impl.jar
         jspcaching-connector.jar
         web-glue.jar
         bean-validator.jar
