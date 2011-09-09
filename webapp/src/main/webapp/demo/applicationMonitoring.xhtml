@@ -30,17 +30,11 @@
                 xmlns:trh="http://myfaces.apache.org/trinidad/html"
                 >
 
-<!--    <ui:define name="subtabs">
-        <ui:include src="/demo/applicationTabs.xhtml" />
-    </ui:define>-->
 
-<!--    <ui:define name="content">
-        <f:view>-->
             <div>
                 <div class="navObjectInfo">
                     <div class="title headerPageTitle">Application Monitoring Data comes here..</div>
+                        <tr:inputText label="Application Name" value="#{applicationBean.appName}" readOnly="true"/>
                 </div>
             </div>
-<!--        </f:view>
-    </ui:define>-->
 </ui:composition>
