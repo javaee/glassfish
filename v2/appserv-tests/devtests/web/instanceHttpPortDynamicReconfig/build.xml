@@ -107,7 +107,7 @@
     <target name="build-publish-war" depends="build, publish-war-common" />
 
     <target name="deploy" depends="init-common">
-      <antcall target="deploy-war-common"/>
+      <antcall target="deploy-war-instance"/>
     </target>
     
     <target name="run" depends="init-common">
@@ -116,6 +116,7 @@
         <arg value="${http.port}"/>
         <arg value="${instance.http.port.2}"/>
         <arg value="${env.S1AS_HOME}"/>
+        <arg value="${contextroot}"/>
         <classpath>
           <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
           <pathelement location="."/>
@@ -124,7 +125,7 @@
     </target>
  
     <target name="undeploy" depends="init-common">
-        <antcall target="undeploy-war-common"/>
+        <antcall target="undeploy-war-instance"/>
     </target>   
 
     <target name="usage">

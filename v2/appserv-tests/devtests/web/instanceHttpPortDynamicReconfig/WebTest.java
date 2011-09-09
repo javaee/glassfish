@@ -62,12 +62,14 @@ public class WebTest {
     private String port;
     private String newPort;
     private String location;
+    private String contextRoot;
 
     public WebTest(String[] args) {
         host = args[0];
         port = args[1];
         newPort = args[2];
         location = args[3];
+        contextRoot = args[4];
     }
     
     public static void main(String[] args) {
@@ -89,8 +91,8 @@ public class WebTest {
 
     private void invoke() throws Exception {
         
-        URL url = new URL("http://" + host  + ":" + newPort); 
-        System.out.println("Connecting ... "+"http://" + host  + ":" + newPort);
+        URL url = new URL("http://" + host  + ":" + newPort + contextRoot); 
+        System.out.println("Connecting ... "+url);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();
