@@ -63,6 +63,9 @@
                 <tr:showDetailItem text="Monitoring"
                                    disclosed="#{tabBean.isActiveTab('/demo/environments.jsf')}"
                                    onclick="window.location = '#{request.contextPath}/demo/environmentMonitoring.jsf'; return false;"/>
+                <tr:showDetailItem text="Logging"
+                                   disclosed="#{tabBean.isActiveTab('/demo/environments.jsf')}"
+                                   onclick="window.location = '#{request.contextPath}/demo/environmentLogging.jsf'; return false;"/>
             </tr:panelTabbed>
         </h:panelGroup>
     </h:form>
