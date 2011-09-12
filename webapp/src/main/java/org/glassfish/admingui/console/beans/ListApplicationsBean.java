@@ -88,9 +88,17 @@ public class ListApplicationsBean {
         }
 
         public String getEnvironment() {
+            /* CommandUtil.getEnvironments() has been moved to Environment Management Bean.
+             * Commenting the following code, getEnvironments() is getting ALL env. for the system
+             * not for indiviual app anyway.  Need to get the target of this app.
+             */
+            /*
             List<Map> environments = CommandUtil.getEnvironments();
             if (environments.size() == 0) return null;
             return (String)environments.get(0).get("Name");
+             *
+             */
+            return "";
         }
 
     }

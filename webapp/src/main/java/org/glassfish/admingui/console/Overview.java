@@ -83,8 +83,4 @@ public class Overview implements Serializable {
         }
         return services;
     }
-
-    public List<Map> getEnvironments() {
-        return CommandUtil.getEnvironments();
-    }
 }

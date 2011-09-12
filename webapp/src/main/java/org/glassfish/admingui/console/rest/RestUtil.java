@@ -633,19 +633,24 @@ public class RestUtil {
         return (convert && (val.equals(""))) ? GUI_TOKEN_FOR_EMPTY_PROPERTY_VALUE : val.toString();
     }
 
-    /**
-     * Given the parent URL and the desired childType, this method will build a List of Strings that
-     * contains child entity names.
-     *
-     * @param endpoint
-     * @return
-     * @throws Exception
-     */
+    /* This returns a list of String, which is the endpoint of the child */
     public static List<String> getChildList(String endpoint) throws Exception {
         List<String> childElements = new ArrayList<String>();
         Map<String, String> childResources = getChildMap(endpoint);
         if (childResources != null) {
             childElements.addAll(childResources.values());
+        }
+        Collections.sort(childElements);
+        return childElements;
+    }
+
+
+    /* This returns a list of String, which is the name of the childResource */
+    public static List<String> getChildNameList(String endpoint) throws Exception {
+        List<String> childElements = new ArrayList<String>();
+        Map<String, String> childResources = getChildMap(endpoint);
+        if (childResources != null) {
+            childElements.addAll(childResources.keySet());
         }
         Collections.sort(childElements);
         return childElements;
@@ -700,6 +705,21 @@ public class RestUtil {
         }
         return token;
     }
+
+    public static List<Map> getListFromREST(String endpoint, Map attrs, String listKey){
+        List result = null;
+        try{
+            Map responseMap = RestUtil.restRequest( endpoint , attrs, "GET" , null, null, false, true);
+            Map extraPropertiesMap = (Map)((Map)responseMap.get("data")).get("extraProperties");
+            if (extraPropertiesMap != null){
+                result = (List)extraPropertiesMap.get(listKey);
+            }
+        }catch (Exception ex){
+            GuiUtil.getLogger().severe("cannot List Services");
+        }
+        return result;
+    }
+
 
     //******************************************************************************************************************
     // Jersey client methods

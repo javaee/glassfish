@@ -42,7 +42,7 @@ public class CommandUtil {
         putOptionalAttrs(attrs, "scope", scope);
 
 
-        services = getListFromREST(endpoint, attrs, "list");
+        services = RestUtil.getListFromREST(endpoint, attrs, "list");
         if (services == null){
             services = new ArrayList();
         }else {
@@ -73,7 +73,7 @@ public class CommandUtil {
         String endpoint = "http://localhost:4848/management/domain/list-javaEE";
         Map attrs = new HashMap();
         putOptionalAttrs(attrs, "type", serviceType);
-        //javaEE = getListFromREST(endpoint, attrs);
+        //javaEE = RestUtil.getListFromREST(endpoint, attrs);
 
         //provide dummy data as list-javaEE endpoint is not available yet.
         if (SERVICE_TYPE_JAVAEE.equals(serviceType)){
@@ -128,45 +128,6 @@ public class CommandUtil {
     }
 
 
-    /*
-     * <p> This method returns list of Map, each Map represents an environment.
-     */
-    public static List<Map> getEnvironments(){
-
-        List envList = new ArrayList();
-        String prefix = "http://localhost:4848/management/domain/clusters/cluster/" ;
-        try{
-            List<String> clusterList = new ArrayList(RestUtil.getChildMap(prefix).keySet());
-            if ( (clusterList != null) && (! clusterList.isEmpty())){
-                //For each cluster, consider that as Environment only if it has chlid element <virtual-machine-config>
-                for(String oneCluster : clusterList){
-                    Map attrs = new HashMap();
-                    attrs.put("whichtarget", oneCluster);
-                    List<Map> instanceList = getListFromREST("http://localhost:4848/management/domain/list-instances", attrs, "instanceList");
-                    if (instanceList == null || instanceList.isEmpty()){
-                        continue;
-                    }
-                    String vmcEndpoint = prefix + oneCluster + "/virtual-machine-config/" + instanceList.get(0).get("name");
-                    try{
-                        Map vmc = RestUtil.getEntityAttrs(vmcEndpoint, "entity");
-                        Map env = new HashMap();
-                        env.put("clusterName", oneCluster);
-                        env.put("instanceCount",  instanceList.size());
-                        env.put("template", vmc.get("template"));
-                        envList.add(env);
-                    }catch( Exception ex){
-                        //no VMC exist, skip this cluster.
-                        continue;
-                    }
-                }
-            }
-        }catch(Exception ex){
-            ex.printStackTrace();
-        }
-        System.out.println("================= return envList=" + envList);
-        return envList;
-    }
-
 
 
 
@@ -175,21 +136,6 @@ public class CommandUtil {
         if (!GuiUtil.isEmpty(value)){
             attrs.put(key, value);
         }
-    }
-
-
-    private static List<Map> getListFromREST(String endpoint, Map attrs, String listKey){
-        List result = null;
-        try{
-            Map responseMap = RestUtil.restRequest( endpoint , attrs, "GET" , null, null, false, true);
-            Map extraPropertiesMap = (Map)((Map)responseMap.get("data")).get("extraProperties");
-            if (extraPropertiesMap != null){
-                result = (List)extraPropertiesMap.get(listKey);
-            }
-        }catch (Exception ex){
-            GuiUtil.getLogger().severe("cannot List Services");
-        }
-        return result;
     }
 
 }
