@@ -39,6 +39,7 @@
  */
 package org.jvnet.hk2.config;
 
+import org.glassfish.hk2.classmodel.reflect.ClassModel;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.ComponentException;
@@ -169,18 +170,21 @@ public class DomDocument<T extends Dom> {
                 Class[] intfs = targetType.getInterfaces();
                 for (Class intf : intfs) {
                     if (intf.isAnnotationPresent(Configured.class)) {
-
-                        List<ConfigModel> models = implementorsOf.getOne(intf);
-                        if (models==null) {
-                            models = new ArrayList<ConfigModel>();
-                            implementorsOf.add(intf, models);
-                        }
-                        models.add(cm);
+                        addXRef(intf, cm);
                     }
                 }
                 targetType = targetType.getSuperclass();
             } while (targetType!=null);
         }
+    }
+
+    private void addXRef(Class type, ConfigModel cm) {
+        List<ConfigModel> models = implementorsOf.getOne(type);
+        if (models==null) {
+            models= new ArrayList<ConfigModel>();
+            implementorsOf.add(type, models);
+        }
+        models.add(cm);
     }
 
 
