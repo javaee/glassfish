@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,7 +47,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Level;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import javax.servlet.FilterRegistration;
+import javax.servlet.DispatcherType;
 import javax.servlet.Servlet;
 import javax.servlet.ServletRegistration;
 import org.glassfish.embeddable.*;
@@ -59,11 +62,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Tests for Context#addServlet to default virtual server
+ * Tests for Context addServlet & addFilter using class name to default virtual server
  * 
  * @author Amy Roh
  */
-public class EmbeddedAddServletDefaultVSTest {
+public class EmbeddedAddServletAndFilterByClassNameTest {
 
     static GlassFish glassfish;
     static WebContainer embedded;
@@ -76,7 +79,7 @@ public class EmbeddedAddServletDefaultVSTest {
         glassfish = GlassFishRuntime.bootstrap().newGlassFish();
         glassfish.start();
         embedded = glassfish.getService(WebContainer.class);
-        System.out.println("================ EmbeddedAddServletDefaultVS Test");
+        System.out.println("================ EmbeddedAddServletAndFilterByClassNameTest Test");
         System.out.println("Starting Web "+embedded);
         embedded.setLogLevel(Level.INFO);
         WebContainerConfig config = new WebContainerConfig();
@@ -94,11 +97,19 @@ public class EmbeddedAddServletDefaultVSTest {
         VirtualServer vs = embedded.getVirtualServer("server");
         System.out.println("Default virtual server "+vs);
         Context context = (Context) embedded.createContext(root);
-        ServletRegistration sr = context.addServlet("NewServlet", "org.glassfish.tests.embedded.web.NewServlet");
-        sr.addMapping(new String[] {"/newservlet"});
+
+        ServletRegistration sr = context.addServlet("NewFilterServlet", "org.glassfish.tests.embedded.web.NewFilterServlet");
+        sr.setInitParameter("servletInitName", "servletInitValue");
+        sr.addMapping("/newFilterServlet");
+
+        FilterRegistration fr = context.addFilter("NewFilter", "org.glassfish.tests.embedded.web.NewFilter");
+        fr.setInitParameter("filterInitName", "filterInitValue");
+        fr.addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST),
+                                     true, "NewFilterServlet");
+
         vs.addContext(context, contextRoot);
 
-        URL servlet = new URL("http://localhost:8080/"+contextRoot+"/newservlet");
+        URL servlet = new URL("http://localhost:8080/"+contextRoot+"/newFilterServlet");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(

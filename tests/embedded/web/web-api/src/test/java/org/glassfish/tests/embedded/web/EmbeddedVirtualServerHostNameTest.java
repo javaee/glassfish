@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,10 +48,8 @@ import java.net.URLConnection;
 import java.util.logging.Level;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.Servlet;
-import javax.servlet.ServletRegistration;
 import org.glassfish.embeddable.*;
-import org.glassfish.embeddable.web.*;
+import org.glassfish.embeddable.web.*;  
 import org.glassfish.embeddable.web.config.*;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -59,61 +57,61 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Tests for Context#addServlet to default virtual server
+ * Test for VirtualServerConfig#setHostNames
  * 
  * @author Amy Roh
  */
-public class EmbeddedAddServletDefaultVSTest {
+public class EmbeddedVirtualServerHostNameTest {
 
     static GlassFish glassfish;
     static WebContainer embedded;
-    static File root;
-    static String vsname = "test-server";
-    static String contextRoot = "test";
-
+    static String contextRoot = "host";
+    static int newPort = 9090;
+    
     @BeforeClass
     public static void setupServer() throws GlassFishException {
-        glassfish = GlassFishRuntime.bootstrap().newGlassFish();
+
+        GlassFishRuntime runtime = GlassFishRuntime.bootstrap();
+        GlassFishProperties props = new GlassFishProperties();
+        props.setPort("http-listener", 8080);
+        GlassFish glassfish = runtime.newGlassFish(props);
         glassfish.start();
         embedded = glassfish.getService(WebContainer.class);
-        System.out.println("================ EmbeddedAddServletDefaultVS Test");
-        System.out.println("Starting Web "+embedded);
-        embedded.setLogLevel(Level.INFO);
-        WebContainerConfig config = new WebContainerConfig();
-        config.setListings(true);
-        root = new File(System.getProperty("buildDir"));
-        config.setDocRootDir(root);
-        config.setPort(8080);
-        System.out.println("Added Web with base directory "+root.getAbsolutePath());
-        embedded.setConfiguration(config);
+
     }
     
     @Test
-    public void testEmbeddedAddServletDefaultVS() throws Exception {
+    public void test() throws Exception {
 
-        VirtualServer vs = embedded.getVirtualServer("server");
-        System.out.println("Default virtual server "+vs);
+        String virtualServerId = "example";
+        File root =  new File(System.getProperty("buildDir"));
+        VirtualServer virtualServer = embedded.createVirtualServer(virtualServerId, root);
+
+        VirtualServerConfig config = new VirtualServerConfig();
+        config.setHostNames("example.com");
+        virtualServer.setConfig(config);
+        embedded.addVirtualServer(virtualServer);
+
+        VirtualServer vs = embedded.getVirtualServer(virtualServerId);
+        Assert.assertEquals(virtualServerId,vs.getID());
+
         Context context = (Context) embedded.createContext(root);
-        ServletRegistration sr = context.addServlet("NewServlet", "org.glassfish.tests.embedded.web.NewServlet");
-        sr.addMapping(new String[] {"/newservlet"});
-        vs.addContext(context, contextRoot);
+        embedded.addContext(context, contextRoot);
 
-        URL servlet = new URL("http://localhost:8080/"+contextRoot+"/newservlet");
+        // curl -i -H 'Host: example.com' http://localhost:8080/
+        URL servlet = new URL("http://localhost:8080/"+contextRoot+"/hello");
         URLConnection yc = servlet.openConnection();
-        BufferedReader in = new BufferedReader(
-                                new InputStreamReader(
-                                yc.getInputStream()));
-
+        BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
         StringBuilder sb = new StringBuilder();
         String inputLine;
         while ((inputLine = in.readLine()) != null){
             sb.append(inputLine);
         }
         in.close();
+        System.out.println(inputLine);
+        Assert.assertEquals("Hello World!", sb.toString());
 
-        vs.removeContext(context);
-        
-     }
+    } 
 
     @AfterClass
     public static void shutdownServer() throws GlassFishException {
@@ -124,6 +122,5 @@ public class EmbeddedAddServletDefaultVSTest {
             glassfish = null;
         }
     }
-    
     
 }

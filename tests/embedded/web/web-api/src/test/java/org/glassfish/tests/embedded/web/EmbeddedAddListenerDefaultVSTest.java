@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,11 +59,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Tests for Context#addServlet to default virtual server
+ * Tests for Context#addListener to default virtual server
  * 
  * @author Amy Roh
  */
-public class EmbeddedAddServletDefaultVSTest {
+public class EmbeddedAddListenerDefaultVSTest {
 
     static GlassFish glassfish;
     static WebContainer embedded;
@@ -76,7 +76,7 @@ public class EmbeddedAddServletDefaultVSTest {
         glassfish = GlassFishRuntime.bootstrap().newGlassFish();
         glassfish.start();
         embedded = glassfish.getService(WebContainer.class);
-        System.out.println("================ EmbeddedAddServletDefaultVS Test");
+        System.out.println("================ EmbeddedAddListenerDefaultVS Test");
         System.out.println("Starting Web "+embedded);
         embedded.setLogLevel(Level.INFO);
         WebContainerConfig config = new WebContainerConfig();
@@ -94,11 +94,12 @@ public class EmbeddedAddServletDefaultVSTest {
         VirtualServer vs = embedded.getVirtualServer("server");
         System.out.println("Default virtual server "+vs);
         Context context = (Context) embedded.createContext(root);
-        ServletRegistration sr = context.addServlet("NewServlet", "org.glassfish.tests.embedded.web.NewServlet");
-        sr.addMapping(new String[] {"/newservlet"});
+        context.addListener("org.glassfish.tests.embedded.web.MyServletContextListener");
+        ServletRegistration sr = context.addServlet("MyServlet", "org.glassfish.tests.embedded.web.MyServlet");
+        sr.addMapping(new String[] {"/myservlet"});
         vs.addContext(context, contextRoot);
 
-        URL servlet = new URL("http://localhost:8080/"+contextRoot+"/newservlet");
+        URL servlet = new URL("http://localhost:8080/"+contextRoot+"/myservlet");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(

@@ -97,10 +97,8 @@ public class EmbeddedAddServletTest {
 
         VirtualServerConfig config = new VirtualServerConfig();
         config.setHostNames("localhost");
-        //VirtualServer vs = (VirtualServer)
-        //        embedded.createVirtualServer(vsname, root, webListeners);
         VirtualServer vs = (VirtualServer)
-                embedded.createVirtualServer(vsname, root);
+                embedded.createVirtualServer(vsname, root, webListeners);
         vs.setConfig(config);
         embedded.addVirtualServer(vs);
         boolean testvs = false;
@@ -112,12 +110,11 @@ public class EmbeddedAddServletTest {
         }
         Assert.assertTrue(testvs);    
         Context context = (Context) embedded.createContext(root);
-        //ServletRegistration sr = context.addServlet("NewServlet", new NewServlet());
-        //sr.addMapping(new String[] {"/new"});
+        ServletRegistration sr = context.addServlet("NewServlet", "org.glassfish.tests.embedded.web.NewServlet");
+        sr.addMapping(new String[] {"/newservlet"});
         vs.addContext(context, contextRoot);
-        //embedded.addContext(context, contextRoot);
 
-        URL servlet = new URL("http://localhost:8080/"+contextRoot+"/new");
+        URL servlet = new URL("http://localhost:9090/"+contextRoot+"/newservlet");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(

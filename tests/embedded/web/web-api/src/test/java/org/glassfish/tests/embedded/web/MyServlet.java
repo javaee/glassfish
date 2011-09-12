@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,70 +41,28 @@
 package org.glassfish.tests.embedded.web;
 
 import java.io.*;
+import java.util.*;
 import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
-//@WebServlet(urlPatterns={"/new"})
-public class NewServlet extends HttpServlet {
+public class MyServlet extends HttpServlet {
 
-    private String initParamValue;
-    private String myParamValue;
-
-
-    public NewServlet() {
-        System.out.println("Servlet NewServlet initialized");
-    }
-
-    public void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws IOException, ServletException {
-
-        PrintWriter pw = res.getWriter();
-        try {
-            pw.println("Hello World!");
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /*public void setMyParameter(String value) {
-        myParamValue = value;
-    }
-
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        initParamValue = config.getInitParameter("servletInitParamName");
-    }
-
-        public void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws IOException, ServletException {
-
-        PrintWriter pw = res.getWriter();
-        try {
-            pw.println("Hello World!");
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+    public MyServlet() {
+        System.out.println("Servlet MyServlet initialized");
     }
 
     public void service(ServletRequest req, ServletResponse res)
             throws IOException, ServletException {
-        if (!"myServletParamValue".equals(myParamValue)) {
-            throw new ServletException("Wrong servlet instance");
+        if (!"def".equals(req.getAttribute("abc"))) {
+            throw new ServletException("Missing ServletRequest parameter");
+        } else {
+            PrintWriter pw = res.getWriter();
+            try {
+                pw.println("Hello World!");
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
         }
-
-        if (!"servletInitParamValue".equals(initParamValue)) {
-            throw new ServletException("Missing servlet init param");
-        }
-
-        if (!"myFilterParamValue".equals(
-                req.getAttribute("myFilterParamName"))) {
-            throw new ServletException("Wrong filter instance");
-        }
-
-        if (!"filterInitParamValue".equals(
-                req.getAttribute("filterInitParamName"))) {
-            throw new ServletException("Missing filter init param");
-        }
-    }*/
+    }
 }

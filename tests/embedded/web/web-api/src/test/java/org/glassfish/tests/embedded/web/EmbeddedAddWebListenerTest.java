@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,15 +41,25 @@
 package org.glassfish.tests.embedded.web;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.File;
-import java.net.URL;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URLConnection;
+import java.net.URL;
+import java.security.KeyStore;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+
 import java.util.logging.Level;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.Servlet;
-import javax.servlet.ServletRegistration;
 import org.glassfish.embeddable.*;
 import org.glassfish.embeddable.web.*;
 import org.glassfish.embeddable.web.config.*;
@@ -59,61 +69,84 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Tests for Context#addServlet to default virtual server
+ * Tests WebContainer#addWebListener(HttpListener) & HttpListener.setConfig
  * 
  * @author Amy Roh
  */
-public class EmbeddedAddServletDefaultVSTest {
+public class EmbeddedAddWebListenerTest {
 
     static GlassFish glassfish;
     static WebContainer embedded;
-    static File root;
-    static String vsname = "test-server";
+    static File root;                
     static String contextRoot = "test";
+    static int port = 9090;
+    static int newPort = 9292;
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
         glassfish = GlassFishRuntime.bootstrap().newGlassFish();
         glassfish.start();
         embedded = glassfish.getService(WebContainer.class);
-        System.out.println("================ EmbeddedAddServletDefaultVS Test");
+        System.out.println("================ EmbeddedAddWebListener Test");
         System.out.println("Starting Web "+embedded);
         embedded.setLogLevel(Level.INFO);
-        WebContainerConfig config = new WebContainerConfig();
-        config.setListings(true);
-        root = new File(System.getProperty("buildDir"));
-        config.setDocRootDir(root);
-        config.setPort(8080);
-        System.out.println("Added Web with base directory "+root.getAbsolutePath());
-        embedded.setConfiguration(config);
     }
     
     @Test
-    public void testEmbeddedAddServletDefaultVS() throws Exception {
+    public void test() throws Exception {
 
-        VirtualServer vs = embedded.getVirtualServer("server");
-        System.out.println("Default virtual server "+vs);
-        Context context = (Context) embedded.createContext(root);
-        ServletRegistration sr = context.addServlet("NewServlet", "org.glassfish.tests.embedded.web.NewServlet");
-        sr.addMapping(new String[] {"/newservlet"});
-        vs.addContext(context, contextRoot);
+        HttpListener testListener = new HttpListener("test-listener", port);
+        embedded.addWebListener(testListener);
 
-        URL servlet = new URL("http://localhost:8080/"+contextRoot+"/newservlet");
+        WebListenerConfig config = new WebListenerConfig("test-listener", newPort);
+        config.setProtocol("http");
+        testListener.setConfig(config);
+
+        List<WebListener> listenerList = new ArrayList(embedded.getWebListeners());
+        Assert.assertTrue(listenerList.size()==1);
+        for (WebListener listener : embedded.getWebListeners())
+            System.out.println("Web listener "+listener.getId()+" "+listener.getPort());
+
+        Deployer deployer = glassfish.getDeployer();
+
+        URL source = WebHello.class.getClassLoader().getResource(
+                "org/glassfish/tests/embedded/web/WebHello.class");
+        String p = source.getPath().substring(0, source.getPath().length() -
+                "org/glassfish/tests/embedded/web/WebHello.class".length());
+        File path = new File(p).getParentFile().getParentFile();
+
+        String name = null;
+
+        if (path.getName().lastIndexOf('.') != -1) {
+            name = path.getName().substring(0, path.getName().lastIndexOf('.'));
+        } else {
+            name = path.getName();
+        }
+
+        System.out.println("Deploying " + path + ", name = " + name);
+
+        String appName = deployer.deploy(path.toURI(), "--contextroot", contextRoot, "--name=" + name);
+
+        System.out.println("Deployed " + appName);
+
+        Assert.assertTrue(appName != null);
+
+        URL servlet = new URL("http://localhost:"+newPort+"/"+contextRoot+"/hello");
         URLConnection yc = servlet.openConnection();
-        BufferedReader in = new BufferedReader(
-                                new InputStreamReader(
-                                yc.getInputStream()));
-
+        BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
         StringBuilder sb = new StringBuilder();
         String inputLine;
         while ((inputLine = in.readLine()) != null){
             sb.append(inputLine);
         }
         in.close();
-
-        vs.removeContext(context);
+        System.out.println(inputLine);
+        Assert.assertEquals("Hello World!", sb.toString());
         
-     }
+        if (appName!=null)
+            deployer.undeploy(appName);
+        
+    }
 
     @AfterClass
     public static void shutdownServer() throws GlassFishException {
@@ -124,6 +157,5 @@ public class EmbeddedAddServletDefaultVSTest {
             glassfish = null;
         }
     }
-    
     
 }
