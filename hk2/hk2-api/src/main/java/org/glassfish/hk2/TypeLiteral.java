@@ -42,6 +42,7 @@ package org.glassfish.hk2;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 
 /**
  * Supports inline instantiation of objects that represent parameterized
@@ -131,6 +132,8 @@ public abstract class TypeLiteral<T> {
 
             return Object[].class;
 
+        } else if (type instanceof WildcardType) {
+            return null;
         } else {
             throw new RuntimeException("Illegal type");
         }

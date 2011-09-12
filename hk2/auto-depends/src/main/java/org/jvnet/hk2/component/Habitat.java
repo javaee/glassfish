@@ -920,8 +920,8 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
      */
     public boolean isContractExt(java.lang.reflect.Type type) {
         Class clazz = TypeLiteral.getRawType(type);
-        return (null != clazz.getAnnotation(Contract.class) ||
-                isContract(type));
+        return (clazz!=null && (null != clazz.getAnnotation(Contract.class) ||
+                isContract(type)));
     }
     
     /**
