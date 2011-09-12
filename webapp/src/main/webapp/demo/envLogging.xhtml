@@ -38,8 +38,15 @@
         <f:view>
             <div>
                 <div class="navObjectInfo">
-                    <div class="title headerPageTitle">Environment Monitoring Data comes here..</div>
+                    <div class="title headerPageTitle">Environment Monitoring Data comes here.. here is a sample of how it looks like </div>
                 </div>
+            <tr:panelHorizontalLayout halign="left" >
+                <tr:outputLabel value="Environment Name: " for="nm"/>
+                <tr:outputLabel id="nm" value="#{param['envName']}"  for="dummy"/>
+                <tr:inputHidden value="#{param['envName']}"/>
+            </tr:panelHorizontalLayout>
+                <tr:image id="log" source="/images/logTableSample.png" shortDesc="Log table .... "/>
+
             </div>
         </f:view>
     </ui:define>

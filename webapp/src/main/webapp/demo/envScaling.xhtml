@@ -16,8 +16,9 @@
     KIND, either express or implied.  See the License for the
     specific language governing permissions and limitations
     under the License.
-
+	   
 -->
+
 
 <!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
@@ -29,21 +30,22 @@
                 xmlns:trh="http://myfaces.apache.org/trinidad/html"
                 template="/layout.xhtml">
 
+    <ui:define name="subtabs">
+        <ui:include src="/demo/environmentTabs.xhtml" />
+    </ui:define>
 
     <ui:define name="content">
-
-        <div class="navObjectInfo">
-            <div class="title headerPageTitle">Environments</div>
-            <div class="subHeading">List of Environment</div>
-            <tr:table id="envs" var="envs" value="#{environments.envsAndApps}">
-                <tr:column headerText="Environment Name">
-                    <a id="clusterName"  href="#{request.contextPath}/demo/envGeneral.jsf?envName=#{envs.clusterName}" > #{envs.clusterName} </a>
-                </tr:column>
-                <tr:column headerText="Application Name">
-                    <!-- TODO display as list for more than 1 app -->
-                    <a id="appName"  href="#{request.contextPath}/demo/applicationGeneral.jsf?appName=#{envs.appList[0]}" > #{envs.appList[0]}  </a>
-                </tr:column>
-            </tr:table>
-        </div>
+        <f:view>
+            <tr:panelHorizontalLayout halign="left" >
+                <tr:outputLabel value="Environment Name: " for="nm"/>
+                <tr:outputLabel id="nm" value="#{param['envName']}"  for="dummy"/>
+                <tr:inputHidden value="#{param['envName']}"/>
+            </tr:panelHorizontalLayout>
+            <div>
+                <div class="navObjectInfo">
+                    <div class="title headerPageTitle"> Spinner for manual and Auto Scaling </div>
+                </div>
+            </div>
+        </f:view>
     </ui:define>
 </ui:composition>
