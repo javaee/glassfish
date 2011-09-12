@@ -57,15 +57,21 @@
     <h:form id="environmentTabsForm" style="color: black;">
         <h:panelGroup id="environmentTabs">
             <tr:panelTabbed id="environmentTabsPanel" position ="above" inlineStyle="padding: 0px;">
-                <tr:showDetailItem text="Configuration"
+                <tr:showDetailItem text="General"
                                    disclosed="#{tabBean.isActiveTab('/demo/environments.jsf')}"
-                                   onclick="window.location = '#{request.contextPath}/demo/environmentGeneral.jsf'; return false;"/>
+                                   onclick="window.location = '#{request.contextPath}/demo/envGeneral.jsf?envName=#{param['envName']}'; return false;"/>
                 <tr:showDetailItem text="Monitoring"
                                    disclosed="#{tabBean.isActiveTab('/demo/environments.jsf')}"
-                                   onclick="window.location = '#{request.contextPath}/demo/environmentMonitoring.jsf'; return false;"/>
+                                   onclick="window.location = '#{request.contextPath}/demo/envMonitoring.jsf?envName=#{param['envName']}'; return false;"/>
+                <tr:showDetailItem text="Scaling"
+                                   disclosed="#{tabBean.isActiveTab('/demo/environments.jsf')}"
+                                   onclick="window.location = '#{request.contextPath}/demo/envScaling.jsf?envName=#{param['envName']}'; return false;"/>
                 <tr:showDetailItem text="Logging"
                                    disclosed="#{tabBean.isActiveTab('/demo/environments.jsf')}"
-                                   onclick="window.location = '#{request.contextPath}/demo/environmentLogging.jsf'; return false;"/>
+                                   onclick="window.location = '#{request.contextPath}/demo/envLogging.jsf?envName=#{param['envName']}'; return false;"/>
+                <tr:showDetailItem text="Load Balancer"
+                                   disclosed="#{tabBean.isActiveTab('/demo/environments.jsf')}"
+                                   onclick="window.location = '#{request.contextPath}/demo/envLoadBalancer.jsf?envName=#{param['envName']}'; return false;"/>
             </tr:panelTabbed>
         </h:panelGroup>
     </h:form>
