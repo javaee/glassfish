@@ -51,12 +51,14 @@
                             <tr:inputText label="Context Root" value="#{applicationBean.appName}" readOnly="true"/>
 
                             <tr:inputText label="Status" value="Enabled" readOnly="true"/>
+                            <!--
                             <f:facet name="footer">
                                 <tr:panelHorizontalLayout inlineStyle="height:50px;">
                                     <tr:commandButton id="Enable" text="Enable"/>
                                     <tr:commandButton text="Disable"/>
                                 </tr:panelHorizontalLayout>
                             </f:facet>
+                            -->
                             <tr:outputText value="URL(s) to launch the application : "/>
                             <tr:table id="urls" var="urls" value="#{applicationBean.urls}">
                                 <tr:column headerText="Instance">
@@ -95,6 +97,7 @@
                                 </tr:column>
                             </tr:table>
                         </div>
+<!--
                         <div class="navObjectInfo">
                             <div class="title headerPageTitle">Elasticity Settings</div>
                             <tr:panelFormLayout  id="elasiticitySettings">
@@ -102,6 +105,7 @@
                                 <tr:inputNumberSpinbox label="Instances:" value="2" minimum="1" maximum="4"/>
                             </tr:panelFormLayout>
                         </div>
+-->
                     </div>
             </h:panelGroup>
         </h:form>
