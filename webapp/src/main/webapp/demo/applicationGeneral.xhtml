@@ -74,7 +74,7 @@
                         <div class="title headerPageTitle">Environment(s)</div>
                         <tr:table id="applicationInstances" var="cluster" value="#{applicationBean.instances}">
                             <tr:column headerText="Environment">
-                                #{cluster}
+                            <a id="envName"  href="#{request.contextPath}/demo/envGeneral.jsf?appName=#{cluster}" > #{cluster} </a>
                             </tr:column>
                         </tr:table>
                     </div>
