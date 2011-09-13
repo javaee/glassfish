@@ -7,16 +7,14 @@ package org.glassfish.admingui.console.beans;
 
 import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import java.util.*;
 import org.glassfish.admingui.console.rest.RestUtil;
 import org.glassfish.admingui.console.util.CommandUtil;
 
 @ManagedBean(name="listApplicationsBean")
-@SessionScoped
+@ViewScoped
 public class ListApplicationsBean {
-    private Application selectedApplication = new Application();
-    private List applications;
     private Map appData;
 
     public ListApplicationsBean() {
