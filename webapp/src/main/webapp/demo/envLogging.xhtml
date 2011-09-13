@@ -37,17 +37,31 @@
     <ui:define name="content">
         <f:view>
             <div>
+                <br/><br/>
+                <tr:panelHorizontalLayout halign="left" >
+                    <tr:outputLabel value="Environment Name: " for="nm"/>
+                    <tr:outputLabel id="nm" value="#{param['envName']}"  for="dummy"/>
+                    <tr:inputHidden value="#{param['envName']}"/>
+                    <br/>
+                </tr:panelHorizontalLayout>
                 <div class="navObjectInfo">
-                    <div class="title headerPageTitle">Environment Monitoring Data comes here.. here is a sample of how it looks like </div>
+                    <div class="title headerPageTitle">Logging Results</div>
+                    <div class="subHeading">View a server log file.</div>
+                    <tr:selectOneChoice label="Instance: " value="server">
+                        <f:selectItem itemLabel="server" itemValue="server"/>
+                    </tr:selectOneChoice>
+                    <tr:table id="logmsgs" var="logmsgs" value="#{loggingBean.logMessages}">
+                        <tr:column headerText="Timestamp">
+                            #{logmsgs.loggedDateTimeInMS}
+                        </tr:column>
+                        <tr:column headerText="Logger">
+                            #{logmsgs.loggerName}
+                        </tr:column>
+                        <tr:column headerText="Message">
+                            #{logmsgs.Message}
+                        </tr:column>
+                    </tr:table>
                 </div>
-            <tr:panelHorizontalLayout halign="left" >
-                <tr:outputLabel value="Environment Name: " for="nm"/>
-                <tr:outputLabel id="nm" value="#{param['envName']}"  for="dummy"/>
-                <tr:inputHidden value="#{param['envName']}"/>
-                <tr:outputLabel id="instances"  value="#{environments.getInstancesNameForEnv(param['envName'])}" />
-            </tr:panelHorizontalLayout>
-                <tr:image id="log" source="/images/logTableSample.png" shortDesc="Log table .... "/>
-
             </div>
         </f:view>
     </ui:define>
