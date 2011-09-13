@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,6 +59,16 @@ public class WebListenerBase implements WebListener  {
 
     private String protocol;
 
+    private WebContainer webContainer;
+
+    public WebListenerBase() {
+    }
+
+    public WebListenerBase(String id, int port) {
+        this.id = id;
+        this.port = port;
+    }
+
     /**
      * Sets the id for this <tt>WebListener</tt>.
      */
@@ -77,11 +87,16 @@ public class WebListenerBase implements WebListener  {
      * Reconfigures this <tt>WebListener</tt> with the given
      * configuration.
      */
-    public void setConfig(WebListenerConfig config) throws ConfigException {
+    public void setConfig(WebListenerConfig config)
+            throws ConfigException, GlassFishException {
         this.config = config;
         setId(config.getId());
         setPort(config.getPort());
         setProtocol(config.getProtocol());
+        if (webContainer != null) {
+            webContainer.removeWebListener(this);
+            webContainer.addWebListener(this);
+        }
     }
 
     /**
@@ -120,28 +135,19 @@ public class WebListenerBase implements WebListener  {
     }
 
     /**
-     * Enables this component.
+     * Sets the <tt>WebContainer</tt> which will be used by this <tt>WebListener</tt>.
      */
-    public void enable() throws GlassFishException {
-        /*
-        try {
-            start();
-        } catch (org.apache.catalina.LifecycleException e) {
-            throw new LifecycleException(e);
-        }*/
+    public void setWebContainer(WebContainer webContainer) {
+        this.webContainer = webContainer;
     }
 
     /**
-     * Disables this component.
+     * Gets the <tt>WebContainer</tt> used by this <tt>WebListener</tt>.
      */
-    public void disable() throws GlassFishException {
-        /*
-        try {
-            stop();
-        } catch (org.apache.catalina.LifecycleException e) {
-            throw new LifecycleException(e);
-        }*/
+    public WebContainer getWebContainer() {
+        return webContainer;
     }
+
 
 }
 

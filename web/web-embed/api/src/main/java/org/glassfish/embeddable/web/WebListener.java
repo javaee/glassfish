@@ -40,13 +40,11 @@
 
 package org.glassfish.embeddable.web;
 
+import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.web.config.WebListenerConfig;
 
 /**
  * Representation of a network listener for web requests.
- *
- * <p>Instances of <tt>WebListener</tt> may be in one of two states:
- * <i>stopped</i> or <i>started</i>.
  *
  * <p/>See {@link WebContainer} for usage example.
  *
@@ -54,7 +52,7 @@ import org.glassfish.embeddable.web.config.WebListenerConfig;
  * @author Amy Roh
  */
 
-public interface WebListener extends Lifecycle  {
+public interface WebListener  {
 
     /**
      * Sets the id for this <tt>WebListener</tt>.
@@ -103,15 +101,17 @@ public interface WebListener extends Lifecycle  {
      * configuration.
      *
      * <p>In order for the given configuration to take effect, this
-     * <tt>WebListener</tt> may be stopped and restarted.
+     * <tt>WebListener</tt> will be stopped and restarted.
      *
      * @param config the configuration to be applied
      *
      * @throws ConfigException if the configuration requires a restart,
      * and this <tt>WebListener</tt> fails to be restarted
+     * @throws GlassFishException if an error occurs,
+     * and this <tt>WebListener</tt> fails to be restarted
      */
     public void setConfig(WebListenerConfig config)
-            throws ConfigException;
+            throws ConfigException, GlassFishException;
 
     /**
      * Gets the current configuration of this <tt>WebListener</tt>.
@@ -121,5 +121,15 @@ public interface WebListener extends Lifecycle  {
      * <tt>WebListener</tt>
      */
     public WebListenerConfig getConfig();
+
+    /**
+     * Sets the <tt>WebContainer</tt> which will be used by this <tt>WebListener</tt>.
+     */
+    public void setWebContainer(WebContainer webContainer);
+
+    /**
+     * Gets the <tt>WebContainer</tt> used by this <tt>WebListener</tt>.
+     */
+    public WebContainer getWebContainer();
 
 }

@@ -65,7 +65,15 @@ public class LoginConfig {
 
     private AuthMethod authMethod;
     private FormLoginConfig formLoginConfig;
-    String realmName;
+    private String realmName;
+
+    public LoginConfig() {
+    }
+
+    public LoginConfig(AuthMethod authMethod, String name) {
+        this.authMethod = authMethod;
+        this.realmName = name;
+    }
 
     /**
      * Set the authentication scheme to be used for a given

@@ -68,15 +68,14 @@ import java.util.Set;
 public class SecurityConstraint {
 
     private Set<WebResourceCollection> webResourceCollection;
-    private String[] roleNames;
+    private String[] roleNames = new String[0];
     private TransportGuarantee tg;
 
     /**
-     * Create an instance of SecurityConstraint with default values
-     *
+     * Create an instance of SecurityConstraint
+     */
     public SecurityConstraint() {
-        roleNames = new String[0];
-    } */
+    }
 
 
     /**

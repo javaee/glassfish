@@ -80,9 +80,9 @@ import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
 
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.deployment.versioning.VersioningUtils;
-import org.glassfish.embeddable.*;
+import org.glassfish.embeddable.CommandRunner;
 import org.glassfish.embeddable.Deployer;
+import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.web.Context;
 import org.glassfish.embeddable.web.ConfigException;
 import org.glassfish.embeddable.web.WebListener;
@@ -119,6 +119,8 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 
 /**
@@ -218,6 +220,8 @@ public class VirtualServer extends StandardHost
     private String[] cacheControls;
 
     private Domain domain;
+
+    private CommandRunner runner;
 
     private ServerEnvironment instance;
 
@@ -370,6 +374,10 @@ public class VirtualServer extends StandardHost
      */
     public void setCacheControls(String[] cacheControls) {
         this.cacheControls = cacheControls;
+    }
+
+    public void setCommandRunner(CommandRunner runner) {
+        this.runner = runner;
     }
 
     public String getInfo() {
@@ -1984,7 +1992,9 @@ public class VirtualServer extends StandardHost
      * this <tt>VirtualServer</tt> receives requests.
      */
     public void setWebListeners(WebListener...  webListeners) {
-        listeners = Arrays.asList(webListeners);
+        if (webListeners != null) {
+            listeners = Arrays.asList(webListeners);
+        }
     }
 
     /**
@@ -2017,61 +2027,76 @@ public class VirtualServer extends StandardHost
                     contextRoot+" is already registered");
         }
 
-        try {
+        if (context instanceof ContextFacade) {
             ContextFacade facade = (ContextFacade) context;
             File docRoot = facade.getDocRoot();
             ClassLoader classLoader = facade.getClassLoader();
 
+            if (contextRoot.equals("")) {
+                contextRoot = "/";
+            }
+            String name = contextRoot;
+            if (name.equals("/")) {
+                name =  Constants.DEFAULT_WEB_MODULE_NAME;
+            }
+
             Deployer deployer = Globals.getDefaultHabitat().getComponent(Deployer.class);
-            String appName = deployer.deploy(docRoot, "--name", contextRoot);
-            //String appName = deployer.deploy(docRoot, "--name", contextRoot, "--enabled", "false");
-            String contextName = "/"+appName;
+            String appName = deployer.deploy(docRoot, "--virtualservers", getName(),
+                    "--contextroot", contextRoot, "--name", name,"--enabled", "false");
+             String contextName = "/"+appName;
 
-            Map<String, String> servlets = facade.getAddedServlets();
-            Map<String, String[]> mappings = facade.getServletMappings();
-            File webXml = null;
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Deployed --virtualservers=" + getName() +
+                        "--contextroot=" + contextRoot + "--name=" + name);
+            }
 
-            if (!servlets.isEmpty()) {
+            try {
+
+                File file = null;
+                boolean delete = true;
                 Applications apps = domain.getApplications();
-                com.sun.enterprise.config.serverbeans.Application app = apps.getApplication(contextRoot);
+                com.sun.enterprise.config.serverbeans.Application app = apps.getApplication(name);
                 if (app != null) {
-                    webXml = new File(app.application().getAbsolutePath(), "/WEB-INF/web.xml");
+                    file = new File(app.application().getAbsolutePath(), "/WEB-INF/web.xml");
+                    if (file.exists()) {
+                        delete = false;
+                    }
                 }
-                if (_logger.isLoggable(Level.FINE)) {
-                    _logger.log(Level.FINE, "Modifying web.xml "+webXml.getAbsolutePath());
-                }
-                updateWebXml(webXml, servlets, mappings);
 
-                String repositoryBitName = VersioningUtils.getRepositoryName(appName);
-                File webInf = new File(instance.getApplicationRepositoryPath(), repositoryBitName+"/WEB-INF");
-                webInf.mkdirs();
-                webXml = new File(webInf, "web.xml");
+                updateWebXml(facade, file);
 
-                if (_logger.isLoggable(Level.FINE)) {
-                    _logger.log(Level.FINE, "Modifying web.xml "+webXml.getAbsolutePath());
+                if (runner != null) {
+                    runner.run("enable", appName);
                 }
+
+                if (delete) {
+                    if (file != null) {
+                        if (file.exists() && !file.delete()) {
+                            String path = file.toString();
+                            _logger.log(Level.WARNING,
+                                    "webcontainer.unableToDelete",
+                                    path);
+                        }
+                    }
+                }
+
+                WebModule wm = (WebModule) findChild(contextName);
+                if (wm != null) {
+                    if (classLoader != null) {
+                        wm.setParentClassLoader(classLoader);
+                    } else {
+                        wm.setParentClassLoader(serverContext.getSharedClassLoader());
+                    }
+                    facade.setUnwrappedContext(wm);
+                    wm.setEmbedded(true);
+                    if (config != null) {
+                        wm.setDefaultWebXml(config.getDefaultWebXml());
+                    }
+                }
+
+            } catch (Exception ex) {
+                throw new GlassFishException(ex);
             }
-
-            // enable the deployapp
-            //((com.sun.enterprise.admin.cli.embeddable.DeployerImpl) deployer).enable(appName);
-            //webXml.delete();
-
-            WebModule wm = (WebModule) findChild(contextName);
-            if (wm != null) {
-                if (classLoader != null) {
-                    wm.setParentClassLoader(classLoader);
-                } else {
-                    wm.setParentClassLoader(serverContext.getSharedClassLoader());
-                }
-                facade.setUnwrappedContext(wm);
-                wm.setEmbedded(true);
-                if (config != null) {
-                    wm.setDefaultWebXml(config.getDefaultWebXml());
-                }
-            }
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
     }
 
@@ -2163,79 +2188,199 @@ public class VirtualServer extends StandardHost
         super.stop();
     }
 
-    /**
-     * Enables this component.
-     * 
-     * @throws GlassFishException if this component fails to be enabled
-     */    
-    public void enable() throws GlassFishException {
-       try {
-            start();
-        } catch (LifecycleException e) {
-            throw new GlassFishException(e);
-        }
-    }
-    
-    /**
-     * Disables this component.
-     * 
-     * @throws LifecycleException if this component fails to be disabled
-     */
-    public void disable() throws GlassFishException {
-       try {
-            stop();
-        } catch (LifecycleException e) {
-            throw new GlassFishException(e);
-        }        
-    }
+	public void updateWebXml(ContextFacade facade, File file) throws Exception {
 
-	public static void updateWebXml(File file, Map<String, String> servlets, Map<String, String[]> mappings) {
+        Map<String, String> servlets = facade.getAddedServlets();
+        Map<String, String[]> mappings = facade.getServletMappings();
+        List<String> listeners = facade.getListeners();
+        Map<String, String> filters = facade.getAddedFilters();
+        Map<String, String> servletNameFilterMappings = facade.getServletNameFilterMappings();
+        Map<String, String> urlPatternFilterMappings = facade.getUrlPatternFilterMappings();
 
-		try {
+        if (!filters.isEmpty() || !listeners.isEmpty() || !servlets.isEmpty()) {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Modifying web.xml "+file.getAbsolutePath());
+            }
 
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = null;
             Element webapp = null;
 
             if ((file != null) && (file.exists())) {
-			    doc = dBuilder.parse(file);
+                doc = dBuilder.parse(file);
                 webapp = doc.getDocumentElement();
-                // doc.getDocumentElement().normalize();
             } else {
                 doc = dBuilder.newDocument();
                 webapp = doc.createElement("web-app");
-                webapp.setAttribute("xmln", "http://java.sun.com/xml/ns/j2ee");
+                webapp.setAttribute("xmln", "http://java.sun.com/xml/ns/javaee");
                 webapp.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
                 webapp.setAttribute("xsi:schemaLocation",
-                        "http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd");
-                webapp.setAttribute("version", "2.4");
+                        "http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd");
+                webapp.setAttribute("version", "3.0");
                 doc.appendChild(webapp);
             }
 
-			for (String name : servlets.keySet()) {
-				Element servlet = doc.createElement("servlet");
-				webapp.appendChild(servlet);
-                Element servletName = doc.createElement("servlet-name");
-                servletName.setTextContent(name);
-                servlet.appendChild(servletName);
-                Element servletClass = doc.createElement("servlet-class");
-                servletClass.setTextContent(servlets.get(name));
-                servlet.appendChild(servletClass);
-			}
+            boolean entryFound = false;
 
-            for (String mapping : mappings.keySet()) {
-                Element servletMapping = doc.createElement("servlet-mapping");
-                webapp.appendChild(servletMapping);
-                for (String pattern : mappings.get(mapping)) {
-                    Element servletName = doc.createElement("servlet-name");
-                    servletName.setTextContent(mapping);
-                    Element urlPattern = doc.createElement("url-pattern");
-                    urlPattern.setTextContent(pattern);
-                    servletMapping.appendChild(servletName);
-                    servletMapping.appendChild(urlPattern);
+            // Update <filter>
+            for (Map.Entry entry : filters.entrySet()) {
+                NodeList filterList = doc.getElementsByTagName("filter-name");
+                for (int i=0; i<filterList.getLength(); i++) {
+                    Node filterNode = filterList.item(i);
+                    if (entry.getKey().equals(filterNode.getTextContent()) &&
+                            filterNode.getParentNode().getNodeName().equals("filter")) {
+                        NodeList children = filterNode.getParentNode().getChildNodes();
+                        for (int j=0; j<children.getLength(); j++) {
+                            Node filterClass = children.item(j);
+                            if (filterClass.getNodeName().equals("filter-class")) {
+                                // If a filter with the given filter-name is already defined,
+                                // the given class name will be assigned according to the spec
+                                filterClass.setTextContent(entry.getValue().toString());
+                                entryFound = true;
+                                break;
+                            }
+                        }
+                    }
                 }
-                webapp.appendChild(servletMapping);
+                if (!entryFound) {
+                    Element filter = doc.createElement("filter");
+                    Element filterName = doc.createElement("filter-name");
+                    filterName.setTextContent(entry.getKey().toString());
+                    filter.appendChild(filterName);
+                    Element filterClass = doc.createElement("filter-class");
+                    filterClass.setTextContent(entry.getValue().toString());
+                    filter.appendChild(filterClass);
+                    Map<String, String> initParams =
+                            facade.getFilterRegistration(entry.getKey().toString()).getInitParameters();
+                    if ((initParams != null) && (!initParams.isEmpty())) {
+                        Element initParam = doc.createElement("init-param");
+                        for (Map.Entry param : initParams.entrySet()) {
+                            Element paramName = doc.createElement("param-name");
+                            paramName.setTextContent(param.getKey().toString());
+                            initParam.appendChild(paramName);
+                            Element paramValue = doc.createElement("param-value");
+                            paramValue.setTextContent(param.getValue().toString());
+                            initParam.appendChild(paramValue);
+                        }
+                        filter.appendChild(initParam);
+                    }
+                    webapp.appendChild(filter);
+                }
+            }
+
+            // Update <filter-mapping>
+            for (Map.Entry mapping : servletNameFilterMappings.entrySet()) {
+                Element filterMapping = doc.createElement("filter-mapping");
+                Element filterName = doc.createElement("filter-name");
+                filterName.setTextContent(mapping.getKey().toString());
+                filterMapping.appendChild(filterName);
+                Element servletName = doc.createElement("servlet-name");
+                servletName.setTextContent(mapping.getValue().toString());
+                filterMapping.appendChild(servletName);
+                webapp.appendChild(filterMapping);
+            }
+
+            for (Map.Entry mapping : urlPatternFilterMappings.entrySet()) {
+                Element filterMapping = doc.createElement("filter-mapping");
+                Element filterName = doc.createElement("filter-name");
+                filterName.setTextContent(mapping.getKey().toString());
+                filterMapping.appendChild(filterName);
+                Element urlPattern = doc.createElement("url-pattern");
+                urlPattern.setTextContent(mapping.getValue().toString());
+                filterMapping.appendChild(urlPattern);
+                webapp.appendChild(filterMapping);
+            }
+
+            entryFound = false;
+
+            // Update <servlet>
+            for (Map.Entry entry : servlets.entrySet()) {
+                NodeList servletList = doc.getElementsByTagName("servlet-name");
+                for (int i=0; i<servletList.getLength(); i++) {
+                    Node servletNode = servletList.item(i);
+                    if (entry.getKey().equals(servletNode.getTextContent()) &&
+                            servletNode.getParentNode().getNodeName().equals("servlet")) {
+                        NodeList children = servletNode.getParentNode().getChildNodes();
+                        for (int j=0; j<children.getLength(); j++) {
+                            Node servletClass = children.item(j);
+                            if (servletClass.getNodeName().equals("servlet-class")) {
+                                // If a servlet with the given servlet-name is already defined,
+                                // the given className will be assigned according to the spec
+                                servletClass.setTextContent(entry.getValue().toString());
+                                entryFound = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!entryFound) {
+                    Element servlet = doc.createElement("servlet");
+                    Element servletName = doc.createElement("servlet-name");
+                    servletName.setTextContent(entry.getKey().toString());
+                    servlet.appendChild(servletName);
+                    Element servletClass = doc.createElement("servlet-class");
+                    servletClass.setTextContent(entry.getValue().toString());
+                    servlet.appendChild(servletClass);
+                    Map<String, String> initParams =
+                        facade.getServletRegistration(entry.getKey().toString()).getInitParameters();
+                    if ((initParams != null) && (!initParams.isEmpty())) {
+                        Element initParam = doc.createElement("init-param");
+                        for (Map.Entry param : initParams.entrySet()) {
+                            Element paramName = doc.createElement("param-name");
+                            paramName.setTextContent(param.getKey().toString());
+                            initParam.appendChild(paramName);
+                            Element paramValue = doc.createElement("param-value");
+                            paramValue.setTextContent(param.getValue().toString());
+                            initParam.appendChild(paramValue);
+                        }
+                        servlet.appendChild(initParam);
+                    }
+                    webapp.appendChild(servlet);
+                }
+            }
+
+            entryFound = false;
+
+            // Update <servlet-mapping>
+            for (Map.Entry mapping : mappings.entrySet()) {
+                NodeList servletList = doc.getElementsByTagName("servlet-name");
+                for (int i=0; i<servletList.getLength(); i++) {
+                    Node servletNode = servletList.item(i);
+                    if (mapping.getKey().equals(servletNode.getTextContent()) &&
+                            servletNode.getParentNode().getNodeName().equals("servlet-mapping")) {
+                        NodeList children = servletNode.getParentNode().getChildNodes();
+                        for (int j=0; j<children.getLength(); j++) {
+                            Node urlPattern = children.item(j);
+                            if (urlPattern.getNodeName().equals("url-pattern")) {
+                                // If any of the specified URL patterns are already mapped to a different Servlet,
+                                // no updates will be performed according to the spec
+                                entryFound = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!entryFound) {
+                    Element servletMapping = doc.createElement("servlet-mapping");
+                    for (String pattern : mappings.get(mapping.getKey())) {
+                        Element servletName = doc.createElement("servlet-name");
+                        servletName.setTextContent(mapping.getKey().toString());
+                        servletMapping.appendChild(servletName);
+                        Element urlPattern = doc.createElement("url-pattern");
+                        urlPattern.setTextContent(pattern);
+                        servletMapping.appendChild(urlPattern);
+                    }
+                    webapp.appendChild(servletMapping);
+                }
+            }
+
+            for (String listenerStr : listeners) {
+                Element listener = doc.createElement("listener");
+                Element listenerClass = doc.createElement("listener-class");
+                listenerClass.setTextContent(listenerStr);
+                listener.appendChild(listenerClass);
+                webapp.appendChild(listener);
             }
 
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
@@ -2245,9 +2390,7 @@ public class VirtualServer extends StandardHost
             StreamResult result = new StreamResult(file);
             transformer.transform(src, result);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+        }
+    }
 
 }

@@ -43,7 +43,7 @@ package org.glassfish.embeddable.web.config;
 
 /**
  * Class that is used for configuring form based login, when
- * the authentication method is set to <tt>FORM</tt> in <tt>LoginConfig</tt>
+ * the authentication method is set to <tt>FORM</tt> in <tt>LoginConfig</tt>.
  *
  * @see LoginConfig
  * @see AuthMethod

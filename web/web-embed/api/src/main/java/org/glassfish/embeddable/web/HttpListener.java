@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,17 +42,24 @@ package org.glassfish.embeddable.web;
         
 
 /**
- * HTTP Listener listens on a TCP port for incoming HTTP connection
+ * HTTP Listener listens on a TCP port for incoming HTTP connection.
  *
  * @author Rajiv Mordani
  * @author Jan Luehe
  * @author Amy Roh
  */
 public class HttpListener extends WebListenerBase  {
-    
+
+    /**
+     * Initializes a newly created HttpListener object with HTTP protocol.
+     */
     public HttpListener() {
         super();
-        //TODO: Define constatnts somewhere
+        this.setProtocol("http");
+    }
+
+    public HttpListener(String id, int port) {
+        super(id, port);
         this.setProtocol("http");
     }
 

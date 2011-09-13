@@ -41,15 +41,29 @@
 package org.glassfish.embeddable.web;
 
 /**
- * Listener which listens via AJP protocol
+ * Listener which listens via AJP protocol.
  *
  * @author Rajiv Mordani
  * @author Amy Roh
  */
 public class AjpListener extends WebListenerBase  {
 
+    /**
+     * Initializes a newly created AjpListener object with AJP protocol.
+     */
     public AjpListener() {
         super();
+        this.setProtocol("AJP/1.3");
+    }
+
+    /**
+     * Initializes a newly created AjpListener object with AJP protocol.
+     *
+     * @param id the id of the listener
+     * @param port the port of the listener
+     */
+    public AjpListener(String id, int port) {
+        super(id, port);
         this.setProtocol("AJP/1.3");
     }
     

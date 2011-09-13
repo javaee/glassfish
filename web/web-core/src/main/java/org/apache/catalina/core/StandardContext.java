@@ -710,7 +710,7 @@ public class StandardContext
     protected ConcurrentHashMap<String, ServletRegistrationImpl> servletRegisMap =
         new ConcurrentHashMap<String, ServletRegistrationImpl>();
 
-    private ConcurrentHashMap<String, FilterRegistrationImpl> filterRegisMap =
+    protected ConcurrentHashMap<String, FilterRegistrationImpl> filterRegisMap =
         new ConcurrentHashMap<String, FilterRegistrationImpl>();
 
     /**
