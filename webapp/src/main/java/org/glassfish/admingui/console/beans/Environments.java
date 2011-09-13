@@ -106,6 +106,15 @@ public class Environments implements Serializable {
         return instancesForEnv;
     }
 
+    public List<String> getInstancesNameForEnv(String envName){
+        List<Map> instancesMap = getInstancesForEnv(envName);
+        List<String> instancesName = new ArrayList();
+        for(Map oneInstance : instancesMap){
+            instancesName.add((String)oneInstance.get("name"));
+        }
+        return instancesName;
+    }
+
 
     public List<Map> getApplications() {
         synchronized (apps) {
