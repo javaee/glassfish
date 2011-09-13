@@ -59,12 +59,14 @@
 
 
         <tr:inputFile label="Application Source:"
+                      id="upload"
+                      onchange="autofill()"
                       columns="40"
                       value="#{uploadBean.file}"
                       valueChangeListener="#{uploadBean.fileUploaded}">
         </tr:inputFile>
-        <tr:inputText label="Application Name: " value="#{uploadBean.appName}" columns="40"/>
-        <tr:inputText label="Context Root:  " value="#{uploadBean.contextRoot}"  columns="40"/>
+        <tr:inputText id="appName" label="Application Name: " value="#{uploadBean.appName}" columns="40"/>
+        <tr:inputText id="contextRoot" label="Context Root:  " value="#{uploadBean.contextRoot}"  columns="40"/>
         <tr:inputText label="Description:  " value="#{uploadBean.description}" columns="40"/>
     </tr:panelFormLayout>
     <tr:separator/>
@@ -74,4 +76,18 @@
     <tr:commandButton id="nextButton" text="Next &gt;&gt;" action="#{wizardBean.next}">
         <f:ajax render="@form" execute="@form"/>
     </tr:commandButton>
+    <script type="text/javascript">
+        function autofill() {
+            var fullPath = document.getElementById('wizard:upload').value;
+            if (fullPath) {
+                var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+                var filename = fullPath.substring(startIndex + 1);
+                var endIndex = filename.lastIndexOf('.');
+                var appname = filename.substring(0, endIndex);
+                document.getElementById('wizard:appName').value = appname;
+                document.getElementById('wizard:contextRoot').value = appname;
+            }
+
+        }
+    </script>
 </ui:composition>
