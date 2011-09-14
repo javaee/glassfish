@@ -76,11 +76,19 @@ public class UploadBean {
                 tmpFile = tf;
                 Map attrs = new HashMap();
                 attrs.put("archive", tmpFile.getAbsolutePath());
-                Map appData = (Map) RestUtil.restRequest(REST_URL + "/get-service-metadata", attrs, "GET", null, null, false, true).get("data");
+                Map appData = (Map) RestUtil.restRequest(REST_URL + "/applications/_get-service-metadata", attrs, "GET", null, null, false, true).get("data");
 
                 //each Map is a Service that will be provisioned
                 metaData = (List<Map<String, Object>>)((Map) appData.get("extraProperties")).get("list");
+
                 System.out.println("metaData = " + metaData);
+
+                Map dpAttrs = new HashMap();
+                dpAttrs.put("archive" , tmpFile.getAbsolutePath());
+                dpAttrs.put("test", "test String");
+                dpAttrs.put("modifiedServiceDesc", metaData);
+                Map res = (Map) RestUtil.restRequest(REST_URL + "/applications/_generate-glassfish-services-deployment-plan", dpAttrs, "GET", null, null, false, true).get("data");
+                System.out.println(res);
             }
         }catch(Exception ex){
             ex.printStackTrace();
