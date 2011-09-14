@@ -216,168 +216,24 @@ public class DeployUtil {
                 GuiUtil.getMessage("deploy.someEnabled", new String[]{""+numEnabled, ""+numTargets });
         
     }
-
-    private static String getVirtualServers(String target, String appName) {
-        List clusters = TargetUtil.getClusters();
-        List standalone = TargetUtil.getStandaloneInstances();
-        standalone.add("server");
-        String ep = (String)GuiUtil.getSessionValue("REST_URL");
-        if (clusters.contains(target)){
-            ep = ep + "/clusters/cluster/" + target + "/application-ref/" + appName;
-        }else{
-            ep = ep + "/servers/server/" + target + "/application-ref/" + appName;
-        }
-        String virtualServers =
-                (String)RestUtil.getAttributesMap(ep).get("virtualServers");
-        return virtualServers;
-    }
-
-    private static String calContextRoot(String contextRoot) {
-        //If context root is not specified or if the context root is "/", ensure that we don't show two // at the end.
-        //refer to issue#2853
-        String ctxRoot = "";
-        if ((contextRoot == null) || contextRoot.equals("") || contextRoot.equals("/")) {
-            ctxRoot = "/";
-        } else if (contextRoot.startsWith("/")) {
-            ctxRoot = contextRoot;
-        } else {
-            ctxRoot = "/" + contextRoot;
-        }
-        return ctxRoot;
-    }
-
-
-    private static Set getURLs(List<String> vsList, String configName, Collection<String> hostNames, String target) {
-        Set URLs = new TreeSet();
-        if (vsList == null || vsList.size() == 0) {
-            return URLs;
-        }
-        //Just to ensure we look at "server" first.
-        if (vsList.contains("server")){
-            vsList.remove("server");
-            vsList.add(0, "server");
-        }
-        String ep = (String)GuiUtil.getSessionValue("REST_URL");
-        ep = ep + "/configs/config/" + configName + "/http-service/virtual-server";
-        Map vsInConfig = new HashMap();
-        try{
-            vsInConfig = RestUtil.getChildMap(ep);
-
-        }catch (Exception ex){
-            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getURLs") + ex.getLocalizedMessage());
-                if (GuiUtil.getLogger().isLoggable(Level.FINE)){
-                    ex.printStackTrace();
-                }
-        }
-        String localHostName = null;
-        try {
-            localHostName = InetAddress.getLocalHost().getHostName();
-        } catch (Exception ex) {
-            // ignore exception
-        }
-
-        for (String vsName : vsList) {
-            if (vsName.equals("__asadmin")) {
-                continue;
-            }
-            Object vs = vsInConfig.get(vsName);
-            if (vs != null) {
-                ep = (String)GuiUtil.getSessionValue("REST_URL") + "/configs/config/" +
-                        configName + "/http-service/virtual-server/" + vsName;
-                String listener = (String)RestUtil.getAttributesMap(ep).get("networkListeners");
-
-                if (GuiUtil.isEmpty(listener)) {
-                    continue;
-                } else {
-                    List<String> hpList = GuiUtil.parseStringList(listener, ",");
-                    for (String one : hpList) {
-                        ep = (String)GuiUtil.getSessionValue("REST_URL") +
-"/configs/config/" + configName + "/network-config/network-listeners/network-listener/" + one;
-
-                        Map nlAttributes = RestUtil.getAttributesMap(ep);
-                        if ("false".equals((String)nlAttributes.get("enabled"))) {
-                            continue;
-                        }
-//                        String security = (String)oneListener.findProtocol().attributesMap().get("SecurityEnabled");
-                        ep = (String)GuiUtil.getSessionValue("REST_URL") + "/configs/config/" +
-                                configName + "/network-config/protocols/protocol/" + (String)nlAttributes.get("protocol");
-                        String security = (String)RestUtil.getAttributesMap(ep).get("securityEnabled");
-
-                        String protocol = "http";
-                        if ("true".equals(security))
-                            protocol = "https";
-
-                        String port = (String)nlAttributes.get("port");
-                        if (port == null)
-                            port = "";
-                        String resolvedPort = RestUtil.resolveToken((String)GuiUtil.getSessionValue("REST_URL") +
-                                "/servers/server/" + target, port);
-
-                        for (String hostName : hostNames) {
-                            if (localHostName != null && hostName.equalsIgnoreCase("localhost"))
-                                hostName = localHostName;
-//                            URLs.add("[" + target + "]  - " + protocol + "://" + hostName + ":" + resolvedPort + "[ " + one + " " + configName
-//                                    + " " + listener + " " + target + " ]");
-                            URLs.add(target + "@@@" + protocol + "://" + hostName + ":" + resolvedPort);
-                        }
-                    }
-                }
-            }
+    public static List<String> getApplicationURLs(String appName) {
+        String ep = (String)GuiUtil.getSessionValue("REST_URL") + "/applications/_get-application-launch-urls?appname=" + appName;
+        List URLs = new ArrayList();
+        Map responseMap = RestUtil.restRequest(ep, new HashMap<String, Object>(), "get", null, null, false);
+        Map<String, Map> data = (Map) responseMap.get("data");
+        List<Map> children = (List)data.get("children");
+        for (Map entry : children) {
+            Map<String, String> props = (Map)entry.get("properties");
+            String protocol = props.get("protocol");
+            if (protocol == null) protocol = "http";
+            String host = props.get("host");
+            String contextPath = props.get("contextpath");
+            String port = props.get("port");
+            if (host == null || contextPath == null || port == null) continue;
+            URLs.add(protocol + "://" + host + ":" + port + contextPath  );
         }
         return URLs;
     }
-
-    public static List<Map<String, String>> getTargetURLList(String appID, String contextRoot) {
-        String ctxRoot = calContextRoot(contextRoot);
-        Set<String> URLs = new TreeSet();
-        List<String> targetList = DeployUtil.getApplicationTarget(appID, "application-ref");
-        for(String target : targetList) {
-            String ep = TargetUtil.getTargetEndpoint(target) + "/application-ref/" + appID;
-            boolean enabled = Boolean.parseBoolean((String)RestUtil.getAttributesMap(ep).get("enabled"));
-            if (!enabled)
-                continue;
-
-            String virtualServers = getVirtualServers(target, appID);
-            String configName = TargetUtil.getConfigName(target);
-
-            List clusters = TargetUtil.getClusters();
-            List<String> instances = new ArrayList();
-            if (clusters.contains(target)){
-                instances = TargetUtil.getClusteredInstances(target);
-            } else {
-                instances.add(target);
-            }
-
-            for (String instance : instances) {
-                Collection<String> hostNames = TargetUtil.getHostNames(instance);
-                URLs.addAll(getURLs(GuiUtil.parseStringList(virtualServers, ","), configName, hostNames, instance));
-            }
-        }
-
-	Iterator it = URLs.iterator();
-	String url = null;
-        ArrayList<Map<String, String>> list = new ArrayList();
-
-	while (it.hasNext()) {
-	    url = (String)it.next();
-            String target = "";
-            int i = url.indexOf("@@@");
-            if (i >= 0) {
-                target = url.substring(0, i);
-                url = url.substring(i + 3);
-            }
-
-            HashMap<String, String> m = new HashMap();
-            m.put("url", url + ctxRoot);
-            m.put("target", target);
-            list.add(m);
-	}
-        return list;
-
-
-    }
-
-
 
 
 }

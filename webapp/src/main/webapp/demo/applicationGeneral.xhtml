@@ -61,11 +61,8 @@
                             -->
                             <tr:outputText value="URL(s) to launch the application : "/>
                             <tr:table id="urls" var="urls" value="#{applicationBean.urls}">
-                                <tr:column headerText="Instance">
-                                    #{urls.target}
-                                </tr:column>
                                 <tr:column headerText ="URL">
-                                    <a id="applicationName"  href="#{urls.url}" > #{urls.url} </a>
+                                    <a id="applicationURL"  href="#{urls}" > #{urls} </a>
                                 </tr:column>
                             </tr:table>
                         </tr:panelFormLayout>
