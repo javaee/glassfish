@@ -24,6 +24,8 @@ configure() {
 
 	cd ${BASE_APACHE_HOME}/conf
 
+	../bin/apachectl -k stop ;
+
 	sed -i .bak`date "+%m%d%H%M"` \
 		-e '/^#*ProxyPass.*/d' \
 		-e '/^#*ProxyPreserveHost .*/d' \
@@ -41,7 +43,7 @@ EOF
 
 	$S1AS_HOME/bin/asadmin stop-domain
 
-	../bin/apachectl -k stop ; sleep 1 && ../bin/apachectl -k start && echo "apache up" || echo "failed to start apache"
+	 sleep 1 && ../bin/apachectl -k start && echo "apache up" || echo "failed to start apache"
 	cd -
 
 	$S1AS_HOME/bin/asadmin start-domain
@@ -50,4 +52,4 @@ EOF
 }
 
 configure
-#run
+run
