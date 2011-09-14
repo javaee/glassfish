@@ -43,67 +43,67 @@
                 <tr:inputText label="Application Name" value="#{applicationBean.appName}" readOnly="true" contentStyle="font-size=10px;font-weight: bold;"/>
             </div>
             <tr:spacer height="10px"/>
-            
-            <h:panelGroup id="applicationTabs">
-                    <div class="navObjectInfo">
-                        <div class="title headerPageTitle">General</div>
-                        <tr:panelFormLayout  id="applicationDetails">
-                            <tr:inputText label="Context Root" value="#{applicationBean.appName}" readOnly="true"/>
 
-                            <tr:inputText label="Status" value="Enabled" readOnly="true"/>
-                            <!--
-                            <f:facet name="footer">
-                                <tr:panelHorizontalLayout inlineStyle="height:50px;">
-                                    <tr:commandButton id="Enable" text="Enable"/>
-                                    <tr:commandButton text="Disable"/>
-                                </tr:panelHorizontalLayout>
-                            </f:facet>
-                            -->
-                            <tr:outputText value="URL(s) to launch the application : "/>
-                            <tr:table id="urls" var="urls" value="#{applicationBean.urls}">
-                                <tr:column headerText ="URL">
-                                    <a id="applicationURL"  href="#{urls}" > #{urls} </a>
-                                </tr:column>
-                            </tr:table>
-                        </tr:panelFormLayout>
-                    </div>
-                    <div class="navObjectInfo">
-                        <div class="title headerPageTitle">Environment(s)</div>
-                        <tr:table id="applicationInstances" var="cluster" value="#{applicationBean.instances}">
-                            <tr:column headerText="Environment">
-                            <a id="envName"  href="#{request.contextPath}/demo/envGeneral.jsf?appName=#{cluster}" > #{cluster} </a>
+            <h:panelGroup id="applicationTabs">
+                <div class="navObjectInfo">
+                    <div class="title headerPageTitle">General</div>
+                    <tr:panelFormLayout  id="applicationDetails">
+                        <tr:inputText label="Context Root" value="#{applicationBean.appName}" readOnly="true"/>
+
+                        <tr:inputText label="Status" value="Enabled" readOnly="true"/>
+                        <!--
+                        <f:facet name="footer">
+                            <tr:panelHorizontalLayout inlineStyle="height:50px;">
+                                <tr:commandButton id="Enable" text="Enable"/>
+                                <tr:commandButton text="Disable"/>
+                            </tr:panelHorizontalLayout>
+                        </f:facet>
+                        -->
+                        <tr:outputText value="URL(s) to launch the application : "/>
+                        <tr:table id="urls" var="urls" value="#{applicationBean.urls}">
+                            <tr:column headerText ="URL">
+                                <a id="applicationURL"  href="#{urls}" > #{urls} </a>
+                            </tr:column>
+                        </tr:table>
+                    </tr:panelFormLayout>
+                </div>
+                <div class="navObjectInfo">
+                    <div class="title headerPageTitle">Environment(s)</div>
+                    <tr:table id="applicationInstances" var="cluster" value="#{applicationBean.instances}">
+                        <tr:column headerText="Environment">
+                            <a id="envName"  href="#{request.contextPath}/demo/environmentDetail.jsf?appName=#{cluster}" > #{cluster} </a>
+                        </tr:column>
+                    </tr:table>
+                </div>
+                <div>
+                    <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
+                        <div class="title headerPageTitle">Services</div>
+                        <div class="subHeading">List of all services provisioned</div>
+                        <tr:table id="services" var="svs" value="#{applicationBean.services}">
+                            <tr:column headerText="Name">
+                                #{svs.serviceName}
+                            </tr:column>
+                            <tr:column headerText="Type">
+                                #{svs.serverType}
+                            </tr:column>
+                            <tr:column headerText="Scope">
+                                #{svs.SCOPE}
+                            </tr:column>
+                            <tr:column headerText="State">
+                                <tr:image source="#{svs.stateImage}" shortDesc="#{svs.STATE}"/>
                             </tr:column>
                         </tr:table>
                     </div>
-                    <div>
-                        <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
-                            <div class="title headerPageTitle">Services</div>
-                            <div class="subHeading">List of all services provisioned</div>
-                            <tr:table id="services" var="svs" value="#{applicationBean.services}">
-                                <tr:column headerText="Name">
-                                    #{svs.serviceName}
-                                </tr:column>
-                                <tr:column headerText="Type">
-                                    #{svs.serverType}
-                                </tr:column>
-                                <tr:column headerText="Scope">
-                                    #{svs.SCOPE}
-                                </tr:column>
-                                <tr:column headerText="State">
-                                    <tr:image source="#{svs.stateImage}" shortDesc="#{svs.STATE}"/>
-                                </tr:column>
-                            </tr:table>
-                        </div>
-<!--
-                        <div class="navObjectInfo">
-                            <div class="title headerPageTitle">Elasticity Settings</div>
-                            <tr:panelFormLayout  id="elasiticitySettings">
-                                <tr:inputNumberSpinbox label="Memory limit:" value="512" minimum="512" maximum="2048" stepSize="512" columns="4"/>
-                                <tr:inputNumberSpinbox label="Instances:" value="2" minimum="1" maximum="4"/>
-                            </tr:panelFormLayout>
-                        </div>
--->
-                    </div>
+                    <!--
+                                            <div class="navObjectInfo">
+                                                <div class="title headerPageTitle">Elasticity Settings</div>
+                                                <tr:panelFormLayout  id="elasiticitySettings">
+                                                    <tr:inputNumberSpinbox label="Memory limit:" value="512" minimum="512" maximum="2048" stepSize="512" columns="4"/>
+                                                    <tr:inputNumberSpinbox label="Instances:" value="2" minimum="1" maximum="4"/>
+                                                </tr:panelFormLayout>
+                                            </div>
+                    -->
+                </div>
             </h:panelGroup>
         </h:form>
     </ui:define>

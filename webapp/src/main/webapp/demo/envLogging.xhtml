@@ -16,61 +16,46 @@
     KIND, either express or implied.  See the License for the
     specific language governing permissions and limitations
     under the License.
-	   
+           
 -->
 
 
 <!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ps="http://admingui.glassfish.org/console"
-                xmlns:tr="http://myfaces.apache.org/trinidad"
-                xmlns:trh="http://myfaces.apache.org/trinidad/html"
-                template="/layout.xhtml">
-
-    <ui:define name="subtabs">
-        <ui:include src="/demo/environmentTabs.xhtml" />
-    </ui:define>
-
-    <ui:define name="content">
-        <tr:form>
-            <f:view>
-                <div>
-                    <br/><br/>
-                    <tr:panelHorizontalLayout halign="left" >
-                        <tr:outputLabel value="Environment Name: " for="nm"/>
-                        <tr:outputLabel id="nm" value="#{param['envName']}"  for="dummy"/>
-                        <tr:inputHidden value="#{param['envName']}"/>
-                        <br/>
-                    </tr:panelHorizontalLayout>
-                    <div class="navObjectInfo">
-                        <div class="title headerPageTitle">Logging Results</div>
-                        <div class="subHeading">View a server log file.</div>
-                        <tr:selectOneChoice label="Instance: " value="server">
-                            <f:selectItem itemLabel="server" itemValue="server"/>
-                        </tr:selectOneChoice>
-                        <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{loggingBean.previous}">
-                            <f:ajax render="@form" execute="@form"/>
-                        </tr:commandButton>
-                        <tr:commandButton id="nextButton" text="Next &gt;&gt;" action="#{loggingBean.next}">
-                            <f:ajax render="@form" execute="@form"/>
-                        </tr:commandButton>
-                        <tr:table id="logmsgs" var="logmsgs" value="#{loggingBean.logMessages}">
-                            <tr:column headerText="Timestamp">
-                                #{logmsgs.loggedDateTimeInMS}
-                            </tr:column>
-                            <tr:column headerText="Logger">
-                                #{logmsgs.loggerName}
-                            </tr:column>
-                            <tr:column headerText="Message">
-                                #{logmsgs.Message}
-                            </tr:column>
-                        </tr:table>
-                    </div>
-                </div>
-            </f:view>
-        </tr:form>
-    </ui:define>
-</ui:composition>
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ps="http://admingui.glassfish.org/console"
+             xmlns:tr="http://myfaces.apache.org/trinidad"
+             xmlns:trh="http://myfaces.apache.org/trinidad/html">
+    <div>
+        <br/><br/>
+        <tr:panelHorizontalLayout halign="left" >
+            Environment Name: #{param['envName']}
+        </tr:panelHorizontalLayout>
+        <div class="navObjectInfo">
+            <div class="title headerPageTitle">Logging Results</div>
+            <div class="subHeading">View a server log file.</div>
+            <tr:selectOneChoice label="Instance: " value="server">
+                <f:selectItem itemLabel="server" itemValue="server"/>
+            </tr:selectOneChoice>
+            <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{loggingBean.previous}">
+                <f:ajax render="@form" execute="@form"/>
+            </tr:commandButton>
+            <tr:commandButton id="nextButton" text="Next &gt;&gt;" action="#{loggingBean.next}">
+                <f:ajax render="@form" execute="@form"/>
+            </tr:commandButton>
+            <tr:table id="logmsgs" var="logmsgs" value="#{loggingBean.logMessages}">
+                <tr:column headerText="Timestamp">
+                    #{logmsgs.loggedDateTimeInMS}
+                </tr:column>
+                <tr:column headerText="Logger">
+                    #{logmsgs.loggerName}
+                </tr:column>
+                <tr:column headerText="Message">
+                    #{logmsgs.Message}
+                </tr:column>
+            </tr:table>
+        </div>
+    </div>
+</ui:fragment>

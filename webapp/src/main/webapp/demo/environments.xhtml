@@ -37,7 +37,7 @@
             <div class="subHeading">List of Environment</div>
             <tr:table id="envs" var="envs" value="#{environments.envsAndApps}">
                 <tr:column headerText="Environment Name">
-                    <a id="clusterName"  href="#{request.contextPath}/demo/envGeneral.jsf?envName=#{envs.clusterName}" > #{envs.clusterName} </a>
+                    <a id="clusterName"  href="#{request.contextPath}/demo/environmentDetail.jsf?envName=#{envs.clusterName}" > #{envs.clusterName} </a>
                 </tr:column>
                 <tr:column headerText="Application Name">
                     <!-- TODO display as list for more than 1 app -->
