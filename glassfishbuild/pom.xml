@@ -125,9 +125,9 @@
                 <version>2.0.1</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.enterprise</groupId>
+                <groupId>org.glassfish.hk2</groupId>
                 <artifactId>hk2-maven</artifactId>
-                <version>1.6.9</version>
+                <version>1.6.18</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
