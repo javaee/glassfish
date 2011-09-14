@@ -18,67 +18,58 @@ import javax.faces.context.FacesContext;
 @ViewScoped
 public class ListApplicationsBean {
     private Map appData;
-    transient private final List<Map> apps = new ArrayList<Map>();
+    private List<Map> apps = null;
+    private boolean modelUpdated = false;
 
-    public ListApplicationsBean() {
-//        applications = getApplications();
+    private void ensureModel() {
+        if (!modelUpdated) {
+            updateModel();
+            modelUpdated = true;
+        }
     }
-/**
-    public List<Application> getApplications() {
-        List<Application> apps = new ArrayList<Application>();
+
+    public List<Map> getApplications() {
+        ensureModel();
+        return apps;
+    }
+
+    private void updateModel() {
+        apps = new ArrayList();
+        Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+        List<String> deployingApps = (List) sessionMap.get("_deployingApps");
         String endPoint = "http://localhost:4848/management/domain/applications/list-applications";
         Map attrs = new HashMap();
         attrs.put("target", "domain");  //specify domain to get Paas deployed app.
-        appData = (Map)RestUtil.restRequest(endPoint, attrs, "GET", null, null, false, true).get("data");
-        Map<String, String> props = (Map)appData.get("properties");
-        for (String prop : props.keySet()) {
-            apps.add(new Application(prop, true, props.get(prop)));
-        }
-        return apps;
-    }
-**/
+        Map appData = (Map) RestUtil.restRequest(endPoint, attrs, "GET", null, null, false, true).get("data");
+        Map<String, String> props = (Map) appData.get("properties");
+        if (props != null) {
+            for (String appName : props.keySet()) {
+                Map app = new HashMap();
+                app.put("appName", appName);
+                app.put("notExist", false);
+                app.put("environment", getEnvironment(appName));
+                apps.add(app);
 
-    public List<Map> getApplications() {
-        synchronized (apps) {
-            if (apps.isEmpty()) {
-                Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
-                List<String> deployingApps = (List) sessionMap.get("_deployingApps");
-                String endPoint = "http://localhost:4848/management/domain/applications/list-applications";
-                Map attrs = new HashMap();
-                attrs.put("target", "domain");  //specify domain to get Paas deployed app.
-                Map appData = (Map) RestUtil.restRequest(endPoint, attrs, "GET", null, null, false, true).get("data");
-                Map<String, String> props = (Map) appData.get("properties");
-                if (props != null) {
-                    for (String appName : props.keySet()) {
-                        Map app = new HashMap();
-                        app.put("appName", appName);
-                        app.put("notExist", false);
-                        app.put("environment", getEnvironment(appName));
-                        apps.add(app);
-
-                        if (deployingApps != null && deployingApps.contains(appName)) {
-                            deployingApps.remove(appName);
-                        }
-                    }
-                }
-                if (deployingApps != null) {
-                    for (String one : deployingApps) {
-                        Map app = new HashMap();
-                        app.put("appName", one);
-                        app.put("notExist", true);
-                        apps.add(app);
-                    }
+                if (deployingApps != null && deployingApps.contains(appName)) {
+                    deployingApps.remove(appName);
                 }
             }
         }
-        return apps;
+        if (deployingApps != null) {
+            for (String one : deployingApps) {
+                Map app = new HashMap();
+                app.put("appName", one);
+                app.put("notExist", true);
+                apps.add(app);
+            }
+        }
+
     }
 
 
-    public String getEnvironment(String appName) {
-            List<String> targets = DeployUtil.getApplicationTarget(appName, "application-ref");
-            if (targets.size() > 0) return targets.get(0);
-            return "";
+    private String getEnvironment(String appName) {
+        List<String> targets = DeployUtil.getApplicationTarget(appName, "application-ref");
+        if (targets.size() > 0) return targets.get(0);
+        return "";
     }
-
 }
