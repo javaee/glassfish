@@ -55,40 +55,6 @@ import java.net.InetAddress;
 
 public class DeployUtil {
 
-    /* reload application for each target.  If the app is disabled for the target, it is an no-op.
-     * otherwise, the app is disabled and then enabled to force the reload.
-     */
-
-
-    static public boolean reloadApplication(String appName, List<String> targets){
-        try{
-            String decodedName = URLDecoder.decode(appName, "UTF-8");
-            List clusters =  TargetUtil.getClusters();
-            String clusterEndpoint = GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/";
-            String serverEndpoint = GuiUtil.getSessionValue("REST_URL")+"/servers/server/";
-            for(String targetName : targets){
-                String endpoint ;
-                if (clusters.contains(targetName)){
-                    endpoint = clusterEndpoint + targetName + "/application-ref/" + decodedName ;
-                }else{
-                    endpoint = serverEndpoint + targetName + "/application-ref/"  + decodedName ;
-                }
-                String status = (String) RestUtil.getAttributesMap(endpoint).get("enabled");
-                if ( Boolean.parseBoolean(status)){
-                    Map attrs = new HashMap();
-                    attrs.put("enabled", "false");
-                    RestUtil.restRequest(endpoint, attrs, "POST", null, null, false, true);
-                    attrs.put("enabled", "true");
-                    RestUtil.restRequest(endpoint, attrs, "POST", null, null, false, true);
-                }
-            }
-       }catch(Exception ex){
-            GuiUtil.handleError(ex.getMessage());
-            return false;
-       }
-        return true;
-    }
-
 
     //This method returns the list of targets (clusters and standalone instances) of any deployed application
     static public List getApplicationTarget(String appName, String ref){
