@@ -80,9 +80,16 @@ public class UploadBean {
 
                 //each Map is a Service that will be provisioned
                 metaData = (List<Map<String, Object>>)((Map) appData.get("extraProperties")).get("list");
+                for(Map oneService : metaData){
+                    oneService.put("serviceType", oneService.get("service-type"));   //in the table cell, if there is a 'dash' in the key, it won't show up.
+                    String templateId = (String) oneService.get("template-id");
+                    if (templateId != null){
+                        oneService.put("templateList", getTemplateList ((String) oneService.get("service-type")));
+                        oneService.put("templateId", templateId);
+                    }
+                }
 
                 System.out.println("metaData = " + metaData);
-
                 Map dpAttrs = new HashMap();
                 dpAttrs.put("archive" , tmpFile.getAbsolutePath());
                 dpAttrs.put("test", "test String");
@@ -169,40 +176,36 @@ public class UploadBean {
         this.metaData = nm;
     }
 
-    public String getDatabase() {
-        return database;
-    }
+    //For now, since backend only supports one Virtualization setup, we will just return the list if anyone exist.
+    //Later, probably need to pass in the virtualiztion type to this method.
+    private static List<String> getTemplateList(String type){
+        List<String> tList = new ArrayList();
+        try{
+            List<String> virts = RestUtil.getChildNameList(REST_URL+"/virtualizations");
+            for(String virtType : virts){
+                List<String> virtInstances = RestUtil.getChildNameList(REST_URL+"/virtualizations/" + virtType);
+                if ( (virtInstances != null ) && (virtInstances.size() > 0)){
+                    //get the templates for this V that is the same service type
+                    String templateEndpoint = REST_URL+"/virtualizations/" + virtType + "/" + virtInstances.get(0) + "/template";
+                    if (RestUtil.doesProxyExist(templateEndpoint )){
+                        Map<String, String> templateEndpoints = RestUtil.getChildMap(templateEndpoint);
+                        for(String oneT : templateEndpoints.keySet()){
+                            Map<String, String> tempIndexes = RestUtil.getChildMap(templateEndpoints.get(oneT) + "/template-index");
+                            for(String oneI : tempIndexes.keySet()){
+                                Map attrs = RestUtil.getAttributesMap(tempIndexes.get(oneI));
+                                if ("ServiceType".equals (attrs.get("type"))  &&  type.equals(attrs.get("value"))){
+                                    //finally found it
+                                    tList.add(oneT);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }catch(Exception ex){
 
-    public void setDatabase(String database) {
-        this.database = database;
-    }
-
-    public String getEeTemplate() {
-        return eeTemplate;
-    }
-
-    public void setEeTemplate(String eeTemplate) {
-        this.eeTemplate = eeTemplate;
-    }
-
-    public String getLoadBalancer() {
-        return loadBalancer;
-    }
-
-    public void setLoadBalancer(String loadBalancer) {
-        this.loadBalancer = loadBalancer;
-    }
-
-    public List<String> getEeTemplates() {
-        return eeTemplates;
-    }
-
-    public List<String> getDatabases() {
-        return databases;
-    }
-
-    public List<String> getLoadBalancers() {
-        return loadBalancers;
+        }
+        return tList;
     }
 
     public String databaseDropListener(DragDropEvent event) {
