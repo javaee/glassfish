@@ -36,6 +36,7 @@ public class UploadBean {
     private String appName;
     private String desc;
     private String contextRoot;
+    private List<Map<String, Object>> metaData;
 
     private String database;
     private String eeTemplate;
@@ -73,6 +74,13 @@ public class UploadBean {
                 System.out.println("getContentType=" + file.getContentType());
                 File tf = FileUtil.inputStreamToFile(file.getInputStream(), file.getFilename());
                 tmpFile = tf;
+                Map attrs = new HashMap();
+                attrs.put("archive", tmpFile.getAbsolutePath());
+                Map appData = (Map) RestUtil.restRequest(REST_URL + "/get-service-metadata", attrs, "GET", null, null, false, true).get("data");
+
+                //each Map is a Service that will be provisioned
+                metaData = (List<Map<String, Object>>)((Map) appData.get("extraProperties")).get("list");
+                System.out.println("metaData = " + metaData);
             }
         }catch(Exception ex){
             ex.printStackTrace();
@@ -112,7 +120,7 @@ public class UploadBean {
                 sessionMap.put("_deployingApps", deployingApps);
             }
             deployingApps.add(this.appName);
-            RestUtil.restRequest("http://localhost:4848/management/domain/applications/application", payload, "post", null, null, false, true);
+            RestUtil.restRequest(REST_URL + "/applications/application", payload, "post", null, null, false, true);
             return "/demo/overview";
         } catch (Exception ex) {
             if (deployingApps != null && deployingApps.contains(this.appName)){
@@ -143,6 +151,14 @@ public class UploadBean {
     }
     public void setContextRoot(String ctxRoot){
         this.contextRoot = ctxRoot;
+    }
+
+
+    public List getMetaData(){
+        return metaData;
+    }
+    public void setMetaData(List nm){
+        this.metaData = nm;
     }
 
     public String getDatabase() {
@@ -216,4 +232,6 @@ public class UploadBean {
 
         return null;
     }
+
+    static final String REST_URL="http://localhost:4848/management/domain";
 }

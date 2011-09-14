@@ -22,12 +22,12 @@ public class WizardBean {
     private int step = 0;
     private List<String> stepLabels = Collections.unmodifiableList(new ArrayList<String>(){{ 
         add("1. Upload Application");
-        //add("2. Configure Services");
-        add("2. Review and Deploy");
+        add("2. Configure Services");
+        add("3. Review and Deploy");
     }});
     private List<String> stepPages = Collections.unmodifiableList(new ArrayList<String>(){{ 
         add("/demo/wizard/upload.xhtml");
-        //add("/demo/wizard/template.xhtml");
+        add("/demo/wizard/configServices.xhtml");
         add("/demo/wizard/deploy.xhtml");
     }});
 
