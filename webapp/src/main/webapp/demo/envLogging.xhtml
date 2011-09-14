@@ -45,7 +45,7 @@
             <tr:commandButton id="nextButton" text="Next &gt;&gt;" action="#{loggingBean.next}">
                 <f:ajax render="@form" execute="@form"/>
             </tr:commandButton>
-            <tr:table id="logmsgs" var="logmsgs" value="#{loggingBean.logMessages}">
+            <tr:table id="logmsgs" var="logmsgs" value="#{loggingBean.logMessages}" inlineStyle="width: 100pc">
                 <tr:column headerText="Timestamp">
                     #{logmsgs.loggedDateTimeInMS}
                 </tr:column>
