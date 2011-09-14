@@ -30,6 +30,7 @@
                 template="/layout.xhtml">
 
     <ui:define name="content">
+        
         <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
             <div class="title headerPageTitle">Applications
                 <a id="add" href="#{request.contextPath}/demo/wizard.jsf">
@@ -37,23 +38,21 @@
                 </a>
             </div>
 
-            <div class="navObjectInfo">
-                <div class="subHeading">Deployed Applications</div>
-                <tr:table id="envs" var="app" value="#{listApplicationsBean.applications}">
-                    <tr:column headerText="Name">
-                        <tr:panelHorizontalLayout  halign="left">
-                            <tr:image id="progressBar" source="/images/progress.gif" shortDesc="Deploying Applicaiton .... " rendered="#{app.notExist}"/>
-                            <a id="applicationName"  href="#{request.contextPath}/demo/applicationGeneral.jsf?appName=#{app.appName}" > #{app.appName} </a>
-                        </tr:panelHorizontalLayout>
-                    </tr:column>
-                    <tr:column headerText="Environments">
-                        <a id="environmentName"  href="#{request.contextPath}/demo/envGeneral.jsf?envName=#{app.environment}" > #{app.environment} </a>
-                    </tr:column>
-                    <tr:column width="20px">
-                        <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="confirm('Application will be deleted.  Continue ? ');"/>
-                    </tr:column>
-                </tr:table>
-            </div>
+            <div class="subHeading">List of Applications </div>
+            <tr:table id="envs" var="app" value="#{listApplicationsBean.applications}">
+                <tr:column headerText="Name">
+                    <tr:panelHorizontalLayout  halign="left">
+                        <tr:image id="progressBar" source="/images/progress.gif" shortDesc="Deploying Applicaiton .... " rendered="#{app.notExist}"/>
+                        <a id="applicationName"  href="#{request.contextPath}/demo/applicationGeneral.jsf?appName=#{app.appName}" > #{app.appName} </a>
+                    </tr:panelHorizontalLayout>
+                </tr:column>
+                <tr:column headerText="Environments">
+                    <a id="environmentName"  href="#{request.contextPath}/demo/envGeneral.jsf?envName=#{app.environment}" > #{app.environment} </a>
+                </tr:column>
+                <tr:column width="20px">
+                    <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="confirm('Application will be deleted.  Continue ? ');"/>
+                </tr:column>
+            </tr:table>
         </div>
 
     </ui:define>
