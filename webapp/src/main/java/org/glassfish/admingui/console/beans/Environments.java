@@ -36,6 +36,7 @@ public class Environments implements Serializable {
         String prefix = REST_URL+"/clusters/cluster/" ;
         try{
             List<String> clusterList = new ArrayList(RestUtil.getChildMap(prefix).keySet());
+            //System.out.println("====== getEnvsAndApps --- " + clusterList);
             if ( (clusterList != null) && (! clusterList.isEmpty())){
                 //For each cluster, consider that as Environment only if it has chlid element <virtual-machine-config>
                 for(String oneCluster : clusterList){
@@ -46,6 +47,7 @@ public class Environments implements Serializable {
                     //assume that if the cluster has VMC, thats an environment
                     if (RestUtil.doesProxyExist( prefix + oneCluster + "/virtual-machine-config/" + instanceList.get(0))){
                         List<String> apps = RestUtil.getChildNameList(prefix+oneCluster+"/application-ref");
+                        System.out.println("======== getEnvsAndApps : " + apps );
                         Map env = new HashMap();
                         env.put("clusterName", oneCluster);
                         env.put("instanceCount",  instanceList.size());
@@ -58,27 +60,31 @@ public class Environments implements Serializable {
         }catch(Exception ex){
             ex.printStackTrace();
         }
-        System.out.println("================= getEnvs() return envList=" + envList);
+        //System.out.println("================= getEnvs() return envList=" + envList);
         return envList;
     }
 
 
     public List<Map> getAppsForEnv(String envName) {
+        //System.out.println("========= in getAppsForEnv");
         synchronized (appsForEnv) {
             try {
                 if (appsForEnv.isEmpty()) {
                     List<String> appsNameList = RestUtil.getChildNameList(REST_URL + "/clusters/cluster/" + envName + "/application-ref");
+                    System.out.println("======== appsNameList = " + appsNameList);
                     for (String oneApp : appsNameList) {
                         String contextRoot = (String) RestUtil.getAttributesMap(REST_URL + "/applications/application/" + oneApp).get("contextRoot");
                         Map aMap = new HashMap();
                         aMap.put("appName", oneApp);
                         aMap.put("contextRoot", contextRoot);
                         appsForEnv.add(aMap);
+                        System.out.println("======== add " +  oneApp);
                     }
                 }
             } catch (Exception ex) {
             }
         }
+        //System.out.println("================================== returns " + appsForEnv);
         return appsForEnv;
     }
 
