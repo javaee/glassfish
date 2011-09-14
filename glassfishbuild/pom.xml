@@ -51,7 +51,7 @@
 
     <groupId>org.glassfish.build</groupId>
     <artifactId>parent-build-pom</artifactId>
-    <version>3.2.2-SNAPSHOT</version>
+    <version>3.2.2</version>
     <packaging>pom</packaging>
     <name>GlassFish Build Utilities</name>
 
@@ -87,9 +87,9 @@
         </mailingList>
     </mailingLists>
     <scm>
-        <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/glassfishbuild</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/glassfishbuild</developerConnection>
-        <url>http://java.net/projects/glassfish/sources/svn/show</url>
+        <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/tags/parent-build-pom-3.2.2</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/tags/parent-build-pom-3.2.2</developerConnection>
+        <url>http://java.net/projects/glassfish/sources/svn/show/tags/parent-build-pom-3.2.2</url>
     </scm>
 
     <modules>
