@@ -57,7 +57,7 @@ public class DeployUtil {
 
 
     //This method returns the list of targets (clusters and standalone instances) of any deployed application
-    static public List getApplicationTarget(String appName, String ref){
+    public static List getApplicationTarget(String appName, String ref){
         List targets = new ArrayList();
         try{
             //check if any cluster has this application-ref
@@ -69,7 +69,7 @@ public class DeployUtil {
                 }
             }
             List<String> servers = TargetUtil.getStandaloneInstances();
-//            servers.add("server");
+            servers.add("server");
             for(String oneServer:  servers){
                 List appRefs = new ArrayList(RestUtil.getChildMap(GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + oneServer + "/" + ref).keySet());
                 if (appRefs.contains(appName)){
@@ -86,6 +86,37 @@ public class DeployUtil {
         return targets;
     }
     
+    //This method returns the list of targets (clusters and standalone instances) of any deployed application
+    public static List getApplicationEnvironments(String appName){
+        String prefix = GuiUtil.getSessionValue("REST_URL") + "/clusters/cluster/" ;
+
+        List targets = new ArrayList();
+        try{
+            //check if any cluster has this application-ref
+            List<String> clusters = TargetUtil.getClusters();
+            for(String oneCluster:  clusters){
+                List appRefs = new ArrayList(RestUtil.getChildMap(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/"+oneCluster+"/application-ref").keySet());
+                if (appRefs.contains(appName)){
+                    List<String> instanceList = RestUtil.getChildNameList(prefix+oneCluster+"/server-ref");
+                    if (instanceList == null || instanceList.isEmpty()){
+                        continue;
+                    }
+                    //assume that if the cluster has VMC, thats an environment
+                    if (RestUtil.doesProxyExist( prefix + oneCluster + "/virtual-machine-config/" + instanceList.get(0))){
+                        targets.add(oneCluster);
+                    }
+                }
+            }
+        }catch(Exception ex){
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.appTarget") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
+        }
+        return targets;
+    }
+
+
     static public List<Map> getRefEndpoints(String name, String ref){
         List endpoints = new ArrayList();
         try{

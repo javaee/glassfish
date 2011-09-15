@@ -68,8 +68,8 @@ public class ListApplicationsBean {
 
 
     private String getEnvironment(String appName) {
-        List<String> targets = DeployUtil.getApplicationTarget(appName, "application-ref");
-        if (targets.size() > 0) return targets.get(0);
+        List<String> envList = DeployUtil.getApplicationEnvironments(appName);
+        if (envList.size() > 0) return envList.get(0);
         return "";
     }
 }
