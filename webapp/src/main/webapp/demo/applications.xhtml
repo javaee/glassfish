@@ -47,7 +47,7 @@
                     </tr:panelHorizontalLayout>
                 </tr:column>
                 <tr:column headerText="Environment">
-                    <a id="environmentName"  href="#{request.contextPath}/demo/envGeneral.jsf?envName=#{app.environment}" > #{app.environment} </a>
+                    <a id="environmentName"  href="#{request.contextPath}/demo/environmentDetail.jsf?envName=#{app.environment}" > #{app.environment} </a>
                 </tr:column>
                 <tr:column width="20px">
                     <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="confirm('Application will be deleted.  Continue ? ');"/>
