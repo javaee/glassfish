@@ -42,7 +42,7 @@
             <tr:table id="envs" var="app" value="#{listApplicationsBean.applications}">
                 <tr:column headerText="Name">
                     <tr:panelHorizontalLayout  halign="left">
-                        <tr:image id="progressBar" source="/images/progress.gif" shortDesc="Deploying Applicaiton .... " rendered="#{app.notExist}"/>
+                        <tr:image id="progressBar" source="/images/progress.gif" shortDesc="Deploying Application .... " rendered="#{app.notExist}"/>
                         <a id="applicationName"  href="#{request.contextPath}/demo/applicationGeneral.jsf?appName=#{app.appName}" > #{app.appName} </a>
                     </tr:panelHorizontalLayout>
                 </tr:column>
