@@ -64,13 +64,12 @@ public class DeployUtil {
             List<String> clusters = TargetUtil.getClusters();
             for(String oneCluster:  clusters){
                 List appRefs = new ArrayList(RestUtil.getChildMap(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/"+oneCluster+"/"+ref).keySet());
-
                 if (appRefs.contains(appName)){
                     targets.add(oneCluster);
                 }
             }
             List<String> servers = TargetUtil.getStandaloneInstances();
-            servers.add("server");
+//            servers.add("server");
             for(String oneServer:  servers){
                 List appRefs = new ArrayList(RestUtil.getChildMap(GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + oneServer + "/" + ref).keySet());
                 if (appRefs.contains(appName)){
