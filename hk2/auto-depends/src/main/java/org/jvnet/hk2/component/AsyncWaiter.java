@@ -46,6 +46,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.glassfish.hk2.AsyncPostConstruct;
 
@@ -60,6 +62,9 @@ import org.glassfish.hk2.AsyncPostConstruct;
  */
 public class AsyncWaiter {
 
+    private static Logger logger = Logger.getLogger(AsyncWaiter.class.getName());
+    private static Level LEVEL = Level.FINE;
+    
     private Collection<AsyncPostConstruct> watches;
     
     private AsyncPostConstruct workingOn;
@@ -83,7 +88,12 @@ public class AsyncWaiter {
                 if (null == watches) {
                     watches = new ArrayList<AsyncPostConstruct>();
                 }
-                watches.add(new AsyncInhabitant(i));
+                AsyncInhabitant watch = new AsyncInhabitant(i);
+                logger.log(LEVEL, "Adding watch on {0}", watch);
+    
+                logger.log(LEVEL, " watch done = {0}", watch.isDone());
+                
+                watches.add(watch);
             }
         }
     }
@@ -96,7 +106,9 @@ public class AsyncWaiter {
             if (null == watches) {
                 watches = new ArrayList<AsyncPostConstruct>();
             }
-            watches.add(new AsyncFuture(f));
+            AsyncFuture watch = new AsyncFuture(f);
+            logger.log(LEVEL, "Adding watch on {0}", watch);
+            watches.add(watch);
         }
     }
     
@@ -118,9 +130,15 @@ public class AsyncWaiter {
     
     /**
      * Wait's for all inhabitants being watched to be done, giving each up
-     * to timeout/unit's to be done before giving up throwing a {@link TimeoutException}.
+     * to timeout/unit's to be done. If there are any {@link TimeoutException}s
+     * the result will be false.
      */
-    public synchronized void waitForDone(long timeout, TimeUnit unit) throws ExecutionException, TimeoutException, InterruptedException {
+    public boolean waitForDone(long timeout, TimeUnit unit) throws ExecutionException, TimeoutException, InterruptedException {
+        long start = System.currentTimeMillis();
+        logger.log(LEVEL, "entering; watches = {0}", (null == watches ? -1 : watches.size()));
+        
+        boolean done = true;
+        
         if (null != watches) {
             Iterator<AsyncPostConstruct> iter = watches.iterator();
             while (iter.hasNext()) {
@@ -128,12 +146,19 @@ public class AsyncWaiter {
                 if (workingOn.waitForDone(timeout, unit)) {
                     iter.remove();
                 } else {
-                    throw new TimeoutException("timeout waiting for " + workingOn);
+                    logger.log(LEVEL, "gave up waiting on {0}", workingOn);
+                    done = false;
                 }
             }
         }
         
         workingOn = null;
+
+        logger.log(LEVEL, "exiting - {0} ms", System.currentTimeMillis()-start);
+        logger.log(LEVEL, " watches = {0}", (null == watches ? -1 : watches.size()));
+        logger.log(LEVEL, " done is {0}", done);
+        
+        return done;
     }
     
     public synchronized int getWatches() {
@@ -144,21 +169,22 @@ public class AsyncWaiter {
      * A non-blocking call that returns true when we are done waiting.
      */
     public synchronized boolean isDone() {
-        if (null == watches) {
-            return true;
-        }
-        
-        Iterator<AsyncPostConstruct> iter = watches.iterator();
-        while (iter.hasNext()) {
-            workingOn = iter.next();
-            if (workingOn.isDone()) {
-                iter.remove();
+        boolean done = true;
+        if (null != watches) {
+            Iterator<AsyncPostConstruct> iter = watches.iterator();
+            while (iter.hasNext()) {
+                workingOn = iter.next();
+                if (workingOn.isDone()) {
+                    iter.remove();
+                }
             }
+    
+            workingOn = null;
+            
+            done = watches.isEmpty();
         }
-
-        workingOn = null;
         
-        return watches.isEmpty();
+        return done;
     }
     
     /**

@@ -51,7 +51,7 @@ public class AsyncFakeService1 implements AsyncPostConstruct {
 
     public long start;
 
-    public static Long waitFor;
+    public static long waitFor = 0;
     public static boolean waited;
     
     @Override
@@ -62,24 +62,31 @@ public class AsyncFakeService1 implements AsyncPostConstruct {
     @Override
     public boolean isDone() {
         long now = System.currentTimeMillis();
-        boolean b = (now - start) >= AsyncFakeService1.waitFor;
-        if (b) {
-            System.out.println(getClass().getSimpleName() + " is done already");
-        }
+        boolean b = (now - start) >= waitFor;
+//        if (b) {
+//            System.out.println(getClass().getSimpleName() + " is done already");
+//        }
         return b;
     }
 
     @Override
     public void waitForDone() {
         long now = System.currentTimeMillis();
-        long waitTime = (now - start) - AsyncFakeService1.waitFor;
+        long waitTime = (now - start) + waitFor;
         if (waitTime > 0) {
-            try {
-                Thread.sleep(waitTime);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            if (false) {
+                try {
+                    Thread.sleep(waitTime);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                // simulate done
+                waitFor = 0L;
             }
         }
+
+        System.out.println("waited for " + (System.currentTimeMillis() - now));
     }
 
     @Override
@@ -87,11 +94,25 @@ public class AsyncFakeService1 implements AsyncPostConstruct {
         AsyncFakeService1.waited = true;
         
         long now = System.currentTimeMillis();
-        long waitTime = (now - start) - AsyncFakeService1.waitFor;
-        if (waitTime > unit.toMillis(timeout)) {
-            return false;
+        long waitTime = (now - start) + waitFor;
+//        System.out.println("waiting for " + waitTime + "; now = " + now + "; start = " + start + "; wait= " + waitFor);
+        waitTime = Math.max(waitTime, unit.toMillis(timeout));
+        if (waitTime > 0) {
+            if (false) {
+                try {
+                    Thread.sleep(waitTime);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                // simulate done
+                waitFor = 0L;
+            }
         }
-        return true;
+
+//        System.out.println("waited for " + (System.currentTimeMillis() - now));
+
+        return isDone();
     }
     
 }

@@ -51,7 +51,7 @@ public class AsyncFakeService2 implements AsyncPostConstruct {
 
     public long start;
 
-    public static Long waitFor;
+    public static long waitFor;
     public static boolean waited;
     
     @Override
@@ -62,17 +62,17 @@ public class AsyncFakeService2 implements AsyncPostConstruct {
     @Override
     public boolean isDone() {
         long now = System.currentTimeMillis();
-        boolean b = (now - start) >= AsyncFakeService1.waitFor;
-        if (b) {
-            System.out.println(getClass().getSimpleName() + " is done already");
-        }
+        boolean b = (now - start) >= waitFor;
+//        if (b) {
+//            System.out.println(getClass().getSimpleName() + " is done already");
+//        }
         return b;
     }
 
     @Override
     public void waitForDone() {
         long now = System.currentTimeMillis();
-        long waitTime = (now - start) - AsyncFakeService2.waitFor;
+        long waitTime = (now - start) + waitFor;
         if (waitTime > 0) {
             try {
                 Thread.sleep(waitTime);
@@ -87,10 +87,12 @@ public class AsyncFakeService2 implements AsyncPostConstruct {
         AsyncFakeService2.waited = true;
         
         long now = System.currentTimeMillis();
-        long waitTime = (now - start) - AsyncFakeService2.waitFor;
-        if (waitTime > unit.toMillis(timeout)) {
+        long waitTime = (now - start) + waitFor;
+        waitTime = Math.max(waitTime, unit.toMillis(timeout));
+        if (waitTime > 0) {
             return false;
         }
+        
         return true;
     }
     
