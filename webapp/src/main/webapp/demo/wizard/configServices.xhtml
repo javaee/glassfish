@@ -30,11 +30,11 @@
 
     This is services that will be provisioned for the uploaded application.  You can take all the defaults or customize it.
 
-    <tr:panelBox text="RDBMS - #{uploadBean.database}"
+    <tr:panelBox text="RDBMS - #{uploadBean.databaseMetaData['name']}"
          background="light"
          inlineStyle="width: 500px;"
          id="databaseDetails"
-         rendered="#{uploadBean.database != null}">
+         rendered="#{uploadBean.databaseMetaData != null}">
             <tr:selectOneListbox value="#{uploadBean.database}" inlineStyle="display: inline-block;"
                                  contentStyle="width: 187px;" size="6">
                 <f:selectItems value="#{uploadBean.databaseSelectItems}" />
@@ -47,15 +47,15 @@
                     #{char}
                 </tr:column>
                 <tr:column>
-                    #{uploadBean.databaseCharacteristics[char]}
+                    #{uploadBean.databaseMetaData['characteristics'][char]}
                 </tr:column>
             </tr:table>
     </tr:panelBox>
-    <tr:panelBox text="JavaEE - #{uploadBean.eeTemplate}"
+    <tr:panelBox text="JavaEE - #{uploadBean.eeTemplateMetaData['name']}"
          background="light"
          inlineStyle="width: 500px;"
          id="eeTemplateDetails"
-         rendered="#{uploadBean.eeTemplate != null}">
+         rendered="#{uploadBean.eeTemplateMetaData != null}">
             <tr:selectOneListbox value="#{uploadBean.eeTemplate}" inlineStyle="display: inline-block;"
                                  contentStyle="width: 187px;" size="6">
                 <f:selectItems value="#{uploadBean.eeTemplateSelectItems}" />
@@ -70,7 +70,7 @@
                         #{char}
                     </tr:column>
                     <tr:column>
-                        #{uploadBean.eeTemplateCharacteristics[char]}
+                        #{uploadBean.eeTemplateMetaData['characteristics'][char]}
                     </tr:column>
                 </tr:table>
                 <tr:panelFormLayout inlineStyle="">
@@ -94,11 +94,11 @@
                 </tr:panelFormLayout>
             </div>
     </tr:panelBox>
-    <tr:panelBox text="Load Balancer - #{uploadBean.loadBalancer}"
+    <tr:panelBox text="Load Balancer - #{uploadBean.loadBalancerMetaData['name']}"
          background="light"
          inlineStyle="width: 500px;"
          id="lbDetails"
-         rendered="#{uploadBean.loadBalancer != null}">
+         rendered="#{uploadBean.loadBalancerMetaData != null}">
             <tr:selectOneListbox value="#{uploadBean.loadBalancer}" inlineStyle="display: inline-block;"
                                  contentStyle="width: 187px;" size="6">
                 <f:selectItems value="#{uploadBean.loadBalancerSelectItems}" />
@@ -111,7 +111,7 @@
                     #{char}
                 </tr:column>
                 <tr:column>
-                    #{uploadBean.loadBalancerCharacteristics[char]}
+                    #{uploadBean.loadBalancerMetaData['characteristics'][char]}
                 </tr:column>
             </tr:table>
     </tr:panelBox>

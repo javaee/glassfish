@@ -84,41 +84,26 @@ public class UploadBean {
 
             List<SelectItem> selectItems = new ArrayList();
             String templateId = (String) oneService.get("template-id");
-            if (true || templateId != null){ // FIX-ME: conditional?
-                List<String> templateList = getTemplateList(serviceType);
-                oneService.put("templateList", templateList);
-                for (String template : templateList) {
-                    selectItems.add(new SelectItem(template));
-                }
+            List<String> templateList = getTemplateList(serviceType);
+            oneService.put("templateList", templateList);
+            for (String template : templateList) {
+                selectItems.add(new SelectItem(template));
             }
             if (CommandUtil.SERVICE_TYPE_RDMBS.equals(serviceType)) {
-                database = serviceName;
-                //databases = templateList;
+                database = templateId;
+                databases = templateList;
                 databaseSelectItems = selectItems;
                 databaseMetaData = oneService;
             } else if (CommandUtil.SERVICE_TYPE_JAVAEE.equals(serviceType)) {
-                eeTemplate = serviceName;
-                //eeTemplates = templateList;
+                eeTemplate = templateId;
+                eeTemplates = templateList;
                 eeTemplateSelectItems = selectItems;
                 eeTemplateMetaData = oneService;
             } else if (CommandUtil.SERVICE_TYPE_LB.equals(serviceType)) {
-                loadBalancer = serviceName;
-                //loadBalancers = templateList;
+                loadBalancer = templateId;
+                loadBalancers = templateList;
                 loadBalancerSelectItems = selectItems;
                 loadBalancerMetaData = oneService;
-            }
-        }
-    }
-
-    void processMetaDataTable() {
-        for(Map oneService : metaData){
-            String serviceType = (String) oneService.get("service-type");
-
-            oneService.put("serviceType", serviceType);   //in the table cell, if there is a 'dash' in the key, it won't show up.
-            String templateId = (String) oneService.get("template-id");
-            if (templateId != null){
-                oneService.put("templateList", getTemplateList ((String) oneService.get("service-type")));
-                oneService.put("templateId", templateId);
             }
         }
     }
@@ -302,6 +287,7 @@ public class UploadBean {
 
     public void setDatabase(String database) {
         this.database = database;
+        databaseMetaData.put("template-id", database);
     }
 
     public String getEeTemplate() {
@@ -310,6 +296,7 @@ public class UploadBean {
 
     public void setEeTemplate(String eeTemplate) {
         this.eeTemplate = eeTemplate;
+        eeTemplateMetaData.put("template-id", eeTemplate);
     }
 
     public String getLoadBalancer() {
@@ -318,17 +305,19 @@ public class UploadBean {
 
     public void setLoadBalancer(String loadBalancer) {
         this.loadBalancer = loadBalancer;
+        loadBalancerMetaData.put("template-id", loadBalancer);
     }
 
     public List<SelectItem> getDatabaseSelectItems() {
         return databaseSelectItems;
     }
 
-    public Map getDatabaseCharacteristics() {
-        return (Map)databaseMetaData.get("characteristics");
+    public Map getDatabaseMetaData() {
+        return databaseMetaData;
     }
 
-    private List mapKeySetToList(Map map) {
+    private List mapKeySetToList(Map serviceMetaData) {
+        Map map = (Map)serviceMetaData.get("characteristics");
         List ret = new ArrayList();
         for (Object key : map.keySet()) {
             ret.add(key);
@@ -336,19 +325,19 @@ public class UploadBean {
         return ret;
     }
     public List getDatabaseCharacteristicKeys() {
-        return mapKeySetToList(getDatabaseCharacteristics());
+        return mapKeySetToList(databaseMetaData);
     }
 
     public List<SelectItem> getEeTemplateSelectItems() {
         return eeTemplateSelectItems;
     }
 
-    public Map getEeTemplateCharacteristics() {
-        return (Map)eeTemplateMetaData.get("characteristics");
+    public Map getEeTemplateMetaData() {
+        return eeTemplateMetaData;
     }
 
     public List getEeTemplateCharacteristicKeys() {
-        return mapKeySetToList(getEeTemplateCharacteristics());
+        return mapKeySetToList(eeTemplateMetaData);
     }
 
     public String getEeTemplateMinMaxInstances() {
@@ -369,12 +358,12 @@ public class UploadBean {
         return loadBalancerSelectItems;
     }
 
-    public Map getLoadBalancerCharacteristics() {
-        return (Map)loadBalancerMetaData.get("characteristics");
+    public Map getLoadBalancerMetaData() {
+        return loadBalancerMetaData;
     }
 
     public List getLoadBalancerCharacteristicKeys() {
-        return mapKeySetToList(getLoadBalancerCharacteristics());
+        return mapKeySetToList(loadBalancerMetaData);
     }
 
     static final String REST_URL="http://localhost:4848/management/domain";
