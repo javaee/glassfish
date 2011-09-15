@@ -16,9 +16,13 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
+import javax.faces.model.SelectItem;
+
+import com.sun.faces.taglib.jsf_core.SelectItemTag;
 import org.apache.myfaces.trinidad.model.UploadedFile;
 import org.glassfish.admingui.console.event.DragDropEvent;
 import org.glassfish.admingui.console.rest.RestUtil;
+import org.glassfish.admingui.console.util.CommandUtil;
 import org.glassfish.admingui.console.util.FileUtil;
 import org.glassfish.admingui.console.util.GuiUtil;
 import org.glassfish.admingui.console.util.TargetUtil;
@@ -60,6 +64,65 @@ public class UploadBean {
         add("baz");
     }};
 
+    private List<SelectItem> databaseSelectItems;
+    private List<SelectItem> eeTemplateSelectItems;
+    private List<SelectItem> loadBalancerSelectItems;
+
+    private Map databaseMetaData;
+    private Map eeTemplateMetaData;
+    private Map loadBalancerMetaData;
+
+    /*{
+        metaData = CommandUtil.getPreSelectedServices("D:/Projects/console.next/svn/main/appserver/tests/paas/basic-db/target/basic_db_paas_sample.war");
+        processMetaData();
+    }*/
+
+    void processMetaData() {
+        for(Map oneService : metaData){
+            String serviceType = (String) oneService.get("service-type");
+            String serviceName = (String) oneService.get("name");
+
+            List<SelectItem> selectItems = new ArrayList();
+            String templateId = (String) oneService.get("template-id");
+            if (true || templateId != null){ // FIX-ME: conditional?
+                List<String> templateList = getTemplateList(serviceType);
+                oneService.put("templateList", templateList);
+                for (String template : templateList) {
+                    selectItems.add(new SelectItem(template));
+                }
+            }
+            if (CommandUtil.SERVICE_TYPE_RDMBS.equals(serviceType)) {
+                database = serviceName;
+                //databases = templateList;
+                databaseSelectItems = selectItems;
+                databaseMetaData = oneService;
+            } else if (CommandUtil.SERVICE_TYPE_JAVAEE.equals(serviceType)) {
+                eeTemplate = serviceName;
+                //eeTemplates = templateList;
+                eeTemplateSelectItems = selectItems;
+                eeTemplateMetaData = oneService;
+            } else if (CommandUtil.SERVICE_TYPE_LB.equals(serviceType)) {
+                loadBalancer = serviceName;
+                //loadBalancers = templateList;
+                loadBalancerSelectItems = selectItems;
+                loadBalancerMetaData = oneService;
+            }
+        }
+    }
+
+    void processMetaDataTable() {
+        for(Map oneService : metaData){
+            String serviceType = (String) oneService.get("service-type");
+
+            oneService.put("serviceType", serviceType);   //in the table cell, if there is a 'dash' in the key, it won't show up.
+            String templateId = (String) oneService.get("template-id");
+            if (templateId != null){
+                oneService.put("templateList", getTemplateList ((String) oneService.get("service-type")));
+                oneService.put("templateId", templateId);
+            }
+        }
+    }
+
     public void fileUploaded(ValueChangeEvent event) {
         System.out.println("------ in filUploaded");
         UploadedFile file = (UploadedFile) event.getNewValue();
@@ -72,22 +135,11 @@ public class UploadBean {
                 System.out.println("getFilename=" + file.getFilename());
                 System.out.println("getLength=" + file.getLength());
                 System.out.println("getContentType=" + file.getContentType());
-                File tf = FileUtil.inputStreamToFile(file.getInputStream(), file.getFilename());
-                tmpFile = tf;
-                Map attrs = new HashMap();
-                attrs.put("archive", tmpFile.getAbsolutePath());
-                Map appData = (Map) RestUtil.restRequest(REST_URL + "/applications/_get-service-metadata", attrs, "GET", null, null, false, true).get("data");
+                tmpFile = FileUtil.inputStreamToFile(file.getInputStream(), file.getFilename());
 
                 //each Map is a Service that will be provisioned
-                metaData = (List<Map<String, Object>>)((Map) appData.get("extraProperties")).get("list");
-                for(Map oneService : metaData){
-                    oneService.put("serviceType", oneService.get("service-type"));   //in the table cell, if there is a 'dash' in the key, it won't show up.
-                    String templateId = (String) oneService.get("template-id");
-                    if (templateId != null){
-                        oneService.put("templateList", getTemplateList ((String) oneService.get("service-type")));
-                        oneService.put("templateId", templateId);
-                    }
-                }
+                metaData =  CommandUtil.getPreSelectedServices(tmpFile.getAbsolutePath());
+                processMetaData();
 
                 System.out.println("metaData = " + metaData);
                 Map dpAttrs = new HashMap();
@@ -242,6 +294,87 @@ public class UploadBean {
         Collections.sort(eeTemplates);
 
         return null;
+    }
+
+    public String getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(String database) {
+        this.database = database;
+    }
+
+    public String getEeTemplate() {
+        return eeTemplate;
+    }
+
+    public void setEeTemplate(String eeTemplate) {
+        this.eeTemplate = eeTemplate;
+    }
+
+    public String getLoadBalancer() {
+        return loadBalancer;
+    }
+
+    public void setLoadBalancer(String loadBalancer) {
+        this.loadBalancer = loadBalancer;
+    }
+
+    public List<SelectItem> getDatabaseSelectItems() {
+        return databaseSelectItems;
+    }
+
+    public Map getDatabaseCharacteristics() {
+        return (Map)databaseMetaData.get("characteristics");
+    }
+
+    private List mapKeySetToList(Map map) {
+        List ret = new ArrayList();
+        for (Object key : map.keySet()) {
+            ret.add(key);
+        }
+        return ret;
+    }
+    public List getDatabaseCharacteristicKeys() {
+        return mapKeySetToList(getDatabaseCharacteristics());
+    }
+
+    public List<SelectItem> getEeTemplateSelectItems() {
+        return eeTemplateSelectItems;
+    }
+
+    public Map getEeTemplateCharacteristics() {
+        return (Map)eeTemplateMetaData.get("characteristics");
+    }
+
+    public List getEeTemplateCharacteristicKeys() {
+        return mapKeySetToList(getEeTemplateCharacteristics());
+    }
+
+    public String getEeTemplateMinMaxInstances() {
+        Map config = (Map)eeTemplateMetaData.get("configurations");
+        String min = (String) config.get("min.clustersize");
+        String max = (String) config.get("max.clustersize");
+        return min + " - " + max;
+    }
+
+    public void setEeTemplateMinMaxInstances(String minMaxInstances) {
+        String minmax[] = minMaxInstances.split("-");
+        Map config = (Map)eeTemplateMetaData.get("configurations");
+        config.put("min.clustersize", minmax[0].trim());
+        config.put("max.clustersize", minmax[1].trim());
+    }
+
+    public List<SelectItem> getLoadBalancerSelectItems() {
+        return loadBalancerSelectItems;
+    }
+
+    public Map getLoadBalancerCharacteristics() {
+        return (Map)loadBalancerMetaData.get("characteristics");
+    }
+
+    public List getLoadBalancerCharacteristicKeys() {
+        return mapKeySetToList(getLoadBalancerCharacteristics());
     }
 
     static final String REST_URL="http://localhost:4848/management/domain";

@@ -14,10 +14,11 @@ import org.glassfish.admingui.console.rest.RestUtil;
  * @author anilam
  */
 public class CommandUtil {
-    public static String SERVICE_TYPE_RDMBS = "Datebase";
+    public static String SERVICE_TYPE_RDMBS = "Database";
     public static final String SERVICE_TYPE_JAVAEE = "JavaEE";
-    private static final String SERVICE_TYPE_LB = "LB";
+    public static final String SERVICE_TYPE_LB = "LB";
 
+    static final String REST_URL="http://localhost:4848/management/domain";
 
     /**
      *	<p> This method returns the list of Services. </p>
@@ -93,44 +94,52 @@ public class CommandUtil {
     }
     
 
-     /**
+    /**
      *	<p> This method returns the list of of Services that is pre-selected by Orchestrator.  It is indexed by the serviceType.
      *  If a particular serviceType doesn't exist, it means the application doesn't require such service.  Service Configuration
      *  page in deployment wizard will not show that section.
      *
-     *	@param	String  filePath  This is the absolutely file path of the uploaded application.
+     *	@param	filePath  This is the absolute file path of the uploaded application.
      * 
-     *	@return	<code>List<Map<String, Map>></code>  Returns the list of Map of ServiceDescriptor.    It is indexed by the serviceType. 
-     *           The Map is the properties of this service that should be shown to the user when that service is selected.  It is guaranteed
-     *           that the templateName of the pre-selected service will be one of the member in the list returned by listTemplates() of the same type.
-     *
-     */
-    public static List<Map<String, Map>> getPreSelectedServices(String filePath){
-        List slist = new ArrayList();
-        //Need to call backend get-service-metadata API.  For now, return dummy data.
+     *	@return	raw meta data as returned by web service, e.g.
+     *	<pre>
+     *	{
+     *    characteristics = {service-type = LB},
+     *    init-type = lazy,
+     *    name = basic_db_paas_sample-lb,
+     *    service-type = LB,
+     *  },
+     *  {
+     *    characteristics = {
+     *      os-name = Linux,
+     *      service-type = JavaEE,
+     *    },
+     *    configurations = {
+     *      max.clustersize = 4,
+     *      min.clustersize = 2
+     *    },
+     *    init-type = lazy,
+     *    name = basic-db,
+     *    service-type = JavaEE,
+     *  },
+     *  {
+     *    characteristics = {
+     *      os-name = 	Windows XP,
+     *      service-type = Database,
+     *    },
+     *    init-type = lazy,
+     *    name = default-derby-db-service,
+     *    service-type = Database,
+     *  }
+     *	</pre>
+    */
+    public static List<Map<String, Object>> getPreSelectedServices(String filePath) {
+        Map attrs = new HashMap();
+        attrs.put("archive", filePath);
+        Map appData = (Map) RestUtil.restRequest(REST_URL + "/applications/_get-service-metadata", attrs, "GET", null, null, false, true).get("data");
 
-        Map eeMap = new HashMap();
-        eeMap.put("templateName", "Native");
-        eeMap.put("serviceType", SERVICE_TYPE_JAVAEE);
-        eeMap.put("virtualizationType", "Native");
-        Map aMap = new HashMap();
-        aMap.put(SERVICE_TYPE_JAVAEE, eeMap);
-        slist.add(aMap);
-
-        Map dbMap = new HashMap();
-        dbMap.put("templateName", "DBNative");
-        dbMap.put("serviceType", SERVICE_TYPE_RDMBS);
-        dbMap.put("virtualizationType", "Native");
-        Map bMap = new HashMap();
-        bMap.put(SERVICE_TYPE_RDMBS, dbMap);
-        slist.add(dbMap);
-        return slist;
+        return (List<Map<String, Object>>) ((Map) appData.get("extraProperties")).get("list");
     }
-
-
-
-
-
 
     private static void putOptionalAttrs(Map attrs, String key, String value){
         if (!GuiUtil.isEmpty(value)){
