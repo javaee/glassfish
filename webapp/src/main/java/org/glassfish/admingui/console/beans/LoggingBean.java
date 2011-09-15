@@ -12,17 +12,21 @@ import javax.faces.context.FacesContextFactory;
 import javax.faces.*;
 import javax.faces.context.FacesContext;
 import java.util.*;
+import javax.faces.event.ValueChangeEvent;
+import javax.faces.model.SelectItem;
 import org.glassfish.admingui.console.rest.RestUtil;
 
 @ManagedBean(name="loggingBean")
-@SessionScoped
+@ViewScoped
 public class LoggingBean {
 
-    private String instanceName = "server";
+    private String instanceName = null;
     private String startIndex = null;
     private String searchForward = "false";
     private String firstRecord = null;
     private String lastRecord = null;
+    private Vector<SelectItem> instanceList = null;
+    private Environments env = new Environments();
 
     public static final String TIME_FORMAT = " HH:mm:ss.SSS";
     
@@ -31,7 +35,6 @@ public class LoggingBean {
             FactoryFinder.getFactory(FactoryFinder.FACES_CONTEXT_FACTORY);
         Map requestMap =
                 FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-        instanceName = (String)requestMap.get("instanceName");
     }
 
     public LoggingBean(String instanceName) {
@@ -44,6 +47,7 @@ public class LoggingBean {
         attrs.put("instanceName", instanceName);
         attrs.put("startIndex", startIndex);
         attrs.put("searchForward", searchForward);
+        attrs.put("maximumNumberOfResults", 25);
         Map data = (Map)RestUtil.restRequest(endPoint, attrs, "GET", null, null, false, true).get("data");
         List<Map> records = (List<Map>) data.get("records");
         records = processLogRecords(records);
@@ -56,13 +60,29 @@ public class LoggingBean {
                 new Date(new Long(record.get("loggedDateTimeInMS").toString()))));
         }
         if ((records != null) && (records.size() > 0)) {
-            lastRecord    = records.get(records.size()-1).get("recordNumber").toString();
-	    firstRecord   = records.get(0).get("recordNumber").toString();
+            firstRecord    = records.get(records.size()-1).get("recordNumber").toString();
+            lastRecord   = records.get(0).get("recordNumber").toString();
 	} else {
 	    firstRecord = "-1";
             lastRecord  = "-1";
 	}
         return records;
+    }
+
+    public List<SelectItem> getInstancesForEnv(String envName) {
+        List<String> instancesNameList = env.getInstancesNameForEnv(envName);
+        instanceList = new Vector<SelectItem>();
+        for (String instance : instancesNameList) {
+                instanceList.add(new SelectItem(0,instance));
+        }
+        return instanceList;
+    }
+
+    public String valueChange(ValueChangeEvent valueChangeEvent) {
+        int selectedValue = ((Integer)valueChangeEvent.getNewValue()).intValue();
+        SelectItem si = instanceList.get(selectedValue);
+        instanceName = (String) si.getLabel();
+        return null;
     }
 
     public String previous() {

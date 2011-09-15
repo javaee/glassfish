@@ -28,34 +28,36 @@
              xmlns:ps="http://admingui.glassfish.org/console"
              xmlns:tr="http://myfaces.apache.org/trinidad"
              xmlns:trh="http://myfaces.apache.org/trinidad/html">
-    <div>
-        <br/><br/>
-        <tr:panelHorizontalLayout halign="left" >
-            Environment Name: #{param['envName']}
-        </tr:panelHorizontalLayout>
-        <div class="navObjectInfo">
-            <div class="title headerPageTitle">Logging Results</div>
-            <div class="subHeading">View a server log file.</div>
-            <tr:selectOneChoice label="Instance: " value="server">
-                <f:selectItem itemLabel="server" itemValue="server"/>
-            </tr:selectOneChoice>
-            <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{loggingBean.previous}">
-                <f:ajax render="@form" execute="@form"/>
-            </tr:commandButton>
-            <tr:commandButton id="nextButton" text="Next &gt;&gt;" action="#{loggingBean.next}">
-                <f:ajax render="@form" execute="@form"/>
-            </tr:commandButton>
-            <tr:table id="logmsgs" var="logmsgs" value="#{loggingBean.logMessages}" inlineStyle="width: 100pc">
-                <tr:column headerText="Timestamp">
-                    #{logmsgs.loggedDateTimeInMS}
-                </tr:column>
-                <tr:column headerText="Logger">
-                    #{logmsgs.loggerName}
-                </tr:column>
-                <tr:column headerText="Message">
-                    #{logmsgs.Message}
-                </tr:column>
-            </tr:table>
+        <div>
+            <br/><br/>
+            <tr:panelHorizontalLayout halign="left" >
+                Environment Name: #{param['envName']}
+            </tr:panelHorizontalLayout>
+            <div class="navObjectInfo">
+                <div class="title headerPageTitle">Logging Results</div>
+                <div class="subHeading">View a server log file.</div>
+                <tr:selectOneChoice label="Instance: " id="instance" autoSubmit="true"
+                                    valueChangeListener="#{loggingBean.valueChange}">
+                    <f:selectItems value="#{loggingBean.getInstancesForEnv(param['envName'])}"/>
+                </tr:selectOneChoice>
+                <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{loggingBean.previous}">
+                </tr:commandButton>
+                <tr:commandButton id="nextButton" text="Next &gt;&gt;" action="#{loggingBean.next}">
+                </tr:commandButton>
+                <tr:table id="logmsgs" var="logmsgs" value="#{loggingBean.logMessages}" inlineStyle="width: 100pc">
+                    <tr:column headerText="Record Number">
+                        #{logmsgs.recordNumber}
+                    </tr:column>
+                    <tr:column headerText="Timestamp">
+                        #{logmsgs.loggedDateTimeInMS}
+                    </tr:column>
+                    <tr:column headerText="Logger">
+                        #{logmsgs.loggerName}
+                    </tr:column>
+                    <tr:column headerText="Message">
+                        #{logmsgs.Message}
+                    </tr:column>
+                </tr:table>
+            </div>
         </div>
-    </div>
 </ui:fragment>
