@@ -1548,10 +1548,10 @@ public class RunLevelServiceTest {
   }
   
   /**
-   * Async service types
+   * Async service types. The default RLS should wait until all async services are done before progressing.
    */
   @Test
-  public void asyncBased() {
+  public void asyncBased() throws Exception {
       DescriptorImpl descriptor = new DescriptorImpl();
       descriptor.addContract(RunLevelService.class);
       descriptor.addMetadata(RunLevel.META_SCOPE_TAG, Object.class.getName());
@@ -1563,16 +1563,26 @@ public class RunLevelServiceTest {
       rls.proceedTo(4);
       assertTrue(rls.getState().getCurrentRunLevel() < 5);
 
-      AsyncFakeService1.waitFor = 1000L;
+      Inhabitant<AsyncFakeService1> fs1 = h.getInhabitantByType(AsyncFakeService1.class);
+      Inhabitant<AsyncFakeService2> fs2 = h.getInhabitantByType(AsyncFakeService2.class);
+      
+      AsyncFakeService1.waitFor = 200L;
+      assertFalse(fs1.isActive());
       assertFalse(AsyncFakeService1.waited);
       rls.proceedTo(5);
       assertTrue(AsyncFakeService1.waited);
+      assertTrue(fs1.isActive());
+      Thread.sleep(1000);
+      assertTrue("we should wait up to DefaultRunLevelService.DEFAULT_ASYNC_WAIT so therefore should be done", fs1.get().isDone());
       
       // now do it with an error involved
-//      AsyncFakeService2.waitFor = DefaultRunLevelService.DEFAULT_ASYNC_WAIT + 500;
+      AsyncFakeService2.waitFor = DefaultRunLevelService.DEFAULT_ASYNC_WAIT + 250;
       assertFalse(AsyncFakeService2.waited);
+      assertFalse(fs2.isActive());
       rls.proceedTo(6);
       assertTrue(AsyncFakeService2.waited);
+      assertTrue(fs2.isActive());
+      assertFalse("FS2 should have timed out", fs2.get().isDone());
   }
 
   /**

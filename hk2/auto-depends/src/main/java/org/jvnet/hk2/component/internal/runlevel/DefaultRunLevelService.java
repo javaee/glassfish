@@ -259,6 +259,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     public static final Class<?> DEFAULT_SCOPE = RunLevelDefaultScope.class;
     
     private static final Logger logger = Logger.getLogger(DefaultRunLevelService.class.getName());
+    private static final Level LEVEL = Level.FINE;
     
     private final Object lock = new Object();
     
@@ -583,10 +584,10 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     
     protected void event(Worker worker, ListenerEvent event,
             ServiceContext context, Throwable error, boolean isHardInterrupt) {
-        logger.log(Level.FINE, "event {0} - " + getDescription(true), event);
+        logger.log(LEVEL, "event {0} - " + getDescription(true), event);
         
         if (isCancelled(worker)) {
-            logger.log(Level.FINE, "Ignoring this notification!");
+            logger.log(LEVEL, "Ignoring this notification!");
         } else {
             Interrupt lastInterrupt = null;
             Collection<RunLevelListener> activeListeners = getListeners();
@@ -614,7 +615,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
                 throw lastInterrupt;
             } else {
                 if (null != error) {
-                    logger.log(Level.FINE, "swallowing exception - " + context,
+                    logger.log(LEVEL, "swallowing exception - " + context,
                             new RunLevelException(error));
                 }
             }
@@ -832,7 +833,10 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     public void awaitCompletion() 
             throws InterruptedException, ExecutionException, TimeoutException {
         if (null != waiter) {
+            long start = System.currentTimeMillis();
+            logger.log(Level.FINER, "awaiting completion");
             waiter.waitForDone();
+            logger.log(Level.FINER, "finished awaiting completion - {0} ms", System.currentTimeMillis() - start);
         }
     }
     
@@ -843,7 +847,11 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     public void awaitCompletion(long timeout, TimeUnit unit)
             throws InterruptedException, TimeoutException, ExecutionException {
         if (null != waiter) {
-            waiter.waitForDone(timeout, unit);
+            long start = System.currentTimeMillis();
+            logger.log(Level.FINER, "awaiting completion");
+            boolean done = waiter.waitForDone(timeout, unit);
+            logger.log(Level.FINER, "finished awaiting completion - {0} ms; done = {1}",
+                    new Object[] {System.currentTimeMillis() - start, done});
         }
     }
     
@@ -1000,7 +1008,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
          */
         @Override
         public void run() {
-            logger.log(Level.FINE, "proceedTo({0}) - " + getDescription(true),
+            logger.log(LEVEL, "proceedTo({0}) - " + getDescription(true),
                     planned);
             
             upSide = null;
@@ -1073,8 +1081,8 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
             
             if (!activations.isEmpty()) {
                 InhabitantSorter is = getInhabitantSorter();
-                if (logger.isLoggable(Level.FINER)) {
-                    logger.log(Level.FINER, "sorting {0}", activations);
+                if (logger.isLoggable(LEVEL)) {
+                    logger.log(LEVEL, "sorting {0}", activations);
                 }
                 activations = is.sort(activations);
                 assert (null != activations);
@@ -1087,8 +1095,8 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
                 }
                 
                 for (Inhabitant<?> rli : activations) {
-                    if (logger.isLoggable(Level.FINER)) {
-                        logger.log(Level.FINER, "activating {0} - "
+                    if (logger.isLoggable(LEVEL)) {
+                        logger.log(LEVEL, "activating {0} - "
                                 + getDescription(true), rli);
                     }
                     
@@ -1147,8 +1155,8 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
                     
                     Inhabitant<?> i;
                     while (null != (i = downRecorder.pop())) {
-                        if (logger.isLoggable(Level.FINER)) {
-                            logger.log(Level.FINER, "releasing {0} - "
+                        if (logger.isLoggable(LEVEL)) {
+                            logger.log(LEVEL, "releasing {0} - "
                                     + getDescription(true), i);
                         }
                         
@@ -1222,7 +1230,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
                     // Note how this thread exhibits async behavior in this
                     // case.
                     // The cancel notification will happen on the other thread
-                    logger.log(Level.FINE, "Interrupting thread {0} - "
+                    logger.log(LEVEL, "Interrupting thread {0} - "
                             + getDescription(true), activeThread);
                     
                     this.isHardInterrupt = isHard;
@@ -1298,8 +1306,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
         }
         
         private void handleInterruptException(Exception e) {
-            logger.log(Level.FINE,
-                    "Interrupt caught - " + getDescription(true), e);
+            logger.log(LEVEL, "Interrupt caught - " + getDescription(true), e);
             
             Thread currentThread = Thread.currentThread();
             
@@ -1315,7 +1322,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
                 proceedTo(next);
             } else {
                 // RLS must continue / fall out
-                logger.log(Level.FINE, "swallowing exception - "
+                logger.log(LEVEL, "swallowing exception - "
                         + getDescription(true), new RunLevelException(e));
             }
         }
