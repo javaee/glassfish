@@ -47,10 +47,13 @@ public class LoggingBean {
         attrs.put("instanceName", instanceName);
         attrs.put("startIndex", startIndex);
         attrs.put("searchForward", searchForward);
-        attrs.put("maximumNumberOfResults", 25);
-        Map data = (Map)RestUtil.restRequest(endPoint, attrs, "GET", null, null, false, true).get("data");
-        List<Map> records = (List<Map>) data.get("records");
-        records = processLogRecords(records);
+        attrs.put("maximumNumberOfResults", 30);
+        List<Map> records = null;
+        if (instanceName != null) {
+            Map data = (Map)RestUtil.restRequest(endPoint, attrs, "GET", null, null, false, true).get("data");
+            records = (List<Map>) data.get("records");
+            records = processLogRecords(records);
+        }
         return records;
     }
 
