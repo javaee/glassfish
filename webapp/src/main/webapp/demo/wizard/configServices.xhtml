@@ -30,90 +30,108 @@
 
     This is services that will be provisioned for the uploaded application.  You can take all the defaults or customize it.
 
-    <tr:panelBox text="RDBMS - #{uploadBean.databaseMetaData['name']}"
+    <tr:panelBox text="Database"
          background="light"
          inlineStyle="width: 500px;"
          id="databaseDetails"
-         rendered="#{uploadBean.databaseMetaData != null}">
-            <tr:selectOneListbox value="#{uploadBean.database}" inlineStyle="display: inline-block;"
-                                 contentStyle="width: 187px;" size="6">
-                <f:selectItems value="#{uploadBean.databaseSelectItems}" />
-                <f:ajax render=":wizard:databaseDetails"/>
-            </tr:selectOneListbox>
-            <tr:table var="char" value="#{uploadBean.databaseCharacteristicKeys}" horizontalGridVisible="false"
-                              verticalGridVisible="false" rowBandingInterval="1"
-                              inlineStyle="width: 200px; display: inline-block; vertical-align: top; padding-left: 10px">
-                <tr:column>
-                    #{char}
+         rendered="#{uploadBean.databasesMetaData.size() > 0}">
+            <tr:table var="metaData" value="#{uploadBean.databasesMetaData}" horizontalGridVisible="false"
+                              rowBandingInterval="1"
+                              inlineStyle="">
+                <tr:column headerText="Service Name">
+                    #{metaData['name']}
                 </tr:column>
-                <tr:column>
-                    #{uploadBean.databaseMetaData['characteristics'][char]}
+                <tr:column headerText="Configuration">
+                    <tr:panelGroupLayout rendered="#{!metaData['templated-id']}">
+                        <tr:outputLabel for="osName" value="OS Name:"/>
+                        <tr:outputText id="osName" value="#{metaData['characteristics']['os-name']}"/>
+                    </tr:panelGroupLayout>
+                    <tr:panelGroupLayout rendered="#{metaData['templated-id']}">
+                        <tr:outputLabel for="databseTemplate" value="Template:"/>
+                        <tr:selectOneChoice id="databaseTemplate"
+                                            value="#{uploadBean.database}" inlineStyle="display: inline-block;"
+                                             contentStyle="width: 187px;" size="6">
+                            <f:selectItems value="#{uploadBean.databaseSelectItems}" />
+                            <f:ajax render=":wizard:databaseDetails"/>
+                        </tr:selectOneChoice>
+                    </tr:panelGroupLayout>
                 </tr:column>
             </tr:table>
     </tr:panelBox>
-    <tr:panelBox text="JavaEE - #{uploadBean.eeTemplateMetaData['name']}"
+    <tr:panelBox text="JavaEE"
          background="light"
          inlineStyle="width: 500px;"
          id="eeTemplateDetails"
-         rendered="#{uploadBean.eeTemplateMetaData != null}">
-            <tr:selectOneListbox value="#{uploadBean.eeTemplate}" inlineStyle="display: inline-block;"
-                                 contentStyle="width: 187px;" size="6">
-                <f:selectItems value="#{uploadBean.eeTemplateSelectItems}" />
-                <f:ajax render=":wizard:eeTemplateDetails"/>
-            </tr:selectOneListbox>
-            <div style="width: 200px; display: inline-block; vertical-align: top; padding-left: 10px">
-
-                <tr:table var="char" value="#{uploadBean.eeTemplateCharacteristicKeys}" horizontalGridVisible="false"
-                                  verticalGridVisible="false" rowBandingInterval="1"
-                                  inlineStyle="width: 200px; ">
-                    <tr:column>
-                        #{char}
-                    </tr:column>
-                    <tr:column>
-                        #{uploadBean.eeTemplateMetaData['characteristics'][char]}
-                    </tr:column>
-                </tr:table>
-                <tr:panelFormLayout inlineStyle="">
-                    <tr:inputText id="amount" label="Clustersize:" value="#{uploadBean.eeTemplateMinMaxInstances}" columns="16"/>
-                    <div id="slider-range"></div>
-                    <script type="text/javascript">
-                        $(function() {
-                            $( "#slider-range" ).slider({
-                                range: true,
-                                min: 1,
-                                max: 5,
-                                values: [ $( "#wizard\\:amount" ).val().split(" - ")[0], $( "#wizard\\:amount" ).val().split(" - ")[1] ],
-                                slide: function( event, ui ) {
-                                    $( "#wizard\\:amount" ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
-                                }
+         rendered="#{uploadBean.eeTemplatesMetaData.size() > 0}">
+            <tr:table var="metaData" value="#{uploadBean.eeTemplatesMetaData}" horizontalGridVisible="false"
+                              rowBandingInterval="1"
+                              inlineStyle="">
+                <tr:column headerText="Service Name">
+                    #{metaData['name']}
+                </tr:column>
+                <tr:column headerText="Configuration">
+                    <tr:panelGroupLayout rendered="#{!metaData['templated-id']}">
+                        <tr:outputLabel for="osName" value="OS Name:"/>
+                        <tr:outputText id="osName" value="#{metaData['characteristics']['os-name']}"/>
+                        <br/>
+                        <tr:outputLabel for="amount" value="Cluster Size:"/>
+                        <tr:inputText id="amount" label="Clustersize:" value="#{uploadBean.eeTemplateMinMaxInstances}" columns="16"/>
+                        <div id="slider-range"></div>
+                        <script type="text/javascript">
+                            $(function() {
+                                $( "#slider-range" ).slider({
+                                    range: true,
+                                    min: 1,
+                                    max: 5,
+                                    values: [ $( "#wizard\\:amount" ).val().split(" - ")[0], $( "#wizard\\:amount" ).val().split(" - ")[1] ],
+                                    slide: function( event, ui ) {
+                                        $( "#wizard\\:amount" ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
+                                    }
+                                });
+                                $( "#wizard\\:amount" ).val( $( "#slider-range" ).slider( "values", 0 ) +
+                                        " - " + $( "#slider-range" ).slider( "values", 1 ) );
                             });
-                            $( "#wizard\\:amount" ).val( $( "#slider-range" ).slider( "values", 0 ) +
-                                    " - " + $( "#slider-range" ).slider( "values", 1 ) );
-                        });
-                    </script>
-                </tr:panelFormLayout>
-            </div>
+                        </script>
+                    </tr:panelGroupLayout>
+                    <tr:panelGroupLayout rendered="#{metaData['templated-id']}">
+                        <tr:outputLabel for="eeTemplate" value="Template:"/>
+                        <tr:selectOneChoice id="eeTemplate"
+                                            value="#{uploadBean.eeTemplate}" inlineStyle="display: inline-block;"
+                                            contentStyle="width: 187px;" size="6">
+                            <f:selectItems value="#{uploadBean.eeTemplateSelectItems}" />
+                            <f:ajax render=":wizard:eeTemplateDetails"/>
+                        </tr:selectOneChoice>
+                    </tr:panelGroupLayout>
+                </tr:column>
+            </tr:table>
     </tr:panelBox>
-    <tr:panelBox text="Load Balancer - #{uploadBean.loadBalancerMetaData['name']}"
+    <tr:panelBox text="Load Balancer"
          background="light"
          inlineStyle="width: 500px;"
          id="lbDetails"
-         rendered="#{uploadBean.loadBalancerMetaData != null}">
-            <tr:selectOneListbox value="#{uploadBean.loadBalancer}" inlineStyle="display: inline-block;"
-                                 contentStyle="width: 187px;" size="6">
-                <f:selectItems value="#{uploadBean.loadBalancerSelectItems}" />
-                <f:ajax render=":wizard:lbDetails"/>
-            </tr:selectOneListbox>
-            <tr:table var="char" value="#{uploadBean.loadBalancerCharacteristicKeys}" horizontalGridVisible="false"
-                              verticalGridVisible="false" rowBandingInterval="1"
-                              inlineStyle="width: 200px; display: inline-block; vertical-align: top; padding-left: 10px">
-                <tr:column>
-                    #{char}
-                </tr:column>
-                <tr:column>
-                    #{uploadBean.loadBalancerMetaData['characteristics'][char]}
-                </tr:column>
-            </tr:table>
+         rendered="#{uploadBean.loadBalancersMetaData.size() > 0}">
+        <tr:table var="metaData" value="#{uploadBean.loadBalancersMetaData}" horizontalGridVisible="false"
+                          rowBandingInterval="1"
+                          inlineStyle="">
+            <tr:column headerText="Service Name">
+                #{metaData['name']}
+            </tr:column>
+            <tr:column headerText="Configuration">
+                <tr:panelGroupLayout rendered="#{!metaData['templated-id']}">
+                    <tr:outputLabel for="osName" value="OS Name:"/>
+                    <tr:outputText id="osName" value="#{metaData['characteristics']['os-name']}"/>
+                </tr:panelGroupLayout>
+                <tr:panelGroupLayout rendered="#{metaData['templated-id']}">
+                    <tr:outputLabel for="loadBalancerTemplate" value="Template:"/>
+                    <tr:selectOneChoice id="loadBalancer"
+                                        value="#{uploadBean.loadBalancer}" inlineStyle="display: inline-block;"
+                                        contentStyle="width: 187px;" size="6">
+                        <f:selectItems value="#{uploadBean.loadBalancerSelectItems}" />
+                        <f:ajax render=":wizard:loadBalancerDetails"/>
+                    </tr:selectOneChoice>
+                </tr:panelGroupLayout>
+            </tr:column>
+        </tr:table>
     </tr:panelBox>
     <tr:separator/>
     <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{wizardBean.previous}" >

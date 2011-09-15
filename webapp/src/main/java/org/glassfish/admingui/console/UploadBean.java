@@ -68,43 +68,54 @@ public class UploadBean {
     private List<SelectItem> eeTemplateSelectItems;
     private List<SelectItem> loadBalancerSelectItems;
 
-    private Map databaseMetaData;
-    private Map eeTemplateMetaData;
-    private Map loadBalancerMetaData;
+    private List<Map> databasesMetaData = new ArrayList();
+    private List<Map> eeTemplatesMetaData = new ArrayList();
+    private List<Map> loadBalancersMetaData = new ArrayList();
 
     /*{
-        metaData = CommandUtil.getPreSelectedServices("D:/Projects/console.next/svn/main/appserver/tests/paas/basic-db/target/basic_db_paas_sample.war");
+        //metaData = CommandUtil.getPreSelectedServices("D:/Projects/console.next/svn/main/appserver/tests/paas/basic-db/target/basic_db_paas_sample.war");
+        metaData = CommandUtil.getPreSelectedServices("/opt/console.next/svn/main/appserver/tests/paas/basic-db/target/basic_db_paas_sample.war");
         processMetaData();
     }*/
+
+    void createSelectItems(String serviceType) {
+        List<SelectItem> selectItems = new ArrayList();
+        List<String> templateList = getTemplateList(serviceType);
+        for (String template : templateList) {
+            selectItems.add(new SelectItem(template));
+        }
+        if (CommandUtil.SERVICE_TYPE_RDMBS.equals(serviceType)) {
+            databaseSelectItems =  selectItems;
+            databases = templateList;
+        } else if (CommandUtil.SERVICE_TYPE_JAVAEE.equals(serviceType)) {
+            eeTemplateSelectItems =  selectItems;
+            eeTemplates = templateList;
+        } else if (CommandUtil.SERVICE_TYPE_LB.equals(serviceType)) {
+            loadBalancerSelectItems =  selectItems;
+            loadBalancers = templateList;
+        }
+    }
 
     void processMetaData() {
         for(Map oneService : metaData){
             String serviceType = (String) oneService.get("service-type");
-            String serviceName = (String) oneService.get("name");
-
-            List<SelectItem> selectItems = new ArrayList();
-            String templateId = (String) oneService.get("template-id");
-            List<String> templateList = getTemplateList(serviceType);
-            oneService.put("templateList", templateList);
-            for (String template : templateList) {
-                selectItems.add(new SelectItem(template));
-            }
             if (CommandUtil.SERVICE_TYPE_RDMBS.equals(serviceType)) {
-                database = templateId;
-                databases = templateList;
-                databaseSelectItems = selectItems;
-                databaseMetaData = oneService;
+                databasesMetaData.add(oneService);
             } else if (CommandUtil.SERVICE_TYPE_JAVAEE.equals(serviceType)) {
-                eeTemplate = templateId;
-                eeTemplates = templateList;
-                eeTemplateSelectItems = selectItems;
-                eeTemplateMetaData = oneService;
+                eeTemplatesMetaData.add(oneService);
             } else if (CommandUtil.SERVICE_TYPE_LB.equals(serviceType)) {
-                loadBalancer = templateId;
-                loadBalancers = templateList;
-                loadBalancerSelectItems = selectItems;
-                loadBalancerMetaData = oneService;
+                loadBalancersMetaData.add(oneService);
             }
+        }
+
+        if (databasesMetaData != null) {
+            createSelectItems(CommandUtil.SERVICE_TYPE_RDMBS);
+        }
+        if (eeTemplatesMetaData != null) {
+            createSelectItems(CommandUtil.SERVICE_TYPE_JAVAEE);
+        }
+        if (loadBalancersMetaData != null) {
+            createSelectItems(CommandUtil.SERVICE_TYPE_LB);
         }
     }
 
@@ -287,7 +298,6 @@ public class UploadBean {
 
     public void setDatabase(String database) {
         this.database = database;
-        databaseMetaData.put("template-id", database);
     }
 
     public String getEeTemplate() {
@@ -296,7 +306,6 @@ public class UploadBean {
 
     public void setEeTemplate(String eeTemplate) {
         this.eeTemplate = eeTemplate;
-        eeTemplateMetaData.put("template-id", eeTemplate);
     }
 
     public String getLoadBalancer() {
@@ -305,65 +314,49 @@ public class UploadBean {
 
     public void setLoadBalancer(String loadBalancer) {
         this.loadBalancer = loadBalancer;
-        loadBalancerMetaData.put("template-id", loadBalancer);
     }
 
     public List<SelectItem> getDatabaseSelectItems() {
         return databaseSelectItems;
     }
 
-    public Map getDatabaseMetaData() {
-        return databaseMetaData;
-    }
-
-    private List mapKeySetToList(Map serviceMetaData) {
-        Map map = (Map)serviceMetaData.get("characteristics");
-        List ret = new ArrayList();
-        for (Object key : map.keySet()) {
-            ret.add(key);
-        }
-        return ret;
-    }
-    public List getDatabaseCharacteristicKeys() {
-        return mapKeySetToList(databaseMetaData);
+    public List<Map> getDatabasesMetaData() {
+        return databasesMetaData;
     }
 
     public List<SelectItem> getEeTemplateSelectItems() {
         return eeTemplateSelectItems;
     }
 
-    public Map getEeTemplateMetaData() {
-        return eeTemplateMetaData;
-    }
-
-    public List getEeTemplateCharacteristicKeys() {
-        return mapKeySetToList(eeTemplateMetaData);
+    public List<Map> getEeTemplatesMetaData() {
+        return eeTemplatesMetaData;
     }
 
     public String getEeTemplateMinMaxInstances() {
+        /*
         Map config = (Map)eeTemplateMetaData.get("configurations");
         String min = (String) config.get("min.clustersize");
         String max = (String) config.get("max.clustersize");
         return min + " - " + max;
+        */
+        return "";
     }
 
     public void setEeTemplateMinMaxInstances(String minMaxInstances) {
+        /*
         String minmax[] = minMaxInstances.split("-");
         Map config = (Map)eeTemplateMetaData.get("configurations");
         config.put("min.clustersize", minmax[0].trim());
         config.put("max.clustersize", minmax[1].trim());
+        */
     }
 
     public List<SelectItem> getLoadBalancerSelectItems() {
         return loadBalancerSelectItems;
     }
 
-    public Map getLoadBalancerMetaData() {
-        return loadBalancerMetaData;
-    }
-
-    public List getLoadBalancerCharacteristicKeys() {
-        return mapKeySetToList(loadBalancerMetaData);
+    public List<Map> getLoadBalancersMetaData() {
+        return loadBalancersMetaData;
     }
 
     static final String REST_URL="http://localhost:4848/management/domain";
