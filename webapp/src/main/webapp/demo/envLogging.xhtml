@@ -31,14 +31,14 @@
         <div>
             <br/><br/>
             <tr:panelHorizontalLayout halign="left" >
-                Environment Name: #{param['envName']}
+                Environment Name: #{environmentBean.envName}
             </tr:panelHorizontalLayout>
             <div class="navObjectInfo">
                 <div class="title headerPageTitle">Logging Results</div>
                 <div class="subHeading">View a server log file.</div>
                 <tr:selectOneChoice label="Instance: " id="instance" autoSubmit="true"
                                     valueChangeListener="#{loggingBean.valueChange}">
-                    <f:selectItems value="#{loggingBean.getInstancesForEnv(param['envName'])}"/>
+                    <f:selectItems value="#{loggingBean.convertToSelectItem(environmentBean.instanceNames)}"/>
                 </tr:selectOneChoice>
                 <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{loggingBean.previous}">
                 </tr:commandButton>

@@ -48,17 +48,14 @@
                 xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
     <h3>Manual and Auto Scaling  </h3>
-    <tr:spacer height="40px"/>
-
+    <br/><br/>
     <tr:panelHorizontalLayout halign="left" >
-        Environment Name: #{param['envName']}
+        Environment Name: #{environmentBean.envName}
     </tr:panelHorizontalLayout>
-
 
     <div class="navObjectInfo">
         <div class="title headerPageTitle">Elasticity Settings</div>
         <tr:panelFormLayout  id="elasiticitySettings">
-            <tr:inputNumberSpinbox label="Memory limit:" value="512" minimum="512" maximum="2048" stepSize="512" columns="4"/>
             <tr:inputNumberSpinbox label="Min # of Instances:" value="2" minimum="1" maximum="4"/>
             <tr:inputNumberSpinbox label="Max # of Instances:" value="6" minimum="1" maximum="6"/>
         </tr:panelFormLayout>

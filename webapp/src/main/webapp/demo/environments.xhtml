@@ -35,7 +35,7 @@
         <div class="navObjectInfo">
             <div class="title headerPageTitle">Environments</div>
             <div class="subHeading">List of Environment</div>
-            <tr:table id="envs" var="envs" value="#{environments.envsAndApps}">
+            <tr:table id="envs" var="envs" value="#{listEnvironmentsBean.envsAndApps}">
                 <tr:column headerText="Environment Name">
                     <a id="clusterName"  href="#{request.contextPath}/demo/environmentDetail.jsf?envName=#{envs.clusterName}" > #{envs.clusterName} </a>
                 </tr:column>

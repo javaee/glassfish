@@ -47,18 +47,27 @@
                 xmlns:ps="http://admingui.glassfish.org/console"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
+<!--
+    <ui:define name="head">
+        <f:metadata>
+            <f:event type="postAddToView" listener="#{environmentBean.resetInstancesData}"/>
+        </f:metadata>
+    </ui:define
+-->
+
     <h3>General Information for Environment </h3>
     <tr:spacer height="40px"/>
 
+
     <tr:panelHorizontalLayout halign="left" >
-        Environment Name: #{param['envName']}
+        Environment Name: #{environmentBean.envName}
     </tr:panelHorizontalLayout>
 
     <div style="width: 1300px">
 
         <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
             <div class="subHeading">List of currently deployed applications</div>
-            <tr:table var="app" value="#{environments.getAppsForEnv(param['envName'])}" horizontalGridVisible="false" verticalGridVisible="false" rowBandingInterval="1">
+            <tr:table var="app" value="#{environmentBean.applications}" horizontalGridVisible="false" verticalGridVisible="false" rowBandingInterval="1">
                 <tr:column headerText="Application Name">
                     <tr:panelHorizontalLayout  halign="left">
                         <tr:image id="progressBar" source="/images/progress.gif" shortDesc="Deploying Applicaiton .... " rendered="#{app.notExist}"/>
@@ -77,7 +86,7 @@
 
         <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
             <div class="subHeading">List of Instances for this Environment</div>
-            <tr:table var="instance" value="#{environments.getInstancesForEnv(param['envName'])}" horizontalGridVisible="false" verticalGridVisible="false" rowBandingInterval="1">
+            <tr:table var="instance" value="#{environmentBean.instances}" horizontalGridVisible="false" verticalGridVisible="false" rowBandingInterval="1">
                 <tr:column headerText="Instance Name">
                     #{instance.name}
                 </tr:column>
@@ -86,31 +95,7 @@
                 </tr:column>
             </tr:table>
         </div>
-        <!--
-                <div class="navObjectInfo">
-                    <div class="title headerPageTitle">Elasticity Settings</div>
-                    <tr:panelFormLayout  id="elasiticitySettings">
-                        <tr:inputNumberSpinbox label="Memory limit:" value="512" minimum="512" maximum="2048" stepSize="512" columns="4"/>
-                        <tr:inputNumberSpinbox label="Min # of Instances:" value="2" minimum="1" maximum="4"/>
-                        <tr:inputNumberSpinbox label="Max # of Instances:" value="6" minimum="1" maximum="6"/>
-                    </tr:panelFormLayout>
-                </div>
-        
-                <div class="navObjectInfo">
-                    <div class="title headerPageTitle">Monitoring</div>
-                    <div class="subHeading">Monitoring data for PaaS Environment</div>
-                    <tr:poll id="poller" interval="5000" pollListener="#{monitoringBean.onPoll}" immediate="#{true}"/>
-                    <tr:panelGroupLayout partialTriggers="poller">
-                        <tr:panelHorizontalLayout>
-                            <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="line" inlineStyle="width:350px; height:150px;"/>
-                            <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="pie" inlineStyle="width:350px; height:150px;"/>
-                        </tr:panelHorizontalLayout>
-                        <tr:panelHorizontalLayout>
-                            <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="barLine" inlineStyle="width:350px; height:150px;"/>
-                            <tr:chart YMajorGridLineCount="4" value="#{monitoringBean.value}" type="bar" inlineStyle="width:350px; height:150px;"/>
-                        </tr:panelHorizontalLayout>
-                    </tr:panelGroupLayout>
-                </div>
-        -->
+
+        <tr:outputText value="#{environmentBean.dummy}" />
     </div>
 </ui:fragment>
