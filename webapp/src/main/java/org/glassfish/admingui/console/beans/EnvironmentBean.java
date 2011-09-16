@@ -10,6 +10,7 @@ import javax.faces.bean.*;
 import javax.faces.context.FacesContext;
 import java.util.*;
 import org.glassfish.admingui.console.rest.RestUtil;
+import org.glassfish.admingui.console.util.DeployUtil;
 
 
 @ManagedBean(name="environmentBean")
@@ -21,6 +22,8 @@ public class EnvironmentBean implements Serializable {
     private List<Map> applications = null;
     private List<Map> instances = null;
     private List<String> instanceNames = null;
+    private String minScale = "1";
+    private String maxScale = "4";
     private String dummy = "";
 
 
@@ -47,6 +50,10 @@ public class EnvironmentBean implements Serializable {
                     Map aMap = new HashMap();
                     aMap.put("appName", oneApp);
                     aMap.put("contextRoot", contextRoot);
+                    List<String> urls = getLaunchUrls(oneApp);
+                    if (urls.size()>0){
+                        aMap.put("url", urls.get(0));
+                    }
                     applications.add(aMap);
                 }
             } catch (Exception ex) {
@@ -91,6 +98,27 @@ public class EnvironmentBean implements Serializable {
         return instanceNames;
     }
 
+
+    public String getMinScale(){
+
+        String elasticEndpoint = REST_URL + "/elastic-services/elasticservice/" + envName;
+        if (RestUtil.doesProxyExist(elasticEndpoint)){
+            minScale = (String) RestUtil.getAttributesMap(elasticEndpoint).get("min");
+        }
+        return minScale;
+    }
+
+    public String getMaxScale(){
+        String elasticEndpoint = REST_URL + "/elastic-services/elasticservice/" + envName;
+        if (RestUtil.doesProxyExist(elasticEndpoint)){
+            maxScale = (String) RestUtil.getAttributesMap(elasticEndpoint).get("max");
+        }
+        return maxScale;
+    }
+
+    public List<String> getLaunchUrls(String appName) {
+        return DeployUtil.getApplicationURLs(appName);
+    }
 
     public String getDummy(){
         instances = null;
