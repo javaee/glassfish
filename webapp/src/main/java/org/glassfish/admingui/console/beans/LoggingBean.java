@@ -26,7 +26,6 @@ public class LoggingBean {
     private String firstRecord = null;
     private String lastRecord = null;
     private Vector<SelectItem> instanceList = null;
-    private Environments env = new Environments();
 
     public static final String TIME_FORMAT = " HH:mm:ss.SSS";
     
@@ -72,8 +71,7 @@ public class LoggingBean {
         return records;
     }
 
-    public List<SelectItem> getInstancesForEnv(String envName) {
-        List<String> instancesNameList = env.getInstancesNameForEnv(envName);
+    public List<SelectItem> convertToSelectItem(List<String> instancesNameList) {
         instanceList = new Vector<SelectItem>();
         for (String instance : instancesNameList) {
                 instanceList.add(new SelectItem(0,instance));

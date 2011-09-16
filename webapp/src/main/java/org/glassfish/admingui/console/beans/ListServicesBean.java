@@ -110,7 +110,7 @@ public class ListServicesBean {
     }
 
     public List<SelectItem> getDatabaseSelectItems() {
-        List<String> templates = CommandUtil.listTemplates(CommandUtil.SERVICE_TYPE_RDMBS);
+        List<String> templates = CommandUtil.getTemplateList(CommandUtil.SERVICE_TYPE_RDMBS);
         List<SelectItem> databases = new ArrayList<SelectItem>(templates.size());
         for (String template : templates) {
             databases.add(new SelectItem(template));
@@ -119,7 +119,7 @@ public class ListServicesBean {
     }
 
     public List<SelectItem> getJavaEESelectItems() {
-        List<String> templates = CommandUtil.listTemplates(CommandUtil.SERVICE_TYPE_JAVAEE);
+        List<String> templates = CommandUtil.getTemplateList(CommandUtil.SERVICE_TYPE_JAVAEE);
         List<SelectItem> javaEE = new ArrayList<SelectItem>(templates.size());
         for (String template : templates) {
             javaEE.add(new SelectItem(template));
