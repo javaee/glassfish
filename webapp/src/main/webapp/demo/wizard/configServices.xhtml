@@ -30,10 +30,10 @@
 
     This is services that will be provisioned for the uploaded application.  You can take all the defaults or customize it.
 
-    <tr:panelBox text="Database"
-         background="light"
-         inlineStyle="width: 500px;"
+    <tr:panelBox text="RDMBS"
+         inlineStyle="width: 600px;"
          id="databaseDetails"
+         icon="/images/icons/JDBC.gif"
          rendered="#{uploadBean.databasesMetaData.size() > 0}">
             <tr:table var="metaData" value="#{uploadBean.databasesMetaData}" horizontalGridVisible="false"
                               rowBandingInterval="1"
@@ -41,12 +41,15 @@
                 <tr:column headerText="Service Name">
                     #{metaData['name']}
                 </tr:column>
-                <tr:column headerText="Configuration">
-                    <tr:panelGroupLayout rendered="#{!metaData['templated-id']}">
-                        <tr:outputLabel for="osName" value="OS Name:"/>
-                        <tr:outputText id="osName" value="#{metaData['characteristics']['os-name']}"/>
+                <tr:column headerText="Characterstics">
+                    <tr:panelGroupLayout rendered="#{!metaData['template-id']}">
+                        <ui:repeat value="#{uploadBean.getListAsSet(metaData['characteristics'].keySet())}" var="char">
+                            <tr:outputLabel for="char" value="#{char}:"/>
+                            <tr:outputText id="char" value="#{metaData['characteristics'][char]}"/>
+                            <br/>
+                        </ui:repeat>
                     </tr:panelGroupLayout>
-                    <tr:panelGroupLayout rendered="#{metaData['templated-id']}">
+                    <tr:panelGroupLayout rendered="#{metaData['template-id']}">
                         <tr:outputLabel for="databseTemplate" value="Template:"/>
                         <tr:selectOneChoice id="databaseTemplate"
                                             value="#{uploadBean.database}" inlineStyle="display: inline-block;"
@@ -56,44 +59,32 @@
                         </tr:selectOneChoice>
                     </tr:panelGroupLayout>
                 </tr:column>
+                <tr:column headerText="Configuration">
+                </tr:column>
             </tr:table>
     </tr:panelBox>
     <tr:panelBox text="JavaEE"
          background="light"
-         inlineStyle="width: 500px;"
+         inlineStyle="width: 600px;"
+         icon="/images/icons/instance.gif"
          id="eeTemplateDetails"
          rendered="#{uploadBean.eeTemplatesMetaData.size() > 0}">
-            <tr:table var="metaData" value="#{uploadBean.eeTemplatesMetaData}" horizontalGridVisible="false"
+            <tr:table var="metaData" value="#{uploadBean.eeTemplatesDataModel}" horizontalGridVisible="false"
                               rowBandingInterval="1"
-                              inlineStyle="">
-                <tr:column headerText="Service Name">
+                              inlineStyle=""
+                              id="eeTemplateMetaData">
+                <tr:column headerText="Service Name" inlineStyle="vertical-align:  top">
                     #{metaData['name']}
                 </tr:column>
-                <tr:column headerText="Configuration">
-                    <tr:panelGroupLayout rendered="#{!metaData['templated-id']}">
-                        <tr:outputLabel for="osName" value="OS Name:"/>
-                        <tr:outputText id="osName" value="#{metaData['characteristics']['os-name']}"/>
-                        <br/>
-                        <tr:outputLabel for="amount" value="Cluster Size:"/>
-                        <tr:inputText id="amount" label="Clustersize:" value="#{uploadBean.eeTemplateMinMaxInstances}" columns="16"/>
-                        <div id="slider-range"></div>
-                        <script type="text/javascript">
-                            $(function() {
-                                $( "#slider-range" ).slider({
-                                    range: true,
-                                    min: 1,
-                                    max: 5,
-                                    values: [ $( "#wizard\\:amount" ).val().split(" - ")[0], $( "#wizard\\:amount" ).val().split(" - ")[1] ],
-                                    slide: function( event, ui ) {
-                                        $( "#wizard\\:amount" ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
-                                    }
-                                });
-                                $( "#wizard\\:amount" ).val( $( "#slider-range" ).slider( "values", 0 ) +
-                                        " - " + $( "#slider-range" ).slider( "values", 1 ) );
-                            });
-                        </script>
+                <tr:column headerText="Characterstics"  inlineStyle="vertical-align:  top">
+                    <tr:panelGroupLayout rendered="#{!metaData['template-id']}">
+                        <ui:repeat value="#{uploadBean.getListAsSet(metaData['characteristics'].keySet())}" var="char">
+                            <tr:outputLabel for="char" value="#{char}:"/>
+                            <tr:outputText id="char" value="#{metaData['characteristics'][char]}"/>
+                            <br/>
+                        </ui:repeat>
                     </tr:panelGroupLayout>
-                    <tr:panelGroupLayout rendered="#{metaData['templated-id']}">
+                    <tr:panelGroupLayout rendered="#{metaData['template-id']}">
                         <tr:outputLabel for="eeTemplate" value="Template:"/>
                         <tr:selectOneChoice id="eeTemplate"
                                             value="#{uploadBean.eeTemplate}" inlineStyle="display: inline-block;"
@@ -103,12 +94,40 @@
                         </tr:selectOneChoice>
                     </tr:panelGroupLayout>
                 </tr:column>
+                <tr:column headerText="Configuration">
+                    <tr:panelGroupLayout>
+                        <tr:panelFormLayout>
+                        <tr:outputLabel value="Cluster Size:"/>
+                        <tr:inputNumberSpinbox label="Min:" value="#{uploadBean.eeTemplateMinClusterSize}" minimum="1" maximum="16"  simple="false"/>
+                        <tr:inputNumberSpinbox label="Max:" value="#{uploadBean.eeTemplateMaxClusterSize}" minimum="1" maximum="16" />
+                        </tr:panelFormLayout>
+                        <!--tr:inputText id="amount" label="Clustersize:" value="#{uploadBean.eeTemplateMinMaxClusterSize}" columns="16"/>
+                        <div id="slider-range"></div>
+                        <script type="text/javascript">
+                            $(function() {
+                                var $input = $( "#wizard\\:eeTemplateMetaData\\:0\\:amount" );
+                                $( "#slider-range" ).slider({
+                                    range: true,
+                                    min: 1,
+                                    max: 5,
+                                    values: [ $input.val().split(" - ")[0], $input.val().split(" - ")[1] ],
+                                    slide: function( event, ui ) {
+                                        $input.val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
+                                    }
+                                });
+                                $input.val( $( "#slider-range" ).slider( "values", 0 ) +
+                                        " - " + $( "#slider-range" ).slider( "values", 1 ) );
+                            });
+                        </script-->
+                    </tr:panelGroupLayout>
+                </tr:column>
             </tr:table>
     </tr:panelBox>
     <tr:panelBox text="Load Balancer"
          background="light"
-         inlineStyle="width: 500px;"
+         inlineStyle="width: 600px;"
          id="lbDetails"
+         icon="/images/icons/cluster.gif"
          rendered="#{uploadBean.loadBalancersMetaData.size() > 0}">
         <tr:table var="metaData" value="#{uploadBean.loadBalancersMetaData}" horizontalGridVisible="false"
                           rowBandingInterval="1"
@@ -116,12 +135,15 @@
             <tr:column headerText="Service Name">
                 #{metaData['name']}
             </tr:column>
-            <tr:column headerText="Configuration">
-                <tr:panelGroupLayout rendered="#{!metaData['templated-id']}">
-                    <tr:outputLabel for="osName" value="OS Name:"/>
-                    <tr:outputText id="osName" value="#{metaData['characteristics']['os-name']}"/>
+            <tr:column headerText="Characterstics">
+                <tr:panelGroupLayout rendered="#{!metaData['template-id']}">
+                    <ui:repeat value="#{uploadBean.getListAsSet(metaData['characteristics'].keySet())}" var="char">
+                        <tr:outputLabel for="char" value="#{char}:"/>
+                        <tr:outputText id="char" value="#{metaData['characteristics'][char]}"/>
+                        <br/>
+                    </ui:repeat>
                 </tr:panelGroupLayout>
-                <tr:panelGroupLayout rendered="#{metaData['templated-id']}">
+                <tr:panelGroupLayout rendered="#{metaData['template-id']}">
                     <tr:outputLabel for="loadBalancerTemplate" value="Template:"/>
                     <tr:selectOneChoice id="loadBalancer"
                                         value="#{uploadBean.loadBalancer}" inlineStyle="display: inline-block;"
@@ -130,6 +152,8 @@
                         <f:ajax render=":wizard:loadBalancerDetails"/>
                     </tr:selectOneChoice>
                 </tr:panelGroupLayout>
+            </tr:column>
+            <tr:column headerText="Configuration">
             </tr:column>
         </tr:table>
     </tr:panelBox>

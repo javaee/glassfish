@@ -6,16 +6,14 @@ package org.glassfish.admingui.console;
 
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
+import javax.faces.model.DataModel;
+import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 
 import com.sun.faces.taglib.jsf_core.SelectItemTag;
@@ -43,9 +41,9 @@ public class UploadBean {
     private String contextRoot;
     private List<Map<String, Object>> metaData;
 
-    private String database;
-    private String eeTemplate;
-    private String loadBalancer;
+    private String database = "";
+    private String eeTemplate = "";
+    private String loadBalancer = "";
 
     private List<String> eeTemplates = new ArrayList<String>() {{
         add("GlassFish Small");
@@ -72,6 +70,10 @@ public class UploadBean {
     private List<Map> databasesMetaData = new ArrayList();
     private List<Map> eeTemplatesMetaData = new ArrayList();
     private List<Map> loadBalancersMetaData = new ArrayList();
+
+    private DataModel<Map> databasesDataModel;
+    private DataModel<Map> eeTemplatesDataModel;
+    private DataModel<Map> loadBalancersDataModel;
 
     /*{
         //metaData = CommandUtil.getPreSelectedServices("D:/Projects/console.next/svn/main/appserver/tests/paas/basic-db/target/basic_db_paas_sample.war");
@@ -100,12 +102,25 @@ public class UploadBean {
     void processMetaData() {
         for(Map oneService : metaData){
             String serviceType = (String) oneService.get("service-type");
+            String serviceName = (String) oneService.get("name");
             if (CommandUtil.SERVICE_TYPE_RDMBS.equals(serviceType)) {
                 databasesMetaData.add(oneService);
+                if (database.length() > 0)  {
+                    database += ", ";
+                }
+                database += serviceName;
             } else if (CommandUtil.SERVICE_TYPE_JAVAEE.equals(serviceType)) {
                 eeTemplatesMetaData.add(oneService);
+                if (eeTemplate.length() > 0)  {
+                    eeTemplate += ", ";
+                }
+                eeTemplate += serviceName;
             } else if (CommandUtil.SERVICE_TYPE_LB.equals(serviceType)) {
                 loadBalancersMetaData.add(oneService);
+                if (loadBalancer.length() > 0)  {
+                    loadBalancer += ", ";
+                }
+                loadBalancer += serviceName;
             }
         }
 
@@ -267,27 +282,48 @@ public class UploadBean {
     }
 
     public String getDatabase() {
-        return database;
+        if (databasesDataModel != null && databasesDataModel.isRowAvailable()) {
+            Map databaseMetaData = databasesDataModel.getRowData();
+            return (String) databaseMetaData.get("template-id");
+        } else {
+            return database;
+        }
     }
 
     public void setDatabase(String database) {
         this.database = database;
+        Map databaseMetaData = databasesDataModel.getRowData();
+        databaseMetaData.put("template-id", database);
     }
 
     public String getEeTemplate() {
+        if (eeTemplatesDataModel != null && eeTemplatesDataModel.isRowAvailable()) {
+            Map eeTemplateMetaData = eeTemplatesDataModel.getRowData();
+            return (String) eeTemplateMetaData.get("template-id");
+        }
         return eeTemplate;
     }
 
     public void setEeTemplate(String eeTemplate) {
         this.eeTemplate = eeTemplate;
+        Map eeTemplateMetaData = eeTemplatesDataModel.getRowData();
+        eeTemplateMetaData.put("template-id", eeTemplate);
+
     }
 
     public String getLoadBalancer() {
-        return loadBalancer;
+        if (loadBalancersDataModel != null && loadBalancersDataModel.isRowAvailable()) {
+            Map loadBalancerMetaData = loadBalancersDataModel.getRowData();
+            return (String) loadBalancerMetaData.get("template-id");
+        } else {
+            return loadBalancer;
+        }
     }
 
     public void setLoadBalancer(String loadBalancer) {
         this.loadBalancer = loadBalancer;
+        Map loadBalancerMetaData = loadBalancersDataModel.getRowData();
+        loadBalancerMetaData.put("template-id", loadBalancer);
     }
 
     public List<SelectItem> getDatabaseSelectItems() {
@@ -306,23 +342,54 @@ public class UploadBean {
         return eeTemplatesMetaData;
     }
 
-    public String getEeTemplateMinMaxInstances() {
-        /*
+    public String getEeTemplateMinMaxClusterSize() {
+        Map eeTemplateMetaData = eeTemplatesDataModel.getRowData();
         Map config = (Map)eeTemplateMetaData.get("configurations");
         String min = (String) config.get("min.clustersize");
         String max = (String) config.get("max.clustersize");
         return min + " - " + max;
-        */
-        return "";
     }
 
-    public void setEeTemplateMinMaxInstances(String minMaxInstances) {
-        /*
-        String minmax[] = minMaxInstances.split("-");
+    public void setEeTemplateMinMaxClusterSize(String minMaxClusterSize) {
+        Map eeTemplateMetaData = eeTemplatesDataModel.getRowData();
+        String minmax[] = minMaxClusterSize.split("-");
         Map config = (Map)eeTemplateMetaData.get("configurations");
-        config.put("min.clustersize", minmax[0].trim());
-        config.put("max.clustersize", minmax[1].trim());
-        */
+        config.put("min.clusterSize", minmax[0].trim());
+        config.put("max.clusterSize", minmax[1].trim());
+    }
+
+    public String getEeTemplateMinClusterSize() {
+        Map eeTemplateMetaData = eeTemplatesDataModel.getRowData();
+        Map config = (Map)eeTemplateMetaData.get("configurations");
+        if (config != null) {
+            return (String) config.get("min.clustersize");
+        }
+        return "1";
+    }
+
+    public void setEeTemplateMinClusterSize(String minClusterSize) {
+        Map eeTemplateMetaData = eeTemplatesDataModel.getRowData();
+        Map config = (Map)eeTemplateMetaData.get("configurations");
+        if (config != null) {
+            config.put("min.clustersize", minClusterSize);
+        }
+    }
+
+    public String getEeTemplateMaxClusterSize() {
+        Map eeTemplateMetaData = eeTemplatesDataModel.getRowData();
+        Map config = (Map)eeTemplateMetaData.get("configurations");
+        if (config != null) {
+            return (String) config.get("max.clustersize");
+        }
+        return "1";
+    }
+
+    public void setEeTemplateMaxClusterSize(String maxClusterSize) {
+        Map eeTemplateMetaData = eeTemplatesDataModel.getRowData();
+        Map config = (Map)eeTemplateMetaData.get("configurations");
+        if (config != null) {
+            config.put("max.clustersize", maxClusterSize);
+        }
     }
 
     public List<SelectItem> getLoadBalancerSelectItems() {
@@ -332,6 +399,36 @@ public class UploadBean {
     public List<Map> getLoadBalancersMetaData() {
         return loadBalancersMetaData;
     }
+
+    public DataModel<Map> getDatabasesDataModel() {
+        if (databasesDataModel == null) {
+            databasesDataModel = new ListDataModel<Map>(databasesMetaData);
+        }
+        return databasesDataModel;
+    }
+
+    public DataModel<Map> getEeTemplatesDataModel() {
+        if (eeTemplatesDataModel == null) {
+            eeTemplatesDataModel = new ListDataModel<Map>(eeTemplatesMetaData);
+        }
+        return eeTemplatesDataModel;
+    }
+
+    public DataModel<Map> getLoadBalancersDataModel() {
+        if (loadBalancersDataModel == null) {
+            loadBalancersDataModel = new ListDataModel<Map>(loadBalancersMetaData);
+        }
+        return loadBalancersDataModel;
+    }
+
+    public List getListAsSet(Set set) {
+         if (set != null) {
+            return new ArrayList(set);
+         } else {
+             return new ArrayList();
+         }
+    }
+
 
     static final String REST_URL="http://localhost:4848/management/domain";
 }

@@ -59,8 +59,9 @@
     </tr:panelFormLayout>
     <tr:separator/>
     <tr:panelFormLayout  id="templateInfo">
-        <tr:inputText label="Template Name: " value="Native" readOnly="true"/>
-        <tr:inputText label="Database: " value="DBNative" readOnly="true"/>
+        <tr:inputText label="Database: " value="#{uploadBean.database}" readOnly="true"/>
+        <tr:inputText label="JavaEE: " value="#{uploadBean.eeTemplate}" readOnly="true"/>
+        <tr:inputText label="Load Balancer: " value="#{uploadBean.loadBalancer}" readOnly="true"/>
     </tr:panelFormLayout>
     <tr:spacer height="40px"/>
     <tr:separator/>
