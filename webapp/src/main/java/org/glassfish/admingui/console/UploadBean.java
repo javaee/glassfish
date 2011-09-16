@@ -137,14 +137,6 @@ public class UploadBean {
                 //each Map is a Service that will be provisioned
                 metaData =  CommandUtil.getPreSelectedServices(tmpFile.getAbsolutePath());
                 processMetaData();
-
-                System.out.println("metaData = " + metaData);
-                Map dpAttrs = new HashMap();
-                dpAttrs.put("archive" , tmpFile.getAbsolutePath());
-                dpAttrs.put("test", "test String");
-                dpAttrs.put("modifiedServiceDesc", metaData);
-                Map res = (Map) RestUtil.restRequest(REST_URL + "/applications/_generate-glassfish-services-deployment-plan", dpAttrs, "GET", null, null, false, true).get("data");
-                System.out.println(res);
             }
         }catch(Exception ex){
             ex.printStackTrace();
@@ -162,7 +154,6 @@ public class UploadBean {
 
     public String doDeploy(){
 
-
         // Generate deployment plan based on modified service
         Map dpAttrs = new HashMap();
         dpAttrs.put("archive" , tmpFile.getAbsolutePath());
@@ -172,10 +163,9 @@ public class UploadBean {
         Map res = (Map) RestUtil.restRequest(REST_URL + "/applications/_generate-glassfish-services-deployment-plan", dpAttrs, "POST", null, null, false, true).get("data");
         Map extr = (Map) res.get("extraProperties");
         String deploymentPlanPath = (String) extr.get("deployment-plan-file-path");
-        System.out.println( extr.get("deployment-plan-file-path"));
+//        System.out.println( extr.get("deployment-plan-file-path"));
 
         Map payload = new HashMap();
-        //uncomment out when backend can generate the deployment plan.
         //payload.put("deploymentplan", deploymentPlanPath);
 
         payload.put("id", this.tmpFile.getAbsolutePath());
