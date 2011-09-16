@@ -76,6 +76,8 @@
     <tr:commandButton id="nextButton" text="Next &gt;&gt;" action="#{wizardBean.next}">
         <f:ajax render="@form" execute="@form"/>
     </tr:commandButton>
+    <tr:commandButton id="cancelButton" text="Cancel" action="/demo/applications"  />
+
     <script type="text/javascript">
         function autofill() {
             var fullPath = document.getElementById('wizard:upload').value;
