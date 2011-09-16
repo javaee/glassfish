@@ -47,17 +47,43 @@
                 xmlns:ps="http://admingui.glassfish.org/console"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
-    <h3>Manual and Auto Scaling  </h3>
-    <br/><br/>
+
+    
     <tr:panelHorizontalLayout halign="left" >
+        <tr:spacer height="40px"/>
         Environment Name: #{environmentBean.envName}
     </tr:panelHorizontalLayout>
 
     <div class="navObjectInfo">
         <div class="title headerPageTitle">Elasticity Settings</div>
+        <div class="subHeading">
+            <span>
+                Auto-scaling automatically launches or terminates instances based on
+                defined memory thresholds.
+                These settings allow you to control auto-scaling behavior.
+            </span>
+        </div>
+        <span style="display: inline-block; float: right">
+            <tr:commandButton id="saveButton" text="Save" action="#{scaleBean.saveScaling}" >
+                <f:ajax render="@form" execute="@form"/>
+            </tr:commandButton>
+        </span>
+        <tr:spacer height="40px"/>
         <tr:panelFormLayout  id="elasiticitySettings">
-            <tr:inputNumberSpinbox label="Min # of Instances:" value="2" minimum="1" maximum="4"/>
-            <tr:inputNumberSpinbox label="Max # of Instances:" value="6" minimum="1" maximum="6"/>
+            <tr:inputNumberSpinbox label="Minimum Instance Count: " value="#{scaleBean.minScale}" minimum="1" maximum="10"/>
+            <tr:inputNumberSpinbox label="Maximum Instance Count: " value="#{scaleBean.maxScale}" minimum="1" maximum="10"/>
+            <tr:spacer height="30px" />
+            
+            <tr:selectOneChoice label="Select Scaling Trigger :  ">
+                    <f:selectItem itemLabel="JVM Memory "/>
+            </tr:selectOneChoice>
+            <tr:selectBooleanCheckbox label="Enable: " value="true"/>
+            <tr:inputNumberSpinbox label="Threshold (% of JVM Memory) : " value="60" minimum="1" maximum="100" stepSize="4" />
+            <tr:inputNumberSpinbox label="Sample Intervals (seconds)  : " value="5" minimum="1" maximum="50" />
+
         </tr:panelFormLayout>
+        
+
     </div>
+
 </ui:fragment>
