@@ -49,9 +49,10 @@
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
 
     <h3>General Information for Environment </h3>
-    <tr:spacer height="40px"/>
+    
 
     <tr:panelHorizontalLayout halign="left" >
+        <tr:spacer height="40px"/>
         Environment Name: #{environmentBean.envName}
     </tr:panelHorizontalLayout>
 
@@ -69,9 +70,11 @@
                 <tr:column  headerText="Context Root">
                     #{app.contextRoot}
                 </tr:column>
-                <tr:column>launch</tr:column>
+                <tr:column headerText="URLs">
+                    <a id="applicationURL" href="#{app.url}" > Launch </a>
+                </tr:column>
                 <tr:column width="20px">
-                    <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="confirm('Application will be deleted.  Continue ? ');"/>
+                    <h:commandLink id="delete" styleClass="ui-icon ui-icon-trash" onclick="confirm('This feature is not yet fully implemented. It will be available soon.');"/>
                 </tr:column>
             </tr:table>
         </div>
