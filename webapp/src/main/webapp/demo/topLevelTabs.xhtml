@@ -48,15 +48,10 @@
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:tr="http://myfaces.apache.org/trinidad">
 
-    <ui:define name="head">
-        <f:metadata>
-        </f:metadata>
-    </ui:define>
-
     <h:form id="topLevelTabsForm" style="color: black;">
         <h:panelGroup id="topTabs">
             <f:event type="postAddToView" listener="#{tabBean.pageLoadListener}"/>
-            <tr:panelTabbed id="topLevelTabs" position ="above" inlineStyle="padding: 0px;">
+            <tr:panelTabbed id="topLevelTabs" position="above" inlineStyle="padding: 0px;">
                 <tr:showDetailItem text="Applications"
                                    disclosed="#{tabBean.isActiveTab('Applications')}"
                                    onclick="window.location = '#{request.contextPath}/demo/applications.jsf?_activeTab=Applications'; return false;"/>
