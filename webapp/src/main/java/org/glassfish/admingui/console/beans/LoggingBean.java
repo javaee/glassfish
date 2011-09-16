@@ -82,12 +82,19 @@ public class LoggingBean {
 	} else {
 	    firstRecord = "-1";
             lastRecord  = "-1";
+            HashMap noRec = new HashMap();
+            noRec.put("recordNumber", "No Records Found.");
+            records.add(noRec);
 	}
         return records;
     }
 
     public String valueChange(ValueChangeEvent valueChangeEvent) {
         instanceName = (String) valueChangeEvent.getNewValue();
+        startIndex = "";
+        searchForward = "false";
+        firstRecord = "";
+        lastRecord = "";
         return null;
     }
 
