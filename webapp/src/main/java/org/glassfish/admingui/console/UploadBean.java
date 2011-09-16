@@ -178,11 +178,8 @@ public class UploadBean {
         Map res = (Map) RestUtil.restRequest(REST_URL + "/applications/_generate-glassfish-services-deployment-plan", dpAttrs, "POST", null, null, false, true).get("data");
         Map extr = (Map) res.get("extraProperties");
         String deploymentPlanPath = (String) extr.get("deployment-plan-file-path");
-//        System.out.println( extr.get("deployment-plan-file-path"));
-
         Map payload = new HashMap();
-        //payload.put("deploymentplan", deploymentPlanPath);
-
+        payload.put("deploymentplan", deploymentPlanPath);
         payload.put("id", this.tmpFile.getAbsolutePath());
         if (!GuiUtil.isEmpty(this.appName)){
             payload.put("name", this.appName);
