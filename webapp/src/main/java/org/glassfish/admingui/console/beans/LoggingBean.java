@@ -8,9 +8,6 @@ package org.glassfish.admingui.console.beans;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import javax.faces.bean.*;
-import javax.faces.context.FacesContextFactory;
-import javax.faces.*;
-import javax.faces.context.FacesContext;
 import java.util.*;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
@@ -20,24 +17,42 @@ import org.glassfish.admingui.console.rest.RestUtil;
 @ViewScoped
 public class LoggingBean {
 
-    private String instanceName = null;
-    private String startIndex = null;
+    private String instanceName;
+    private String startIndex;
     private String searchForward = "false";
-    private String firstRecord = null;
-    private String lastRecord = null;
-    private Vector<SelectItem> instanceList = null;
+    private String firstRecord;
+    private String lastRecord;
+    private List<SelectItem> selectionList;
+    private String selectedIndex;
 
     public static final String TIME_FORMAT = " HH:mm:ss.SSS";
     
     public LoggingBean() {
-        FacesContextFactory factory = (FacesContextFactory)
-            FactoryFinder.getFactory(FactoryFinder.FACES_CONTEXT_FACTORY);
-        Map requestMap =
-                FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        List<String> instanceList = (new EnvironmentBean()).getInstanceNames();
+        selectionList = new ArrayList<SelectItem>();
+        for (String instance : instanceList) {
+                selectionList.add(new SelectItem(instance, instance));
+        }
+        if (selectionList.size() > 0) {
+            instanceName = (String)selectionList.get(0).getValue();
+            setSelectedIndex(instanceName);
+        }
     }
 
     public LoggingBean(String instanceName) {
         this.instanceName = instanceName;
+    }
+
+    public String getSelectedIndex() {
+        return selectedIndex;
+    }
+
+    public void setSelectedIndex(String instance) {
+        selectedIndex = instance;
+    }
+
+    public List<SelectItem> getSelectionList() {
+        return selectionList;
     }
 
     public List<Map> getLogMessages() {
@@ -71,18 +86,8 @@ public class LoggingBean {
         return records;
     }
 
-    public List<SelectItem> convertToSelectItem(List<String> instancesNameList) {
-        instanceList = new Vector<SelectItem>();
-        for (String instance : instancesNameList) {
-                instanceList.add(new SelectItem(0,instance));
-        }
-        return instanceList;
-    }
-
     public String valueChange(ValueChangeEvent valueChangeEvent) {
-        int selectedValue = ((Integer)valueChangeEvent.getNewValue()).intValue();
-        SelectItem si = instanceList.get(selectedValue);
-        instanceName = (String) si.getLabel();
+        instanceName = (String) valueChangeEvent.getNewValue();
         return null;
     }
 

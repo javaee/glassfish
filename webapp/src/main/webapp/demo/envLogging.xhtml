@@ -42,8 +42,8 @@
                 <div class="title headerPageTitle">Logging Results</div>
                 <div class="subHeading">View a server log file.</div>
                 <tr:selectOneChoice label="Instance: " id="instance" autoSubmit="true"
-                                    valueChangeListener="#{loggingBean.valueChange}">
-                    <f:selectItems value="#{loggingBean.convertToSelectItem(environmentBean.instanceNames)}"/>
+                                    value = "#{loggingBean.selectedIndex}" valueChangeListener="#{loggingBean.valueChange}">
+                    <f:selectItems value="#{loggingBean.selectionList}"/>
                 </tr:selectOneChoice>
                 <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{loggingBean.previous}">
                 </tr:commandButton>
