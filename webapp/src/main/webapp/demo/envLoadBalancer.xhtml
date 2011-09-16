@@ -53,4 +53,11 @@
     <tr:panelHorizontalLayout halign="left" >
         Environment Name: #{environmentBean.envName}
     </tr:panelHorizontalLayout>
+    <div class="navObjectInfo">
+        <tr:panelFormLayout  id="loadBalancerDetails">
+            <tr:inputText label="HTTP Listener Port " value="#{loadBalancerBean.httpPort}" readOnly="true"/>
+            <tr:inputText label="SSL Enabled " value="#{loadBalancerBean.sslEnabled}" readOnly="true"/>
+            <tr:inputText label="HTTPS Listener Port " value="#{loadBalancerBean.httpsPort}" readOnly="true"/>
+        </tr:panelFormLayout>
+    </div>
 </ui:fragment>
