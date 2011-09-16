@@ -21,6 +21,7 @@ import javax.faces.model.SelectItem;
 import com.sun.faces.taglib.jsf_core.SelectItemTag;
 import org.apache.myfaces.trinidad.model.UploadedFile;
 import org.glassfish.admingui.console.event.DragDropEvent;
+import org.glassfish.admingui.console.rest.JSONUtil;
 import org.glassfish.admingui.console.rest.RestUtil;
 import org.glassfish.admingui.console.util.CommandUtil;
 import org.glassfish.admingui.console.util.FileUtil;
@@ -80,7 +81,7 @@ public class UploadBean {
 
     void createSelectItems(String serviceType) {
         List<SelectItem> selectItems = new ArrayList();
-        List<String> templateList = getTemplateList(serviceType);
+        List<String> templateList = CommandUtil.getTemplateList(serviceType);
         for (String template : templateList) {
             selectItems.add(new SelectItem(template));
         }
@@ -160,8 +161,23 @@ public class UploadBean {
     }
 
     public String doDeploy(){
-        System.out.println("=================== doDeploy()");
+
+
+        // Generate deployment plan based on modified service
+        Map dpAttrs = new HashMap();
+        dpAttrs.put("archive" , tmpFile.getAbsolutePath());
+        String metaDataJson = JSONUtil.javaToJSON(metaData, -1);
+        dpAttrs.put("modifiedServiceDesc", metaDataJson);
+        //ensure that template-id is the same as templateId, ie whatever user has changed that to.
+        Map res = (Map) RestUtil.restRequest(REST_URL + "/applications/_generate-glassfish-services-deployment-plan", dpAttrs, "POST", null, null, false, true).get("data");
+        Map extr = (Map) res.get("extraProperties");
+        String deploymentPlanPath = (String) extr.get("deployment-plan-file-path");
+        System.out.println( extr.get("deployment-plan-file-path"));
+
         Map payload = new HashMap();
+        //uncomment out when backend can generate the deployment plan.
+        //payload.put("deploymentplan", deploymentPlanPath);
+
         payload.put("id", this.tmpFile.getAbsolutePath());
         if (!GuiUtil.isEmpty(this.appName)){
             payload.put("name", this.appName);
@@ -184,7 +200,7 @@ public class UploadBean {
             }
             deployingApps.add(this.appName);
             RestUtil.restRequest(REST_URL + "/applications/application", payload, "post", null, null, false, true);
-            return "/demo/overview";
+            return "/demo/applications";
         } catch (Exception ex) {
             if (deployingApps != null && deployingApps.contains(this.appName)){
                 deployingApps.remove(this.appName);
@@ -222,38 +238,6 @@ public class UploadBean {
     }
     public void setMetaData(List nm){
         this.metaData = nm;
-    }
-
-    //For now, since backend only supports one Virtualization setup, we will just return the list if anyone exist.
-    //Later, probably need to pass in the virtualiztion type to this method.
-    private static List<String> getTemplateList(String type){
-        List<String> tList = new ArrayList();
-        try{
-            List<String> virts = RestUtil.getChildNameList(REST_URL+"/virtualizations");
-            for(String virtType : virts){
-                List<String> virtInstances = RestUtil.getChildNameList(REST_URL+"/virtualizations/" + virtType);
-                if ( (virtInstances != null ) && (virtInstances.size() > 0)){
-                    //get the templates for this V that is the same service type
-                    String templateEndpoint = REST_URL+"/virtualizations/" + virtType + "/" + virtInstances.get(0) + "/template";
-                    if (RestUtil.doesProxyExist(templateEndpoint )){
-                        Map<String, String> templateEndpoints = RestUtil.getChildMap(templateEndpoint);
-                        for(String oneT : templateEndpoints.keySet()){
-                            Map<String, String> tempIndexes = RestUtil.getChildMap(templateEndpoints.get(oneT) + "/template-index");
-                            for(String oneI : tempIndexes.keySet()){
-                                Map attrs = RestUtil.getAttributesMap(tempIndexes.get(oneI));
-                                if ("ServiceType".equals (attrs.get("type"))  &&  type.equals(attrs.get("value"))){
-                                    //finally found it
-                                    tList.add(oneT);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }catch(Exception ex){
-
-        }
-        return tList;
     }
 
     public String databaseDropListener(DragDropEvent event) {

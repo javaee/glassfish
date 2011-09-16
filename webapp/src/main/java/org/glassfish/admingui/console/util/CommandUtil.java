@@ -35,7 +35,7 @@ public class CommandUtil {
 
         List<Map>services = null;
         //String endpoint = GuiUtil.getSessionValue("REST_URL")+"/list-services";
-        String endpoint = "http://localhost:4848/management/domain/list-services";
+        String endpoint = REST_URL+"/list-services";
 
         Map attrs = new HashMap();
         putOptionalAttrs(attrs, "appname", appName);
@@ -55,7 +55,7 @@ public class CommandUtil {
                 }
             }
         }
-        System.out.println("======== CommandUtil.listServices():  services = " + services);
+        //System.out.println("======== CommandUtil.listServices():  services = " + services);
         return services;
     }
 
@@ -67,32 +67,38 @@ public class CommandUtil {
      *                      If set to NULL, all service type will be returned.
      *	@return	<code>List<String></code>  Returns the list of names of the template.
      */
-    public static List<String> listTemplates(String serviceType){
+    public static List<String> getTemplateList(String type){
 
-        List<String>list = new ArrayList();
-        //String endpoint = GuiUtil.getSessionValue("REST_URL")+"/list-javaEE";
-        String endpoint = "http://localhost:4848/management/domain/list-javaEE";
-        Map attrs = new HashMap();
-        putOptionalAttrs(attrs, "type", serviceType);
-        //javaEE = RestUtil.getListFromREST(endpoint, attrs);
+    //For now, since backend only supports one Virtualization setup, we will just return the list if anyone exist.
+    //Later, probably need to pass in the virtualiztion type to this method.
+        List<String> tList = new ArrayList();
+        try{
+            List<String> virts = RestUtil.getChildNameList(REST_URL+"/virtualizations");
+            for(String virtType : virts){
+                List<String> virtInstances = RestUtil.getChildNameList(REST_URL+"/virtualizations/" + virtType);
+                if ( (virtInstances != null ) && (virtInstances.size() > 0)){
+                    //get the templates for this V that is the same service type
+                    String templateEndpoint = REST_URL+"/virtualizations/" + virtType + "/" + virtInstances.get(0) + "/template";
+                    if (RestUtil.doesProxyExist(templateEndpoint )){
+                        Map<String, String> templateEndpoints = RestUtil.getChildMap(templateEndpoint);
+                        for(String oneT : templateEndpoints.keySet()){
+                            Map<String, String> tempIndexes = RestUtil.getChildMap(templateEndpoints.get(oneT) + "/template-index");
+                            for(String oneI : tempIndexes.keySet()){
+                                Map attrs = RestUtil.getAttributesMap(tempIndexes.get(oneI));
+                                if ("ServiceType".equals (attrs.get("type"))  &&  type.equals(attrs.get("value"))){
+                                    //finally found it
+                                    tList.add(oneT);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }catch(Exception ex){
 
-        //provide dummy data as list-javaEE endpoint is not available yet.
-        if (SERVICE_TYPE_JAVAEE.equals(serviceType)){
-            list.add("Native");
-            list.add("GLASSFISH_SMALL");
-            list.add("GLASSFISH_TINY");
         }
-        if (SERVICE_TYPE_RDMBS.equals(serviceType)){
-            list.add("NDBative");
-            list.add("DBSql");
-        }
-        if (SERVICE_TYPE_LB.equals(serviceType)){
-            list.add("LBBative");
-            list.add("MyLB");
-        }
-        return list;
+        return tList;
     }
-    
 
     /**
      *	<p> This method returns the list of of Services that is pre-selected by Orchestrator.  It is indexed by the serviceType.
