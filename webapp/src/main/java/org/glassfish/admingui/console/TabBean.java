@@ -20,21 +20,10 @@ import javax.faces.event.ComponentSystemEvent;
 // This is an ugly, ugly hack. Post-OOW, when we hopefully are using a better
 // component set, this can be made "right".
 public class TabBean {
-    private String currentTab = "/demo/applications.jsf";
+    private String currentTab = "Applications";
 
-    private List<String> tabs = new ArrayList<String>() {{
-        add("/demo/applications.xhtml");
-        add("/demo/environments.xhtml");
-        /*
-        add("/demo/listServices.xhtml");
-        add("/demo/listTemplates.xhtml");
-         */
-    }};
-    
     public boolean isActiveTab(String tab) {
-        tab = tab.replace(".jsf", ".xhtml");
-        String viewId = FacesContext.getCurrentInstance().getViewRoot().getViewId();
-        return viewId.equals(tab) && tabs.contains(tab);
+        return getCurrentTab().equalsIgnoreCase(tab);
     }
 
     public String getCurrentTab() {
@@ -46,5 +35,9 @@ public class TabBean {
     }
 
     public void pageLoadListener(ComponentSystemEvent event) throws javax.faces.event.AbortProcessingException {
+        String activeTab = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("_activeTab");
+        if (activeTab != null) {
+            setCurrentTab(activeTab);
+        }
     }
 }

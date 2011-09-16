@@ -50,19 +50,19 @@
 
     <ui:define name="head">
         <f:metadata>
-            <f:event type="postAddToView" listener="#{tabBean.pageLoadListener}"/>
         </f:metadata>
     </ui:define>
 
     <h:form id="topLevelTabsForm" style="color: black;">
         <h:panelGroup id="topTabs">
+            <f:event type="postAddToView" listener="#{tabBean.pageLoadListener}"/>
             <tr:panelTabbed id="topLevelTabs" position ="above" inlineStyle="padding: 0px;">
                 <tr:showDetailItem text="Applications"
-                                   disclosed="#{tabBean.isActiveTab('/demo/applications.jsf')}"
-                                   onclick="window.location = '#{request.contextPath}/demo/applications.jsf'; return false;"/>
+                                   disclosed="#{tabBean.isActiveTab('Applications')}"
+                                   onclick="window.location = '#{request.contextPath}/demo/applications.jsf?_activeTab=Applications'; return false;"/>
                 <tr:showDetailItem text="Environments"
-                                   disclosed="#{tabBean.isActiveTab('/demo/environments.jsf')}"
-                                   onclick="window.location = '#{request.contextPath}/demo/environments.jsf'; return false;"/>
+                                   disclosed="#{tabBean.isActiveTab('Environments')}"
+                                   onclick="window.location = '#{request.contextPath}/demo/environments.jsf?_activeTab=Environments'; return false;"/>
                 <!--
                 <tr:showDetailItem text="Services"
                                    disclosed="#{tabBean.isActiveTab('/demo/listServices.jsf')}"
