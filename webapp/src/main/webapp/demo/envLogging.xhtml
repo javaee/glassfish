@@ -28,11 +28,16 @@
              xmlns:ps="http://admingui.glassfish.org/console"
              xmlns:tr="http://myfaces.apache.org/trinidad"
              xmlns:trh="http://myfaces.apache.org/trinidad/html">
+
+
+    <h3>View Logs for Environment </h3>
+
+    <tr:panelHorizontalLayout halign="left" >
+        <tr:spacer height="40px"/>
+        Environment Name: #{environmentBean.envName}
+    </tr:panelHorizontalLayout>
+
         <div>
-            <br/><br/>
-            <tr:panelHorizontalLayout halign="left" >
-                Environment Name: #{environmentBean.envName}
-            </tr:panelHorizontalLayout>
             <div class="navObjectInfo">
                 <div class="title headerPageTitle">Logging Results</div>
                 <div class="subHeading">View a server log file.</div>
