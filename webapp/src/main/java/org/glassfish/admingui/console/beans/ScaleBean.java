@@ -9,7 +9,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.*;
+import javax.faces.context.FacesContext;
+
 import org.glassfish.admingui.console.rest.RestUtil;
 
 
@@ -119,6 +122,9 @@ public class ScaleBean implements Serializable {
             payload.put("min", minScale);
             payload.put("max", maxScale);
             RestUtil.restRequest(endpoint, payload, "POST", null, null, true);
+            FacesContext.getCurrentInstance().addMessage("saveButton",
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Saved successfully."));
+
 
 //            Comment out for now until create-memory-alert is ready from backend.
 //            String alertEndpoint = endpoint + "/alerts/alert/";
@@ -131,6 +137,8 @@ public class ScaleBean implements Serializable {
 //            payload2.put("enabled", enabled);
 //            RestUtil.restRequest(alertEndpoint+"/create-memory-alert", payload2, "POST", null, null, true);
         }catch(Exception ex){
+            FacesContext.getCurrentInstance().addMessage("saveButton",
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",  ex.getMessage()));
         }
         return null;
     }

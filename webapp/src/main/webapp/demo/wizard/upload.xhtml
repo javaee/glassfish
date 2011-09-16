@@ -69,6 +69,7 @@
         <tr:inputText id="contextRoot" label="Context Root:  " value="#{uploadBean.contextRoot}"  columns="40"/>
         <tr:inputText label="Description:  " value="#{uploadBean.description}" columns="40"/>
     </tr:panelFormLayout>
+    <tr:spacer height="40px"/>
     <tr:separator/>
     <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{wizardBean.previous}" disabled="true">
         <f:ajax render="@form" execute="@form"/>

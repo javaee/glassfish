@@ -52,20 +52,20 @@
     Review the information below and click Deploy
 
     <tr:spacer height="40px"/>
-    <tr:panelFormLayout  id="appInfo">
-        <tr:inputText label="Application Name: " value="#{uploadBean.appName}" readOnly="true"/>
-        <tr:inputText label="Context Root: " value="#{uploadBean.contextRoot}" readOnly="true"/>
-        <tr:inputText label="Description: " value="#{uploadBean.description}" readOnly="true"/>
-    </tr:panelFormLayout>
-    <tr:separator/>
-    <tr:panelFormLayout  id="templateInfo">
-        <tr:inputText label="Database: " value="#{uploadBean.database}" readOnly="true"/>
-        <tr:inputText label="JavaEE: " value="#{uploadBean.eeTemplate}" readOnly="true"/>
-        <tr:inputText label="Load Balancer: " value="#{uploadBean.loadBalancer}" readOnly="true"/>
+    <tr:panelFormLayout  id="appInfo" inlineStyle="width: 100%">
+        <tr:group>
+            <tr:inputText label="Application Name: " value="#{uploadBean.appName}" readOnly="true"/>
+            <tr:inputText label="Context Root: " value="#{uploadBean.contextRoot}" readOnly="true"/>
+            <tr:inputText label="Description: " value="#{uploadBean.description}" readOnly="true"/>
+        </tr:group>
+        <tr:group>
+            <tr:inputText label="Database: " value="#{uploadBean.database}" readOnly="true" rendered="#{!uploadBean.database.isEmpty()}"/>
+            <tr:inputText label="JavaEE: " value="#{uploadBean.eeTemplate}" readOnly="true"  rendered="#{!uploadBean.eeTemplate.isEmpty()}"/>
+            <tr:inputText label="Load Balancer: " value="#{uploadBean.loadBalancer}" readOnly="true"  rendered="#{!uploadBean.loadBalancer.isEmpty()}"/>
+        </tr:group>
     </tr:panelFormLayout>
     <tr:spacer height="40px"/>
     <tr:separator/>
-    <tr:spacer height="40px"/>
     <tr:commandButton id="prevButton" text="&lt;&lt; Previous" action="#{wizardBean.previous}">
     </tr:commandButton>
     <tr:commandButton id="nextButton" text=" Deploy " action="#{uploadBean.doDeploy}"

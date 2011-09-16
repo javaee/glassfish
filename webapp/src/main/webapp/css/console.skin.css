@@ -183,5 +183,14 @@ af|panelBox::body af|panelBox::header img {
     width: 16px;
     height: 16px;
     padding-right: 10px;
+}
 
+.OraInlineErrorText {
+    padding:  5px;
+    color: red;
+}
+
+.OraInlineInfoText {
+    padding:  5px;
+    color: green;
 }
