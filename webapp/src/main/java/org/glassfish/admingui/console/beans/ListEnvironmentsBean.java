@@ -4,18 +4,14 @@
  */
 package org.glassfish.admingui.console.beans;
 
-import org.glassfish.admingui.console.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
 import org.glassfish.admingui.console.rest.RestUtil;
-import org.glassfish.admingui.console.util.CommandUtil;
 
 /**
  *
@@ -56,7 +52,7 @@ public class ListEnvironmentsBean implements Serializable {
                     //assume that if the cluster has VMC, thats an environment
                     if (RestUtil.doesProxyExist( prefix + oneCluster + "/virtual-machine-config/" + instanceList.get(0))){
                         List<String> apps = RestUtil.getChildNameList(prefix+oneCluster+"/application-ref");
-                        System.out.println("======== getEnvsAndApps : " + apps );
+                        //System.out.println("======== getEnvsAndApps : " + apps );
                         Map env = new HashMap();
                         env.put("clusterName", oneCluster);
                         env.put("instanceCount",  instanceList.size());
