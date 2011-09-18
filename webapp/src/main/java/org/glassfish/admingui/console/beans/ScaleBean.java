@@ -22,10 +22,12 @@ public class ScaleBean implements Serializable {
 
     private String minScale = "1";
     private String maxScale = "2";
-    private String endpoint = "";
+    private String elasticEndpoint = "";
+    private String alertEndpoint = "";
     private String threshold = "80";
     private String sampleInterval = "5";
     private String enabled = "true";
+    private String alertName=null;
 
     @ManagedProperty(value="#{environmentBean.envName}")
     private String envName;
@@ -40,14 +42,34 @@ public class ScaleBean implements Serializable {
 
     public void setEnvName(String en){
         envName = en;
-        endpoint = REST_URL + "/elastic-services/elasticservice/" + envName;
+        elasticEndpoint = REST_URL + "/elastic-services/elasticservice/" + envName;
+        alertEndpoint = elasticEndpoint + "/alerts/alert/";
+        try{
+            Map elasticMap = RestUtil.getAttributesMap(elasticEndpoint);
+            minScale = (String) elasticMap.get("min");
+            maxScale = (String) elasticMap.get("max");
+            List<String> alertList = RestUtil.getChildNameList(alertEndpoint);
+            if (alertList.size()>0){
+                alertName = alertList.get(0);
+                Map payload = new HashMap();
+                payload.put("serviceName", envName);
+                payload.put("alertName", alertName);
+                Map data = (Map) RestUtil.restRequest( REST_URL  + "/elastic-services/describe-memory-alert", payload, "GET", null, null, false, true).get("data");
+                Map Props = (Map) data.get("properties");
+                threshold =  (String) Props.get("threshold");
+                enabled = (String) Props.get("enabled");
+                sampleInterval = (String) Props.get("sampleInterval");
+            }else{
+                alertName=envName + "-memory-alert";
+                //take defaults
+            }
+            
+        }catch(Exception ex){
+            
+        }
     }
 
     public String getMinScale(){
-        String elasticEndpoint = REST_URL + "/elastic-services/elasticservice/" + envName;
-        if (RestUtil.doesProxyExist(elasticEndpoint)){
-            minScale = (String) RestUtil.getAttributesMap(elasticEndpoint).get("min");
-        }
         return minScale;
     }
 
@@ -56,9 +78,6 @@ public class ScaleBean implements Serializable {
     }
 
     public String getMaxScale(){
-        if (RestUtil.doesProxyExist(endpoint)){
-            maxScale = (String) RestUtil.getAttributesMap(endpoint).get("max");
-        }
         return maxScale;
     }
 
@@ -66,49 +85,29 @@ public class ScaleBean implements Serializable {
         maxScale = mm;
     }
 
+    
+    public String getAlertName(){
+        return alertName;
+    }
+
+    
     public String getSampleInterval(){
-        try{
-            String alertEndpoint = endpoint + "/alerts/alert/";
-            List<String> alertList = RestUtil.getChildNameList(alertEndpoint);
-            sampleInterval = (String) RestUtil.getAttributesMap(alertEndpoint + "/" + alertList.get(0)).get("sampleInterval");
-        }catch(Exception ex){
-        }
         return sampleInterval;
     }
 
-    public void setSampleInterval(String sampleI) {
-        sampleInterval = sampleI;
+    public void setSampleInterval(String sample) {
+        sampleInterval = sample;
     }
 
     public String getThreshold(){
-        try{
-            String alertEndpoint = endpoint + "/alerts/alert/";
-            List<String> alertList = RestUtil.getChildNameList(alertEndpoint);
-            Map payload = new HashMap();
-            payload.put("service" , envName);
-            payload.put("alert", alertList.get(0));
-            //Map alertAttrs = RestUtil.restRequest(endpoint+"/describe-memory-alert", null, "GET", null, null, true);
-            //threshold =  (String) alertAttrs.get("threshold");
-        }catch(Exception ex){
-        }
         return threshold;
     }
 
-    public void setThreshold(String th) {
-        threshold = th;
+    public void setThreshold(String thres) {
+        threshold = thres;
     }
 
     public String getEnabled(){
-        try{
-            String alertEndpoint = endpoint + "/alerts/alert/";
-            List<String> alertList = RestUtil.getChildNameList(alertEndpoint);
-            Map payload = new HashMap();
-            payload.put("service" , envName);
-            payload.put("alert", alertList.get(0));
-            //Map alertAttrs = RestUtil.restRequest(endpoint+"/describe-memory-alert", null, "GET", null, null, true);
-            //enabled =  (String) alertAttrs.get("enabled");
-        }catch(Exception ex){
-        }
         return enabled;
     }
 
@@ -121,21 +120,18 @@ public class ScaleBean implements Serializable {
             Map payload = new HashMap();
             payload.put("min", minScale);
             payload.put("max", maxScale);
-            RestUtil.restRequest(endpoint, payload, "POST", null, null, true);
+            RestUtil.restRequest(elasticEndpoint, payload, "POST", null, null, true);
+
+            Map payload2 = new HashMap();
+            payload2.put("serviceName", envName);
+            payload2.put("alertName", alertName);
+            payload2.put("threshold", threshold);
+            payload2.put("sample-interval", sampleInterval);
+            payload2.put("enabled", enabled);
+            RestUtil.restRequest(REST_URL +"/elastic-services/create-memory-alert", payload2, "POST", null, null, true);
             FacesContext.getCurrentInstance().addMessage("saveButton",
                     new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Saved successfully."));
 
-
-//            Comment out for now until create-memory-alert is ready from backend.
-//            String alertEndpoint = endpoint + "/alerts/alert/";
-//            List<String> alertList = RestUtil.getChildNameList(alertEndpoint);
-//            Map payload2 = new HashMap();
-//            payload2.put("service", envName);
-//            payload2.put("threshold", threshold);
-//            payload2.put("sample-interval", sampleInterval);
-//            payload2.put("alert", alertList.get(0));
-//            payload2.put("enabled", enabled);
-//            RestUtil.restRequest(alertEndpoint+"/create-memory-alert", payload2, "POST", null, null, true);
         }catch(Exception ex){
             FacesContext.getCurrentInstance().addMessage("saveButton",
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",  ex.getMessage()));

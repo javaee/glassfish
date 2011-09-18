@@ -78,13 +78,9 @@
             <tr:selectOneChoice label="Select Scaling Trigger :  ">
                     <f:selectItem itemLabel="JVM Memory "/>
             </tr:selectOneChoice>
-            <tr:selectBooleanCheckbox label="Enable: " value="true"/>
-            <tr:inputNumberSpinbox label="Threshold (% of JVM Memory) : " value="60" minimum="1" maximum="100" stepSize="4" />
-            <tr:inputNumberSpinbox label="Sample Intervals (seconds)  : " value="5" minimum="1" maximum="50" />
-
+            <tr:selectBooleanCheckbox label="Enable: " value="#{scaleBean.enabled}"/>
+            <tr:inputNumberSpinbox label="Threshold (% of JVM Memory) : " value="#{scaleBean.threshold}" minimum="1" maximum="100" stepSize="4" />
+            <tr:inputNumberSpinbox label="Sample Intervals (minutes)  : " value="#{scaleBean.sampleInterval}" minimum="1" maximum="30" />
         </tr:panelFormLayout>
-        
-
     </div>
-
 </ui:fragment>
