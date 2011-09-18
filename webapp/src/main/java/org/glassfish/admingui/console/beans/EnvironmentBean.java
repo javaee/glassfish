@@ -73,11 +73,24 @@ public class EnvironmentBean implements Serializable {
                 Map attrs = new HashMap();
                 attrs.put("whichtarget", envName);
                 List<Map> iList =  RestUtil.getListFromREST(REST_URL+"/list-instances", attrs, "instanceList");
+                int num=0;
                 for(Map oneI : iList){
                     if("running".equals(((String)oneI.get("status")).toLowerCase())){
                         oneI.put("statusImage", "/images/running_small.gif");
+                        oneI.put("actionImage", "/images/stop-instance.png");
+                        oneI.put("action", "stop-instance");
+                        oneI.put("confirmMsg", "Instance will be stopped, continue ? ");
+                        oneI.put("shortDesc", "Stop Instance");
+                        oneI.put("num", ""+num);
+                        num++;
                     }else{
                         oneI.put("statusImage", "/images/not-running_small.png");
+                        oneI.put("actionImage", "/images/start-instance.png");
+                        oneI.put("action", "start-instance");
+                        oneI.put("confirmMsg", "Instance will be started, continue ? ");
+                        oneI.put("shortDesc",  "Start Instance");
+                        oneI.put("num", ""+num);
+                        num++;
                     }
                     instances.add(oneI);
                 }
@@ -96,6 +109,15 @@ public class EnvironmentBean implements Serializable {
             }
         }
         return instanceNames;
+    }
+
+    public void instanceAction(String action, String instanceName){
+        System.out.println("------------- action = " + REST_URL+"/servers/server/"+instanceName+"/"+action);
+        try{
+            RestUtil.restRequest(REST_URL+"/servers/server/"+instanceName+"/"+action, null , "POST", null, null, false);
+        }catch(Exception ex){
+        }
+        instances = null;
     }
 
 
