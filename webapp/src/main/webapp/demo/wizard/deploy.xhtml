@@ -59,9 +59,9 @@
             <tr:inputText label="Description: " value="#{uploadBean.description}" readOnly="true"/>
         </tr:group>
         <tr:group>
-            <tr:inputText label="Database: " value="#{uploadBean.database}" readOnly="true" rendered="#{!uploadBean.database.isEmpty()}"/>
-            <tr:inputText label="JavaEE: " value="#{uploadBean.eeTemplate}" readOnly="true"  rendered="#{!uploadBean.eeTemplate.isEmpty()}"/>
             <tr:inputText label="Load Balancer: " value="#{uploadBean.loadBalancer}" readOnly="true"  rendered="#{!uploadBean.loadBalancer.isEmpty()}"/>
+            <tr:inputText label="Java EE: " value="#{uploadBean.eeTemplate}" readOnly="true"  rendered="#{!uploadBean.eeTemplate.isEmpty()}"/>
+            <tr:inputText label="Database: " value="#{uploadBean.database}" readOnly="true" rendered="#{!uploadBean.database.isEmpty()}"/>
         </tr:group>
     </tr:panelFormLayout>
     <tr:spacer height="40px"/>
