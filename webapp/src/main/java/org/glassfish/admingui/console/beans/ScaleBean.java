@@ -46,8 +46,10 @@ public class ScaleBean implements Serializable {
         alertEndpoint = elasticEndpoint + "/alerts/alert/";
         try{
             Map elasticMap = RestUtil.getAttributesMap(elasticEndpoint);
-            minScale = (String) elasticMap.get("min");
-            maxScale = (String) elasticMap.get("max");
+            if (elasticMap.size()>0){
+                minScale = (String) elasticMap.get("min");
+                maxScale = (String) elasticMap.get("max");
+            }
             List<String> alertList = RestUtil.getChildNameList(alertEndpoint);
             if (alertList.size()>0){
                 alertName = alertList.get(0);
