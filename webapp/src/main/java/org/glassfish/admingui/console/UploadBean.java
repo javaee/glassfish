@@ -44,6 +44,8 @@ public class UploadBean {
     private String database = "";
     private String eeTemplate = "";
     private String loadBalancer = "";
+    private String minClusterSize = "1";
+    private String maxClusterSize = "2";
 
     private List<String> eeTemplates = new ArrayList<String>() {{
         add("GlassFish Small");
@@ -76,8 +78,8 @@ public class UploadBean {
     private DataModel<Map> loadBalancersDataModel;
 
     /*{
-        //metaData = CommandUtil.getPreSelectedServices("D:/Projects/console.next/svn/main/appserver/tests/paas/basic-db/target/basic_db_paas_sample.war");
-        metaData = CommandUtil.getPreSelectedServices("/opt/console.next/svn/main/appserver/tests/paas/basic-db/target/basic_db_paas_sample.war");
+        metaData = CommandUtil.getPreSelectedServices("D:/Projects/console.next/svn/main/appserver/tests/paas/basic-db/target/basic_db_paas_sample.war");
+        //metaData = CommandUtil.getPreSelectedServices("/opt/console.next/svn/main/appserver/tests/paas/basic-db/target/basic_db_paas_sample.war");
         processMetaData();
     }*/
 
@@ -340,31 +342,43 @@ public class UploadBean {
     }
 
     public String getEeTemplateMinMaxClusterSize() {
-        Map eeTemplateMetaData = eeTemplatesDataModel.getRowData();
-        Map config = (Map)eeTemplateMetaData.get("configurations");
-        String min = (String) config.get("min.clustersize");
-        String max = (String) config.get("max.clustersize");
-        return min + " - " + max;
+        if (eeTemplatesDataModel != null && eeTemplatesDataModel.isRowAvailable()) {
+            Map eeTemplateMetaData = eeTemplatesDataModel.getRowData();
+            Map config = (Map)eeTemplateMetaData.get("configurations");
+            if (config != null) {
+                String min = (String) config.get("min.clustersize");
+                String max = (String) config.get("max.clustersize");
+                return min + " - " + max;
+            }
+        }
+        return minClusterSize + " - " + maxClusterSize;
     }
 
     public void setEeTemplateMinMaxClusterSize(String minMaxClusterSize) {
-        Map eeTemplateMetaData = eeTemplatesDataModel.getRowData();
-        String minmax[] = minMaxClusterSize.split("-");
-        Map config = (Map)eeTemplateMetaData.get("configurations");
-        config.put("min.clusterSize", minmax[0].trim());
-        config.put("max.clusterSize", minmax[1].trim());
+        if (eeTemplatesDataModel != null && eeTemplatesDataModel.isRowAvailable()) {
+            Map eeTemplateMetaData = eeTemplatesDataModel.getRowData();
+            String minmax[] = minMaxClusterSize.split("-");
+            Map config = (Map)eeTemplateMetaData.get("configurations");
+            if (config != null) {
+                config.put("min.clusterSize", minmax[0].trim());
+                config.put("max.clusterSize", minmax[1].trim());
+            }
+        }
     }
 
     public String getEeTemplateMinClusterSize() {
-        Map eeTemplateMetaData = eeTemplatesDataModel.getRowData();
-        Map config = (Map)eeTemplateMetaData.get("configurations");
-        if (config != null) {
-            return (String) config.get("min.clustersize");
+        if (eeTemplatesDataModel != null && eeTemplatesDataModel.isRowAvailable()) {
+            Map eeTemplateMetaData = eeTemplatesDataModel.getRowData();
+            Map config = (Map)eeTemplateMetaData.get("configurations");
+            if (config != null) {
+                return (String) config.get("min.clustersize");
+            }
         }
-        return "1";
+        return minClusterSize;
     }
 
     public void setEeTemplateMinClusterSize(String minClusterSize) {
+        this.minClusterSize = minClusterSize;
         Map eeTemplateMetaData = eeTemplatesDataModel.getRowData();
         Map config = (Map)eeTemplateMetaData.get("configurations");
         if (config != null) {
@@ -373,15 +387,18 @@ public class UploadBean {
     }
 
     public String getEeTemplateMaxClusterSize() {
-        Map eeTemplateMetaData = eeTemplatesDataModel.getRowData();
-        Map config = (Map)eeTemplateMetaData.get("configurations");
-        if (config != null) {
-            return (String) config.get("max.clustersize");
+        if (eeTemplatesDataModel != null && eeTemplatesDataModel.isRowAvailable()) {
+            Map eeTemplateMetaData = eeTemplatesDataModel.getRowData();
+            Map config = (Map)eeTemplateMetaData.get("configurations");
+            if (config != null) {
+                return (String) config.get("max.clustersize");
+            }
         }
-        return "1";
+        return maxClusterSize;
     }
 
     public void setEeTemplateMaxClusterSize(String maxClusterSize) {
+        this.maxClusterSize = maxClusterSize;
         Map eeTemplateMetaData = eeTemplatesDataModel.getRowData();
         Map config = (Map)eeTemplateMetaData.get("configurations");
         if (config != null) {
@@ -424,6 +441,16 @@ public class UploadBean {
          } else {
              return new ArrayList();
          }
+    }
+
+    public String getCharacteristicDisplayName(String characteristic) {
+        if ("os-name".equals(characteristic)) {
+            return "OS Name";
+        } else if ("service-type".equals(characteristic)){
+            return "Service Type";
+        } else {
+            return characteristic;
+        }
     }
 
 
