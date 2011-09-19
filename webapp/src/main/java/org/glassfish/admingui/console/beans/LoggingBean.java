@@ -19,11 +19,13 @@ public class LoggingBean {
 
     private String instanceName;
     private String startIndex;
-    private String searchForward = "false";
+    private String searchForward;
     private String firstRecord;
     private String lastRecord;
     private List<SelectItem> selectionList;
+    private List<Map> records;
     private String selectedIndex;
+    private boolean getRecords;
 
     public static final String TIME_FORMAT = " HH:mm:ss.SSS";
     
@@ -37,6 +39,10 @@ public class LoggingBean {
             instanceName = (String)selectionList.get(0).getValue();
             setSelectedIndex(instanceName);
         }
+        firstRecord = "0";
+        lastRecord = "0";
+        searchForward = "false";
+        getRecords = true;
     }
 
     public LoggingBean(String instanceName) {
@@ -61,12 +67,11 @@ public class LoggingBean {
         attrs.put("instanceName", instanceName);
         attrs.put("startIndex", startIndex);
         attrs.put("searchForward", searchForward);
-        attrs.put("maximumNumberOfResults", 30);
-        List<Map> records = null;
-        if (instanceName != null) {
+        if (instanceName != null && getRecords) {
             Map data = (Map)RestUtil.restRequest(endPoint, attrs, "GET", null, null, false, true).get("data");
             records = (List<Map>) data.get("records");
             records = processLogRecords(records);
+            getRecords = false;
         }
         return records;
     }
@@ -77,13 +82,30 @@ public class LoggingBean {
                 new Date(new Long(record.get("loggedDateTimeInMS").toString()))));
         }
         if ((records != null) && (records.size() > 0)) {
-            firstRecord    = records.get(records.size()-1).get("recordNumber").toString();
-            lastRecord   = records.get(0).get("recordNumber").toString();
+            firstRecord   = records.get(0).get("recordNumber").toString();
+            lastRecord    = records.get(records.size()-1).get("recordNumber").toString();
+            if (firstRecord == null)
+                firstRecord = "0";
+            if (lastRecord == null)
+                lastRecord = "0";
+            int firstRow = 0;
+            try {
+                firstRow = Integer.parseInt(firstRecord);
+                int lastRow = Integer.parseInt(lastRecord);
+                if (firstRow > lastRow) {
+                    String temp = firstRecord;
+                    firstRecord = lastRecord;
+                    lastRecord = temp;
+                }
+            } catch (NumberFormatException ex) {
+                // ignore
+            }
+
 	} else {
 	    firstRecord = "-1";
             lastRecord  = "-1";
             HashMap noRec = new HashMap();
-            noRec.put("recordNumber", "No Records Found.");
+            noRec.put("loggedDateTimeInMS", "No items Found.");
             records.add(noRec);
 	}
         return records;
@@ -91,22 +113,24 @@ public class LoggingBean {
 
     public String valueChange(ValueChangeEvent valueChangeEvent) {
         instanceName = (String) valueChangeEvent.getNewValue();
-        startIndex = "";
+        firstRecord = "0";
+        lastRecord = "0";
         searchForward = "false";
-        firstRecord = "";
-        lastRecord = "";
+        getRecords = true;
         return null;
     }
 
     public String previous() {
         searchForward = "false";
         startIndex = firstRecord;
+        getRecords = true;
         return null;
     }
 
     public String next() {
         searchForward = "true";
         startIndex = lastRecord;
+        getRecords = true;
         return null;
     }
 
