@@ -30,15 +30,22 @@
                 template="/layout.xhtml">
 
     <ui:define name="content">
-        
+
         <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
-            <div class="title headerPageTitle">Applications
+            <div class="title headerPageTitle">Applications</div>
+            <div class="subHeading">
+                <span>
+                    Applications can be enterprise or web applications, or various kinds of modules.
+                    Restart an application or module by clicking on the reload link, this action will
+                    apply only to the targets that the application or module is enabled on.
+                </span>
+            </div>
+            <br/>
+            <div class="subHeading">List of currently deployed applications:
                 <a id="add" href="#{request.contextPath}/demo/wizard.jsf">
                     <span style="display: inline-block; float: right">Add...</span>
                 </a>
             </div>
-
-            <div class="subHeading">List of Applications </div>
             <tr:table id="envs" var="app" value="#{listApplicationsBean.applications}">
                 <tr:column headerText="Name">
                     <tr:panelHorizontalLayout  halign="left">

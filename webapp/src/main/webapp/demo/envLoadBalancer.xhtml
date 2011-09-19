@@ -47,13 +47,14 @@
                 xmlns:ps="http://admingui.glassfish.org/console"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
-    <h3>Load Balancer Configuration for Environment </h3>
+    <div style="padding-top: 10px; padding-left: 20px;">
+        <tr:inputText label="Environment Name" value="#{environmentBean.envName}" readOnly="true" contentStyle="font-size=10px;font-weight: bold;"/>
+    </div>
 
-    <br/><br/>
-    <tr:panelHorizontalLayout halign="left" >
-        Environment Name: #{environmentBean.envName}
-    </tr:panelHorizontalLayout>
     <div class="navObjectInfo">
+        <div class="title headerPageTitle">Load Balancer Configuration for Environment</div>
+        <div class="subHeading">Configure load balancer.</div>
+        <br/>
         <tr:panelFormLayout  id="loadBalancerDetails">
             <tr:inputText label="HTTP Listener Port " value="#{loadBalancerBean.httpPort}" readOnly="true"/>
             <tr:inputText label="SSL Enabled " value="#{loadBalancerBean.sslEnabled}" readOnly="true"/>

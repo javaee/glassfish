@@ -38,15 +38,15 @@
 
     <ui:define name="content">
         <h:form id="applicationTabsForm" style="color: black;">
-            <tr:spacer height="10px"/>
-            <div class="subHeading">
+            <div style="padding-top: 10px; padding-left: 20px;">
                 <tr:inputText label="Application Name" value="#{applicationBean.appName}" readOnly="true" contentStyle="font-size=10px;font-weight: bold;"/>
             </div>
-            <tr:spacer height="10px"/>
 
             <h:panelGroup id="applicationTabs">
                 <div class="navObjectInfo">
                     <div class="title headerPageTitle">General</div>
+                    <div class="subHeading">General application information.</div>
+                    <br/>
                     <tr:panelFormLayout  id="applicationDetails">
                         <tr:inputText label="Context Root" value="#{applicationBean.appName}" readOnly="true"/>
 
@@ -69,6 +69,8 @@
                 </div>
                 <div class="navObjectInfo">
                     <div class="title headerPageTitle">Environment(s)</div>
+                    <div class="subHeading">Environments for application.</div>
+                    <br/>
                     <tr:table id="applicationInstances" var="cluster" value="#{applicationBean.instances}">
                         <tr:column headerText="Environment">
                             <a id="envName"  href="#{request.contextPath}/demo/environmentDetail.jsf?envName=#{cluster}" > #{cluster} </a>
@@ -78,7 +80,8 @@
                 <div>
                     <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
                         <div class="title headerPageTitle">Services</div>
-                        <div class="subHeading">List of all services provisioned</div>
+                        <div class="subHeading">List of all services provisioned.</div>
+                        <br/>
                         <tr:table id="services" var="svs" value="#{applicationBean.services}">
                             <tr:column headerText="Name">
                                 #{svs.serviceName}

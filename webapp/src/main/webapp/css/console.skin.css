@@ -185,6 +185,13 @@ af|panelBox::body af|panelBox::header img {
     padding-right: 10px;
 }
 
+af|panelTabbed::body {
+    background: #FFFFFF;
+    border:  0px;
+    border-radius: 0;
+    border-top: solid 1px #B0CEE0;
+}
+
 .OraInlineErrorText {
     padding:  5px;
     color: red;

@@ -49,10 +49,9 @@
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
 
     
-    <tr:panelHorizontalLayout halign="left" >
-        <tr:spacer height="40px"/>
-        Environment Name: #{environmentBean.envName}
-    </tr:panelHorizontalLayout>
+    <div style="padding-top: 10px; padding-left: 20px;">
+        <tr:inputText label="Environment Name" value="#{environmentBean.envName}" readOnly="true" contentStyle="font-size=10px;font-weight: bold;"/>
+    </div>
 
     <div class="navObjectInfo">
         <div class="title headerPageTitle">Elasticity Settings</div>

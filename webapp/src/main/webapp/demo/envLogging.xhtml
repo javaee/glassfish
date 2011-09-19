@@ -30,17 +30,15 @@
              xmlns:trh="http://myfaces.apache.org/trinidad/html">
 
 
-    <h3>View Logs for Environment </h3>
-
-    <tr:panelHorizontalLayout halign="left" >
-        <tr:spacer height="40px"/>
-        Environment Name: #{environmentBean.envName}
-    </tr:panelHorizontalLayout>
+    <div style="padding-top: 10px; padding-left: 20px;">
+        <tr:inputText label="Environment Name" value="#{environmentBean.envName}" readOnly="true" contentStyle="font-size=10px;font-weight: bold;"/>
+    </div>
 
         <div>
             <div class="navObjectInfo">
                 <div class="title headerPageTitle">Logging Results</div>
                 <div class="subHeading">View a server log file.</div>
+                <br/>
                 <tr:selectOneChoice label="Instance: " id="instance" autoSubmit="true"
                                     value = "#{loggingBean.selectedIndex}" valueChangeListener="#{loggingBean.valueChange}">
                     <f:selectItems value="#{loggingBean.selectionList}"/>

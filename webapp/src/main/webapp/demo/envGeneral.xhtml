@@ -48,18 +48,20 @@
                 xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:trh="http://myfaces.apache.org/trinidad/html">
 
-    <h3>General Information for Environment </h3>
-    
-
-    <tr:panelHorizontalLayout halign="left" >
-        <tr:spacer height="40px"/>
-        Environment Name: #{environmentBean.envName}
-    </tr:panelHorizontalLayout>
+    <div style="padding-top: 10px; padding-left: 20px;">
+        <tr:inputText label="Environment Name" value="#{environmentBean.envName}" readOnly="true" contentStyle="font-size=10px;font-weight: bold;"/>
+    </div>
 
     <!-- <div style="width: 1300px"> -->
 
         <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
-            <div class="subHeading">List of currently deployed applications</div>
+            <div class="title headerPageTitle">Applications</div>
+            <div class="subHeading">
+                <span>
+                   List of currently deployed applications.
+                </span>
+            </div>
+            <br/>
             <tr:table var="app" value="#{environmentBean.applications}" horizontalGridVisible="true" verticalGridVisible="true" rowBandingInterval="1">
                 <tr:column headerText="Application Name">
                     <tr:panelHorizontalLayout  halign="left">
@@ -77,7 +79,13 @@
         </div>
 
         <div class="navObjectInfo" style="width: 555px; display: inline-block; margin:  20px; vertical-align: top;">
-            <div class="subHeading">List of Instances for this Environment</div>
+            <div class="title headerPageTitle">Instances</div>
+            <div class="subHeading">
+                <span>
+                   List of Instances for this Environment.
+                </span>
+            </div>
+            <br/>
             <tr:table id="table" var="instance" value="#{environmentBean.instances}" horizontalGridVisible="true" verticalGridVisible="true" rowBandingInterval="1">
                 <tr:column headerText="Instance Name">
                     #{instance.name}
