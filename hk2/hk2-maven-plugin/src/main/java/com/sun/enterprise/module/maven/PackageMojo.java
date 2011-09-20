@@ -82,6 +82,7 @@ import java.util.Properties;
  * @goal package
  * @phase package
  * @requiresProject
+ * @requiresDependencyResolution
  */
 public class PackageMojo extends AbstractMojo {
     private static final String[] DEFAULT_INCLUDES = new String[]{"**/**"};
