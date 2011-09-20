@@ -37,34 +37,39 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests;
 
-import static org.junit.Assert.*;
+package org.jvnet.hk2.component;
 
-import org.glassfish.hk2.ContractLocator;
-import org.glassfish.hk2.HK2;
-import org.glassfish.hk2.Services;
-import org.glassfish.hk2.tests.perthread.SomeContract;
-import org.junit.Test;
+import org.glassfish.hk2.ComponentException;
+
+import com.sun.hk2.component.Holder;
+import com.sun.hk2.component.LazyInhabitant;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 6/2/11
- * Time: 1:25 PM
- * To change this template use File | Settings | File Templates.
+ * Binder that is based on a lazy inhabitant.
+ * 
+ * @author Jeff Trent
  */
-public class StartupTest {
+@SuppressWarnings({ "rawtypes", "unchecked" })
+class ClassNameBasedBinder extends AbstractResolvedBinder {
 
-    @Test
-    public void startupTest() {
-        HK2 hk2 = HK2.get();
-        Services services = hk2.create(null, MyModule.class);
-        assertNotNull(services.byType(MyStartupCode.class).get());
-        
-        ContractLocator<?> locator = services.forContract(SomeContract.class.getName());
-        assertNotNull(locator);
-        assertNotNull(locator.get());
+    private final Holder<ClassLoader> loader;
+    private final String className;
+
+    ClassNameBasedBinder(BinderImpl metadata, String className, final ClassLoader loader) {
+        super(metadata);
+        this.loader = new Holder<ClassLoader>() {
+            @Override
+            public ClassLoader get() throws ComponentException {
+                return loader;
+            }
+        };
+        this.className = className;
     }
 
+    @Override
+    void registerIn(Habitat habitat) {
+        LazyInhabitant inhabitant = new LazyInhabitant(habitat, loader, className, new MultiMap<String,String>());
+        super.registerIn(habitat, inhabitant);
+    }
 }

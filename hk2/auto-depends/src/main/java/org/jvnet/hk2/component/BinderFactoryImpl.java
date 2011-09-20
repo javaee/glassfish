@@ -120,7 +120,6 @@ class BinderFactoryImpl implements BinderFactory {
             binder.registerIn(habitat);
         }
         binders.clear();
-
     }
 
 

@@ -51,6 +51,10 @@ public class ProxyModuleDefinitionTest {
       list.add(pmd);
     }
     
+    System.gc();
+    System.gc();
+    Thread.sleep(100);
+    
     long freeMemory2 = getMemoryUse();
     
     Logger.getAnonymousLogger().fine("First Object: " + (freeMemory1 - freeMemory0));

@@ -39,8 +39,6 @@
  */
 package org.jvnet.hk2.component;
 
-import com.sun.hk2.component.ConstructorCreator;
-
 /**
  * Binds a typed binding to the habitat
  * @author Jerome Dochez
