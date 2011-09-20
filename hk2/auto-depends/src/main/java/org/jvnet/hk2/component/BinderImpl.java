@@ -58,7 +58,6 @@ import java.util.*;
 class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
 
     String name;
-    String typeName;
     Class<? extends Scope> scope;
     final List<Class<? extends Annotation>> annotations = new ArrayList<Class<? extends Annotation>>();
     final Map<String, Class> contracts = new HashMap<String,Class>();
@@ -82,8 +81,9 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
 
     @Override
     public ResolvedBinder<V> to(String className) {
-        typeName = className;
-        return this;
+        AbstractResolvedBinder<V> resolvedBinder = new ClassNameBasedBinder(this, className, getClass().getClassLoader());
+        owner.add(resolvedBinder);
+        return resolvedBinder;
     }
 
     @Override

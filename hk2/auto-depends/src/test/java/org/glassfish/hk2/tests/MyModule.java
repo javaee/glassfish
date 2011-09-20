@@ -42,6 +42,8 @@ package org.glassfish.hk2.tests;
 
 import org.glassfish.hk2.BinderFactory;
 import org.glassfish.hk2.Module;
+import org.glassfish.hk2.tests.perthread.PerThreadService;
+import org.glassfish.hk2.tests.perthread.SomeContract;
 import org.jvnet.hk2.test.impl.RandomService;
 import org.jvnet.hk2.test.runlevel.RandomContract;
 
@@ -55,5 +57,7 @@ public class MyModule implements Module {
     public void configure(BinderFactory binderFactory) {
         binderFactory.bind(RandomContract.class).to(RandomService.class);
         binderFactory.bind().to(MyStartupCode.class);
+        
+        binderFactory.bind(SomeContract.class.getName()).to(PerThreadService.class.getName());
     }
 }
