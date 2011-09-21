@@ -40,28 +40,20 @@
 package org.glassfish.hk2;
 
 /**
- * A {@link ManagedComponentProvider} is one in which its backing
- * component that it provides can either be in an active or inactive
- * state.
- * 
- * <p/>
- * Lazy implies managed. However, managed does NOT imply lazy. Therefore,
- * a {@link ManagedComponentProvider} might allow for {@link #release()}
- * but it is not "lazy" meaning that it is active in its natural state.
+ * Represents something that can be active or inactive, and released.
  *
- * <p/>
- * {@link ManagedComponentProvider}s are usually lazy, Singleton scoped
- * services (but not always).  Lazy, Singleton services exhibit the
- * following characteristics:
- * 	<li> (a) are initially not active,
- * 	<li> (b) are made active by calling {@link #get()},
- * 	<li> (c) once active will produce the same service each time
- * 			(i.e., assert(get() == get())},
- * 	<li> (d) once released, a call to get() will return a newly created
- * 			instance.   
- * 
- * @author Jerome Dochez, Jeff Trent
+ * @author Jeff Trent, Tom Beerbower
  */
-public interface ManagedComponentProvider<T> extends Provider<T>, Releasable {
+public interface Releasable {
+    
+    /**
+     * @return true if the component/service is currently active 
+     */
+    boolean isActive();
+
+    /**
+     * Release the component/service if active.
+     */
+    void release();
 
 }

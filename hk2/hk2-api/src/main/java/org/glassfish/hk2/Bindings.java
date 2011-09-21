@@ -40,28 +40,21 @@
 package org.glassfish.hk2;
 
 /**
- * A {@link ManagedComponentProvider} is one in which its backing
- * component that it provides can either be in an active or inactive
- * state.
+ * This represents the result of dynamically binding [services] to
+ * the underlying {@link Services} instance.
  * 
  * <p/>
- * Lazy implies managed. However, managed does NOT imply lazy. Therefore,
- * a {@link ManagedComponentProvider} might allow for {@link #release()}
- * but it is not "lazy" meaning that it is active in its natural state.
- *
- * <p/>
- * {@link ManagedComponentProvider}s are usually lazy, Singleton scoped
- * services (but not always).  Lazy, Singleton services exhibit the
- * following characteristics:
- * 	<li> (a) are initially not active,
- * 	<li> (b) are made active by calling {@link #get()},
- * 	<li> (c) once active will produce the same service each time
- * 			(i.e., assert(get() == get())},
- * 	<li> (d) once released, a call to get() will return a newly created
- * 			instance.   
+ * WARNING: Hk2 does not guard against the possibility that someone
+ * has cached (or injected) a {@link Provider} from the committed
+ * Bindings group.  Upon {{@link #release()} these services become
+ * orphaned as they are no longer registered in {@link Services}.
  * 
- * @author Jerome Dochez, Jeff Trent
+ * @author Jeff Trent, Tom Beerbower
+ * 
+ * @see Services#bindDynamically()
+ * @see DynamicBinderFactory
  */
-public interface ManagedComponentProvider<T> extends Provider<T>, Releasable {
+// TODO: consider in the future extending this to support iteration over the actual Binding objects
+public interface Bindings extends Releasable {
 
 }

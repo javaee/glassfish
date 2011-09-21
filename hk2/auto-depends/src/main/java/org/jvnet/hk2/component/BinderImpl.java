@@ -112,7 +112,7 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
 
         AbstractResolvedBinder<T> resolvedBinder = new AbstractResolvedBinder<T>(this) {
             @Override
-            void registerIn(Habitat habitat) {
+            Inhabitant<?> registerIn(Habitat habitat) {
                 MultiMap<String, String> metadataMap = super.populateMetadata();
                 Class contractType=null;
                 Iterator<Class> itrClasses = contracts.values().iterator();
@@ -130,6 +130,7 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
                     }
                 };
                 super.registerIn(habitat, inh);
+                return inh;
             }
         };
         owner.add(resolvedBinder);
@@ -140,7 +141,7 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
     public <T extends V> ResolvedBinder<T> toFactory(final Class<? extends org.glassfish.hk2.Factory<? extends T>> factoryType) {
         AbstractResolvedBinder<T> resolvedBinder = new AbstractResolvedBinder<T>(this) {
             @Override
-            void registerIn(Habitat habitat) {
+            Inhabitant<?> registerIn(Habitat habitat) {
                 MultiMap<String, String> metadataMap = super.populateMetadata();
                 Class contractType=null;
                 Iterator<Class> itrClasses = contracts.values().iterator();
@@ -164,6 +165,7 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
                     }
                 };
                 super.registerIn(habitat, inh);
+                return inh;
             }
         };
         owner.add(resolvedBinder);

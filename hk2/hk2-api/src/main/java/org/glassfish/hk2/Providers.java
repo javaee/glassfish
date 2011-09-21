@@ -63,6 +63,9 @@ public interface Providers<T> {
      * current criteria. If the collection {@link #all()} is not empty,
      * this will return a non null value.  Otherwise the return value is
      * null.
+     * 
+     * <p/>
+     * Currently "best" is reserved for future use.
      */
     Provider<T> getProvider();
 
