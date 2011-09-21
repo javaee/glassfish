@@ -68,8 +68,9 @@ class ClassNameBasedBinder extends AbstractResolvedBinder {
     }
 
     @Override
-    void registerIn(Habitat habitat) {
+    Inhabitant<?> registerIn(Habitat habitat) {
         LazyInhabitant inhabitant = new LazyInhabitant(habitat, loader, className, new MultiMap<String,String>());
         super.registerIn(habitat, inhabitant);
+        return inhabitant;
     }
 }

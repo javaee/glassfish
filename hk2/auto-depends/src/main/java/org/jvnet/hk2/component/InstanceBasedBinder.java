@@ -59,10 +59,12 @@ class InstanceBasedBinder<T> extends AbstractResolvedBinder<T> {
     }
 
     @Override
-    void registerIn(Habitat habitat) {
+    Inhabitant<?> registerIn(Habitat habitat) {
         if (metadata.scope!=null) {
             throw new RuntimeException(metadata.name + " binding cannot have a scope and be bound to an existing instance");
         }
-        super.registerIn(habitat, new ExistingSingletonInhabitant<T>(instance));
+        ExistingSingletonInhabitant<T> inhabitant = new ExistingSingletonInhabitant<T>(instance);
+        super.registerIn(habitat, inhabitant);
+        return inhabitant;
     }
 }

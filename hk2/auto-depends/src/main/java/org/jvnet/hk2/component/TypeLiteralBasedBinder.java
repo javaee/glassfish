@@ -60,7 +60,7 @@ class TypeLiteralBasedBinder<T> extends AbstractResolvedBinder<T> {
     }
 
     @Override
-    void registerIn(Habitat habitat) {
+    Inhabitant<?> registerIn(Habitat habitat) {
         MultiMap<String, String> inhMetadata = super.populateMetadata();
         final String parameterizedTypes = BinderFactoryImpl.exploreType(typeLiteral);
         if (parameterizedTypes.contains("<")) {
@@ -71,7 +71,7 @@ class TypeLiteralBasedBinder<T> extends AbstractResolvedBinder<T> {
             }
         }
 
-        super.registerIn(habitat, com.sun.hk2.component.Inhabitants.wrapByScope(
+        Inhabitant<T> inhabitant = com.sun.hk2.component.Inhabitants.wrapByScope(
                 new ConstructorCreator<T>(typeLiteral.getRawType(), habitat, inhMetadata) {
                     @Override
                     public String typeName(){
@@ -79,6 +79,8 @@ class TypeLiteralBasedBinder<T> extends AbstractResolvedBinder<T> {
                     }
                 },
                 habitat,
-                metadata.scope));
+                metadata.scope);
+        super.registerIn(habitat, inhabitant);
+        return inhabitant;
     }
 }

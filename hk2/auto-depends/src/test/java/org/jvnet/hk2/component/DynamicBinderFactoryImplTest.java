@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,30 +39,65 @@
  */
 package org.jvnet.hk2.component;
 
+import static org.junit.Assert.*;
+
 import org.glassfish.hk2.Bindings;
 import org.glassfish.hk2.DynamicBinderFactory;
+import org.glassfish.hk2.tests.perthread.PerThreadService;
+import org.glassfish.hk2.tests.perthread.SomeContract;
+import org.junit.Test;
 
 /**
- * Implementation of the {@link DynamicBinderFactory} interface
- *
- * @author Jerome Dochez
+ * Tests for DynamicBinderFactoryImpl
+ * 
+ * @author Jeff Trent, Tom Beerbower
  */
-class DynamicBinderFactoryImpl extends BinderFactoryImpl implements DynamicBinderFactory {
+public class DynamicBinderFactoryImplTest {
 
-    final Habitat habitat;
-    final DynamicBinderFactory parentBinder;
+    @Test
+    public void commitAndRelease() throws Exception {
+        Habitat habitat = new Habitat();
+        assertNull(habitat.getComponent(SomeContract.class));
+        assertNull(habitat.getComponent(MyContract.class));
 
-    public DynamicBinderFactoryImpl(DynamicBinderFactory parent, Habitat habitat) {
-        super(parent);
-        this.parentBinder = parent;
-        this.habitat = habitat;
-    }
+        DynamicBinderFactory dbf = new DynamicBinderFactoryImpl(null, habitat);
+        dbf.bind(SomeContract.class).to(PerThreadService.class);
+        dbf.bind(MyContract.class).to(MyService.class);
 
-    @Override
-    public Bindings commit() {
-        if (parentBinder!=null) {
-            parentBinder.commit();
+        assertNull(habitat.getComponent(SomeContract.class));
+        assertNull(habitat.getComponent(MyContract.class));
+        
+        Bindings bindings = dbf.commit();
+        assertNotNull(habitat.getComponent(SomeContract.class));
+        assertNotNull(habitat.getComponent(MyContract.class));
+
+        assertSame(habitat.getComponent(SomeContract.class), habitat.getComponent(SomeContract.class));
+        assertSame(habitat.getComponent(MyContract.class), habitat.getComponent(MyContract.class));
+
+        assertNotNull(bindings);
+        assertTrue(bindings.isActive());
+        
+        bindings.release();
+        assertFalse(bindings.isActive());
+        assertNull(habitat.getComponent(SomeContract.class));
+        assertNull(habitat.getComponent(MyContract.class));
+        
+        // extraneous release
+        try {
+            bindings.release();
+            fail();
+        } catch (IllegalStateException e) {
+            // expected
         }
-        return super.registerIn(habitat);
     }
+    
+    
+    public static interface MyContract {
+        
+    }
+    
+    public static class MyService implements MyContract {
+        
+    }
+    
 }

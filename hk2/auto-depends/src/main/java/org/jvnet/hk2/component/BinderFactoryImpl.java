@@ -46,11 +46,14 @@ import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.glassfish.hk2.Binder;
 import org.glassfish.hk2.BinderFactory;
+import org.glassfish.hk2.Bindings;
 import org.glassfish.hk2.NamedBinder;
 import org.glassfish.hk2.TypeLiteral;
 
@@ -115,11 +118,17 @@ class BinderFactoryImpl implements BinderFactory {
         binders.add(binder);
     }
 
-    void registerIn(Habitat habitat) {
+    Bindings registerIn(Habitat habitat) {
+        FactoryBindings bindings = new FactoryBindings(habitat);
+        
         for (AbstractResolvedBinder<?> binder : binders) {
-            binder.registerIn(habitat);
+            Inhabitant<?> inhabitant = binder.registerIn(habitat);
+            bindings.add(binder, inhabitant);
         }
+        
         binders.clear();
+        
+        return bindings;
     }
 
 
@@ -161,4 +170,41 @@ class BinderFactoryImpl implements BinderFactory {
         exploreType(typeLiteral.getType(), builder);
         return builder.toString();
     }
+    
+    
+    private static class FactoryBindings implements Bindings {
+
+        private Habitat habitat;
+        private HashMap<AbstractResolvedBinder<?>, Inhabitant<?>> bindings = new HashMap<AbstractResolvedBinder<?>, Inhabitant<?>>();
+        
+        public FactoryBindings(Habitat habitat) {
+            this.habitat = habitat;
+        }
+
+        public void add(AbstractResolvedBinder<?> binder, Inhabitant<?> inhabitant) {
+            bindings.put(binder, inhabitant);
+        }
+
+        @Override
+        public synchronized boolean isActive() {
+            return (null != bindings);
+        }
+
+        @Override
+        public synchronized void release() {
+            if (!isActive()) {
+                throw new IllegalStateException();
+            }
+            
+            for (Map.Entry<AbstractResolvedBinder<?>, Inhabitant<?>> entry : bindings.entrySet()) {
+                entry.getKey().releaseFrom(habitat, entry.getValue());
+            }
+            
+            bindings = null;
+            habitat = null;
+        }
+        
+    }
+
+
 }
