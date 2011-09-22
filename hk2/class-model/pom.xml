@@ -45,7 +45,7 @@
 	<parent>
     	<groupId>org.glassfish.hk2</groupId>
     	<artifactId>hk2-parent</artifactId>
-	    <version>1.6.20</version>
+	    <version>1.6.21-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
 
     </parent>
