@@ -41,9 +41,10 @@
 package admin;
 
 import com.sun.appserv.test.BaseDevTest;
+/*
 import com.sun.messaging.AdminConnectionConfiguration;
 import com.sun.messaging.AdminConnectionFactory;
-
+*/
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeDataSupport;
@@ -172,6 +173,9 @@ public class DynamicSyncBrokerListTest extends AdminBaseDevTest {
     }
 
     public Object jmxCall(String jmsProviderPort, String objectName){
+/*
+ * Commented out because building this code depends on having GlassFish already downloaded.
+ * The admin devtest must build without having GlassFish present. 
      try{
         AdminConnectionFactory acf = new AdminConnectionFactory();
         acf.setProperty(AdminConnectionConfiguration.imqAddress,    "localhost:" + jmsProviderPort);
@@ -196,7 +200,8 @@ public class DynamicSyncBrokerListTest extends AdminBaseDevTest {
       }catch(Exception ex){
                     ex.printStackTrace();
      }
-         return null;
+*/
+        return null;
     }
 
     private void reportFailureResultStatus(String testName, AsadminReturn result) {

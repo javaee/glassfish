@@ -103,7 +103,6 @@
             <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
             <pathelement location="build"/>
             <pathelement location="${env.S1AS_HOME}/lib/gf-client.jar"/>
-            <fileset dir="${env.S1AS_HOME}/modules" includes="**/*.jar"/>
         </path>
         <pathconvert refid="class.path" property="test"/>
     </target>

@@ -41,8 +41,11 @@
 package admin;
 
 import com.sun.appserv.test.BaseDevTest;
+/*
 import com.sun.messaging.AdminConnectionConfiguration;
 import com.sun.messaging.AdminConnectionFactory;
+ * 
+ */
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
@@ -181,6 +184,9 @@ public class ConfigureJmsClusterTest extends AdminBaseDevTest {
         reportResultStatus(testName, result);
     }
     public Object jmxCall(String jmsProviderPort, String objectName, String attrName){
+/*
+ * Commented out because building this code depends on having GlassFish already downloaded.
+ * The admin devtest must build without having GlassFish present. 
         try{
 
         AdminConnectionFactory acf = new AdminConnectionFactory();
@@ -199,7 +205,8 @@ public class ConfigureJmsClusterTest extends AdminBaseDevTest {
       }catch(Exception ex){
                     ex.printStackTrace();
      }
-         return null;
+*/
+        return null;
     }
 
     private void reportFailureResultStatus(String testName, AsadminReturn result) {
