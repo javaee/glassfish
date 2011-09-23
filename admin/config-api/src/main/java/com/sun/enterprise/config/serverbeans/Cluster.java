@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -174,7 +174,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
-    @Param(name="broadcast", optional=true)
+    @Param(name="gmsbroadcast", optional=true)
     void setBroadcast(String value) throws PropertyVetoException;
 
 
@@ -611,10 +611,11 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
 
             // handle generation of udp multicast and non-multicast mode for DAS managed cluster.
             // inspect cluster attribute broadcast and cluster property GMS_DISCOVERY_URI_LIST.
+            String DEFAULT_BROADCAST = "udpmulticast";
             String broadcastProtocol = instance.getBroadcast();
             Property discoveryUriListProp = instance.getProperty("GMS_DISCOVERY_URI_LIST");
             String  discoveryUriList = discoveryUriListProp != null ? discoveryUriListProp.getValue() : null;
-            if (discoveryUriList != null  && broadcastProtocol != null && broadcastProtocol.equals("udpmulticast")) {
+            if (discoveryUriList != null  && DEFAULT_BROADCAST.equals(broadcastProtocol)) {
 
                 // override default broadcast protocol of udp multicast when GMS_DISCOVERY_URI_LIST has been set.
                 instance.setBroadcast("tcp");
@@ -624,7 +625,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                 logger.log(Level.FINE, "cluster attribute gms broadcast=" + instance.getBroadcast());
                 logger.log(Level.FINE, "cluster property GMS_DISCOVERY_URI_LIST=" + discoveryUriList);
             }
-            if (broadcastProtocol.equals("udpmulticast")) {
+            if (DEFAULT_BROADCAST.equals(broadcastProtocol)) {
 
                 // only generate these values when they are not set AND broadcastProtocol is set to enable UDP multicast.
                 // Note: that this is the default for DAS controlled clusters.
@@ -636,48 +637,36 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                 }
             } else {
 
-                // cover case that broadcast is set to non-multicast and no cluster property GMS_DISCOVERY_URI_LIST exists.
-                // create the property.
+                final String GENERATE = "generate";
+
+                // cover case that broadcast is set to non-multicast and no
+                // cluster property GMS_DISCOVERY_URI_LIST exists.
+                // create the property and set to "generate".
+                // gms-adapter will handle generation of the list when needed
                 if (discoveryUriListProp == null) {
                     discoveryUriListProp = instance.createChild(Property.class);
                     discoveryUriListProp.setName("GMS_DISCOVERY_URI_LIST");
-                    discoveryUriList = null;
+                    discoveryUriListProp.setValue(GENERATE);
                     instance.getProperty().add(discoveryUriListProp);
-
                 }
 
-                // non mulitcast case.  genereate GMS_DISCOVERY_URI_LIST value with DAS as the seed.
-                // must explicitly set GMS_LISTENER_PORT-clustername system property for DAS and
-                // use this in generated GMS_DISCOVERY_URI_LIST.
-                if (discoveryUriList == null || discoveryUriList.equals("generate")) {
+                if (GENERATE.equals(discoveryUriListProp.getValue())) {
 
                     // TODO: implement UDP unicast.
 
                     // Only tcp mode is supported now.
                     // So either "udpunicast" or "tcp" for broadcast mode is treated the same.
-                    String TCPPORT = "9090";
+                    final String TCPPORT = "9090";
 
-                    // TBD: consider calling GMS NetworkUtility.getFirstAddress() here to copy how GMS gets the
-                    // network address of DAS.
-                    // TBD:  This is just an initial phase that will only work for a single cluster.
-                    String hostAddress = "localhost";
-                    try {
-                        hostAddress = InetAddress.getLocalHost().getHostAddress();
-                    } catch (UnknownHostException uhe)  {}
-                    String uriValue = "http://" + hostAddress + ":" + TCPPORT;
-                    discoveryUriListProp.setValue(uriValue);
-                    if (logger.isLoggable(Level.FINE)) {
-                        logger.log(Level.FINE,"Generated GMS_DISCOVERY_URI_LIST value " + uriValue);
-                    }
-
-                    // lookup server-config and set environment property value GMS_LISTENER_PORT-clusterName to 9090.
+                    // lookup server-config and set environment property value
+                    // GMS_LISTENER_PORT-clusterName to 9090.
                     Config config = habitat.getComponent(Config.class, "server-config");
                     if (config != null) {
                         Config writeableConfig = t.enroll(config);
                         SystemProperty gmsListenerPortSysProp = instance.createChild(SystemProperty.class);
                         gmsListenerPortSysProp.setName(String.format("GMS_LISTENER_PORT-%s", instanceName));
                         gmsListenerPortSysProp.setValue(TCPPORT);
-                        boolean result = writeableConfig.getSystemProperty().add(gmsListenerPortSysProp);
+                        writeableConfig.getSystemProperty().add(gmsListenerPortSysProp);
                     }
                 }
             }
@@ -789,6 +778,17 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
 
                 logger.log(Level.SEVERE, msg);
                 throw new TransactionFailure(msg);
+            }
+
+            // remove GMS_LISTENER_PORT-clusterName prop from server config
+            Config serverConfig = configs.getConfigByName("server-config");
+            String propName = String.format(
+                "GMS_LISTENER_PORT-%s", child.getName());
+            SystemProperty gmsProp = serverConfig.getSystemProperty(propName);
+            if (gmsProp != null && t != null) {
+                Config c = t.enroll(serverConfig);
+                List<SystemProperty> propList = c.getSystemProperty();
+                propList.remove(gmsProp);
             }
 
             // check if the config is null or still in use by some other

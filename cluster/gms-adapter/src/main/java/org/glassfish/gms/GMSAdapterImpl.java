@@ -47,6 +47,7 @@ import com.sun.enterprise.ee.cms.core.GroupManagementService;
 import com.sun.enterprise.ee.cms.impl.client.*;
 import com.sun.enterprise.mgmt.transport.NetworkUtility;
 import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants;
+import com.sun.enterprise.util.io.ServerDirs;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -64,8 +65,13 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.types.Property;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
@@ -146,6 +152,15 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
     @Inject
     Clusters clusters;
+
+    @Inject
+    Nodes nodes;
+
+    @Inject
+    Servers servers;
+
+    @Inject
+    Domain domain;
 
     private HealthHistory hHistory;
 
@@ -561,6 +576,12 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                         configProps.put(GrizzlyConfigConstants.TCPENDPORT.toString(), value);
                     } else if (name.compareTo("TEST_FAILURE_RECOVERY") == 0) {
                         testFailureRecoveryHandler = Boolean.parseBoolean(value);
+                        } else if (ServiceProviderConfigurationKeys
+                            .DISCOVERY_URI_LIST.name().equals(name) &&
+                            "generate".equals(value)) {
+
+                            value = generateDiscoveryUriList();
+                            configProps.put(name, value);
                     } else {
                         // handle normal case.  one to one mapping.
                         configProps.put(name, value);
@@ -575,6 +596,146 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 }
             }
         }
+    }
+
+    /*
+     * Get existing nodes based on cluster element in domain.
+     * Then check for DAS address in das.properties.
+     */
+    private String generateDiscoveryUriList() {
+        final String propName = "GMS_LISTENER_PORT-" + clusterName;
+
+        // get cluster member server refs
+        Set<String> instanceNames = new HashSet<String>();
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, String.format(
+                "checking cluster.getServerRef() for '%s'",
+                cluster.getName()));
+        }
+        for (ServerRef sRef : cluster.getServerRef()) {
+
+            /*
+             * When an instance (not DAS) starts up, it will add
+             * its own address to the discovery list. This is ok
+             * now. If we want to skip it, here's the place to
+             * check.
+             */
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, String.format(
+                    "adding server ref %s to set of instance names",
+                    sRef.getRef()));
+            }
+            instanceNames.add(sRef.getRef());
+        }
+
+        StringBuilder sb = new StringBuilder();
+        final String SEP = ",";
+        final String httpScheme = "http://"; // some day https
+
+        // use server refs to find matching nodes
+        for (String name : instanceNames) {
+            Server server = servers.getServer(name);
+            if (server != null) {
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.log(Level.FINE, String.format(
+                        "found server for name %s",
+                        name));
+                }
+                SystemProperty gmsPort = server.getSystemProperty(propName);
+                Node node = nodes.getNode(server.getNodeRef());
+                if (node != null) {
+                    String host = node.getNodeHost();
+                    if (gmsPort != null) {
+                        host = httpScheme + host + ":" + gmsPort.getValue();
+                    }
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.log(Level.FINE, String.format(
+                            "Adding host '%s' to discovery list", host));
+                    }
+                    sb.append(host).append(SEP);
+                }
+            }
+        }
+
+        // add das location from das.properties if needed
+        if (server.isInstance()) {
+            try {
+                ServerDirs sDirs = new ServerDirs(env.getInstanceRoot());
+                File dasPropsFile = sDirs.getDasPropertiesFile();
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.log(Level.FINE, String.format(
+                        "found das.props file at %s",
+                        dasPropsFile.getAbsolutePath()));
+                }
+                Properties dasProps = getProperties(dasPropsFile);
+                String host = dasProps.getProperty("agent.das.host");
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.log(Level.FINE, String.format(
+                        "found host name '%s'", host));
+                }
+                Config serverConf = domain.getConfigNamed("server-config");
+                if (serverConf == null) {
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.log(Level.FINE,
+                            "did not find server config. configs:");
+                        for (Config c : domain.getConfigs().getConfig()) {
+                            logger.log(Level.FINE,  c.getName());
+                        }
+                    }
+                } else {
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.log(Level.FINE, String.format(
+                            "looking up '%s' from config '%s'",
+                            propName, serverConf.getName()));
+                    }
+                    SystemProperty dasGmsPortProp =
+                        serverConf.getSystemProperty(propName);
+                    if (dasGmsPortProp != null) {
+                        host = httpScheme + host + ":" +
+                            dasGmsPortProp.getValue();
+                    } else if (logger.isLoggable(Level.FINE)) {
+                        logger.log(Level.FINE, "property is null");
+                    }
+                }
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.log(Level.FINE, String.format(
+                        "adding '%s' from das.props file", host));
+                }
+                sb.append(host).append(SEP);
+            } catch (IOException ioe) {
+                logger.log(Level.WARNING, ioe.toString());
+            }
+        }
+
+        // trim list if needed and return
+        int lastCommaIndex = sb.lastIndexOf(SEP);
+        if (lastCommaIndex != -1) {
+            sb.deleteCharAt(lastCommaIndex);
+        }
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, String.format(
+                "returning discovery list '%s'",
+                sb.toString()));
+        }
+        return sb.toString();
+    }
+
+    final protected Properties getProperties(File propFile) throws IOException {
+        Properties props = new Properties();
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(propFile);
+            props.load(fis);
+            fis.close();
+            fis = null;
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException ignored) {}
+            }
+        }
+        return props;
     }
 
     private boolean validateGMSProperty(String propertyName) {
