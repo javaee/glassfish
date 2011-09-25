@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,20 +41,17 @@
 package com.sun.enterprise.security.store;
 
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.util.Utility;
+
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.security.Key;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
+import java.nio.ByteBuffer;
+import java.security.*;
 import java.security.cert.CertificateException;
-import javax.crypto.SecretKey;
+import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 
 import java.util.Enumeration;
@@ -480,6 +477,18 @@ public final class PasswordAdapter {
         
         //debugState( "AFTER changing master password" );
      }
+
+    public byte[] decrypt(byte[] encrypted, String algorithm)
+            throws NoSuchAlgorithmException, IOException, NoSuchPaddingException, InvalidKeyException,
+                    InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+
+
+        Cipher cipher = Cipher.getInstance(algorithm);
+
+        cipher.init(Cipher.DECRYPT_MODE,new SecretKeySpec(Utility.convertCharArrayToByteArray(getMasterPassword(),null),algorithm));
+        byte[] decrypted = cipher.doFinal(encrypted);
+        return decrypted;
+    }
  }
 
 
