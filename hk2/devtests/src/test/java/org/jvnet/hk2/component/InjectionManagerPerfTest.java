@@ -193,7 +193,9 @@ public class InjectionManagerPerfTest extends Hk2Test implements PostConstruct {
       throws InstantiationException, IllegalAccessException {
     Object component = clazz.newInstance();
     im.inject(component, null, es, new InjectionResolver[] {new InjectInjectionResolver(h)});
-    PostConstruct.class.cast(component).postConstruct();
+    if (PostConstruct.class.isInstance(component)) {
+        PostConstruct.class.cast(component).postConstruct();
+    }
   }
 
 }
