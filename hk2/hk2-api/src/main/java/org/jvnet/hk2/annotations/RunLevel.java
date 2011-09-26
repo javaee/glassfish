@@ -106,8 +106,8 @@ public @interface RunLevel {
      * 
      * <p>
      * When set to false these rules apply:
-     * <li> The RunLevelService will not manage / release the service.
-     * <li> Any demand for the service will cause the service to be instantiated.
+     * <li> The RunLevelService will not release the service during shutdown.
+     * <li> Any demand for the service (i.e., a non-run level service has demanded it) will cause the service to be instantiated.
      * 
      * @return true if strict constraint rules should be followed
      */
