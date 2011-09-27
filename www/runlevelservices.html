@@ -87,7 +87,7 @@ public StandardService {
 @RunLevel(2)
 @Service
 public MyService4 implements MyContract {
-}</pre></div><p>It is important to note, however, that the service instance obtained from the Holder should never be cached or otherwise held unto for extended periods of time (i.e., not carried in a class field) since the run level annotated service can eventually be nulled when the run level service responsible for that service is shutting down. Also be careful to perform null checks at all times.</p></li><li>RunLevel(strict=false)<p>Declaring the run level with strict=false simply provides a means to create demand for the service when reaching the given run level. It will NOT, however, be managed / released as part of shutdown processing.</p><p>See the javadoc for additional details.</p></li></ul></div>
+}</pre></div><p>It is important to note, however, that the service instance obtained from the Holder should never be cached or otherwise held unto for extended periods of time (i.e., not carried in a class field) since the run level annotated service can eventually be nulled when the run level service responsible for that service is shutting down. Also be careful to perform null checks at all times.</p></li><li>RunLevel(strict=false)<p>Declaring the run level with strict=false simply provides a means to create demand for the service when reaching the given run level. It will NOT, however, be managed / released as part of shutdown processing.</p><p>See the javadoc for additional details.</p></li></ul></div><div class="section"><h2>Conclusion<a name="Conclusion"></a></h2><p>The RunLevel annotation are appropriate when you need the system to automatically start your services. Typically, there is no need to add a RunLevel annotation to most services because Hk2 will automatically start your service when it is needed (i.e., by injection). In the event that you need the system to start your service, it is then important to consider which run level value to apply. This is usually determined by the other service dependencies you have as well as how other services depend on your new run level annotated service. In general, you want to use the highest run level value possible to allow startup to be as fast as possible. However, if there is another service that depends on your service, and that service has a run level of value=1 for instance, then your new service must be either value 0 or 1. The point is that other services that depend on your service must be of equal or higher run level value. So, a good rule of thumb is to use a run level value that equals the min(runLevel) of all dependencies to your service. If there are no other run level dependencies on your service, then pick the highest run level value applicable in your system.</p><p>In GlassFish, the Init, Startup, and PostStartup interfaces have been deprecated in favor of RunLevel annotations InitRunLevel, StartupRunLevel, and PostStartupRunLevel, respectively. These three run level meta annotations should be used whenever a component needs to be associated with startup automatic instantiation.</p></div>
       </div>
     </div>
     <div class="clear">
@@ -103,8 +103,8 @@ public MyService4 implements MyContract {
 
   
   
-  &nbsp;| Last Published: 09/07/2011
-  &nbsp;| Version: 1.6.18-SNAPSHOT
+  &nbsp;| Last Published: 09/27/2011
+  &nbsp;| Version: 1.6.22-SNAPSHOT
 </div>
       <div class="clear">
         <hr/>
