@@ -252,3 +252,15 @@ public MyService4 implements MyContract {
 
     []
 
+Conclusion
+
+    The RunLevel annotation are appropriate when you need the system to automatically start your services. Typically, there is no need to add a RunLevel annotation to most services because Hk2 will
+automatically start your service when it is needed (i.e., by injection).  In the event that you need the system to start your service, it is then important to consider which run level value to
+apply.  This is usually determined by the other service dependencies you have as well as how other services depend on your new run level annotated service.  In general, you want to use the highest
+run level value possible to allow startup to be as fast as possible.  However, if there is another service that depends on your service, and that service has a run level of value=1 for instance, then
+your new service must be either value 0 or 1. The point is that other services that depend on your service must be of equal or higher run level value.  So, a good rule of thumb is to use a run level
+value that equals the min(runLevel) of all dependencies to your service. If there are no other run level dependencies on your service, then pick the highest run level value applicable in your
+system.
+
+    In GlassFish, the Init, Startup, and PostStartup interfaces have been deprecated in favor of RunLevel annotations InitRunLevel, StartupRunLevel, and PostStartupRunLevel, respectively.  These
+three run level meta annotations should be used whenever a component needs to be associated with startup automatic instantiation.
