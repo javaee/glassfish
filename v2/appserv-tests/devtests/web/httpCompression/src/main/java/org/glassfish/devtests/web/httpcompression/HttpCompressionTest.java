@@ -111,15 +111,21 @@ public class HttpCompressionTest extends BaseDevTest {
         BufferedReader bis = new BufferedReader(new InputStreamReader(is));
         String line;
         boolean found = false;
+        boolean chunked = false;
+        boolean contentLength = false;
         try {
             while ((line = bis.readLine()) != null && !"".equals(line.trim())) {
                 found |= line.toLowerCase().contains("content-encoding: " + compScheme);
+                if (zipped) {
+                   chunked |= line.toLowerCase().contains("transfer-encoding: chunked");
+                   contentLength |= !line.toLowerCase().contains("content-length"); 
+		}
             }
         } finally {
             s.close();
         }
         if (zipped) {
-            stat.addStatus(compScheme + "-" + test, found ? SimpleReporterAdapter.PASS : SimpleReporterAdapter.FAIL);
+            stat.addStatus(compScheme + "-" + test, (found && chunked && contentLength) ? SimpleReporterAdapter.PASS : SimpleReporterAdapter.FAIL);
         } else {
             stat.addStatus(compScheme + "-" + test, found ? SimpleReporterAdapter.FAIL : SimpleReporterAdapter.PASS);
         }
