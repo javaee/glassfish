@@ -1139,6 +1139,7 @@ public class ClusterTest extends AdminBaseDevTest {
         //Cleanup the code so that tests run successfully next time
         report("delete-cl1", asadmin("delete-cluster", "cl1"));
         report("delete-cl2", asadmin("delete-cluster", "cl2"));
+        report("delete-cl1-config", asadmin("delete-config", "cl1-config"));
         report("delete-cl3", !asadmin("delete-cluster", "cl3")); // should not have been created
         report("delete-cl4", asadmin("delete-cluster", "cl4"));
 
