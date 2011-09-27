@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,34 +37,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.v3.admin.cluster.dcom;
 
-import java.util.*;
-import org.glassfish.internal.api.RelativePathResolver;
+package org.glassfish.cluster.ssh.util;
+
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
- * I hate to copy&paste identical code into more than one class.
- * Hence this class!
+ * Strings -- Get your Strings here.
+ * One file with Strings
+ * So one class for messing with them!
+ * Nothing in here is public protected.  Only for use by this one java package.
  * @author Byron Nevins
  */
-// not public!
-final class DcomUtils {
-    private DcomUtils() {
+
+final class Strings {
+    private Strings() {
         // no instances allowed!
     }
 
-    static List<String> resolvePassword(String raw) {
-        List tokens = new ArrayList<String>(1);
-        String password = null;
-
-        try {
-            password = RelativePathResolver.getRealPasswordFromAlias(raw);
-        }
-        catch (Exception e) {
-            password = raw;
-        }
-
-        tokens.add("AS_ADMIN_DCOMPASSWORD=" + password);
-        return tokens;
+    final static String get(String indexString) {
+        return strings.get(indexString);
     }
+
+    final static String get(String indexString, Object... objects) {
+        return strings.get(indexString, objects);
+    }
+
+    final private static LocalStringsImpl strings = new LocalStringsImpl(Strings.class);
 }

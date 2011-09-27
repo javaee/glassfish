@@ -37,11 +37,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.config.serverbeans.Node;
+import com.sun.enterprise.universal.process.WindowsException;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.util.io.WindowsRemoteFile;
+import com.sun.enterprise.util.io.WindowsRemoteFileSystem;
 import com.trilead.ssh2.SFTPv3FileAttributes;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -59,6 +61,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.sftp.SFTPClient;
+import org.glassfish.cluster.ssh.util.DcomInfo;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -69,15 +72,13 @@ import org.jvnet.hk2.component.Habitat;
  * @author Tim Quinn
  */
 public abstract class SecureAdminBootstrapHelper {
-
     private static final String DOMAIN_XML_PATH = "config/domain.xml";
-    private static final String[] SECURE_ADMIN_FILE_REL_URIS_TO_COPY = new String[] {
+    private static final String[] SECURE_ADMIN_FILE_REL_URIS_TO_COPY = new String[]{
         DOMAIN_XML_PATH,
         "config/keystore.jks",
         "config/cacerts.jks"
     };
-
-    private static final String[] SECURE_ADMIN_FILE_DIRS_TO_CREATE = new String[] {
+    private static final String[] SECURE_ADMIN_FILE_DIRS_TO_CREATE = new String[]{
         "config"
     };
 
@@ -156,6 +157,7 @@ public abstract class SecureAdminBootstrapHelper {
      * Cleans up any allocated resources.
      */
     protected abstract void mkdirs(String dirURI) throws IOException;
+
     protected abstract void close();
 
     /**
@@ -198,7 +200,8 @@ public abstract class SecureAdminBootstrapHelper {
             mkdirs();
             copyBootstrapFiles();
             backdateInstanceDomainXML();
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             throw new BootstrapException(ex);
         }
     }
@@ -213,7 +216,6 @@ public abstract class SecureAdminBootstrapHelper {
      * Implements the helper functionality for a remote instance.
      */
     private static abstract class RemoteHelper extends SecureAdminBootstrapHelper {
-
         final Logger logger;
         final File dasInstanceDir;
         final String instance;
@@ -239,12 +241,14 @@ public abstract class SecureAdminBootstrapHelper {
 //            return new File(dasInstanceDir.toURI().resolve(DOMAIN_XML_PATH)).lastModified();
 //        }
         abstract void writeToFile(final String path, final InputStream content) throws IOException;
+
         abstract void setLastModified(final String path, final long when) throws IOException;
 
         String ensureTrailingSlash(final String path) {
-            if ( ! path.endsWith("/")) {
+            if (!path.endsWith("/")) {
                 return path + "/";
-            } else {
+            }
+            else {
                 return path;
             }
         }
@@ -257,24 +261,22 @@ public abstract class SecureAdminBootstrapHelper {
             String result;
             if (remoteNodeDir != null) {
                 result = remoteNodeDir;
-            } else {
-                result = new StringBuilder(ensureTrailingSlash(node.getInstallDirUnixStyle()))
-                        .append("glassfish/nodes/")
-                        .append(node.getName()).toString();
+            }
+            else {
+                result = new StringBuilder(ensureTrailingSlash(node.getInstallDirUnixStyle())).append("glassfish/nodes/").append(node.getName()).toString();
             }
 
-            return ensureTrailingSlash(result.replaceAll("\\\\","/"));
+            return ensureTrailingSlash(result.replaceAll("\\\\", "/"));
         }
 
         String remoteInstanceDir(final String remoteNodeDirPath) {
             final StringBuilder remoteInstancePath = new StringBuilder(remoteNodeDirPath);
-            if ( ! remoteNodeDirPath.endsWith("/")) {
+            if (!remoteNodeDirPath.endsWith("/")) {
                 remoteInstancePath.append("/");
             }
             remoteInstancePath.append(instance).append("/");
-            return remoteInstancePath.toString().replaceAll("\\\\","/");
+            return remoteInstancePath.toString().replaceAll("\\\\", "/");
         }
-
 
         @Override
         protected void copyBootstrapFiles() throws FileNotFoundException, IOException {
@@ -284,23 +286,24 @@ public abstract class SecureAdminBootstrapHelper {
                 try {
                     is = new BufferedInputStream(
                             new FileInputStream(
-                                new File(dasInstanceDir.toURI().resolve(fileRelativePath))));
+                            new File(dasInstanceDir.toURI().resolve(fileRelativePath))));
                     remoteFilePath = remoteInstanceDir + fileRelativePath;
                     writeToFile(remoteFilePath, is);
                     logger.log(Level.FINE, "Copied bootstrap file to {0}", remoteFilePath);
-                } catch (Exception ex) {
+                }
+                catch (Exception ex) {
                     if (logger.isLoggable(Level.FINE)) {
                         logger.log(Level.FINE, "Error copying bootstrap file to " + remoteFilePath, ex);
                     }
                     throw new IOException(ex);
-                } finally {
+                }
+                finally {
                     if (is != null) {
                         is.close();
                     }
                 }
             }
         }
-
 
         /**
          * Returns the specified system time in seconds since 01 Jan 1970.
@@ -309,7 +312,7 @@ public abstract class SecureAdminBootstrapHelper {
          * @return
          */
         Integer secondsSince_01_Jan_1970(final long milliseconds) {
-            return Integer.valueOf((int)(milliseconds) / 1000);
+            return Integer.valueOf((int) (milliseconds) / 1000);
         }
     }
 
@@ -336,6 +339,7 @@ public abstract class SecureAdminBootstrapHelper {
                 throw new BootstrapException(launcher, ex);
             }
         }
+
         @Override
         protected void mkdirs(String dir) throws IOException {
             String remoteDir = remoteInstanceDir + dir;
@@ -344,15 +348,17 @@ public abstract class SecureAdminBootstrapHelper {
             Integer instanceDirPermissions;
             try {
                 instanceDirPermissions = ftpClient.lstat(remoteNodeDir).permissions;
-            } catch (IOException ex) {
+            }
+            catch (IOException ex) {
                 throw new IOException(remoteNodeDir, ex);
             }
-            logger.log(Level.FINE, "Creating remote bootstrap directory " +
-                       remoteDir + " with permissions " +
-                       instanceDirPermissions.toString());
+            logger.log(Level.FINE, "Creating remote bootstrap directory "
+                    + remoteDir + " with permissions "
+                    + instanceDirPermissions.toString());
             try {
                 ftpClient.mkdirs(remoteDir, instanceDirPermissions);
-            } catch (IOException ex) {
+            }
+            catch (IOException ex) {
                 throw new IOException(remoteDir, ex);
             }
         }
@@ -363,6 +369,7 @@ public abstract class SecureAdminBootstrapHelper {
                 ftpClient.close();
             }
         }
+
         @Override
         void writeToFile(final String path, final InputStream content) throws IOException {
             final OutputStream os = new BufferedOutputStream(ftpClient.writeToFile(path));
@@ -380,17 +387,20 @@ public abstract class SecureAdminBootstrapHelper {
         /* bnevins -- this method had to be made abstract ONLY because of the
          * annoying special exception constructor that is SSH-specific.
          */
+
         @Override
         protected void backdateInstanceDomainXML() throws BootstrapException {
             final String remoteDomainXML = remoteInstanceDir + DOMAIN_XML_PATH;
             try {
                 setLastModified(remoteDomainXML, 0);
-            } catch (IOException ex) {
+            }
+            catch (IOException ex) {
                 throw new BootstrapException(launcher, ex);
             }
             logger.log(Level.FINE, "Backdated the instance's copy of domain.xml");
         }
 
+        @Override
         void setLastModified(final String path, final long when) throws IOException {
             /*
              * Times over ssh are expressed as seconds since 01 Jan 1970.
@@ -400,8 +410,12 @@ public abstract class SecureAdminBootstrapHelper {
             ftpClient.setstat(path, attrs);
         }
     }
+
     private static class DCOMHelper extends RemoteHelper {
-        private DCOMHelper(
+        final WindowsRemoteFileSystem wrfs;
+        final DcomInfo info;
+
+        DCOMHelper(
                 final Habitat habitat,
                 final File dasInstanceDir,
                 String remoteNodeDir,
@@ -409,31 +423,69 @@ public abstract class SecureAdminBootstrapHelper {
                 final Node node,
                 final Logger logger) throws BootstrapException {
             super(habitat, dasInstanceDir, remoteNodeDir, instance, node, logger);
+            try {
+                info = new DcomInfo(node);
+                wrfs = new WindowsRemoteFileSystem(info.getHost(), info.getUser(), info.getPassword());
+            }
+            catch (WindowsException ex) {
+                throw new BootstrapException(ex);
+            }
         }
 
         @Override
         protected void close() {
-            throw new UnsupportedOperationException("Not supported yet.");
+            // DCOM doesn't need to do anything...
         }
 
         @Override
-        protected void mkdirs(String dirURI) throws IOException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        protected void mkdirs(String subdir) throws IOException {
+            String remoteDir = remoteInstanceDir + subdir;
+            logger.log(Level.FINE, "Trying to create directories for remote path {0}",
+                    remoteDir);
+            try {
+                WindowsRemoteFile f = new WindowsRemoteFile(wrfs, remoteDir);
+                f.mkdirs();
+
+                if (!f.exists())
+                    throw new IOException(Strings.get("no.mkdir", f.getPath()));
+            }
+            catch (WindowsException ex) {
+                throw new IOException(ex.getMessage(), ex);
+            }
         }
 
         @Override
         void writeToFile(String path, InputStream content) throws IOException {
-            throw new UnsupportedOperationException("Not supported yet.");
+            try {
+                WindowsRemoteFile f = new WindowsRemoteFile(wrfs, path);
+                f.copyFrom((BufferedInputStream)content);
+            }
+            catch (WindowsException ex) {
+                throw new IOException(ex.getMessage(), ex);
+            }
         }
 
         @Override
         void setLastModified(String path, long when) throws IOException {
-            throw new UnsupportedOperationException("Not supported yet.");
+            try {
+                WindowsRemoteFile f = new WindowsRemoteFile(wrfs, path);
+                f.setLastModified(when);
+            }
+            catch (WindowsException ex) {
+                throw new IOException(ex.getMessage(), ex);
+            }
         }
 
         @Override
         protected void backdateInstanceDomainXML() throws BootstrapException {
-            throw new UnsupportedOperationException("Not supported yet.");
+            final String remoteDomainXML = remoteInstanceDir + DOMAIN_XML_PATH;
+            try {
+                setLastModified(remoteDomainXML, 0);
+            }
+            catch (IOException ex) {
+                throw new BootstrapException(ex);
+            }
+            logger.log(Level.FINE, "Backdated the instance's copy of domain.xml");
         }
     }
 
@@ -441,7 +493,6 @@ public abstract class SecureAdminBootstrapHelper {
      * Implements the helper for a local instance (one co-located with the DAS).
      */
     private static class LocalHelper extends SecureAdminBootstrapHelper {
-
         private final URI existingInstanceDirURI;
         private final URI newInstanceDirURI;
 
@@ -453,7 +504,7 @@ public abstract class SecureAdminBootstrapHelper {
         @Override
         protected void mkdirs(String dir) {
             final File newDir = new File(newInstanceDirURI.resolve(dir));
-            if ( ! newDir.exists() && ! newDir.mkdirs()) {
+            if (!newDir.exists() && !newDir.mkdirs()) {
                 throw new RuntimeException(Strings.get("secure.admin.boot.errCreDir", newDir.getAbsolutePath()));
             }
         }
@@ -470,7 +521,7 @@ public abstract class SecureAdminBootstrapHelper {
         @Override
         protected void backdateInstanceDomainXML() throws BootstrapException {
             final File newDomainXMLFile = new File(newInstanceDirURI.resolve(DOMAIN_XML_PATH));
-            if ( ! newDomainXMLFile.setLastModified(0)) {
+            if (!newDomainXMLFile.setLastModified(0)) {
                 throw new RuntimeException(Strings.get("secure.admin.boot.errSetLastMod", newDomainXMLFile.getAbsolutePath()));
             }
         }
@@ -480,7 +531,7 @@ public abstract class SecureAdminBootstrapHelper {
             // Nothing to do for local provider
             return;
         }
- }
+    }
 
     public static class BootstrapException extends Exception {
         private transient final SSHLauncher launcher;
@@ -494,6 +545,7 @@ public abstract class SecureAdminBootstrapHelper {
             super(ex);
             launcher = null;
         }
+
         public BootstrapException(final String msg) {
             super(msg);
             launcher = null;

@@ -37,74 +37,42 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.cluster.ssh.connect;
+package org.glassfish.cluster.ssh.util;
 
-import java.util.*;
-import java.util.logging.*;
-
+import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.SshAuth;
 import com.sun.enterprise.config.serverbeans.SshConnector;
+import com.sun.enterprise.universal.glassfish.TokenResolver;
 import com.sun.enterprise.universal.process.WindowsCredentials;
 import com.sun.enterprise.universal.process.WindowsException;
-import com.sun.enterprise.universal.process.WindowsRemoteScripter;
-import org.glassfish.api.admin.SSHCommandExecutionException;
-import com.sun.enterprise.config.serverbeans.Node;
-import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.util.SystemPropertyConstants;
-import org.glassfish.cluster.ssh.util.DcomInfo;
-import org.glassfish.cluster.ssh.util.DcomUtils;
 import static com.sun.enterprise.util.StringUtils.ok;
+import java.util.*;
+import org.glassfish.internal.api.RelativePathResolver;
 
-public class NodeRunnerDcom {
-    private final Logger logger;
-    private Node node;
-
-    public NodeRunnerDcom(Logger logger) {
-        this.logger = logger;
+/**
+ * I hate to copy&paste identical code into more than one class.
+ * Hence this class!
+ * @author Byron Nevins
+ */
+public final class DcomUtils {
+    private DcomUtils() {
+        // no instances allowed!
     }
 
-    /*
-     * return 0 is success, otherwise failure
-     */
-    public final int runAdminCommandOnRemoteNode(Node thisNode, StringBuilder output,
-            List<String> args,
-            List<String> stdinLines) throws
-            SSHCommandExecutionException, IllegalArgumentException,
-            UnsupportedOperationException {
-
-        String commandAsString = null;
+    public static String resolvePassword(String raw) {
 
         try {
-            this.node = thisNode;
-            DcomInfo dcomInfo = new DcomInfo(node);
-            WindowsCredentials bonafides = dcomInfo.getCredentials();
-            List<String> fullcommand = new ArrayList<String>();
-            fullcommand.add(dcomInfo.getNadminPath());
-            fullcommand.addAll(args);
-            commandAsString = commandListToString(fullcommand);
-            WindowsRemoteScripter scripter = new WindowsRemoteScripter(bonafides);
-            String out = scripter.run(commandAsString);
-            logger.info(Strings.get("remote.command.summary", commandAsString, out));
-            return 0;
+            return RelativePathResolver.getRealPasswordFromAlias(raw);
         }
-        catch (WindowsException ex) {
-            throw new SSHCommandExecutionException(Strings.get(
-                    "remote.command.error", ex.getMessage(), commandAsString), ex);
+        catch (Exception e) {
+            return raw;
         }
     }
 
-    private void trace(String s) {
-        logger.fine(String.format("%s: %s", this.getClass().getSimpleName(), s));
-    }
-
-    private static String commandListToString(List<String> command) {
-        StringBuilder fullCommand = new StringBuilder();
-
-        for (String s : command) {
-            fullCommand.append(" ");
-            fullCommand.append(s);
-        }
-
-        return fullCommand.toString();
+    public static List<String> resolvePasswordToList(String raw) {
+        List tokens = new ArrayList<String>(1);
+        String password = resolvePassword(raw);
+        tokens.add("AS_ADMIN_DCOMPASSWORD=" + password);
+        return tokens;
     }
 }
