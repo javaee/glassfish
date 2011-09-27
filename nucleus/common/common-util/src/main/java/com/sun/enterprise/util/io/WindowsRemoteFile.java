@@ -153,6 +153,41 @@ public final class WindowsRemoteFile {
         }
     }
 
+    public final void copyFrom(final BufferedInputStream sin) throws WindowsException {
+        try {
+            if (sin == null)
+                throw new IllegalArgumentException("copyFrom stream arg is bad: " + sin);
+
+            if (!exists())
+                createNewFile();
+
+            OutputStream sout = new BufferedOutputStream(smbFile.getOutputStream());
+
+            final int bufsize = 1048576;
+            byte[] buf = new byte[bufsize];
+
+            while ((sin.read(buf)) >= 0) {
+                sout.write(buf);
+            }
+
+            try {
+                sin.close();
+            }
+            catch (Exception e) {
+                // nothing can be done!
+            }
+            try {
+                sout.close();
+            }
+            catch (Exception e) {
+                // nothing can be done!
+            }
+        }
+        catch (Exception e) {
+            throw new WindowsException(e);
+        }
+    }
+
     public final void copyFrom(File from, WindowsRemoteFileCopyProgress progress)
             throws WindowsException {
         try {
@@ -162,10 +197,9 @@ public final class WindowsRemoteFile {
             if (!exists())
                 createNewFile();
 
-            long filesize = from.length();
             OutputStream sout = new BufferedOutputStream(smbFile.getOutputStream());
             InputStream sin = new BufferedInputStream(new FileInputStream(from));
-
+            long filesize = from.length();
             final int bufsize = 1048576;
             byte[] buf = new byte[bufsize];
             long numBytes = 0;
@@ -225,6 +259,18 @@ public final class WindowsRemoteFile {
         }
     }
 
+    public final void setLastModified(long when) throws WindowsException {
+        // time is the usual -- msec from 1/1/1970
+        // Shows you just how huge a long is.  THe number of milliseconds from (probably)
+        // before you were born fits easily into a long!
+        try {
+            smbFile.setLastModified(when);
+        }
+        catch (Exception se) {
+            throw new WindowsException(se);
+        }
+
+    }
     // note that the path is ALWAYS appended with one and only one slash!!
     // THis is important for smb calls...
     public final String getPath() {
