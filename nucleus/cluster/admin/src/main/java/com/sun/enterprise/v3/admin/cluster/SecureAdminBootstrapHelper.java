@@ -84,7 +84,6 @@ public abstract class SecureAdminBootstrapHelper {
     /**
      * Creates a new helper for delivering files needed for secure admin to
      * the remote instance.
-     * This uses SSH exclusively
      *
      * @param habitat hk2 habitat
      * @param DASInstanceDir directory of the local instance - source for the required files
@@ -103,39 +102,16 @@ public abstract class SecureAdminBootstrapHelper {
             final Node node,
             final Logger logger) throws BootstrapException {
 
-        return getRemoteHelperInternal(habitat, DASInstanceDir, remoteNodeDir,
-                instance, node, logger, NodeUtils.RemoteType.SSH);
-    }
+        NodeUtils.RemoteType type = null;
 
-    /*
-     * The organization looks odd because the method was marked as public
-     */
-    static SecureAdminBootstrapHelper getRemoteHelperDcom(
-            final Habitat habitat,
-            final File DASInstanceDir,
-            final String remoteNodeDir,
-            final String instance,
-            final Node node,
-            final Logger logger) throws BootstrapException {
-
-        return getRemoteHelperInternal(habitat, DASInstanceDir, remoteNodeDir,
-                instance, node, logger, NodeUtils.RemoteType.DCOM);
-    }
-
-    /* Byron Nevins Sept 2011 --
-     * Now there are TWO different remote technologies.
-     * DCOM and SSH.
-     * Changing the code around while continuing to respect the fact that the
-     * original methods are public (and therefore set in stone)...
-     */
-    private static SecureAdminBootstrapHelper getRemoteHelperInternal(
-            final Habitat habitat,
-            final File DASInstanceDir,
-            final String remoteNodeDir,
-            final String instance,
-            final Node node,
-            final Logger logger,
-            final NodeUtils.RemoteType type) throws BootstrapException {
+        try {
+            // this also handles the case where node is null
+            type = NodeUtils.RemoteType.valueOf(node.getType());
+        }
+        catch (Exception e) {
+            throw new IllegalArgumentException(
+                    Strings.get("internal.error", "unknown type"));
+        }
 
         switch (type) {
             case SSH:
@@ -156,7 +132,8 @@ public abstract class SecureAdminBootstrapHelper {
                         logger);
             default:
                 throw new IllegalArgumentException(
-                        Strings.get("internal.error", "unknown type"));
+                        Strings.get("internal.error", "A new type must have "
+                        + "been added --> unknown type: " + type.toString()));
         }
     }
 
