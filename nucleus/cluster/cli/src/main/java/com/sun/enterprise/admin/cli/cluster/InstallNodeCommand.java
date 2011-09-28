@@ -117,26 +117,32 @@ public class InstallNodeCommand extends NativeRemoteCommandsBase {
         }
 
         dcomuser = sshuser = resolver.resolve(sshuser);
-        dcomuser = sshuser;
 
-        if (sshkeyfile == null) {
-            //if user hasn't specified a key file check if key exists in
-            //default location
-            String existingKey = SSHUtil.getExistingKeyFile();
-            if (existingKey == null) {
-                promptPass = true;
+        if (isSSH()) {
+            if (sshkeyfile == null) {
+                //if user hasn't specified a key file check if key exists in
+                //default location
+                String existingKey = SSHUtil.getExistingKeyFile();
+                if (existingKey == null) {
+                    promptPass = true;
+                }
+                else {
+                    sshkeyfile = existingKey;
+                }
             }
             else {
-                sshkeyfile = existingKey;
+                validateKey(sshkeyfile);
+            }
+
+            //we need the key passphrase if key is encrypted
+            if (sshkeyfile != null && isEncryptedKey()) {
+                sshkeypassphrase = getSSHPassphrase(true);
             }
         }
         else {
-            validateKey(sshkeyfile);
-        }
-
-        //we need the key passphrase if key is encrypted
-        if (sshkeyfile != null && isEncryptedKey()) {
-            sshkeypassphrase = getSSHPassphrase(true);
+            // just to be safe!
+            sshkeypassphrase = null;
+            sshkeyfile = null;
         }
     }
 
@@ -193,12 +199,12 @@ public class InstallNodeCommand extends NativeRemoteCommandsBase {
                     System.out.print(".");
                 }
             });
-            System.out.println("");
+//            System.out.println("");
             String fullZipFileName = SmartFile.sanitize(installDir + "/" + zipFileName);
             String fullUnpackScriptPath = SmartFile.sanitize(installDir + "/" + unpackScriptName);
             unpackScript.copyFrom(makeScriptString(installDir, zipFileName));
             logger.fine("WROTE FILE TO REMOTE SYSTEM: " + fullZipFileName + " and " + fullUnpackScriptPath);
-            unpackOnHostsWindows(host, remotePassword, fullUnpackScriptPath.replace('/', '\\'));
+             unpackOnHostsWindows(host, remotePassword, fullUnpackScriptPath.replace('/', '\\'));
         }
     }
 
@@ -215,6 +221,8 @@ public class InstallNodeCommand extends NativeRemoteCommandsBase {
 
         if (out == null || out.length() < 50)
             throw new CommandException(Strings.get("dcom.error.unpacking", unpackScript, out));
+
+        logger.fine("Output from Windows Unpacker:\n" + out);
     }
 
     private void copyToHostsSSH(File zipFile, ArrayList<String> binDirFiles) throws IOException, InterruptedException, CommandException {
@@ -469,5 +477,9 @@ public class InstallNodeCommand extends NativeRemoteCommandsBase {
         catch (UnknownHostException e) {
             throw new CommandException(Strings.get("cantResolveIpAddress", host));
         }
+    }
+
+    private boolean isSSH() {
+        return !dcomNode;
     }
 }
