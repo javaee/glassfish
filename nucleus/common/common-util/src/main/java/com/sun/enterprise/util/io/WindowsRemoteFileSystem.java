@@ -40,18 +40,24 @@
 
 package com.sun.enterprise.util.io;
 
+import com.sun.enterprise.universal.process.WindowsCredentials;
 import java.net.*;
 import jcifs.smb.NtlmPasswordAuthentication;
 
 /**
  * Wrap the implementation details for the way we get access to remote
  * Windows files.
+ * Note: null args == NPE
  * @author Byron Nevins
  */
 public class WindowsRemoteFileSystem {
     private final String host;
     private final NtlmPasswordAuthentication authorization;
 
+    public WindowsRemoteFileSystem(WindowsCredentials cr) {
+        host = getIP(cr.getHost());
+        authorization = new NtlmPasswordAuthentication(host, cr.getUser(), cr.getPassword());
+    }
     public WindowsRemoteFileSystem(String hostname, NtlmPasswordAuthentication auth) {
         host = getIP(hostname);
         authorization = auth;

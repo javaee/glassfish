@@ -41,6 +41,7 @@ package com.sun.enterprise.util.io;
 
 import com.sun.enterprise.universal.process.WindowsException;
 import java.io.*;
+import java.util.*;
 import jcifs.smb.SmbFile;
 
 /**
@@ -245,8 +246,23 @@ public final class WindowsRemoteFile {
     /*
      * Use this for tiny files -- like scripts that are created on-the-fly from a String
      */
-    public final void copyFrom(String from)
-            throws WindowsException {
+    public final void copyFrom(Collection<String> from) throws WindowsException {
+        if (from == null || from.isEmpty())
+            throw new IllegalArgumentException("copyFrom String-array arg is empty");
+        
+        StringBuilder sb = new StringBuilder();
+
+        for (String s : from) {
+            // since we will write with a writer -- the \n will get translated correctly
+            sb.append(s).append('\n');
+        }
+        copyFrom(sb.toString());
+    }
+    /*
+     * Use this for tiny files -- like scripts that are created on-the-fly from a String
+     */
+
+    public final void copyFrom(String from) throws WindowsException {
         try {
             if (from == null || from.isEmpty())
                 throw new IllegalArgumentException("copyFrom String arg is empty");
