@@ -60,7 +60,6 @@
     <name>Distribution Fragments for various OSGi platforms</name>
     <modules>
         <module>felix</module>
-        <module>equinox</module>
         <module>felix-webconsole-extension</module>
         <module>glassfish-osgi-console-plugin</module>
     </modules>
