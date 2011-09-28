@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.util.io;
 
 import com.sun.enterprise.universal.process.WindowsException;
@@ -143,10 +142,21 @@ public final class WindowsRemoteFile {
     }
 
     public final void mkdirs() throws WindowsException {
+        mkdirs(false);
+    }
+
+    public final void mkdirs(boolean force) throws WindowsException {
         try {
-            if (exists())
-                delete();
+            if (exists()) {
+                if (force)
+                    delete();
+                else
+                    throw new WindowsException(Strings.get("dir.already.exists", getPath()));
+            }
             smbFile.mkdirs();
+        }
+        catch (WindowsException we) {
+            throw we;
         }
         catch (Exception se) {
             throw new WindowsException(se);
@@ -273,6 +283,7 @@ public final class WindowsRemoteFile {
     }
     // note that the path is ALWAYS appended with one and only one slash!!
     // THis is important for smb calls...
+
     public final String getPath() {
         return smbPath;
     }
