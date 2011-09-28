@@ -39,6 +39,7 @@
  */
 package org.glassfish.cluster.ssh.connect;
 
+import com.sun.enterprise.util.io.WindowsRemoteFile;
 import java.util.*;
 import java.util.logging.*;
 
@@ -51,13 +52,18 @@ import org.glassfish.api.admin.SSHCommandExecutionException;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.util.io.WindowsRemoteFileSystem;
 import org.glassfish.cluster.ssh.util.DcomInfo;
 import org.glassfish.cluster.ssh.util.DcomUtils;
+import org.glassfish.common.util.admin.AsadminInput;
 import static com.sun.enterprise.util.StringUtils.ok;
 
 public class NodeRunnerDcom {
     private final Logger logger;
     private Node node;
+    private WindowsRemoteFile authTokenFile;
+    private String authTokenFilePath;
+    private DcomInfo dcomInfo;
 
     public NodeRunnerDcom(Logger logger) {
         this.logger = logger;
@@ -73,13 +79,16 @@ public class NodeRunnerDcom {
             UnsupportedOperationException {
 
         String commandAsString = null;
-
         try {
             this.node = thisNode;
-            DcomInfo dcomInfo = new DcomInfo(node);
+            dcomInfo = new DcomInfo(node);
             WindowsCredentials bonafides = dcomInfo.getCredentials();
             List<String> fullcommand = new ArrayList<String>();
             fullcommand.add(dcomInfo.getNadminPath());
+
+            if(stdinLines != null && !stdinLines.isEmpty())
+                setupAuthTokenFile(fullcommand, stdinLines);
+
             fullcommand.addAll(args);
             commandAsString = commandListToString(fullcommand);
             WindowsRemoteScripter scripter = new WindowsRemoteScripter(bonafides);
@@ -90,6 +99,9 @@ public class NodeRunnerDcom {
         catch (WindowsException ex) {
             throw new SSHCommandExecutionException(Strings.get(
                     "remote.command.error", ex.getMessage(), commandAsString), ex);
+        }
+        finally {
+            teardownAuthTokenFile();
         }
     }
 
@@ -107,4 +119,30 @@ public class NodeRunnerDcom {
 
         return fullCommand.toString();
     }
+
+    /*
+     * 1. creae a remote file
+     * 2. copy the token/auth stuff into it
+     * 3. add the correct args to the remote commandline
+     *    Put the file in the same directory that nadmin lives in (lib)
+     */
+    private void setupAuthTokenFile(List<String> cmd, List<String> stdin) throws WindowsException {
+        WindowsRemoteFileSystem wrfs = new WindowsRemoteFileSystem(dcomInfo.getCredentials());
+        authTokenFilePath = dcomInfo.getNadminParentPath() + "\\stdin";
+        authTokenFile = new WindowsRemoteFile(wrfs, authTokenFilePath);
+        authTokenFile.copyFrom(stdin);
+        cmd.add(AsadminInput.CLI_INPUT_OPTION);
+        cmd.add(authTokenFilePath);
+    }
+
+    private void teardownAuthTokenFile() {
+        if(authTokenFile != null)
+            try {
+            authTokenFile.delete();
+        }
+        catch (WindowsException ex) {
+            logger.warning(Strings.get("cant.delete", dcomInfo.getHost(), authTokenFilePath));
+        }
+    }
+
 }

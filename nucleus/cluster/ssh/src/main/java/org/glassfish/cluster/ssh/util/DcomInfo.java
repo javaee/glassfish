@@ -62,6 +62,7 @@ public final class DcomInfo {
     private final String user;
     private final String windowsDomain;
     private final String nadminPath;
+    private final String nadminParentPath;
 
     public DcomInfo(Node theNode) throws WindowsException {
         // Create a resolver that can replace system properties in strings
@@ -120,10 +121,11 @@ public final class DcomInfo {
             notFinal += "/";
 
         notFinal += SystemPropertyConstants.getComponentName();
-        notFinal += "/lib/nadmin.bat";
-        notFinal = notFinal.replace('/', '\\');
+        notFinal += "/lib";
         notFinal = StringUtils.quotePathIfNecessary(notFinal);
-        nadminPath = notFinal;
+        notFinal = notFinal.replace('/', '\\');
+        nadminParentPath = notFinal;
+        nadminPath = notFinal + "\\nadmin.bat";
 
         credentials = new WindowsCredentials(getHost(), getWindowsDomain(),
                 getUser(), getPassword());
@@ -132,6 +134,10 @@ public final class DcomInfo {
     public String getNadminPath() {
         return nadminPath;
     }
+    public String getNadminParentPath() {
+        return nadminParentPath;
+    }
+
     public WindowsCredentials getCredentials() {
         return credentials;
     }

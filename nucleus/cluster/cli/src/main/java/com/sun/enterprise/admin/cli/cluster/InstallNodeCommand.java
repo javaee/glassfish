@@ -187,7 +187,7 @@ public class InstallNodeCommand extends NativeRemoteCommandsBase {
             String remotePassword = getDCOMPassword(host);
             WindowsRemoteFileSystem wrfs = new WindowsRemoteFileSystem(host, dcomuser, remotePassword);
             WindowsRemoteFile remoteInstallDir = new WindowsRemoteFile(wrfs, installDir);
-            remoteInstallDir.mkdirs();
+            remoteInstallDir.mkdirs(force);
             WindowsRemoteFile remoteZip = new WindowsRemoteFile(remoteInstallDir, zipFileName);
             WindowsRemoteFile unpackScript = new WindowsRemoteFile(remoteInstallDir, unpackScriptName);
             //createUnpackScript
@@ -199,12 +199,12 @@ public class InstallNodeCommand extends NativeRemoteCommandsBase {
                     System.out.print(".");
                 }
             });
-//            System.out.println("");
+            System.out.println("");
             String fullZipFileName = SmartFile.sanitize(installDir + "/" + zipFileName);
             String fullUnpackScriptPath = SmartFile.sanitize(installDir + "/" + unpackScriptName);
             unpackScript.copyFrom(makeScriptString(installDir, zipFileName));
             logger.fine("WROTE FILE TO REMOTE SYSTEM: " + fullZipFileName + " and " + fullUnpackScriptPath);
-             unpackOnHostsWindows(host, remotePassword, fullUnpackScriptPath.replace('/', '\\'));
+            unpackOnHostsWindows(host, remotePassword, fullUnpackScriptPath.replace('/', '\\'));
         }
     }
 
