@@ -42,6 +42,8 @@ package com.sun.enterprise.util.io;
 import com.sun.enterprise.universal.process.WindowsException;
 import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jcifs.smb.SmbFile;
 
 /**
@@ -51,6 +53,7 @@ public final class WindowsRemoteFile {
     private SmbFile smbFile;
     private WindowsRemoteFileSystem wrfs;
     private String smbPath;
+    private static final int BUFSIZE = 1048576;
 
     public WindowsRemoteFile(WindowsRemoteFile parent, String path)
             throws WindowsException {
@@ -164,67 +167,49 @@ public final class WindowsRemoteFile {
         }
     }
 
+    /**
+     * Copies from sin to this WindowsRemoteFile
+     * @param sin the opened stream.  It will automatically be closed here.
+     * @throws WindowsException if any errors.
+     */
     public final void copyFrom(final BufferedInputStream sin) throws WindowsException {
-        try {
-            if (sin == null)
-                throw new IllegalArgumentException("copyFrom stream arg is bad: " + sin);
+        copyFrom(sin, null, -1);
+    }
 
+    /**
+     * If desired -- make this public sometime in the future.  For now there is no
+     * reason to clog up the public namespace with it...
+     */
+    private final void copyFrom(final BufferedInputStream sin,
+            final WindowsRemoteFileCopyProgress progress, final long filelength)
+            throws WindowsException {
+        OutputStream sout = null;
+
+        if (sin == null)
+            throw new NullPointerException("copyFrom stream arg is null");
+
+        try {
             if (!exists())
                 createNewFile();
 
-            OutputStream sout = new BufferedOutputStream(smbFile.getOutputStream());
+            sout = new BufferedOutputStream(smbFile.getOutputStream());
+            byte[] buf = new byte[BUFSIZE];
+            int numBytes = 0;
+            long totalBytesCopied = 0;
 
-            final int bufsize = 1048576;
-            byte[] buf = new byte[bufsize];
+            while ((numBytes = sin.read(buf)) >= 0) {
+                sout.write(buf, 0, numBytes);
+                totalBytesCopied += numBytes;
 
-            while ((sin.read(buf)) >= 0) {
-                sout.write(buf);
-            }
-
-            try {
-                sin.close();
-            }
-            catch (Exception e) {
-                // nothing can be done!
-            }
-            try {
-                sout.close();
-            }
-            catch (Exception e) {
-                // nothing can be done!
+                // It's OK to send in a null Progress object
+                if (progress != null)
+                    progress.callback(totalBytesCopied, filelength);
             }
         }
         catch (Exception e) {
             throw new WindowsException(e);
         }
-    }
-
-    public final void copyFrom(File from, WindowsRemoteFileCopyProgress progress)
-            throws WindowsException {
-        try {
-            if (from == null || !from.isFile())
-                throw new IllegalArgumentException("copyFrom file arg is bad: " + from);
-
-            if (!exists())
-                createNewFile();
-
-            OutputStream sout = new BufferedOutputStream(smbFile.getOutputStream());
-            InputStream sin = new BufferedInputStream(new FileInputStream(from));
-            long filesize = from.length();
-            final int bufsize = 1048576;
-            byte[] buf = new byte[bufsize];
-            long numBytes = 0;
-            long totalBytesCopied = 0;
-
-            while ((numBytes = sin.read(buf)) >= 0) {
-                sout.write(buf);
-                totalBytesCopied += numBytes;
-
-                // It's OK to send in a null Progress object
-                if (progress != null)
-                    progress.callback(totalBytesCopied, filesize);
-            }
-
+        finally {
             try {
                 sin.close();
             }
@@ -237,6 +222,22 @@ public final class WindowsRemoteFile {
             catch (Exception e) {
                 // nothing can be done!
             }
+        }
+    }
+
+    public final void copyFrom(File from, WindowsRemoteFileCopyProgress progress)
+            throws WindowsException {
+
+        try {
+            if (from == null || !from.isFile())
+                throw new IllegalArgumentException("copyFrom file arg is bad: " + from);
+
+            long filesize = from.length();
+            BufferedInputStream sin = new BufferedInputStream(new FileInputStream(from));
+            copyFrom(sin, progress, filesize);
+        }
+        catch (WindowsException e) {
+            throw e;
         }
         catch (Exception e) {
             throw new WindowsException(e);
@@ -249,7 +250,7 @@ public final class WindowsRemoteFile {
     public final void copyFrom(Collection<String> from) throws WindowsException {
         if (from == null || from.isEmpty())
             throw new IllegalArgumentException("copyFrom String-array arg is empty");
-        
+
         StringBuilder sb = new StringBuilder();
 
         for (String s : from) {
