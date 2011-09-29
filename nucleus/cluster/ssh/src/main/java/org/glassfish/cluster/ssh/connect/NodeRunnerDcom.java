@@ -40,6 +40,8 @@
 package org.glassfish.cluster.ssh.connect;
 
 import com.sun.enterprise.util.io.WindowsRemoteFile;
+import java.io.*;
+import java.net.*;
 import java.util.*;
 import java.util.logging.*;
 
@@ -131,8 +133,12 @@ public class NodeRunnerDcom {
         authTokenFilePath = dcomInfo.getNadminParentPath() + "\\stdin";
         authTokenFile = new WindowsRemoteFile(wrfs, authTokenFilePath);
         authTokenFile.copyFrom(stdin);
+
+        // jira 17731 -- Asadmin can't handle Windows full paths (the ":" is the problem)
+        URI authTokenFileUri = new File(authTokenFilePath).toURI();
+
         cmd.add(AsadminInput.CLI_INPUT_OPTION);
-        cmd.add(authTokenFilePath);
+        cmd.add(authTokenFileUri.toString());
     }
 
     private void teardownAuthTokenFile() {
