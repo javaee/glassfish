@@ -39,10 +39,12 @@
  */
 package org.glassfish.admin.mbeanserver;
 
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
+
 import org.jvnet.hk2.annotations.Service;
 
 import javax.management.MBeanServer;
@@ -61,12 +63,14 @@ import java.util.List;
 import java.util.ArrayList;
 
 import java.lang.management.ManagementFactory;
+
 import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.config.serverbeans.JmxConnector;
 import com.sun.enterprise.config.serverbeans.AmxPref;
 import com.sun.enterprise.config.serverbeans.Domain;
 
 import com.sun.grizzly.config.dom.Ssl;
+
 import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXServiceURL;
 
@@ -74,14 +78,15 @@ import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
 import java.util.Set;
 import javax.management.JMException;
+
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.internal.api.*;
 
 /**
-Responsible for creating the {@link BootAMXMBean}, and starting JMXConnectors,
-which will initialize (boot) AMX when a connection arrives.
+ * Responsible for creating the {@link BootAMXMBean}, and starting JMXConnectors,
+ * which will initialize (boot) AMX when a connection arrives.
  */
 @Service
 public final class JMXStartupService implements PostStartup, PostConstruct {
@@ -89,6 +94,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
     private static void debug(final String s) {
         System.out.println("### " + s);
     }
+
     @Inject
     private MBeanServer mMBeanServer;
     @Inject
@@ -105,7 +111,8 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
     private volatile JMXConnectorsStarterThread mConnectorsStarterThread;
 
     public JMXStartupService() {
-        mMBeanServer = ManagementFactory.getPlatformMBeanServer();
+        //mMBeanServer = java.lang.management.ManagementFactory.getPlatformMBeanServer();
+        mMBeanServer = javax.management.MBeanServerFactory.createMBeanServer();
     }
 
     private final class ShutdownListener implements EventListener {
@@ -140,14 +147,39 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
     private synchronized void shutdown() {
         Util.getLogger().fine("JMXStartupService: shutting down AMX and JMX");
 
-        if(mBootAMX != null) mBootAMX.shutdown();
+        if (mBootAMX != null) mBootAMX.shutdown();
         mBootAMX = null;
 
-        if(mConnectorsStarterThread != null) mConnectorsStarterThread.shutdown();
+        if (mConnectorsStarterThread != null) mConnectorsStarterThread.shutdown();
         mConnectorsStarterThread = null;
 
         // we can't block here waiting, we have to assume that the rest of the AMX modules do the right thing
         Util.getLogger().log(java.util.logging.Level.INFO, "JMXStartupService and JMXConnectors have been shut down.");
+
+        //Code to unregister all mbeans - not needed here just added for testing by naman
+        /*Set names = mMBeanServer.queryNames(null, null);
+        for (Iterator i = names.iterator(); i.hasNext(); ) {
+            ObjectName objectName = (ObjectName) i.next();
+            if (objectName != null) {
+                System.out.print( "ObjectName going to be unRegistered " + objectName);
+                Util.getLogger().log(java.util.logging.Level.FINE, "ObjectName going to be unRegistered " + objectName);
+                try {
+                    boolean isRegistered = mMBeanServer.isRegistered(objectName);
+                    if (isRegistered && !objectName.getKeyProperty("type").equals("MBeanServerDelegate") &&
+                            !objectName.getKeyProperty("type").equals("mbean-tracker")) {
+                        mMBeanServer.unregisterMBean(objectName);
+                    }
+                } catch (InstanceNotFoundException e) {
+                    Util.getLogger().log(Level.SEVERE, e.getMessage());
+                } catch (MBeanRegistrationException e) {
+                    Util.getLogger().log(Level.SEVERE, e.getMessage());
+                } catch (Exception e) {
+                    Util.getLogger().log(Level.SEVERE, e.getMessage());
+                }
+            }
+        }*/
+
+        javax.management.MBeanServerFactory.releaseMBeanServer(mMBeanServer);
     }
 
     private static final class BootAMXThread extends Thread {
@@ -164,7 +196,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
     }
 
     /**
-    Thread that starts the configured JMXConnectors.
+     * Thread that starts the configured JMXConnectors.
      */
     private static final class JMXConnectorsStarterThread extends Thread {
 
@@ -191,7 +223,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
                 ((RMIConnectorStarter) starter).stopAndUnexport();
             }
             try {
-                if(connObjectName != null) {
+                if (connObjectName != null) {
                     mMBeanServer.unregisterMBean(connObjectName);
                     connObjectName = null;
                 }
@@ -199,7 +231,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
                 Util.getLogger().log(Level.SEVERE, null, ex);
             } catch (InstanceNotFoundException ex) {
                 Util.getLogger().log(Level.SEVERE, null, ex);
-            } 
+            }
             for (final JMXConnectorServer connector : mConnectorServers) {
                 try {
                     final JMXServiceURL address = connector.getAddress();
@@ -238,13 +270,13 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
             final BootAMXListener listener = mNeedBootListeners ? new BootAMXListener(server, mAMXBooterNew) : null;
             if (protocol.equals("rmi_jrmp")) {
                 starter = new RMIConnectorStarter(mMBeanServer, address, port,
-                            protocol, authRealmName, securityEnabled, habitat,
-                                listener, ssl);
+                        protocol, authRealmName, securityEnabled, habitat,
+                        listener, ssl);
                 server = ((RMIConnectorStarter) starter).start();
             } else if (protocol.equals("jmxmp")) {
                 starter = new JMXMPConnectorStarter(mMBeanServer, address, port,
-                            authRealmName, securityEnabled,
-                                habitat, listener, ssl);
+                        authRealmName, securityEnabled,
+                        habitat, listener, ssl);
                 server = ((JMXMPConnectorStarter) starter).start();
             } else {
                 throw new IllegalArgumentException("JMXStartupService.startConnector(): Unknown protocol: " + protocol);
@@ -256,7 +288,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
             try {
                 connObjectName = new ObjectName(JMX_CONNECTOR_SERVER_PREFIX + ",protocol=" + protocol + ",name=" + connConfig.getName());
                 ObjectName connObjectName1 = mMBeanServer.registerMBean(server, connObjectName).getObjectName();
-           } catch (final Exception e) {
+            } catch (final Exception e) {
                 // it's not critical to have it registered as an MBean
                 e.printStackTrace();
             }
@@ -270,6 +302,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
 
             return server;
         }
+
         private final List<JMXConnectorServer> mConnectorServers = new ArrayList<JMXConnectorServer>();
 
         public void run() {
@@ -289,6 +322,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
             }
         }
     }
+
     public static final String JMX_CONNECTOR_SERVER_PREFIX = "jmxremote:type=jmx-connector-server";
 
     public static final Set<ObjectName> getJMXConnectorServers(final MBeanServer server) {
@@ -301,7 +335,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
     }
 
     /**
-    Return the JMXServiceURLs for all connectors we've loaded.
+     * Return the JMXServiceURLs for all connectors we've loaded.
      */
     public static JMXServiceURL[] getJMXServiceURLs(final MBeanServer server) {
         final Set<ObjectName> objectNames = getJMXConnectorServers(server);

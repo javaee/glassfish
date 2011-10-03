@@ -51,6 +51,8 @@ import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
 import org.glassfish.internal.api.*;
 
+import java.lang.management.ManagementFactory;
+
 /**
     Factory for the MBeanServer.  Required so that HK2 can find an MBeanServer
     for modules doing @Inject MBeanServer.
@@ -65,7 +67,8 @@ public final class MBeanServerFactory implements Factory, PostStartup {
     public MBeanServerFactory()
     {
         // initialize eagerly; ~20ms
-        mMBeanServer = java.lang.management.ManagementFactory.getPlatformMBeanServer();
+        //mMBeanServer = java.lang.management.ManagementFactory.getPlatformMBeanServer();
+        mMBeanServer = javax.management.MBeanServerFactory.createMBeanServer();
     }
     
     public void postConstruct()
