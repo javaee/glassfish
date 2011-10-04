@@ -71,6 +71,7 @@
         <module>ldapbp</module>
         <module>dbschema</module>
         <module>schema2beans</module>
+        <module>j-interop</module>
 	<module>antlr</module>
 	<module>jmsra</module>
         <module>jaxr_ra</module>
