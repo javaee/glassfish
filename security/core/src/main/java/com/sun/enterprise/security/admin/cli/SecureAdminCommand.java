@@ -98,10 +98,10 @@ import org.jvnet.hk2.config.types.Property;
  */
 public abstract class SecureAdminCommand implements AdminCommand {
 
-    private final static String SEC_ADMIN_LISTENER_PROTOCOL_NAME = "sec-admin-listener";
+    final static String SEC_ADMIN_LISTENER_PROTOCOL_NAME = "sec-admin-listener";
     private final static String REDIRECT_PROTOCOL_NAME = "admin-http-redirect";
     public final static String ADMIN_LISTENER_NAME = "admin-listener";
-    private static final String DAS_CONFIG_NAME = "server-config";
+    static final String DAS_CONFIG_NAME = "server-config";
 
     static final Logger logger = LogDomains.getLogger(SecureAdminCommand.class,
                                         LogDomains.ADMIN_LOGGER);
@@ -192,7 +192,7 @@ public abstract class SecureAdminCommand implements AdminCommand {
 
         private SecureAdmin secureAdmin_w = null;
 
-        private TopLevelContext(
+        TopLevelContext(
                 final Transaction t,
                 final Domain d) {
             this.t = t;
@@ -213,8 +213,9 @@ public abstract class SecureAdminCommand implements AdminCommand {
                  */
                 SecureAdmin secureAdmin = d.getSecureAdmin();
                 if (secureAdmin == null) {
-                    secureAdmin_w = d.createChild(SecureAdmin.class);
-                    d.setSecureAdmin(secureAdmin_w);
+                    Domain domain_w = t.enroll(d);
+                    secureAdmin_w = domain_w.createChild(SecureAdmin.class);
+                    domain_w.setSecureAdmin(secureAdmin_w);
                 } else {
                     /*
                      * It already existed, so join it to the transaction.
@@ -240,7 +241,7 @@ public abstract class SecureAdminCommand implements AdminCommand {
                 HashMap<String,Protocol>();
 
 
-        private ConfigLevelContext(
+        ConfigLevelContext(
                 final TopLevelContext topLevelContext,
                 final Config config_w) {
             this.topLevelContext = topLevelContext;
@@ -899,7 +900,7 @@ public abstract class SecureAdminCommand implements AdminCommand {
         }
     }
     
-    public class SecureAdminCommandException extends RuntimeException {
+    public static class SecureAdminCommandException extends RuntimeException {
         
         public SecureAdminCommandException(String message) {
             super(message);
