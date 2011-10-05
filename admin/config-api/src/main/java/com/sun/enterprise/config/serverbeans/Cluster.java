@@ -577,10 +577,15 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                     instanceName));
             }
 
-            Property gmsListenerPort = instance.createChild(Property.class);
-            gmsListenerPort.setName("GMS_LISTENER_PORT");
-            gmsListenerPort.setValue(String.format("${GMS_LISTENER_PORT-%s}", instanceName));
-            instance.getProperty().add(gmsListenerPort);
+            Property gmsListenerPort = instance.getProperty("GMS_LISTENER_PORT");
+            if (gmsListenerPort == null) {
+                gmsListenerPort = instance.createChild(Property.class);
+                gmsListenerPort.setName("GMS_LISTENER_PORT");
+                gmsListenerPort.setValue(String.format("${GMS_LISTENER_PORT-%s}", instanceName));
+                instance.getProperty().add(gmsListenerPort);
+            }
+            // TESTING ONLY. DELETE BEFORE CHECKIN.
+            //logger.log(Level.WARNING,"GMS_LISTENER_PORT value:" + gmsListenerPort.getValue());
 
             if (configRef==null) {
                 Config config = habitat.getComponent(Config.class, "default-config");
@@ -656,7 +661,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
 
                     // Only tcp mode is supported now.
                     // So either "udpunicast" or "tcp" for broadcast mode is treated the same.
-                    final String TCPPORT = "9090";
+                    final String TCPPORT = gmsListenerPort.getValue();
 
                     // lookup server-config and set environment property value
                     // GMS_LISTENER_PORT-clusterName to 9090.
