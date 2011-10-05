@@ -111,8 +111,8 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
     private volatile JMXConnectorsStarterThread mConnectorsStarterThread;
 
     public JMXStartupService() {
-        //mMBeanServer = java.lang.management.ManagementFactory.getPlatformMBeanServer();
-        mMBeanServer = javax.management.MBeanServerFactory.createMBeanServer();
+        mMBeanServer = java.lang.management.ManagementFactory.getPlatformMBeanServer();
+        //mMBeanServer = javax.management.MBeanServerFactory.createMBeanServer();
     }
 
     private final class ShutdownListener implements EventListener {
@@ -179,7 +179,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
             }
         }*/
 
-        javax.management.MBeanServerFactory.releaseMBeanServer(mMBeanServer);
+        //javax.management.MBeanServerFactory.releaseMBeanServer(mMBeanServer);
     }
 
     private static final class BootAMXThread extends Thread {

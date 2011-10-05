@@ -67,8 +67,8 @@ public final class MBeanServerFactory implements Factory, PostStartup {
     public MBeanServerFactory()
     {
         // initialize eagerly; ~20ms
-        //mMBeanServer = java.lang.management.ManagementFactory.getPlatformMBeanServer();
-        mMBeanServer = javax.management.MBeanServerFactory.createMBeanServer();
+        mMBeanServer = java.lang.management.ManagementFactory.getPlatformMBeanServer();
+        //mMBeanServer = javax.management.MBeanServerFactory.createMBeanServer();
     }
     
     public void postConstruct()
