@@ -43,10 +43,8 @@ import com.sun.enterprise.config.serverbeans.customvalidators.NotTargetKeyword;
 import com.sun.enterprise.config.serverbeans.customvalidators.NotDuplicateTargetName;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.net.NetUtils;
-import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.logging.LogDomains;
-import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -160,6 +158,25 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
      */
     @Param(name = "type")
     void setType(String value) throws PropertyVetoException;
+
+    /**
+     * specifies the windows domain if applicable
+     *
+     * @return the Windows domain name.
+     */
+    @Attribute
+    @Pattern(regexp = NAME_REGEX, message = "{windowsdomain.invalid.name}", payload = Node.class)
+    String getWindowsDomain();
+
+    /**
+     * Sets the value of the windows domain property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
+     */
+    @Param(name = "windowsdomain", optional = true)
+    void setWindowsDomain(String value) throws PropertyVetoException;
 
     @Element
     SshConnector getSshConnector();
@@ -307,18 +324,20 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
         String installdir = null;
         @Param(name = "type")
         String type = null;
-        @Param(name = "sshport", optional = true)
+        @Param(name = "sshport", optional = true, alias = "dcomport")
         String sshPort = null;
-        @Param(name = "sshnodehost", optional = true)
+        @Param(name = "sshnodehost", optional = true, alias = "dcomnodehost")
         String sshHost = null;
-        @Param(name = "sshuser", optional = true)
+        @Param(name = "sshuser", optional = true, alias = "dcomuser")
         String sshuser = null;
         @Param(name = "sshkeyfile", optional = true)
         String sshkeyfile;
-        @Param(name = "sshpassword", optional = true)
+        @Param(name = "sshpassword", optional = true, alias = "dcompassword")
         String sshpassword;
         @Param(name = "sshkeypassphrase", optional = true)
         String sshkeypassphrase;
+        @Param(name = "windowsdomain", optional = true)
+        String windowsdomain;
         @Inject
         Habitat habitat;
         @Inject
@@ -352,12 +371,15 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
                 instance.setInstallDir(null);
             if (!StringUtils.ok(nodehost))
                 instance.setNodeHost(null);
+            if (!StringUtils.ok(windowsdomain))
+                instance.setWindowsDomain(null);
 
             //only create-node-ssh and update-node-ssh should be changing the type to SSH
             instance.setType(type);
 
             if (type.equals("CONFIG"))
                 return;
+
             SshConnector sshC = instance.createChild(SshConnector.class);
 
             SshAuth sshA = sshC.createChild(SshAuth.class);
@@ -377,8 +399,15 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
             if (StringUtils.ok(sshHost))
                 sshC.setSshHost(sshHost);
 
+            if ("DCOM".equals(type)) {
+                if (StringUtils.ok(windowsdomain))
+                    instance.setWindowsDomain(windowsdomain);
+                else if(StringUtils.ok(nodehost))
+                    instance.setWindowsDomain(nodehost);
+                else if(StringUtils.ok(sshHost))
+                    instance.setWindowsDomain(sshHost);
+            }
             instance.setSshConnector(sshC);
-
         }
     }
 
@@ -399,7 +428,6 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
                 PropertyVetoException, TransactionFailure {
             Logger logger = LogDomains.getLogger(Node.class, LogDomains.ADMIN_LOGGER);
             LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Node.class);
-            final ActionReport report = context.getActionReport();
             String nodeName = child.getName();
 
             if (nodeName.equals("localhost-" + domain.getName())) { // can't delete localhost node
