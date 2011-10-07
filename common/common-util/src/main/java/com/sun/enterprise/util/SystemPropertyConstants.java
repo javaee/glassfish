@@ -238,6 +238,8 @@ public class SystemPropertyConstants
     public static final String TEMPLATE_CONFIG_NAME = "default-config";
     public static final String DEFAULT_ADMIN_USER = "admin";
     public static final String DEFAULT_ADMIN_PASSWORD = "";
+    public static final String ASADMIN_RELATIVE_PATH = "bin/asadmin";
+    public static final String ASADMIN_RELATIVE_PATH_WINDOWS = "bin/asadmin.bat";
     
     private static final StringManager sm = StringManager.getManager(SystemPropertyConstants.class);
 
