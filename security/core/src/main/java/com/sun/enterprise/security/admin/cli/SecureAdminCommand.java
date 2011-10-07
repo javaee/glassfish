@@ -102,6 +102,8 @@ public abstract class SecureAdminCommand implements AdminCommand {
     private final static String REDIRECT_PROTOCOL_NAME = "admin-http-redirect";
     public final static String ADMIN_LISTENER_NAME = "admin-listener";
     static final String DAS_CONFIG_NAME = "server-config";
+    final static String PORT_UNIF_PROTOCOL_NAME = "pu-protocol";
+        
 
     static final Logger logger = LogDomains.getLogger(SecureAdminCommand.class,
                                         LogDomains.ADMIN_LOGGER);
@@ -189,6 +191,7 @@ public abstract class SecureAdminCommand implements AdminCommand {
 
         private final Transaction t;
         private final Domain d;
+        private Domain d_w = null;
 
         private SecureAdmin secureAdmin_w = null;
 
@@ -199,6 +202,12 @@ public abstract class SecureAdminCommand implements AdminCommand {
             this.d = d;
         }
 
+        Domain writableDomain() throws TransactionFailure {
+            if (d_w == null) {
+                d_w = t.enroll(d);
+            }
+            return d_w;
+        }
 
         /*
          * Gets the SecureAdmin object in writeable form, from the specified
@@ -213,9 +222,8 @@ public abstract class SecureAdminCommand implements AdminCommand {
                  */
                 SecureAdmin secureAdmin = d.getSecureAdmin();
                 if (secureAdmin == null) {
-                    Domain domain_w = t.enroll(d);
-                    secureAdmin_w = domain_w.createChild(SecureAdmin.class);
-                    domain_w.setSecureAdmin(secureAdmin_w);
+                    secureAdmin_w = writableDomain().createChild(SecureAdmin.class);
+                    writableDomain().setSecureAdmin(secureAdmin_w);
                 } else {
                     /*
                      * It already existed, so join it to the transaction.
