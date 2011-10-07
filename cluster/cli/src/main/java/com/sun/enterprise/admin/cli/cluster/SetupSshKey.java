@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli.cluster;
 
 import java.io.*;
@@ -55,6 +54,7 @@ import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.util.SSHUtil;
 
 import com.sun.enterprise.universal.glassfish.TokenResolver;
+import com.sun.enterprise.util.io.FileUtils;
 
 /**
  *  This is a local command that distributes the SSH public key to remote node(s)
@@ -63,20 +63,19 @@ import com.sun.enterprise.universal.glassfish.TokenResolver;
 @Service(name = "setup-ssh")
 @Scoped(PerLookup.class)
 @ExecuteOn({RuntimeType.DAS})
-public final class SetupSshKey extends SSHCommandsBase {
+public final class SetupSshKey extends NativeRemoteCommandsBase {
+    private static final String NL = System.getProperty("line.separator");
     @Param(optional = true)
     private String sshpublickeyfile;
-
-    @Param(optional = true, defaultValue="false")
+    @Param(optional = true, defaultValue = "false")
     private boolean generatekey;
-
     @Inject
     private Habitat habitat;
 
     public SetupSshKey() {
         // Create a resolver that can replace system properties in strings
         Map<String, String> systemPropsMap =
-                new HashMap<String, String>((Map)(System.getProperties()));
+                new HashMap<String, String>((Map) (System.getProperties()));
         resolver = new TokenResolver(systemPropsMap);
     }
 
@@ -86,7 +85,7 @@ public final class SetupSshKey extends SSHCommandsBase {
     protected void validate()
             throws CommandException {
         Globals.setDefaultHabitat(habitat);
-        
+
         sshuser = resolver.resolve(sshuser);
 
         if (sshkeyfile == null) {
@@ -95,22 +94,24 @@ public final class SetupSshKey extends SSHCommandsBase {
             String existingKey = SSHUtil.getExistingKeyFile();
             if (existingKey == null) {
                 sshkeyfile = SSHUtil.getDefaultKeyFile();
-                if(promptForKeyGeneration()) {
-                    generatekey=true;                 
+                if (promptForKeyGeneration()) {
+                    generatekey = true;
                 }
-            } else {
+            }
+            else {
                 //there is a key that requires to be distributed, hence need password
                 promptPass = true;
                 sshkeyfile = existingKey;
-                
-                if(isEncryptedKey()) {
-                    sshkeypassphrase=getSSHPassphrase(false);
+
+                if (isEncryptedKey()) {
+                    sshkeypassphrase = getSSHPassphrase(false);
                 }
             }
-        } else {
+        }
+        else {
             validateKeyFile(sshkeyfile);
-            if(isEncryptedKey()) {
-                sshkeypassphrase=getSSHPassphrase(false);
+            if (isEncryptedKey()) {
+                sshkeypassphrase = getSSHPassphrase(false);
             }
         }
 
@@ -126,50 +127,44 @@ public final class SetupSshKey extends SSHCommandsBase {
     protected int executeCommand()
             throws CommandException {
 
-        SSHLauncher sshL=habitat.getComponent(SSHLauncher.class);
+        SSHLauncher sshL = habitat.getComponent(SSHLauncher.class);
 
         String previousPassword = null;
         boolean status = false;
         for (String node : hosts) {
-            sshL.init(sshuser, node,  sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
+            sshL.init(sshuser, node, sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
             if (generatekey || promptPass) {
                 //prompt for password iff required
                 if (sshkeyfile != null || SSHUtil.getExistingKeyFile() != null) {
-                    try {
-                        if(sshL.checkConnection()) {
-                            logger.info(Strings.get("SSHAlreadySetup", sshuser, node));
-                            continue;
-                        }
-                    } catch (IOException ioe) {
-                        //ignore
+                    if (sshL.checkConnection()) {
+                        logger.info(Strings.get("SSHAlreadySetup", sshuser, node));
+                        continue;
                     }
                 }
                 if (previousPassword != null) {
                     status = sshL.checkPasswordAuth();
                 }
                 if (!status) {
-                    sshpassword=getSSHPassword(node);
-                    previousPassword=sshpassword;
+                    sshpassword = getSSHPassword(node);
+                    previousPassword = sshpassword;
                 }
-            }
-            try {
-                sshL.setupKey(node, sshpublickeyfile, generatekey, sshpassword);
-            } catch (IOException ce) {
-                //logger.fine("SSH key setup failed: " + ce.getMessage());
-                throw new CommandException(Strings.get("KeySetupFailed", ce.getMessage()));
-            } catch (Exception e) {
-                //handle KeyStoreException
             }
 
-            boolean res = false;
             try {
-                res = sshL.checkConnection();
-            } catch (IOException ioe) {
+                sshL.setupKey(node, sshpublickeyfile, generatekey, sshpassword);
+            }
+            catch (IOException ce) {
+                //logger.fine("SSH key setup failed: " + ce.getMessage());
+                throw new CommandException(Strings.get("KeySetupFailed", ce.getMessage()));
+            }
+            catch (Exception e) {
+                //handle KeyStoreException
                 if (logger.isLoggable(Level.FINER)) {
-                    ioe.printStackTrace();
+                    logger.log(Level.FINER, "Keystore error: ", e);
                 }
             }
-            if (!res) {
+
+            if (!sshL.checkConnection()) {
                 throw new CommandException(Strings.get("ConnFailed"));
             }
         }
@@ -184,8 +179,21 @@ public final class SetupSshKey extends SSHCommandsBase {
         //if key exists, set prompt flag
         File f = new File(file);
         if (f.exists()) {
-            promptPass=true;
-        } else {
+            if (!f.getName().endsWith(".pub")) {
+                String key = null;
+                try {
+                    key = FileUtils.readSmallFile(file);
+                }
+                catch (IOException ioe) {
+                    throw new CommandException(Strings.get("UnableToReadKey", file, ioe.getMessage()));
+                }
+                if (!key.startsWith("-----BEGIN ") && !key.endsWith(" PRIVATE KEY-----" + NL)) {
+                    throw new CommandException(Strings.get("InvalidKeyFile", file));
+                }
+            }
+            promptPass = true;
+        }
+        else {
             throw new CommandException(Strings.get("KeyDoesNotExist", file));
         }
     }
@@ -196,7 +204,7 @@ public final class SetupSshKey extends SSHCommandsBase {
     private boolean promptForKeyGeneration() {
         if (generatekey)
             return true;
-        
+
         if (!programOpts.isInteractive())
             return false;
 
@@ -208,14 +216,16 @@ public final class SetupSshKey extends SSHCommandsBase {
                 cons.printf("%s", Strings.get("GenerateKeyPairPrompt", sshuser, Arrays.toString(hosts)));
                 val = cons.readLine();
                 if (val != null && (val.equalsIgnoreCase("yes") || val.equalsIgnoreCase("y"))) {
-                    if(logger.isLoggable(Level.FINER)) {
+                    if (logger.isLoggable(Level.FINER)) {
                         logger.finer("Generate key!");
                     }
                     return true;
-                } else if ( val != null && (val.equalsIgnoreCase("no") || val.equalsIgnoreCase("n"))) {
+                }
+                else if (val != null && (val.equalsIgnoreCase("no") || val.equalsIgnoreCase("n"))) {
                     break;
                 }
-            } while (val != null && !isValidAnswer(val));
+            }
+            while (val != null && !isValidAnswer(val));
         }
         return false;
     }

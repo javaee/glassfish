@@ -37,16 +37,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package com.sun.enterprise.admin.cli.cluster;
 
+import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.universal.process.WindowsCredentials;
+import com.sun.enterprise.universal.process.WindowsException;
+import com.sun.enterprise.universal.process.WindowsRemoteScripter;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.io.FileListerRelative;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.util.io.WindowsRemoteFile;
+import com.sun.enterprise.util.io.WindowsRemoteFileCopyProgress;
+import com.sun.enterprise.util.io.WindowsRemoteFileSystem;
 import com.sun.enterprise.util.zip.ZipFileException;
 import com.sun.enterprise.util.zip.ZipWriter;
 import com.trilead.ssh2.SCPClient;
+import java.io.*;
+import java.net.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandException;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
@@ -62,125 +69,181 @@ import org.glassfish.internal.api.Globals;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Rajiv Mordani
- */ 
-
-
+ */
 @Service(name = "install-node")
 @Scoped(PerLookup.class)
-
-public class InstallNodeCommand extends SSHCommandsBase {
-
-    @Param(name="archive", optional = true)
+public class InstallNodeCommand extends NativeRemoteCommandsBase {
+    @Param(name = "archive", optional = true)
     private String archive;
-
     @Param(name = "installdir", optional = true, defaultValue = "${com.sun.aas.productRoot}")
     private String installDir;
-
     @Param(optional = true, defaultValue = "false")
     private boolean create;
-
     @Param(optional = true, defaultValue = "false")
     private boolean save;
-
     @Param(name = "force", optional = true, defaultValue = "false")
     private boolean force;
-
+    @Param(name = "dcom", shortName = "d", optional = true, defaultValue = "false")
+    private boolean dcomNode;
+    @Param(name = "windowsdomain", shortName = "w", optional = true, defaultValue = "")
+    private String windowsDomain;
     @Inject
     private Habitat habitat;
-    
     @Inject
     private SSHLauncher sshLauncher;
-
     private String archiveName;
-
     private boolean delete = true;
+    private String dcomuser;
 
     @Override
     protected void validate() throws CommandException {
         Globals.setDefaultHabitat(habitat);
-        
+
         installDir = resolver.resolve(installDir);
         if (!force) {
-            for (String host: hosts) {
-                if(checkIfNodeExistsForHost(host, installDir)) {
+            for (String host : hosts) {
+                if (checkIfNodeExistsForHost(host, installDir)) {
                     throw new CommandException(Strings.get("node.already.configured", host, installDir));
                 }
             }
-        }       
-        sshuser = resolver.resolve(sshuser);
-        if (sshkeyfile == null) {
-            //if user hasn't specified a key file check if key exists in
-            //default location
-            String existingKey = SSHUtil.getExistingKeyFile();
-            if (existingKey == null) {
-                promptPass=true;
-            } else {
-                sshkeyfile = existingKey;
+        }
+
+        dcomuser = sshuser = resolver.resolve(sshuser);
+
+        if (isSSH()) {
+            if (sshkeyfile == null) {
+                //if user hasn't specified a key file check if key exists in
+                //default location
+                String existingKey = SSHUtil.getExistingKeyFile();
+                if (existingKey == null) {
+                    promptPass = true;
+                }
+                else {
+                    sshkeyfile = existingKey;
+                }
             }
-        } else {
-            validateKeyFile(sshkeyfile);
+            else {
+                validateKey(sshkeyfile);
+            }
+
+            //we need the key passphrase if key is encrypted
+            if (sshkeyfile != null && isEncryptedKey()) {
+                sshkeypassphrase = getSSHPassphrase(true);
+            }
         }
-        
-        //we need the key passphrase if key is encrypted
-        if(sshkeyfile != null && isEncryptedKey()){
-            sshkeypassphrase=getSSHPassphrase(true);
+        else {
+            // just to be safe!
+            sshkeypassphrase = null;
+            sshkeyfile = null;
         }
-        
     }
 
     @Override
     protected int executeCommand() throws CommandException {
-
         File zipFile = null;
-        try {
 
-            String baseRootValue = getSystemProperty(SystemPropertyConstants.PRODUCT_ROOT_PROPERTY) ;
-            ArrayList<String>  binDirFiles = new ArrayList<String>();
-            zipFile = createZipFileIfNeeded(baseRootValue, binDirFiles);
-            copyToHosts(zipFile, binDirFiles);            
-        } catch (IOException ioe) {
-            throw new CommandException(ioe);
-        } catch (ZipFileException ze) {
-            throw new CommandException(ze);
-        } catch (InterruptedException e) {
+        try {
+            ArrayList<String> binDirFiles = new ArrayList<String>();
+            zipFile = createZipFileIfNeeded(binDirFiles);
+            copyToHosts(zipFile, binDirFiles);
+        }
+        catch (Exception e) {
             throw new CommandException(e);
-        } finally {
+        }
+        finally {
             if (!save && delete) {
-                if (zipFile != null)
-                    zipFile.delete();
+                if (zipFile != null) {
+                    if (!zipFile.delete())
+                        zipFile.deleteOnExit();
+                }
             }
         }
 
         return SUCCESS;
     }
 
-    private void copyToHosts(File zipFile, ArrayList<String> binDirFiles) throws IOException, InterruptedException, CommandException {
+    private void copyToHosts(File zipFile, ArrayList<String> binDirFiles)
+            throws WindowsException, CommandException, IOException, InterruptedException {
+        if (dcomNode)
+            copyToHostsWindows(zipFile);
+        else
+            copyToHostsSSH(zipFile, binDirFiles);
+    }
+
+    private void copyToHostsWindows(File zipFile)
+            throws WindowsException, CommandException {
+        final String zipFileName = "glassfish_install.zip";
+        final String unpackScriptName = "unpack.bat";
+
+        for (String host : hosts) {
+            String remotePassword = getDCOMPassword(host);
+            WindowsRemoteFileSystem wrfs = new WindowsRemoteFileSystem(host, dcomuser, remotePassword);
+            WindowsRemoteFile remoteInstallDir = new WindowsRemoteFile(wrfs, installDir);
+            remoteInstallDir.mkdirs(force);
+            WindowsRemoteFile remoteZip = new WindowsRemoteFile(remoteInstallDir, zipFileName);
+            WindowsRemoteFile unpackScript = new WindowsRemoteFile(remoteInstallDir, unpackScriptName);
+            //createUnpackScript
+            System.out.printf("Copying %d bytes", zipFile.length());
+            remoteZip.copyFrom(zipFile, new WindowsRemoteFileCopyProgress() {
+                @Override
+                public void callback(long numcopied, long numtotal) {
+                    //final int percent = (int)((double)numcopied / (double)numtotal * 100.0);
+                    System.out.print(".");
+                }
+            });
+            System.out.println("");
+            String fullZipFileName = SmartFile.sanitize(installDir + "/" + zipFileName);
+            String fullUnpackScriptPath = SmartFile.sanitize(installDir + "/" + unpackScriptName);
+            unpackScript.copyFrom(makeScriptString(installDir, zipFileName));
+            logger.fine("WROTE FILE TO REMOTE SYSTEM: " + fullZipFileName + " and " + fullUnpackScriptPath);
+            unpackOnHostsWindows(host, remotePassword, fullUnpackScriptPath.replace('/', '\\'));
+        }
+    }
+
+    private void unpackOnHostsWindows(String host, String remotePassword,
+            String unpackScript) throws WindowsException, CommandException {
+        String domain = windowsDomain;
+
+        if (!ok(domain))
+            domain = host;
+
+        WindowsCredentials bonafides = new WindowsCredentials(host, domain, sshuser, remotePassword);
+        WindowsRemoteScripter scripter = new WindowsRemoteScripter(bonafides);
+        String out = scripter.run(unpackScript);
+
+        if (out == null || out.length() < 50)
+            throw new CommandException(Strings.get("dcom.error.unpacking", unpackScript, out));
+
+        logger.fine("Output from Windows Unpacker:\n" + out);
+    }
+
+    private void copyToHostsSSH(File zipFile, ArrayList<String> binDirFiles) throws IOException, InterruptedException, CommandException {
 
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        
-        for (String host: hosts) {
+
+        for (String host : hosts) {
             sshLauncher.init(sshuser, host, sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
-            
+
             if (sshkeyfile != null && !sshLauncher.checkConnection()) {
                 //key auth failed, so use password auth
-                promptPass=true;
+                promptPass = true;
             }
-            
-            if (promptPass) {                
-                sshpassword=getSSHPassword(host);
+
+            if (promptPass) {
+                sshpassword = getSSHPassword(host);
                 //re-initialize
                 sshLauncher.init(sshuser, host, sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
             }
 
-            installDir = installDir.replaceAll("\\\\","/");
+            installDir = installDir.replaceAll("\\\\", "/");
 
             SFTPClient sftpClient = sshLauncher.getSFTPClient();
             SCPClient scpClient = sshLauncher.getSCPClient();
@@ -188,74 +251,63 @@ public class InstallNodeCommand extends SSHCommandsBase {
                 if (!sftpClient.exists(installDir)) {
                     sftpClient.mkdirs(installDir, 0755);
                 }
-            } catch (IOException ioe){
-                logger.info(Strings.get("mkdir.failed",installDir, host));
+            }
+            catch (IOException ioe) {
+                logger.info(Strings.get("mkdir.failed", installDir, host));
                 throw new IOException(ioe);
             }
 
-            if(checkIfAlreadyInstalled(host))
+            if (checkIfAlreadyInstalled(host))
                 continue;
-            
+
             //delete the installDir contents if non-empty
             try {
                 //get list of file in DAS installdir
-                //File all = new File(resolver.resolve("${com.sun.aas.installRoot}"));
-                String ins = resolver.resolve("${com.sun.aas.installRoot}") + "/../";
-
-                File all = new File(ins);
-                Set files = FileUtils.getAllFilesAndDirectoriesUnder(all);
-
-                logger.finer("Total number of files under " + ins + " = " + files.size());
-                String remoteDir = installDir;
-                List<String> modList = new ArrayList<String>();
-                if (!installDir.endsWith("/"))
-                    remoteDir = remoteDir + "/";
-
-                for (Object f:files) {
-                    modList.add(remoteDir+FileUtils.makeForwardSlashes(((File)f).getPath()));
-                }
-            
-                deleteRemoteFiles(sftpClient, modList, installDir, force);
-            } catch (IOException ex) {
-                logger.finer("Failed to remove installDir contents");
-                throw new IOException (ex);
+                List<String> files = getListOfInstallFiles(installDir);
+                deleteRemoteFiles(sftpClient, files, installDir, force);
             }
-            
-            
+            catch (IOException ex) {
+                logger.finer("Failed to remove installDir contents");
+                throw new IOException(ex);
+            }
+
             String zip = zipFile.getCanonicalPath();
             try {
-                logger.info("Copying " + zip + " (" + zipFile.length() +" bytes)" +
-                            " to " + host + ":" + installDir);
+                logger.info("Copying " + zip + " (" + zipFile.length() + " bytes)"
+                        + " to " + host + ":" + installDir);
                 // Looks like we need to quote the paths to scp in case they
                 // contain spaces.
                 scpClient.put(zipFile.getAbsolutePath(), FileUtils.quoteString(installDir));
                 logger.finer("Copied " + zip + " to " + host + ":" + installDir);
-            } catch (IOException ex){
-                logger.info (Strings.get("cannot.copy.zip.file", zip, host));
-                throw new IOException (ex);
+            }
+            catch (IOException ex) {
+                logger.info(Strings.get("cannot.copy.zip.file", zip, host));
+                throw new IOException(ex);
             }
 
             try {
                 logger.info("Installing " + archiveName + " into " + host + ":" + installDir);
                 String unzipCommand = "cd '" + installDir + "'; jar -xvf " + archiveName;
                 int status = sshLauncher.runCommand(unzipCommand, outStream);
-                if (status != 0){
-                    logger.info (Strings.get("jar.failed", host, outStream.toString()));
-                    throw new CommandException ("Remote command output: " +outStream.toString());
+                if (status != 0) {
+                    logger.info(Strings.get("jar.failed", host, outStream.toString()));
+                    throw new CommandException("Remote command output: " + outStream.toString());
                 }
                 logger.finer("Installed " + archiveName + " into " + host + ":" + installDir);
-            } catch (IOException ioe){
-                logger.info (Strings.get("jar.failed", host, outStream.toString()));
-                throw new IOException (ioe);
+            }
+            catch (IOException ioe) {
+                logger.info(Strings.get("jar.failed", host, outStream.toString()));
+                throw new IOException(ioe);
             }
 
             try {
 //                String zipFileName = archiveName;
-            logger.info("Removing " + host + ":" + installDir + "/"+archiveName);
-            sftpClient.rm(installDir + "/"+archiveName);
-            logger.finer("Removed " + host + ":" + installDir + "/" + archiveName);
-            } catch (IOException ioe){
-                logger.info(Strings.get("remove.glassfish.failed",host, installDir));
+                logger.info("Removing " + host + ":" + installDir + "/" + archiveName);
+                sftpClient.rm(installDir + "/" + archiveName);
+                logger.finer("Removed " + host + ":" + installDir + "/" + archiveName);
+            }
+            catch (IOException ioe) {
+                logger.info(Strings.get("remove.glassfish.failed", host, installDir));
                 throw new IOException(ioe);
             }
 
@@ -264,53 +316,57 @@ public class InstallNodeCommand extends SSHCommandsBase {
             try {
                 if (binDirFiles.isEmpty()) {
                     //binDirFiles can be empty if the archive isn't a fresh one
-                    String cmd = "cd '" + installDir + "/glassfish/bin'; chmod 0755 *";
+                    String cmd = "cd '" + installDir + "/" + SystemPropertyConstants.getComponentName() + "/bin'; chmod 0755 *";
                     int status = sshLauncher.runCommand(cmd, outStream);
-                    if (status != 0){
-                        logger.info (Strings.get("jar.failed", host, outStream.toString()));
-                        throw new CommandException ("Remote command output: " +outStream.toString());
-                    } 
-                } else {
-                    for (String binDirFile: binDirFiles) {
+                    if (status != 0) {
+                        logger.info(Strings.get("jar.failed", host, outStream.toString()));
+                        throw new CommandException("Remote command output: " + outStream.toString());
+                    }
+                }
+                else {
+                    for (String binDirFile : binDirFiles) {
                         sftpClient.chmod((installDir + "/" + binDirFile), 0755);
                     }
                 }
                 logger.finer("Fixed file permissions of all files under " + host + ":" + installDir + "/bin");
-            } catch (IOException ioe){
+            }
+            catch (IOException ioe) {
                 logger.info(Strings.get("fix.permissions.failed", host, installDir));
                 throw new IOException(ioe);
             }
         }
     }
 
-    private File createZipFileIfNeeded(String baseRootValue, ArrayList<String> binDirFiles) throws IOException, ZipFileException {
-
-        File installRoot = new File(baseRootValue); 
+    private File createZipFileIfNeeded(ArrayList<String> binDirFiles) throws IOException, ZipFileException {
+        String baseRootValue = getSystemProperty(SystemPropertyConstants.PRODUCT_ROOT_PROPERTY);
+        File installRoot = new File(baseRootValue);
 
         File zipFileLocation = null;
-        File glassFishZipFile = null;        
+        File glassFishZipFile = null;
 
         if (archive != null) {
-            archive = archive.replaceAll("\\\\","/");
+            archive = archive.replaceAll("\\\\", "/");
             archiveName = archive.substring(archive.lastIndexOf("/") + 1, archive.length());
-            zipFileLocation = new File(archive.substring(0,archive.lastIndexOf("/")));
+            zipFileLocation = new File(archive.substring(0, archive.lastIndexOf("/")));
             glassFishZipFile = new File(archive);
             if (glassFishZipFile.exists() && !create) {
                 logger.finer("Found " + glassFishZipFile.getCanonicalPath());
                 delete = false;
                 return glassFishZipFile;
-            } else if (!zipFileLocation.canWrite()) {
-                throw new IOException ("Cannot write to " + archive);
             }
-        } else {
+            else if (!zipFileLocation.canWrite()) {
+                throw new IOException("Cannot write to " + archive);
+            }
+        }
+        else {
             zipFileLocation = new File(".");
             if (!zipFileLocation.canWrite()) {
                 zipFileLocation = new File(System.getProperty("java.io.tmpdir"));
             }
             glassFishZipFile = File.createTempFile("glassfish", ".zip", zipFileLocation);
-            String filePath  = glassFishZipFile.getCanonicalPath();
-            filePath = filePath.replaceAll("\\\\","/");
-            archiveName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length());            
+            String filePath = glassFishZipFile.getCanonicalPath();
+            filePath = filePath.replaceAll("\\\\", "/");
+            archiveName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length());
         }
 
         FileListerRelative lister = new FileListerRelative(installRoot);
@@ -323,9 +379,9 @@ public class InstallNodeCommand extends SSHCommandsBase {
         logger.finer("Number of files to be zipped = " + resultFiles.size());
 
         Iterator<String> iter = resultFiles.iterator();
-        while(iter.hasNext()) {
+        while (iter.hasNext()) {
             String fileName = iter.next();
-            String fPath = fileName.substring(fileName.lastIndexOf("/") + 1);            
+            String fPath = fileName.substring(fileName.lastIndexOf("/") + 1);
             if (fPath.equals(glassFishZipFile.getName())) {
                 logger.finer("Removing file = " + fileName);
                 iter.remove();
@@ -333,14 +389,15 @@ public class InstallNodeCommand extends SSHCommandsBase {
             }
             if (fileName.contains("domains") || fileName.contains("nodes")) {
                 iter.remove();
-            } else if (fileName.startsWith("bin") || fileName.startsWith("glassfish/bin")) {
+            }
+            else if (fileName.startsWith("bin") || fileName.startsWith(SystemPropertyConstants.getComponentName() + "/bin")) {
                 binDirFiles.add(fileName);
             }
         }
-        
-        logger.finer("Final number of files to be zipped = " +resultFiles.size());
 
-        String [] filesToZip = new String[resultFiles.size()];
+        logger.finer("Final number of files to be zipped = " + resultFiles.size());
+
+        String[] filesToZip = new String[resultFiles.size()];
         filesToZip = resultFiles.toArray(filesToZip);
 
         ZipWriter writer = new ZipWriter(FileUtils.safeGetCanonicalPath(glassFishZipFile), installRoot.toString(), filesToZip);
@@ -349,14 +406,7 @@ public class InstallNodeCommand extends SSHCommandsBase {
 
         return glassFishZipFile;
     }
-    
-    private void validateKeyFile(String file) throws CommandException {
-        File f = new File(file);
-        if (!f.exists()) {
-            throw new CommandException(Strings.get("KeyDoesNotExist", file));
-        }
-    }
-    
+
     /**
      * Determines if GlassFish is installed on remote host at specified location.
      * Uses SSH launcher to execute 'asadmin version'
@@ -371,19 +421,55 @@ public class InstallNodeCommand extends SSHCommandsBase {
         boolean res = false;
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         try {
-            String cmd = "'" + installDir + "/glassfish/bin/asadmin' version --local --terse";
+            String cmd = "'" + installDir + "/" + SystemPropertyConstants.getComponentName() + "/bin/asadmin' version --local --terse";
             int status = sshLauncher.runCommand(cmd, outStream);
-            if (status == 0){
-                logger.finer(host + ":'" + cmd + "'" + " returned ["+ outStream.toString() + "]");
+            if (status == 0) {
+                logger.finer(host + ":'" + cmd + "'" + " returned [" + outStream.toString() + "]");
                 logger.info(Strings.get("found.glassfish.install", host, installDir));
                 res = true;
-            } else {
-                logger.finer(host + ":'" + cmd + "'" + " failed ["+ outStream.toString() + "]");
             }
-        } catch (IOException ex) {
-            logger.info (Strings.get("glassfish.install.check.failed", host));
-            throw new IOException (ex);
+            else {
+                logger.finer(host + ":'" + cmd + "'" + " fa iled [" + outStream.toString() + "]");
+            }
+        }
+        catch (IOException ex) {
+            logger.info(Strings.get("glassfish.install.check.failed", host));
+            throw new IOException(ex);
         }
         return res;
+    }
+
+    public static String toString(InputStream ins) throws IOException {
+        StringWriter sw = new StringWriter();
+        InputStreamReader reader = new InputStreamReader(ins);
+
+        char[] buffer = new char[4096];
+        int n;
+        while ((n = reader.read(buffer)) >= 0)
+            sw.write(buffer, 0, n);
+
+        return sw.toString();
+    }
+
+    private String makeScriptString(String installDir, String zipFileName) {
+        // first line is drive designator to make sure we are on the right drive.  E.g. "C:"
+        StringBuilder scriptString = new StringBuilder(installDir.substring(0, 2));
+        scriptString.append("\r\n").append("cd \"").append(installDir).append("\"\r\n").
+                append("jar xvf ").append(zipFileName).append("\r\n");
+
+        return scriptString.toString();
+    }
+
+    private String getIP(String host) throws CommandException {
+        try {
+            return InetAddress.getByName(host).getHostAddress();
+        }
+        catch (UnknownHostException e) {
+            throw new CommandException(Strings.get("cantResolveIpAddress", host));
+        }
+    }
+
+    private boolean isSSH() {
+        return !dcomNode;
     }
 }

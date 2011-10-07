@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,8 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.admin.remote.ServerRemoteAdminCommand;
+import com.sun.enterprise.universal.process.WindowsException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.File;
 import java.io.IOException;
@@ -65,9 +67,10 @@ import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.api.ServerContext;
-import org.glassfish.cluster.ssh.connect.RemoteConnectHelper;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
+import com.sun.enterprise.util.io.WindowsRemoteFile;
+import com.sun.enterprise.util.io.WindowsRemoteFileSystem;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -76,6 +79,7 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PerLookup;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.sftp.SFTPClient;
+import org.glassfish.cluster.ssh.util.DcomInfo;
 
 /**
  * AdminCommand to stop the instance
@@ -96,7 +100,7 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
     @Inject
     private Habitat habitat;
     @Inject
-    private ServerContext serverContext;    
+    private ServerContext serverContext;
     @Inject
     private Nodes nodes;
     @Inject
@@ -111,6 +115,10 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
     private Boolean kill = false;
     @Param(optional = false, primary = true)
     private String instanceName;
+
+    @Param(name="_vmShutdown", optional=true, defaultValue = "true")
+    private String vmShutdown;
+
     private Logger logger;
     private RemoteInstanceCommandHelper helper;
     private ActionReport report;
@@ -118,14 +126,13 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
     private String cmdName = "stop-instance";
     private Server instance;
     File pidFile = null;
-    SFTPClient ftpClient=null;    
-
+    SFTPClient ftpClient=null;
+    private WindowsRemoteFile wrf;
 
     public void execute(AdminCommandContext context) {
         report = context.getActionReport();
         logger = context.getLogger();
         SSHLauncher launcher;
-        RemoteConnectHelper rch;
         int dasPort;
         String dasHost;
 
@@ -139,7 +146,7 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
             errorMessage = Strings.get("stop.instance.notDas",
                     env.getRuntimeType().toString());
         }
-        
+
         if(errorMessage == null && !kill) {
             errorMessage = pollForDeath();
         }
@@ -168,24 +175,28 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
         Node node = nodes.getNode(nodeName);
         String nodeHost = node.getNodeHost();
         InstanceDirUtils insDU = new InstanceDirUtils(node, serverContext);
-        try {
-            pidFile = new File (insDU.getLocalInstanceDir(instance.getName()) , "config/pid");
-        } catch (java.io.IOException eio){
-            // could not get the file name so can't see if it still exists.  Need to exit
-            return;
-        }
-        // this should be replaced with method from Node config bean.  
+        // this should be replaced with method from Node config bean.
         dasPort = helper.getAdminPort(SystemPropertyConstants.DAS_SERVER_NAME);
         dasHost = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
-        rch = new RemoteConnectHelper(habitat, node, logger, dasHost, dasPort);
-
-        if (rch.isLocalhost()){
+        if (node.isLocal()){
+            try {
+                pidFile = new File (insDU.getLocalInstanceDir(instance.getName()) , "config/pid");
+            } catch (java.io.IOException eio){
+                // could not get the file name so can't see if it still exists.  Need to exit
+                return;
+            }
             if (pidFile.exists()){
                     //server still not down completely, do we poll?
                 errorMessage = pollForRealDeath("local");
             }
 
         } else if (node.getType().equals("SSH")) {
+            try {
+                pidFile = new File (insDU.getLocalInstanceDir(instance.getName()) , "config/pid");
+            } catch (java.io.IOException eio){
+                // could not get the file name so can't see if it still exists.  Need to exit
+                return;
+            }
             //use SFTPClient to see if file exists.
             launcher = habitat.getComponent(SSHLauncher.class);
             launcher.init(node, logger);
@@ -193,18 +204,28 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
                 ftpClient = launcher.getSFTPClient();
                 if (ftpClient.exists(pidFile.toString())){
                     // server still not down, do we poll?
-                    errorMessage = pollForRealDeath("remote");
+                    errorMessage = pollForRealDeath("SSH");
                 }
             } catch (IOException ex) {
                 //could not get to other host
             }
-        }
+        } else if (node.getType().equals("DCOM")) {
+            DcomInfo info;
+            try {
+                info = new DcomInfo(node);
+                String path = info.getRemoteNodeRootDirectory() + "\\config\\pid";
+                wrf = new WindowsRemoteFile(info.getCredentials(), path);
+                if(wrf.exists())
+                    errorMessage = pollForRealDeath("DCOM");
 
+            }catch (WindowsException ex) {
+                //could not get to other host
+            }
+        }
         if (errorMessage != null) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(errorMessage);
         }
-        
     }
 
     @Override
@@ -312,7 +333,7 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
         }
         return Strings.get("stop.instance.timeout", instanceName);
     }
-    
+
     private String pollForRealDeath(String mode){
         int counter = 0;  // 30 seconds
 
@@ -323,10 +344,14 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
                     if(!pidFile.exists()){
                         return null;
                     }
-                }else {
+                }else if (mode.equals("SSH")){
                     if (!ftpClient.exists(pidFile.toString()))
                         return null;
+                }else if (mode.equals("DCOM")){
+                    if (wrf == null || !wrf.exists())
+                        return null;
                 }
+
                 // Fairly long interval between tries because checking over
                 // SSH is expensive.
                 Thread.sleep(5000);

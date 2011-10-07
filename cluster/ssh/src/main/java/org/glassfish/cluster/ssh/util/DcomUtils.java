@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,41 +37,42 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-package com.sun.enterprise.v3.admin.cluster;
+package org.glassfish.cluster.ssh.util;
 
 import com.sun.enterprise.config.serverbeans.Node;
-import org.glassfish.api.I18n;
-import org.glassfish.api.admin.*;
-import org.jvnet.hk2.annotations.*;
-import org.jvnet.hk2.component.PerLookup;
+import com.sun.enterprise.config.serverbeans.SshAuth;
+import com.sun.enterprise.config.serverbeans.SshConnector;
+import com.sun.enterprise.universal.glassfish.TokenResolver;
+import com.sun.enterprise.universal.process.WindowsCredentials;
+import com.sun.enterprise.universal.process.WindowsException;
+import static com.sun.enterprise.util.StringUtils.ok;
+import java.util.*;
+import org.glassfish.internal.api.RelativePathResolver;
 
 /**
- * Remote AdminCommand to validate the connection to an SSH node.
- *
- * @author Joe Di Pol
+ * I hate to copy&paste identical code into more than one class.
+ * Hence this class!
+ * @author Byron Nevins
  */
-@Service(name = "ping-node-ssh")
-@I18n("ping.node.ssh")
-@Scoped(PerLookup.class)
-@CommandLock(CommandLock.LockType.NONE)
-@ExecuteOn({RuntimeType.DAS})
-public class PingNodeSshCommand extends PingNodeRemoteCommand {
-    @Override
-    public void execute(AdminCommandContext context) {
-        executeInternal(context);
+public final class DcomUtils {
+    private DcomUtils() {
+        // no instances allowed!
     }
 
-    /**
-     *
-     * @param node the node of interest
-     * @return null if all-OK, otherwise return an error message
-     */
-    @Override
-    protected String validateSubType(Node node) {
-        if (!NodeUtils.isSSHNode(node)) {
-            return Strings.get("notSshNode", name);
+    public static String resolvePassword(String raw) {
+
+        try {
+            return RelativePathResolver.getRealPasswordFromAlias(raw);
         }
-        return null;
+        catch (Exception e) {
+            return raw;
+        }
+    }
+
+    public static List<String> resolvePasswordToList(String raw) {
+        List tokens = new ArrayList<String>(1);
+        String password = resolvePassword(raw);
+        tokens.add("AS_ADMIN_DCOMPASSWORD=" + password);
+        return tokens;
     }
 }

@@ -58,10 +58,8 @@ import com.trilead.ssh2.SCPClient;
 import org.glassfish.internal.api.RelativePathResolver;
 import org.glassfish.cluster.ssh.util.HostVerifier;
 import org.glassfish.cluster.ssh.util.SSHUtil;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.config.serverbeans.SshAuth;
@@ -137,9 +135,6 @@ public class SSHLauncher {
     // Password before it has been expanded. Used for debugging.
     private String rawPassword = null;
     private String rawKeyPassPhrase = null;
-
-    @Inject
-    private Habitat habitat;
 
     public void init(Node node, Logger logger) {
         this.logger = logger;
@@ -572,7 +567,24 @@ public class SSHLauncher {
         return printable;
     }
 
-     public void setupKey(String node, String pubKeyFile, boolean generateKey, String passwd)
+    /**
+     * Setting up the key involves the following steps:
+     * -If a key exists and we can connect using the key, do nothing.
+     * -Generate a key pair if there isn't one
+     * -Connect to remote host using password auth and do the following:
+     *  1. create .ssh directory if it doesn't exist
+     *  2. copy over the key as key.tmp
+     *  3. Append the key to authorized_keys file
+     *  4. Remove the temporary key file key.tmp
+     *  5. Fix permissions for home, .ssh and authorized_keys
+     * @param node        - remote host
+     * @param pubKeyFile  - .pub file
+     * @param generateKey - flag to indicate if key needs to be generated or not
+     * @param passwd      - ssh user password
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void setupKey(String node, String pubKeyFile, boolean generateKey, String passwd)
              throws IOException, InterruptedException {
         boolean connected = false;
 
@@ -604,8 +616,18 @@ public class SSHLauncher {
         if(!connected) {
             throw new IOException("SSH password authentication failed for user " + userName + " on host " + node);
         }
+        
+        //We open up a second connection for scp and exec. For some reason, a hang
+        //is seen in MKS if we try to do everything using the same connection.
+        Connection conn = new Connection(node, port);
+        conn.connect();
+        boolean ret = conn.authenticateWithPassword(userName, passwd);
+        
+        if (!ret) {
+            throw new IOException("SSH password authentication failed for user " + userName + " on host " + node);
+        }
         //initiate scp client
-        SCPClient scp = new SCPClient(connection);
+        SCPClient scp = new SCPClient(conn);
         SFTPClient sftp = new SFTPClient(connection);
 
         if (key.exists()) {
@@ -644,20 +666,28 @@ public class SSHLauncher {
             if(logger.isLoggable(Level.FINER)) {
                 logger.finer("mergeCommand = " + mergeCommand);
             }
-            if(connection.exec(mergeCommand, new ByteArrayOutputStream())!=0) {
+            if(conn.exec(mergeCommand, new ByteArrayOutputStream())!=0) {
                 throw new IOException("Failed to propogate the public key " + pubKeyFile + " to " + host);
             }
             logger.info("Copied keyfile " + pubKeyFile + " to " + userName + "@" + host);
 
             //remove the public key file on remote host
-            //for some reason sftp.rm() hangs for MKS ssh
-            if(connection.exec("rm .ssh/key.tmp", new ByteArrayOutputStream())!=0) {
+            if(conn.exec("rm .ssh/key.tmp", new ByteArrayOutputStream())!=0) {
                 logger.warning("WARNING: Failed to remove the public key file key.tmp on remote host " + host);
             }
             if(logger.isLoggable(Level.FINER)) {
-                logger.finer("Removed the key file on remote host");
+                logger.finer("Removed the temporary key file on remote host");
             }
+            
+            //Lets fix all the permissions
+            //On MKS, chmod doesn't work as expected. StrictMode needs to be disabled
+            //for connection to go through
+            logger.info("Fixing file permissions for home(755), .ssh(700) and authorized_keys file(644)");
+            sftp.chmod(".", 0755);
+            sftp.chmod(SSH_DIR, 0700);
+            sftp.chmod(SSH_DIR + AUTH_KEY_FILE, 0644);
             connection.close();
+            conn.close();
         }
     }
 
@@ -675,23 +705,43 @@ public class SSHLauncher {
         return o;
     }
 
-    public boolean checkConnection() throws IOException {
+    /**
+     * Check if we can authenticate using public key auth
+     * @return true|false
+     */
+    public boolean checkConnection() {
         boolean status = false;
         Connection c = null;
         c = new Connection(host, port);
-        c.connect();
-        File f = new File(keyFile);
-        if(logger.isLoggable(Level.FINER)) {
-            logger.finer("Checking connection...");
+        try {
+            c.connect();
+            File f = new File(keyFile);
+            if(logger.isLoggable(Level.FINER)) {
+                logger.finer("Checking connection...");
+            }
+            status = c.authenticateWithPublicKey(userName, f, rawKeyPassPhrase);
+            if (status) {
+                logger.info("Successfully connected to " + userName + "@" + host + " using keyfile " + keyFile);
+            }
+        } catch(IOException ioe) {
+            Throwable t = ioe.getCause();
+            if (t != null) {
+                String msg = t.getMessage();
+                logger.warning("Failed to connect or authenticate: " + msg);
+            }
+            if (logger.isLoggable(Level.FINER)) {
+                logger.log(Level.FINER, "Failed to connect or autheticate: ", ioe);
+            }
+        } finally {
+            c.close();
         }
-        status = c.authenticateWithPublicKey(userName, f, rawKeyPassPhrase);
-        if (status) {
-            logger.info("Successfully connected to " + userName + "@" + host + " using keyfile " + keyFile);
-        }
-        c.close();
         return status;
     }
 
+    /**
+     * Check if we can connect using password auth
+     * @return true|false
+     */
     public boolean checkPasswordAuth() {
         boolean status = false;
         Connection c = null;
@@ -710,8 +760,9 @@ public class SSHLauncher {
             if (logger.isLoggable(Level.FINER)) {
                 ioe.printStackTrace();
             }
+        } finally {
+            c.close();
         }
-        c.close();
         return status;
     }
 
@@ -724,7 +775,9 @@ public class SSHLauncher {
             logger.finer("Using " + keygenCmd + " to generate key pair");
         }
 
-        setupSSHDir();
+        if (!setupSSHDir()) {
+            throw new IOException("Failed to set proper permissions on .ssh directory");
+        }
 
         StringBuffer k = new StringBuffer();
         List<String> cmdLine = new ArrayList<String>();
@@ -828,9 +881,10 @@ public class SSHLauncher {
     /**
       * Create .ssh directory and set the permissions correctly
       */
-    private void setupSSHDir() throws IOException {
+    private boolean setupSSHDir() throws IOException {
+        boolean ret = true;
         File home = new File(System.getProperty("user.home"));
-        File f = new File(home,SSH_DIR);
+        File f = new File(home, SSH_DIR);
 
         if(!FileUtils.safeIsDirectory(f)) {
             if (!f.mkdirs()) {
@@ -839,16 +893,22 @@ public class SSHLauncher {
             logger.info("Created directory " + f.toString());
         }
         
-        f.setWritable(false,false);
-        f.setWritable(true, true);
-        f.setReadable(false, false);
-        f.setReadable(true, true);
-        f.setExecutable(false, false);
-        f.setExecutable(true, true);
+        if (!f.setReadable(false, false) || !f.setReadable(true)) {
+            ret = false;
+        }
+        
+        if (!f.setWritable(false,false) || !f.setWritable(true)) {
+            ret = false;
+        }
+
+        if (!f.setExecutable(false, false) || !f.setExecutable(true)) {
+            ret = false;
+        }
 
         if(logger.isLoggable(Level.FINER)) {
             logger.finer("Fixed the .ssh directory permissions to 0700");
         }
+        return ret;
     }
     
     @Override

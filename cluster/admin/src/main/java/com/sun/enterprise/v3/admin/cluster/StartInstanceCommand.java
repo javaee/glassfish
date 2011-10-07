@@ -87,7 +87,7 @@ public class StartInstanceCommand implements AdminCommand {
 
     @Inject
     private Servers servers;
-    
+
     @Param(name = "instance_name", primary = true)
     private String instanceName;
 
@@ -178,7 +178,7 @@ public class StartInstanceCommand implements AdminCommand {
             report.setMessage(msg);
             return;
         }
-        
+
         node = nodes.getNode(noderef);
         if (node != null) {
             nodedir = node.getNodeDirAbsolute();
@@ -303,7 +303,11 @@ public class StartInstanceCommand implements AdminCommand {
     private String makeCommandHuman(List<String> command) {
         StringBuilder fullCommand = new StringBuilder();
 
-        fullCommand.append("asadmin ");
+        // don't use file.separator since this is a local command
+        // that may run on a different computer.  We don't necessarily know
+        // what it is.
+
+        fullCommand.append("bin/asadmin ");
 
         for (String s : command) {
             fullCommand.append(" ");

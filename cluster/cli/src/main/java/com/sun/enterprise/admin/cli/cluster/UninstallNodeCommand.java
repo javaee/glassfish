@@ -37,11 +37,11 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package com.sun.enterprise.admin.cli.cluster;
 
-import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.universal.process.WindowsException;
+import com.sun.enterprise.util.io.WindowsRemoteFile;
+import com.sun.enterprise.util.io.WindowsRemoteFileSystem;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandException;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
@@ -54,29 +54,23 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.internal.api.Globals;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
 
 /**
  * @author Rajiv Mordani
  */
-
-
 @Service(name = "uninstall-node")
 @Scoped(PerLookup.class)
-public class UninstallNodeCommand extends SSHCommandsBase {
-    @Param(name="installdir", optional = true, defaultValue = "${com.sun.aas.productRoot}")
+public class UninstallNodeCommand extends NativeRemoteCommandsBase {
+    @Param(name = "installdir", optional = true, defaultValue = "${com.sun.aas.productRoot}")
     private String installDir;
-
     @Param(optional = true, defaultValue = "false")
     private boolean force;
-    
+    @Param(optional = true, defaultValue = "SSH")
+    private String type;
     @Inject
     private Habitat habitat;
-    
     @Inject
     SSHLauncher sshLauncher;
 
@@ -85,31 +79,34 @@ public class UninstallNodeCommand extends SSHCommandsBase {
         Globals.setDefaultHabitat(habitat);
         installDir = resolver.resolve(installDir);
         if (!force) {
-            for (String host: hosts) {
-                if(checkIfNodeExistsForHost(host, installDir)) {
+            for (String host : hosts) {
+                if (checkIfNodeExistsForHost(host, installDir)) {
                     throw new CommandException(Strings.get("call.delete.node.ssh", host));
                 }
             }
-        }       
+        }
         sshuser = resolver.resolve(sshuser);
-        if (sshkeyfile == null) {
+        if ("DCOM".equals(type)) {
+        }
+        else if (sshkeyfile == null) {
             //if user hasn't specified a key file check if key exists in
             //default location
             String existingKey = SSHUtil.getExistingKeyFile();
             if (existingKey == null) {
-                promptPass=true;
-            } else {
+                promptPass = true;
+            }
+            else {
                 sshkeyfile = existingKey;
             }
-        } else {
-            validateKeyFile(sshkeyfile);
         }
-        
+        else {
+            validateKey(sshkeyfile);
+        }
+
         //we need the key passphrase if key is encrypted
-        if(sshkeyfile != null && isEncryptedKey()){
-            sshkeypassphrase=getSSHPassphrase(true);
+        if (sshkeyfile != null && isEncryptedKey()) {
+            sshkeypassphrase = getSSHPassphrase(true);
         }
-        
     }
 
     @Override
@@ -117,66 +114,74 @@ public class UninstallNodeCommand extends SSHCommandsBase {
 
         try {
             deleteFromHosts();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new CommandException(ioe);
-        }  catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
+            throw new CommandException(e);
+        }
+        catch (WindowsException e) {
             throw new CommandException(e);
         }
 
         return SUCCESS;
     }
 
-    private void deleteFromHosts() throws CommandException, IOException, InterruptedException {
+    private void deleteFromHosts() throws CommandException, IOException, InterruptedException, WindowsException {
+        if ("SSH".equals(type))
+            deleteFromHostsSsh();
+        else if ("DCOM".equals(type))
+            deleteFromHostsDcom();
+    }
 
-        for (String host: hosts) {
+    private void deleteFromHostsSsh() throws CommandException, IOException, InterruptedException {
+
+        List<String> files = getListOfInstallFiles(installDir);
+
+        for (String host : hosts) {
             sshLauncher.init(sshuser, host, sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
 
             if (sshkeyfile != null && !sshLauncher.checkConnection()) {
                 //key auth failed, so use password auth
-                promptPass=true;
+                promptPass = true;
             }
-            
-            if (promptPass) {                
-                sshpassword=getSSHPassword(host);
+
+            if (promptPass) {
+                sshpassword = getSSHPassword(host);
                 //re-initialize
                 sshLauncher.init(sshuser, host, sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
             }
-            
+
             SFTPClient sftpClient = sshLauncher.getSFTPClient();
 
-
             if (!sftpClient.exists(installDir)) {
-                throw new IOException (installDir + " Directory does not exist");
+                throw new IOException(installDir + " Directory does not exist");
             }
-            
-            //File all = new File(resolver.resolve("${com.sun.aas.productRoot}"));
-            String ins = resolver.resolve("${com.sun.aas.installRoot}") + "/../";
 
-            File all = new File(ins);
-            Set files = FileUtils.getAllFilesAndDirectoriesUnder(all);
+            deleteRemoteFiles(sftpClient, files, installDir, force);
 
-            logger.finer("Total number of files under " + ins + " = " + files.size());
-            String remoteDir = installDir;
-            List<String> modList = new ArrayList<String>();
-            if (!installDir.endsWith("/"))
-                remoteDir = remoteDir + "/";
-
-            for (Object f:files) {
-                modList.add(remoteDir+FileUtils.makeForwardSlashes(((File)f).getPath()));
-            }
-            
-            deleteRemoteFiles(sftpClient, modList, installDir, force);
-            
-            if(sftpClient.ls(installDir).isEmpty()) {
+            if (sftpClient.ls(installDir).isEmpty()) {
                 sftpClient.rmdir(installDir);
             }
         }
     }
-    
-    private void validateKeyFile(String file) throws CommandException {
-        File f = new File(file);
-        if (!f.exists()) {
-            throw new CommandException(Strings.get("KeyDoesNotExist", file));
+
+    private void deleteFromHostsDcom() throws WindowsException, IOException, CommandException {
+        for (String host : hosts) {
+            String pw = getDCOMPassword(host);
+            WindowsRemoteFileSystem wrfs = new WindowsRemoteFileSystem(host, sshuser, pw);
+            WindowsRemoteFile remoteInstallDir = new WindowsRemoteFile(wrfs, installDir);
+
+            if (!remoteInstallDir.exists()) {
+                throw new IOException(Strings.get("remote.install.dir.already.gone", installDir));
+            }
+            remoteInstallDir.delete();
+
+           // make sure it's gone now...
+            if (remoteInstallDir.exists()) {
+                throw new IOException(Strings.get("remote.install.dir.cant.delete", installDir));
+            }
         }
     }
 }

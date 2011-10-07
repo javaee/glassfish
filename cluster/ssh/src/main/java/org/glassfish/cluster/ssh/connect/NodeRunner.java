@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,16 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.cluster.ssh.connect;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.logging.Logger;
+import java.io.*;
+import java.util.*;
+import java.util.logging.*;
 import org.glassfish.common.util.admin.AsadminInput;
-
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.admin.SSHCommandExecutionException;
 import com.sun.enterprise.universal.process.ProcessManagerException;
@@ -54,25 +50,18 @@ import com.sun.enterprise.universal.process.ProcessManager;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.StringUtils;
-
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
-import java.io.ByteArrayOutputStream;
+import org.glassfish.cluster.ssh.connect.NodeRunnerSsh;
 import org.glassfish.common.util.admin.AuthTokenManager;
 
-public class NodeRunner  {
-
+public class NodeRunner {
     private static final String NL = System.getProperty("line.separator");
     private static final String AUTH_TOKEN_STDIN_LINE_PREFIX = "option." + AuthTokenManager.AUTH_TOKEN_OPTION_NAME + "=";
-
-    private  Habitat habitat;
+    private Habitat habitat;
     private Logger logger;
-
     private String lastCommandRun = null;
-
     private int commandStatus;
-
     private SSHLauncher sshL = null;
-
     private final AuthTokenManager authTokenManager;
 
     public NodeRunner(Habitat habitat, Logger logger) {
@@ -90,9 +79,19 @@ public class NodeRunner  {
         if (node == null) {
             throw new IllegalArgumentException("Node is null");
         }
-        if (node.getType() ==null)
+        if (node.getType() == null)
             return false;
         return node.getType().equals("SSH");
+    }
+
+    public boolean isDcomNode(Node node) {
+
+        if (node == null) {
+            throw new IllegalArgumentException("Node is null");
+        }
+        if (node.getType() == null)
+            return false;
+        return node.getType().equals("DCOM");
     }
 
     /**
@@ -100,7 +99,7 @@ public class NodeRunner  {
      * it is remote then SSH is used to execute the command on the node.
      * The args list is all parameters passed to "asadmin", but not
      * "asadmin" itself. So an example args is:
-     * 
+     *
      * "--host", "mydashost.com", "start-local-instance", "--node", "n1", "i1"
      *
      * @param node  The node to run the asadmin command on
@@ -125,22 +124,22 @@ public class NodeRunner  {
      * @throws IllegalArgumentException     The passed node is malformed.
      */
     public int runAdminCommandOnNode(Node node, StringBuilder output,
-                                     List<String> args) throws
-        SSHCommandExecutionException,
-        ProcessManagerException,
-        UnsupportedOperationException,
-        IllegalArgumentException {
+            List<String> args) throws
+            SSHCommandExecutionException,
+            ProcessManagerException,
+            UnsupportedOperationException,
+            IllegalArgumentException {
 
         return runAdminCommandOnNode(node, output, false, args);
     }
 
     public int runAdminCommandOnNode(Node node, StringBuilder output,
-                                     boolean waitForReaderThreads,
-                                     List<String> args) throws
-        SSHCommandExecutionException,
-        ProcessManagerException,
-        UnsupportedOperationException,
-        IllegalArgumentException {
+            boolean waitForReaderThreads,
+            List<String> args) throws
+            SSHCommandExecutionException,
+            ProcessManagerException,
+            UnsupportedOperationException,
+            IllegalArgumentException {
 
 
         if (node == null) {
@@ -150,26 +149,27 @@ public class NodeRunner  {
         final List<String> stdinLines = new ArrayList<String>();
         stdinLines.add(AsadminInput.versionSpecifier());
         stdinLines.add(AUTH_TOKEN_STDIN_LINE_PREFIX + authTokenManager.createToken());
-        args.add(0, AsadminInput.CLI_INPUT_OPTION);
-        args.add(1, AsadminInput.SYSTEM_IN_INDICATOR); // specified to read from System.in
-        args.add(2, "--interactive=false");            // No prompting!
-        
+        args.add(0, "--interactive=false");            // No prompting!
+
         if (node.isLocal()) {
             return runAdminCommandOnLocalNode(node, output, waitForReaderThreads,
                     args, stdinLines);
-        } else {
+        }
+        else {
             return runAdminCommandOnRemoteNode(node, output, args, stdinLines);
         }
     }
 
     private int runAdminCommandOnLocalNode(Node node, StringBuilder output,
-                                           boolean waitForReaderThreads,
-                                           List<String> args,
-                                           List<String> stdinLines) throws
+            boolean waitForReaderThreads,
+            List<String> args,
+            List<String> stdinLines) throws
             ProcessManagerException {
-
+        args.add(0, AsadminInput.CLI_INPUT_OPTION);
+        args.add(1, AsadminInput.SYSTEM_IN_INDICATOR); // specified to read from System.in
         List<String> fullcommand = new ArrayList<String>();
-        String installDir = node.getInstallDirUnixStyle() + "/glassfish";
+        String installDir = node.getInstallDirUnixStyle() + "/"
+                + SystemPropertyConstants.getComponentName();
         if (!StringUtils.ok(installDir)) {
             throw new IllegalArgumentException("Node does not have an installDir");
         }
@@ -210,70 +210,25 @@ public class NodeRunner  {
     }
 
     private int runAdminCommandOnRemoteNode(Node node, StringBuilder output,
-                                       List<String> args,
-                                       List<String> stdinLines) throws
+            List<String> args,
+            List<String> stdinLines) throws
             SSHCommandExecutionException, IllegalArgumentException,
             UnsupportedOperationException {
 
-        if (! isSshNode(node)) {
-            throw new UnsupportedOperationException(
-                    "Node is not of type SSH");
+        // don't want to call a config object proxy more than absolutely necessary!
+        String type = node.getType();
+
+        if ("SSH".equals(type)) {
+            NodeRunnerSsh nrs = new NodeRunnerSsh(habitat, logger);
+            return nrs.runAdminCommandOnRemoteNode(node, output, args, stdinLines);
         }
 
-        String installDir = node.getInstallDirUnixStyle() + "/glassfish";
-        if (!StringUtils.ok(installDir)) {
-            throw new IllegalArgumentException("Node does not have an installDir");
+        if ("DCOM".equals(type)) {
+            NodeRunnerDcom nrd = new NodeRunnerDcom(logger);
+            return nrd.runAdminCommandOnRemoteNode(node, output, args, stdinLines);
         }
 
-        List<String> fullcommand = new ArrayList<String>();
-
-        // We can just use "asadmin" even on Windows since the SSHD provider
-        // will locate the command (.exe or .bat) for us
-        fullcommand.add(installDir + "/bin/asadmin");
-        fullcommand.addAll(args);
-
-        try{
-            lastCommandRun = commandListToString(fullcommand);
-            trace("Running command on " + node.getNodeHost() + ": " +
-                    lastCommandRun);
-            sshL=habitat.getComponent(SSHLauncher.class);
-            sshL.init(node, logger);
-
-            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-            commandStatus = sshL.runCommand(fullcommand, outStream, stdinLines);
-            String results = outStream.toString();
-            output.append(outStream.toString());
-            return commandStatus;              
-
-        }catch (IOException ex) {
-            String m1 = " Command execution failed. " +ex.getMessage();
-            String m2 = "";
-            Throwable e2 = ex.getCause();
-            if(e2 != null) {
-                m2 = e2.getMessage();
-            }
-            logger.severe("Command execution failed for "+ lastCommandRun);
-            SSHCommandExecutionException cee = new SSHCommandExecutionException(StringUtils.cat(":",
-                                            m1));
-            cee.setSSHSettings(sshL.toString());
-            cee.setCommandRun(lastCommandRun);
-            throw cee;
-            
-        } catch (java.lang.InterruptedException ei){
-            ei.printStackTrace();
-            String m1 = ei.getMessage();
-            String m2 = "";
-            Throwable e2 = ei.getCause();
-            if(e2 != null) {
-                m2 = e2.getMessage();
-            }
-            logger.severe("Command interrupted "+ lastCommandRun);
-            SSHCommandExecutionException cee = new SSHCommandExecutionException(StringUtils.cat(":",
-                                             m1, m2));
-            cee.setSSHSettings(sshL.toString());
-            cee.setCommandRun(lastCommandRun);
-            throw cee;
-        }
+        throw new UnsupportedOperationException("Node is not of type SSH or DCOM");
     }
 
     private void trace(String s) {
@@ -290,5 +245,4 @@ public class NodeRunner  {
 
         return fullCommand.toString();
     }
-
 }
