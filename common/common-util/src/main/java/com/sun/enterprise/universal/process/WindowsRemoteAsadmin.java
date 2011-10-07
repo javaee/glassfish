@@ -40,17 +40,8 @@
 package com.sun.enterprise.universal.process;
 
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import java.util.*;
-import java.util.logging.Level;
-import org.jinterop.dcom.common.JISystem;
-import org.jinterop.dcom.core.IJIComObject;
-import org.jinterop.dcom.core.JIComServer;
-import org.jinterop.dcom.core.JIProgId;
-import org.jinterop.dcom.core.JISession;
-import org.jinterop.dcom.core.JIString;
-import org.jinterop.dcom.core.JIVariant;
-import org.jinterop.dcom.impls.JIObjectFactory;
-import org.jinterop.dcom.impls.automation.IJIDispatch;
 
 /**
  * Wrapper for calling asadmin -- since it is done all the time, this convenience class
@@ -67,7 +58,8 @@ public class WindowsRemoteAsadmin extends WindowsRemoteScripter {
         if (!remoteInstallRoot.endsWith("\\"))
             remoteInstallRoot += "\\";
 
-        asadminRemotePath = StringUtils.quotePathIfNecessary(remoteInstallRoot + "lib\\nadmin.bat");
+        asadminRemotePath = StringUtils.quotePathIfNecessary(remoteInstallRoot +
+                SystemPropertyConstants.ASADMIN_RELATIVE_PATH_WINDOWS);
     }
 
     /**
