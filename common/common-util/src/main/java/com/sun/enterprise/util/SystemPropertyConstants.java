@@ -41,6 +41,7 @@
 package com.sun.enterprise.util;
 
 import com.sun.enterprise.util.i18n.StringManager;
+import java.io.File;
 
 public class SystemPropertyConstants
 {
@@ -57,38 +58,38 @@ public class SystemPropertyConstants
     public static final String UNIX_ASENV_FILENAME = "asenv.conf";
 
     /**
-     * Field 
+     * Field
      */
     public static final String WINDOWS_ASENV_FILENAME = "asenv.bat";
 
     /**
-     * Field 
+     * Field
      */
     public static final String WEB_SERVICES_LIB_PROPERTY =
         "com.sun.aas.webServicesLib";
 
     /**
-     * Field 
+     * Field
      */
     public static final String PERL_ROOT_PROPERTY = "com.sun.aas.perlRoot";
 
     /**
-     * Field 
+     * Field
      */
     public static final String IMQ_LIB_PROPERTY = "com.sun.aas.imqLib";
 
     /**
-     * Field 
+     * Field
      */
     public static final String IMQ_BIN_PROPERTY = "com.sun.aas.imqBin";
 
     /**
-     * Field 
+     * Field
      */
     public static final String CONFIG_ROOT_PROPERTY = "com.sun.aas.configRoot";
 
     /**
-     * Field 
+     * Field
      */
     public static final String INSTALL_ROOT_PROPERTY =
         "com.sun.aas.installRoot";
@@ -100,30 +101,30 @@ public class SystemPropertyConstants
         "com.sun.aas.productRoot";
 
     /**
-     * Field 
+     * Field
      */
     public static final String JAVA_ROOT_PROPERTY = "com.sun.aas.javaRoot";
     public static final String JAVA_ROOT_PROPERTY_ASENV = "com.sun.aas.javaRoot.asenv";
 
     /**
-     * Field 
+     * Field
      */
     public static final String ICU_LIB_PROPERTY = "com.sun.aas.icuLib";
 
     /**
-     * Field 
+     * Field
      */
     public static final String DEFAULT_LOCALE_PROPERTY =
         "com.sun.aas.defaultLocale";
 
     /**
-     * Field 
+     * Field
      */
     public static final String DOMAINS_ROOT_PROPERTY =
         "com.sun.aas.domainsRoot";
 
     /**
-     * Field 
+     * Field
      */
     public static final String INSTANCE_ROOT_PROPERTY =
         "com.sun.aas.instanceRoot";
@@ -134,15 +135,15 @@ public class SystemPropertyConstants
      */
     public static final String AGENT_CERT_NICKNAME =
         "com.sun.aas.agentCertNickname";
-    
+
     public static final String AGENT_ROOT_PROPERTY =
         "com.sun.aas.agentRoot";
-    
+
     public static final String AGENT_NAME_PROPERTY =
         "com.sun.aas.agentName";
 
     /**
-     * Field 
+     * Field
      */
     public static final String WEBCONSOLE_LIB_PROPERTY =
         "com.sun.aas.webconsoleLib";
@@ -155,7 +156,7 @@ public class SystemPropertyConstants
     public static final String ANT_ROOT_PROPERTY = "com.sun.aas.antRoot";
 
     public static final String ANT_LIB_PROPERTY = "com.sun.aas.antLib";
-    
+
     public static final String JHELP_ROOT_PROPERTY = "com.sun.aas.jhelpRoot";
 
     /** name of the server instance key */
@@ -169,42 +170,42 @@ public class SystemPropertyConstants
 
         public static final String NSS_ROOT_PROPERTY = "com.sun.aas.nssRoot";
 
-    public static final String NSS_BIN_PROPERTY = "com.sun.aas.nssBin";        
+    public static final String NSS_BIN_PROPERTY = "com.sun.aas.nssBin";
 
     public static final String NATIVE_LAUNCHER = "com.sun.aas.nativeLauncher";
-    public static final String NATIVE_LAUNCHER_LIB_PREFIX = "com.sun.aas.nativeLauncherLibPrefix";       
-    
+    public static final String NATIVE_LAUNCHER_LIB_PREFIX = "com.sun.aas.nativeLauncherLibPrefix";
+
     public static final String KEYSTORE_PROPERTY = "javax.net.ssl.keyStore";
-    public static final String JKS_KEYSTORE = 
+    public static final String JKS_KEYSTORE =
         System.getProperty("file.separator") + "config" +
         System.getProperty("file.separator") + "keystore.jks";
 
     public static final String TRUSTSTORE_PROPERTY = "javax.net.ssl.trustStore";
-    public static final String JKS_TRUSTSTORE = 
+    public static final String JKS_TRUSTSTORE =
         System.getProperty("file.separator") + "config" +
         System.getProperty("file.separator") + "cacerts.jks";
-   
-    public static final String ADMIN_REALM = "admin-realm"; 
+
+    public static final String ADMIN_REALM = "admin-realm";
     public static final String NSS_DB_PROPERTY = "com.sun.appserv.nss.db";
 
     public static final String NSS_DB_PASSWORD_PROPERTY = "com.sun.appserv.nss.db.password";
 
-    public static final String CLIENT_TRUSTSTORE_PROPERTY = 
+    public static final String CLIENT_TRUSTSTORE_PROPERTY =
         TRUSTSTORE_PROPERTY;
         //"com.sun.appserv.client.truststore";
 
     public static final String CLIENT_TRUSTSTORE_PASSWORD_PROPERTY =
         "javax.net.ssl.trustStorePassword";
         //"com.sun.appserv.client.truststore.password";
-    
+
     public static final String PID_FILE = ".__com_sun_appserv_pid";
     public static final String REF_TS_FILE = "admsn";
-    
-    public static final String KILLSERV_SCRIPT = "killserv";    
-    
+
+    public static final String KILLSERV_SCRIPT = "killserv";
+
     public static final String KILL_SERV_UNIX = "killserv";
     public static final String KILL_SERV_WIN = "killserv.bat";
-    public static final String KILL_SERV_OS     = 
+    public static final String KILL_SERV_OS     =
         OS.isWindows() ? KILL_SERV_WIN : KILL_SERV_UNIX;
 
     @Deprecated
@@ -214,12 +215,12 @@ public class SystemPropertyConstants
     public static final String DAS_SERVER_CONFIG = "server-config";
 
     public static final String JDMK_HOME_PROPERTY="com.sun.aas.jdmkHome";
-    
+
     public static final String DERBY_ROOT_PROPERTY="com.sun.aas.derbyRoot";
 
     /** Java ES Monitoring Framework install directory */
     public static final String MFWK_HOME_PROPERTY="com.sun.aas.mfwkHome";
- 
+
     /* An implementation note: This variable should be defined at one place.
      * I have chosen this location because most of the other modules depend
      * on appserv-commons for compilation.
@@ -231,16 +232,16 @@ public class SystemPropertyConstants
     public static final String DOCROOT_PROPERTY = "docroot";
     public static final String ACCESSLOG_PROPERTY = "accesslog";
     public static final String DEFAULT_SERVER_SOCKET_ADDRESS="0.0.0.0";
-    public static final String CLUSTER_AWARE_FEATURE_FACTORY_CLASS 
+    public static final String CLUSTER_AWARE_FEATURE_FACTORY_CLASS
         = "com.sun.enterprise.ee.server.pluggable.EEPluggableFeatureImpl";
-    
+
     /** Name of the default config that determines the configuration for the instances */
     public static final String TEMPLATE_CONFIG_NAME = "default-config";
     public static final String DEFAULT_ADMIN_USER = "admin";
     public static final String DEFAULT_ADMIN_PASSWORD = "";
     public static final String ASADMIN_RELATIVE_PATH = "bin/asadmin";
     public static final String ASADMIN_RELATIVE_PATH_WINDOWS = "bin\\asadmin.bat";
-    
+
     private static final StringManager sm = StringManager.getManager(SystemPropertyConstants.class);
 
 
@@ -262,10 +263,10 @@ public class SystemPropertyConstants
         sb.append(OPEN).append(name).append(CLOSE);
         return ( sb.toString() );
 	}
-        
+
         public static final String OPEN       = "${";
         public static final String CLOSE      = "}";
-        
+
         /** Returns the string removing the "system-property syntax" from it.
          * If the given string is not in "system-property syntax" the same string is returned.
          * The "system-propery syntax" is "${...}"
@@ -273,7 +274,7 @@ public class SystemPropertyConstants
          * The returned String may be an empty String, if it is of the form "${}" (rarely so).
          */
         public static final String unSystemProperty(final String sp) {
-            if (sp == null) 
+            if (sp == null)
                 throw new IllegalArgumentException ("null_arg");
             String ret = sp;
             if (isSystemPropertySyntax(sp)) {
@@ -281,7 +282,7 @@ public class SystemPropertyConstants
             }
             return ( ret );
         }
-        
+
         public static final boolean isSystemPropertySyntax(final String s) {
             if ( s == null)
                 throw new IllegalArgumentException ("null_arg");
@@ -290,7 +291,7 @@ public class SystemPropertyConstants
                 sp = true;
             return ( sp );
         }
-    
+
     /** Returns the default value (as would appear in the domain.xml on installation)
      * of docroot of a virtual server, as a String. Never returns a null.
      * Returned String contains no backslashes.
@@ -300,7 +301,7 @@ public class SystemPropertyConstants
         final StringBuffer sb = new StringBuffer(getPropertyAsValue(INSTANCE_ROOT_PROPERTY));
         return ( sb.append("/docroot").toString() );
     }
-    
+
     /** Returns the default value (as would appear in the domain.xml on installation)
      * of file where the acess log of a virtual server is stored, as a String. Never returns a null.
      * Returned String contains no backslashes.
@@ -310,7 +311,7 @@ public class SystemPropertyConstants
         final StringBuffer sb = new StringBuffer(getPropertyAsValue(INSTANCE_ROOT_PROPERTY));
         return ( sb.append("/logs/access").toString() );
     }
-    
+
     /** Returns the system specific file.separator delimited path to the asadmin script. Any changes to file layout should
 
      * be reflected here. The path will contain '/' as the separator character, regardless of operating
@@ -338,6 +339,16 @@ public class SystemPropertyConstants
 
         return ( sb.toString() );
     }
-
-
+   /**
+     * Copied from the trunk (4.0)
+     * Returns the component identifier associated with the INSTALL_ROOT.
+     *  For example if INSTALL_ROOT is /home/glassfish3/glassfish the
+     *  component name will "glassfish".
+     * @return String representing the component identifier.
+     */
+    public static final String getComponentName() {
+        final File installRootFile = new File(System.getProperty(
+            SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
+        return installRootFile.getName();
+    }
 }
