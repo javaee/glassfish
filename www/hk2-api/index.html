@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+<html>
+  <head>
+    <title>Introduction to Hk2-APIs</title>
+    <style type="text/css" media="all">
+      @import url("./css/maven-base.css");
+      @import url("./css/maven-theme.css");
+      @import url("./css/site.css");
+    </style>
+    <link rel="stylesheet" href="./css/print.css" type="text/css" media="print" />
+          <meta name="author" content="Jerome Dochez" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      </head>
+  <body class="composite">
+    <!-- TODO: move this into JavaScript to patch the skin
+      <div class="xright">  </div>
+    -->
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <p>HK2 is primarily a declarative framework for services using annotations like <a href="./apidocs/org/jvnet/hk2/annotations/Contract.html">Contract</a> and <a href="./apidocs/org/jvnet/hk2/annotations/Service.html">Service</a>. However, it is possible to use programmatic APIs to precisely control the services and bindings available within the Services registry.</p><div class="section"><h2>Modules<a name="Modules"></a></h2><p>In HK2, there are different types of modules, the lower level modules that are often implemented as OSGi modules, are basic jar files with a set of appropriate decorations. However, there is a module notion for hk2 services that defines boundaries with other services that are registered in other modules.</p><p>Such <a href="./apidocs/org/glassfish/hk2/Module.html">Module</a> provides a modular approach to services bindings and access with precise control over the services visibility between modules.</p><p><a href="./apidocs/org/glassfish/hk2/Module.html">Module</a> implementations are the basic entry point for applications to register their services and finally start the desired top level services.</p><p>Here is a simple example of a binding module from the auto-depends tests :</p><div class="source"><pre>public class MyModule implements Module {
+
+    @Override
+    public void configure(BinderFactory binderFactory) {
+        binderFactory.bind(RandomContract.class).to(RandomService.class);
+        binderFactory.bind().to(MyStartupCode.class);
+
+        binderFactory.bind(SomeContract.class.getName()).to(PerThreadService.class.getName());
+    }
+}</pre></div><p>The fist bind() call to <a href="./apidocs/org/glassfish/hk2/BinderFactory.html#bindjava.lang.Class20java.lang.Class...">bind(Class)</a> registers a service implementation type for a contract type.</p></div><div class="section"><h2>Hk2 Binding EDSL<a name="Hk2_Binding_EDSL"></a></h2><p>Much like <a class="externalLink" href="http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Binder.html">Guice</a>, HK2 uses an embedded domain specific language to create bindings.</p><div class="section"><h3>Simple Bindings<a name="Simple_Bindings"></a></h3><p>All the examples below assume having access to an implicit BinderFactory instance.</p><div class="source"><pre>    bind(ServiceImpl.class)</pre></div><p>This statement does nothing as all classes are implicitly services.</p><div class="source"><pre>    ServiceImpl instance = new MyServiceImpl(); // or another factory/builder pattern
+    bind(instance)</pre></div><p>This statement will register the &quot;instance&quot; as the provider for the ServiceImpl service type.</p><div class="source"><pre>    bind(MyContract.class).to(MyServiceImpl.class)</pre></div><p>This statement will register MyServiceImpl type as the service type for the MyContract interface. This is semantically equivalent to using the @Contract annotation on MyContract class and @Service annotation on MyServiceImpl class.</p><div class="source"><pre>    ServiceImpl instance = new MyServiceImpl(); // or another factory/builder pattern
+    bind(MyContract.class).to(instance)</pre></div><p>This statement will bind the &quot;instance&quot; as the provider for the MyContract interface.</p></div><div class="section"><h3>Naming<a name="Naming"></a></h3><p>Services registered thought the BinderFactory can also carry an optional name to disambiguate multiple providers. A Service can only have one name.</p><div class="source"><pre>    bind(MyContract.class).named(&quot;foo&quot;).to(MyServiceImpl.class)</pre></div><p>This statement is sematically equivalent as annotating MyServiceImpl class with @Service(name=&quot;foo). To depend on this service, code will need to either use @Inject(name=&quot;foo&quot;) MyContract declaration or user the <a href="./apidocs/org/glassfish/hk2/Locator.html">Locator</a> APIs.</p></div><div class="section"><h3>Qualifiers<a name="Qualifiers"></a></h3><p>Services can be further qualified by using specific annotations when registering or looking up.</p><div class="source"><pre>    bind(MyContract.class).annotatedWith(Red.class).to(MyRedServiceImpl.class)</pre></div><p>Such service can be once again looked up using the <a href="./apidocs/org/glassfish/hk2/Locator.html">Locator</a> APIs or more simply, can use the same annotation on the injection point :</p><div class="source"><pre>    @Inject
+    @Red
+    MyContract mc; // should be injected with an instance of MyRedServiceImpl type</pre></div></div><div class="section"><h3>Factory Bindings<a name="Factory_Bindings"></a></h3><p>Sometimes, the instantiation of services requires specific domain behavior, which can be resolved by registering a <a href="./apidocs/org/glassfish/hk2/Factory.html">Factory</a> for the service. The Factory is a contract to deliver an instance of the service when called.</p><div class="source"><pre>    bind(MyContract.class).named(&quot;foo&quot;).toFactory(MyServiceFactory.class)</pre></div></div><div class="section"><h3>Parameterized Bindings<a name="Parameterized_Bindings"></a></h3><p>You can bind a parameterized type by forcing users to create a subclass of <a href="./apidocs/org/glassfish/hk2/TypeLiteral.html">TypeLiteral</a> which will allow HK2 to retrieve the parameterized type at runtime.</p><div class="source"><pre>    // simple parameterized contract
+    public interface RouteBuilder&lt;T extends Pattern&gt; {
+    }
+
+    binderFactory.bind(new TypeLiteral&lt;RouteBuilder&lt;PathPattern&gt;&gt;() {}).to(PathPatternRouteBuilder.class);</pre></div></div></div>
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2011
+    
+          Oracle Corporation
+          
+  
+
+  
+  
+  &nbsp;| Last Published: 10/10/2011
+  &nbsp;| Version: 1.6.22-SNAPSHOT
+</div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>
