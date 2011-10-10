@@ -26,7 +26,7 @@
     -->
     <div id="bodyColumn">
       <div id="contentBox">
-        <div class="section"><h2>Introduction<a name="Introduction"></a></h2><p>With the HK2 module system, the module system is already responsible for instantiating many classes that constitute the application functionality.</p><p>HK2 components runtime will complement the module system so that it creates objects, but it configures such objects by:</p><ul><li>injecting other objects that are needed by a newly instantiated object.</li><li>injecting configuration information needed for that object.</li><li>making newly created objects available, so that it can be then injected to other objects that need it.</li></ul></div><div class="section"><h2>Services<a name="Services"></a></h2><p>HK2 relies on the notion of Service to identify the building blocks or the extension points of an application. Services are just POJO :</p><ul><li>implementing an interface</li><li>declared in jar with the META-INF/services file<p>To clearly separate the contract interface and its implementation, the HK2 runtime needs to understand what interfaces are contract and what implementations of such interfaces are services, so this call for an annotation describing interfaces as a service contract.</p><div class="source"><pre>@Retention(RUNTIME)
+        <div class="section"><h2>Introduction<a name="Introduction"></a></h2><p>With the HK2 module system, the module system is already responsible for instantiating many classes that constitute the application functionality.</p><p>HK2 components runtime will complement the module system so that it creates objects, but it configures such objects by:</p><ul><li>injecting other objects that are needed by a newly instantiated object.</li><li>injecting configuration information needed for that object.</li><li>making newly created objects available, so that it can be then injected to other objects that need it.</li></ul></div><div class="section"><h2>Services<a name="Services"></a></h2><p>HK2 relies on the notion of Service to identify the building blocks or the extension points of an application. Services are just POJO :</p><ul><li>implementing an interface</li><li>annotated with a <a href="./hk2-api/apidocs/org/jvnet/hk2/annotations/Contract.html">Contract</a> annotation</li><li>use the <a href="./hk2-api/index.html">hk2-api</a> DSL to declare components<p>To clearly separate the contract interface and its implementation, the HK2 runtime needs to understand what interfaces are contract and what implementations of such interfaces are services, so this call for an annotation describing interfaces as a service contract.</p><div class="source"><pre>@Retention(RUNTIME)
 @Target(TYPE)
 public @interface Contract {   
 }</pre></div><p>Implementations of such contract should also be annotated with an annotation so the HK2 runtime can identify them as contracts implementations.</p><div class="source"><pre>@Retention(RUNTIME)
@@ -45,24 +45,34 @@ public Singleton implements Scope {
 @Service
 public class SingletonService implements RandomContract {
 ...
-}</pre></div><p>For the curious reader, you can experiment defining a new Scope implementation and have that scope used on your @Service implementations. You will see that the HK2 runtime use the Scope instance to store/retrieve services instances tied to that scope.</p></div><div class="section"><h4>Instantiation<a name="Instantiation"></a></h4><p>Instantiation of components</p><p>In the IoC world, components are not instantiated using a new () method call. Components are retrieved using the ComponentManager instance. The simplest way is to do that is through a getComponent(Class<i>T</i> contract) call although there are more APIs available at <a href="./auto-depends/apidocs/org/jvnet/hk2/component/ComponentManager.html">ComponentManager</a></p><div class="source"><pre>    /**
-     * Obtains a reference to the component inside the manager.
+}</pre></div><p>For the curious reader, you can experiment defining a new Scope implementation and have that scope used on your @Service implementations. You will see that the HK2 runtime use the Scope instance to store/retrieve services instances tied to that scope.</p></div><div class="section"><h4>Instantiation<a name="Instantiation"></a></h4><p>Instantiation of components</p><p>In the IoC world, components are not instantiated using a new () method call. Components are retrieved using the Services instance. The simplest way is to do that is through a getComponent(Class<i>T</i> contract) call although there are more APIs available at <a href="./hk2-api/org/glassfish/hk2/Services.html">Services</a></p><div class="source"><pre>    /**
+     * Retrieve a service locator via a contract class.
      *
-     * &lt;p&gt;
-     * This is the &quot;new Foo()&quot; equivalent in the IoC world.
+     * &lt;pre&gt;
+     * // ExampleContract is an example of a contract type
+     * &amp;#064;Contract
+     * public interface ExampleContract {
+     * }
      *
-     * &lt;p&gt;
-     * Depending on the {@link Scope} of the component, a new instance
-     * might be created, or an existing instance might be returned.
+     * &amp;#064;Service
+     * public class Example implements ExampleContract {
+     * }
+     * &lt;/pre&gt;
      *
-     * @return
-     *      non-null.
-     * @throws ComponentException
-     *      If failed to obtain a requested instance.
-     *      In practice, failure only happens when we try to create a
-     *      new instance of the component.
+     * @param contract the contract class
+     * @return a contract locator
      */
-    public &lt;T&gt; T getComponent(Class&lt;T&gt; clazz) throws ComponentException</pre></div><p>HK2 employs a &quot;lazy instantiation&quot; model. Only after demand exists for a component does that component get instantiated. Demand can come from either injection (@Inject) or through programmatic calls to the ComponentManager. Note, however, that the Scope of the service also plays a role on the instantiation of the given component.</p></div><div class="section"><h4>Lifecycle<a name="Lifecycle"></a></h4><p>Components can attach behaviors to their construction and destruction events by implementing the <a href="./auto-depends/apidocs/org/jvnet/hk2/component/PostConstruct.html">PostConstruct</a> and/or the <a href="./auto-depends/apidocs/org/jvnet/hk2/component/PreDestroy.html">PreDestroy</a> interfaces. Interfaces have been used rather than annotations for performance as it is faster to cast component instance to any of these interfaces to check if the component has implemented one of them rather than using reflection on all methods to find if they are annotated.</p></div></div><div class="section"><h3>Run Level Based Lifecycle<a name="Run_Level_Based_Lifecycle"></a></h3><p>Components can also use a <a href="./hk2-api/apidocs/org/jvnet/hk2/annotations/RunLevel">RunLevel</a> form of lifecycle. As stated previously, HK2 employs a &#x201c;lazy instantiation&#x201d; model for component creation. However, there are situations where the developer may want the instantiation to occur either immediately upon HK2 initialization or otherwise on some more regimented schedule.</p><p>see <a href="./runlevelservices.html">run level services</a> for complete reference</p></div></div><div class="section"><h2>Inversion of Control<a name="Inversion_of_Control"></a></h2><div class="section"><h3>Injection<a name="Injection"></a></h3><p>Services usually rely of other services to perform their tasks and the model described above can easily be extended to have the HK2 runtime identify the @Contract implementations required by a service. This call for a new annotation <a href="./auto-depends/apidocs/org/jvnet/hk2/annotations/Inject.html">Inject</a> which can be placed on fields or setter methods of any Service instantiated by the HK2 runtime and have that Service retrieved and injected during the service's instantiation by the component manager.</p><div class="source"><pre>Field :
+    &lt;U&gt; ContractLocator&lt;U&gt; forContract(Class&lt;U&gt; contract);</pre></div><p>HK2 employs a &quot;lazy instantiation&quot; model. Only after demand exists for a component does that component get instantiated. Demand can come from either injection (@Inject) or through programmatic calls to the Services instances. Note, however, that the Scope of the service also plays a role on the instantiation of the given component.</p></div><div class="section"><h4>Lifecycle<a name="Lifecycle"></a></h4><p>Components can attach behaviors to their construction and destruction events by implementing the <a href="./hk2-api/apidocs/org/jvnet/hk2/component/PostConstruct.html">PostConstruct</a> and/or the <a href="./hk2-api/apidocs/org/jvnet/hk2/component/PreDestroy.html">PreDestroy</a> interfaces. Interfaces have been used rather than annotations for performance as it is faster to cast component instance to any of these interfaces to check if the component has implemented one of them rather than using reflection on all methods to find if they are annotated.</p><div class="section"><h5>Constructor Injection<a name="Constructor_Injection"></a></h5><p>It is possible to use Constructor injection by using the <a href="./hk2-api/apidocs/org/jvnet/hk2/annotations/Inject">Inject</a> annotation. This is particularly useful when using final variable to hold injected references.</p><div class="source"><pre>@Service
+public class SomeService {
+
+    final SomeContract dependencyOne;
+    final SomeOtherContract dependencyTwo;
+
+    public SomeService(@Inject(name=&quot;foo&quot;) SomeContract one, @Inject(name=&quot;bar&quot;) SomeOtherContract tow) {
+        dependencyOne = one;
+        dependencyTwo = two;
+    }
+}</pre></div></div></div></div><div class="section"><h3>Run Level Based Lifecycle<a name="Run_Level_Based_Lifecycle"></a></h3><p>Components can also use a <a href="./hk2-api/apidocs/org/jvnet/hk2/annotations/RunLevel">RunLevel</a> form of lifecycle. As stated previously, HK2 employs a &#x201c;lazy instantiation&#x201d; model for component creation. However, there are situations where the developer may want the instantiation to occur either immediately upon HK2 initialization or otherwise on some more regimented schedule.</p><p>see <a href="./runlevelservices.html">run level services</a> for complete reference</p></div></div><div class="section"><h2>Inversion of Control<a name="Inversion_of_Control"></a></h2><div class="section"><h3>Injection<a name="Injection"></a></h3><p>Services usually rely of other services to perform their tasks and the model described above can easily be extended to have the HK2 runtime identify the @Contract implementations required by a service. This call for a new annotation <a href="./hk2-api/apidocs/org/jvnet/hk2/annotations/Inject.html">Inject</a> which can be placed on fields or setter methods of any Service instantiated by the HK2 runtime and have that Service retrieved and injected during the service's instantiation by the component manager.</p><div class="source"><pre>Field :
 @Inject
 ConfigService config;
 
@@ -100,8 +110,8 @@ public Class ConfigService implements ... {...}
 
   
   
-  &nbsp;| Last Published: 09/07/2011
-  &nbsp;| Version: 1.6.18-SNAPSHOT
+  &nbsp;| Last Published: 10/10/2011
+  &nbsp;| Version: 1.6.22-SNAPSHOT
 </div>
       <div class="clear">
         <hr/>

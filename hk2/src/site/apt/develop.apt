@@ -34,7 +34,6 @@ Developing a module
 	The plugin is marked as "extension" because this plugin adds a custom packaging "hk2-jar". Once installed, this plugin can be accessible with the "hk2" prefix. This packaging forces relevant build phases to use the right mojo, which performs additional HK2-specific processing, such as:
 
 	* Produce proper manifest entries from POM
-	* Generating necessary <<<META-INF/services>>> files for @Service and @Contract.
 
 	Modules can be built and installed with usual <<<mvn install>>> and <<<mvn deploy>>>.
 
@@ -44,7 +43,7 @@ Developing a module
 
 
 
-Developing a mulit-module project
+Developing a multi-module project
 
 * Inter-module dependency
 

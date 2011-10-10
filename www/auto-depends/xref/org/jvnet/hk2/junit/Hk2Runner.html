@@ -265,26 +265,27 @@
 <a class="jxr_linenumber" name="255" href="#255">255</a>                 <strong class="jxr_keyword">null</strong> == options ? <strong class="jxr_keyword">null</strong> : options.inhabitantsParserFactory(),
 <a class="jxr_linenumber" name="256" href="#256">256</a>                 <strong class="jxr_keyword">null</strong> == options ? <strong class="jxr_keyword">true</strong> : options.enableDefaultRunLevelService(),
 <a class="jxr_linenumber" name="257" href="#257">257</a>                 <strong class="jxr_keyword">null</strong> == options ? <strong class="jxr_keyword">true</strong> : options.enableRunLevelConstraints(),
-<a class="jxr_linenumber" name="258" href="#258">258</a>                 <strong class="jxr_keyword">null</strong> == options ? <strong class="jxr_keyword">null</strong> : options.classpathFilter());
-<a class="jxr_linenumber" name="259" href="#259">259</a> 
-<a class="jxr_linenumber" name="260" href="#260">260</a>         <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat = singleton.getHabitat();
-<a class="jxr_linenumber" name="261" href="#261">261</a>         <em class="jxr_comment">// so far we don't support extra meta-data on our tests.</em>
-<a class="jxr_linenumber" name="262" href="#262">262</a>         <a href="../../../../org/jvnet/hk2/component/Creator.html">Creator</a> creator = Creators.create(testClass, habitat, <strong class="jxr_keyword">new</strong> MultiMap&lt;String, String&gt;());
-<a class="jxr_linenumber" name="263" href="#263">263</a>         instance = creator.create(creator);
-<a class="jxr_linenumber" name="264" href="#264">264</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="265" href="#265">265</a>             Hk2Test.Populator populator = Hk2Test.Populator.<strong class="jxr_keyword">class</strong>.<strong class="jxr_keyword">cast</strong>(instance);
-<a class="jxr_linenumber" name="266" href="#266">266</a>             populator.populate(getHabitat());
-<a class="jxr_linenumber" name="267" href="#267">267</a>         } <strong class="jxr_keyword">catch</strong> (ClassCastException e) {
-<a class="jxr_linenumber" name="268" href="#268">268</a>             Logger.getAnonymousLogger().fine(instance + <span class="jxr_string">" is not a populator"</span>);
-<a class="jxr_linenumber" name="269" href="#269">269</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="270" href="#270">270</a>             e.printStackTrace();
-<a class="jxr_linenumber" name="271" href="#271">271</a>             Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage(), e);
-<a class="jxr_linenumber" name="272" href="#272">272</a>         }
-<a class="jxr_linenumber" name="273" href="#273">273</a>         creator.initialize(instance, creator);
-<a class="jxr_linenumber" name="274" href="#274">274</a>     }
-<a class="jxr_linenumber" name="275" href="#275">275</a> 
-<a class="jxr_linenumber" name="276" href="#276">276</a>     <strong class="jxr_keyword">static</strong> Hk2TestServices singleton;
-<a class="jxr_linenumber" name="277" href="#277">277</a> }
+<a class="jxr_linenumber" name="258" href="#258">258</a>                 <strong class="jxr_keyword">null</strong> == options ? <strong class="jxr_keyword">null</strong> : options.classpathFilter(),
+<a class="jxr_linenumber" name="259" href="#259">259</a>                 <strong class="jxr_keyword">null</strong> == options ? <strong class="jxr_keyword">null</strong> : options.module());
+<a class="jxr_linenumber" name="260" href="#260">260</a> 
+<a class="jxr_linenumber" name="261" href="#261">261</a>         <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat = singleton.getHabitat();
+<a class="jxr_linenumber" name="262" href="#262">262</a>         <em class="jxr_comment">// so far we don't support extra meta-data on our tests.</em>
+<a class="jxr_linenumber" name="263" href="#263">263</a>         <a href="../../../../org/jvnet/hk2/component/Creator.html">Creator</a> creator = Creators.create(testClass, habitat, <strong class="jxr_keyword">new</strong> MultiMap&lt;String, String&gt;());
+<a class="jxr_linenumber" name="264" href="#264">264</a>         instance = creator.create(creator);
+<a class="jxr_linenumber" name="265" href="#265">265</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="266" href="#266">266</a>             Hk2Test.Populator populator = Hk2Test.Populator.<strong class="jxr_keyword">class</strong>.<strong class="jxr_keyword">cast</strong>(instance);
+<a class="jxr_linenumber" name="267" href="#267">267</a>             populator.populate(getHabitat());
+<a class="jxr_linenumber" name="268" href="#268">268</a>         } <strong class="jxr_keyword">catch</strong> (ClassCastException e) {
+<a class="jxr_linenumber" name="269" href="#269">269</a>             Logger.getAnonymousLogger().fine(instance + <span class="jxr_string">" is not a populator"</span>);
+<a class="jxr_linenumber" name="270" href="#270">270</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="271" href="#271">271</a>             e.printStackTrace();
+<a class="jxr_linenumber" name="272" href="#272">272</a>             Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage(), e);
+<a class="jxr_linenumber" name="273" href="#273">273</a>         }
+<a class="jxr_linenumber" name="274" href="#274">274</a>         creator.initialize(instance, creator);
+<a class="jxr_linenumber" name="275" href="#275">275</a>     }
+<a class="jxr_linenumber" name="276" href="#276">276</a> 
+<a class="jxr_linenumber" name="277" href="#277">277</a>     <strong class="jxr_keyword">static</strong> Hk2TestServices singleton;
+<a class="jxr_linenumber" name="278" href="#278">278</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

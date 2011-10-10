@@ -71,7 +71,7 @@
 <a class="jxr_linenumber" name="61" href="#61">61</a>    }
 <a class="jxr_linenumber" name="62" href="#62">62</a>    
 <a class="jxr_linenumber" name="63" href="#63">63</a>    @Override
-<a class="jxr_linenumber" name="64" href="#64">64</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">boolean</strong> inhabitantChanged(<a href="../../../../org/jvnet/hk2/component/HabitatListener.html">EventType</a> eventType, <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat,
+<a class="jxr_linenumber" name="64" href="#64">64</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">boolean</strong> inhabitantChanged(<a href="../../../../org/jvnet/hk2/component/InhabitantListener.html">EventType</a> eventType, <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat,
 <a class="jxr_linenumber" name="65" href="#65">65</a>        Inhabitant&lt;?&gt; inhabitant) {
 <a class="jxr_linenumber" name="66" href="#66">66</a>      <a href="../../../../org/jvnet/hk2/component/HabitatListener.html">HabitatListener</a> listener = proxy.get();
 <a class="jxr_linenumber" name="67" href="#67">67</a>      <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">null</strong> == listener) <strong class="jxr_keyword">return</strong> false;
@@ -79,7 +79,7 @@
 <a class="jxr_linenumber" name="69" href="#69">69</a>    }
 <a class="jxr_linenumber" name="70" href="#70">70</a>  
 <a class="jxr_linenumber" name="71" href="#71">71</a>    @Override
-<a class="jxr_linenumber" name="72" href="#72">72</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> inhabitantIndexChanged(<a href="../../../../org/jvnet/hk2/component/HabitatListener.html">EventType</a> eventType, <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat,
+<a class="jxr_linenumber" name="72" href="#72">72</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> inhabitantIndexChanged(<a href="../../../../org/jvnet/hk2/component/InhabitantListener.html">EventType</a> eventType, <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat,
 <a class="jxr_linenumber" name="73" href="#73">73</a>        Inhabitant&lt;?&gt; inhabitant, String index, String name, Object service) {
 <a class="jxr_linenumber" name="74" href="#74">74</a>      <a href="../../../../org/jvnet/hk2/component/HabitatListener.html">HabitatListener</a> listener = proxy.get();
 <a class="jxr_linenumber" name="75" href="#75">75</a>      <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">null</strong> == listener) <strong class="jxr_keyword">return</strong> false;

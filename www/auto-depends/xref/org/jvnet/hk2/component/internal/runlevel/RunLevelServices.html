@@ -205,7 +205,7 @@
 <a class="jxr_linenumber" name="195" href="#195">195</a>     
 <a class="jxr_linenumber" name="196" href="#196">196</a>     habitat.addHabitatListener(<strong class="jxr_keyword">new</strong> <a href="../../../../../../org/jvnet/hk2/component/HabitatListener.html">HabitatListener</a>() {
 <a class="jxr_linenumber" name="197" href="#197">197</a>       @Override
-<a class="jxr_linenumber" name="198" href="#198">198</a>       <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> inhabitantChanged(<a href="../../../../../../org/jvnet/hk2/component/HabitatListener.html">EventType</a> eventType, <a href="../../../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat, Inhabitant&lt;?&gt; inhabitant) {
+<a class="jxr_linenumber" name="198" href="#198">198</a>       <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> inhabitantChanged(<a href="../../../../../../org/jvnet/hk2/component/InhabitantListener.html">EventType</a> eventType, <a href="../../../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat, Inhabitant&lt;?&gt; inhabitant) {
 <a class="jxr_linenumber" name="199" href="#199">199</a>         <strong class="jxr_keyword">if</strong> (EventType.HABITAT_INITIALIZED == eventType) {
 <a class="jxr_linenumber" name="200" href="#200">200</a>           Map&lt;String, RunLevelServiceStub&gt; rlss;
 <a class="jxr_linenumber" name="201" href="#201">201</a>           <strong class="jxr_keyword">synchronized</strong> (map) {
@@ -224,7 +224,7 @@
 <a class="jxr_linenumber" name="214" href="#214">214</a>       }
 <a class="jxr_linenumber" name="215" href="#215">215</a> 
 <a class="jxr_linenumber" name="216" href="#216">216</a>       @Override
-<a class="jxr_linenumber" name="217" href="#217">217</a>       <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> inhabitantIndexChanged(<a href="../../../../../../org/jvnet/hk2/component/HabitatListener.html">EventType</a> eventType,
+<a class="jxr_linenumber" name="217" href="#217">217</a>       <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> inhabitantIndexChanged(<a href="../../../../../../org/jvnet/hk2/component/InhabitantListener.html">EventType</a> eventType,
 <a class="jxr_linenumber" name="218" href="#218">218</a>           <a href="../../../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat, Inhabitant&lt;?&gt; inhabitant, String index, String name,
 <a class="jxr_linenumber" name="219" href="#219">219</a>           Object service) {
 <a class="jxr_linenumber" name="220" href="#220">220</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
