@@ -18,6 +18,8 @@ or injection of dependencies as well as automatic resolution of dependencies.
 
    Link to {{{.\/components.html}Component Model}}
 
+   Link to HK2 APIs {{{./hk2-api/index.html}Programmatic APIs}}
+
 * Class Model
 
 	In order to generate enough metadata to satisfy all injection points with a suitable injection target, HK2 has developped a simple class model which mimics a java class reflective API without the cost of loading the class files with a class loader. The class-model sub project can be used indenpendently of HK2, it is using ASM to load the byte code and provide a user friendly reflective APIs on the parsed classes.
@@ -26,7 +28,7 @@ or injection of dependencies as well as automatic resolution of dependencies.
 
 * Configuration
  
-	Most sofware need to store some configuration for persisting behaviours accross restarts. Such configuration is usually stored in xml files and can be consumed like any other services in hk2. We provide a powerful abstraction to a configuration file definition, coupled with a 2 phase transactional system to mutate any configuration that ensure isolation and completness of any configuation changes.
+	Most software need to store some configuration for persisting behaviours accross restarts. Such configuration is usually stored in xml files and can be consumed like any other services in hk2. We provide a powerful abstraction to a configuration file definition, coupled with a 2 phase transactional system to mutate any configuration that ensure isolation and completness of any configuation changes.
 
     Link to {{{.\/config\/configuration.html}Configuration}}
 

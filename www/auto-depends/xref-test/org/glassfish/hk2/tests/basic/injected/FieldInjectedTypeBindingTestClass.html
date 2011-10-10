@@ -85,8 +85,8 @@
 <a class="jxr_linenumber" name="75" href="#75">75</a>      Factory&lt;ContractB&gt; cbp;
 <a class="jxr_linenumber" name="76" href="#76">76</a>      @Inject
 <a class="jxr_linenumber" name="77" href="#77">77</a>      Factory&lt;ContractA&gt; cap;
-<a class="jxr_linenumber" name="78" href="#78">78</a>  <em class="jxr_comment">//    @Inject</em>
-<a class="jxr_linenumber" name="79" href="#79">79</a>  <em class="jxr_comment">//    Factory&lt;GenericContract&lt;String&gt;&gt; gcp;</em>
+<a class="jxr_linenumber" name="78" href="#78">78</a>      @Inject
+<a class="jxr_linenumber" name="79" href="#79">79</a>      Factory&lt;GenericContract&lt;String&gt;&gt; gcp;
 <a class="jxr_linenumber" name="80" href="#80">80</a>  
 <a class="jxr_linenumber" name="81" href="#81">81</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> assertInjection() {
 <a class="jxr_linenumber" name="82" href="#82">82</a>          assertInjectedInstance(ServiceC.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">this</strong>.sc);
@@ -104,7 +104,7 @@
 <a class="jxr_linenumber" name="94" href="#94">94</a>          assertInjectedFactory(ServiceA.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">this</strong>.cap);
 <a class="jxr_linenumber" name="95" href="#95">95</a>          assertInjectedInstance(ServiceB.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">this</strong>.cap.get().getB());
 <a class="jxr_linenumber" name="96" href="#96">96</a>          assertInjectedInstance(ClassX.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">this</strong>.cap.get().getB().getX());
-<a class="jxr_linenumber" name="97" href="#97">97</a>  <em class="jxr_comment">//        assertInjectedFactory(GenericContractStringImpl.class, this.gcp);</em>
+<a class="jxr_linenumber" name="97" href="#97">97</a>          assertInjectedFactory(GenericContractStringImpl.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">this</strong>.gcp);
 <a class="jxr_linenumber" name="98" href="#98">98</a>      }
 <a class="jxr_linenumber" name="99" href="#99">99</a>  }
 </pre>

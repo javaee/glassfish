@@ -130,7 +130,7 @@
 <a class="jxr_linenumber" name="120" href="#120">120</a>   }
 <a class="jxr_linenumber" name="121" href="#121">121</a>   
 <a class="jxr_linenumber" name="122" href="#122">122</a>   @Override
-<a class="jxr_linenumber" name="123" href="#123">123</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">boolean</strong> inhabitantChanged(<a href="../../../../../../org/jvnet/hk2/component/HabitatListener.html">EventType</a> eventType, Inhabitant&lt;?&gt; inhabitant) {
+<a class="jxr_linenumber" name="123" href="#123">123</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">boolean</strong> inhabitantChanged(<a href="../../../../../../org/jvnet/hk2/component/InhabitantListener.html">EventType</a> eventType, Inhabitant&lt;?&gt; inhabitant) {
 <a class="jxr_linenumber" name="124" href="#124">124</a>     <strong class="jxr_keyword">if</strong> (EventType.INHABITANT_ACTIVATED == eventType) {
 <a class="jxr_linenumber" name="125" href="#125">125</a>       assert(inhabitant.isActive());
 <a class="jxr_linenumber" name="126" href="#126">126</a>       assert(AbstractInhabitantImpl.<strong class="jxr_keyword">class</strong>.isInstance(inhabitant));
