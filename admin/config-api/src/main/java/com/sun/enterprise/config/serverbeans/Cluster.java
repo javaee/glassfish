@@ -65,8 +65,6 @@ import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.ReferenceContainer;
 
 import java.beans.PropertyVetoException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Level;
