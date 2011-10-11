@@ -600,10 +600,29 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
     /*
      * Get existing nodes based on cluster element in domain.
-     * Then check for DAS address in das.properties.
+     * Then check for DAS address in das.properties. When the
+     * list is set to 'generate' then the gms listener port
+     * must also be specified. So the same port is used for
+     * each cluster member.
      */
     private String generateDiscoveryUriList() {
-        final String propName = "GMS_LISTENER_PORT-" + clusterName;
+        String clusterPort = null;
+
+        Property gmsPortProp = cluster.getProperty("GMS_LISTENER_PORT");
+        if (gmsPortProp == null ||
+            gmsPortProp.getValue() == null ||
+            gmsPortProp.getValue().trim().charAt(0) == '$') {
+
+            clusterPort = "9090";
+            logger.log(Level.WARNING, "gmsservice.listener.port.required",
+                new Object [] {cluster.getName(), clusterPort});
+        } else {
+            clusterPort = gmsPortProp.getValue();
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, "will use gms listener port: " +
+                    clusterPort);
+            }
+        }
 
         // get cluster member server refs
         Set<String> instanceNames = new HashSet<String>();
@@ -641,13 +660,10 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                         "found server for name %s",
                         name));
                 }
-                SystemProperty gmsPort = server.getSystemProperty(propName);
                 Node node = nodes.getNode(server.getNodeRef());
                 if (node != null) {
-                    String host = node.getNodeHost();
-                    if (gmsPort != null) {
-                        host = httpScheme + host + ":" + gmsPort.getValue();
-                    }
+                    String host = httpScheme + node.getNodeHost() + ":" +
+                        clusterPort;
                     if (logger.isLoggable(Level.FINE)) {
                         logger.log(Level.FINE, String.format(
                             "Adding host '%s' to discovery list", host));
@@ -668,35 +684,10 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                         dasPropsFile.getAbsolutePath()));
                 }
                 Properties dasProps = getProperties(dasPropsFile);
-                String host = dasProps.getProperty("agent.das.host");
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.FINE, String.format(
-                        "found host name '%s'", host));
-                }
-                Config serverConf = domain.getConfigNamed("server-config");
-                if (serverConf == null) {
-                    if (logger.isLoggable(Level.FINE)) {
-                        logger.log(Level.FINE,
-                            "did not find server config. configs:");
-                        for (Config c : domain.getConfigs().getConfig()) {
-                            logger.log(Level.FINE,  c.getName());
-                        }
-                    }
-                } else {
-                    if (logger.isLoggable(Level.FINE)) {
-                        logger.log(Level.FINE, String.format(
-                            "looking up '%s' from config '%s'",
-                            propName, serverConf.getName()));
-                    }
-                    SystemProperty dasGmsPortProp =
-                        serverConf.getSystemProperty(propName);
-                    if (dasGmsPortProp != null) {
-                        host = httpScheme + host + ":" +
-                            dasGmsPortProp.getValue();
-                    } else if (logger.isLoggable(Level.FINE)) {
-                        logger.log(Level.FINE, "property is null");
-                    }
-                }
+                String host = httpScheme +
+                    dasProps.getProperty("agent.das.host") +
+                    ":" +
+                    clusterPort;
                 if (logger.isLoggable(Level.FINE)) {
                     logger.log(Level.FINE, String.format(
                         "adding '%s' from das.props file", host));
