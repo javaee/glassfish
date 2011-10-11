@@ -47,7 +47,7 @@ import com.sun.ejte.ccl.reporter.*;
  */
 public class WebTest {
 
-    private static final String TEST_NAME = "caching-hang";
+    private static final String TEST_NAME = "cache-hang";
 
     private static SimpleReporterAdapter stat =
         new SimpleReporterAdapter("appserv-tests");

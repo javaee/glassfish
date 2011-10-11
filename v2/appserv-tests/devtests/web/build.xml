@@ -441,7 +441,7 @@
         <ant dir="weldJsfServerAuthModuleRedirect" target="all"/>
         <ant dir="weldJsfFormLoginHttpSessionListener" target="all"/>
         <ant dir="oneSessionCookieHeader" target="all"/>
-        <ant dir="cachingHang" target="all"/>
+        <ant dir="cacheHang" target="all"/>
         <ant dir="jsessionIdParameter" target="all"/>
         <ant dir="setWebContextParam" target="all"/>
     </target>
