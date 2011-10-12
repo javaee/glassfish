@@ -57,11 +57,4 @@ public interface Password {
      * @returns byte[] 
      */
     public byte[] getValue();
-
-    /**
-     * returns encryption algorithm set by administrator
-     * in the realm configuration
-     * @returns String
-     */
-    public String getAlgorithm();
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,14 +44,7 @@ import com.sun.enterprise.security.auth.digest.impl.DigestProcessor;
 import com.sun.enterprise.security.auth.digest.api.Password;
 import com.sun.enterprise.security.auth.digest.api.DigestAlgorithmParameter;
 import com.sun.enterprise.security.auth.digest.api.Key;
-import org.glassfish.internal.api.Globals;
-import org.glassfish.security.common.MasterPassword;
-import com.sun.enterprise.security.store.PasswordAdapter;
-import org.jvnet.hk2.component.Habitat;
-
-
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
@@ -64,58 +57,17 @@ import static com.sun.enterprise.security.auth.digest.api.Constants.*;
 public abstract class DigestRealmBase extends IASRealm implements DigestRealm {
 
     private DigestValidatorImpl validator = null;
-    private static MasterPassword masterPasswordHelper = null;
-    private PasswordAdapter pwdAdapter = null;
-
-    static {
-        Habitat habitat = Globals.getDefaultHabitat();
-        if (habitat != null) {
-            masterPasswordHelper = habitat.getByContract(MasterPassword.class);
-        }
-    }
 
     public DigestRealmBase() {
     }
 
 
     protected final boolean validate(final Password passwd, DigestAlgorithmParameter[] params) {
-
         try {
-            pwdAdapter = masterPasswordHelper.getMasterPasswordAdapter();
-            if ((pwdAdapter == null) && (passwd.getAlgorithm() != null)) {
-                return false;
-            }
-            Password decPasswd = new Password() {
-
-                public byte[] getValue() {
-                    try {
-                        if (passwd.getAlgorithm() != null) {
-                            byte[] decPassVal = pwdAdapter.decrypt(passwd.getValue(), passwd.getAlgorithm());
-                            return decPassVal;
-                        } else {
-                            return passwd.getValue();
-                        }
-                    } catch (Exception ex) {
-                        _logger.log(Level.SEVERE, "error_validating_password", ex);
-                        return null;
-                    }
-                }
-
-                public int getType() {
-                    return Password.PLAIN_TEXT;
-                }
-
-                public String getAlgorithm() {
-                    return passwd.getAlgorithm();
-                }
-            };
-
-
-            return new DigestValidatorImpl().validate(decPasswd, params);
-        } catch (Exception ex) {
-            _logger.log(Level.SEVERE, "error_validating_password", ex);
+            return new DigestValidatorImpl().validate(passwd, params);
+        } catch (NoSuchAlgorithmException ex) {            
+            _logger.log(Level.SEVERE,"invalid.digest.algo",ex);
         }
-
         return false;
     }
 

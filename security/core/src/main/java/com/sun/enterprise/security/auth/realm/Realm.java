@@ -70,7 +70,7 @@ import org.jvnet.hk2.component.Habitat;
 @Contract
 public abstract class Realm implements Comparable {
 
-    protected static LocalStringManagerImpl localStrings =
+    private static LocalStringManagerImpl localStrings =
 	new LocalStringManagerImpl(Realm.class);
 
 //    private static Hashtable loadedRealms = new Hashtable();

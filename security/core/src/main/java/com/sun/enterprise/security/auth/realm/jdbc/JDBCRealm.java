@@ -40,10 +40,6 @@
 
 package com.sun.enterprise.security.auth.realm.jdbc;
 
-import java.io.*;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.channels.NonWritableChannelException;
 import java.nio.charset.CharacterCodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -64,7 +60,6 @@ import javax.sql.DataSource;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 
 import com.sun.enterprise.universal.GFBase64Encoder;
-import com.sun.enterprise.universal.GFBase64Decoder;
 
 import javax.security.auth.login.LoginException;
 import com.sun.enterprise.security.auth.realm.IASRealm;
@@ -77,12 +72,12 @@ import com.sun.enterprise.security.auth.digest.api.Password;
 import com.sun.enterprise.security.auth.realm.DigestRealmBase;
 import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.util.Utility;
-
+import java.io.CharArrayReader;
+import java.io.Reader;
+import java.io.StringReader;
 import java.nio.CharBuffer;
 import java.util.Arrays;
 import org.jvnet.hk2.annotations.Service;
-
-
 
 /**
  * Realm for supporting JDBC authentication.
@@ -130,7 +125,6 @@ public final class JDBCRealm extends DigestRealmBase {
     public static final String PARAM_GROUP_TABLE = "group-table";
     public static final String PARAM_GROUP_NAME_COLUMN = "group-name-column";
     public static final String PARAM_GROUP_TABLE_USER_NAME_COLUMN = "group-table-user-name-column";
-    public static final String PARAM_DIGEST_PASSWORD_ENC_ALGORITHM = "digestrealm-password-enc-algorithm";
 
     private static final char[] HEXADECIMAL = { '0', '1', '2', '3',
         '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
@@ -245,10 +239,7 @@ public final class JDBCRealm extends DigestRealmBase {
         if (charset != null) {
             this.setProperty(PARAM_CHARSET, charset);
         }
-        String digestEncAlgorithm = props.getProperty(PARAM_DIGEST_PASSWORD_ENC_ALGORITHM);
-        if (digestEncAlgorithm != null) {
-            this.setProperty(PARAM_DIGEST_PASSWORD_ENC_ALGORITHM,digestEncAlgorithm);
-        }
+
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest("JDBCRealm : " + 
                 IASRealm.JAAS_CONTEXT_PARAM + "= " + jaasCtx + ", " +
@@ -357,44 +348,27 @@ public final class JDBCRealm extends DigestRealmBase {
             rs = statement.executeQuery();
 
             if (rs.next()) {
-                Reader pwdReader = rs.getCharacterStream(1);
-                final char[] pwd = extractFromReader(pwdReader);
-                final byte[] pwdB = Utility.convertCharArrayToByteArray(pwd,null);
-                if (getProperty(PARAM_DIGEST_PASSWORD_ENC_ALGORITHM) == null) {
+                final String pwd = rs.getString(1);
+                if (!PRE_HASHED.equalsIgnoreCase(getProperty(PARAM_ENCODING))) {
                     return new Password() {
 
                         public byte[] getValue() {
-                            return  pwdB;
+                            return pwd.getBytes();
                         }
 
                         public int getType() {
                             return Password.PLAIN_TEXT;
-                        }
-
-                        public String getAlgorithm() {
-                            return null;
                         }
                     };
                 } else {
                     return new Password() {
 
                         public byte[] getValue() {
-                            if(getProperty(PARAM_ENCODING).equals(HEX)) {
-                                return hexDecode(pwd);
-                            }
-                            else if(getProperty(PARAM_ENCODING).equals(BASE64)) {
-                                return base64Decode(pwd);
-                            }
-                            return null;
+                            return pwd.getBytes();
                         }
-
 
                         public int getType() {
                             return Password.HASHED;
-                        }
-
-                        public String getAlgorithm() {
-                            return getProperty(PARAM_DIGEST_PASSWORD_ENC_ALGORITHM);
                         }
                     };
                 }
@@ -433,9 +407,17 @@ public final class JDBCRealm extends DigestRealmBase {
             if (rs.next()) {
                 //Obtain the password as a char[] with a  max size of 50
                 Reader reader =  rs.getCharacterStream(1);
-                char[] passwd = extractFromReader(reader);
-                int noOfChars = passwd.length;
+                char[] pwd = new char[1024];
+                int noOfChars = reader.read(pwd);
 
+                /*Since pwd contains 1024 elements arbitrarily initialized,
+                    construct a new char[] that has the right no of char elements
+                    to be used for equal comparison*/
+                if (noOfChars < 0) {
+                    noOfChars = 0;
+                }
+                char[] passwd = new char[noOfChars];
+                System.arraycopy(pwd, 0, passwd, 0, noOfChars);
                 if (HEX.equalsIgnoreCase(getProperty(PARAM_ENCODING))) {
                     valid = true;
                     //Do a case-insensitive equals
@@ -507,31 +489,9 @@ public final class JDBCRealm extends DigestRealmBase {
     private String base64Encode(byte[] bytes) {
         GFBase64Encoder encoder = new GFBase64Encoder();
         return encoder.encode(bytes);
+
+        
     }
-
-    public static byte[] hexDecode(char[] str) {
-        int len = str.length;
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(str[i], 16) << 4)
-                                 + Character.digit(str[i+1], 16));
-        }
-        return data;
-    }
-
-    public static byte[] base64Decode(char[] str){
-        GFBase64Decoder decoder = new GFBase64Decoder();
-        try {
-            return decoder.decodeBuffer(new String(str));
-        }
-        catch (IOException ex) {
-            _logger.log(Level.SEVERE, "jdbcrealm.error.decoding.pwd");
-            return null;
-        }
-
-    }
-
-
 
     /**
      * Delegate method for retreiving users groups
@@ -620,20 +580,5 @@ public final class JDBCRealm extends DigestRealmBase {
             loginEx.initCause(ex);
             throw loginEx;
         }
-    }
-    
-    private char[] extractFromReader(Reader reader) throws IOException {
-        char[] pwd = new char[1024];
-        int noOfChars = reader.read(pwd);
-
-        /*Since pwd contains 1024 elements arbitrarily initialized,
-        construct a new char[] that has the right no of char elements
-        to be used for equal comparison*/
-        if (noOfChars < 0) {
-            noOfChars = 0;
-        }
-        char[] passwd = new char[noOfChars];
-        System.arraycopy(pwd, 0, passwd, 0, noOfChars);
-        return passwd;
     }
 }
