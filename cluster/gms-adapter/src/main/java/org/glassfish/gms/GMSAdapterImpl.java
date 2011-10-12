@@ -159,9 +159,6 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
     @Inject
     Servers servers;
 
-    @Inject
-    Domain domain;
-
     private HealthHistory hHistory;
 
     @Override
