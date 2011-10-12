@@ -53,12 +53,12 @@ import java.net.*;
  * @author Yamini K B
  */
 public class InstallNodeTest extends SshBaseDevTest {
-    
+
     private static final String INSTALL_DIR = "--installdir";
     private static final String LOCALHOST = "localhost";
     private static final String INSTALL = "--install";
     private static final String UNINSTALL = "--uninstall";
-    
+
     private final String host;
     private final File glassFishHome;
     private String remoteHost = null;
@@ -77,11 +77,11 @@ public class InstallNodeTest extends SshBaseDevTest {
         }
         host = host0;
         glassFishHome = getGlassFishHome();
-        
-        sshUser = getExpandedSystemProperty(SSH_USER_PROP);
-        remoteHost = getExpandedSystemProperty(SSH_HOST_PROP);
-        sshPass = getExpandedSystemProperty(SSH_PASSWORD_PROP);
-        sshConfigure = Boolean.valueOf(getExpandedSystemProperty(SSH_CONFIGURE_PROP));
+
+        sshUser = TestUtils.getExpandedSystemProperty(SSH_USER_PROP);
+        remoteHost = TestUtils.getExpandedSystemProperty(SSH_HOST_PROP);
+        sshPass = TestUtils.getExpandedSystemProperty(SSH_PASSWORD_PROP);
+        sshConfigure = Boolean.valueOf(TestUtils.getExpandedSystemProperty(SSH_CONFIGURE_PROP));
     }
 
     public static void main(String[] args) {
@@ -104,23 +104,23 @@ public class InstallNodeTest extends SshBaseDevTest {
 
         if (!ok(remoteHost)) {
             remoteHost=host;
-        }    
+        }
 
         if (!ok(sshUser)) {
             sshUser = System.getProperty("user.name");
         }
-        
+
         if (!ok(sshPass)) {
             System.out.printf("%s requires you set the %s property\n",
                 this.getClass().getName(), SSH_PASSWORD_PROP);
             runTest = false;
-        }        
+        }
 
         if (!runTest) {
             report("install-node-*", false);
             return;
         }
-        
+
         System.out.printf("%s=%s\n", "Host", host);
         System.out.printf("%s=%s\n", "GlassFish Home", glassFishHome);
         System.out.printf("%s=%s\n", SSH_HOST_PROP, remoteHost);
@@ -130,12 +130,12 @@ public class InstallNodeTest extends SshBaseDevTest {
                 (ok(sshPass) ? "<concealed>" : "<none>" ));
         System.out.printf("%s=%s\n", SSH_CONFIGURE_PROP, sshConfigure);
         System.out.println("Password file = " +  pFile);
-        
+
         if (!sshConfigure) {
             //will use password auth for the tests
             addPassword(sshPass, PasswordType.SSH_PASS);
         }
-        
+
         disableInteractiveMode();
 
         asadmin("start-domain");
@@ -153,12 +153,12 @@ public class InstallNodeTest extends SshBaseDevTest {
             testInstallRemoteNode();
             testUnInstallRemoteNode();
         }
-        
+
         asadmin("stop-domain");
         removePasswords();
         stat.printSummary();
     }
-    
+
     private void testInstallLocalNode() {
 
         //create a ssh node with --install
@@ -172,11 +172,11 @@ public class InstallNodeTest extends SshBaseDevTest {
 
         //try using host name alias
         report("install-same-host", asadmin("install-node", INSTALL_DIR, "/tmp/b", LOCALHOST));
-        
+
         //create a sample instance
         asadmin("create-local-instance", "--nodedir", "/tmp/b/glassfish/nodes", "i1");
         asadmin("create-local-instance", "--nodedir", "/tmp/b/glassfish/servers", "i2");
-    }       
+    }
 
     private void testUnInstallLocalNode() {
         //should fail since there is an installation
@@ -186,7 +186,7 @@ public class InstallNodeTest extends SshBaseDevTest {
         //this is to test JIRA-16889
         asadmin("delete-local-instance", "--nodedir", "/tmp/b/glassfish/nodes", "i1");
         asadmin("delete-local-instance", "--nodedir", "/tmp/b/glassfish/servers", "i2");
-        
+
         //simple uninstall
         report("uninstall-node-1", asadmin("uninstall-node", INSTALL_DIR, "/tmp/b", LOCALHOST));
 
@@ -204,7 +204,7 @@ public class InstallNodeTest extends SshBaseDevTest {
         //installing at different location on same host should work
         report("install-at-different-location-remote", asadmin("install-node", "--sshuser", sshUser, INSTALL_DIR, "gf-test-2", remoteHost));
     }
-    
+
     private void testUnInstallRemoteNode() {
         //should fail since there is an installation
         report("uninstall-node-remote", !asadmin("uninstall-node", "--sshuser", sshUser, INSTALL_DIR, "gf-test-1", remoteHost));

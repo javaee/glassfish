@@ -72,6 +72,13 @@
     <property name="ssh.installprefix" value="/export/home/hudson/devtest-${user.name}"/>
     <property name="ssh.doinstall"  value="true"/>
 
+    <!-- DCOM defaults -->
+    <property name="dcom.host"       value="wnevins-lnr"/>
+    <property name="dcom.domain"     value="wnevins-lnr"/>
+    <property name="dcom.user"       value="hudson"/>
+    <property name="dcom.password"   value="hudson"/>
+    <property name="dcom.installdir" value="D:/glassfish3"/>
+
     <!-- convert these paths to canonical form -->
     <pathconvert property="aps_home">
         <path location="${env.APS_HOME}"/>
@@ -180,6 +187,16 @@
             <jvmarg value="-Dssh.user=${ssh.user}"/>
             <jvmarg value="-Dssh.password=${ssh.password}"/>
             <jvmarg value="-Dssh.doinstall=${ssh.doinstall}"/>
+        </runtest>
+    </target>
+
+    <target name="dcom" depends="init">
+        <runtest classname="admin.DcomTest">
+            <jvmarg value="-Ddcom.host=${dcom.host}"/>
+            <jvmarg value="-Ddcom.domain=${dcom.domain}"/>
+            <jvmarg value="-Ddcom.user=${dcom.user}"/>
+            <jvmarg value="-Ddcom.password=${dcom.password}"/>
+            <jvmarg value="-Ddcom.installdir=${dcom.installdir}"/>
         </runtest>
     </target>
 

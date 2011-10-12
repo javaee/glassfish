@@ -55,7 +55,7 @@ import java.io.IOException;
 public abstract class SshBaseDevTest extends AdminBaseDevTest {
     static final String SSH_DIRECTORY = System.getProperty("user.home")
                                 + File.separator + ".ssh" + File.separator;
-    
+
     // Properties that may be passed into test
 
     // Host to create remote instances on
@@ -72,20 +72,20 @@ public abstract class SshBaseDevTest extends AdminBaseDevTest {
     // prefix. Typically used with ssh.doinstall=true.
     static final String SSH_INSTALLPREFIX_PROP = "ssh.installprefix";
 
-    // Location of nodedir to use. If not set use default location. 
+    // Location of nodedir to use. If not set use default location.
     static final String SSH_NODEDIR_PROP = "ssh.nodedir";
 
-    // SSH password to use when connecting to ssh.host. Not needed if 
+    // SSH password to use when connecting to ssh.host. Not needed if
     // public key authentication is already set up.
     static final String SSH_PASSWORD_PROP = "ssh.password";
 
     // Controlls whether or not the SSHNodeTest does an install for you
-    // onto ssh.host. 
+    // onto ssh.host.
     static final String SSH_DOINSTALL_PROP = "ssh.doinstall";
 
     // Used by SetupSshTest
     static final String SSH_CONFIGURE_PROP = "ssh.configure";
-    
+
     static enum PasswordType { SSH_PASS, KEY_PASS };
 
     static final String pFile = System.getenv("APS_HOME") +
@@ -93,10 +93,10 @@ public abstract class SshBaseDevTest extends AdminBaseDevTest {
 
     static final String tmpFile = System.getenv("APS_HOME") +
             File.separator + "config" + File.separator + "adminpassword.tmp";
-    
+
     /**
      * Add a password to the asadmin password file used by the test.
-     * 
+     *
      * @param value     Password to use
      * @param passType  SSH_PASS if you are setting ssh password.
      *                  KEY_PASS if you are setting encryption key
@@ -139,7 +139,7 @@ public abstract class SshBaseDevTest extends AdminBaseDevTest {
      * Remove SSH related passwords from the asadmin password file
      */
     void removePasswords() {
-        final File f = new File(pFile);        
+        final File f = new File(pFile);
         final File tempFile = new File(tmpFile);
 
         BufferedReader reader = null;
@@ -148,7 +148,7 @@ public abstract class SshBaseDevTest extends AdminBaseDevTest {
         try {
             writer=new BufferedWriter(new FileWriter(tempFile));
             reader = new BufferedReader(new FileReader(f));
-            
+
             String currentLine;
 
             while((currentLine = reader.readLine()) != null && !currentLine.trim().isEmpty()) {
@@ -157,18 +157,18 @@ public abstract class SshBaseDevTest extends AdminBaseDevTest {
                 writer.write(currentLine);
                 writer.newLine();
             }
-                
+
             reader.close();
             writer.close();
-            
+
             //On Windows, rename will fail if destination file already exists
             if(!f.delete()) {
                 System.out.println("Failed to delete original file");
             }
-            
+
             if(!tempFile.renameTo(f)) {
                 System.out.println("Failed to restore password file.");
-            }            
+            }
         } catch (IOException ioe) {
             //ignore
         }
@@ -186,39 +186,6 @@ public abstract class SshBaseDevTest extends AdminBaseDevTest {
         return;
     }
 
-    /**
-     * If a system property has a value of the form "${propname}", then expand
-     * it. If "propname" is not an existing Java system property then return null.
-     * 
-     * We use this mainly because in ant the test may be invoked with something
-     * like this:
-     *             <jvmarg value="-Dssh.installdir=${ssh.installdir}"/>
-     * If if ssh.installdir is not a defined property then ant will just pass
-     * "${ssh.installdir}" as the value for ssh.installdir. In this case we
-     * rather have the value be null to know the property was not set.
-     * 
-     * @param propName
-     * @return 
-     */
-    static String getExpandedSystemProperty(String propName) {
-        String value = System.getProperty(propName);
-        if (value == null) {
-            return null;
-        }
-        if (value.startsWith("${")) {
-            int index1 = value.indexOf("{");
-            int index2 = value.indexOf("}");
-            String substring = value.substring(index1+1, index2);
-            if (propName.equals(substring)) {
-                // Have something like foo=${foo}. Can't expand, return null;
-                return null;
-            }
-            return getExpandedSystemProperty(substring);
-        } else {
-            return value;
-        }
-    }
-    
     /**
      * Modify asadmin common options to include --interactive=false
      */

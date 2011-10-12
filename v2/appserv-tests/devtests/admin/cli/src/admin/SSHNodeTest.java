@@ -49,49 +49,49 @@ import java.util.ArrayList;
  * This class adds devtests for creating an SSH node for a remote
  * system, and then using that node for basic instance and cluster
  * lifecycle management.
- * 
+ *
  * You can run this test two ways:
- * 
+ *
  * A. Remote system already has glassfish installed and SSH key is already set up
- * 
- * In this case you already have glassfish installed on the remote system, 
+ *
+ * In this case you already have glassfish installed on the remote system,
  * and you are able to access the remote system via SSH as the user you are
  * running this test as, and do so via key authentication. In other words
  * running "ssh hostname" works without it prompting you for anything.
- * 
+ *
  * In this case run the test like this:
  * #
  * ant -Dteststorun=sshnode -Dssh.host=adc2101159.us.oracle.com
  *    "-Dssh.installdir=/export/glassfish3" all
- * 
+ *
  * If you want to use a different user for SSH login you can set ssh.user:
  *     -Dssh.user=hudson
- * 
+ *
  * If you want to use an alternate node-dir you can set ssh.nodedir:
  *     -Dssh.nodedir=/var/tmp/nodes
- * 
+ *
  * B. Remote system does not have glassfish installed and you want the test
  *    to set up key authentication for you.
- * 
+ *
  * In this case you want the test to install glassfish on the remote system
  * and set up SSH key authentication. Run it like this:
- * 
+ *
  * ant -Dteststorun=sshnode -Dssh.host=adc2101159.us.oracle.com
  *      -Dssh.doinstall=true all
- * 
+ *
  * If you want to use a different ssh user do:
- * 
+ *
  * ant -Dteststorun=sshnode -Dssh.host=adc2101159.us.oracle.com
  *      -Dssh.doinstall=true -Dssh.user=hudson -Dssh.password=hudson all
- * 
+ *
  * If you want to control the directory that the test installs GF into use
  * the ssh.installPrefix property (which will be used as the parent of
  * installation directory):
- * 
+ *
  * ant -Dteststorun=sshnode -Dssh.host=adc2101159.us.oracle.com
  *      -Dssh.doinstall=true -Dssh.user=hudson -Dssh.password=hudson
  *      -Dssh.installprefix=/export/home/hudson/devtest all
- * 
+ *
  *
  * @author Joe Di Pol
  */
@@ -120,13 +120,13 @@ public class SSHNodeTest extends SshBaseDevTest {
         }
 
         thisUser = System.getProperty("user.name");
-        remoteHost       = getExpandedSystemProperty(SSH_HOST_PROP);
-        remoteInstallDir = getExpandedSystemProperty(SSH_INSTALLDIR_PROP);
-        remoteInstallPrefix = getExpandedSystemProperty(SSH_INSTALLPREFIX_PROP);
-        remoteNodeDir = getExpandedSystemProperty(SSH_NODEDIR_PROP);
-        sshUser = getExpandedSystemProperty(SSH_USER_PROP);
-        sshPassword = getExpandedSystemProperty(SSH_PASSWORD_PROP);
-        sshDoInstall = Boolean.valueOf(getExpandedSystemProperty(SSH_DOINSTALL_PROP));
+        remoteHost       = TestUtils.getExpandedSystemProperty(SSH_HOST_PROP);
+        remoteInstallDir = TestUtils.getExpandedSystemProperty(SSH_INSTALLDIR_PROP);
+        remoteInstallPrefix = TestUtils.getExpandedSystemProperty(SSH_INSTALLPREFIX_PROP);
+        remoteNodeDir = TestUtils.getExpandedSystemProperty(SSH_NODEDIR_PROP);
+        sshUser = TestUtils.getExpandedSystemProperty(SSH_USER_PROP);
+        sshPassword = TestUtils.getExpandedSystemProperty(SSH_PASSWORD_PROP);
+        sshDoInstall = Boolean.valueOf(TestUtils.getExpandedSystemProperty(SSH_DOINSTALL_PROP));
     }
 
 
@@ -345,7 +345,7 @@ public class SSHNodeTest extends SshBaseDevTest {
     /**
      * Generate a unique path to use as a remote install location
      * @param prefix
-     * @return 
+     * @return
      */
     public String generateInstallPath(String prefix) {
         if (!ok(prefix)) {

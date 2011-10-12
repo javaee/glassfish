@@ -47,6 +47,10 @@ import java.io.*;
  * @author Byron Nevins
  */
 final class TestUtils {
+    private TestUtils() {
+        // all-static class!
+    }
+    
     static File createPasswordFile() throws IOException {
         File f = File.createTempFile("password_junk", ".txt");
         //f.deleteOnExit();   // just in case
@@ -67,5 +71,37 @@ final class TestUtils {
             return s.substring(index);
 
         return s;
+    }
+    /**
+     * If a system property has a value of the form "${propname}", then expand
+     * it. If "propname" is not an existing Java system property then return null.
+     *
+     * We use this mainly because in ant the test may be invoked with something
+     * like this:
+     *             <jvmarg value="-Dssh.installdir=${ssh.installdir}"/>
+     * If if ssh.installdir is not a defined property then ant will just pass
+     * "${ssh.installdir}" as the value for ssh.installdir. In this case we
+     * rather have the value be null to know the property was not set.
+     *
+     * @param propName
+     * @return
+     */
+    static String getExpandedSystemProperty(String propName) {
+        String value = System.getProperty(propName);
+        if (value == null) {
+            return null;
+        }
+        if (value.startsWith("${")) {
+            int index1 = value.indexOf("{");
+            int index2 = value.indexOf("}");
+            String substring = value.substring(index1+1, index2);
+            if (propName.equals(substring)) {
+                // Have something like foo=${foo}. Can't expand, return null;
+                return null;
+            }
+            return getExpandedSystemProperty(substring);
+        } else {
+            return value;
+        }
     }
 }

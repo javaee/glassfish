@@ -56,20 +56,20 @@ import java.util.Arrays;
  * 2. To run the actual setup-ssh tests
  *    ant -Dteststorun=setup-ssh -Dssh.configure=false -Dssh.host=onyx
  *        -Dssh.user=hudson -Dssh.password=hudson all
- * 
+ *
  * @author Yamini K B
  */
 public class SetupSshTest extends SshBaseDevTest {
     private static final String SSH_USER_OPTION = "--sshuser";
-    
+
     private static final String backup = System.getProperty("user.home")
                                 + File.separator + ".ssh.bak";
 
     private static final String SSH_KEY = "resources/ssh/id_dsa";
     private static final String SSH_KEY_PASSPHRASE = "Hello World!";
-    
+
     private static enum PasswordValue { EMPTY, RIGHT, WRONG };
-    
+
     private final String host;
     private final File glassFishHome;
     private String remoteHost = null;
@@ -88,11 +88,11 @@ public class SetupSshTest extends SshBaseDevTest {
         }
         host = host0;
         glassFishHome = getGlassFishHome();
-        
-        sshUser = getExpandedSystemProperty(SSH_USER_PROP);
-        remoteHost = getExpandedSystemProperty(SSH_HOST_PROP);
-        sshPass = getExpandedSystemProperty(SSH_PASSWORD_PROP);
-        sshConfigure = Boolean.valueOf(getExpandedSystemProperty(SSH_CONFIGURE_PROP));
+
+        sshUser = TestUtils.getExpandedSystemProperty(SSH_USER_PROP);
+        remoteHost = TestUtils.getExpandedSystemProperty(SSH_HOST_PROP);
+        sshPass = TestUtils.getExpandedSystemProperty(SSH_PASSWORD_PROP);
+        sshConfigure = Boolean.valueOf(TestUtils.getExpandedSystemProperty(SSH_CONFIGURE_PROP));
     }
 
     public static void main(String[] args) {
@@ -116,23 +116,23 @@ public class SetupSshTest extends SshBaseDevTest {
 
         if (!ok(remoteHost)) {
             remoteHost=host;
-        }    
+        }
 
         if (!ok(sshUser)) {
             sshUser = System.getProperty("user.name");
         }
-        
+
         if (!ok(sshPass)) {
             System.out.printf("%s requires you set the %s property\n",
                 this.getClass().getName(), SSH_PASSWORD_PROP);
             runTest = false;
-        }        
+        }
 
         if (!runTest) {
             report("setup-ssh-*", false);
             return;
         }
-        
+
         System.out.printf("%s=%s\n", "Host", host);
         System.out.printf("%s=%s\n", "GlassFish Home", glassFishHome);
         System.out.printf("%s=%s\n", SSH_HOST_PROP, remoteHost);
@@ -142,7 +142,7 @@ public class SetupSshTest extends SshBaseDevTest {
                 (ok(sshPass) ? "<concealed>" : "<none>" ));
         System.out.printf("%s=%s\n", SSH_CONFIGURE_PROP, sshConfigure);
         System.out.println("Password file = " +  pFile);
-        
+
         addPassword(PasswordValue.RIGHT, PasswordType.SSH_PASS);
 
         //to add --interactive=false;
@@ -159,7 +159,7 @@ public class SetupSshTest extends SshBaseDevTest {
             removePasswords();
             return;
         }
-        
+
         if (doesSSHDirectoryExist()) {
             if (getExistingKeyFile() != null) {
                 if(!testKeyDistributionWithoutKeyGeneration()) {
@@ -175,7 +175,7 @@ public class SetupSshTest extends SshBaseDevTest {
                 System.out.println("Unable to rename .ssh directory, backing out from running the remaining tests.");
                 failed = true;
             }
-        }        
+        }
 
         if(!failed) {
             testOptions();
@@ -187,12 +187,12 @@ public class SetupSshTest extends SshBaseDevTest {
                 System.out.println("Unable to restore .ssh.bak directory, please rename manually.");
             }
         }
-        
+
         //clean up the password file
         removePasswords();
 	stat.printSummary();
     }
-    
+
     private boolean testKeyDistributionWithoutKeyGeneration() {
         boolean res = true;
 
@@ -208,37 +208,37 @@ public class SetupSshTest extends SshBaseDevTest {
         }
 
         return res;
-    }       
+    }
 
     private void testOptions() {
         //invalid key file
         report("setup-ssh-invalid-key", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--sshkeyfile", "resources/ssh/identity", remoteHost));
     }
-    
+
     private void testKeyGeneration() {
 
         //will fail since default value of generatekey=false
         report("setup-ssh-with-missing-key-pair", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, remoteHost));
-        
+
         removePasswords();
         report("setup-ssh-without-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost));
-        
+
         addPassword(PasswordValue.EMPTY, PasswordType.SSH_PASS);
         report("setup-ssh-with-empty-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost));
         deleteDirectory(new File(SSH_DIRECTORY));
         removePasswords();
-        
+
         addPassword(PasswordValue.WRONG, PasswordType.SSH_PASS);
         report("setup-ssh-with-wrong-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost));
         deleteDirectory(new File(SSH_DIRECTORY));
         removePasswords();
-        
+
         //restore correct password
         addPassword(PasswordValue.RIGHT, PasswordType.SSH_PASS);
 
         report("setup-ssh-with-key-generation", asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost));
-        
-        report("setup-ssh-with-invalid-key", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--sshkeyfile", "/tmp/foo", remoteHost));        
+
+        report("setup-ssh-with-invalid-key", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--sshkeyfile", "/tmp/foo", remoteHost));
 
         //invalid host name
         report("setup-ssh-password-failure", !asadmin("setup-ssh", SSH_USER_OPTION, "foo", remoteHost));
@@ -261,13 +261,13 @@ public class SetupSshTest extends SshBaseDevTest {
         report("setup-ssh-encrypted-key-with-empty-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", "--sshkeyfile", SSH_KEY, remoteHost));
         deleteDirectory(new File(SSH_DIRECTORY));
         removePasswords();
-        
+
         addPassword(PasswordValue.RIGHT, PasswordType.SSH_PASS);
         addPassword(PasswordValue.WRONG, PasswordType.KEY_PASS);
         report("setup-ssh-encrypted-key-with-wrong-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", "--sshkeyfile", SSH_KEY, remoteHost));
         deleteDirectory(new File(SSH_DIRECTORY));
         removePasswords();
-        
+
         addPassword(PasswordValue.RIGHT, PasswordType.SSH_PASS);
         addPassword(PasswordValue.RIGHT, PasswordType.KEY_PASS);
         report("setup-ssh-encrypted-key-with-key-generation", asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", "--sshkeyfile", SSH_KEY, remoteHost));
@@ -299,7 +299,7 @@ public class SetupSshTest extends SshBaseDevTest {
         return;
     }
 
-    
+
 
     private boolean renameDirectory(String from, String to) {
         File file = new File(from);
