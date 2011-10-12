@@ -37,10 +37,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 /**
  * AdminBaseDevTest is a base class for administration CLI dev tests.
  *
+ * @author Byron Nevins
  * @author tmueller
  */
 package admin;
@@ -54,11 +54,14 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.*;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import static admin.Constants.*;
 
-public abstract class AdminBaseDevTest extends BaseDevTest {
+public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
+    static enum PasswordType { SSH_PASS, KEY_PASS, DCOM_PASS };
+
+
     protected AdminBaseDevTest() {
         boolean verbose = false;
         try {
@@ -73,6 +76,25 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
         }
     }
 
+    // Byron Says:
+    // let's make this an abstract method someday when we have time to change
+    // all the test classes
+    public void subrun() {
+        // all subclasses someday should have this method which is called by run()
+        // the subclass should call run() which will help with housekeeping.
+        // I'm not enforcing yet because I don't have time to change all the
+        // classes!  10/12/11
+        // do nothing.
+    }
+
+    @Override
+    public final void run() {
+        System.out.println(getTestDescription());
+        System.out.println(getTestName());
+        subrun();
+        stat.printSummary();
+    }
+
     @Override
     public String getTestName() {
         return this.getClass().getName();
@@ -82,7 +104,7 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
         // WBN ==> sometimes I like it in this order!
         report(name, success);
     }
-    
+
     @Override
     public void report(String name, boolean success) {
         // bnevins june 6 2010
@@ -307,9 +329,9 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
         // echoing off later)
 
         for (String line : lines) {
-            if(line.indexOf("list-instances") >= 0)
+            if (line.indexOf("list-instances") >= 0)
                 continue;
-            
+
             if (line.indexOf(iname) >= 0) {
                 printf("Line from list-instances = " + line);
                 return line.indexOf("  running") >= 0;
@@ -365,17 +387,105 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
         }
         return (path.delete());
     }
+    /**
+     * Add a password to the asadmin password file used by the test.
+     *
+     * @param value     Password to use
+     * @param passType  SSH_PASS if you are setting ssh password.
+     *                  KEY_PASS if you are setting encryption key
+     */
+    void addPassword(String value, PasswordType passType) {
+        BufferedWriter out = null;
+
+        if (value == null)
+            value="";
+        try {
+            final File f = new File(pFile);
+            out = new BufferedWriter(new FileWriter(f, true));
+            out.newLine();
+            switch (passType) {
+                case DCOM_PASS:
+                    out.write("AS_ADMIN_DCOMPASSWORD=" + value);
+                    break;
+                case SSH_PASS:
+                    out.write("AS_ADMIN_SSHPASSWORD=" + value);
+                    break;
+                case KEY_PASS:
+                    out.write("AS_ADMIN_SSHKEYPASSPHRASE=" + value);
+                    break;
+                default:
+                    //do nothing
+            }
+        } catch (IOException ioe) {
+            //ignore
+        }
+        finally {
+            try {
+                if (out != null) {
+                    out.flush();
+                    out.close();
+                }
+            } catch(final Exception ignore){}
+        }
+
+        return;
+    }
+
+
+    /**
+     * Remove SSH related passwords from the asadmin password file
+     * id == "SSH" or "DCOM"
+     */
+    void removePasswords(String id) {
+        final File f = new File(pFile);
+        final File tempFile = new File(tmpFile);
+
+        BufferedReader reader = null;
+        BufferedWriter writer = null;
+
+        try {
+            writer=new BufferedWriter(new FileWriter(tempFile));
+            reader = new BufferedReader(new FileReader(f));
+
+            String currentLine;
+
+            while((currentLine = reader.readLine()) != null && !currentLine.trim().isEmpty()) {
+                if(currentLine.trim().startsWith("AS_ADMIN_" + id))
+                    continue;
+                writer.write(currentLine);
+                writer.newLine();
+            }
+
+            reader.close();
+            writer.close();
+
+            //On Windows, rename will fail if destination file already exists
+            if(!f.delete()) {
+                System.out.println("Failed to delete original file");
+            }
+
+            if(!tempFile.renameTo(f)) {
+                System.out.println("Failed to restore password file.");
+            }
+        } catch (IOException ioe) {
+            //ignore
+        }
+        finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch(final Exception ignore){}
+        }
+
+        return;
+    }
 
     final boolean ok(String s) {
         return s != null && s.length() > 0;
-    }
-    private static final File TIMESTAMP_FILE = new File("timestamps.out").getAbsoluteFile();
-    private static long lastReportTime = 0;
-    private static final int MAX_LENGTH = 101;
-    private static final String DASHES =
-            "------------------------------------------------------------------------------------------------------------------------------";
-
-    static {
     }
 
     // bnevins - horribly inefficient but we are guaranteeing to see contents when exited abruptly.
@@ -408,4 +518,9 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
             }
         }
     }
+    private static final File TIMESTAMP_FILE = new File("timestamps.out").getAbsoluteFile();
+    private static long lastReportTime = 0;
+    private static final int MAX_LENGTH = 101;
+    private static final String DASHES =
+            "------------------------------------------------------------------------------------------------------------------------------";
 }

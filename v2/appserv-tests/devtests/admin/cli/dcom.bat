@@ -1,0 +1,1 @@
+ant -Dteststorun=dcom all 

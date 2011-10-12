@@ -77,7 +77,7 @@
     <property name="dcom.domain"     value="wnevins-lnr"/>
     <property name="dcom.user"       value="hudson"/>
     <property name="dcom.password"   value="hudson"/>
-    <property name="dcom.installdir" value="D:/glassfish3"/>
+    <property name="dcom.installdir" value="C:/glassfish3"/>
 
     <!-- convert these paths to canonical form -->
     <pathconvert property="aps_home">
@@ -97,6 +97,21 @@
             <java classname="@{classname}" fork="true" classpath="${test}">
                 <jvmarg value="${javaprops}"/>
                 <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
+                <env key="APS_HOME" value="${aps_home}"/>
+                <env key="S1AS_HOME" value="${s1as_home}"/>
+                <env key="AS_LOGFILE" value="${as_logfile}"/>
+                <args/>
+            </java>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="runtestsuspend">
+        <attribute name="classname"/>
+        <element name="args" implicit="yes" optional="true"/>
+        <sequential>
+            <java classname="@{classname}" fork="true" classpath="${test}">
+                <jvmarg value="${javaprops}"/>
+                <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=1234"/>
                 <env key="APS_HOME" value="${aps_home}"/>
                 <env key="S1AS_HOME" value="${s1as_home}"/>
                 <env key="AS_LOGFILE" value="${as_logfile}"/>
@@ -191,13 +206,13 @@
     </target>
 
     <target name="dcom" depends="init">
-        <runtest classname="admin.DcomTest">
+        <runtestsuspend classname="admin.DcomTest">
             <jvmarg value="-Ddcom.host=${dcom.host}"/>
             <jvmarg value="-Ddcom.domain=${dcom.domain}"/>
             <jvmarg value="-Ddcom.user=${dcom.user}"/>
             <jvmarg value="-Ddcom.password=${dcom.password}"/>
             <jvmarg value="-Ddcom.installdir=${dcom.installdir}"/>
-        </runtest>
+        </runtestsuspend>
     </target>
 
     <target name="setup-ssh" depends="init">

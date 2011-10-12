@@ -44,7 +44,7 @@ import java.io.*;
 import java.net.*;
 
 /*
- * Dev test for DAS recovery commands (backup-domain, restore-domain, 
+ * Dev test for DAS recovery commands (backup-domain, restore-domain,
  * list-backups)
  * @author Yamini K B
  * @author Chris Kasso
@@ -80,7 +80,8 @@ public class BackupCommandsTest extends AdminBaseDevTest {
         return "Developer tests for backup-domain/restore-domain/list-backups";
     }
 
-    public void run() {
+    @Override
+    public void subrun() {
         testCommandsWithDefaultOptions();
         testCommandsWithDASRunning();
         testCommandsWithOperands();
@@ -150,7 +151,7 @@ public class BackupCommandsTest extends AdminBaseDevTest {
         // test for absolute path
         report("list-backups-with-invalid-backupdir", !asadmin("list-backups", "--backupdir", "foo"));
 
-        // test recovery from backupdir.  Ensure backups within the domain 
+        // test recovery from backupdir.  Ensure backups within the domain
         // directory are preserved.
         asadmin("backup-domain", "--backupdir", BACKUP_DIR, DOMAIN1);
         ret = asadminWithOutput("list-backups");
@@ -179,7 +180,7 @@ public class BackupCommandsTest extends AdminBaseDevTest {
 
         // specify a different domain name
         report("restore-domain-with-filename", !asadmin("restore-domain", FILENAME_OPTION, "foo", DOMAIN2));
-        
+
         // force restore
         report("force-restore-domain-with-operand", !asadmin("restore-domain", FORCE_OPTION, DOMAIN2));
 
@@ -213,7 +214,7 @@ public class BackupCommandsTest extends AdminBaseDevTest {
     }
 
     private void testCommandsWithMultipleDomains() {
-        
+
         // create domain2
         asadmin("create-domain", "--nopassword", DOMAIN2);
 

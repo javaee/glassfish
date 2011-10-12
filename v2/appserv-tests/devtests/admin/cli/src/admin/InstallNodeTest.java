@@ -98,7 +98,8 @@ public class InstallNodeTest extends SshBaseDevTest {
         return "Developer tests for GlassFish provisioning";
     }
 
-    public void run() {
+    @Override
+    public void subrun() {
 
         boolean runTest = true;
 
@@ -129,7 +130,7 @@ public class InstallNodeTest extends SshBaseDevTest {
         System.out.printf("%s=%s\n", SSH_PASSWORD_PROP,
                 (ok(sshPass) ? "<concealed>" : "<none>" ));
         System.out.printf("%s=%s\n", SSH_CONFIGURE_PROP, sshConfigure);
-        System.out.println("Password file = " +  pFile);
+        System.out.println("Password file = " +  Constants.pFile);
 
         if (!sshConfigure) {
             //will use password auth for the tests
@@ -155,7 +156,7 @@ public class InstallNodeTest extends SshBaseDevTest {
         }
 
         asadmin("stop-domain");
-        removePasswords();
+        removePasswords("SSH");
         stat.printSummary();
     }
 

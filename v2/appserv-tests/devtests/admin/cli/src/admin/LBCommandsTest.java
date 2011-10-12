@@ -79,10 +79,11 @@ public class LBCommandsTest extends AdminBaseDevTest {
         return "Developer tests for load balancer administration";
     }
 
-    public void run() {
+    @Override
+    public void subrun() {
         asadmin("start-domain");
         createInstances();
-        
+
         File loadbalancerXml = new File("resources", "loadbalancer.xml");
 
         int i = 1;
@@ -100,14 +101,14 @@ public class LBCommandsTest extends AdminBaseDevTest {
         //test options
         runTest(i++ + ".create-http-lb-cluster-ref", !asadmin("create-http-lb-ref", CLUSTER));
         runTest(i++ + ".create-http-lb-cluster-ref", !asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, LB_NAME_OPTION, LB_NAME, CLUSTER));
-        
+
         //create/delete cluster-ref for LB
         runTest(i++ + ".create-http-lb-cluster-ref", asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
         runTest(i++ + ".re-create-http-lb-cluster-ref", !asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
 
         //creating server-ref when cluster-ref entry is already present should fail
         runTest(i++ + ".create-http-lb-server-ref", !asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE1));
-        
+
         //enable/disable clusters for LB
         runTest(i++ + ".enable-http-lb-server-for-cluster", asadmin("enable-http-lb-server", CLUSTER));
         runTest(i++ + ".disable-http-lb-server-for-cluster", asadmin("disable-http-lb-server", CLUSTER));
@@ -133,7 +134,7 @@ public class LBCommandsTest extends AdminBaseDevTest {
         //test options
         runTest(i++ + ".delete-http-lb-cluster-ref", !asadmin("delete-http-lb-ref", CLUSTER));
         runTest(i++ + ".delete-http-lb-cluster-ref", !asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, LB_NAME_OPTION, LB_NAME, CLUSTER));
-        
+
         runTest(i++ + ".delete-http-lb-cluster-ref", asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
 
         //create server-ref for LB
@@ -142,7 +143,7 @@ public class LBCommandsTest extends AdminBaseDevTest {
 
         //creating cluster-ref when server-ref already exists should fail
         runTest(i++ + ".create-http-lb-cluster-ref", !asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
-        
+
         ret = asadminWithOutput("list-http-lb-configs", LB_CONFIG);
         success = ret.out.indexOf(STANDALONE_INSTANCE1) >= 0;
         runTest(i++ + ".list-http-lb-configs", success);
@@ -157,7 +158,7 @@ public class LBCommandsTest extends AdminBaseDevTest {
         runTest(i++ + ".enable-http-lb-server", asadmin("enable-http-lb-server", STANDALONE_INSTANCE2));
 
         runTest(i++ + ".delete-http-lb-server-ref", !asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
-  
+
         runTest(i++ + ".disable-http-lb-server", asadmin("disable-http-lb-server", STANDALONE_INSTANCE2));
         runTest(i++ + ".enable-http-lb-server", asadmin("enable-http-lb-server", STANDALONE_INSTANCE2));
 
@@ -169,7 +170,7 @@ public class LBCommandsTest extends AdminBaseDevTest {
 
         runTest(i++ + ".disable-http-lb-server", asadmin("disable-http-lb-server", STANDALONE_INSTANCE2));
         runTest(i++ + ".disable-http-lb-server", asadmin("disable-http-lb-server", STANDALONE_INSTANCE1));
-        
+
         //delete server-ref for LB, but no apps
         runTest(i++ + ".delete-http-lb-server-ref", asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
 
@@ -310,7 +311,7 @@ public class LBCommandsTest extends AdminBaseDevTest {
                 CHECKSUM4, CHECKSUM4_2));
 
         deleteXML(loadbalancerXml);
-        
+
         //export-http-lb-config negative tests
         runTest(i++ + ".export-http-lb-config", !asadmin("export-http-lb-config",
                 loadbalancerXml.getAbsolutePath()));
@@ -357,7 +358,7 @@ public class LBCommandsTest extends AdminBaseDevTest {
                 LB_NODE2, INSTANCE2);
         asadmin("create-instance", CLUSTER_OPTION, CLUSTER, NODE_OPTION,
                 LB_NODE1, INSTANCE3);
-        
+
         asadmin("create-cluster", CLUSTER2);
 
         asadmin("create-instance", CLUSTER_OPTION, CLUSTER2, NODE_OPTION,
@@ -454,7 +455,7 @@ public class LBCommandsTest extends AdminBaseDevTest {
             loadbalancerXml.delete();
         }
     }
-    
+
     private final String host;
     private final File glassFishHome;
     private static final String CLUSTER = "cl1";

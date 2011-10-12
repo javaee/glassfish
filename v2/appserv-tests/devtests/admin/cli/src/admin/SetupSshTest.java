@@ -109,7 +109,8 @@ public class SetupSshTest extends SshBaseDevTest {
         return "Developer tests for setup-ssh";
     }
 
-    public void run() {
+    @Override
+    public void subrun() {
 
         boolean failed = false;
         boolean runTest = true;
@@ -141,7 +142,7 @@ public class SetupSshTest extends SshBaseDevTest {
         System.out.printf("%s=%s\n", SSH_PASSWORD_PROP,
                 (ok(sshPass) ? "<concealed>" : "<none>" ));
         System.out.printf("%s=%s\n", SSH_CONFIGURE_PROP, sshConfigure);
-        System.out.println("Password file = " +  pFile);
+        System.out.println("Password file = " +  Constants.pFile);
 
         addPassword(PasswordValue.RIGHT, PasswordType.SSH_PASS);
 
@@ -156,7 +157,7 @@ public class SetupSshTest extends SshBaseDevTest {
                 System.out.println("FAILURE: Unable to configure public key authentication on " + remoteHost);
             }
             //clean up the password file
-            removePasswords();
+            removePasswords("SSH");
             return;
         }
 
@@ -165,7 +166,7 @@ public class SetupSshTest extends SshBaseDevTest {
                 if(!testKeyDistributionWithoutKeyGeneration()) {
                     System.out.println("FAILURE: Please remove the public key manually on " + remoteHost + " and re-run the tests");
                     //clean up the password file
-                    removePasswords();
+                    removePasswords("SSH");
                     return;
                 }
             }
@@ -189,7 +190,7 @@ public class SetupSshTest extends SshBaseDevTest {
         }
 
         //clean up the password file
-        removePasswords();
+        removePasswords("SSH");
 	stat.printSummary();
     }
 
@@ -220,18 +221,18 @@ public class SetupSshTest extends SshBaseDevTest {
         //will fail since default value of generatekey=false
         report("setup-ssh-with-missing-key-pair", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, remoteHost));
 
-        removePasswords();
+        removePasswords("SSH");
         report("setup-ssh-without-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost));
 
         addPassword(PasswordValue.EMPTY, PasswordType.SSH_PASS);
         report("setup-ssh-with-empty-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost));
         deleteDirectory(new File(SSH_DIRECTORY));
-        removePasswords();
+        removePasswords("SSH");
 
         addPassword(PasswordValue.WRONG, PasswordType.SSH_PASS);
         report("setup-ssh-with-wrong-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost));
         deleteDirectory(new File(SSH_DIRECTORY));
-        removePasswords();
+        removePasswords("SSH");
 
         //restore correct password
         addPassword(PasswordValue.RIGHT, PasswordType.SSH_PASS);
@@ -260,18 +261,18 @@ public class SetupSshTest extends SshBaseDevTest {
         addPassword(PasswordValue.EMPTY, PasswordType.KEY_PASS);
         report("setup-ssh-encrypted-key-with-empty-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", "--sshkeyfile", SSH_KEY, remoteHost));
         deleteDirectory(new File(SSH_DIRECTORY));
-        removePasswords();
+        removePasswords("SSH");
 
         addPassword(PasswordValue.RIGHT, PasswordType.SSH_PASS);
         addPassword(PasswordValue.WRONG, PasswordType.KEY_PASS);
         report("setup-ssh-encrypted-key-with-wrong-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", "--sshkeyfile", SSH_KEY, remoteHost));
         deleteDirectory(new File(SSH_DIRECTORY));
-        removePasswords();
+        removePasswords("SSH");
 
         addPassword(PasswordValue.RIGHT, PasswordType.SSH_PASS);
         addPassword(PasswordValue.RIGHT, PasswordType.KEY_PASS);
         report("setup-ssh-encrypted-key-with-key-generation", asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", "--sshkeyfile", SSH_KEY, remoteHost));
-        removePasswords();
+        removePasswords("SSH");
     }
 
     /**

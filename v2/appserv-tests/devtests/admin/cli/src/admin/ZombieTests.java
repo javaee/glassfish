@@ -67,7 +67,8 @@ public class ZombieTests extends AdminBaseDevTest {
         return "Developer tests for forced shutdown of Undead servers";
     }
 
-    public void run() {
+    @Override
+    public void subrun() {
         validate();
         startDomain();
         undeploy(true);
