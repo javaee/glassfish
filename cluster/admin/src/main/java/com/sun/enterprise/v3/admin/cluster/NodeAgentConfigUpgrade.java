@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -69,7 +69,11 @@ import org.jvnet.hk2.config.*;
 
 
 /**
- * Change the node-agent element to use V3 mechanism 
+ * Change the node-agent element to use V3 mechanism. This module
+ * assumes that there will be either a nodeAgents element or a nodes
+ * element, but not both. (There will be a nodes element if the upgrade
+ * is run on a 3.X server.)
+ *
  * @author Carla Mott
  */
 
@@ -86,12 +90,16 @@ public class NodeAgentConfigUpgrade implements ConfigurationUpgrade, PostConstru
 
         final NodeAgents nodeAgents = domain.getNodeAgents();
         if (nodeAgents == null) {
-            createDefaultNodeList();
+            // check if already a 3.X server
+            if (domain.getNodes() == null) {
+                createDefaultNodeList();
+            }
             return;
         }
 
         final List<NodeAgent> agList= nodeAgents.getNodeAgent();
         if (agList.size() == 0) {
+            // assume nodes element does not exist in this case
             createDefaultNodeList();
             return;
         }
@@ -193,3 +201,4 @@ public class NodeAgentConfigUpgrade implements ConfigurationUpgrade, PostConstru
         nodes.getNode().add(node);
     }
 }
+
