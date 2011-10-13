@@ -171,6 +171,7 @@
         <ant dir="cookiePropertiesSunWebXml" target="all"/>  
         <ant dir="defaultCharset" target="all"/>
         <ant dir="dirListing" target="all"/>
+        <ant dir="defaultServletWithSubdirectoryMapping" target="all"/>
         <ant dir="distributableWebappEnforceSerializableSessionAttrs" target="all"/>
         <ant dir="errorPageExceptionTypeWrapper" target="all"/>
         <ant dir="errorPageHandlingForError" target="all"/>
