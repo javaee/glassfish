@@ -77,7 +77,10 @@ import java.util.List;
 
 /**
  * @author Rajiv Mordani
+ * @author Byron Nevins
+ * 3.1.2
  */
+
 @Service(name = "install-node")
 @Scoped(PerLookup.class)
 public class InstallNodeCommand extends NativeRemoteCommandsBase {
@@ -106,6 +109,11 @@ public class InstallNodeCommand extends NativeRemoteCommandsBase {
     @Override
     protected void validate() throws CommandException {
         Globals.setDefaultHabitat(habitat);
+
+        // one implies the other
+        if(ok(windowsDomain))
+            dcomNode = true;
+
 
         installDir = resolver.resolve(installDir);
         if (!force) {
