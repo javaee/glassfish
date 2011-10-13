@@ -60,7 +60,7 @@ import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
-
+import org.glassfish.cluster.ssh.util.DcomUtils;
 /**
  * The name of this class matches "setup-ssh".  It does not setup but rather tests
  * to see if a remote Windows machine can be contacted from the server via DCOM.
@@ -91,7 +91,6 @@ public class SetupDcom implements AdminCommand {
     private WindowsRemoteFile script;
     private static final String SCRIPT_NAME = "delete_me.bat";
     private String scriptFullPath;
-
     @Override
     public final void execute(AdminCommandContext context) {
         init(context);
@@ -109,15 +108,11 @@ public class SetupDcom implements AdminCommand {
     }
 
     private void init(AdminCommandContext context) {
-        //DCOMFIX TODO password alias??
-        //DCOMFIX TODO password alias??
-        //DCOMFIX TODO password alias??
-        //DCOMFIX TODO password alias??
         report = context.getActionReport();
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         logger = context.getLogger();
         user = resolver.resolve(user);
-
+        password = DcomUtils.resolvePassword(resolver.resolve(password));
         // backslash does not actually matter but it's neater
         testdir = resolver.resolve(testdir).replace('/', '\\');
         if (testdir.endsWith("\\"))
@@ -182,7 +177,7 @@ public class SetupDcom implements AdminCommand {
             setError(ex, Strings.get("dcom.no.run", host));
             return false;
         }
-        out.append(Strings.get("dcom.run.ok", host, scriptOut)).append('\n');
+        out.append(Strings.get("dcom.run.ok", host, crunch(12, scriptOut))).append('\n');
         return true;
     }
 
@@ -195,5 +190,19 @@ public class SetupDcom implements AdminCommand {
     private void setError(String msg) {
         report.setActionExitCode(ActionReport.ExitCode.FAILURE);
         report.setMessage(msg);
+    }
+
+    private String crunch(int numlines, String big) {
+        if(!ok(big))
+            return big;
+        StringBuilder sb = new StringBuilder();
+        String[] ss = big.split("\n");
+
+        // numlines or fewer lines
+        for(int i = 0; i < numlines && i < ss.length; i++) {
+            sb.append(ss[i]).append('\n');
+        }
+
+        return sb.toString();
     }
 }
