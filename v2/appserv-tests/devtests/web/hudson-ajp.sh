@@ -49,6 +49,8 @@ EOF
 	$S1AS_HOME/bin/asadmin start-domain
 
 	$S1AS_HOME/bin/asadmin --port ${WEBTIER_ADMIN_PORT} set configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.jk-enabled=true
+
+	$S1AS_HOME/bin/asadmin stop-domain
 }
 
 configure
