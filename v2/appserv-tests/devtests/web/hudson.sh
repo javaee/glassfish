@@ -93,7 +93,7 @@ kill_processes() {
     (ps -aef | grep java | grep ASMain | grep -v grep | awk '{print $2}' | xargs $KILL > /dev/null 2>&1) || true
 }
 
-GLASSFISH_DOWNLOAD_URL=${1:-"http://hudson.glassfish.org/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip"}
+GLASSFISH_DOWNLOAD_URL=${1:-"http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip"}
 SKIP_NAME=$2
 
 java -version
