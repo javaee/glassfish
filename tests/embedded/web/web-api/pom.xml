@@ -47,11 +47,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.tests</groupId>
     <artifactId>web-api-embedded-test</artifactId>
+    <packaging>war</packaging>
     <version>3.1.2-SNAPSHOT</version>
     <name>Test for glassfish-embedded-web</name>
 
     <properties>
-        <project.version>3.1.1-SNAPSHOT</project.version>
+        <project.version>3.1.2-SNAPSHOT</project.version>
     </properties>
 
     <dependencies>
@@ -84,7 +85,13 @@
     <build>
         <testSourceDirectory>src/test/java</testSourceDirectory>
         <testOutputDirectory>target/classes/WEB-INF/classes</testOutputDirectory>
+        <finalName>embedded-webapi-tests</finalName>
         <plugins>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -98,10 +105,17 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.4.2</version>
                 <configuration>
+                    <forkMode>always</forkMode>
+                    <useSystemClassLoader>false</useSystemClassLoader>
+                    <useManifestOnlyJar>false</useManifestOnlyJar>
                     <systemProperties>
                         <property>
                             <name>buildDir</name>
                             <value>${project.build.outputDirectory}</value>
+                        </property>
+                        <property>
+                            <name>targetDir</name>
+                            <value>${project.build.directory}</value>
                         </property>
                     </systemProperties>
                 </configuration>

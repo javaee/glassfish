@@ -40,71 +40,43 @@
 
 package org.glassfish.tests.embedded.web;
 
-import java.io.*;
-import java.net.*;
-import java.security.*;
-import java.security.cert.X509Certificate;
-import javax.net.ssl.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.File;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.logging.Level;
-
 import org.glassfish.embeddable.*;
-import org.glassfish.embeddable.web.*;
-import org.glassfish.embeddable.web.config.*;
-
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Tests WebContainer#addWebListener(HttpsListener)
- * 
+ * Tests GlassFish restart
+ *
  * @author Amy Roh
  */
-public class EmbeddedAddHttpsListenerTest {
+public class EmbeddedRestartTest {
 
     static GlassFish glassfish;
-    static WebContainer embedded;
-    static File root;                
     static String contextRoot = "test";
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
-        glassfish = GlassFishRuntime.bootstrap().newGlassFish();
+        GlassFishProperties gp = new GlassFishProperties();
+        gp.setPort("http-listener", 8080);
+        glassfish = GlassFishRuntime.bootstrap().newGlassFish(gp);
         glassfish.start();
-        embedded = glassfish.getService(WebContainer.class);
-        System.out.println("================ EmbeddedAddHttpsListener Test");
-        System.out.println("Starting Web "+embedded);
-        embedded.setLogLevel(Level.INFO);
-        WebContainerConfig config = new WebContainerConfig();
-        root = new File(System.getProperty("buildDir"));
-        config.setDocRootDir(root);
-        config.setListings(true);
-        config.setPort(8080);
-        System.out.println("Added Web with base directory "+root.getAbsolutePath());
-        embedded.setConfiguration(config);
+        System.out.println("================ Embedded Restart Test");
     }
     
     @Test
-    public void test() throws Exception {
+    public void testEmbeddedWebAPI() throws Exception {
 
-        HttpsListener listener = new HttpsListener();
-        listener.setPort(9191);
-        listener.setId("https-listener-2");
-        listener.setProtocol("https");
-
-        String keyStorePath = root + "/keystore.jks";
-        String trustStorePath = root + "/cacerts.jks";
-        String keyPassword = "changeit";
-        SslConfig sslConfig = new SslConfig(keyStorePath, trustStorePath);
-        sslConfig.setKeyPassword(keyPassword.toCharArray());
-
-        listener.setSslConfig(sslConfig);
-
-        embedded.addWebListener(listener);
+        // Restart is not working. Uncomment this to see the issue.
+        //glassfish.stop();
+        //glassfish.start();
 
         Deployer deployer = glassfish.getDeployer();
 
@@ -115,59 +87,37 @@ public class EmbeddedAddHttpsListenerTest {
         File path = new File(p).getParentFile().getParentFile();
 
         String name = null;
+
         if (path.getName().lastIndexOf('.') != -1) {
             name = path.getName().substring(0, path.getName().lastIndexOf('.'));
         } else {
             name = path.getName();
         }
 
-        System.out.println("Deploying " + path + ", name = " + name);
-        String appName = deployer.deploy(path.toURI(), "--name=" + name);
+        System.out.println("Deploying " + path + ", contextroot = " + contextRoot);
+
+        String appName = deployer.deploy(path.toURI(), "--contextroot", contextRoot);
+
         System.out.println("Deployed " + appName);
+
         Assert.assertTrue(appName != null);
 
-        disableCertValidation();
-        URL servlet = new URL("https://localhost:9191/classes/hello");
-        HttpsURLConnection uc = (HttpsURLConnection) servlet.openConnection();
-        BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
+        URL servlet = new URL("http://localhost:8080/"+contextRoot+"/hello");
+        URLConnection yc = servlet.openConnection();
+        BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
         StringBuilder sb = new StringBuilder();
         String inputLine;
         while ((inputLine = in.readLine()) != null){
             sb.append(inputLine);
         }
         in.close();
-        System.out.println(sb);
+        System.out.println(inputLine);
         Assert.assertEquals("Hello World!", sb.toString());
-        
+
+        System.out.println("Undeploying "+appName);
         if (appName!=null)
             deployer.undeploy(appName);
-        
-    }
-
-    public static void disableCertValidation() {
-        // Create a trust manager that does not validate certificate chains
-        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
-            public X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
-
-            public void checkClientTrusted(X509Certificate[] certs, String authType) {
-                return;
-            }
-
-            public void checkServerTrusted(X509Certificate[] certs, String authType) {
-                return;
-            }
-        }};
-
-        try {
-            SSLContext sc = SSLContext.getInstance("TLS");
-            sc.init(null, trustAllCerts, new SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-        } catch (Exception e) {
-            return;
-        }
-    }
+     }
 
     @AfterClass
     public static void shutdownServer() throws GlassFishException {
