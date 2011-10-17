@@ -364,7 +364,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             return;
         }
         isRestBeingStarted = true;
-        Thread thread = new Thread() {
+        Thread thread = new Thread("Force REST Module Load Thread") {
             @Override
             public void run() {
                 InputStream is = null;
