@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,11 +49,13 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.component.PostConstruct;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * This factory class is responsible for creating Archivists
@@ -62,7 +64,7 @@ import java.util.ArrayList;
  */
 @Service
 @Scoped(Singleton.class)
-public class ArchivistFactory implements ContractProvider {
+public class ArchivistFactory implements ContractProvider, PostConstruct {
 
     @Inject
     Archivist[] archivists;
@@ -183,4 +185,19 @@ public class ArchivistFactory implements ContractProvider {
             throw new RuntimeException(ex);
         }
     }
+
+    public void postConstruct() {
+        // move appclient archivist to the last to match as other archives 
+        // could have Main-Class in Manifest also
+        LinkedList<Archivist> sortedArchivists = new LinkedList<Archivist>();
+        for (Archivist a : archivists) {
+            if (a instanceof AppClientArchivist) {
+                sortedArchivists.addLast(a);
+            } else {
+                sortedArchivists.addFirst(a);
+            }
+        }
+        archivists = sortedArchivists.toArray(new Archivist[sortedArchivists.size()]);
+    }
+
 }
