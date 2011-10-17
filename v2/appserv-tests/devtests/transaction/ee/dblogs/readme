@@ -4,15 +4,17 @@ This test, when run with 'all' target performs the following steps:
 - setup
   - start-database
   - startDomain
-  - setup-database (add jdbc resources and execute create.sql script on 2 resorces + tx logs resource)
-  - setup-cluster (create cluster of 2 instances, enable resources in the cluster, enable db-based tx logging, and deploy the application)
+  - setup-database (add jdbc resources and execute create.sql script on 2 resources + tx logs resource "jdbc/nontx")
 
 - run
-  - run-recover (execute test for automatic transactions recover as a GMS notification handling)
+  - setup-cluster (create cluster of 2 instances, enable resources in the cluster, enable db-based tx logging, and deploy the application)
+  - run-delegated (execute test for automatic transactions recover as a GMS notification handling)
     Test inserts 3 rows from in1 into the default and xa database
     Instance in1 is killed and restarted
     Sleep 35 seconds to allow for all processing to go through
     Expected result: 3 rows found in xa database when verified from in2
+  - reset (unsetup-cluster, reset-tables, setup-cluster)
+  - run-cli (execute the same test with CLI-based delegated recovery) 
 
 - unsetup
   - unsetup-cluster (undeploy the application, stop and delete the cluster)
