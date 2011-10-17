@@ -49,12 +49,15 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.archivist.WebArchivist;
 import com.sun.enterprise.security.web.GlassFishSingleSignOn;
 import com.sun.enterprise.server.logging.GFFileHandler;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.enterprise.v3.services.impl.GrizzlyListener;
 import com.sun.enterprise.v3.services.impl.GrizzlyProxy;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
@@ -79,7 +82,18 @@ import org.apache.catalina.deploy.ErrorPage;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
 
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.deployment.OpsParams;
+import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.api.deployment.archive.ArchiveHandler;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.event.*;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.deployment.common.ApplicationConfigInfo;
+import org.glassfish.deployment.common.DeploymentContextImpl;
+import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.embeddable.CommandRunner;
 import org.glassfish.embeddable.Deployer;
 import org.glassfish.embeddable.GlassFishException;
@@ -88,18 +102,27 @@ import org.glassfish.embeddable.web.ConfigException;
 import org.glassfish.embeddable.web.WebListener;
 import org.glassfish.embeddable.web.config.VirtualServerConfig;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.internal.data.EngineRef;
+import org.glassfish.internal.data.ProgressTracker;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.web.loader.WebappClassLoader;
 import org.glassfish.web.valve.GlassFishValve;
 
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PreDestroy;
+import org.jvnet.hk2.config.Transaction;
+import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.*;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -219,7 +242,11 @@ public class VirtualServer extends StandardHost
 
     private String[] cacheControls;
 
+    private ClassLoaderHierarchy clh;
+
     private Domain domain;
+
+    private Habitat habitat;
 
     private CommandRunner runner;
 
@@ -396,8 +423,16 @@ public class VirtualServer extends StandardHost
         this.instance = instance;
     }
 
+    public void setClassLoaderHierarchy(ClassLoaderHierarchy clh) {
+        this.clh = clh;
+    }
+
     public void setDomain(Domain domain) {
         this.domain = domain;
+    }
+
+    public void setHabitat(Habitat habitat) {
+        this.habitat = habitat;
     }
 
     @Override
@@ -2008,6 +2043,11 @@ public class VirtualServer extends StandardHost
         return listeners;
     }
 
+
+    private ArchiveFactory factory = null;
+    private ActionReport report = null;
+    private Deployment deployment = null;
+
     /**
      * Registers the given <tt>Context</tt> with this <tt>VirtualServer</tt>
      * at the given context root.
@@ -2019,100 +2059,237 @@ public class VirtualServer extends StandardHost
         throws ConfigException, GlassFishException {
 
         if (_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.FINE, "Virtual server "+getName()+" added context "+contextRoot);
+            _logger.log(Level.FINE, "Virtual server "+getName()+" adding context "+contextRoot);
         }
 
-        if (getContext(contextRoot)!=null) {
-            throw new ConfigException("Context with contextRoot "+
-                    contextRoot+" is already registered");
+        if (!(context instanceof ContextFacade)) {
+            // embedded context should always be created via ContextFacade
+            return;
         }
 
-        if (context instanceof ContextFacade) {
+        if (!contextRoot.equals("/")) {
+            contextRoot = "/"+contextRoot;
+        }
+        ExtendedDeploymentContext deploymentContext = null;
+
+        try {
+            if (factory==null)
+                factory = habitat.getComponent(ArchiveFactory.class);
+
             ContextFacade facade = (ContextFacade) context;
             File docRoot = facade.getDocRoot();
             ClassLoader classLoader = facade.getClassLoader();
+            ReadableArchive archive = factory.openArchive(docRoot);
 
-            if (contextRoot.equals("")) {
-                contextRoot = "/";
-            }
-            String name = contextRoot;
-            if (name.equals("/")) {
-                name =  Constants.DEFAULT_WEB_MODULE_NAME;
+            if (report==null)
+                report = new PlainTextActionReporter();
+
+            ServerEnvironment env = habitat.getComponent(ServerEnvironment.class);
+
+            DeployCommandParameters params = new DeployCommandParameters();
+            params.contextroot = contextRoot;
+            params.enabled = Boolean.FALSE;
+            params.origin = OpsParams.Origin.deploy;
+            params.target = "server";
+            params.virtualservers = getName();
+
+            ExtendedDeploymentContext initialContext =
+                    new DeploymentContextImpl(report, _logger, archive, params, env);
+
+            if (deployment==null)
+                deployment = habitat.getComponent(Deployment.class);
+
+            ArchiveHandler archiveHandler = deployment.getArchiveHandler(archive);
+            if (archiveHandler==null) {
+                throw new RuntimeException("Cannot find archive handler for source archive");
             }
 
-            Deployer deployer = Globals.getDefaultHabitat().getComponent(Deployer.class);
-            String appName = deployer.deploy(docRoot, "--virtualservers", getName(),
-                    "--contextroot", contextRoot, "--name", name,"--enabled", "false");
-             String contextName = "/"+appName;
+            params.name = archiveHandler.getDefaultApplicationName(archive, initialContext);
+
+            Applications apps = domain.getApplications();
+            ApplicationInfo appInfo = deployment.get(params.name);
+            ApplicationRef appRef = domain.getApplicationRefInServer(params.target, params.name);
+
+            if (appInfo != null) {
+                if (appRef!=null && appRef.getVirtualServers().contains(getName())) {
+                    throw new ConfigException(
+                            "Context with name "+params.name+" is already registered on virtual server "+getName());
+                } else {
+                    String virtualServers = appRef.getVirtualServers();
+                    virtualServers = virtualServers + ","+getName();
+                    params.virtualservers = virtualServers;
+                    params.force = Boolean.TRUE;
+                    if (_logger.isLoggable(Level.FINE)) {
+                        _logger.log(Level.FINE, "Virtual server "+getName()+" added to context "+params.name);
+                    }
+                    return;
+                }
+            }
+
+            deploymentContext = deployment.getBuilder(
+                    _logger, params, report).source(archive).archiveHandler(
+                    archiveHandler).build(initialContext);
+
+            Properties properties = new Properties();
+            deploymentContext.getAppProps().putAll(properties);
+
+            if (classLoader != null) {
+                ClassLoader parentCL = clh.createApplicationParentCL(classLoader, deploymentContext);
+                ClassLoader cl = archiveHandler.getClassLoader(parentCL, deploymentContext);
+                deploymentContext.setClassLoader(cl);
+            }
+
+            ApplicationConfigInfo savedAppConfig =
+                    new ApplicationConfigInfo(apps.getModule(com.sun.enterprise.config.serverbeans.Application.class, params.name));
+
+            Properties appProps = deploymentContext.getAppProps();
+            String appLocation = DeploymentUtils.relativizeWithinDomainIfPossible(deploymentContext.getSource().getURI());
+
+            appProps.setProperty(ServerTags.LOCATION, appLocation);
+            appProps.setProperty(ServerTags.OBJECT_TYPE, "user");
+            appProps.setProperty(ServerTags.CONTEXT_ROOT, contextRoot);
+
+            savedAppConfig.store(appProps);
+
+            Transaction t = deployment.prepareAppConfigChanges(deploymentContext);
+            appInfo = deployment.deploy(deploymentContext);
+
+            if (appInfo!=null) {
+                facade.setAppName(appInfo.getName());
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "Virtual server "+getName()+" added context "+appInfo.getName());
+                }
+                deployment.registerAppInDomainXML(appInfo, deploymentContext, t);
+            } else {
+                if (report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
+                    throw new ConfigException(report.getMessage());
+                }
+            }
+
+            // Update web.xml with programmatically added servlets, filters, and listeners
+            File file = null;
+            boolean delete = true;
+            com.sun.enterprise.config.serverbeans.Application appBean = apps.getApplication(params.name);
+            if (appBean != null) {
+                file = new File(deploymentContext.getSource().getURI().getPath(), "/WEB-INF/web.xml");
+                if (file.exists()) {
+                    delete = false;
+                }
+                updateWebXml(facade, file);
+            } else {
+                _logger.log(Level.SEVERE, "Application "+params.name+" not found");
+            }
+
+            // Enable the app using the modified web.xml
+            // We can't use Deployment.enable since it doesn't take DeploymentContext with custom class loader
+            deployment.updateAppEnabledAttributeInDomainXML(params.name, params.target, true);
+
+            ReadableArchive source = appInfo.getSource();
+            UndeployCommandParameters undeployParams = new UndeployCommandParameters(params.name);
+            undeployParams.origin = UndeployCommandParameters.Origin.undeploy;
+            undeployParams.target = "server";
+            ExtendedDeploymentContext undeploymentContext =
+                    deployment.getBuilder(_logger, undeployParams, report).source(source).build();
+            deployment.undeploy(params.name, undeploymentContext);
+
+            params.origin = DeployCommandParameters.Origin.load;
+            params.enabled = Boolean.TRUE;
+            archive = factory.openArchive(docRoot);
+            deploymentContext = deployment.getBuilder(_logger, params, report).source(archive).build();
+
+            if (classLoader != null) {
+                ClassLoader parentCL = clh.createApplicationParentCL(classLoader, deploymentContext);
+                archiveHandler = deployment.getArchiveHandler(archive);
+                ClassLoader cl = archiveHandler.getClassLoader(parentCL, deploymentContext);
+                deploymentContext.setClassLoader(cl);
+            }
+            deployment.deploy(deploymentContext);
 
             if (_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE, "Deployed --virtualservers=" + getName() +
-                        "--contextroot=" + contextRoot + "--name=" + name);
+                _logger.log(Level.FINE, "Virtual server "+getName()+" enabled context "+params.name());
             }
 
-            try {
-
-                File file = null;
-                boolean delete = true;
-                Applications apps = domain.getApplications();
-                com.sun.enterprise.config.serverbeans.Application app = apps.getApplication(name);
-                if (app != null) {
-                    file = new File(app.application().getAbsolutePath(), "/WEB-INF/web.xml");
-                    if (file.exists()) {
-                        delete = false;
+            if (delete) {
+                if (file != null) {
+                    if (file.exists() && !file.delete()) {
+                        String path = file.toString();
+                        _logger.log(Level.WARNING, "webcontainer.unableToDelete", path);
                     }
                 }
-
-                updateWebXml(facade, file);
-
-                if (runner != null) {
-                    runner.run("enable", appName);
-                }
-
-                if (delete) {
-                    if (file != null) {
-                        if (file.exists() && !file.delete()) {
-                            String path = file.toString();
-                            _logger.log(Level.WARNING,
-                                    "webcontainer.unableToDelete",
-                                    path);
-                        }
-                    }
-                }
-
-                WebModule wm = (WebModule) findChild(contextName);
-                if (wm != null) {
-                    if (classLoader != null) {
-                        wm.setParentClassLoader(classLoader);
-                    } else {
-                        wm.setParentClassLoader(serverContext.getSharedClassLoader());
-                    }
-                    facade.setUnwrappedContext(wm);
-                    wm.setEmbedded(true);
-                    if (config != null) {
-                        wm.setDefaultWebXml(config.getDefaultWebXml());
-                    }
-                }
-
-            } catch (Exception ex) {
-                throw new GlassFishException(ex);
             }
+
+            if (contextRoot.equals("/")) {
+                contextRoot = "";
+            }
+            WebModule wm = (WebModule) findChild(contextRoot);
+            if (wm != null) {
+                facade.setUnwrappedContext(wm);
+                wm.setEmbedded(true);
+                if (config != null) {
+                    wm.setDefaultWebXml(config.getDefaultWebXml());
+                }
+            } else {
+                throw new ConfigException("Deployed app not found "+contextRoot);
+            }
+
+            if (deploymentContext != null) {
+                deploymentContext.postDeployClean(true);
+            }
+
+        } catch (Exception ex) {
+            if (deployment!=null && deploymentContext!=null) {
+                deploymentContext.clean();
+            }
+            throw new GlassFishException(ex);
         }
+
     }
 
     /**
      * Stops the given <tt>context</tt> and removes it from this
      * <tt>VirtualServer</tt>.
      */
-    public void removeContext(Context context)
-            throws GlassFishException {
+    public void removeContext(Context context) throws GlassFishException {
+        ActionReport report = habitat.getComponent(ActionReport.class, "plain");
+        Deployment deployment = habitat.getComponent(Deployment.class);
+        String name = ((ContextFacade)context).getAppName();
+        ApplicationInfo appInfo = deployment.get(name);
+
+        if (appInfo == null) {
+            report.setMessage("Cannot find deployed application of name " + name);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            throw new GlassFishException("Cannot find deployed application of name " + name);
+        }
+
+        ReadableArchive source = appInfo.getSource();
+
+        if (source == null) {
+            report.setMessage("Cannot get source archive for undeployment");
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            throw new GlassFishException("Cannot get source archive for undeployment");
+        }
+
+        UndeployCommandParameters params = new UndeployCommandParameters(name);
+        params.origin = UndeployCommandParameters.Origin.undeploy;
+        params.target = "server";
+        ExtendedDeploymentContext deploymentContext = null;
+
         try {
-            Deployer deployer = Globals.getDefaultHabitat().getComponent(Deployer.class);
-            deployer.undeploy(context.getContextPath());
-        } catch (Exception ex) {
-            throw new GlassFishException(new ConfigException(
-                    "Context with context path " + context.getContextPath() +
-                            " cannot be removed from virtual server " + getID()));
+            deploymentContext = deployment.getBuilder(_logger, params, report).source(source).build();
+            deployment.undeploy(name, deploymentContext);
+            deployment.unregisterAppFromDomainXML(name, "server");
+        } catch (IOException e) {
+            _logger.log(Level.SEVERE, "Cannot create context for undeployment ", e);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            throw new GlassFishException("Cannot create context for undeployment ", e);
+        } catch (TransactionFailure e) {
+            throw new GlassFishException(e);
+        } finally {
+            deploymentContext.clean();
+        }
+
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "Successfully removed context "+name);
         }
     }
 
@@ -2152,7 +2329,7 @@ public class VirtualServer extends StandardHost
         
         this.config = config;
         configureSingleSignOn(config.isSsoEnabled(), 
-                Globals.getDefaultHabitat().getComponent(
+                habitat.getComponent(
                 PEWebContainerFeatureFactoryImpl.class),
                 false);
         if (config.isAccessLoggingEnabled()) {
