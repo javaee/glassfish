@@ -1776,12 +1776,12 @@ public class EJBTimerService
                     
             agent.requestStart(RequestType.TIMER_EJB);
             container.onEnteringContainer();
-            // Need to address the case that another server instance 
+            // For persistent timers, need to address the case that another server instance 
             // cancelled this timer.  For maximum consistency, we will need 
             // to do a database read before each delivery.  This can have 
             // significant performance implications, so investigate possible 
             // reduced consistency tradeoffs.  
-            if( performDBReadBeforeTimeout) {
+            if( timerState.isPersistent() && performDBReadBeforeTimeout) {
 
                 if( logger.isLoggable(Level.FINE) ) {
                     logger.log(Level.FINE, "For Timer :" + timerId + 
