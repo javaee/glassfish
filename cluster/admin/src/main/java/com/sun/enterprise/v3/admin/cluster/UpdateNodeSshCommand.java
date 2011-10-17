@@ -39,7 +39,7 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
-import com.sun.enterprise.v3.admin.cluster.NodeUtils.RemoteType;
+import com.sun.enterprise.util.cluster.RemoteType;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
