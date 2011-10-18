@@ -68,13 +68,9 @@ public class HostVerifier implements ServerHostKeyVerifier {
                 return true;
 
             case KnownHosts.HOSTKEY_IS_NEW:
+            case KnownHosts.HOSTKEY_HAS_CHANGED:
                 knownHosts.addHostkey(new String[] {hostName}, serverHostKeyAlgorithm, serverHostKey);
                 return true;
-
-            case KnownHosts.HOSTKEY_HAS_CHANGED:
-                // XXX Right now return false. I think we want the user to add the new key manually. We could just add it to the database
-                // if we want it like above when the key is new
-                return false;
             
             default:
                 throw new IllegalStateException("Cannot verify server key");
