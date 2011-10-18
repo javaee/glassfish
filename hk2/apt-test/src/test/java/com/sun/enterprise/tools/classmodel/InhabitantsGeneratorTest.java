@@ -592,22 +592,22 @@ public class InhabitantsGeneratorTest {
 
     if (fromClassModel) {
       sb.append("class=com.sun.enterprise.tools.classmodel.test.local.LocalServiceInTestDir,index=java.io.Closeable\n");
-      sb.append("class=rls.test.model.ServiceOtherToY,index=org.jvnet.hk2.annotations.RunLevel,runLevelScope=org.glassfish.hk2.RunLevelDefaultScope,runLevel=-1\n");
-      sb.append("class=rls.test.model.ServiceDerivedX,index=rls.test.model.ContractX:derived,index=org.jvnet.hk2.annotations.RunLevel,runLevelScope=org.glassfish.hk2.RunLevelDefaultScope,runLevel=-1\n");
-      sb.append("class=rls.test.model.ServiceYSpecial,index=rls.test.model.ContractY\n");
-      sb.append("class=rls.test.infra.MultiThreadedInhabitantActivator,index=org.jvnet.hk2.component.InhabitantActivator\n");
-      sb.append("class=rls.test.model.ServiceBaseX,index=rls.test.model.ContractX:base,index=org.jvnet.hk2.annotations.RunLevel,runLevelScope=org.glassfish.hk2.RunLevelDefaultScope,runLevel=-1\n");
-      sb.append("class=rls.test.model.ServiceY1,index=rls.test.model.ContractY,index=org.jvnet.hk2.annotations.RunLevel,runLevelScope=org.glassfish.hk2.RunLevelDefaultScope,runLevel=-1\n");
-      sb.append("class=rls.test.model.ServiceY2,index=rls.test.model.ContractY,index=org.jvnet.hk2.annotations.RunLevel,runLevelScope=org.glassfish.hk2.RunLevelDefaultScope,runLevel=-1\n");
-      sb.append("class=rls.test.model.ServiceZ\n");
-      sb.append("class=rls.test.infra.RandomInhabitantSorter,index=org.jvnet.hk2.component.InhabitantSorter\n");
+      sb.append("class=org.glassfish.hk2.tests.rls.model.ServiceOtherToY,index=org.jvnet.hk2.annotations.RunLevel,runLevelScope=org.glassfish.hk2.RunLevelDefaultScope,runLevel=-1\n");
+      sb.append("class=org.glassfish.hk2.tests.rls.model.ServiceDerivedX,index=org.glassfish.hk2.tests.rls.model.ContractX:derived,index=org.jvnet.hk2.annotations.RunLevel,runLevelScope=org.glassfish.hk2.RunLevelDefaultScope,runLevel=-1\n");
+      sb.append("class=org.glassfish.hk2.tests.rls.model.ServiceYSpecial,index=org.glassfish.hk2.tests.rls.model.ContractY\n");
+      sb.append("class=org.glassfish.hk2.tests.rls.infra.RLSTestMultiThreadedInhabitantActivator,index=org.jvnet.hk2.component.InhabitantActivator\n");
+      sb.append("class=org.glassfish.hk2.tests.rls.model.ServiceBaseX,index=org.glassfish.hk2.tests.rls.model.ContractX:base,index=org.jvnet.hk2.annotations.RunLevel,runLevelScope=org.glassfish.hk2.RunLevelDefaultScope,runLevel=-1\n");
+      sb.append("class=org.glassfish.hk2.tests.rls.model.ServiceY1,index=org.glassfish.hk2.tests.rls.model.ContractY,index=org.jvnet.hk2.annotations.RunLevel,runLevelScope=org.glassfish.hk2.RunLevelDefaultScope,runLevel=-1\n");
+      sb.append("class=org.glassfish.hk2.tests.rls.model.ServiceY2,index=org.glassfish.hk2.tests.rls.model.ContractY,index=org.jvnet.hk2.annotations.RunLevel,runLevelScope=org.glassfish.hk2.RunLevelDefaultScope,runLevel=-1\n");
+      sb.append("class=org.glassfish.hk2.tests.rls.model.ServiceZ\n");
+      sb.append("class=org.glassfish.hk2.tests.rls.infra.RandomInhabitantSorter,index=org.jvnet.hk2.component.InhabitantSorter\n");
       sb.append("class=org.glassfish.hk2.scopes.PerThread,index=org.glassfish.hk2.Scope\n");
       if (worldViewClassPath) {
-        sb.append("class=rls.test.RlsTest,index=com.sun.enterprise.module.bootstrap.ModuleStartup\n");
+        sb.append("class=org.glassfish.hk2.tests.rls.RlsTest,index=com.sun.enterprise.module.bootstrap.ModuleStartup\n");
         sb.append("class=test1.Start,index=com.sun.enterprise.module.bootstrap.ModuleStartup\n");
         sb.append("class=com.sun.enterprise.tools.classmodel.test.MyModuleStartup,index=com.sun.enterprise.tools.classmodel.test.MyBaseModuleStartupContract:startup,index=com.sun.enterprise.module.bootstrap.ModuleStartup:startup\n");
       } else {
-        sb.append("class=rls.test.RlsTest\n");
+        sb.append("class=org.glassfish.hk2.tests.rls.RlsTest\n");
         sb.append("class=test1.Start\n");
         sb.append("class=com.sun.enterprise.tools.classmodel.test.MyModuleStartup,index=com.sun.enterprise.tools.classmodel.test.MyBaseModuleStartupContract:startup\n");
       }

@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package rls.test;
+package org.glassfish.hk2.tests.rls;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -55,14 +55,14 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 
-import rls.test.infra.MultiThreadedInhabitantActivator;
-import rls.test.infra.RandomInhabitantSorter;
-import rls.test.model.ContractX;
-import rls.test.model.ContractY;
-import rls.test.model.ServiceBaseX;
-import rls.test.model.ServiceDerivedX;
-import rls.test.model.ServiceOtherToY;
-import rls.test.model.ServiceZ;
+import org.glassfish.hk2.tests.rls.infra.RLSTestMultiThreadedInhabitantActivator;
+import org.glassfish.hk2.tests.rls.infra.RandomInhabitantSorter;
+import org.glassfish.hk2.tests.rls.model.ContractX;
+import org.glassfish.hk2.tests.rls.model.ContractY;
+import org.glassfish.hk2.tests.rls.model.ServiceBaseX;
+import org.glassfish.hk2.tests.rls.model.ServiceDerivedX;
+import org.glassfish.hk2.tests.rls.model.ServiceOtherToY;
+import org.glassfish.hk2.tests.rls.model.ServiceZ;
 
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
@@ -93,7 +93,7 @@ public class RlsTest implements ModuleStartup {
     assert h.isInitialized() : "Sanity check";
     
     assertTrue("Sorter should be called", RandomInhabitantSorter.wasCalled());
-    assertTrue("Activator should be called", MultiThreadedInhabitantActivator.wasCalled());
+    assertTrue("Activator should be called", RLSTestMultiThreadedInhabitantActivator.wasCalled());
     
 //    assertNull("can't support dependencies to a non RLS", y);
 //    assertNull("can't support dependencies to a non RLS", other);

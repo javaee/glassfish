@@ -98,9 +98,9 @@ public class InhabitantsSorterTest {
    */
   @Test
   public void testSorting() throws Exception {
-    String original = "class=rls.test.model.ServiceWithTwoRunLevelAssignments,index=org.jvnet.hk2.annotations.RunLevel,runLevel=2,runLevel=55,aaa=java.lang.Void";
+    String original = "class=org.glassfish.hk2.tests.rls.model.ServiceWithTwoRunLevelAssignments,index=org.jvnet.hk2.annotations.RunLevel,runLevel=2,runLevel=55,aaa=java.lang.Void";
     String sorted = Utilities.sortInhabitantsDescriptor(original, true);
-    String expected = "class=rls.test.model.ServiceWithTwoRunLevelAssignments,index=org.jvnet.hk2.annotations.RunLevel,aaa=java.lang.Void,runLevel=2,runLevel=55\n";
+    String expected = "class=org.glassfish.hk2.tests.rls.model.ServiceWithTwoRunLevelAssignments,index=org.jvnet.hk2.annotations.RunLevel,aaa=java.lang.Void,runLevel=2,runLevel=55\n";
     assertEquals(expected, sorted);
   }
   
