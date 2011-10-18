@@ -66,7 +66,7 @@ javadb_version="10.5.3.0,0-0"
 corba_version="3.1.0,0-30"
 jsf_version="2.1.3,0-4"
 grizzly_version="1.9.36,0-1"
-metro_version="2.1.1,0-9"
+metro_version="2.2,0-4"
 javahelp_version="2.0.2,0-1"
 shoal_version="1.6.13,0-0"
 

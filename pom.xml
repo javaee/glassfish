@@ -127,7 +127,7 @@
         <uc-pkg-client.version>1.122-54.2834</uc-pkg-client.version>
         <uc-pkg-bootstrap.version>1.122-54.2834</uc-pkg-bootstrap.version>
 
-        <webservices.version>2.1.1-b09</webservices.version>
+        <webservices.version>2.2-b04</webservices.version>
         <woodstox.version>4.1.1</woodstox.version>
         <woodstox-stax2.version>3.1.1</woodstox-stax2.version>
         <jaxb-api.version>2.2.3</jaxb-api.version>
@@ -154,7 +154,7 @@
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <gmbal.version>3.1.0-b001</gmbal.version>
         <glassfish-management-api.version>3.1.0-b001</glassfish-management-api.version>
-        <mimepull.version>1.6</mimepull.version>
+        <mimepull.version>1.7</mimepull.version>
         <findbugs.skip>false</findbugs.skip>
         <findbugs.threshold>High</findbugs.threshold>
         <findbugs.exclude></findbugs.exclude>
@@ -1319,7 +1319,7 @@
             </dependency>
 
             <dependency>
-                <groupId>org.jvnet</groupId>
+                <groupId>org.jvnet.mimepull</groupId>
                 <artifactId>mimepull</artifactId>
                 <version>${mimepull.version}</version>
             </dependency>

@@ -244,7 +244,7 @@
         </dependency>
         <!-- mimepull - shared dependency of metro and jersey -->
         <dependency>
-            <groupId>org.jvnet</groupId>
+            <groupId>org.jvnet.mimepull</groupId>
             <artifactId>mimepull</artifactId>
         </dependency>
 
