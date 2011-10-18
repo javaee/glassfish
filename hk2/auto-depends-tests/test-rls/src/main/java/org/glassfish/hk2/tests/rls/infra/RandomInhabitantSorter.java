@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package rls.test.infra;
+package org.glassfish.hk2.tests.rls.infra;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,50 +37,36 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package rls.test.infra;
+package org.glassfish.hk2.tests.rls.model;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Inhabitant;
 import org.glassfish.hk2.PostConstruct;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.RunLevel;
+import org.jvnet.hk2.annotations.Service;
 
-@Service
-public class MultiThreadedInhabitantActivator 
-    extends org.jvnet.hk2.component.MultiThreadedInhabitantActivator 
-    implements PostConstruct {
+import com.sun.hk2.component.Holder;
 
-  private static boolean called;
+@RunLevel(RunLevel.KERNEL_RUNLEVEL)
+@Service(name="other")
+public class ServiceOtherToY implements PostConstruct {
+
+  public static int ctorCount = 0;
+  public static int postConstructCount = 0;
+  
+  @Inject public static ContractY y;
+  
+  @Inject public static ContractY[] allY;
+
+  @Inject public static Holder<ServiceZ> zHolder;
+  
+  
+  public ServiceOtherToY() {
+    ctorCount++;
+  }
   
   @Override
   public void postConstruct() {
-    ExecutorService es = Executors.newFixedThreadPool(2, new ThreadFactory() {
-      @Override
-      public Thread newThread(Runnable run) {
-        Thread t = new Thread(run);
-        t.setDaemon(true);
-        t.setName(MultiThreadedInhabitantActivator.class.getSimpleName());
-//        System.out.println("HERE: " + t);
-        return t;
-      }
-    });
-    setExecutorService(es);
+    postConstructCount++;
   }
-  
-  @Override
-  public void activate(final Inhabitant<?> inhabitant) {
-    super.activate(inhabitant);
-    setCalled();
-  }
-  
-  private static void setCalled() {
-      called = true;
-  }
-  
-  public static boolean wasCalled() {
-      return called;
-  }
-  
+ 
 }

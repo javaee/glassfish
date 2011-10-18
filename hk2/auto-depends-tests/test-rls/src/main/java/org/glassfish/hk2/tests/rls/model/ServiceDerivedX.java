@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,13 +37,29 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package rls.test.model;
+package org.glassfish.hk2.tests.rls.model;
 
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
+import org.glassfish.hk2.PostConstruct;
 
 @RunLevel(RunLevel.KERNEL_RUNLEVEL)
-@Service
-public class ServiceY1 implements ContractY {
+@Service(name="derived")
+public class ServiceDerivedX extends ServiceBaseX implements PostConstruct {
 
+  public static int ctorCount = 0;
+  public static int postConstructCount = 0;
+
+  @Inject public static ContractY y;
+
+  public ServiceDerivedX() {
+    ctorCount++;
+  }
+  
+  @Override
+  public void postConstruct() {
+    postConstructCount++;
+    super.postConstruct();
+  }
 }
