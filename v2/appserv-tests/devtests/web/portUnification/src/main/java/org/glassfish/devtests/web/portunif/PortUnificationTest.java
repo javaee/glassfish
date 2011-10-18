@@ -111,6 +111,7 @@ public class PortUnificationTest extends BaseDevTest {
         InputStreamReader reader = null;
         try {
             try {
+                connection.setConnectTimeout(30000);
                 reader = new InputStreamReader(connection.getInputStream());
                 StringBuilder builder = new StringBuilder();
                 char[] buffer = new char[1024];
