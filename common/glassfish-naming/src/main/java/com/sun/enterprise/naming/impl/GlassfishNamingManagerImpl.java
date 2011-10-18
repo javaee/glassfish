@@ -44,8 +44,6 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 
-import org.jvnet.hk2.component.*;
-
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.ComponentInvocation;
 
@@ -55,6 +53,8 @@ import org.glassfish.api.naming.NamingObjectProxy;
 
 import com.sun.enterprise.naming.util.LogFacade;
 
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Singleton;
 import org.omg.CORBA.ORB;
 import java.rmi.RemoteException;
 import java.rmi.Remote;
@@ -232,7 +232,7 @@ public final class  GlassfishNamingManagerImpl
         // It is also used from bindObjects while populating ejb-refs in
         // the java:comp namespace.
         Object serialObj = new Reference("reference",
-                    new StringRefAddr("url", name.toString()),
+                    new StringRefAddr("url", name),
                     IIOPOBJECT_FACTORY, null);
 
         publishObject(name, serialObj, rebind);
@@ -954,14 +954,17 @@ class BindingsIterator implements NamingEnumeration {
         this.names = names;
     }
 
+    @Override
     public boolean hasMoreElements() {
         return names.hasNext();
     }
 
+    @Override
     public boolean hasMore() throws NamingException {
         return hasMoreElements();
     }
 
+    @Override
     public Object nextElement() {
         if (names.hasNext()) {
             try {
@@ -974,12 +977,13 @@ class BindingsIterator implements NamingEnumeration {
             return null;
     }
 
+    @Override
     public Object next() throws NamingException {
         return nextElement();
     }
 
-    // New API for JNDI 1.2
-    public void close() throws NamingException {
-        throw new OperationNotSupportedException("close() not implemented");
+    @Override
+    public void close() {
+        //no-op since no steps needed to free up resources
     }
 }
