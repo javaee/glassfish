@@ -50,5 +50,11 @@
         <cache-mapping>
             <servlet-name>hello2</servlet-name>
         </cache-mapping>
+        <cache-mapping>
+            <url-pattern>*.jsp</url-pattern>
+        </cache-mapping>
+        <cache-mapping>
+            <url-pattern>/pages/*</url-pattern>
+        </cache-mapping>
     </cache>
 </glassfish-web-app>

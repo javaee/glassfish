@@ -43,7 +43,7 @@ import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
 /*
- * Unit test for AsyncContext#setTimeout
+ * Unit test for Cache hang for IT 12891, 17377
  */
 public class WebTest {
 
@@ -64,7 +64,7 @@ public class WebTest {
     
     public static void main(String[] args) {
 
-        stat.addDescription("Unit test for IT 12891");
+        stat.addDescription("Unit test for IT 12891, 17377");
         WebTest webTest = new WebTest(args);
 
         try {
@@ -72,23 +72,25 @@ public class WebTest {
             webTest.doTest("hello", 200);
             webTest.doTest("hello2", 500);
             webTest.doTest("hello2", 200);
+
+            webTest.doTest("pages/test.jsp", 200);
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
         }
 
-	stat.printSummary();
+        stat.printSummary();
     }
 
-    public void doTest(String servlet, int expectedStatus) throws Exception {
+    public void doTest(String path, int expectedStatus) throws Exception {
 
         InputStream is = null;
         BufferedReader input = null;
        
         try {     
             URL url = new URL("http://" + host  + ":" + port +
-                contextRoot + "/" + servlet);
+                contextRoot + "/" + path);
             System.out.println("Connecting to: " + url.toString());
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
