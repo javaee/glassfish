@@ -991,6 +991,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         _embedded.addConnector(jkConnector);
 
+        ObservableBean httpListenerBean = (ObservableBean) ConfigSupport.getImpl(
+                listener);
+        httpListenerBean.addListener(configListener);
 
         return jkConnector;
 
@@ -3235,8 +3238,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 }
             }
 
-            WebConnector connector =
-                    createHttpListener(httpListener, httpService, mapper);
+            WebConnector connector = null;
+            if (ConfigBeansUtilities.toBoolean(httpListener.getJkEnabled())) {
+                connector = createJKConnector(httpListener, httpService);
+            } else {
+                connector = createHttpListener(httpListener, httpService, mapper);
+            }
 
             if (connector.getRedirectPort() == -1) {
                 connector.setRedirectPort(defaultRedirectPort);
