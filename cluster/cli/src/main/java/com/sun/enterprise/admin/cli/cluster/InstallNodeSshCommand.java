@@ -78,7 +78,6 @@ import java.util.List;
 /**
  * @author Rajiv Mordani
  * @author Byron Nevins
- * 3.1.2
  */
 
 @Service(name = "install-node-ssh")
@@ -370,6 +369,18 @@ public class InstallNodeSshCommand extends NativeRemoteCommandsBase {
                 logger.info(Strings.get("fix.permissions.failed", host, installDir));
                 throw new IOException(ioe);
             }
+
+            if (Constants.v4) {
+                logger.info("Fixing file permissions for nadmin file under " + host + ":" + installDir + "/lib");
+                try {
+                    sftpClient.chmod((installDir + "/" + SystemPropertyConstants.getComponentName() + "/lib/nadmin"), 0755);
+                    logger.finer("Fixed file permission for nadmin under " + host + ":" + installDir + "/" + SystemPropertyConstants.getComponentName() + "/lib/nadmin");
+                }
+                catch (IOException ioe) {
+                    logger.info(Strings.get("fix.permissions.failed", host, installDir));
+                    throw new IOException(ioe);
+                }
+            }
         }
     }
 
@@ -457,7 +468,8 @@ public class InstallNodeSshCommand extends NativeRemoteCommandsBase {
         boolean res = false;
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         try {
-            String cmd = "'" + installDir + "/" + SystemPropertyConstants.getComponentName() + "/bin/asadmin' version --local --terse";
+            String asadmin = Constants.v4 ? "/lib/nadmin' version --local --terse" : "/bin/asadmin' version --local --terse";
+            String cmd = "'" + installDir + "/" + SystemPropertyConstants.getComponentName() + asadmin;
             int status = sshLauncher.runCommand(cmd, outStream);
             if (status == 0) {
                 logger.finer(host + ":'" + cmd + "'" + " returned [" + outStream.toString() + "]");
