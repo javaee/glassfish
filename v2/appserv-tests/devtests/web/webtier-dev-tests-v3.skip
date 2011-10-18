@@ -1,5 +1,4 @@
 singleengine # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=7548 is fixed
 accessLoggingBadRequests # supported in 3.1.1
 genDocSchema
-portUnification # hangs on hudson
 

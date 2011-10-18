@@ -67,15 +67,23 @@
     <target name="all" depends="init-common,jar,create-cluster,create-local-instance,restart,run,stop-local-instance,delete-local-instance,delete-cluster"/>
 
     <target name="run" depends="init-common">
-        <copy file="build/dummy-protocol.jar" tofile="${env.S1AS_HOME}/domains/domain1/autodeploy/bundles/dummy-protocol.jar" verbose="true"/>
-        <sleep seconds = "5" description="waiting for autodeploy to detect the new bundle" failonerror="true"/>
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="deploy" />
+            <param name="operand.props"
+                   value="--type=osgi build/dummy-protocol.jar"/>
+        </antcall>
+
         <run-test classname="org.glassfish.devtests.web.portunif.PortUnificationTest" classpath="${reportbuilder.path.property}">
             <arguments>
                 <arg value="${cluster.name}"/>
             </arguments>
         </run-test>
-        <delete file="${env.S1AS_HOME}/domains/domain1/autodeploy/bundles/build/dummy-protocol.jar"/>
-        <sleep seconds = "5" description="waiting for autodeploy to detect the deleted bundle" failonerror="true"/>
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="undeploy" />
+            <param name="operand.props"
+                   value="dummy-protocol"/>
+        </antcall>
+
     </target>
 
     <target name="restart" depends="init-common">
