@@ -21,9 +21,17 @@ public class TestBean extends AbstractBaseEJB<Object> {
         return null;
     }
 
+    public void doSomething4(Integer t) {
+        System.out.println("In doSomething4(Integer) of " + this);
+    }
+
     @Override
     public void doSomething4(Object t) {
-        System.out.println("In doSomething4 of " + this);
+        System.out.println("In doSomething4(Object T) of " + this);
+    }
+
+    public void doSomething4(String t) {
+        System.out.println("In doSomething4(String) of " + this);
     }
 
     @Override
