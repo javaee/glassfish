@@ -59,6 +59,7 @@ import com.sun.enterprise.config.serverbeans.KeepAlive;
 import com.sun.enterprise.config.serverbeans.RequestProcessing;
 import com.sun.enterprise.config.serverbeans.ThreadPools;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.config.dom.FileCache;
 import com.sun.grizzly.config.dom.Http;
 import com.sun.grizzly.config.dom.NetworkConfig;
@@ -75,6 +76,7 @@ import com.sun.grizzly.config.dom.Ssl;
 import com.sun.grizzly.config.dom.ThreadPool;
 import com.sun.grizzly.config.dom.Transport;
 import com.sun.grizzly.config.dom.Transports;
+import com.sun.logging.LogDomains;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -99,6 +101,8 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
     private static final String ASADMIN_LISTENER = "admin-listener";
     private static final String ASADMIN_VIRTUAL_SERVER = "__asadmin";
 
+    static final Logger logger = LogDomains.getLogger(GrizzlyConfigSchemaMigrator.class, LogDomains.ADMIN_LOGGER);
+    
     public void postConstruct() {
         for (Config config : configs.getConfig()) {
             currentConfig = config;
@@ -116,15 +120,13 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                         currentConfig.getHttpService());
                 } else {
                     // this only happens during some unit tests
-                    Logger.getAnonymousLogger().log(Level.WARNING,
-                        String.format(
-                            "config.getHttpService() null for config '%s'",
-                            currentConfig.getName()));
+                    logger.log(Level.WARNING, "GrizzlyConfigSchemaMigrator.nullHttpService",
+                            new String[] { currentConfig.getName() });
                 }
                 promoteSystemProperties();
                 addAsadminProtocol(currentConfig.getNetworkConfig());
             } catch (TransactionFailure tf) {
-                Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading domain.xml.", tf);
+                logger.log(Level.SEVERE, "GrizzlyConfigSchemaMigrator.failUpgradeDomain", tf);
                 throw new RuntimeException(tf);
             }
         }
