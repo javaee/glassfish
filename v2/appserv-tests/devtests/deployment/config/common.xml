@@ -829,6 +829,14 @@ AS_ADMIN_MASTERPASSWORD=changeit
     <record name="client.log" action="stop"/>
     <echo message="Grep the file client.log for exception/Exception and ensure that none is present"/>
 </target>
+<target name="tim-run" depends="init">
+  <antcall target="preTestsRun"/>
+  <delete dir="${build}/setupdone"/>
+  <antcall target="private-all">
+    <param name="build" value="${testsRoot}/build"/>
+  </antcall>
+  <antcall target="postTestsRun"/>
+</target>
 
 <target name="all-ee" depends="init">
     <echo file="${testsRoot}/password.txt" append="false">AS_ADMIN_MASTERPASSWORD=changeit
@@ -928,11 +936,18 @@ AS_ADMIN_MASTERPASSWORD=changeit
     </antcall>
 </target>
 
-<target name="failed" if="testFailed">
+<!--
+  Paramters: 
+    testname - name of the test
+    result - numeric value of the exit status from the client
+    status - typically FAILED or UNKNOWN
+    log - the log file containing the client output
+-->
+<target name="writeLogToConsole">
     <tstamp>
         <format property="failureNOW"  pattern="dd-MMM-yyyy HH:mm:ss.SSS"/>
     </tstamp>
-    <echo message="Test ${testname} Failed at ${failureNOW} with return code ${result}"/>
+    <echo message="Test ${testname} ${status} at ${failureNOW} with return code ${result}"/>
     <concat append="yes">
         <header trimleading="true">
         ==================  Error output  ==================
@@ -941,9 +956,15 @@ AS_ADMIN_MASTERPASSWORD=changeit
         ==================  End of error output ==================
         </footer>
         <fileset file="${log}"/>
-    </concat> 
-    <concat destfile="${root}/tests-results.xml" append="yes">&lt;result status="FAILED" log="${log}"/></concat>
-    <concat destfile="${root}/tests-results.xml" append="yes">&lt;/test></concat>	
+    </concat>
+    <concat destfile="${root}/tests-results.xml" append="yes">&lt;result status="${status}" log="${log}"/></concat>
+    <concat destfile="${root}/tests-results.xml" append="yes">&lt;/test></concat>
+</target>
+
+<target name="failed" if="testFailed">
+    <antcall target="writeLogToConsole">
+        <param name="status" value="FAILED"/>
+    </antcall>
 </target>
 
 <target name="passed" if="testPassed">
@@ -953,9 +974,9 @@ AS_ADMIN_MASTERPASSWORD=changeit
 </target>
 
 <target name="unknown" unless="statusProvided">
-    <echo message="Test ${testname} has an unknown result code ${result}"/>
-    <concat destfile="${root}/tests-results.xml" append="yes">&lt;result status="UNKNOWN" log="${log}"/></concat>
-    <concat destfile="${root}/tests-results.xml" append="yes">&lt;/test></concat>	
+    <antcall target="writeLogToConsole">
+        <param name="status" value="UNKNOWN"/>
+    </antcall>
 </target>
 
 <!-- @param ${description} (required) -->
