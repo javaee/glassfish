@@ -7,12 +7,15 @@ import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import org.junit.*;
+import org.junit.rules.TestName;
 import static org.junit.Assert.*;
 
 public class ContextTest {
     private static final String NL = System.getProperty("line.separator");
     private static EJBContainer ejbContainer;
     private TestBean testBean;
+    
+    @Rule public TestName testName = new TestName();
     
     @BeforeClass public static void setUpClass() {
         ejbContainer = EJBContainer.createEJBContainer();
@@ -24,15 +27,15 @@ public class ContextTest {
 
     @Before public void setUp() throws NamingException {
         testBean = (TestBean) ejbContainer.getContext().lookup("java:global/classes/TestBean");
+        System.out.printf("%n----------------- Starting test %s -------------------%n", testName.getMethodName());
     }
 
     @After public void tearDown() {
+        System.out.printf("%n================= Finishing test   ================================================%n%n");
     }
     
-    
-    
     @Test public void listEmptyString2() throws NamingException {
-        assertNotNull(testBean.listEmptyString());
+        System.out.println(testBean.listEmptyString().toString());
     }
     
     @Test public void listEmptyString() throws NamingException {
@@ -43,7 +46,7 @@ public class ContextTest {
     }
     
     @Test public void listBindingsEmptyString2() throws NamingException {
-        assertNotNull(testBean.listBindingsEmptyString());
+        System.out.println(testBean.listBindingsEmptyString().toString());
     }
  
     @Test public void listBindingsEmptyString() throws NamingException {
@@ -55,7 +58,7 @@ public class ContextTest {
     
     @Ignore
     @Test public void listGlobal2() throws NamingException {
-        assertNotNull(testBean.listGlobal());
+        System.out.println(testBean.listGlobal().toString());
     }
     
     @Ignore //got null componentId
@@ -68,7 +71,7 @@ public class ContextTest {
     
     @Ignore
     @Test public void listBindingsGlobal2() throws NamingException {
-        assertNotNull(testBean.listBindingsGlobal());
+        System.out.println(testBean.listBindingsGlobal().toString());
     }
     
     @Ignore
@@ -80,27 +83,27 @@ public class ContextTest {
     }
     
     @Test public void listJavaComp() throws NamingException {
-        assertNotNull(testBean.listJavaComp());
+        System.out.println(testBean.listJavaComp().toString());
     }
     
     @Test public void listBindingsJavaComp() throws NamingException {
-        assertNotNull(testBean.listBindingsJavaComp());
+        System.out.println(testBean.listBindingsJavaComp().toString());
     }
     
     @Test public void listJavaModule() throws NamingException {
-        assertNotNull(testBean.listJavaModule());
+        System.out.println(testBean.listJavaModule().toString());
     }
     
     @Test public void listBindingsJavaModule() throws NamingException {
-        assertNotNull(testBean.listBindingsJavaModule());
+        System.out.println(testBean.listBindingsJavaModule().toString());
     }
     
     @Test public void listJavaApp() throws NamingException {
-        assertNotNull(testBean.listJavaApp());
+        System.out.println(testBean.listJavaApp().toString());
     }
     
     @Test public void listBindingsJavaApp() throws NamingException {
-        assertNotNull(testBean.listBindingsJavaApp());
+        System.out.println(testBean.listBindingsJavaApp().toString());
     }
     
     @Test public void closeNamingEnumerations() throws NamingException {
@@ -109,7 +112,8 @@ public class ContextTest {
     
     private String toString(NamingEnumeration<? extends NameClassPair> n) throws NamingException {
         StringBuilder sb = new StringBuilder();
-        while(n.hasMore()) {
+        sb.append(n.toString()).append(NL);
+        while(n.hasMore()) {  // test will fail with NPE if null
             NameClassPair x = n.next();
             sb.append(x).append(NL);
         }
