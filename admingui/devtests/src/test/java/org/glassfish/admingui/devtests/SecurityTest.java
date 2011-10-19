@@ -281,29 +281,6 @@ public class SecurityTest extends BaseSeleniumTestClass {
         }
     }
 
-    @Test
-    public void testRedirectAfterLogin() {
-        final String newUser = "user" + generateRandomString();
-        final String realmName = "admin-realm";
-        final String newPass = generateRandomString();
-
-        try {
-            addUserToRealm("server-config", realmName, newUser, newPass);
-            // http://localhost:4848/common/help/help.jsf?contextRef=/resource/common/en/help/ref-developercommontasks.html
-            reset();
-            pressButton("Masthead:logoutLink");
-            waitForLoginPageLoad(30);
-            open ("http://localhost:4848/common/help/help.jsf?contextRef=/resource/common/en/help/ref-developercommontasks.html");
-            handleLogin(newUser, newPass, "The Common Tasks page provides shortcuts for common Administration Console tasks.");
-        } finally {
-            reset();
-            pressButton("Masthead:logoutLink");
-            waitForLoginPageLoad(30);
-            handleLogin();
-            deleteUserFromRealm("server-config", realmName, newUser);
-        }
-    }
-
     public void createConfig(String configName) {
         clickAndWait("treeForm:tree:configurations:configurations_link", TRIGGER_CONFIGURATION);
         if (!isTextPresent("new-config")) {
