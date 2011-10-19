@@ -79,6 +79,7 @@ import org.glassfish.security.common.MasterPassword;
 
 import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.util.OS;
+import org.jvnet.hk2.annotations.Inject;
 
 /**
  *  Base class for SSH provisioning commands.
@@ -97,6 +98,7 @@ abstract class NativeRemoteCommandsBase extends CLICommand {
     TokenResolver resolver = null;
     private String remoteUser;
     private int remotePort;
+    boolean createZip = true;
 
     NativeRemoteCommandsBase() {
         // Create a resolver that can replace system properties in strings
