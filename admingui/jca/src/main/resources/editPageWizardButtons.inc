@@ -84,7 +84,7 @@
                              prepareAlertMsg(summary="$resource{i18n.msg.PingSucceed}", type="success");
                         }
                         if ("!(#{requestScope.result.data['exit_code']} = SUCCESS)") {
-                             prepareAlertMsg(summary="$resource{i18njca.msg.warning.poolCreatedPingFailed}", detail="#{requestScope.result.data.message}", type="warning");
+                             prepareAlertMsg(summary="$resource{i18njca.msg.warning.poolCreatedPingFailed}", detail="#{requestScope.result.data.message}", type="error");
                         }
                         setSessionAttribute(key="wizardMap" value="#{null}")
                         setSessionAttribute(key="wizardPoolExtra" value="#{null}")
