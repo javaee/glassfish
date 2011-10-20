@@ -436,7 +436,7 @@ public class FileArchiveTest {
     private void createPreexistingDir() throws IOException {
         for (String entryName : usualEntryNames) {
             final File f = new File(archiveDir, entryName);
-            f.mkdirs();
+            f.getParentFile().mkdirs();
             f.createNewFile();
         }
     }
