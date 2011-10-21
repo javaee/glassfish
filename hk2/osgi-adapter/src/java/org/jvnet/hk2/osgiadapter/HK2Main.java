@@ -259,6 +259,16 @@ public class HK2Main extends Main implements
         public Object addingService(final ServiceReference reference) {
             final Object object = ctx.getService(reference);
 
+            if (object == null) {
+                // service obuject can be null if the service is created using a factory and the factory fails to
+                // create for whatever reason. In such a case, gracefully handle the situation instead of us failing.
+                // See GLASSFISH-17398 for example.
+                logger.logp(Level.INFO, "HK2Main$HK2ServiceTrackerCustomizer", "addingService",
+                        "Skipping registration of inhabitant for service reference {0} " +
+                                "as the service object could not be obtained.", new Object[]{reference});
+                return null;
+            }
+
             // let's get the list of implemented contracts
             String[] contractNames = (String[]) reference.getProperty("objectclass");
             if (contractNames != null && contractNames.length > 0) {
