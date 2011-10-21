@@ -73,7 +73,7 @@
       	<include name="*ejb.jar"/>
       	<include name="*ejb1.jar"/>
       	<include name="*ejb2.jar"/>
-      	<include name="*.war"/>
+      	<include name="*client.jar"/>
     	</fileset>
     	<fileset dir="${build.classes.dir}">
 		<include name="META-INF/sun-application.xml"/>
