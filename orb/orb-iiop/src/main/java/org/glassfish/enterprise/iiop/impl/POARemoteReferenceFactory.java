@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -267,10 +267,7 @@ public final class POARemoteReferenceFactory extends org.omg.CORBA.LocalObject
 	    // Servant caching for local RMI-IIOP invocation performance
             policies.add(ServantCachingPolicy.getPolicy());
 
-            /**  TODO
-	    // OTS Policy
-	    policies.add(new OTSPolicy());
-            */
+	    policies.add(new OTSPolicyImpl());
 
 	    if (logger.isLoggable(Level.FINE)) {
 	        logger.log(Level.FINE, ".createReferenceFactory: {0} {1}: {2}",
