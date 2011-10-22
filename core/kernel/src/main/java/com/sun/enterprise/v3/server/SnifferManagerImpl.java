@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,6 +50,7 @@ import org.glassfish.api.container.CompositeSniffer;
 import org.glassfish.internal.deployment.SnifferManager;
 import org.glassfish.internal.deployment.ApplicationInfoProvider;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import com.sun.enterprise.deployment.deploy.shared.Util;
 import org.glassfish.deployment.common.DeploymentUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
@@ -265,7 +266,7 @@ public class SnifferManagerImpl implements SnifferManager {
                     // library jars
                     List<URL> moduleLibraries = DeploymentUtils.getModuleLibraryJars(context);
                     for (URL url : moduleLibraries) {
-                        uris.add(url.toURI());
+                        uris.add(Util.toURI(url));
                     }
                 } else {
                     // non-standalone case, we need to look at other libraries too
@@ -273,7 +274,7 @@ public class SnifferManagerImpl implements SnifferManager {
                     if (appInfoProvider != null) {
                         List<URL> libraryJars = appInfoProvider.getLibraryJars(context);
                         for (URL url : libraryJars) {
-                            uris.add(url.toURI());
+                            uris.add(Util.toURI(url));
                         }
                     }
                 }
