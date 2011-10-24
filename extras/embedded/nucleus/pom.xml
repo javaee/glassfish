@@ -46,7 +46,7 @@
   <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.glassfish.extras</groupId>
+        <groupId>org.glassfish.main.extras</groupId>
         <artifactId>extras</artifactId>
         <version>3.1.2-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
@@ -111,21 +111,21 @@
 
       <dependencies>
         <dependency>
-           <groupId>org.glassfish.packager</groupId>
+           <groupId>org.glassfish.main.packager</groupId>
            <artifactId>glassfish-hk2</artifactId>
            <version>${project.version}</version>
            <type>zip</type>
             <optional>true</optional>
        </dependency>
        <dependency>
-          <groupId>org.glassfish.packager</groupId>
+          <groupId>org.glassfish.main.packager</groupId>
           <artifactId>glassfish-grizzly</artifactId>
           <version>${project.version}</version>
           <type>zip</type>
           <optional>true</optional>
       </dependency>
       <dependency>
-            <groupId>org.glassfish.packager</groupId>
+            <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-nucleus</artifactId>
             <version>${project.version}</version>
             <type>zip</type>

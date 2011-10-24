@@ -44,14 +44,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>org.glassfish.jms</groupId>
+        <groupId>org.glassfish.main.jms</groupId>
         <artifactId>jms</artifactId>
         <version>3.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>    
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.glassfish.jms</groupId>
     <artifactId>jms-core</artifactId>
     <name>JMS Module</name>
     <packaging>hk2-jar</packaging>
@@ -84,27 +83,27 @@
 
   <dependencies>
       <dependency>
-          <groupId>org.glassfish.common</groupId>
+          <groupId>org.glassfish.main.common</groupId>
           <artifactId>internal-api</artifactId>
 	  <version>3.1.2-SNAPSHOT</version>
       </dependency>		    
       <dependency>
-          <groupId>org.glassfish.connectors</groupId>
+          <groupId>org.glassfish.main.connectors</groupId>
           <artifactId>connectors-internal-api</artifactId>
 	  <version>3.1.2-SNAPSHOT</version>
       </dependency>		    
          <dependency>
-             <groupId>org.glassfish.connectors</groupId>
+             <groupId>org.glassfish.main.connectors</groupId>
              <artifactId>connectors-inbound-runtime</artifactId>
              <version>3.1.2-SNAPSHOT</version>
          </dependency>
          <dependency>
-	      <groupId>org.glassfish.connectors</groupId>
+	      <groupId>org.glassfish.main.connectors</groupId>
 	      <artifactId>connectors-runtime</artifactId>
 	      <version>3.1.2-SNAPSHOT</version>
          </dependency>
          <dependency>
-	 	<groupId>org.glassfish.admin</groupId>
+	 	<groupId>org.glassfish.main.admin</groupId>
 	 	<artifactId>admin-util</artifactId>
 		<version>3.1.2-SNAPSHOT</version>
          </dependency>

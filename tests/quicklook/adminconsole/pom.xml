@@ -123,12 +123,12 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.common</groupId>
+            <groupId>org.glassfish.main</groupId>
             <artifactId>amx-core</artifactId>
             <version>3.1.2-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.common</groupId>
+            <groupId>org.glassfish.main</groupId>
             <artifactId>amx-config</artifactId>
             <version>3.1.2-SNAPSHOT</version>
         </dependency>

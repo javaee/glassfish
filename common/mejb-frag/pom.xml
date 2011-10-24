@@ -44,7 +44,7 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish.common</groupId>
+        <groupId>org.glassfish.main.common</groupId>
         <artifactId>common</artifactId>
         <version>3.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -122,7 +122,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.glassfish.common</groupId>
+            <groupId>org.glassfish.main.common</groupId>
             <artifactId>mejb</artifactId>
 	    <version>${project.version}</version>
 	    <type>ejb</type>

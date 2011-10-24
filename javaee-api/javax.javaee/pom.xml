@@ -262,13 +262,13 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.javaee-api</groupId>
             <artifactId>javax.xml.soap</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.javaee-api</groupId>
             <artifactId>javax.jms</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>

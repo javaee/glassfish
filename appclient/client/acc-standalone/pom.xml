@@ -61,7 +61,7 @@
         Perhaps later.
     -->
     <parent>
-        <groupId>org.glassfish.appclient</groupId>
+        <groupId>org.glassfish.main.appclient.client</groupId>
         <artifactId>client</artifactId>
         <version>3.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -86,7 +86,7 @@
             <url>http://blogs.sun.com/quinn</url>
             <organization>Oracle, Inc.</organization>
             <roles>
-		        <role>lead</role>
+		<role>lead</role>
                 <role>developer</role>
             </roles>
         </developer>
@@ -190,7 +190,7 @@ this or the downstream JARs and so attempts to find things fail.
             accurate Class-Path for the manifest.
         -->
         <dependency>
-            <groupId>org.glassfish.appclient</groupId>
+            <groupId>org.glassfish.main.appclient.client</groupId>
             <artifactId>gf-client-module</artifactId>
             <version>${project.version}</version>
         </dependency>

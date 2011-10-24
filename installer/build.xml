@@ -100,9 +100,9 @@
 		<resolveArtifact groupID="com.sun.pkg" artifactId="pkg-client" property="pkg-client.jar" />
 
 		<echo message="Setting up required registration module dependencies" />
-		<resolveArtifact groupID="org.glassfish.registration" artifactId="registration-api" property="registration-api.jar" />
-		<resolveArtifact groupID="org.glassfish.registration" artifactId="registration-impl" property="registration-impl.jar" />
-                <resolveArtifact groupID="org.glassfish.common" artifactId="common-util" property="common-util.jar" />
+		<resolveArtifact groupID="org.glassfish.main.registration" artifactId="registration-api" property="registration-api.jar" />
+		<resolveArtifact groupID="org.glassfish.main.registration" artifactId="registration-impl" property="registration-impl.jar" />
+                <resolveArtifact groupID="org.glassfish.man.common" artifactId="common-util" property="common-util.jar" />
 
 		<echo message="Setting up required OpenInstaller dependencies" />
 		<resolveArtifact groupID="org.openinstaller" artifactId="resources" property="resources.zip" />

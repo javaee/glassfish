@@ -45,12 +45,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
      <parent>
-        <groupId>org.glassfish.security</groupId>
+        <groupId>org.glassfish.main.security</groupId>
         <artifactId>securitymodule</artifactId>
         <version>3.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>        
     </parent>    
-    <groupId>org.glassfish.security</groupId>
     <artifactId>webservices.security</artifactId>
     <packaging>hk2-jar</packaging>
     <name>WebServices Security and JSR 196 SOAP Profile Implementation</name>
@@ -71,32 +70,32 @@
             <artifactId>hk2</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.core</groupId>
+            <groupId>org.glassfish.main.core</groupId>
             <artifactId>kernel</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.deployment</groupId>
+            <groupId>org.glassfish.main.deployment</groupId>
             <artifactId>dol</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.common</groupId>
+            <groupId>org.glassfish.main.common</groupId>
             <artifactId>common-util</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.deployment</groupId>
+            <groupId>org.glassfish.main.deployment</groupId>
             <artifactId>deployment-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.common</groupId>
+            <groupId>org.glassfish.main.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.common</groupId>
+            <groupId>org.glassfish.main.common</groupId>
             <artifactId>internal-api</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -107,12 +106,12 @@
         </dependency>
 
         <dependency>
-           <groupId>org.glassfish.common</groupId>
+           <groupId>org.glassfish.main</groupId>
             <artifactId>container-common</artifactId>
             <version>${project.version}</version>
         </dependency> -->
         <dependency>
-           <groupId>org.glassfish.web</groupId>
+           <groupId>org.glassfish.main.web</groupId>
             <artifactId>web-glue</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -133,28 +132,28 @@
             <artifactId>jaxb-api-osgi</artifactId>
         </dependency>
         <!--<dependency>
-           <groupId>org.glassfish</groupId>
+           <groupId>org.glassfish.main.ejb</groupId>
             <artifactId>javax.ejb</artifactId>
             <version>${project.version}</version>
         </dependency> -->
         <dependency>
-            <groupId>org.glassfish.security</groupId>
+            <groupId>org.glassfish.main.security</groupId>
             <artifactId>security</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.security</groupId>
+            <groupId>org.glassfish.main.security</groupId>
             <artifactId>websecurity</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.web</groupId>
             <artifactId>javax.servlet</artifactId>
             <version>${project.version}</version>
             <!-- Don't set scope as provided. See issue #5992 -->
         </dependency>
         <dependency>
-         <groupId>org.glassfish.webservices</groupId>
+         <groupId>org.glassfish.main.webservices</groupId>
          <artifactId>jsr109-impl</artifactId>
          <version>${project.version}</version>
         </dependency>

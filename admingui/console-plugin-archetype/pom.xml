@@ -42,7 +42,12 @@
 -->
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.glassfish.admingui</groupId>
+  <parent>
+        <groupId>org.glassfish.main.admingui</groupId>
+        <artifactId>admingui</artifactId>
+        <version>3.1.2-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+  </parent>
   <artifactId>console-plugin-archetype</artifactId>
   <packaging>maven-archetype</packaging>
   <name>Admin Console Plugin Archetype</name>

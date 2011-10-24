@@ -44,7 +44,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish.packager</groupId>
+        <groupId>org.glassfish.main.packager</groupId>
         <artifactId>packages</artifactId>
         <version>3.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -87,7 +87,7 @@
                             <excludeArtifactIds>${packager.artifact.excludes}</excludeArtifactIds>
                             <stripVersion>true</stripVersion>
                         </configuration>
-                   </execution>                  
+                   </execution>         
                </executions>
            </plugin>
         </plugins>
@@ -99,18 +99,18 @@
           modules to be included in this bundle
         -->       
        <dependency>
-           <groupId>org.glassfish.persistence</groupId>
+           <groupId>org.glassfish.main.persistence</groupId>
            <artifactId>jpa-connector</artifactId>
            <version>${project.version}</version>
         </dependency>
         <dependency>
-           <groupId>org.glassfish.persistence</groupId>
+           <groupId>org.glassfish.main.persistence</groupId>
            <artifactId>eclipselink-wrapper</artifactId>
 	   <version>${project.version}</version>
 	   <type>pom</type>
         </dependency>
         <dependency>
-           <groupId>org.glassfish.persistence</groupId>
+           <groupId>org.glassfish.main.persistence</groupId>
            <artifactId>glassfish-oracle-jdbc-driver-packages</artifactId>
 	   <version>${project.version}</version>
         </dependency>
@@ -127,7 +127,7 @@
              can be excluded during staging -->	
    
        <dependency>        
-           <groupId>org.glassfish.packager</groupId>
+           <groupId>org.glassfish.main.packager</groupId>
            <artifactId>glassfish-jca</artifactId>
            <version>${project.version}</version>
            <classifier>artifacts</classifier>

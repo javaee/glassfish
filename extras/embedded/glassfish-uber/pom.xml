@@ -46,13 +46,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.glassfish</groupId>
+        <groupId>org.glassfish.main</groupId>
         <artifactId>glassfish-parent</artifactId>
         <version>3.1.2-SNAPSHOT</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
-    <groupId>org.glassfish.extras</groupId>
+    <groupId>org.glassfish.main.extras</groupId>
     <artifactId>glassfish-uber</artifactId>
     <version>3.1.2-SNAPSHOT</version>
 
@@ -82,7 +82,7 @@
                                     <includes>**/glassfish/modules/**/*.jar</includes>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>org.glassfish.extras</groupId>
+                                    <groupId>org.glassfish.main.extras</groupId>
                                     <artifactId>installroot-builder</artifactId>
                                     <version>${project.version}</version>
                                     <type>jar</type>
@@ -90,7 +90,7 @@
                                     <outputDirectory>${project.build.directory}/classes/modules/installroot-builder_jar</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>org.glassfish.extras</groupId>
+                                    <groupId>org.glassfish.main.extras</groupId>
                                     <artifactId>instanceroot-builder</artifactId>
                                     <version>${project.version}</version>
                                     <type>jar</type>
@@ -98,7 +98,7 @@
                                     <outputDirectory>${project.build.directory}/classes/modules/instanceroot-builder_jar</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>org.glassfish.extras</groupId>
+                                    <groupId>org.glassfish.main.extras</groupId>
                                     <artifactId>osgi-modules-uninstaller</artifactId>
                                     <version>${project.version}</version>
                                     <type>jar</type>
@@ -114,7 +114,7 @@
                                     <outputDirectory>${project.build.directory}/classes</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>org.glassfish.extras</groupId>
+                                    <groupId>org.glassfish.main.extras</groupId>
                                     <artifactId>bootstrap</artifactId>
                                     <version>${project.version}</version>
                                     <type>jar</type>
@@ -132,7 +132,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.glassfish.extras</groupId>
+                                    <groupId>org.glassfish.main.extras</groupId>
                                     <artifactId>osgi-main</artifactId>
                                     <version>${project.version}</version>
                                     <type>jar</type>

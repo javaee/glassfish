@@ -44,13 +44,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish.admingui</groupId>
+        <groupId>org.glassfish.main.admingui</groupId>
         <artifactId>admingui</artifactId>
         <version>3.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>console-jms-plugin</artifactId>
-    <groupId>org.glassfish.admingui</groupId>
     <packaging>hk2-jar</packaging>
     <name>Admin Console JMS Plugin</name>
 
@@ -70,7 +69,7 @@
                         <!-- _include does not work. See Felix-620.
                         <_include>osgi.bundle</_include>
                         -->
-                        <Export-Package>org.glassfish.jdbc.admingui</Export-Package>
+                        <Export-Package>org.glassfish.main.jdbc.admingui</Export-Package>
                     </instructions>
                 </configuration>
                 <executions>
@@ -118,25 +117,25 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.glassfish.admingui</groupId>
+            <groupId>org.glassfish.main.admingui</groupId>
             <artifactId>console-plugin-service</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.jms</groupId>
+            <groupId>org.glassfish.main.jms</groupId>
             <artifactId>jms-core</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.jms</groupId>
+            <groupId>org.glassfish.main.jms</groupId>
             <artifactId>jms-admin</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.admingui</groupId>
+            <groupId>org.glassfish.main.admingui</groupId>
             <artifactId>console-common</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>

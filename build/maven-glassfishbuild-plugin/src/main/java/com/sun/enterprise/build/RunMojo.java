@@ -252,7 +252,7 @@ public class RunMojo extends DistributionAssemblyMojo {
             HK2Factory.initialize();
             ModulesRegistry mr = createModuleRegistry(distPoms);
             mr.setParentClassLoader(this.getClass().getClassLoader());
-            Collection<Module> modules = mr.getModules("org.glassfish.core:glassfish");
+            Collection<Module> modules = mr.getModules("org.glassfish.main.core:glassfish");
             if (modules.size() == 1) {
                 Module mainModule = modules.iterator().next();
                 try {

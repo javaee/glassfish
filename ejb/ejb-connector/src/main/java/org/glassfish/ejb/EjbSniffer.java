@@ -98,7 +98,7 @@ public class EjbSniffer  extends GenericSniffer {
         @Override
      public Module[] setup(String containerHome, Logger logger) throws IOException {
 
-            final String ejbContainerName = "org.glassfish.ejb.ejb-container";
+            final String ejbContainerName = "org.glassfish.main.ejb.ejb-container";
             Collection<Module> modules = modulesRegistry.getModules(ejbContainerName);
             if (modules.isEmpty()) {
 

@@ -49,7 +49,7 @@
 
         
 
-       <resolveArtifact property="glassfish-common-tmp.zip" groupID="org.glassfish.packager" artifactID="glassfish-common-tmp" type="zip" />
+       <resolveArtifact property="glassfish-common-tmp.zip" groupId="org.glassfish.main.packager" artifactId="glassfish-common-tmp" type="zip" />
 
 
        <unzip src="${glassfish-common-tmp.zip}"
@@ -59,7 +59,7 @@
 	  </patternset>
        </unzip> 
 
-       <resolveArtifact property="embedded-fragment.zip" groupID="org.glassfish.extras" artifactID="glassfish-embedded-static-shell-frag" />
+       <resolveArtifact property="embedded-fragment.zip" groupId="org.glassfish.main.extras" artifactId="glassfish-embedded-static-shell-frag" />
 
 
        <unzip src="${embedded-fragment.zip}"

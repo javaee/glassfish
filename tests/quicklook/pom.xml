@@ -126,7 +126,7 @@
 
 		    <!-- AMX tests: once the RMI connector works, we can remove
                     <dependency>
-                        <groupId>org.glassfish.external</groupId>
+                        <groupId>org.glassfish.main.external</groupId>
                         <artifactId>jmxremote_optional-repackaged</artifactId>
                         <version>3.1.2-SNAPSHOT</version>
                     </dependency>

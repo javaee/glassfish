@@ -44,7 +44,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>org.glassfish.admin</groupId>
+        <groupId>org.glassfish.main.admin</groupId>
         <artifactId>admin</artifactId>
         <version>3.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -134,12 +134,12 @@
      </build>
     <dependencies>
 		<dependency>
-			<groupId>org.glassfish.common</groupId>
+			<groupId>org.glassfish.main.common</groupId>
 			<artifactId>stats77</artifactId>
 			<version>${project.version}</version>
 		</dependency>
         <dependency>
-            <groupId>org.glassfish.common</groupId>
+            <groupId>org.glassfish.main.common</groupId>
             <artifactId>common-util</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -148,12 +148,12 @@
             <artifactId>hk2</artifactId>
         </dependency>
         <dependency>
-           <groupId>org.glassfish.admin</groupId>
+           <groupId>org.glassfish.main.admin</groupId>
            <artifactId>config-api</artifactId>
            <version>${project.version}</version>
         </dependency>
          <dependency>
-            <groupId>org.glassfish.flashlight</groupId>
+            <groupId>org.glassfish.main.flashlight</groupId>
             <artifactId>flashlight-framework</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -134,7 +134,7 @@
 
     <!-- stage servicetag registry file and set source value -->
 
-	<resolveArtifact artifactId="servicetag-registry" groupId="org.glassfish.registration" property="servicetag-registry.zip"/>
+	<resolveArtifact artifactId="servicetag-registry" groupId="org.glassfish.main.registration" property="servicetag-registry.zip"/>
    
 
         <unzip src="${servicetag-registry.zip}"
@@ -149,7 +149,7 @@
 
         <!-- stage appropriate legal content for this distribution -->
 
-        <resolveArtifact artifactId="legal-fragment" groupId="org.glassfish.packager" property="legal-fragment.zip"/>
+        <resolveArtifact artifactId="legal-fragment" groupId="org.glassfish.main.packager" property="legal-fragment.zip"/>
 
 
         <unzip src="${legal-fragment.zip}"

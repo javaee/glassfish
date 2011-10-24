@@ -44,7 +44,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish.packager</groupId>
+        <groupId>org.glassfish.main.packager</groupId>
         <artifactId>packages</artifactId>
         <version>3.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -99,38 +99,38 @@
 	later
         -->       
         <dependency>
-            <groupId>org.glassfish.appclient</groupId>
+            <groupId>org.glassfish.main.appclient.client</groupId>
             <artifactId>gf-client</artifactId>
             <version>${project.version}</version>
         </dependency> 
         <dependency>
-            <groupId>org.glassfish.appclient</groupId>
+            <groupId>org.glassfish.main.appclient.client</groupId>
             <artifactId>gf-client-module</artifactId>
             <version>${project.version}</version>
         </dependency>
          <dependency>
-            <groupId>org.glassfish.appclient</groupId>
+            <groupId>org.glassfish.main.appclient.client</groupId>
             <artifactId>acc-config</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.appclient</groupId>
+            <groupId>org.glassfish.main.appclient.client</groupId>
             <artifactId>appclient-scripts</artifactId>
 	    <version>${project.version}</version>
 	    <type>distribution-fragment</type>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.appclient.server</groupId>
+            <groupId>org.glassfish.main.appclient.server</groupId>
             <artifactId>appclient-connector</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.appclient.server</groupId>
+            <groupId>org.glassfish.main.appclient.server</groupId>
             <artifactId>appclient-server-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.security</groupId>
+            <groupId>org.glassfish.main.security</groupId>
             <artifactId>appclient.security</artifactId>
             <version>${project.version}</version>
         </dependency> 

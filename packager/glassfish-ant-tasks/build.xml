@@ -46,7 +46,7 @@
     <target name="create.package">
 	    <mkdir dir="target/stage/${install.dir.name}/glassfish/lib/ant"/>
 
-	<resolveArtifact artifactId="ant-tasks" groupId="org.glassfish" property="ant-tasks.jar"/>
+	<resolveArtifact artifactId="ant-tasks" groupId="org.glassfish.main" property="ant-tasks.jar"/>
 
        <copy file="${ant-tasks.jar}" 
            tofile="target/stage/${install.dir.name}/glassfish/lib/ant/ant-tasks.jar" />

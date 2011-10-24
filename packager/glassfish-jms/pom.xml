@@ -44,7 +44,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish.packager</groupId>
+        <groupId>org.glassfish.main.packager</groupId>
         <artifactId>packages</artifactId>
         <version>3.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -99,7 +99,7 @@
           modules to be included in this bundle
         -->       
        <dependency>
-           <groupId>org.glassfish.admingui</groupId>
+           <groupId>org.glassfish.main.admingui</groupId>
            <artifactId>console-jms-plugin</artifactId>
             <version>${project.version}</version>
        </dependency>
@@ -108,22 +108,22 @@
            <artifactId>console-jms-plugin-help</artifactId>
        </dependency>
        <dependency>
-            <groupId>org.glassfish.jms</groupId>
+            <groupId>org.glassfish.main.jms</groupId>
 	    <artifactId>jms-core</artifactId>
             <version>${project.version}</version>
        </dependency> 
        <dependency>
-            <groupId>org.glassfish.jms</groupId>
+            <groupId>org.glassfish.main.jms</groupId>
        	    <artifactId>jms-admin</artifactId>
             <version>${project.version}</version>
        </dependency> 
        <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.javaee-api</groupId> 
 	    <artifactId>javax.jms</artifactId>
             <version>${project.version}</version>
        </dependency>
        <dependency>
-            <groupId>org.glassfish.external</groupId>
+            <groupId>org.glassfish.main.external</groupId>
             <artifactId>jmsra</artifactId>
             <version>${project.version}</version>
             <type>distribution-fragment</type>
@@ -132,7 +132,7 @@
              can be excluded during staging -->	
   
        <dependency>        
-           <groupId>org.glassfish.packager</groupId>
+           <groupId>org.glassfish.main.packager</groupId>
            <artifactId>glassfish-jts</artifactId>
            <version>${project.version}</version>
 	   <classifier>artifacts</classifier>

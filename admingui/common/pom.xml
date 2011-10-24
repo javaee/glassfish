@@ -45,12 +45,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish</groupId>
-	<artifactId>glassfish-parent</artifactId>
+        <groupId>org.glassfish.main.admingui</groupId>
+        <artifactId>admingui</artifactId>
         <version>3.1.2-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
-    <groupId>org.glassfish.admingui</groupId>
     <artifactId>console-common</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Admin Console Common</name>
@@ -117,13 +116,13 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.glassfish.deployment</groupId>
+            <groupId>org.glassfish.main.deployment</groupId>
             <artifactId>deployment-client</artifactId>
             <version>${project.version}</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.admingui</groupId>
+            <groupId>org.glassfish.main.admingui</groupId>
             <artifactId>console-plugin-service</artifactId>
             <version>${project.version}</version>
 	    <scope>provided</scope>
@@ -139,12 +138,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.web</groupId>
             <artifactId>javax.servlet</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.javaee-api</groupId>
             <artifactId>javax.servlet.jsp</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -159,7 +158,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.admin</groupId>
+            <groupId>org.glassfish.main.admin</groupId>
             <artifactId>rest-service</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>

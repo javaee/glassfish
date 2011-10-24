@@ -43,7 +43,7 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>org.glassfish.web</groupId>
+        <groupId>org.glassfish.main.web</groupId>
         <artifactId>web</artifactId>
         <version>3.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -91,7 +91,7 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.glassfish.web</groupId>
+            <groupId>org.glassfish.main.web</groupId>
             <artifactId>web-glue</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -100,7 +100,7 @@
             <artifactId>ha-api</artifactId>
         </dependency>        
         <dependency>
-            <groupId>org.glassfish.cluster</groupId>
+            <groupId>org.glassfish.main.cluster</groupId>
             <artifactId>gms-bootstrap</artifactId>
             <version>${project.version}</version>
         </dependency>

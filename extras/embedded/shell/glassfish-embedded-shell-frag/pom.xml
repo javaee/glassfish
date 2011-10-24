@@ -44,7 +44,7 @@
 <project>
 
     <parent>
-        <groupId>org.glassfish.extras</groupId>
+        <groupId>org.glassfish.main.extras</groupId>
         <artifactId>extras</artifactId>
         <version>3.1.2-SNAPSHOT</version>
         <relativePath>../../../pom.xml</relativePath>
@@ -126,7 +126,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.glassfish.main.extras</groupId>
             <artifactId>glassfish-embedded-shell</artifactId>
 	    <version>${project.version}</version>
 	    <optional>true</optional>

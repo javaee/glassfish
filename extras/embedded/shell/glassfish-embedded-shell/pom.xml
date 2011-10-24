@@ -46,7 +46,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.glassfish.extras</groupId>
+        <groupId>org.glassfish.main.extras</groupId>
         <artifactId>extras</artifactId>
         <version>3.1.2-SNAPSHOT</version>
         <relativePath>../../../pom.xml</relativePath>
@@ -125,7 +125,7 @@
                               <property name="output.dir" value="${project.build.directory}"/>
                               <property name="stage.dir" value="${project.build.directory}/stage"/>
                               <property name="classpath.file" value="${classpath.file}"/>
-		              <property name="bundlename" value="org.glassfish.embedded.shell"/>
+		              <property name="bundlename" value="org.glassfish.main.embedded.shell"/>
                               <ant antfile="../fixup.xml"/>
                           </tasks>
                       </configuration>
@@ -146,12 +146,12 @@
             <artifactId>hk2</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.common</groupId>
+            <groupId>org.glassfish.main.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.core</groupId>
+            <groupId>org.glassfish.main.core</groupId>
             <artifactId>glassfish</artifactId>
             <version>${project.version}</version>
         </dependency>

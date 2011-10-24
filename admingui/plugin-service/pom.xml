@@ -45,12 +45,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish</groupId>
-	<artifactId>glassfish-parent</artifactId>
-	<version>3.1.2-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <groupId>org.glassfish.main.admingui</groupId>
+        <artifactId>admingui</artifactId>
+        <version>3.1.2-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
-    <groupId>org.glassfish.admingui</groupId>
+
     <artifactId>console-plugin-service</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Admin Console Integration</name>
@@ -83,7 +83,7 @@
             <artifactId>hk2</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.common</groupId>
+            <groupId>org.glassfish.main.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -46,7 +46,7 @@
     <target name="create.package">
 	   <mkdir dir="target/stage/${install.dir.name}"/>
 
-	<resolveArtifact artifactId="javadb" groupId="org.glassfish.external" property="javadb.zip"/>
+	<resolveArtifact artifactId="javadb" groupId="org.glassfish.main.external" property="javadb.zip"/>
    
 
         <unzip src="${javadb.zip}"

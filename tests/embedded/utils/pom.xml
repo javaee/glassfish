@@ -55,7 +55,7 @@
     <name>Utilities for embedded testing</name>
     <dependencies>
         <dependency>
-            <groupId>org.glassfish.extras</groupId>
+            <groupId>org.glassfish.main.extras</groupId>
             <artifactId>glassfish-embedded-shell</artifactId>
             <version>3.1.2-SNAPSHOT</version>
         </dependency>

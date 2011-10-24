@@ -45,12 +45,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish</groupId>
-        <artifactId>pom</artifactId>
-        <version>8</version>
+        <groupId>net.java</groupId>
+        <artifactId>jvnet-parent</artifactId>
+        <version>1</version>
     </parent>
     
-    <groupId>org.glassfish</groupId>
+    <groupId>org.glassfish.main</groupId>
     <artifactId>glassfish-parent</artifactId>
     <packaging>pom</packaging>
     <version>3.1.2-SNAPSHOT</version>
@@ -63,6 +63,20 @@
         <system>IssueTracker</system>
         <url>http://java.net/jira/browse/GLASSFISH</url>
     </issueManagement>
+
+    <licenses>
+      <license>
+        <name>CDDL + GPLv2 with classpath exception</name>
+        <url>https://glassfish.dev.java.net/nonav/public/CDDL+GPL.html</url>
+        <distribution>repo</distribution>
+        <comments>A business-friendly OSS license</comments>
+      </license>
+    </licenses>
+    
+    <organization>
+        <name>GlassFish Community</name>
+        <url>http://glassfish.java.net</url>
+    </organization>
 
     <mailingLists>
         <mailingList>
@@ -168,6 +182,12 @@
         <ha-api.version>3.1.8</ha-api.version>
         <build.properties>maven-build-aix.properties</build.properties>
         <glassfishbuild.version>3.1.1</glassfishbuild.version>
+        <!--
+          java.net user id. Used in SCM setting to access java.net.
+          If your local id and java.net user id are diffrent, override this property
+          in your ~/.m2/settings.xml
+        -->
+        <java.net.username>${user.name}</java.net.username>
     </properties>
 
 
@@ -570,6 +590,10 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version> 2.0.2 </version>
+                    <configuration>
+                        <source>1.6</source>
+                        <target>1.6</target>
+                    </configuration>
                 </plugin>
 
                 <plugin>
@@ -1619,4 +1643,29 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
+
+    <repositories>
+        <!-- first hits nexus repo for any artifact request, then falls to the next repo in the list / order -->
+        <repository>
+            <id>glassfish-repo-archive</id>
+            <name>Nexus repository collection for Glassfish</name>
+            <url>http://maven.glassfish.org/content/groups/glassfish</url>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <!-- first hits nexus repo for any artifact request, then falls to the next repo in the list / order -->
+        <pluginRepository>
+            <id>glassfish-repo-archive</id>
+            <name>Nexus repository collection for Glassfish</name>
+            <url>http://maven.glassfish.org/content/groups/glassfish</url>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
 </project>
