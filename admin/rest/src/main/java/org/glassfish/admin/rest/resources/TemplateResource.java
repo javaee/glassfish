@@ -3,39 +3,34 @@
  *
  * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
- * The contents of this file are subject to the terms of either the GNU
- * General Public License Version 2 only ("GPL") or the Common Development
- * and Distribution License("CDDL") (collectively, the "License").  You
- * may not use this file except in compliance with the License.  You can
- * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
- * or packager/legal/LICENSE.txt.  See the License for the specific
- * language governing permissions and limitations under the License.
+ * The contents of this file are subject to the terms of either the GNU General
+ * Public License Version 2 only ("GPL") or the Common Development and
+ * Distribution License("CDDL") (collectively, the "License"). You may not use
+ * this file except in compliance with the License. You can obtain a copy of the
+ * License at https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html or
+ * packager/legal/LICENSE.txt. See the License for the specific language
+ * governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at packager/legal/LICENSE.txt.
  *
- * GPL Classpath Exception:
- * Oracle designates this particular file as subject to the "Classpath"
- * exception as provided by Oracle in the GPL Version 2 section of the License
- * file that accompanied this code.
+ * GPL Classpath Exception: Oracle designates this particular file as subject to
+ * the "Classpath" exception as provided by Oracle in the GPL Version 2 section
+ * of the License file that accompanied this code.
  *
- * Modifications:
- * If applicable, add the following below the License Header, with the fields
- * enclosed by brackets [] replaced by your own identifying information:
- * "Portions Copyright [year] [name of copyright owner]"
+ * Modifications: If applicable, add the following below the License Header,
+ * with the fields enclosed by brackets [] replaced by your own identifying
+ * information: "Portions Copyright [year] [name of copyright owner]"
  *
- * Contributor(s):
- * If you wish your version of this file to be governed by only the CDDL or
- * only the GPL Version 2, indicate your decision by adding "[Contributor]
- * elects to include this software in this distribution under the [CDDL or GPL
- * Version 2] license."  If you don't indicate a single choice of license, a
- * recipient has the option to distribute your version of this file under
- * either the CDDL, the GPL Version 2 or to extend the choice of license to
- * its licensees as provided above.  However, if you add GPL Version 2 code
- * and therefore, elected the GPL Version 2 license, then the option applies
- * only if the new code is made subject to such option by the copyright
- * holder.
+ * Contributor(s): If you wish your version of this file to be governed by only
+ * the CDDL or only the GPL Version 2, indicate your decision by adding
+ * "[Contributor] elects to include this software in this distribution under the
+ * [CDDL or GPL Version 2] license." If you don't indicate a single choice of
+ * license, a recipient has the option to distribute your version of this file
+ * under either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above. However, if you add GPL Version 2 code and
+ * therefore, elected the GPL Version 2 license, then the option applies only if
+ * the new code is made subject to such option by the copyright holder.
  */
 package org.glassfish.admin.rest.resources;
 
@@ -72,15 +67,13 @@ import static org.glassfish.admin.rest.Util.eleminateHypen;
 @Produces({"text/html;qs=2", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
 @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
 public class TemplateResource {
+
     @Context
     protected HttpHeaders requestHeaders;
-
     @Context
     protected UriInfo uriInfo;
-
     @Context
     protected ResourceContext resourceContext;
-
     @Context
     protected Habitat habitat;
     protected Dom entity;  //may be null when not created yet...
@@ -90,6 +83,7 @@ public class TemplateResource {
     protected String childID; // id of the current child if part of a list, might be null
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateResource.class);
     final private static List<String> attributesToSkip = new ArrayList<String>() {
+
         {
             add("parent");
             add("name");
@@ -139,7 +133,7 @@ public class TemplateResource {
             //just update it.
             data = ResourceUtil.translateCamelCasedNamesToXMLNames(data);
             ActionReporter ar = Util.applyChanges(data, uriInfo, habitat);
-            if(ar.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
+            if (ar.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
                 //TODO better error handling.
                 return Response.status(400).entity(ResourceUtil.getActionReportResult(ar, "Could not apply changes" + ar.getMessage(), requestHeaders, uriInfo)).build();
             }
@@ -261,8 +255,8 @@ public class TemplateResource {
     }
 
     public void setParentAndTagName(Dom parent, String tagName) {
-        
-        if (parent==null){ //prevent https://glassfish.dev.java.net/issues/show_bug.cgi?id=14125
+
+        if (parent == null) { //prevent https://glassfish.dev.java.net/issues/show_bug.cgi?id=14125
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
         this.parent = parent;
@@ -286,45 +280,35 @@ public class TemplateResource {
     public static HashMap<String, String> createDataBasedOnForm(FormDataMultiPart formData) {
         HashMap<String, String> data = new HashMap<String, String>();
         try {
-            /* data passed to the generic command running
-             *
-             * */
-
             Map<String, List<FormDataBodyPart>> m1 = formData.getFields();
 
             Set<String> ss = m1.keySet();
             for (String fieldName : ss) {
-                FormDataBodyPart n = formData.getField(fieldName);
-                Logger.getLogger(TemplateResource.class.getName()).log(Level.INFO, "fieldName={0}", fieldName);
+                for (FormDataBodyPart bodyPart : formData.getFields(fieldName)) {
 
+                    if (bodyPart.getContentDisposition().getFileName() != null) {//we have a file
+                        //save it and mark it as delete on exit.
+                        InputStream fileStream = bodyPart.getValueAs(InputStream.class);
+                        String mimeType = bodyPart.getMediaType().toString();
 
-                if (n.getContentDisposition().getFileName() != null) {//we have a file
-                    //save it and mark it as delete on exit.
-                    InputStream fileStream = n.getValueAs(InputStream.class);
-                    String mimeType = n.getMediaType().toString();
-
-                    //Use just the filename without complete path. File creation
-                    //in case of remote deployment failing because fo this.
-                    String fileName = n.getContentDisposition().getFileName();
-                    if (fileName.contains("/")) {
-                        fileName = Util.getName(fileName, '/');
-                    } else {
-                        if (fileName.contains("\\")) {
-                            fileName = Util.getName(fileName, '\\');
+                        //Use just the filename without complete path. File creation
+                        //in case of remote deployment failing because fo this.
+                        String fileName = bodyPart.getContentDisposition().getFileName();
+                        if (fileName.contains("/")) {
+                            fileName = Util.getName(fileName, '/');
+                        } else {
+                            if (fileName.contains("\\")) {
+                                fileName = Util.getName(fileName, '\\');
+                            }
                         }
-                    }
 
-                    File f = saveFile(fileName, mimeType, fileStream);
-                    f.deleteOnExit();
-                    //put only the local path of the file in the same field.
-                    data.put(fieldName, f.getAbsolutePath());
+                        File f = Util.saveFile(fileName, mimeType, fileStream);
+                        f.deleteOnExit();
+                        //put only the local path of the file in the same field.
+                        data.put(fieldName, f.getAbsolutePath());
 
-                } else {
-                    try {
-                        Logger.getLogger(TemplateResource.class.getName()).log(Level.INFO, "Values={0} === {1}", new Object[]{fieldName, n.getValue()});
-                        data.put(fieldName, n.getValue());
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } else {
+                        data.put(fieldName, bodyPart.getValue());
                     }
                 }
             }
@@ -336,6 +320,7 @@ public class TemplateResource {
         return data;
 
     }
+
 
     public void setBeanByKey(List<Dom> parentList, String id) {
         if (parentList != null) { // Believe it or not, this can happen
@@ -371,10 +356,10 @@ public class TemplateResource {
         RestActionReporter ar = new RestActionReporter();
         ar.setExtraProperties(new Properties());
         ConfigBean entity = (ConfigBean) getEntity();
-        if (childID!=null){
-             ar.setActionDescription(childID);
-           
-        }else if (childModel != null) {
+        if (childID != null) {
+            ar.setActionDescription(childID);
+
+        } else if (childModel != null) {
             ar.setActionDescription(childModel.getTagName());
         }
         if (showEntityValues) {
@@ -390,7 +375,7 @@ public class TemplateResource {
 
         ResourceUtil.addMethodMetaData(ar, mmd);
         if (entity != null) {
-            ar.getExtraProperties().put("childResources", ResourceUtil.getResourceLinks(entity, uriInfo, 
+            ar.getExtraProperties().put("childResources", ResourceUtil.getResourceLinks(entity, uriInfo,
                     ResourceUtil.canShowDeprecatedItems(habitat)));
         }
         ar.getExtraProperties().put("commands", ResourceUtil.getCommandLinks(getCommandResourcesPaths()));
@@ -415,41 +400,6 @@ public class TemplateResource {
         return ResourceUtil.getCommand(RestRedirect.OpType.DELETE, getEntity().model);
     }
 
-    private static File saveFile(String fileName, String mimeType, InputStream fileStream) {
-        BufferedOutputStream out = null;
-        File f = null;
-        try {
-            if (fileName.contains(".")) {
-                //String prefix = fileName.substring(0, fileName.indexOf("."));
-                // String suffix = fileName.substring(fileName.indexOf("."), fileName.length());
-                //if (prefix.length() < 3) {
-                //    prefix = "glassfish" + prefix;
-                //}
-                f = new File(new File(System.getProperty("java.io.tmpdir")), fileName);
-            }
-
-
-            out = new BufferedOutputStream(new FileOutputStream(f));
-            byte[] buffer = new byte[32 * 1024];
-            int bytesRead = 0;
-            while ((bytesRead = fileStream.read(buffer)) != -1) {
-                out.write(buffer, 0, bytesRead);
-            }
-            return f;
-        } catch (IOException ex) {
-            Logger.getLogger(TemplateResource.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(TemplateResource.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        return null;
-    }
-
     /*
      * see if we can understand the ConfigBeans annotations like:
      * @RestRedirects(
@@ -458,7 +408,6 @@ public class TemplateResource {
     @RestRedirect(opType= RestRedirect.OpType.POST, commandName = "redeploy")
     }
      **/
-
     /**
      * Returns the list of command resource paths [command, http method, url/path]
      *
@@ -476,13 +425,12 @@ public class TemplateResource {
     }
 
     // This has to be smarter, since we are encoding / in resource names now
-
     private void addDefaultParameter(HashMap<String, String> data) {
         String defaultParameterValue = getEntity().getKey();
-        if (defaultParameterValue==null){// no primary key
+        if (defaultParameterValue == null) {// no primary key
             //we take the parent key.
             // see for example delete-ssl that that the parent key name as ssl does not have a key
-            defaultParameterValue= parent.getKey();
+            defaultParameterValue = parent.getKey();
         }
         data.put("DEFAULT", defaultParameterValue);
     }
@@ -501,7 +449,6 @@ public class TemplateResource {
     }
 
     //******************************************************************************************************************
-
     private Map<String, String> getAttributes(Dom entity) {
         Map<String, String> result = new TreeMap<String, String>();
         Set<String> attributeNames = entity.model.getAttributeNames();

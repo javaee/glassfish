@@ -42,6 +42,11 @@ package org.glassfish.admin.rest;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.common.ActionReporter;
 import com.sun.jersey.api.client.Client;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import org.glassfish.admin.rest.provider.ProviderUtil;
 import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
@@ -50,6 +55,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.core.PathSegment;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport.MessagePart;
@@ -145,12 +152,6 @@ public class Util {
         // problems with resources named 'http'.
         int nameIndex = url.indexOf(name, url.indexOf(":") + 1);
         return getName(url.substring(0, nameIndex - 1), '/');
-    }
-    
-    public static void main (String... args) {
-        String url = "http://localhost:4848/management/domain/configs/config/server-config/java-config/generate-jvm-report";
-        String gp = getGrandparentName(url);
-        System.out.println("gp = " + gp);
     }
 
     /**
@@ -257,12 +258,12 @@ public class Util {
         String methodName = upperCaseFirstLetter(elementName);
         return methodName = prefix + methodName;
     }
-    
+
     public static Client getJerseyClient() {
         if (client == null) {
             client = Client.create();
         }
-        
+
         return client;
     }
 
@@ -288,7 +289,7 @@ public class Util {
             candidatePathSegment = pathSegments.subList(1, pathSegments.size());
         } else {
             // We are being called for a config change at domain level.
-            // CLI "set" requires name to be of form domain.<attribute-name>. 
+            // CLI "set" requires name to be of form domain.<attribute-name>.
             // Preserve "domain"
             candidatePathSegment = pathSegments;
         }
@@ -301,7 +302,7 @@ public class Util {
         String setBasePath = sb.toString();
         ParameterMap parameters = new ParameterMap();
         Map<String, String> currentValues = getCurrentValues(setBasePath, habitat);
-        
+
         for (Map.Entry<String, String> entry : data.entrySet()) {
             String currentValue = currentValues.get(setBasePath + entry.getKey());
             if ((currentValue == null) || entry.getValue().equals("") || (!currentValue.equals(entry.getValue()))) {
@@ -314,14 +315,14 @@ public class Util {
             return new RestActionReporter(); // noop
         }
     }
-    
+
     private static Map<String, String> getCurrentValues(String basePath, Habitat habitat) {
         Map<String, String> values = new HashMap<String, String>();
         final String path = (basePath.endsWith(".")) ? basePath.substring(0, basePath.length()-1) : basePath;
-        RestActionReporter gr = ResourceUtil.runCommand("get", new ParameterMap() {{ 
-            add ("DEFAULT", path); 
+        RestActionReporter gr = ResourceUtil.runCommand("get", new ParameterMap() {{
+            add ("DEFAULT", path);
         }}, habitat, "");
-        
+
         MessagePart top = gr.getTopMessagePart();
         for (MessagePart child : top.getChildren()) {
             String message = child.getMessage();
@@ -330,7 +331,36 @@ public class Util {
                 values.put(parts[0], (parts.length > 1) ? parts[1] : "");
             }
         }
-        
+
         return values;
+    }
+
+    public static File saveFile(String fileName, String mimeType, InputStream fileStream) {
+        BufferedOutputStream out = null;
+        File f = null;
+        try {
+            if (fileName.contains(".")) {
+                f = new File(new File(System.getProperty("java.io.tmpdir")), fileName);
+            }
+
+            out = new BufferedOutputStream(new FileOutputStream(f));
+            byte[] buffer = new byte[32 * 1024];
+            int bytesRead = 0;
+            while ((bytesRead = fileStream.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+            return f;
+        } catch (IOException ex) {
+            Logger.getLogger(Util.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(Util.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return null;
     }
 }
