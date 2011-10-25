@@ -833,7 +833,7 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
                 AccessController.doPrivileged(new PrivilegedAction<Set>() {
 
                 public Set run() {
-                    return sub.getPrivateCredentials();
+                    return sub.getPrivateCredentials(PasswordCredential.class);
                 }
             });
             if (privateCredSet.isEmpty()) { // this is runas case dont set
