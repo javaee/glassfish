@@ -101,7 +101,6 @@ import org.jvnet.hk2.tracing.TracingUtilities;
 public class DeployCommand extends DeployCommandParameters implements AdminCommand, EventListener {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployCommand.class);
-    final private static String COPY_IN_PLACE_ARCHIVE_PROP_NAME = "copy.inplace.archive";
     
     @Inject
     Applications apps;
@@ -523,61 +522,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             final Logger logger) throws IOException {
         final File finalUploadDir = deploymentContext.getAppInternalDir();
         finalUploadDir.mkdirs();
-        safeCopyOfApp = renameUploadedFileOrCopyInPlaceFile(
-                finalUploadDir, originalPathValue, logger);
-        safeCopyOfDeploymentPlan = renameUploadedFileOrCopyInPlaceFile(
-                finalUploadDir, deploymentplan, logger);
-    }
-
-    private File renameUploadedFileOrCopyInPlaceFile(
-            final File finalUploadDir,
-            final File fileParam,
-            final Logger logger) throws IOException {
-        if (fileParam == null) {
-            return null;
-        }
-        /*
-         * If the fileParam resides within the applications directory then
-         * it has been uploaded.  In that case, rename it.
-         */
-        final File appsDir = env.getApplicationRepositoryPath();
-
-        /*
-         * The default answer is the in-place file, to handle the
-         * directory-deployment case or the in-place archive case if we ae
-         * not copying the in-place archive.
-         */
-        File result = fileParam;
-        
-        if ( ! fileParam.isDirectory() && ! appsDir.toURI().relativize(fileParam.toURI()).isAbsolute()) {
-            /*
-             * The file lies within the apps directory, so it was 
-             * uploaded.
-             */
-            result = new File(finalUploadDir, fileParam.getName());
-            FileUtils.renameFile(fileParam, result);
-            result.setLastModified(fileParam.lastModified());
-        } else {
-            final boolean copyInPlaceArchive = Boolean.valueOf(
-                    System.getProperty(COPY_IN_PLACE_ARCHIVE_PROP_NAME, "true"));
-            if ( ! fileParam.isDirectory() && copyInPlaceArchive) {
-                /*
-                 * The file was not uploaded and the in-place file is not a directory,
-                 * so copy the archive to the permanent location.
-                 */
-                final long startTime = System.currentTimeMillis();
-                result = new File(finalUploadDir, fileParam.getName());
-                FileUtils.copy(fileParam, result);
-                result.setLastModified(fileParam.lastModified());
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.FINE, "*** In-place archive copy of {0} took {1} ms",
-                            new Object[]{
-                                fileParam.getAbsolutePath(),
-                                System.currentTimeMillis() - startTime});
-                }
-            }
-        }
-        return result;
+        safeCopyOfApp = DeploymentCommandUtils.renameUploadedFileOrCopyInPlaceFile( finalUploadDir, originalPathValue, logger, env);
+        safeCopyOfDeploymentPlan = DeploymentCommandUtils.renameUploadedFileOrCopyInPlaceFile( finalUploadDir, deploymentplan, logger, env);
     }
 
     private void recordFileLocations(

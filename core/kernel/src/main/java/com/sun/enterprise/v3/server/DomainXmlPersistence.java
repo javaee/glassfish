@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -216,6 +216,15 @@ public class DomainXmlPersistence implements ConfigurationPersistence, Configura
         }
         saved(destination);
     }
+
+    /**
+     * Update the modified time of the persisted domain.xml so that 
+     * instances will detect it as changed.
+     * This is for triggering instance synchronization to occur.
+     */
+    public void touch() throws IOException {
+        getDestination().setLastModified(System.currentTimeMillis());
+    } 
 
     protected void saved(File destination) {
         logger.fine("Configuration saved at " + destination);
