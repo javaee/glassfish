@@ -159,6 +159,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
                 AdminAccessController.Access access = authenticate(req);
                 if (access == AdminAccessController.Access.FULL) {
+                    /*
                     //Use double checked locking to lazily initialize adapter
                     if (adapter == null) {
                         synchronized(com.sun.grizzly.tcp.Adapter.class) {
@@ -167,6 +168,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                             }
                         }
                     }
+                    */
                     //delegate to adapter managed by Jersey.
                     ((GrizzlyAdapter)adapter).service(req, res);
 
@@ -297,6 +299,12 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         if (event.is(EventTypes.SERVER_READY)) {
             latch.countDown();
             logger.fine("Ready to receive REST resource requests");
+
+            try {
+                exposeContext();
+            } catch (EndpointRegistrationException ex) {
+                Logger.getLogger(RestAdapter.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         //the count-down does not start if any other event is received
     }
@@ -384,13 +392,13 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     private void exposeContext()
             throws EndpointRegistrationException {
         String context = getContextRoot();
-        logger.fine("Exposing rest resource context root: " + context);
+        logger.log(Level.FINE, "Exposing rest resource context root: {0}", context);
         if ((context != null) || (!"".equals(context))) {
             Set<Class<?>> classes = getResourcesConfig();
            // adapter = LazyJerseyInit.exposeContext(classes, sc, habitat);
             adapter = getLazyJersey().exposeContext(classes, sc, habitat);
             ((GrizzlyAdapter) adapter).setResourcesContextPath(context);
-            
+
             logger.log(Level.INFO, "rest.rest_interface_initialized", context);
         }
     }
