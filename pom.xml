@@ -413,7 +413,6 @@
             <id>release-phase-all</id>
             <modules>
                 <module>cluster</module>
-                <module>build</module>
                 <module>findbugs</module>
                 <module>javaee-api</module>
                 <module>common</module>
