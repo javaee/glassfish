@@ -2067,7 +2067,7 @@ public class VirtualServer extends StandardHost
             return;
         }
 
-        if (!contextRoot.equals("/")) {
+        if (!contextRoot.startsWith("/")) {
             contextRoot = "/"+contextRoot;
         }
         ExtendedDeploymentContext deploymentContext = null;
