@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -220,6 +220,14 @@ public interface RuntimeTagNames extends TagNames {
     public static final String CACHE_IDLE_TIMEOUT_IN_SECONDS = "cache-idle-timeout-in-seconds";
     public static final String REMOVAL_TIMEOUT_IN_SECONDS = "removal-timeout-in-seconds";
     public static final String VICTIM_SELECTION_POLICY = "victim-selection-policy";
+    
+    // thread-pool related
+    public static final String THREAD_CORE_POOL_SIZE = "thread-core-pool-size";
+    public static final String THREAD_MAX_POOL_SIZE  = "thread-max-pool-size";
+    public static final String THREAD_KEEP_ALIVE_SECONDS = "thread-keep-alive-seconds";
+    public static final String THREAD_QUEUE_CAPACITY = "thread-queue-capacity";
+    public static final String ALLOW_CORE_THREAD_TIMEOUT = "allow-core-thread-timeout";
+    public static final String PRESTART_ALL_CORE_THREADS = "prestart-all-core-threads";
     
     // flush-at-end-of-method
     public static final String FLUSH_AT_END_OF_METHOD =

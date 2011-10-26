@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,53 +41,32 @@
 package com.sun.ejb.containers;
 
 import com.sun.ejb.EjbInvocation;
-
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.PostConstruct;
-import org.glassfish.api.invocation.InvocationManager;
-import org.glassfish.api.invocation.ComponentInvocation;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import com.sun.ejb.Container;
 import com.sun.logging.LogDomains;
-
 import java.lang.reflect.Method;
-
 import javax.ejb.EJBException;
 
 /**
  * @author Mahesh Kannan
  */
 @Service
-public class EjbAsyncInvocationManager
-    extends ThreadPoolExecutor {
-
-    private Logger _logger = LogDomains.getLogger(EjbAsyncInvocationManager.class, LogDomains.EJB_LOGGER);
+public class EjbAsyncInvocationManager {
+    private static final Logger _logger = LogDomains.getLogger(EjbAsyncInvocationManager.class, LogDomains.EJB_LOGGER);
 
     private AtomicLong invCounter = new AtomicLong();
-
+    
     // Map of Remote Future<> tasks.
     private ConcurrentHashMap<Long, EjbFutureTask> remoteTaskMap =
             new ConcurrentHashMap<Long, EjbFutureTask>();
 
-    public EjbAsyncInvocationManager() {
-        //TODO get the paramters from ejb-container config
-        super(16, 32, 60, TimeUnit.SECONDS, new LinkedBlockingQueue());
-        super.setThreadFactory(new EjbAsyncThreadFactory());
-    }
-
-
     public Future createLocalFuture(EjbInvocation inv) {
         return createFuture(inv);
-
     }
 
     public Future createRemoteFuture(EjbInvocation inv, Container container, GenericEJBHome ejbHome) {
@@ -147,8 +126,9 @@ public class EjbAsyncInvocationManager
         // CallerPrincipal and sets it on the dispatch thread
         // before authorization.
         futureTask.getEjbAsyncTask().initialize(asyncInv);
-
-        return super.submit(futureTask.getEjbAsyncTask());
+        
+        EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
+        return ejbContainerUtil.getThreadPoolExecutor(null).submit(futureTask.getEjbAsyncTask());
     }
 
     public void cleanupContainerTasks(Container container) {
@@ -182,34 +162,9 @@ public class EjbAsyncInvocationManager
                    remoteTaskMap.size() + " remaining");
 
         return;
-
     }
-
-    /**
-     * Ensure that we give out our EjbFutureTask as opposed to JDK's FutureTask
-     * @param callable
-     * @return a RunnableFuture
-     */
-    protected <T> RunnableFuture<T> newTaskFor(Callable<T> callable) {
-        FutureTask<T> result = null;
-
-        if (callable instanceof EjbAsyncTask) {
-            EjbAsyncTask task = (EjbAsyncTask) callable;
-            result = task.getFutureTask();
-        } else {
-            // TODO Why would this even happen if we're only using this
-            // for our ejb async tasks??
-            result = new FutureTask(callable);
-        }
-
-        return result;
-    }
-
 
     RemoteAsyncResult remoteCancel(Long asyncTaskID) {
-
-
-
         EjbFutureTask task = getLocalTaskForID(asyncTaskID);
 
         if( _logger.isLoggable(Level.FINE) ) {
@@ -290,12 +245,9 @@ public class EjbAsyncInvocationManager
     }
 
     RemoteAsyncResult remoteGet(Long asyncTaskID) {
-
-
         EjbFutureTask task = getLocalTaskForID(asyncTaskID);
 
         if( _logger.isLoggable(Level.FINE) ) {
-            EjbAsyncTask asyncTask = task.getEjbAsyncTask();
             _logger.log(Level.FINE, "Enter remoteGet for async task " + asyncTaskID +
                     " : " + task.getEjbAsyncTask().getEjbInvocation());
         }
@@ -328,7 +280,6 @@ public class EjbAsyncInvocationManager
         EjbFutureTask task = getLocalTaskForID(asyncTaskID);
 
         if( _logger.isLoggable(Level.FINE) ) {
-            EjbAsyncTask asyncTask = task.getEjbAsyncTask();
             _logger.log(Level.FINE, "Enter remoteGetWithTimeout for async task " + asyncTaskID +
                     " timeout=" + timeout + " , unit=" + unit + " : " +
                     task.getEjbAsyncTask().getEjbInvocation());
@@ -369,8 +320,6 @@ public class EjbAsyncInvocationManager
 
 
     private EjbFutureTask getLocalTaskForID(Long asyncTaskID) {
-
-
         EjbFutureTask task = remoteTaskMap.get(asyncTaskID);
 
         if( task == null ) {
@@ -382,21 +331,4 @@ public class EjbAsyncInvocationManager
         
         return task;
     }
-
-
-    private static class EjbAsyncThreadFactory
-        implements ThreadFactory {
-
-        private AtomicInteger threadId = new AtomicInteger(0);
-
-        public Thread newThread(Runnable r) {
-            // TODO change this to use common thread pool
-            Thread th = new Thread(r, "Ejb-Async-Thread-" + threadId.incrementAndGet());
-            th.setDaemon(true);
-
-            th.setContextClassLoader(null); //Prevent any app classloader being set as CCL
-            return th;
-        }
-    }
-
 }
