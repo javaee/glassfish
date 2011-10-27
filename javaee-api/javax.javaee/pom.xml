@@ -44,13 +44,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>org.glassfish</groupId>
+        <groupId>org.glassfish.main.javaee-api</groupId>
         <artifactId>javaee-api</artifactId>
         <version>3.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.glassfish</groupId>
     <artifactId>javax.javaee</artifactId>
     <!-- The packaging type is jar so that maven-bundle-plugin
          does not execute.-->
@@ -156,66 +155,68 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.javaee-api</groupId>
             <artifactId>javax.annotation</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.ejb</groupId>
             <artifactId>javax.ejb</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.deploy</groupId>
             <artifactId>javax.enterprise.deploy</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.admin</groupId>
             <artifactId>javax.management.j2ee</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.connectors</groupId>
             <artifactId>javax.resource</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.security</groupId>
             <artifactId>javax.security.auth.message</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.security</groupId>
             <artifactId>javax.security.jacc</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.transaction</groupId>
             <artifactId>javax.transaction</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
+<!--
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.</groupId>
             <artifactId>javax.xml.stream</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
+-->
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>javax.mail</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.javaee-api</groupId>
             <artifactId>javax.xml.rpc</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
@@ -231,13 +232,13 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.javaee-api</groupId>
             <artifactId>javax.servlet.jsp</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.javaee-api</groupId>
             <artifactId>javax.jws</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
@@ -250,7 +251,7 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.javaee-api</groupId>
             <artifactId>javax.servlet.jsp.jstl</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>

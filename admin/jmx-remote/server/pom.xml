@@ -94,12 +94,12 @@
             </dependency>
 
             <dependency>
-                <groupId>org.glassfish.common</groupId>
+                <groupId>org.glassfish.main.common</groupId>
                 <artifactId>glassfish-api</artifactId>
             </dependency>
 
             <dependency>
-                <groupId>org.glassfish.core</groupId>
+                <groupId>org.glassfish.main.core</groupId>
                 <artifactId>kernel</artifactId>
                 <version>${project.version}</version>
             </dependency>

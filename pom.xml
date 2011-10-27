@@ -847,7 +847,7 @@
                 </configuration>
                 <dependencies>
                     <dependency>
-                        <groupId>org.glassfish</groupId>
+                        <groupId>org.glassfish.main</groupId>
                         <artifactId>findbugs</artifactId>
                         <version>${project.version}</version>
                     </dependency>
@@ -872,7 +872,7 @@
                 <!--
                 <dependencies>
                     <dependency>
-                        <groupId>org.glassfish</groupId>
+                        <groupId>org.glassfish.main</groupId>
                         <artifactId>findbugs</artifactId>
                         <version>${project.version}</version>
                     </dependency>
