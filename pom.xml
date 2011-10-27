@@ -152,7 +152,7 @@
         <jaxr-api-osgi.version>1.0-b01</jaxr-api-osgi.version> 
 
         <javax-persistence-api.version>2.0.3</javax-persistence-api.version>
-        <eclipselink.version>2.3.1-M8</eclipselink.version>
+        <eclipselink.version>2.3.1-RC1</eclipselink.version>
         <dbschema.version>RELEASE60</dbschema.version>
         <!-- osgi version string must start with a number. Manually mapping above dbschema.version to osgi.version here -->
         <dbschema.osgi.version>6.0</dbschema.osgi.version>
