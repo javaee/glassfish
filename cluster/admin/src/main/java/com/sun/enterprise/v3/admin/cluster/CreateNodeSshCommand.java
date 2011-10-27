@@ -157,4 +157,9 @@ public class CreateNodeSshCommand extends CreateRemoteNodeCommand {
         }
         return list;
     }
+
+    @Override
+    protected String getInstallNodeCommandName() {
+        return "install-node-ssh";
+    }
 }
