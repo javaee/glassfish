@@ -1,4 +1,5 @@
 <%--
+<%
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
@@ -39,4 +40,5 @@
     holder.
 
 --%>
+<%@ page session="false" %>
 <%out.println("From test.jsp");%>
