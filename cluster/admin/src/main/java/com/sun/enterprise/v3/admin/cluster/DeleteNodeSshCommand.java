@@ -37,30 +37,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.admin.cluster;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.io.File;
-
-import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.config.serverbeans.*;
-import org.glassfish.api.ActionReport;
+import java.util.*;
 import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.ExecuteOn;
-import org.glassfish.api.admin.CommandRunner.CommandInvocation;
-import org.glassfish.api.admin.ParameterMap;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 
-import com.sun.enterprise.universal.process.ProcessManager;
-import com.sun.enterprise.universal.process.ProcessManagerException;
 
 /**
  * Remote AdminCommand to create a config node.  This command is run only on DAS.
@@ -77,6 +62,7 @@ public class DeleteNodeSshCommand extends DeleteNodeRemoteCommand {
     public final void execute(AdminCommandContext context) {
         executeInternal(context);
     }
+
     /**
      * Get list of password file entries
      * @return List
@@ -91,5 +77,10 @@ public class DeleteNodeSshCommand extends DeleteNodeRemoteCommand {
             list.add("AS_ADMIN_SSHKEYPASSPHRASE=" + nodeUtils.sshL.expandPasswordAlias(sshkeypassphrase));
         }
         return list;
+    }
+
+    @Override
+    protected String getUninstallCommandName() {
+        return "uninstall-node-ssh";
     }
 }
