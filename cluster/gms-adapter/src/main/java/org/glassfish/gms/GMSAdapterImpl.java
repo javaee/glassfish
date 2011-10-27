@@ -646,7 +646,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
         StringBuilder sb = new StringBuilder();
         final String SEP = ",";
-        final String httpScheme = "http://"; // some day https
+        final String scheme = "tcp://";
 
         // use server refs to find matching nodes
         for (String name : instanceNames) {
@@ -659,7 +659,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 }
                 Node node = nodes.getNode(server.getNodeRef());
                 if (node != null) {
-                    String host = httpScheme + node.getNodeHost() + ":" +
+                    String host = scheme + node.getNodeHost() + ":" +
                         clusterPort;
                     if (logger.isLoggable(Level.FINE)) {
                         logger.log(Level.FINE, String.format(
@@ -681,7 +681,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                         dasPropsFile.getAbsolutePath()));
                 }
                 Properties dasProps = getProperties(dasPropsFile);
-                String host = httpScheme +
+                String host = scheme +
                     dasProps.getProperty("agent.das.host") +
                     ":" +
                     clusterPort;
