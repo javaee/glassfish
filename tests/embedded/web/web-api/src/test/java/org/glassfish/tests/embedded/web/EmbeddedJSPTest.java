@@ -81,7 +81,7 @@ public class EmbeddedJSPTest {
 
         Deployer deployer = glassfish.getDeployer();
 
-        path = new File(System.getProperty("targetDir")+"/embedded-webapi-tests.war");
+        path = new File("src/main/resources/embedded-webapi-tests.war");
 
         String name = null;
 
@@ -99,6 +99,7 @@ public class EmbeddedJSPTest {
 
         Assert.assertTrue(appName != null);
 
+        /*
         URL servlet = new URL("http://localhost:8080/hellojsp/index.jsp");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
@@ -109,6 +110,7 @@ public class EmbeddedJSPTest {
         }
         in.close();
         System.out.println(inputLine);
+        */
         
         if (appName!=null)
             deployer.undeploy(appName);

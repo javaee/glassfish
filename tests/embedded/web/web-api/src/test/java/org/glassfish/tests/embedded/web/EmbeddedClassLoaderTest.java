@@ -67,12 +67,12 @@ public class EmbeddedClassLoaderTest {
 
         glassfish = GlassFishRuntime.bootstrap().newGlassFish();
         glassfish.start();
-        root = new File(System.getProperty("buildDir"));
+        root = new File("target/classes");
 
         wc = glassfish.getService(WebContainer.class);
         wc.setLogLevel(Level.INFO);
         WebContainerConfig config = new WebContainerConfig();
-        root = new File(System.getProperty("buildDir"));
+        root = new File("target/classes");
         config.setDocRootDir(root);
         config.setListings(true);
         config.setPort(8080);
@@ -81,7 +81,7 @@ public class EmbeddedClassLoaderTest {
     }
 
     private static void loadA(ClassLoader cl) {
-        String className = "org.glassfish.tests.embedded.web.EmbeddedClassLoaderTest";
+        String className = "TestCacaoList";
         try {
             System.out.println("---> Loading " + className + " with " + cl);
             cl.loadClass(className);
@@ -95,19 +95,18 @@ public class EmbeddedClassLoaderTest {
     @Test
     public void test() throws Exception {
         URL[] urls = new URL[1];
-        urls[0] = root.toURI().toURL();
+        urls[0] = (new File("src/main/resources/toto.jar")).toURI().toURL();
         URLClassLoader classLoader = new URLClassLoader(urls, EmbeddedClassLoaderTest.class.getClassLoader());
         loadA(classLoader);
 
         Thread.currentThread().setContextClassLoader(classLoader);
 
-        File path = new File(System.getProperty("targetDir")+"/embedded-webapi-tests.war");
+        File path = new File("src/main/resources/embedded-webapi-tests.war");
 
         Context context = wc.createContext(path, classLoader);
         wc.addContext(context, contextRoot);
 
-        /*
-        URL servlet = new URL("http://localhost:8080/"+contextRoot+"/myurl");
+        URL servlet = new URL("http://localhost:8080/test/testgf");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(
@@ -118,7 +117,13 @@ public class EmbeddedClassLoaderTest {
         while ((inputLine = in.readLine()) != null){
             sb.append(inputLine);
         }
-        in.close();   */
+
+        boolean success = sb.toString().contains("Class TestCacaoList loaded successfully from listener");
+        if (success) {
+            success = sb.toString().contains("Class TestCacaoList loaded successfully from servlet");
+        }
+        Assert.assertTrue(success);
+        in.close();
 
         wc.removeContext(context);
     } 
