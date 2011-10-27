@@ -7,5 +7,13 @@ set f=cli\src\main\java\com\sun\enterprise\admin\cli\cluster\InstallNodeDcomComm
 set g=cli\src\main\java\com\sun\enterprise\admin\cli\cluster\NativeRemoteCommandsBase.java
 set h=cli\src\main\java\com\sun\enterprise\admin\cli\cluster\UninstallNodeDcomCommand.java
 set i=ssh\src\main\java\org\glassfish\cluster\ssh\util\DcomUtils.java
+set j=admin\src\main\java\com\sun\enterprise\v3\admin\cluster\dcom\DeleteNodeDcom.java
+set k=admin\src\main\java\com\sun\enterprise\v3\admin\cluster\DeleteNodeRemoteCommand.java
+set l=admin\src\main\java\com\sun\enterprise\v3\admin\cluster\DeleteNodeSshCommand.java
+
+
+
+
+
 set tr=d:\gf\trunk\main\nucleus\cluster
 set br=d:\gf\branches\3.1.2\cluster

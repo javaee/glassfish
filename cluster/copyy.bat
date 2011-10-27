@@ -10,3 +10,7 @@ copy %br%\%f% %tr%\%f%
 copy %br%\%g% %tr%\%g%
 copy %br%\%h% %tr%\%h%
 copy %br%\%i% %tr%\%i%
+copy %br%\%j% %tr%\%j%
+copy %br%\%k% %tr%\%k%
+## do NOT copy l -- rest annotation!
+
