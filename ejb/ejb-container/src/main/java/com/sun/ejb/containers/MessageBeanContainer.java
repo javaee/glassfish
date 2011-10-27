@@ -857,7 +857,13 @@ public final class MessageBeanContainer extends BaseContainer implements
 						_logger.log(Level.FINE, "[MDBContainer] "
 								+ "Going to wait for a maximum of " + timeout
 								+ " milli-seconds.");
-						task.wait(timeout);
+                                                long maxWaitTime = System.currentTimeMillis() + timeout;
+                                                // wait in loop to guard against spurious wake-up
+                                                do {
+                                                    long timeTillTimeout = maxWaitTime - System.currentTimeMillis();
+                                                    if (timeTillTimeout <= 0) break;
+                                                    task.wait(timeTillTimeout);
+                                                } while (!task.isDone());
 					}
 
 					if (!task.isDone()) {
@@ -1191,8 +1197,6 @@ public final class MessageBeanContainer extends BaseContainer implements
 			_logger.log(Level.SEVERE, "containers.mdb.no_invocation",
 					new Object[] { appEJBName_, "" });
 		} else {
-			MessageBeanContextImpl beanContext = (MessageBeanContextImpl) invocation.context;
-
 			try {
 				if (invocation.containerStartsTx) {
 					// Unregister the session associated with
