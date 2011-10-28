@@ -3,41 +3,35 @@
  *
  * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
- * The contents of this file are subject to the terms of either the GNU
- * General Public License Version 2 only ("GPL") or the Common Development
- * and Distribution License("CDDL") (collectively, the "License").  You
- * may not use this file except in compliance with the License.  You can
- * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
- * or packager/legal/LICENSE.txt.  See the License for the specific
- * language governing permissions and limitations under the License.
+ * The contents of this file are subject to the terms of either the GNU General
+ * Public License Version 2 only ("GPL") or the Common Development and
+ * Distribution License("CDDL") (collectively, the "License"). You may not use
+ * this file except in compliance with the License. You can obtain a copy of the
+ * License at https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html or
+ * packager/legal/LICENSE.txt. See the License for the specific language
+ * governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at packager/legal/LICENSE.txt.
  *
- * GPL Classpath Exception:
- * Oracle designates this particular file as subject to the "Classpath"
- * exception as provided by Oracle in the GPL Version 2 section of the License
- * file that accompanied this code.
+ * GPL Classpath Exception: Oracle designates this particular file as subject to
+ * the "Classpath" exception as provided by Oracle in the GPL Version 2 section
+ * of the License file that accompanied this code.
  *
- * Modifications:
- * If applicable, add the following below the License Header, with the fields
- * enclosed by brackets [] replaced by your own identifying information:
- * "Portions Copyright [year] [name of copyright owner]"
+ * Modifications: If applicable, add the following below the License Header,
+ * with the fields enclosed by brackets [] replaced by your own identifying
+ * information: "Portions Copyright [year] [name of copyright owner]"
  *
- * Contributor(s):
- * If you wish your version of this file to be governed by only the CDDL or
- * only the GPL Version 2, indicate your decision by adding "[Contributor]
- * elects to include this software in this distribution under the [CDDL or GPL
- * Version 2] license."  If you don't indicate a single choice of license, a
- * recipient has the option to distribute your version of this file under
- * either the CDDL, the GPL Version 2 or to extend the choice of license to
- * its licensees as provided above.  However, if you add GPL Version 2 code
- * and therefore, elected the GPL Version 2 license, then the option applies
- * only if the new code is made subject to such option by the copyright
- * holder.
+ * Contributor(s): If you wish your version of this file to be governed by only
+ * the CDDL or only the GPL Version 2, indicate your decision by adding
+ * "[Contributor] elects to include this software in this distribution under the
+ * [CDDL or GPL Version 2] license." If you don't indicate a single choice of
+ * license, a recipient has the option to distribute your version of this file
+ * under either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above. However, if you add GPL Version 2 code and
+ * therefore, elected the GPL Version 2 license, then the option applies only if
+ * the new code is made subject to such option by the copyright holder.
  */
-
 package org.glassfish.admin.rest.adapter;
 
 import com.sun.enterprise.config.serverbeans.AdminService;
@@ -73,11 +67,13 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 
 import java.net.HttpURLConnection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import org.glassfish.admin.rest.Constants;
 
@@ -94,40 +90,38 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(RestAdapter.class);
 
     @Inject
-    volatile AdminService as = null;
+    protected volatile AdminService as = null;
 
     @Inject
-    Events events;
+    protected Events events;
 
     @Inject
-    Habitat habitat;
+    protected Habitat habitat;
 
     @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    Config config;
+    protected Config config;
 
-    CountDownLatch latch = new CountDownLatch(1);
-
-    @Inject
-    ServerContext sc;
+    protected CountDownLatch latch = new CountDownLatch(1);
 
     @Inject
-    ServerEnvironment serverEnvironment;
+    protected ServerContext sc;
 
     @Inject
-    SessionManager sessionManager;
+    protected ServerEnvironment serverEnvironment;
+
+    @Inject
+    protected SessionManager sessionManager;
 
     private static final Logger logger = LogDomains.getLogger(RestAdapter.class, LogDomains.ADMIN_LOGGER);
     private volatile LazyJerseyInterface lazyJerseyInterface =null;
-
-    private Map<Integer, String> httpStatus = new HashMap<Integer, String>() {{
-        put(404, "Resource not found");
-        put(500, "A server error occurred. Please check the server logs.");
-    }};
+    private FutureTask<Boolean> exposeContextFuture;
+    private volatile com.sun.grizzly.tcp.Adapter adapter = null;
+    private boolean isRegistered = false;
+    private AdminEndpointDecider epd = null;
 
     protected RestAdapter() {
         setAllowEncodedSlash(true);
     }
-
 
     @Override
     public void postConstruct() {
@@ -135,10 +129,8 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         events.register(this);
     }
 
-
     @Override
     public void service(GrizzlyRequest req, GrizzlyResponse res) {
-        LogHelper.getDefaultLogger().finer("Rest adapter !");
         LogHelper.getDefaultLogger().log(Level.FINER, "Received resource request: {0}", req.getRequestURI());
 
         try {
@@ -164,7 +156,8 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                     if (adapter == null) {
                         synchronized(com.sun.grizzly.tcp.Adapter.class) {
                             if(adapter == null) {
-                                exposeContext();  //Initializes adapter
+                                exposeContextFuture.get();
+                                //exposeContext();  //Initializes adapter
                             }
                         }
                     }
@@ -176,7 +169,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
                     String msg;
                     int status;
-                    if(access == AdminAccessController.Access.NONE) {
+                    if (access == AdminAccessController.Access.NONE) {
                         status = HttpURLConnection.HTTP_UNAUTHORIZED;
                         msg = localStrings.getLocalString("rest.adapter.auth.userpassword", "Invalid user name or password");
                         res.setHeader("WWW-Authenticate", "BASIC");
@@ -245,8 +238,8 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
             }
         }
 
-        if(restToken != null) {
-            authenticated  = sessionManager.authenticate(restToken, req);
+        if (restToken != null) {
+            authenticated = sessionManager.authenticate(restToken, req);
         }
         return authenticated;
     }
@@ -270,7 +263,6 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         return authenticated;
     }
 
-
     /**
      * Finish the response and recycle the request/response tokens. Base on
      * the connection header, the underlying socket transport will be closed
@@ -279,7 +271,6 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     public void afterService(GrizzlyRequest req, GrizzlyResponse res) throws Exception {
 
     }
-
 
     /**
      * Notify all container event listeners that a particular event has
@@ -293,22 +284,29 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
     }
 
-
     @Override
     public void event(@RestrictTo(EventTypes.SERVER_READY_NAME) Event event) {
         if (event.is(EventTypes.SERVER_READY)) {
             latch.countDown();
-            logger.fine("Ready to receive REST resource requests");
 
-            try {
-                exposeContext();
-            } catch (EndpointRegistrationException ex) {
-                Logger.getLogger(RestAdapter.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            exposeContextFuture = new FutureTask<Boolean>(new Callable<Boolean>() {
+                @Override
+                public Boolean call() {
+                    try {
+                        exposeContext();
+                        logger.fine("Ready to receive REST resource requests");
+                    } catch (EndpointRegistrationException ex) {
+                        Logger.getLogger(RestAdapter.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    return true;
+                }
+            });
+            executor.execute(exposeContextFuture);
+
         }
         //the count-down does not start if any other event is received
     }
-
 
     /**
      * Checks whether this adapter has been registered as a network endpoint.
@@ -317,7 +315,6 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     public boolean isRegistered() {
         return isRegistered;
     }
-
 
     /**
      * Marks this adapter as having been registered or unregistered as a
@@ -328,55 +325,35 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         this.isRegistered = isRegistered;
     }
 
-
     @Override
     public int getListenPort() {
         return epd.getListenPort();
     }
-
 
     @Override
     public InetAddress getListenAddress() {
         return epd.getListenAddress();
     }
 
-
     @Override
     public List<String> getVirtualServers() {
         return epd.getAsadminHosts();
     }
 
-
-
     protected abstract Set<Class<?>> getResourcesConfig();
-
-
-//    private ActionReport getClientActionReport(GrizzlyRequest req) {
-//        ActionReport report=null;
-//        String requestURI = req.getRequestURI();
-//        String acceptedMimeType = getAcceptedMimeType(req);
-//        report = habitat.getComponent(ActionReport.class, acceptedMimeType);
-//
-//        if (report==null) {
-//            // get the default one.
-//            report = habitat.getComponent(ActionReport.class, "html");
-//        }
-//        report.setActionDescription("REST");
-//        return report;
-//    }
 
     /*
      * dynamically load the class that contains all references to Jersey APIs
      * so that Jersey is not loaded when the RestAdapter is loaded at boot time
      * gain a few 100millis at GlassFish startyp time
-+     */
+     */
     protected LazyJerseyInterface getLazyJersey() {
         if (lazyJerseyInterface != null) {
             return lazyJerseyInterface;
         }
         synchronized (com.sun.grizzly.tcp.Adapter.class) {
             if (lazyJerseyInterface == null) {
-               try {
+                try {
                     Class<?> lazyInitClass = Class.forName("org.glassfish.admin.rest.LazyJerseyInit");
                     lazyJerseyInterface = (LazyJerseyInterface) lazyInitClass.newInstance();
                 } catch (Exception ex) {
@@ -386,7 +363,6 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
             }
         }
         return lazyJerseyInterface;
-
     }
 
     private void exposeContext()
@@ -403,14 +379,9 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         }
     }
 
-
     private void reportError(GrizzlyRequest req, GrizzlyResponse res, int statusCode, String msg) {
         // delegate to the class that knows about all Jersey API
         // for faster startup of this adapter.
         getLazyJersey().reportError(req, res, statusCode, msg);
     }
-
-    private volatile com.sun.grizzly.tcp.Adapter adapter = null;
-    private boolean isRegistered = false;
-    private AdminEndpointDecider epd = null;
 }
