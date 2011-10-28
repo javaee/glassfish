@@ -172,7 +172,7 @@ public class InstallNodeTest extends SshBaseDevTest {
         report("install-at-different-location", asadmin("install-node", INSTALL_DIR, "/tmp/b", "127.0.0.1"));
 
         //try using host name alias
-        report("install-same-host", asadmin("install-node", INSTALL_DIR, "/tmp/b", LOCALHOST));
+        report("install-same-host", !asadmin("install-node", INSTALL_DIR, "/tmp/b", LOCALHOST));
 
         //create a sample instance
         asadmin("create-local-instance", "--nodedir", "/tmp/b/glassfish/nodes", "i1");
