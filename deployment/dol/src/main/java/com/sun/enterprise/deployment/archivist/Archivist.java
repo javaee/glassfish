@@ -73,7 +73,6 @@ import org.xml.sax.SAXParseException;
 import javax.enterprise.deploy.shared.ModuleType;
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
@@ -149,8 +148,6 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
     private static final boolean processAnnotationForOldDD =
             Boolean.getBoolean(PROCESS_ANNOTATION_FOR_OLD_DD); 
     
-    private static ExecutorService executorService = null;
-
     protected T descriptor;
 
     @Inject
@@ -553,11 +550,6 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
             parser = archive.getParentArchive().getExtraData(Parser.class);
         } else {
             parser = archive.getExtraData(Parser.class);
-        }
-
-        if (parser == null) {
-            ParsingContext parsingContext = new ParsingContext.Builder().logger(logger).executorService(getExecutorService()).build();
-            parser = new Parser(parsingContext);
         }
 
         scanner.process(archive, bundleDesc, classLoader, parser);
@@ -1944,23 +1936,5 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
         // 1. It is not a full deployment descriptor
         // 2. It is called through dynamic deployment
         return (!isFull && annotationProcessingRequested && classLoader != null);
-    }
-
-    protected synchronized ExecutorService getExecutorService() {
-        if (executorService != null) {
-            return executorService;
-        }
-        Runtime runtime = Runtime.getRuntime();
-        int nrOfProcessors = runtime.availableProcessors();
-        executorService = Executors.newFixedThreadPool(nrOfProcessors, new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r);
-                t.setName("dol-jar-scanner");
-                t.setDaemon(true);
-                return t;
-            }
-        });
-        return executorService;
     }
 }
