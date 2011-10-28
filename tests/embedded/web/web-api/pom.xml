@@ -63,12 +63,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>web-embed-api</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.main.extras</groupId>
             <artifactId>glassfish-embedded-web</artifactId>
             <version>${project.version}</version>
@@ -120,30 +114,6 @@
                     </systemProperties>
                 </configuration>
             </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.glassfish.distributions</groupId>
-                  <artifactId>web</artifactId>
-                  <version>${project.version}</version>
-                  <type>zip</type>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
         </plugins>
     </build>
 
