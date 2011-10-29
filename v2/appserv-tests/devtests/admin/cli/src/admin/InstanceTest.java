@@ -85,7 +85,7 @@ public class InstanceTest extends AdminBaseDevTest {
         printf("GF HOME = " + glassFishHome);
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         new InstanceTest().runTests();
     }
 
@@ -94,7 +94,7 @@ public class InstanceTest extends AdminBaseDevTest {
         return "Unit test for create/delete/list instance";
     }
 
-    public void runTests() throws IOException {
+    public void runTests() throws IOException, InterruptedException {
         startDomain();
         testDuplicateReportNames();
         testNamesWithSpaces();
@@ -137,7 +137,7 @@ public class InstanceTest extends AdminBaseDevTest {
         report(metname + "-nodir-after", !checkInstanceDir(iname));
     }
 
-    private void createStartStopDelete() {
+    private void createStartStopDelete() throws InterruptedException {
         String metname = "createStartStopDelete";
         String iname = generateInstanceName();
 
@@ -150,14 +150,17 @@ public class InstanceTest extends AdminBaseDevTest {
         // see Jira 16232 for details.
         report(metname + "-verifyNotRunning", !isInstanceRunning(iname));
         report(metname + "-startByRestart", asadmin("restart-instance", iname));
+        Thread.sleep(2000);
         report(metname + "-verifyRunning", isInstanceRunning(iname));
         report(metname + "-restart-instance", asadmin("restart-instance", iname));
+        Thread.sleep(2000);
         report(metname + "-verifyRunning", isInstanceRunning(iname));
         report(metname + "-stop", asadmin("stop-local-instance", iname));
         report(metname + "-verifyNotRunning", !isInstanceRunning(iname));
         report(metname + "-start", asadmin("start-local-instance", iname));
         report(metname + "-list-instances", isInstanceRunning(iname));
         report(metname + "-restart-local-instance", asadmin("restart-local-instance", iname));
+        Thread.sleep(2000);
         report(metname + "-verifyRunning", isInstanceRunning(iname));
         report(metname + "-stop", asadmin("stop-local-instance", iname));
         report(metname + "-verifyNotRunning", !isInstanceRunning(iname));
