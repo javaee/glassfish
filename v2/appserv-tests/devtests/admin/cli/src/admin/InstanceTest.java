@@ -150,17 +150,14 @@ public class InstanceTest extends AdminBaseDevTest {
         // see Jira 16232 for details.
         report(metname + "-verifyNotRunning", !isInstanceRunning(iname));
         report(metname + "-startByRestart", asadmin("restart-instance", iname));
-        Thread.sleep(2000);
         report(metname + "-verifyRunning", isInstanceRunning(iname));
         report(metname + "-restart-instance", asadmin("restart-instance", iname));
-        Thread.sleep(2000);
         report(metname + "-verifyRunning", isInstanceRunning(iname));
         report(metname + "-stop", asadmin("stop-local-instance", iname));
         report(metname + "-verifyNotRunning", !isInstanceRunning(iname));
         report(metname + "-start", asadmin("start-local-instance", iname));
         report(metname + "-list-instances", isInstanceRunning(iname));
         report(metname + "-restart-local-instance", asadmin("restart-local-instance", iname));
-        Thread.sleep(2000);
         report(metname + "-verifyRunning", isInstanceRunning(iname));
         report(metname + "-stop", asadmin("stop-local-instance", iname));
         report(metname + "-verifyNotRunning", !isInstanceRunning(iname));
