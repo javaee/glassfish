@@ -69,7 +69,7 @@
 
 
         <sun:property id="TimeoutSeconds"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.TimeoutSeconds}" helpText="$resource{i18n_web.http.TimeoutSecondsHelp}" >
-            <sun:textField id="TimeoutSeconds" styleClass="integer" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.http.TimeoutSeconds']}" text="#{pageSession.httpMap['timeoutSeconds']}" />
+            <sun:textField id="TimeoutSeconds" styleClass="intAllowMinusOne" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.http.TimeoutSeconds']}" text="#{pageSession.httpMap['timeoutSeconds']}" />
             <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
 
