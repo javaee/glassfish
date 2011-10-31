@@ -39,6 +39,7 @@
 <!ENTITY commonBuild SYSTEM "../../../../../config/common.xml">
 <!ENTITY eecommonBuild SYSTEM "../../../../../config/ee-common.xml">
 <!ENTITY commonRun SYSTEM "../../../../../config/run.xml">
+<!ENTITY timerCommon SYSTEM "file:./../timer-common.xml">
 <!ENTITY reporting SYSTEM "../../../../../config/report.xml">
 ]>
 
@@ -49,6 +50,7 @@
     &commonBuild;
     &eecommonBuild;
     &commonRun;
+    &timerCommon;
     &reporting;
 
     <property name="verbose" value="false"/>
@@ -59,36 +61,25 @@
     <target name="setup" depends="init-common">
       <antcall target="start-database"/>
       <ant target="startDomain"/>
-      <antcall target="asadmin-common">
-          <param name="admin.command" value="set"/>
-          <param name="operand.props"
-              value="configs.config.default-config.ejb-container.ejb-timer-service.timer-datasource=jdbc/__default"/>
-      </antcall>
+      <antcall target="setup-database"/>
       <antcall target="setup-cluster"/>
-      <antcall target="setup-timer-service"/>
-    </target>
-
-    <target name="unsetup" depends="init-common">
-        <antcall target="unsetup-timer-service"/>
-        <antcall target="unsetup-cluster"/>
-        <antcall target="stop-database"/>
-        <ant target="stopDomain"/>
-    </target>
-
-    <target name="setup-timer-service">
       <antcall target="asadmin-common">
           <param name="admin.command" value="create-resource-ref"/>
           <param name="operand.props"
-              value="--target ${cluster-name} jdbc/__default"/>
+              value="--target ${cluster-name} jdbc/mypool"/>
       </antcall>
       <antcall target="asadmin-common">
             <param name="admin.command" value="create-resource-ref"/>
             <param name="operand.props"
-              value="--target ${instance-name-3} jdbc/__default"/>
+              value="--target ${instance-name-3} jdbc/mypool"/>
       </antcall>
     </target>
 
-    <target name="unsetup-timer-service">
+    <target name="unsetup" depends="init-common">
+        <antcall target="unsetup-database"/>
+        <antcall target="unsetup-cluster"/>
+        <antcall target="stop-database"/>
+        <ant target="stopDomain"/>
     </target>
 
     <target name="setup-cluster" depends="init-common">

@@ -38,6 +38,7 @@
 <!ENTITY commonSetup SYSTEM "./../../../../../config/properties.xml">
 <!ENTITY commonBuild SYSTEM "./../../../../../config/common.xml">
 <!ENTITY commonRun SYSTEM "./../../../../../config/run.xml">
+<!ENTITY timerCommon SYSTEM "file:./../timer-common.xml">
 <!ENTITY reporting SYSTEM "./../../../../../config/report.xml">
 <!ENTITY testproperties SYSTEM "build.properties">
 ]>
@@ -48,6 +49,7 @@
     &commonSetup;
     &commonBuild;
     &commonRun;
+    &timerCommon;
     &testproperties;
     &reporting;
 
@@ -106,40 +108,6 @@
       </antcall>
     </target>
 
-    <target name="setup-database" depends="init-common">
-      <antcall target="deploy-jdbc-common">
-            <param name="jdbc.conpool.name" value="jdbc-mypool-pool"/>
-            <param name="db.class" value="org.apache.derby.jdbc.ClientDataSource"/>
-            <param name="jdbc.resource.type" value="javax.sql.DataSource"/>
-            <param name="jdbc.resource.name" value="jdbc/mypool"/>
-        </antcall>
-       <antcall target="asadmin-common">
-          <param name="admin.command" value="set"/>
-          <param name="operand.props"
-              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-mypool-pool.property.connectionAttributes=;create=true"/>
-       </antcall>
-       <antcall target="asadmin-common">
-          <param name="admin.command" value="set"/>
-          <param name="operand.props"
-              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-mypool-pool.connection-validation-method=table"/>
-       </antcall>
-       <antcall target="asadmin-common">
-          <param name="admin.command" value="set"/>
-          <param name="operand.props"
-              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-mypool-pool.validation-table-name=sys.systables"/>
-       </antcall>
-       <antcall target="asadmin-common">
-          <param name="admin.command" value="set"/>
-          <param name="operand.props"
-              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-mypool-pool.is-connection-validation-required=true"/>
-       </antcall>
-       <antcall target="asadmin-common">
-          <param name="admin.command" value="set"/>
-          <param name="operand.props"
-              value="configs.config.default-config.ejb-container.ejb-timer-service.timer-datasource=jdbc/mypool"/>
-       </antcall>
-    </target>
-
     <target name="setup-cluster" depends="init-common">
         <echo message="Starting cluster"/>
         <java  fork="on"
@@ -184,21 +152,6 @@
         <antcall target="unsetup-database"/>
         <antcall target="stop-database"/>
         <ant target="stopDomain"/>
-    </target>
-
-    <target name="unsetup-database" depends="init-common">
-       <antcall target="asadmin-common">
-          <param name="admin.command" value="set"/>
-          <param name="operand.props"
-              value="configs.config.default-config.ejb-container.ejb-timer-service.timer-datasource="/>
-       </antcall>
-        <antcall target="delete-jdbc-resource-common">
-            <param name="jdbc.resource.name" value="jdbc/mypool"/>
-        </antcall>
-
-        <antcall target="delete-jdbc-connpool-common">
-            <param name="jdbc.conpool.name" value="jdbc-mypool-pool"/>
-        </antcall>
     </target>
 
     <target name="unsetup-cluster" depends="init-common">
