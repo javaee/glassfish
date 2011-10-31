@@ -78,12 +78,12 @@
         </sun:property>
 
           <sun:property id="connectionUploadTimeout"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.ConnectionUploadTimeout}" helpText="$resource{i18n_web.http.ConnectionUploadTimeoutHelp}" >
-            <sun:textField id="connectionUploadTimeout" styleClass="integer" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.http.ConnectionUploadTimeout']}" text="#{pageSession.httpMap['connectionUploadTimeoutMillis']}" />
+            <sun:textField id="connectionUploadTimeout" styleClass="intAllowMinusOne" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.http.ConnectionUploadTimeout']}" text="#{pageSession.httpMap['connectionUploadTimeoutMillis']}" />
             <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
         </sun:property>
 
         <sun:property id="RequestTimeoutSeconds"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.RequestTimeoutSeconds}" helpText="$resource{i18n_web.http.RequestTimeoutSecondsHelp}" >
-            <sun:textField id="RequestTimeoutSeconds" styleClass="integer" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.http.RequestTimeoutSeconds']}" text="#{pageSession.httpMap['requestTimeoutSeconds']}" />
+            <sun:textField id="RequestTimeoutSeconds" styleClass="intAllowMinusOne" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.http.RequestTimeoutSeconds']}" text="#{pageSession.httpMap['requestTimeoutSeconds']}" />
             <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
 
