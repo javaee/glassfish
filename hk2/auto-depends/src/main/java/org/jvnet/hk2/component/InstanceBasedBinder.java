@@ -40,14 +40,15 @@
 
 package org.jvnet.hk2.component;
 
+
 import com.sun.hk2.component.ExistingSingletonInhabitant;
+import org.glassfish.hk2.ResolvedBinder;
+
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 5/31/11
- * Time: 1:17 PM
- * To change this template use File | Settings | File Templates.
+ * Instance based {@link ResolvedBinder}
+ *
+ * @author Jerome Dochez
  */
 class InstanceBasedBinder<T> extends AbstractResolvedBinder<T> {
 
@@ -63,7 +64,10 @@ class InstanceBasedBinder<T> extends AbstractResolvedBinder<T> {
         if (metadata.scope!=null) {
             throw new RuntimeException(metadata.name + " binding cannot have a scope and be bound to an existing instance");
         }
-        ExistingSingletonInhabitant<T> inhabitant = new ExistingSingletonInhabitant<T>(instance);
+
+        ExistingSingletonInhabitant<T> inhabitant =
+                new ExistingSingletonInhabitant<T>((Class<T>)instance.getClass(), instance, populateMetadata());
+
         super.registerIn(habitat, inhabitant);
         return inhabitant;
     }
