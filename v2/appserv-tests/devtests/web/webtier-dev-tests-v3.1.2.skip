@@ -6,3 +6,4 @@ wrongTransport # Grizzly 2.1
 wrongTransportTarget # Grizzly 2.1
 virtualServerAlternateDocrootRestart # Grizzly 2.1
 programmaticLogin # different class in the trunk
+allowEncodedSlash # fail since svn 50570
