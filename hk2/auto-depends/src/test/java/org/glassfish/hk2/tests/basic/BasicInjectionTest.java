@@ -98,7 +98,6 @@ import org.glassfish.hk2.tests.basic.services.ServiceB1;
 import org.glassfish.hk2.tests.basic.services.ServiceC;
 import org.glassfish.hk2.tests.basic.services.ServiceD;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hk2.annotations.Inject;
 
@@ -178,7 +177,6 @@ public class BasicInjectionTest {
     }
 
     @Test
-    @Ignore
     public void testTypeBindingProvisioningViaServicesApi() {
         final ServiceC sc = services.forContract(ServiceC.class).get();
         assertInjectedInstance(ServiceC.class, sc);
@@ -224,7 +222,6 @@ public class BasicInjectionTest {
     }
 
     @Test
-    @Ignore
     public void testTypeBindingInjection() {
         final FieldInjectedTypeBindingTestClass fi = services.forContract(FieldInjectedTypeBindingTestClass.class).get();
         fi.assertInjection();
@@ -356,7 +353,6 @@ public class BasicInjectionTest {
     }
 
     @Test
-    @Ignore
     public void testInjector() {
         Injector injector = services.forContract(Injector.class).get();
         FieldInjectedTypeBindingTestClass fi = new FieldInjectedTypeBindingTestClass();
