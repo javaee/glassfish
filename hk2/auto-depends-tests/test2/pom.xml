@@ -45,7 +45,7 @@
     <parent>
         <groupId>org.glassfish.hk2.auto-depends-test</groupId>
         <artifactId>auto-depends-tests</artifactId>
-        <version>1.6.23-SNAPSHOT</version>
+        <version>1.6.23</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     
