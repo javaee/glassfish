@@ -85,7 +85,7 @@ public abstract class AbstractServerMojo extends AbstractMojo {
     private static String SHELL_JAR = "lib/embedded/glassfish-embedded-static-shell.jar";
     private static String FELIX_JAR = "osgi/felix/bin/felix.jar";
 
-    private static final String EMBEDDED_GROUP_ID = "org.glassfish.main.extras";
+    private static final String EMBEDDED_GROUP_ID = "org.glassfish.extras";
     private static final String EMBEDDED_ALL = "glassfish-embedded-all";
     private static final String EMBEDDED_ARTIFACT_PREFIX = "glassfish-embedded-";
 
