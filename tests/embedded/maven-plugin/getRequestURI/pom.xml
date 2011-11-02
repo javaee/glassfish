@@ -52,26 +52,10 @@
     <name>Get Request URI Test (maven-plugin/getRequestURI)</name>
 
     <build>
+        <finalName>getRequestURI</finalName>
         <defaultGoal>install</defaultGoal>
         <testSourceDirectory>src/test/java</testSourceDirectory>
         <plugins>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <copy file="target/getRequestURI-3.1.1-SNAPSHOT.war"
-                                      tofile="target/getRequestURI.war"/>
-                            </tasks>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -89,6 +73,7 @@
                     <app>target/getRequestURI.war</app>
                     <port>8080</port>
                     <name>test</name>
+                    <contextRoot>test</contextRoot>
                     <serverID>embedded</serverID>
                 </configuration>
                 <executions>
