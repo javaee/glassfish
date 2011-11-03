@@ -86,7 +86,7 @@ public class MonitorableSelectionKeyHandler extends SelectorThreadKeyHandler {
         }
 
         @Override
-        public void remotlyClosed(final SelectionKey key) {
+        public void remotelyClosed(final SelectionKey key) {
             notifyClosed(key);
         }
         
