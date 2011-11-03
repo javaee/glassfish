@@ -369,37 +369,40 @@ public final class CreateDomainCommand extends CLICommand {
             throws CommandException, CommandValidationException {
 
         final int portToVerify = convertPortStr(portNum);
+
+        if (!NetUtils.isPortValid(portToVerify))
+            throw new CommandException(strings.get("InvalidPortRange", portNum));
+
+        if (checkPorts == false) {
+            // do NOT make any network calls!
+            logger.log(Level.FINER, "Port ={0}", portToVerify);
+            return;
+        }
+
         NetUtils.PortAvailability avail = NetUtils.checkPort(portToVerify);
 
         switch (avail) {
-            case illegalNumber:
+        case illegalNumber:
+            throw new CommandException(
+                strings.get("InvalidPortRange", portNum));
+
+        case inUse:
                 throw new CommandException(
-                        strings.get("InvalidPortRange", portNum));
+                    strings.get("PortInUseError", domainName, portNum));
 
-            case inUse:
-                if (checkPorts)
-                    throw new CommandException(
-                            strings.get("PortInUseError", domainName, portNum));
-                else
-                    logger.warning(strings.get("PortInUseWarning", portNum));
-                break;
+        case noPermission:
+                throw new CommandException(
+                    strings.get("NoPermissionForPortError",
+                    portNum, domainName));
 
-            case noPermission:
-                if (checkPorts)
-                    throw new CommandException(
-                            strings.get("NoPermissionForPortError",
-                            portNum, domainName));
-                else
-                    logger.warning(strings.get("NoPermissionForPortWarning",
-                            portNum, domainName));
-                break;
+        case unknown:
+            throw new CommandException(strings.get("UnknownPortMsg", portNum));
 
-            case unknown:
-                throw new CommandException(strings.get("UnknownPortMsg", portNum));
-
-            case OK:
-                logger.finer("Port =" + portToVerify);
-                break;
+        case OK:
+            logger.log(Level.FINER, "Port ={0}", portToVerify);
+            break;
+        default:
+            break;
         }
     }
 
