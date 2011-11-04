@@ -108,7 +108,7 @@ public class WSTCPProtocolFilter implements ProtocolFilter {
             notifyConnectionClosed(key);
         }
 
-        public void remotelyClosed(SelectionKey key) {
+        public void remotlyClosed(SelectionKey key) {
             notifyConnectionClosed(key);
         }
 
