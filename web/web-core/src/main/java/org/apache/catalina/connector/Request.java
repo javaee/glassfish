@@ -3101,8 +3101,7 @@ public class Request
 
         Parameters parameters = coyoteRequest.getParameters();
         // Set this every time in case limit has been changed via JMX
-        // XXX need to uncomment after Grizzly integration
-        //parameters.setLimit(getConnector().getMaxParameterCount());
+        parameters.setLimit(getConnector().getMaxParameterCount());
 
         // getCharacterEncoding() may have been overridden to search for
         // hidden form field containing request encoding

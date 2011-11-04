@@ -291,6 +291,23 @@ public interface Connector {
      */
     public String getName();
 
+    /**
+     * Return the maximum number of parameters (GET plus POST) that will be
+     * automatically parsed by the container. A value of less than 0 means no
+     * limit.
+     */
+    public int getMaxParameterCount(); 
+
+    /**
+     * Set the maximum number of parameters (GET plus POST) that will be
+     * automatically parsed by the container. A value of less than 0 means no
+     * limit.
+     *
+     * @param maxParameterCount The new setting
+     */
+    public void setMaxParameterCount(int maxParameterCount); 
+
+
     // --------------------------------------------------------- Public Methods
 
 
