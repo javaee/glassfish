@@ -194,7 +194,7 @@
 	</reporting> 
     <dependencies>
         <dependency>
-            <groupId>org.glassfish.hk2</groupId>
+            <groupId>org.glassfish.hk2.external</groupId>
             <artifactId>asm-all-repackaged</artifactId>
             <version>${hk2.version}</version>
         </dependency>
