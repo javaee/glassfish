@@ -85,3 +85,14 @@ d:\gf\branches\3.1.2\cluster\cli>call asadmin -W \pw_vaio install-node-dcom --fo
 23 sony
 Copying 45483 bytes.
 com.sun.enterprise.universal.process.WindowsException: org.jinterop.dcom.common.JIException: An internal error occurred. [0x8001FFFF]
+
+
+
+http://stackoverflow.com/questions/5935714/dcom-access-via-j-interop-in-server-2008-r2
+
+1. Firewall
+2. set permissions on HKEY_CLASSES_ROOT\CLSID{76A64158-CB41-11D1-8B02-00600806D9B6}, 
+3. Turn on remote registry
+4. JISystem.setAutoRegisteration(true);
+5. Deactivate UAC
+
