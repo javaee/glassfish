@@ -120,7 +120,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.sun.enterprise</groupId>
+            <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2</artifactId>
         </dependency>
         <dependency>
@@ -134,7 +134,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.hk2.external</groupId>
+            <groupId>org.glassfish.hk2</groupId>
             <artifactId>asm-all-repackaged</artifactId>
             <version>${hk2.version}</version>
         </dependency>
