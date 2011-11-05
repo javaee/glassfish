@@ -96,3 +96,9 @@ http://stackoverflow.com/questions/5935714/dcom-access-via-j-interop-in-server-2
 4. JISystem.setAutoRegisteration(true);
 5. Deactivate UAC
 
+MSWMI sample runs perfectly
+Copied code over to common-util.  Exact same code \ (of course!!) doesn't work:
+
+
+remote failure: java.lang.IllegalAccessError: tried to access method rpc.Stub.call(ILndr/NdrObject;)V from class org.jinterop.dcom.core.JIComServer
+tried to access method rpc.Stub.call(ILndr/NdrObject;)V from class org.jinterop.dcom.core.JIComServer
