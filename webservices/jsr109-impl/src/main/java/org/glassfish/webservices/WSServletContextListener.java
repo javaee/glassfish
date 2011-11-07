@@ -46,6 +46,7 @@ import com.sun.enterprise.deployment.runtime.ws.ReliabilityConfig;
 import com.sun.logging.LogDomains;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.databinding.DatabindingModeFeature;
 import com.sun.xml.ws.api.server.*;
 import com.sun.xml.ws.developer.SchemaValidationFeature;
 import com.sun.xml.ws.developer.StreamingAttachmentFeature;
@@ -64,6 +65,8 @@ import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.soap.AddressingFeature;
 import javax.xml.ws.soap.MTOMFeature;
 import java.io.File;
+import java.io.FileReader;
+import java.io.LineNumberReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -169,6 +172,25 @@ public class WSServletContextListener implements ServletContextListener {
             wsFeatures.add(mtom);
         }
 
+        URL databindingProps = classLoader.getResource("databinding.properties");
+        if (databindingProps != null) {
+            File databindingPropsFile = new File(databindingProps.toURI());
+
+            FileReader fr = new FileReader(databindingPropsFile);
+            LineNumberReader lnr = new LineNumberReader(fr);
+            String databinding = null;
+            try {
+                databinding = lnr.readLine();
+            } finally {
+                lnr.close();
+                fr.close();
+            }
+            if (databinding != null) {
+                DatabindingModeFeature dmf = new DatabindingModeFeature(databinding);
+                wsFeatures.add(dmf);
+            }
+        }
+        
         Addressing addressing = endpoint.getAddressing();
         if (addressing != null) {
             AddressingFeature addressingFeature = new AddressingFeature(addressing.isEnabled(),

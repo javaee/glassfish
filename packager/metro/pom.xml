@@ -143,6 +143,16 @@
         <dependency>
             <groupId>org.glassfish.metro</groupId>
             <artifactId>webservices-osgi</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.sun.xml.ws</groupId>
+                    <artifactId>jaxws-eclipselink-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.xml.ws</groupId>
+                    <artifactId>sdo-eclipselink-plugin</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.glassfish.metro</groupId>
