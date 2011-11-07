@@ -108,9 +108,9 @@
 <a class="jxr_linenumber" name="98" href="#98">98</a>  <em class="jxr_javadoccomment">   */</em>
 <a class="jxr_linenumber" name="99" href="#99">99</a>    @Test
 <a class="jxr_linenumber" name="100" href="#100">100</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSorting() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="101" href="#101">101</a>     String original = <span class="jxr_string">"class=rls.test.model.ServiceWithTwoRunLevelAssignments,index=org.jvnet.hk2.annotations.RunLevel,runLevel=2,runLevel=55,aaa=java.lang.Void"</span>;
+<a class="jxr_linenumber" name="101" href="#101">101</a>     String original = <span class="jxr_string">"class=org.glassfish.hk2.tests.rls.model.ServiceWithTwoRunLevelAssignments,index=org.jvnet.hk2.annotations.RunLevel,runLevel=2,runLevel=55,aaa=java.lang.Void"</span>;
 <a class="jxr_linenumber" name="102" href="#102">102</a>     String sorted = Utilities.sortInhabitantsDescriptor(original, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="103" href="#103">103</a>     String expected = <span class="jxr_string">"class=rls.test.model.ServiceWithTwoRunLevelAssignments,index=org.jvnet.hk2.annotations.RunLevel,aaa=java.lang.Void,runLevel=2,runLevel=55\n"</span>;
+<a class="jxr_linenumber" name="103" href="#103">103</a>     String expected = <span class="jxr_string">"class=org.glassfish.hk2.tests.rls.model.ServiceWithTwoRunLevelAssignments,index=org.jvnet.hk2.annotations.RunLevel,aaa=java.lang.Void,runLevel=2,runLevel=55\n"</span>;
 <a class="jxr_linenumber" name="104" href="#104">104</a>     assertEquals(expected, sorted);
 <a class="jxr_linenumber" name="105" href="#105">105</a>   }
 <a class="jxr_linenumber" name="106" href="#106">106</a>   

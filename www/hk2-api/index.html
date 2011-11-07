@@ -27,7 +27,7 @@
     -->
     <div id="bodyColumn">
       <div id="contentBox">
-        <p>HK2 is primarily a declarative framework for services using annotations like <a href="./apidocs/org/jvnet/hk2/annotations/Contract.html">Contract</a> and <a href="./apidocs/org/jvnet/hk2/annotations/Service.html">Service</a>. However, it is possible to use programmatic APIs to precisely control the services and bindings available within the Services registry.</p><div class="section"><h2>Modules<a name="Modules"></a></h2><p>In HK2, there are different types of modules, the lower level modules that are often implemented as OSGi modules, are basic jar files with a set of appropriate decorations. However, there is a module notion for hk2 services that defines boundaries with other services that are registered in other modules.</p><p>Such <a href="./apidocs/org/glassfish/hk2/Module.html">Module</a> provides a modular approach to services bindings and access with precise control over the services visibility between modules.</p><p><a href="./apidocs/org/glassfish/hk2/Module.html">Module</a> implementations are the basic entry point for applications to register their services and finally start the desired top level services.</p><p>Here is a simple example of a binding module from the auto-depends tests :</p><div class="source"><pre>public class MyModule implements Module {
+        <p>HK2 is primarily a declarative framework for services using annotations like <a href="./apidocs/org/jvnet/hk2/annotations/Contract.html">Contract</a> and <a href="./apidocs/org/jvnet/hk2/annotations/Service.html">Service</a>. However, it is possible to use programmatic APIs to precisely control the services and bindings available within the Services registry.</p><p>Find information about testing hk2 components <a href="./testing.html">here</a>.</p><div class="section"><h2>Modules<a name="Modules"></a></h2><p>In HK2, there are different types of modules, the lower level modules that are often implemented as OSGi modules, are basic jar files with a set of appropriate decorations. Documentation on how to achieve modularity through jar files and OSGi can be found <a href="./modularity.html">here</a>. However, there is a module notion for hk2 services that defines boundaries with other services that are registered in other modules.</p><p>Such <a href="./apidocs/org/glassfish/hk2/Module.html">Module</a> provides a modular approach to services bindings and access with precise control over the services visibility between modules.</p><p><a href="./apidocs/org/glassfish/hk2/Module.html">Module</a> implementations are the basic entry point for applications to register their services and finally start the desired top level services.</p><p>Here is a simple example of a binding module from the auto-depends tests :</p><div class="source"><pre>public class MyModule implements Module {
 
     @Override
     public void configure(BinderFactory binderFactory) {
@@ -44,7 +44,21 @@
     public interface RouteBuilder&lt;T extends Pattern&gt; {
     }
 
-    binderFactory.bind(new TypeLiteral&lt;RouteBuilder&lt;PathPattern&gt;&gt;() {}).to(PathPatternRouteBuilder.class);</pre></div></div></div>
+    binderFactory.bind(new TypeLiteral&lt;RouteBuilder&lt;PathPattern&gt;&gt;() {}).to(PathPatternRouteBuilder.class);</pre></div></div><div class="section"><h3>Dynamic Bindings<a name="Dynamic_Bindings"></a></h3><p>Although the simplest way of adding bindings into a <a href="./apidocs/org/glassfish/hk2/Services.html">Services</a> instance at <a href="./apidocs/org/glassfish/hk2/Module.html">Modulel</a> configuration, it is also possible to add bindings after the modules initialization phase using a <a href="./apidocs/org/glassfish/hk2/DynamicBinderFactory.html">DynamicBinderFactory</a></p><p>An instance of <a href="./apidocs/org/glassfish/hk2/DynamicBinderFactory.html">DynamicBinderFactory</a> can be obtained from <a href="./apidocs/org/glassfish/hk2/Services.html#bindDynamically">bindDynamically</a> method on the Services instance.</p><p>One to many bindings can be added using the dynamic binder until the <a href="./apidocs/org/glassfish/hk2/DynamicBinderFactory.html#commit">commit</a> method is called which closes the late binding phase.</p><p>Example :</p><div class="source"><pre>@Service
+public class SomeUserService {
+
+    @Inject
+    Services services;
+
+    public void someMethod {
+        DynamicBinderFactory binder = services.bindDynamically();
+        binder.bind().to(SomeClass.class);
+        binder.bind().to(someInstance);
+        binder.bind(SomeContract.class).toFactory(SomeFactory.class);
+        binder.bind(SomeContract.class).to(someInstance);
+        binder.commit();
+    }
+}</pre></div></div></div>
       </div>
     </div>
     <div class="clear">
@@ -60,8 +74,8 @@
 
   
   
-  &nbsp;| Last Published: 10/10/2011
-  &nbsp;| Version: 1.6.22-SNAPSHOT
+  &nbsp;| Last Published: 11/07/2011
+  &nbsp;| Version: 1.6.24-SNAPSHOT
 </div>
       <div class="clear">
         <hr/>

@@ -29,6 +29,9 @@ org.glassfish.hk2.inject
 org.glassfish.hk2.scopes
 org.glassfish.hk2.spi
 org.glassfish.hk2.tests.configuration.introspection.anyreally
+org.glassfish.hk2.tests.rls
+org.glassfish.hk2.tests.rls.infra
+org.glassfish.hk2.tests.rls.model
 org.jvnet.hk2
 org.jvnet.hk2.annotations
 org.jvnet.hk2.component
@@ -46,9 +49,6 @@ org.jvnet.hk2.osgiadapter
 org.jvnet.hk2.test
 org.jvnet.hk2.tracing
 qualifier
-rls.test
-rls.test.infra
-rls.test.model
 runlevel
 service_test
 test1
