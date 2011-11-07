@@ -80,12 +80,13 @@ import org.glassfish.admin.rest.Constants;
 import org.glassfish.internal.api.AdminAccessController;
 import org.glassfish.internal.api.ServerContext;
 import java.util.logging.Level;
+import org.glassfish.internal.api.PostStartup;
 
 /**
  * Adapter for REST interface
  * @author Rajeshwar Patil, Ludovic Champenois
  */
-public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, PostConstruct, EventListener {
+public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, PostStartup, PostConstruct {
 
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(RestAdapter.class);
 
@@ -126,7 +127,8 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     @Override
     public void postConstruct() {
         epd = new AdminEndpointDecider(config, logger);
-        events.register(this);
+        //        events.register(this);
+        latch.countDown();
     }
 
     @Override
@@ -151,17 +153,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
                 AdminAccessController.Access access = authenticate(req);
                 if (access == AdminAccessController.Access.FULL) {
-                    /*
-                    //Use double checked locking to lazily initialize adapter
-                    if (adapter == null) {
-                        synchronized(com.sun.grizzly.tcp.Adapter.class) {
-                            if(adapter == null) {
-                                exposeContextFuture.get();
-                                //exposeContext();  //Initializes adapter
-                            }
-                        }
-                    }
-                    */
+                    exposeContext();
                     //delegate to adapter managed by Jersey.
                     ((GrizzlyAdapter)adapter).service(req, res);
 
@@ -205,7 +197,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
             return;
         }
     }
-
+    
     /**
      * Authenticate given request
      * @return Access as determined by authentication process.
@@ -284,30 +276,6 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
     }
 
-    @Override
-    public void event(@RestrictTo(EventTypes.SERVER_READY_NAME) Event event) {
-        if (event.is(EventTypes.SERVER_READY)) {
-            latch.countDown();
-
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            exposeContextFuture = new FutureTask<Boolean>(new Callable<Boolean>() {
-                @Override
-                public Boolean call() {
-                    try {
-                        exposeContext();
-                        logger.fine("Ready to receive REST resource requests");
-                    } catch (EndpointRegistrationException ex) {
-                        Logger.getLogger(RestAdapter.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    return true;
-                }
-            });
-            executor.execute(exposeContextFuture);
-
-        }
-        //the count-down does not start if any other event is received
-    }
-
     /**
      * Checks whether this adapter has been registered as a network endpoint.
      */
@@ -365,17 +333,23 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         return lazyJerseyInterface;
     }
 
-    private void exposeContext()
-            throws EndpointRegistrationException {
-        String context = getContextRoot();
-        logger.log(Level.FINE, "Exposing rest resource context root: {0}", context);
-        if ((context != null) || (!"".equals(context))) {
-            Set<Class<?>> classes = getResourcesConfig();
-           // adapter = LazyJerseyInit.exposeContext(classes, sc, habitat);
-            adapter = getLazyJersey().exposeContext(classes, sc, habitat);
-            ((GrizzlyAdapter) adapter).setResourcesContextPath(context);
+    private void exposeContext() throws EndpointRegistrationException {
+        //Use double checked locking to lazily initialize adapter
+        if (adapter == null) {
+            synchronized (com.sun.grizzly.tcp.Adapter.class) {
+                if (adapter == null) {
+                    String context = getContextRoot();
+                    logger.log(Level.FINE, "Exposing rest resource context root: {0}", context);
+                    if ((context != null) || (!"".equals(context))) {
+                        Set<Class<?>> classes = getResourcesConfig();
+                        // adapter = LazyJerseyInit.exposeContext(classes, sc, habitat);
+                        adapter = getLazyJersey().exposeContext(classes, sc, habitat);
+                        ((GrizzlyAdapter) adapter).setResourcesContextPath(context);
 
-            logger.log(Level.INFO, "rest.rest_interface_initialized", context);
+                        logger.log(Level.INFO, "rest.rest_interface_initialized", context);
+                    }
+                }
+            }
         }
     }
 

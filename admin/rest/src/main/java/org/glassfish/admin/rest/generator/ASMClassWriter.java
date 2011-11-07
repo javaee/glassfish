@@ -47,7 +47,9 @@ import java.io.FileOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.security.PrivilegedActionException;
 import java.security.ProtectionDomain;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.admin.rest.ResourceUtil;
@@ -65,15 +67,13 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
 
     private org.objectweb.asm.ClassWriter cw = new org.objectweb.asm.ClassWriter(0);
     private String className;
-    Habitat habitat;
-  //  private String baseClassName;
-  //  private String resourcePath;
+    private Habitat habitat;
+    private Map<String, String> generatedMethods = new HashMap<String, String>();
 
     public ASMClassWriter(Habitat habitat, String className, String baseClassName, String resourcePath) {
         this.habitat = habitat;
         this.className = className;
-   //     this.baseClassName = baseClassName;
-   //     this.resourcePath = resourcePath;
+
         if (baseClassName.indexOf("TemplateCommand") != -1) { //constructor is created in createCommandResourceConstructor
             return;
         }
@@ -327,8 +327,13 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
         }else {
             childClass = GENERATED_PATH + childResourceClassName;
         }
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "get" + childResourceClassName, "()L"+ childClass + ";", null, null);
+        String methodName = "get" + childResourceClassName;
+        if (childClass.equals(generatedMethods.get(methodName))) {
+            return;
+        }
 
+        generatedMethods.put(methodName, childClass);
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, methodName, "()L"+ childClass + ";", null, null);
         AnnotationVisitor av0 = mv.visitAnnotation("Ljavax/ws/rs/Path;", true);
         av0.visit("value", path + "/");
         av0.visitEnd();
@@ -449,6 +454,7 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
                         }
                     });
 
+            Logger.getLogger(ASMClassWriter.class.getName()).log(Level.FINE, "Loading bytecode for {0}", generatedClassName);
             clM.invoke(similarClass.getClassLoader()
                     /*Thread.currentThread().getContextClassLoader()*/, generatedClassName, byteContent, 0,
                      byteContent.length, pd);
