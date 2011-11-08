@@ -491,7 +491,7 @@ public class LBCommandsTest extends AdminBaseDevTest {
     private static final String TARGETS_OPTION="--lbtargets";
     private static final String TARGET_OPTION="--target";
 
-    private static final String CHECKSUM1 = "6e1b1e948e31cfff72e89a1d7da5d65f";
+    private static final String CHECKSUM1 = "6ac4df0a875e5202f190899e8ccf823c";
     private static final String CHECKSUM2 = "b8f0b333dc1b935d8921a420985953b0";
     private static final String CHECKSUM3 = "4b5d431750cc251bf1920ce46c38ce38";
     private static final String CHECKSUM4 = "99d66d54e9749427359e2c4b06f63847";
