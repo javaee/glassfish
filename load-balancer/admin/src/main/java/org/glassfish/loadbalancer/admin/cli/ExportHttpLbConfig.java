@@ -52,6 +52,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.LoadBalancer;
+import com.sun.enterprise.config.serverbeans.LbConfig;
 import java.net.URI;
 import org.glassfish.api.admin.AdminCommandContext;
 
@@ -183,7 +184,12 @@ public class ExportHttpLbConfig implements AdminCommand {
             if(retrieveFile){
                 retrieveLbXml(context, lbXmlFile, tmpLbXmlFile);
             }
-            lbr.getLbConfig().setLastExported();
+            LbConfig lbConfig = lbr.getLbConfig();
+            //Check for the case when lbtargets are provided
+            //In such a case, lbconfig will be null
+            if(lbConfig != null){
+                lbConfig.setLastExported();
+            }
             String msg = LbLogUtil.getStringManager().getString(
                     "GeneratedFileLocation", lbXmlFile.toString());
             return msg;
