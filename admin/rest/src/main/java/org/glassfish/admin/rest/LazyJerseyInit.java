@@ -48,7 +48,7 @@ import org.glassfish.api.container.EndpointRegistrationException;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
-import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.container.filter.CsrfProtectionFilter;
 import com.sun.jersey.api.container.filter.LoggingFilter;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.spi.inject.SingletonTypeInjectableProvider;
@@ -112,6 +112,7 @@ public class LazyJerseyInit implements LazyJerseyInterface {
         rc.getMediaTypeMappings().put("json", MediaType.APPLICATION_JSON_TYPE);
         rc.getMediaTypeMappings().put("html", MediaType.TEXT_HTML_TYPE);
         rc.getMediaTypeMappings().put("js", new MediaType("application", "x-javascript"));
+        rc.getContainerRequestFilters().add(CsrfProtectionFilter.class);
 
         RestConfig restConf = getRestConfig(habitat);
         if (restConf != null) {

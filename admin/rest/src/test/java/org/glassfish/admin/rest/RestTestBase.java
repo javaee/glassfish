@@ -42,6 +42,7 @@ package org.glassfish.admin.rest;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.filter.CsrfProtectionFilter;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.multipart.FormDataMultiPart;
@@ -96,6 +97,7 @@ public class RestTestBase {
     public void setup() {
         if (client == null) {
             client = Client.create();
+            client.addFilter(new CsrfProtectionFilter());
         }
     }
 
