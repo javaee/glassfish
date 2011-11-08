@@ -71,7 +71,7 @@
         -->
         <sleep seconds="3"/>
         <manifest mode="update" file="${stage.dir}/META-INF/MANIFEST.MF">
-            <attribute name="Class-Path" value="${classpath} ${classpath.additions}"/>
+            <attribute name="Class-Path" value="../../modules/weld-osgi-bundle.jar ${classpath} ${classpath.additions}"/>
 	    <attribute name="Bundle-SymbolicName" value="${bundlename}"/>
         </manifest>
         <touch file="${stage.dir}/META-INF/MANIFEST.MF"/>

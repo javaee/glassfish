@@ -116,11 +116,12 @@
 	<defaultexcludes add="META-INF/**.inf"/>
 	<defaultexcludes add="META-INF/**.SF"/>
 
-        <rejar destfile="${finaljar}" duplicate="preserve" >
+        <rejar destfile="${finaljar}" duplicate="preserve">
            <manifest>
                 <attribute name="Bundle-SymbolicName" value="${bundlename}"/>
                 <attribute name="Main-Class" value="com.sun.enterprise.glassfish.bootstrap.UberMain"/>
             </manifest>
+            <zipgroupfileset dir="${jardir}" includes="**/weld-osgi-bundle.jar"/>
             <zipgroupfileset dir="${jardir}" includes="**/*.jar"/>
             <fileset dir="${rootdir}/temp" includes="*.rar, *.war"/>
         </rejar>
