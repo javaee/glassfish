@@ -113,6 +113,7 @@
             <artifactId>commonj.sdo</artifactId>
 			<version>2.1.1.v200905221342</version>
             <scope>compile</scope>
+		</dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.oracle</artifactId>
@@ -127,7 +128,6 @@
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.asm</artifactId>
             <scope>compile</scope>
-        </dependency>
         </dependency>
 	</dependencies>
 </project>
