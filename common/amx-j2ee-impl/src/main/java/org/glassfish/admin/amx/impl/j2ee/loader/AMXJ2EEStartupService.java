@@ -70,6 +70,7 @@ import javax.management.ObjectName;
 import java.beans.PropertyChangeEvent;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -253,7 +254,7 @@ public final class AMXJ2EEStartupService
             throw new Error(e);
         }
 
-        ImplUtil.getLogger().info("J2EEDomain registered at " + objectName);
+        logger.log(Level.INFO, "amx.J2EEDomain.registered", objectName);
         return objectName;
     }
 

@@ -39,6 +39,7 @@
  */
 package org.glassfish.admin.amx.impl.config;
 
+import com.sun.logging.LogDomains;
 import org.glassfish.external.amx.AMX;
 import org.glassfish.external.amx.AMXGlassfish;
 
@@ -88,7 +89,7 @@ public final class AMXConfigLoader extends MBeanImplBase
     }
     private volatile AMXConfigLoaderThread mLoaderThread;
     private final Transactions mTransactions;
-    private final Logger mLogger = ImplUtil.getLogger();
+    private final Logger mLogger = LogDomains.getLogger(AMXConfigLoader.class, LogDomains.AMX_LOGGER);
     private final PendingConfigBeans mPendingConfigBeans;
     private final ConfigBeanRegistry mRegistry = ConfigBeanRegistry.getInstance();
 
@@ -309,7 +310,7 @@ public final class AMXConfigLoader extends MBeanImplBase
 
             // a job could come back null for a bogus ConfigBean
             if (job == null) {
-                mLogger.log(Level.INFO, "ConfigBean not processed, something wrong with it: " + cb.getProxyType().getName());
+                mLogger.log(Level.INFO, "amx.ConfigBean.not.processed",cb.getProxyType().getName());
                 processed = false;
             } else if (waitDone) {
                 try {
@@ -372,7 +373,7 @@ public final class AMXConfigLoader extends MBeanImplBase
     Enable registration of MBeans, queued until now.
      */
     public synchronized ObjectName start() {
-        ImplUtil.getLogger().info( "In AMXConfigLoader : loader == " +mLoaderThread );
+        mLogger.log(Level.INFO,"amx.In.AMXConfigLoader",mLoaderThread );
         if (mLoaderThread == null) {
             FeatureAvailability.getInstance().waitForFeature(FeatureAvailability.AMX_CORE_READY_FEATURE, "AMXConfigLoader.start");
 
@@ -407,7 +408,7 @@ public final class AMXConfigLoader extends MBeanImplBase
             // Now the Config subsystem is ready: after the first queue of ConfigBeans are registered as MBeans
             // and after the above MBeans are registered.
             final ObjectName domainConfig = getDomainRootProxy().getDomain().objectName();
-            mLogger.info("AMX config read, domain config registered as " + domainConfig);
+            mLogger.log(Level.INFO,"amx.domain.config.registered",domainConfig);
             FeatureAvailability.getInstance().registerFeature(AMXConfigConstants.AMX_CONFIG_READY_FEATURE, domainConfig);
         }
         return null;
@@ -636,7 +637,7 @@ public final class AMXConfigLoader extends MBeanImplBase
         final ConfigBeanJMXSupport spt = ConfigBeanJMXSupportRegistry.getInstance(cb);
         if ((!spt.isSingleton()) && (name == null || name.length() == 0)) {
             name = "MISSING_NAME-" + sCounter.getAndIncrement();
-            ImplUtil.getLogger().log(Level.WARNING, "Non-singleton ConfigBean " + cb.getProxyType().getName() + " has empty key value (name), supplying " + name);
+            mLogger.log(Level.WARNING, "amx.nonsingleton.configbean",new Object[] {cb.getProxyType().getName() ,name});
         }
 
         //debug( "Type/name for " + cb.getProxyType().getName() + " = " + type + " = " + name );

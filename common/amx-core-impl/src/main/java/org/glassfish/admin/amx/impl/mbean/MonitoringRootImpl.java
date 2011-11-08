@@ -40,9 +40,13 @@
 package org.glassfish.admin.amx.impl.mbean;
 
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+
+import com.sun.logging.LogDomains;
 import org.glassfish.external.amx.AMXGlassfish;
 import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.monitoring.MonitoringRoot;
@@ -55,6 +59,8 @@ import org.jvnet.hk2.component.Habitat;
 
 public class MonitoringRootImpl extends AMXImplBase // implements MonitoringRoot
 {
+    private final Logger mLogger = LogDomains.getLogger(MonitoringRootImpl.class, LogDomains.AMX_LOGGER);
+
     public MonitoringRootImpl(final ObjectName parent) {
         super(parent, MonitoringRoot.class);
     }
@@ -69,7 +75,7 @@ public class MonitoringRootImpl extends AMXImplBase // implements MonitoringRoot
 
         ObjectName childObjectName = null;
         Object mbean = null;
-        System.out.println(" In the registerChildren of MonitoringRootImpl instance Name = " + System.getProperty("com.sun.aas.instanceName"));
+        mLogger.log(Level.INFO, "amx.registerChild", System.getProperty("com.sun.aas.instanceName"));
         // when clustering comes along, some other party will need to register MBeans
         // for each non-DAS instance
         // childObjectName = objectNames.buildChildObjectName(ServerMon.class, AMXGlassfish.DEFAULT.dasName());
