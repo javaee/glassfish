@@ -281,6 +281,9 @@ public class JavaEETransactionManagerSimplified
         return getDelegate().isNullTransaction();
     }
 
+    public void shutdown() {
+        _timer.cancel();
+    }
     public void initRecovery(boolean force) {
         getDelegate().initRecovery(force);
     }
