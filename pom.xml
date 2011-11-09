@@ -505,9 +505,12 @@
                 <module>verifier/verifier-impl</module>
                 <module>verifier/verifier-scripts</module>
                 <module>verifier/verifier-jdk-extension-bundle</module>
+<!--
+comment out since it's causing OutOfMemory error in AIX
                 <module>extras/embedded/all</module>
                 <module>extras/embedded/web</module>
                 <module>extras/embedded/nucleus</module>
+-->
 		<module>ant-tasks</module>
             </modules>
             <dependencies>
