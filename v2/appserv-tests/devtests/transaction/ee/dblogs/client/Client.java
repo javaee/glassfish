@@ -184,7 +184,7 @@ public class Client extends AdminBaseDevTest {
         System.out.println("Executing recover CLI");
         try {
             AsadminReturn result = null;
-            result = asadminWithOutput("recover-transactions", "--target", INSTANCE2_NAME, "--transactionlogdir", INSTANCE1_NAME, INSTANCE1_NAME);
+            result = asadminWithOutput("recover-transactions", "--target", INSTANCE2_NAME, INSTANCE1_NAME);
             System.out.println("Executed command: " + result.out);
             if (!result.returnValue) {
                 System.out.println("CLI FAILED: " + result.err);
