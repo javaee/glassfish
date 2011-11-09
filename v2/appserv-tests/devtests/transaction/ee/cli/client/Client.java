@@ -152,6 +152,16 @@ public class Client extends AdminBaseDevTest {
             //asadmin("set", "configs.config." + CLUSTER_NAME + "-config.log-service.module-log-levels.resourceadapter=FINE");
             AsadminReturn result = null;
             if (location != null && location.length() > 0) {
+                // Try an error first
+                result = asadminWithOutput("recover-transactions", "--target", INSTANCE2_NAME, INSTANCE1_NAME);
+                System.out.println("Executed command: " + result.out);
+                if (result.returnValue) {
+                    System.out.println("CLI DID NOT FAIL!");
+                    stat.addStatus("transaction-ee-cli-recover-with-null-logdir", stat.FAIL);
+                } else {
+                    System.out.println("CLI failed as expected: " + result.err);
+                }
+
                 String txLog = new StringBuffer(location).append(File.separator)
                         .append("nodes").append(File.separator).append("localhost-domain1")
                         .append(File.separator).append(INSTANCE1_NAME).append(File.separator)
