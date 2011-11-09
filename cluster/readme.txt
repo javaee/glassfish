@@ -102,3 +102,36 @@ Copied code over to common-util.  Exact same code \ (of course!!) doesn't work:
 
 remote failure: java.lang.IllegalAccessError: tried to access method rpc.Stub.call(ILndr/NdrObject;)V from class org.jinterop.dcom.core.JIComServer
 tried to access method rpc.Stub.call(ILndr/NdrObject;)V from class org.jinterop.dcom.core.JIComServer
+
+****  stupid j-interop hides real error messages for my convenience.  Finally saw this one by
+painstaking debugger work:
+
+
+"No process is on the other end of the pipe."
+
+which comes from:
+
+
+d:\data\phone>asadmin -W \pw validate-dcom -w hudson  bigapp-oblade-1
+remote failure:
+Successfully resolved host name to: bigapp-oblade-1/10.133.184.150
+Successfully connected to the DCOM port (135).
+Successfully accessed C: on bigapp-oblade-1 using DCOM.
+Successfully wrote delete_me.bat to C: on bigapp-oblade-1 using DCOM.
+Could not connect to WMI (Windows Management Interface) on bigapp-oblade-1. : Error setting up remote connection to WMI
+
+
+After a full hour of painful debugger stepping:
+
+===================================
+JIRemActivation, line 187 is where the exception is thrown for this error:
+
+
+d:\gf>vd bigapp-oblade-1
+asadmin -W d:\pw validate-dcom -w hudson bigapp-oblade-1
+remote failure:
+Successfully resolved host name to: bigapp-oblade-1/10.133.184.150
+Successfully connected to the DCOM port (135).
+The remote file, C: doesn't exist on bigapp-oblade-1 : The parameter is incorrect.
+======================================
+
