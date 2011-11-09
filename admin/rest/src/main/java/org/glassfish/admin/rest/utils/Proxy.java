@@ -56,7 +56,7 @@ public interface Proxy {
      * Execute request in given <code> sourceUriInfo</code> by acting as a proxy to the target instance
      * @return Result of execution as Properties object
      */
-    Properties proxyRequest(UriInfo sourceUriInfo, Client client, Habitat habitat);
+    Properties proxyRequest(UriInfo sourceUriInfo, Habitat habitat);
 
     /**
      * Extract instance name from given <code>uriInfo</code>

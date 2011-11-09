@@ -41,18 +41,14 @@
 package org.glassfish.admin.rest.utils;
 
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.security.ssl.SSLUtils;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.client.urlconnection.HTTPSProperties;
+import org.glassfish.admin.rest.Util;
 import org.glassfish.admin.rest.clientutils.MarshallingUtils;
 import org.jvnet.hk2.component.Habitat;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -70,7 +66,7 @@ import java.util.Properties;
 public abstract class ProxyImpl implements Proxy {
 
     @Override
-    public Properties proxyRequest(UriInfo sourceUriInfo, Client client, Habitat habitat) {
+    public Properties proxyRequest(UriInfo sourceUriInfo, Habitat habitat) {
         Properties proxiedResponse = new Properties();
         try {
             Domain domain = habitat.getComponent(Domain.class);
@@ -79,8 +75,8 @@ public abstract class ProxyImpl implements Proxy {
             if (forwardInstance != null) {
                 UriBuilder forwardUriBuilder = constructForwardURLPath(sourceUriInfo);
                 URI forwardURI = forwardUriBuilder.scheme("https").host(forwardInstance.getAdminHost()).port(forwardInstance.getAdminPort()).build(); //Host and Port are replaced to that of forwardInstanceName
+                Client client = Util.getJerseyClient(habitat);
                 WebResource.Builder resourceBuilder = client.resource(forwardURI).accept(MediaType.APPLICATION_JSON);
-                addAuthenticationInfo(client, resourceBuilder, forwardInstance, habitat);
                 ClientResponse response = resourceBuilder.get(ClientResponse.class); //TODO if the target server is down, we get ClientResponseException. Need to handle it
                 ClientResponse.Status status = ClientResponse.Status.fromStatusCode(response.getStatus());
                 if (status.getFamily() == javax.ws.rs.core.Response.Status.Family.SUCCESSFUL) {
@@ -125,33 +121,6 @@ public abstract class ProxyImpl implements Proxy {
         }
         return proxiedResponse;
 
-    }
-
-    /**
-     * Use SSL to authenticate
-     */
-    private void addAuthenticationInfo(Client client, WebResource.Builder resourceBuilder, Server server, Habitat habitat) {
-        SecureAdmin secureAdmin = habitat.getComponent(SecureAdmin.class);
-        //Instruct Jersey to use HostNameVerifier and SSLContext provided by us.
-        HTTPSProperties httpsProperties = new HTTPSProperties(new BasicHostnameVerifier(server.getAdminHost()),
-                habitat.getComponent(SSLUtils.class).getAdminSSLContext(SecureAdmin.Util.DASAlias(secureAdmin), "TLS" )); //TODO need to get hardcoded "TLS" from corresponding ServerRemoteAdminCommand constant
-        client.getProperties().put(HTTPSProperties.PROPERTY_HTTPS_PROPERTIES, httpsProperties);
-    }
-
-    /**
-     * TODO copied from HttpConnectorAddress. Need to refactor code there to reuse
-     */
-    private static class BasicHostnameVerifier implements HostnameVerifier {
-        private final String host;
-        public BasicHostnameVerifier(String host) {
-            if (host == null)
-                throw new IllegalArgumentException("null host");
-            this.host = host;
-        }
-
-        public boolean verify(String s, SSLSession sslSession) {
-            return host.equals(s);
-        }
     }
 
 }

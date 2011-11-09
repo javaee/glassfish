@@ -40,7 +40,6 @@
 
 package org.glassfish.admin.rest.resources;
 
-import org.glassfish.admin.rest.Util;
 import org.glassfish.admin.rest.utils.ProxyImpl;
 import org.jvnet.hk2.component.Habitat;
 
@@ -146,7 +145,7 @@ public class MonitoringResource {
             } else { //firstPathElement != currentInstanceName => A proxy request
                 if(isRunningOnDAS) { //Attempt to forward to instance if running on Das
                     //TODO validate that firstPathElement corresponds to a valid server name
-                    Properties proxiedResponse = new MonitoringProxyImpl().proxyRequest(uriInfo, Util.getJerseyClient(), habitat);
+                    Properties proxiedResponse = new MonitoringProxyImpl().proxyRequest(uriInfo, habitat);
                     ar.setExtraProperties(proxiedResponse);
                     responseBuilder.entity(new ActionReportResult(ar));
                 } else { // Not running on DAS and firstPathElement != currentInstanceName => Reject the request as invalid

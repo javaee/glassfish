@@ -80,7 +80,7 @@ public class ManagementProxyResource {
 
         ActionReportResult result = new ActionReportResult(ar);
 
-        Properties proxiedResponse = new ManagementProxyImpl().proxyRequest(uriInfo, Util.getJerseyClient(), habitat);
+        Properties proxiedResponse = new ManagementProxyImpl().proxyRequest(uriInfo, habitat);
         ar.setExtraProperties(proxiedResponse);
         return result;
     }

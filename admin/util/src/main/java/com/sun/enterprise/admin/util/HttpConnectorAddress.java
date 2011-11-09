@@ -72,6 +72,11 @@ public final class HttpConnectorAddress {
     public HttpConnectorAddress() {
     }
 
+
+    public HttpConnectorAddress(SSLSocketFactory sslSocketFactory) {
+        this.sslSocketFactory = sslSocketFactory;
+    }
+
     public HttpConnectorAddress(String host, int port) {
         this(host, port, false);
     }
@@ -126,18 +131,11 @@ public final class HttpConnectorAddress {
     public URLConnection openConnection(String path) throws IOException {
         if (path == null || path.trim().length() == 0)
             path = this.path;
-        final URLConnection cnx = this.openConnection(this.toURL(path));
-        if (! (cnx instanceof HttpsURLConnection)) {
-            return cnx;
-        }
-
-        configureSSL((HttpsURLConnection) cnx);
-        
-        return cnx;
+        return this.openConnection(this.toURL(path));
     }
 
-    private void configureSSL(final HttpsURLConnection httpsCnx) throws IOException {
-        httpsCnx.setHostnameVerifier(new BasicHostnameVerifier(this.host));
+    private void configureSSL(final HttpsURLConnection httpsCnx, String host) throws IOException {
+        httpsCnx.setHostnameVerifier(new BasicHostnameVerifier(host));
         httpsCnx.setSSLSocketFactory(getOrCreateSSLSocketFactory());
     }
 
@@ -261,8 +259,13 @@ public final class HttpConnectorAddress {
         return authInfo != null ? authInfo.getPassword() : "";
     }
 
-    private URLConnection openConnection(URL url) throws IOException    {
-        return this.setOptions(this.makeConnection(url));
+    public URLConnection openConnection(URL url) throws IOException    {
+        final URLConnection cnx = this.makeConnection(url);
+        this.setOptions(cnx);
+        if (cnx instanceof HttpsURLConnection) {
+            configureSSL((HttpsURLConnection) cnx, url.getHost());
+        }
+        return cnx;
     }
 
     private URLConnection makeConnection(URL url) throws IOException {

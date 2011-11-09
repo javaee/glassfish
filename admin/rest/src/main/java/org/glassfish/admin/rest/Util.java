@@ -39,6 +39,12 @@
  */
 package org.glassfish.admin.rest;
 
+import com.sun.enterprise.admin.util.AuthenticationInfo;
+import com.sun.enterprise.admin.util.HttpConnectorAddress;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.SecureAdmin;
+import com.sun.enterprise.config.serverbeans.SecureAdminInternalUser;
+import com.sun.enterprise.security.ssl.SSLUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.common.ActionReporter;
 import com.sun.jersey.api.client.Client;
@@ -47,9 +53,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import com.sun.jersey.client.urlconnection.HttpURLConnectionFactory;
+import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import org.glassfish.admin.rest.provider.ProviderUtil;
 import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +72,7 @@ import javax.ws.rs.core.PathSegment;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport.MessagePart;
 import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.security.common.MasterPassword;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -259,9 +271,12 @@ public class Util {
         return methodName = prefix + methodName;
     }
 
-    public static Client getJerseyClient() {
+    public static Client getJerseyClient(Habitat habitat) {
         if (client == null) {
-            client = Client.create();
+            // Tell Jersey to use HttpURLConnectionFactory that delegates to HttpConnectorAddress
+            // URLConnection obtained form HttpConnectorAddress is set up for authentication required for secure admin communication
+            HttpURLConnectionFactory urlConnectionFactory = new ConnectionFactory(habitat);
+            client = new Client(new URLConnectionClientHandler(urlConnectionFactory));
         }
 
         return client;
@@ -362,5 +377,59 @@ public class Util {
             }
         }
         return null;
+    }
+
+    /**
+     * HttpURLConnectionFactory for obtaining connection from a Jersey Client.
+     */
+    private static class ConnectionFactory implements HttpURLConnectionFactory {
+        Habitat habitat;
+
+        private ConnectionFactory(Habitat habitat) {
+            this.habitat = habitat;
+        }
+
+        /**
+         * Code in this method is copied from ServerRemoteAdminCommand to make it easier for sustaining to port back
+         * these changes. In trunk, HttpConnectorAddress will be refactored such that all the code below will be
+         * abstracted into HttpConnectorAddress.
+         */
+        @Override
+        public HttpURLConnection getHttpURLConnection(URL url) throws IOException {
+            final Domain domain = habitat.getComponent(Domain.class);
+            SecureAdmin secureAdmin = domain.getSecureAdmin();
+            final String certAlias = SecureAdmin.Util.isUsingUsernamePasswordAuth(secureAdmin) ? null : SecureAdmin.Util.DASAlias(secureAdmin);
+            HttpConnectorAddress httpConnectorAddress = new HttpConnectorAddress(habitat.getComponent(SSLUtils.class).getAdminSocketFactory(certAlias, "TLS"));
+            AuthenticationInfo authenticationInfo = authenticationInfo(habitat, secureAdmin);
+            if (authenticationInfo != null) {
+                httpConnectorAddress.setAuthenticationInfo(authenticationInfo);
+            }
+            HttpURLConnection httpURLConnection = (HttpURLConnection) httpConnectorAddress.openConnection(url); // The URL constructed for REST will always be Http(s) so, it is ok to cast here.
+            //Hack - httpConnectorAddress calls httpURLConnection.setRequestProperty("Content-type", "application/octet-stream"); before returning connection above
+            //Our resources are only capable of accepting xml, json and form. Override here to apploication/json (randomly picked one of the three). This should not be required after HttpConnectorAddress refactoring in trunk.
+            httpURLConnection.setRequestProperty("Content-type", "application/json");
+            return httpURLConnection;
+        }
+
+        /**
+         * Code in this method is copied from ServerRemoteAdminCommand to make it easier for sustaining to port back
+         * these changes. In trunk, HttpConnectorAddress will be refactored such that all the code below will be
+         * abstracted into HttpConnectorAddress.
+         */
+        private AuthenticationInfo authenticationInfo(Habitat habitat, SecureAdmin secureAdmin) {
+            AuthenticationInfo result = null;
+            if (SecureAdmin.Util.isUsingUsernamePasswordAuth(secureAdmin)) {
+                final SecureAdminInternalUser secureAdminInternalUser = SecureAdmin.Util.secureAdminInternalUser(secureAdmin);
+                if (secureAdminInternalUser != null) {
+                    try {
+                        String pw = habitat.getComponent(MasterPassword.class).getMasterPasswordAdapter().getPasswordForAlias(secureAdminInternalUser.getPasswordAlias());
+                        result = new AuthenticationInfo(secureAdminInternalUser.getUsername(), pw);
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+            return result;
+        }
     }
 }
