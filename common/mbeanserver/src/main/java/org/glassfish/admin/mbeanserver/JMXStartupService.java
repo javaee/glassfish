@@ -114,7 +114,6 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
 
     public JMXStartupService() {
         mMBeanServer = java.lang.management.ManagementFactory.getPlatformMBeanServer();
-        //mMBeanServer = javax.management.MBeanServerFactory.createMBeanServer();
     }
 
     private final class ShutdownListener implements EventListener {
@@ -181,7 +180,11 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
             }
         }*/
 
-        //javax.management.MBeanServerFactory.releaseMBeanServer(mMBeanServer);
+        if (javax.management.MBeanServerFactory.findMBeanServer(null).size() > 0) {
+            MBeanServer server = javax.management.MBeanServerFactory.findMBeanServer(null).get(0);
+            javax.management.MBeanServerFactory.releaseMBeanServer(server);
+        }
+
     }
 
     private static final class BootAMXThread extends Thread {
@@ -231,7 +234,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
                     connObjectName = null;
                 }
             } catch (MBeanRegistrationException ex) {
-                 mLogger.log(Level.SEVERE, "jmx.MBeanRegistrationException", ex);
+                mLogger.log(Level.SEVERE, "jmx.MBeanRegistrationException", ex);
             } catch (InstanceNotFoundException ex) {
                 mLogger.log(Level.SEVERE, "jmx.InstanceNotFoundException", ex);
             }
@@ -239,7 +242,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
                 try {
                     final JMXServiceURL address = connector.getAddress();
                     connector.stop();
-                    mLogger.log(Level.INFO,"jmx.startupService.stopped.jmxconnector",address);
+                    mLogger.log(Level.INFO, "jmx.startupService.stopped.jmxconnector", address);
                 } catch (final Exception e) {
                     e.printStackTrace();
                 }
@@ -286,7 +289,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
             }
 
             final JMXServiceURL url = server.getAddress();
-            mLogger.log(Level.INFO,"jmx.startedservice",url);
+            mLogger.log(Level.INFO, "jmx.startedservice", url);
 
             try {
                 connObjectName = new ObjectName(JMX_CONNECTOR_SERVER_PREFIX + ",protocol=" + protocol + ",name=" + connConfig.getName());
@@ -311,7 +314,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
         public void run() {
             for (final JmxConnector c : mConfiguredConnectors) {
                 if (!Boolean.parseBoolean(c.getEnabled())) {
-                    mLogger.log(Level.INFO,"jmx.startedservice.disabled",c.getName());
+                    mLogger.log(Level.INFO, "jmx.startedservice.disabled", c.getName());
                     continue;
                 }
 
@@ -319,7 +322,7 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
                     final JMXConnectorServer server = startConnector(c);
                     mConnectorServers.add(server);
                 } catch (final Throwable t) {
-                    mLogger.log(Level.WARNING,"jmx.cannotstart.jmxconnector", new Object[] {toString(c),t});
+                    mLogger.log(Level.WARNING, "jmx.cannotstart.jmxconnector", new Object[]{toString(c), t});
                     t.printStackTrace();
                 }
             }
