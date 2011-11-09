@@ -71,7 +71,7 @@ public class MyContractImpl {
     public void doSomething() {
 
     }
-}</pre></div><p>Another implementation can then name its implementation different.</p><div class="source"><pre>@Service(name=&quot;foo&quot;)
+}</pre></div><p>Another implementation can then name its implementation different.</p><div class="source"><pre>@Service(name=&quot;bar&quot;)
 public class MyContractImpl {
 
     public void doSomething() {
@@ -105,7 +105,7 @@ public class MyContractImpl {
     // you should always check you got what you wanted.
     if (myContractImpl!=null) {
         myContractImpl.doSomething();
-    }</pre></div><p>of course, nothing prevents you from doing an explicit typed lookup.</p><p>MyContract myContractImpl = services.forContract(MyContract.class).annotatedWith(Extended.class).get();</p><p>or</p><p>@Inject @Extended MyContract myContract;</p></div><div class="section"><h3>Subclassing<a name="Subclassing"></a></h3><p>The casual reader might think that using the last methods (Substitution, Configuration) would work but it has major drawbacks, let's look at an example.</p><div class="source"><pre>@Service(name=&quot;super&quot;)
+    }</pre></div><p>of course, nothing prevents you from doing an explicit typed lookup.</p><p>MyContract myContractImpl = services.forContract(MyContract.class).annotatedWith(Extended.class).get();</p><p>or</p><p>@Inject @Extended MyContract myContract;</p></div></div><div class="section"><h2>Subclassing<a name="Subclassing"></a></h2><p>The casual reader might think that using the last methods (Substitution, Configuration) would work but it has major drawbacks, let's look at an example.</p><div class="source"><pre>@Service(name=&quot;super&quot;)
 public class MyContractImpl {
 
     public void doSomething() {
@@ -133,19 +133,19 @@ public class MyContractImpl extends AbstractMyContractImpl {
 }
 
 @Service
-public class MyContract2Impl extends MyContractImpl {
+public class MyContract2Impl extends AbstractMyContractImpl {
 
     @Override
     public void doSomething() {
         super.doSomething();
         // do something else
     }
-}</pre></div><div class="section"><h4>Dependency declaration<a name="Dependency_declaration"></a></h4><p>The normal declarative or programmatic access to the implementation is similar to case 1, since only one of the two @Service annotated class will be shipped in a particular product.</p><div class="source"><pre>@Service
+}</pre></div><div class="section"><h3>Dependency declaration<a name="Dependency_declaration"></a></h3><p>The normal declarative or programmatic access to the implementation is similar to case 1, since only one of the two @Service annotated class will be shipped in a particular product.</p><div class="source"><pre>@Service
 public class SomeUserCode {
 
     @Inject
     MyContract contractImpl;
-}</pre></div></div><div class="section"><h4>Packaging<a name="Packaging"></a></h4><p>In order to meet the requirements of visibility, 3 modules are needed.</p><ul><li>common-impl.jar : will be packaging all common code to product A and B.</li><li>productA-impl.jar : contains the product A specific @Service classes (MyContractImpl.class in the example above).</li><li>productB-impl.jar : contains the product B spcecific @Service classes (MyContract2Impl above).</li></ul></div></div></div>
+}</pre></div></div><div class="section"><h3>Packaging<a name="Packaging"></a></h3><p>In order to meet the requirements of visibility, 3 modules are needed.</p><ul><li>common-impl.jar : will be packaging all common code to product A and B.</li><li>productA-impl.jar : contains the product A specific @Service classes (MyContractImpl.class in the example above).</li><li>productB-impl.jar : contains the product B spcecific @Service classes (MyContract2Impl above).</li></ul></div></div>
       </div>
     </div>
     <div class="clear">
@@ -161,7 +161,7 @@ public class SomeUserCode {
 
   
   
-  &nbsp;| Last Published: 11/07/2011
+  &nbsp;| Last Published: 11/09/2011
   &nbsp;| Version: 1.6.24-SNAPSHOT
 </div>
       <div class="clear">
