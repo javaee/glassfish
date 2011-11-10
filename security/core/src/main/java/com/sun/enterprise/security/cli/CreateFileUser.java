@@ -132,7 +132,7 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
     @Inject
     private ServerEnvironment se;
     
-    private static SecureAdmin secureAdmin = null;
+    private SecureAdmin secureAdmin = null;
     
     private final static String ADMIN_REALM = "admin-realm";
 
