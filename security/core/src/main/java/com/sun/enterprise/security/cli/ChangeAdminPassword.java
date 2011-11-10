@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.security.cli;
 
+import java.lang.annotation.Annotation;
 import java.util.Enumeration;
 
 import org.glassfish.api.admin.AdminCommand;
@@ -56,6 +57,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import org.jvnet.hk2.config.types.Property;
@@ -64,6 +66,7 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -98,7 +101,7 @@ public class ChangeAdminPassword implements AdminCommand {
 
     @Param(name="username", primary=true)
     private String userName;
-
+        
     @Inject
     private Configs configs;
     @Inject
@@ -106,6 +109,8 @@ public class ChangeAdminPassword implements AdminCommand {
 
     @Inject
     private RealmsManager realmsManager;
+    
+    private SecureAdmin secureAdmin = null;
 
     private final static String ADMIN_REALM = "admin-realm";
     /**
@@ -115,8 +120,19 @@ public class ChangeAdminPassword implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
-        
+
         final ActionReport report = context.getActionReport();
+
+        //Issue 17513 Fix - Check for null passwords if secureadmin is enabled
+        secureAdmin = domain.getSecureAdmin();
+        if (SecureAdmin.Util.isEnabled(secureAdmin)) {
+            if ((newpassword == null) || (newpassword.isEmpty())) {
+                report.setMessage(localStrings.getLocalString(
+                        "null_empty_password","The new password is null or empty"));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }           
+        }
 
         List <Config> configList = configs.getConfig();
         Config config = configList.get(0);
@@ -214,4 +230,7 @@ public class ChangeAdminPassword implements AdminCommand {
             report.setFailureCause(e);
         }        
     }
+ 
+
+  
 }
