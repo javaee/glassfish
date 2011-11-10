@@ -98,7 +98,7 @@ public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeI
     @Override
     public Collection<T> subTypes() {
         List<T> subTypes = new ArrayList<T>();
-        for (Type t : sink.getSubTypeRefs()) {
+        for (Type t : getProxy().getSubTypeRefs()) {
             subTypes.add((T) t);
         }
         return subTypes;

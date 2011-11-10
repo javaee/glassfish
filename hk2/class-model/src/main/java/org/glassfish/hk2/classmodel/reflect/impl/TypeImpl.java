@@ -54,9 +54,9 @@ import java.net.URI;
  */
 public class TypeImpl extends AnnotatedElementImpl implements Type {
 
-    final TypeProxy<Type> sink;
-    final List<MethodModel> methods = new ArrayList<MethodModel>();
-    final Set<URI> definingURIs= new HashSet<URI>();
+    private final TypeProxy<Type> sink;
+    private final List<MethodModel> methods = new ArrayList<MethodModel>();
+    private final Set<URI> definingURIs= new HashSet<URI>();
 
 
     public TypeImpl(String name, TypeProxy<Type> sink) {
@@ -100,7 +100,7 @@ public class TypeImpl extends AnnotatedElementImpl implements Type {
         return Collections.unmodifiableList(methods);
     }
 
-    TypeProxy getProxy() {
+    TypeProxy<Type> getProxy() {
         return sink;
     }
 

@@ -50,9 +50,9 @@ import java.util.*;
  */
 public class AnnotatedElementImpl implements AnnotatedElement {
     
-    public final String name;
+    private final String name;
 
-    public final List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();
+    private final List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();
 
     public AnnotatedElementImpl(String name) {
         this.name = name;

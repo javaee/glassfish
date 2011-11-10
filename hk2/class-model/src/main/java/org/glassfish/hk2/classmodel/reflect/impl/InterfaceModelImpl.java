@@ -55,14 +55,14 @@ public class InterfaceModelImpl extends ExtensibleTypeImpl<InterfaceModel> imple
 
     @Override
     public Collection<ClassModel> implementations() {
-        return sink.getImplementations();
+        return getProxy().getImplementations();
     }
 
     @Override
     public Collection<ClassModel> allImplementations() {
         Collection<ClassModel> result = new HashSet<ClassModel>();
-        result.addAll(sink.getImplementations());
-        for (ClassModel cm : sink.getImplementations()) {
+        result.addAll(getProxy().getImplementations());
+        for (ClassModel cm : getProxy().getImplementations()) {
             result.addAll(cm.allSubTypes());
         }
         return Collections.unmodifiableCollection(result);
@@ -72,7 +72,7 @@ public class InterfaceModelImpl extends ExtensibleTypeImpl<InterfaceModel> imple
     protected void print(StringBuffer sb) {
         super.print(sb);
         sb.append(", implementors=[");
-        for (ClassModel cm : sink.getImplementations()) {
+        for (ClassModel cm : getProxy().getImplementations()) {
             sb.append(" ").append(cm.getName());
         }
         sb.append("]");
