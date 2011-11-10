@@ -57,6 +57,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.config.serverbeans.SecurityService;
@@ -130,6 +131,10 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
 
     @Inject
     private ServerEnvironment se;
+    
+    private static SecureAdmin secureAdmin = null;
+    
+    private final static String ADMIN_REALM = "admin-realm";
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -139,7 +144,9 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         
-        final ActionReport report = context.getActionReport();
+        final ActionReport report = context.getActionReport();      
+
+        
         Config tmp = null;
         try {
             tmp = configs.getConfigByName(target);
@@ -235,6 +242,18 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
                "in --passwordfile option", userName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
+        }
+        
+        //Issue 17525 Fix - Check for null passwords for admin-realm if secureadmin is enabled
+        secureAdmin = domain.getSecureAdmin();
+        if ((SecureAdmin.Util.isEnabled(secureAdmin))
+                && (authRealmName.equals(ADMIN_REALM))) {
+            if ((password == null) || (password.isEmpty())) {
+                report.setMessage(localStrings.getLocalString(
+                        "null_empty_password","The admin user password is null or empty"));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }           
         }
         
         // now adding user
