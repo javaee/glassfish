@@ -367,7 +367,7 @@ public class ModelClassVisitor implements ClassVisitor {
 
       public void visit(java.lang.String desc, java.lang.Object value) {
         AnnotationTypeImpl am = (AnnotationTypeImpl) context.method.owner;
-        am.addDefaultValue(context.method.name, value);
+        am.addDefaultValue(context.method.getName(), value);
       }
     }
 

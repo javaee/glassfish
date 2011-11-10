@@ -112,10 +112,14 @@ public class TypesCtr implements Types {
         if (typeProxy ==null) {
             // in our unknown type pool ?
             if (unknownTypesStorage.containsKey(name)) {
-                typeProxy = unknownTypesStorage.remove(name);
-                TypeProxy<Type> old = typeStorage.putIfAbsent(name, typeProxy);
-                if (old!=null) {
-                    typeProxy = old;
+                synchronized (unknownTypesStorage) {
+                    typeProxy = unknownTypesStorage.remove(name);
+                }
+                if (typeProxy!=null) {
+                    TypeProxy<Type> old = typeStorage.putIfAbsent(name, typeProxy);
+                    if (old!=null) {
+                        typeProxy = old;
+                    }
                 }
             } else {
                 typeProxy = new TypeProxy<Type>(null, name);

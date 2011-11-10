@@ -117,7 +117,7 @@ public class LocatorTest {
         System.out.println("Found " + files.size() + " files in " + (System.currentTimeMillis() - start));
         for (Type t : context.getTypes().getAllTypes()) {
             if (t instanceof AnnotationTypeImpl) {
-                System.out.println("Found annotation : " + ((AnnotationTypeImpl) t).name + " in " + t.getDefiningURIs());
+                System.out.println("Found annotation : " + ((AnnotationTypeImpl) t).getName() + " in " + t.getDefiningURIs());
             }
         }
         System.out.println("parsed " + files.size() + " in " + (System.currentTimeMillis() - startTime) + " ms");

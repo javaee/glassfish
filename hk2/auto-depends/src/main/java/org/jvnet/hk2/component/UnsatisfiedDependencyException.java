@@ -93,7 +93,7 @@ public class UnsatisfiedDependencyException extends ComponentException {
       }
       return msg;
     }
-    
+
     public boolean isField() {
         return member instanceof Field;
     }

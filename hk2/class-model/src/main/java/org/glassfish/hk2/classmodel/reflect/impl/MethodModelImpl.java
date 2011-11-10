@@ -70,11 +70,6 @@ public class MethodModelImpl extends AnnotatedElementImpl implements MethodModel
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
     public String getSignature() {
         return signature;
     }
