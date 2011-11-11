@@ -47,7 +47,7 @@
 
   <Identity>
     <Identifier feature="true">Domain</Identifier>
-    <Description>GlassFish Server 3.1.1</Description>
+    <Description>GlassFish Server 3.1.2</Description>
     <IdentityVersion>
       <VersionBaseline>0.5</VersionBaseline>
     </IdentityVersion>
