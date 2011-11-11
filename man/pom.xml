@@ -42,17 +42,17 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.glassfish.docs</groupId>
+        <artifactId>v3-docs</artifactId>
+        <version>3.2-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>    
+
    <groupId>org.glassfish.docs.man</groupId>
    <artifactId>manpages</artifactId>
    <name>Man Pages for asadmin Utility Subcommnads</name>
    <packaging>pom</packaging>
-   <distributionManagement>
-       <repository>            
-           <uniqueVersion>false</uniqueVersion>
-           <id>rator.sfbay</id>
-           <url>dav:http://glassfish-maven-repository.us.oracle.com/maven/repositories/glassfish/</url>
-       </repository>
-   </distributionManagement>
    <version>3.2-SNAPSHOT</version>
    <modules>
        <module>admin/cli</module>
@@ -81,5 +81,19 @@
        <module>transaction/jts</module>
        <module>web/admin</module>
        <module>web/gui-plugin-common</module>
-   </modules>
+    </modules>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>2.5</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.2.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>
