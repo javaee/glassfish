@@ -39,6 +39,6 @@
  */
 
 -exportcontents: \
-                            *; version=${project.osgi.version}
+                            *
 
 

@@ -290,13 +290,8 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
             module = parent.makeModuleFor(name,version, resolve);
             if(module!=null)        return module;
         }
+
         module = modules.get(AbstractFactory.getInstance().createModuleId(name, version));
-        if (module == null && version == null) {
-            Collection<Module> matchingModules = getModules(name);
-            if (!matchingModules.isEmpty()) {
-                module = matchingModules.iterator().next();
-            }
-        }
         if (module==null) {
             module = loadFromRepository(name, version);
             if (module!=null) {
@@ -311,7 +306,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
                 throw new ResolveError(e);
             }
         }
-        Logger.getAnonymousLogger().info("this.makeModuleFor("+name+ ", " + version + ") returned " + module);
+        Logger.getAnonymousLogger().fine("this.makeModuleFor("+name+ ", " + version + ") returned " + module);
         return module;
     }
 
@@ -434,7 +429,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
 
         // make a copy to avoid synchronizing since this API can be called while
         // modules are added or removed by other threads.
-        Map<Integer, Repository> repos = new TreeMap<Integer, Repository>();
+        Map<Integer,Repository> repos = new TreeMap<Integer,Repository>();
         repos.putAll(repositories);
 
         // force repository extraction
@@ -444,9 +439,9 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
         for (Integer key : sortedKeys) {
             Repository repo = repos.get(key);
             for (ModuleDefinition moduleDef : repo.findAll()) {
-                if (modules.get(AbstractFactory.getInstance().createModuleId(moduleDef)) == null) {
+                if (modules.get(AbstractFactory.getInstance().createModuleId(moduleDef))==null) {
                     Module newModule = newModule(moduleDef);
-                    if (newModule != null) {
+                    if (newModule!=null) {
                         // When some module can't get installed,
                         // don't halt proceeding, instead continue
                         add(newModule);
@@ -606,16 +601,17 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
     }
 
     public void dumpState(PrintStream writer) {
-
-        StringBuilder sb = new StringBuilder("Registry Info:: Total repositories: " + repositories.size()
-                + ", Total modules = " + modules.size() + "\n");
+        
+        writer.println("Registry Info");
         for (Repository repo : repositories.values()) {
-            sb.append("Attached repository: [" + repo + "]\n");
+            writer.println("Attached repository : " + repo.getName());
+            writer.println(repo.toString());
         }
         for (Module module : getModules()) {
-            sb.append("Registered Module: [" + module + "]\n");
+            
+            writer.println("Registered Module " + module.getModuleDefinition().getName());
+            module.dumpState(writer);
         }
-        writer.println(sb);
     }
 
 
