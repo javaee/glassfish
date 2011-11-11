@@ -45,6 +45,7 @@ import com.sun.enterprise.module.ModuleDependency;
 import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.common_impl.DefaultModuleDefinition;
 import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
+import com.sun.enterprise.module.impl.HK2Factory;
 import com.sun.enterprise.tools.verifier.apiscan.classfile.ClassFileLoader;
 import com.sun.enterprise.tools.verifier.apiscan.classfile.ClassFileLoaderFactory;
 import com.sun.enterprise.tools.verifier.apiscan.classfile.ClosureCompilerImpl;
@@ -283,6 +284,7 @@ public class ModuleDependencyAnalyser {
                 return files.toArray(new File[files.size()]);
             }
         };
+        HK2Factory.initialize();
         Repository moduleRepository = new DirectoryBasedRepository("repo", f);
         moduleRepository.initialize();
         List<ModuleDefinition> moduleDefs = new ArrayList<ModuleDefinition>();
