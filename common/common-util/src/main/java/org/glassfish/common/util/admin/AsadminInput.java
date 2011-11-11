@@ -44,6 +44,7 @@ import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -117,14 +118,41 @@ public class AsadminInput {
         if (inputURI.equals(SYSTEM_IN_INDICATOR)) {
             return reader(System.in);
         }
-        final URI uri;
-        if ( inputURI.indexOf(':') == -1) {
-            /*
-             * Treat the input URI as a file path.
-             */
-            uri = new File(".").toURI().resolve(inputURI);
-        } else {
+        URI uri;
+        /*
+         * Try interpreting the argument as a valid URI.
+         */
+        try {
             uri = new URI(inputURI);
+            /*
+             * The URI parsed successfully.  If there is no scheme then
+             * reconstitute the URI as a file URI by treating it as relative to
+             * the current directory.
+             */
+            if (uri.getScheme() == null) {
+                uri = new File(".").toURI().resolve(uri);
+            }
+        } catch (URISyntaxException ex) {
+            /*
+             * The argument did not parse as a URI.  
+             * It might have been a Windows-style file path (including a 
+             * device letter and the trailing : which would upset the
+             * URI constructor.  Try creating a File using the argument
+             * as a path.
+             */
+            uri = new File(inputURI).toURI();
+        }
+        /*
+         * At this point the URI should be valid.  Check it further if it is a
+         * file URI.
+         */
+        if (uri.getScheme().equals("file")) {
+            final File f = new File(uri);
+            if ( ! f.exists()) {
+                throw new FileNotFoundException(f.getAbsolutePath());
+            } else if ( ! f.canRead()) {
+                throw new IOException(f.getAbsolutePath());
+            }
         }
         return reader(uri.toURL().openStream());
     }
