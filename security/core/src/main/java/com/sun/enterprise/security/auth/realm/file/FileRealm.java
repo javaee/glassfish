@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -759,7 +759,14 @@ public final class FileRealm extends IASRealm
         if (password==null) {
             newUser.setSalt(oldUser.getSalt());
             newUser.setHash(oldUser.getHash());
-            newUser.setAlgo(oldUser.getAlgo());
+            //If the original algo was RESET, change it to
+            //the default - SHA-256
+            if(oldUser.getAlgo().equals(resetKey)) {
+                newUser.setAlgo(algoSHA256);
+            }
+            else {
+                newUser.setAlgo(oldUser.getAlgo());
+            }
             
         } else {
             setPassword(newUser, password);

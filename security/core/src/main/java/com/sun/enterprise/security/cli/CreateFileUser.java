@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.security.cli;
 
+import com.sun.enterprise.config.serverbeans.AdminService;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -128,13 +129,15 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
 
     @Inject
     private RealmsManager realmsManager;
+    
+    @Inject
+    private AdminService adminService;
 
     @Inject
     private ServerEnvironment se;
     
     private SecureAdmin secureAdmin = null;
     
-    private final static String ADMIN_REALM = "admin-realm";
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -247,7 +250,7 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
         //Issue 17525 Fix - Check for null passwords for admin-realm if secureadmin is enabled
         secureAdmin = domain.getSecureAdmin();
         if ((SecureAdmin.Util.isEnabled(secureAdmin))
-                && (authRealmName.equals(ADMIN_REALM))) {
+                && (authRealmName.equals(adminService.getAuthRealmName()))) {
             if ((password == null) || (password.isEmpty())) {
                 report.setMessage(localStrings.getLocalString(
                         "null_empty_password","The admin user password is null or empty"));

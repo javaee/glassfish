@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.security.cli;
 
+import com.sun.enterprise.config.serverbeans.AdminService;
 import java.util.List;
 
 import org.glassfish.api.admin.AdminCommand;
@@ -57,6 +58,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.config.serverbeans.SecurityService;
@@ -119,9 +121,15 @@ public class UpdateFileUser implements AdminCommand {
 
     @Inject
     private Domain domain;
+    
+    @Inject
+    private AdminService adminService;
+    
     @Inject
     private RealmsManager realmsManager;
-
+    
+    private SecureAdmin secureAdmin = null;
+    
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -131,7 +139,7 @@ public class UpdateFileUser implements AdminCommand {
     public void execute(AdminCommandContext context) {
         
         final ActionReport report = context.getActionReport();
-
+        
         Config tmp = null;
         try {
             tmp = configs.getConfigByName(target);
@@ -218,14 +226,30 @@ public class UpdateFileUser implements AdminCommand {
         String password = userpassword; // fetchPassword(report);
         if (password == null && groups == null) {
             report.setMessage(localStrings.getLocalString(
-                "update.file.user.keyfilenotreadable", "None of password or groups have been specified for update,"
+                "update.file.user.passwordgroupempty", "None of password or groups have been specified for update,"
               + "Password for user {0} has to be specified"
               + "through AS_ADMIN_USERPASSWORD property in the file specified " 
               + "in --passwordfile option", userName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
+          
+        //Issue 17525 Fix - Check for null passwords for admin-realm if secureadmin is enabled
+        if (password != null) {
+            secureAdmin = domain.getSecureAdmin();
+            if ((SecureAdmin.Util.isEnabled(secureAdmin))
+                    && (adminService.getAuthRealmName().equals(authRealmName))) {
+                if ((password.isEmpty())) {
+                    report.setMessage(localStrings.getLocalString(
+                            "null_empty_password", "The admin user password is empty"));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+            }
+        }
 
+    
+        
         //even though update-file-user is not an update to the security-service
         //do we need to make it transactional by referncing the securityservice
         //hypothetically ?.

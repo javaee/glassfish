@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.security.cli;
 
+import com.sun.enterprise.config.serverbeans.AdminService;
 import java.lang.annotation.Annotation;
 import java.util.Enumeration;
 
@@ -110,9 +111,12 @@ public class ChangeAdminPassword implements AdminCommand {
     @Inject
     private RealmsManager realmsManager;
     
+    @Inject
+    private AdminService adminService;
+    
     private SecureAdmin secureAdmin = null;
 
-    private final static String ADMIN_REALM = "admin-realm";
+    
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -141,7 +145,7 @@ public class ChangeAdminPassword implements AdminCommand {
        
         AuthRealm fileAuthRealm = null;        
         for (AuthRealm authRealm : securityService.getAuthRealm()) {            
-            if (authRealm.getName().equals(ADMIN_REALM)) {                
+            if (authRealm.getName().equals(adminService.getAuthRealmName())) {                
                 fileAuthRealm = authRealm;            
                 break;
             }
