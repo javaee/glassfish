@@ -70,7 +70,8 @@ public class OSGiFactoryImpl extends AbstractFactory {
     }
 
     public OSGiModulesRegistryImpl createModulesRegistry() {
-        return new OSGiModulesRegistryImpl(ctx);
+        String val = ctx.getProperty(Constants.OBR_ENABLED);
+        return (val != null && Boolean.valueOf(val)) ? new OSGiObrModulesRegistryImpl(ctx) : new OSGiModulesRegistryImpl(ctx);
     }
 
     public ModuleId createModuleId(String name, String version)

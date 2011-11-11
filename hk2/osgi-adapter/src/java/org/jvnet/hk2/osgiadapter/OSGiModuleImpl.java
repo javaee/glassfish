@@ -66,8 +66,8 @@ import java.security.PrivilegedActionException;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public final class OSGiModuleImpl implements Module {
-    private Bundle bundle;
+public class OSGiModuleImpl implements Module {
+    private volatile Bundle bundle; // made volatile as it is accessed from multiple threads
 
     private ModuleDefinition md;
 
@@ -195,6 +195,7 @@ public final class OSGiModuleImpl implements Module {
         if (lifecyclePolicy!=null) {
             lifecyclePolicy.start(this);
         }
+        return;
     }
 
     private String toString(int state)
@@ -321,7 +322,7 @@ public final class OSGiModuleImpl implements Module {
     }
 
     public void dumpState(PrintStream writer) {
-        writer.print(bundle.toString());
+        writer.print(toString());
     }
 
     /**
@@ -406,6 +407,7 @@ public final class OSGiModuleImpl implements Module {
                                         (OSGiModuleImpl) registry.getProvidingModule(name);
                                 if (m != null) {
                                     try {
+                                        m.resolve();
                                         return m.bundle.loadClass(name);
                                     } catch (ClassNotFoundException ex) {
                                         throw new RuntimeException(ex);
@@ -544,9 +546,8 @@ public final class OSGiModuleImpl implements Module {
     }
 
     public String toString() {
-        return "Bundle Id [" + bundle.getBundleId()
-                + "]\t State [" + toString(bundle.getState())
-                + "]\t [" + md.toString() + "]";
+        return "OSGiModuleImpl:: Bundle = [" + bundle
+                + "], State = [" + getState() + "]";
     }
 
     @Override
@@ -560,6 +561,23 @@ public final class OSGiModuleImpl implements Module {
             return bundle.equals(OSGiModuleImpl.class.cast(obj).bundle);
         }
         return false;
+    }
+
+    protected void setBundle(Bundle bundle) {
+        /*
+         * This method is purposefully not made synchronized as this can be called like this:
+         *
+         * thread #1: is calling this.init() and has held the lock, but is waiting for Obr to deploy.
+         * thread #2: is deploying some bundles using Obr and as part of that is trying to call setBundle on this module.
+         */
+        if (this.bundle != null && this.bundle != bundle) {
+            throw new RuntimeException("setBundle called with bundle [" + bundle + "] where as module [" + this +
+                    "] is already associated with bundle [" + this.bundle + "]");
+        } else {
+            this.bundle = bundle;
+            logger.logp(Level.INFO, "OSGiModuleImpl", "setBundle", "module [{0}] is now associated with bundle [{1}]",
+                    new Object[]{this, bundle});
+        }
     }
 }
 
