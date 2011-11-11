@@ -193,22 +193,57 @@
     </target>
 
     <target name="run" depends="init-common">
-      <antcall target="setup-cluster">
-            <param name="delegated" value="true"/>
-       </antcall>
       <antcall target="run-delegated"/>
-      <antcall target="save-logs"/>
-      <copy file="${module}-logs.zip" tofile="${module}-delegated-logs.zip"/>
-      <antcall target="unsetup-cluster"/>
-      <antcall target="reset-tables"/>
-
-      <antcall target="setup-cluster">
-            <param name="delegated" value="false"/>
-       </antcall>
+      <antcall target="reset-all"/>
       <antcall target="run-cli"/>
     </target>
 
+    <target name="reset-all" depends="init-common">
+      <antcall target="unsetup-cluster"/>
+      <antcall target="reset-tables"/>
+    </target>
+
     <target name="run-delegated" depends="init-common">
+      <antcall target="setup-cluster">
+            <param name="delegated" value="true"/>
+       </antcall>
+      <antcall target="test-delegated"/>
+      <antcall target="save-logs"/>
+      <copy file="${module}-logs.zip" tofile="${module}-delegated-logs.zip"/>
+    </target>
+
+    <target name="run-cli" depends="init-common">
+      <antcall target="setup-cluster">
+            <param name="delegated" value="false"/>
+       </antcall>
+      <antcall target="test-cli"/>
+    </target>
+
+    <target name="run-autorecovery" depends="init-common">
+      <antcall target="setup-cluster">
+            <param name="delegated" value="false"/>
+       </antcall>
+      <antcall target="test-autorecovery"/>
+      <antcall target="save-logs"/>
+      <copy file="${module}-logs.zip" tofile="${module}-autorecovery-logs.zip"/>
+    </target>
+
+    <target name="run-delegated-reset" depends="init-common">
+      <antcall target="reset-all"/>
+      <antcall target="run-delegated"/>
+    </target>
+
+    <target name="run-cli-reset" depends="init-common">
+      <antcall target="reset-all"/>
+      <antcall target="run-cli"/>
+    </target>
+
+    <target name="run-autorecovery-reset" depends="init-common">
+      <antcall target="reset-all"/>
+      <antcall target="run-autorecovery"/>
+    </target>
+
+    <target name="test-delegated" depends="init-common">
         <parallel>
            <antcall target="insert-data"/>
            <antcall target="kill-instance"/>
@@ -240,7 +275,7 @@
         </java>
     </target>
 
-    <target name="run-cli" depends="init-common">
+    <target name="test-cli" depends="init-common">
         <parallel>
            <antcall target="insert-data"/>
            <antcall target="kill-instance"/>
@@ -256,6 +291,24 @@
         </exec>
     </target>
 
+    <target name="test-autorecovery" depends="init-common">
+        <parallel>
+           <antcall target="insert-data"/>
+           <antcall target="kill-instance"/>
+        </parallel>
+
+        <!-- restart the instance -->
+        <exec executable="${ASADMIN}" failonerror="false">
+          <arg line="start-local-instance"/>
+          <arg line="in1"/>
+        </exec>
+
+        <!-- wait a little -->
+        <sleep seconds="35"/>
+
+        <antcall target="verify-results"/>
+
+    </target>
 
     <target name="kill-instance">
       <sleep seconds="20"/>
