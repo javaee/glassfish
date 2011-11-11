@@ -104,7 +104,7 @@ public class OSGiModulesRegistryImpl
 
         // Populate registry with pre-installed bundles
         for (final Bundle b : bctx.getBundles()) {
-            if (b.getLocation().equals (Constants.SYSTEM_BUNDLE_LOCATION)) {
+            if (b.getLocation().equals (org.osgi.framework.Constants.SYSTEM_BUNDLE_LOCATION)) {
                 continue;
             }
             try {
@@ -559,17 +559,6 @@ public class OSGiModulesRegistryImpl
         if (bundleListener!=null) {
             bctx.removeBundleListener(bundleListener);
         }
-    }
-
-    /**
-     * This method is needed because {@link super#getModules()} always goes thru'
-     * all the repositories and installs new modules. When such a side effect is not
-     * necessary, this method can be called. The returned collection does not include
-     * modules known to ancestors of this registry.
-     * @return a readonly map of moduleId to modules.
-     */
-    /*package*/Map<ModuleId, Module> getExistingModules() {
-        return Collections.unmodifiableMap(modules);
     }
 
     /*package*/ Module getModule(Bundle bundle) {
