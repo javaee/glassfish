@@ -43,12 +43,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish.docs</groupId>
-	<artifactId>v3-docs</artifactId>
+        <groupId>org.glassfish.docs.help</groupId>
+	<artifactId>online</artifactId>
         <version>3.2-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
-    <groupId>org.glassfish.admingui</groupId>
-    <artifactId>console-jts-plugin-help</artifactId>
+    <artifactId>console-jts-plugin</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Administration Console Java Transaction Service Help Content</name>
     <description>Online help content for the console-jts-plugin bundle.</description>
@@ -84,6 +84,32 @@
                         <Export-Package />
                     </instructions>
                 </configuration>
+            </plugin>
+            <!-- create dummy sources and javadoc artifacts -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.glassfish.docs</groupId>
+                        <artifactId>docs-assembly-descriptor</artifactId>
+                        <version>1.0-SNAPSHOT</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attached</goal>
+                        </goals>
+                        <configuration>
+                            <descriptorRefs>
+                                <descriptorRef>sources</descriptorRef>
+                                <descriptorRef>javadoc</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
         <resources>
