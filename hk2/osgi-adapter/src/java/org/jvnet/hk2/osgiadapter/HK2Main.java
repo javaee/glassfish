@@ -55,9 +55,6 @@ import org.osgi.framework.*;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
-import javax.crypto.MacSpi;
-import java.io.File;
-import java.net.URI;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
@@ -186,27 +183,9 @@ public class HK2Main extends Main implements
         });
     }
 
-    protected ModulesRegistry createModulesRegistry() throws Exception {
+    protected ModulesRegistry createModulesRegistry() {
         assert (mrReg == null);
         ModulesRegistry mr = AbstractFactory.getInstance().createModulesRegistry();
-        String hk2RepositoryUris = ctx.getProperty(Constants.HK2_REPOSITORIES);
-        if (hk2RepositoryUris != null) {
-            for (String s : hk2RepositoryUris.split("\\s")) {
-                URI repoURI = URI.create(s);
-                File repoDir = new File(repoURI);
-                OSGiDirectoryBasedRepository repo = new OSGiDirectoryBasedRepository(repoDir.getAbsolutePath(), repoDir);
-                repo.initialize();
-                mr.addRepository(repo);
-            }
-        }
-        String osgiRepositoryUris = ctx.getProperty(Constants.OBR_REPOSITORIES);
-        if (osgiRepositoryUris != null && mr instanceof OSGiObrModulesRegistryImpl) {
-            OSGiObrModulesRegistryImpl mr1 = (OSGiObrModulesRegistryImpl) mr;
-            for (String s : osgiRepositoryUris.split("\\s")) {
-                mr1.addObr(URI.create(s));
-            }
-        }
-        mr.dumpState(System.out);
         mrReg = ctx.registerService(ModulesRegistry.class.getName(), mr, null);
         return mr;
     }
