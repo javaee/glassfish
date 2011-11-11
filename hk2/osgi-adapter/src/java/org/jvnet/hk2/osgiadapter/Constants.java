@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,12 +38,46 @@
  * holder.
  */
 
--exportcontents: \
-                            org.glassfish.hk2.classmodel.reflect; \
-                            org.glassfish.hk2.classmodel.reflect.util; version=${project.osgi.version}
 
+package org.jvnet.hk2.osgiadapter;
 
-Import-Package: \
-                        org.objectweb.asm;password=GlassFish;resolution:=optional, \
-                        org.objectweb.asm.signature;password=GlassFish;resolution:=optional, \
-                        org.objectweb.asm.commons;password=GlassFish;resolution:=optional
+/**
+ * @author Sanjeeb.Sahoo@Sun.COM
+ */
+public final class Constants {
+    /**
+     * Indicates if OBR is enabled or not.
+     */
+    public static final String OBR_ENABLED = "com.sun.enterprise.hk2.obrEnabled";
+    /**
+     * This property is used to decide if OBR repository should be synchronously initialized.
+     */
+    static final String INITIALIZE_OBR_SYNCHRONOUSLY = "com.sun.enterprise.hk2.initializeRepoSynchronously";
+
+    /**
+     * File name used to store generated OBR repository information.
+     */
+    static final String REPOSITORY_XML_FILE_NAME = "repository.xml";
+
+    /**
+     * URL scheme used by OBR to deploy bundles.
+     */
+    static final String OBR_SCHEME = "obr:";
+
+    /**
+     * No. of milliseconds a thread waits for obtaining a reference to repository admin service before timing out.
+     */
+    static final long OBR_TIMEOUT = 10000; // in ms
+
+    /**
+     * List of URIs of OBR repositories that are configured to be consulted while deploying bundles.
+     * The URIs can be URIs of repository xml file or they can point to directories. If they represent
+     * directories, then we build the repository.xml ourselves.
+     */
+    public static final String OBR_REPOSITORIES = "com.sun.enterprise.hk2.obrRepositories";
+
+    /**
+     * List of HK2 module repository URIs. Currently, we only support directory URIs.
+     */
+    public static final String HK2_REPOSITORIES = "com.sun.enterprise.hk2.repositories";
+}
