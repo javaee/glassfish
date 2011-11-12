@@ -321,10 +321,11 @@ public final class EmbeddedWebContainer extends Embedded implements PostConstruc
 
         connector.setPort(port);
 
-        if (protocol.equals("ajp")) {
-            connector.setProtocolHandlerClassName(
-                 "org.apache.jk.server.JkCoyoteHandler");
-        } else if (protocol.equals("memory")) {
+//        if (protocol.equals("ajp")) {
+//            connector.setProtocolHandlerClassName(
+//                 "org.apache.jk.server.JkCoyoteHandler");
+//        } else 
+        if (protocol.equals("memory")) {
             connector.setProtocolHandlerClassName(
                  "org.apache.coyote.memory.MemoryProtocolHandler");
         } else if (protocol.equals("https")) {

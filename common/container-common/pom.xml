@@ -159,6 +159,14 @@
             <artifactId>grizzly-websockets</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-http-ajp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-config</artifactId>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>

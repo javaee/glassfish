@@ -443,10 +443,9 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             return null;
         }
 
-        final boolean ajpListener = ConfigBeansUtilities.toBoolean(listener.getJkEnabled());
         // create the proxy for the port.
         GrizzlyProxy proxy = new GrizzlyProxy(this, listener);
-        if (!ajpListener && !("light-weight-listener".equals(listener.getProtocol()))) {
+        if (!("light-weight-listener".equals(listener.getProtocol()))) {
             final NetworkConfig networkConfig = listener.getParent(NetworkListeners.class).getParent(NetworkConfig.class);
             // attach all virtual servers to this port
             for (VirtualServer vs : networkConfig.getParent(Config.class).getHttpService().getVirtualServer()) {
@@ -472,23 +471,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             }
         }
 
-        Future<Result<Thread>> future = null;
-        if (!ajpListener) {
-            future =  proxy.start();
-        } else {
-            // we need to create a proxy for AJP based listeners, however, we
-            // don't want Grizzly to actually handle the request since the
-            // webcontainer will start a separate listener implementation to
-            // handle such requests.  So the Future needs to return a
-            // non-null value here to prevent issues elsewhere.
-            future = new GrizzlyProxy.GrizzlyFuture();
-            ((GrizzlyProxy.GrizzlyFuture) future).setResult(new Result<Thread>(new Thread(new Runnable() {
-                @Override
-                public void run() {
-
-                }
-            })));
-        }
+        final Future<Result<Thread>> future =  proxy.start();
 
         // add the new proxy to our list of proxies.
         proxies.add(proxy);

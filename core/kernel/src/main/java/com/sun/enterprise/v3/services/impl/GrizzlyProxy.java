@@ -133,17 +133,26 @@ public class GrizzlyProxy implements NetworkProxy {
         grizzlyListener = new GrizzlyListener(grizzlyService.getMonitoring(), new Controller(){
             public void logVersion(){}   
         }, networkListener.getName());
+        final Protocol httpProtocol = networkListener.findHttpProtocol();
+        V3Mapper mapper = null;
+        // mapper initialization now happens *before* the GrizzlyListener
+        // is configured.  This is necessary for WebSocket support (if enabled).
+        if (httpProtocol != null) {
+            mapper = new V3Mapper(logger);
+            mapper.setPort(portNumber);
+            mapper.setId(networkListener.getName());
+            Inhabitant<Mapper> onePortMapper = new ExistingSingletonInhabitant<Mapper>(mapper);
+            grizzlyService.getHabitat().addIndex(onePortMapper,
+                                                 Mapper.class.getName(),
+                                                 (networkListener.getAddress() + networkListener.getPort()));
+        }
+
         grizzlyListener.configure(networkListener, grizzlyService.habitat);
 
         if(!grizzlyListener.isGenericListener()) {
             final GrizzlyEmbeddedHttp embeddedHttp = grizzlyListener.getEmbeddedHttp();
-            final Protocol httpProtocol = networkListener.findHttpProtocol();
 
             if (httpProtocol != null) {
-                final V3Mapper mapper = new V3Mapper(logger);
-                mapper.setPort(portNumber);
-                mapper.setId(networkListener.getName());
-
                 final ContainerMapper adapter = new ContainerMapper(grizzlyService, embeddedHttp);
                 adapter.setMapper(mapper);
                 adapter.setDefaultHost(grizzlyListener.getDefaultVirtualServer());
@@ -192,10 +201,6 @@ public class GrizzlyProxy implements NetworkProxy {
                 }
 
                 adapter.addRootFolder(embeddedHttp.getWebAppRootPath());
-                
-                Inhabitant<Mapper> onePortMapper = new ExistingSingletonInhabitant<Mapper>(mapper);
-                grizzlyService.getHabitat().addIndex(onePortMapper,
-                        Mapper.class.getName(), (networkListener.getAddress() + networkListener.getPort()));
                 grizzlyService.notifyMapperUpdateListeners(networkListener, mapper);
             }
             

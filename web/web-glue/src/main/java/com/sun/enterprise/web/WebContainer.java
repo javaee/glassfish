@@ -559,11 +559,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             if (networkListeners != null) {
                 List<NetworkListener> listeners = networkListeners.getNetworkListener();
                 for (NetworkListener listener : listeners) {
-                    if (ConfigBeansUtilities.toBoolean(listener.getJkEnabled())) {
-                        createJKConnector(listener, httpService);
-                    } else {
-                        createHttpListener(listener, httpService);
-                    }
+//                    if (ConfigBeansUtilities.toBoolean(listener.getJkEnabled())) {
+//                        createJKConnector(listener, httpService);
+//                    } else {
+                    createHttpListener(listener, httpService);
+//                    }
                 }
             }
             createJKConnector(null, httpService);

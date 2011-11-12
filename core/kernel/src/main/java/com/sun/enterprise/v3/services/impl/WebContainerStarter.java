@@ -325,10 +325,11 @@ public class WebContainerStarter
      * the web container to be started, false otherwise
      */
     private boolean isStartNeeded(NetworkListener networkListener) {
-        if (networkListener == null) {
-            return false;
-        }
-
-        return ConfigBeansUtilities.toBoolean(networkListener.getJkEnabled());
+        return false;
+//        if (networkListener == null) {
+//            return false;
+//        }
+//
+//        return ConfigBeansUtilities.toBoolean(networkListener.getJkEnabled());
     }
 }

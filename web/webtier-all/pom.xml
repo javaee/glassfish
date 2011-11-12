@@ -113,10 +113,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.main.web</groupId>
-            <artifactId>web-ajp</artifactId>
-            <version>${project.version}</version>
-    	</dependency> 
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-http-ajp</artifactId>
+        </dependency> 
         <dependency>
             <groupId>org.glassfish.main.web.web-embed</groupId>
             <artifactId>web-embed-api</artifactId>
