@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -55,6 +55,7 @@ class Constants {
     static final String SERVICE_TYPE_TN = "TYPE";
     static final String CFG_LOCATION_TN = "LOCATION";
     static final String ENTITY_NAME_TN = "ENTITY_NAME";
+    static final String DISPLAY_NAME_TN = "DISPLAY_NAME";
     static final String FQSN_TN = "FQSN";
     static final String AS_ADMIN_USER_TN = "AS_ADMIN_USER";
     static final String AS_ADMIN_PASSWORD_TN = "AS_ADMIN_PASSWORD";
