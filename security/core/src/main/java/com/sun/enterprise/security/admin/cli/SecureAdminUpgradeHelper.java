@@ -49,6 +49,7 @@ import com.sun.enterprise.security.admin.cli.SecureAdminCommand.ConfigLevelConte
 import com.sun.enterprise.security.admin.cli.SecureAdminCommand.TopLevelContext;
 import com.sun.enterprise.security.admin.cli.SecureAdminCommand.Work;
 import com.sun.enterprise.security.ssl.SSLUtils;
+import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.Protocol;
 import java.io.IOException;
 import java.security.KeyPairGenerator;
@@ -238,7 +239,17 @@ public class SecureAdminUpgradeHelper {
         /*
          * See if this config is already set up for secure admin.
          */
-        Protocol secAdminProtocol = c.getNetworkConfig().getProtocols().findProtocol(SecureAdminCommand.SEC_ADMIN_LISTENER_PROTOCOL_NAME);
+        final NetworkConfig nc = c.getNetworkConfig();
+        if (nc == null) {
+            /*
+             * If there is no network config for this configuration then it is
+             * probably a test configuration of some sort.  In any case, there
+             * is no lower-level network protocols to verify so declare this
+             * config to be OK.
+             */
+            return true;
+        }
+        Protocol secAdminProtocol = nc.getProtocols().findProtocol(SecureAdminCommand.SEC_ADMIN_LISTENER_PROTOCOL_NAME);
         if (secAdminProtocol != null) {
             return true;
         }
