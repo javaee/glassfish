@@ -129,12 +129,15 @@ public class WebServicesApplication implements ApplicationContainer {
             while(iter.hasNext()) {
                 ejbendpoint = iter.next();
                 String contextRoot = ejbendpoint.contextRoot;
-
+                WebServerInfo wsi = new WsUtil().getWebServerInfoForDAS();
+                URL rootURL = wsi.getWebServerRootURL(ejbendpoint.isSecure);
                 dispatcher.registerEndpoint(contextRoot, (com.sun.grizzly.tcp.Adapter)adapter, this);
-                logger.info(format(rb.getString("enterprise.deployment.ejbendpoint.registration"),
+                //Fix for issue 13107490 and 17648
+                if (wsi.getHttpVS() != null && wsi.getHttpVS().getPort()!=0)
+                    logger.info(format(rb.getString("enterprise.deployment.ejbendpoint.registration"),
                         app.getAppName(),
 
-                        new WsUtil().getWebServerInfoForDAS().getWebServerRootURL(ejbendpoint.isSecure).toString() + contextRoot)
+                         rootURL + contextRoot)
                 );
             }
 
