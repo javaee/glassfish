@@ -83,17 +83,9 @@ public class MbeanService implements Startup {
         return Startup.Lifecycle.SERVER;
     }
 
-    static MbeanService mbeanService;
-
-    public MbeanService() {
-        mbeanService = this;
-    }
-
     public static MbeanService getInstance() {
         if (habitat == null)
             return null;
-        if (mbeanService != null)
-            return mbeanService;
         return habitat.getComponent(MbeanService.class);
     }
 
