@@ -62,6 +62,7 @@ import com.sun.enterprise.config.serverbeans.LbConfigs;
 import com.sun.enterprise.config.serverbeans.LbConfig;
 import com.sun.enterprise.config.serverbeans.LoadBalancer;
 
+import org.glassfish.api.I18n;
 import org.glassfish.api.admin.*;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
@@ -74,12 +75,13 @@ import org.glassfish.config.support.CommandTarget;
  */
 @Service(name = "delete-http-lb-ref")
 @Scoped(PerLookup.class)
+@I18n("delete.http.lb.ref")
 @TargetType(value={CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 @org.glassfish.api.admin.ExecuteOn(RuntimeType.DAS)
 public final class DeleteHTTPLBRefCommand extends LBCommandsBase
         implements AdminCommand {
 
-    @Param(optional=false)
+    @Param(optional=true)
     String config;
 
     @Param(optional=true)
@@ -119,6 +121,14 @@ public final class DeleteHTTPLBRefCommand extends LBCommandsBase
         if (config!=null && lbname!=null) {
             String msg = localStrings.getLocalString("EitherConfigOrLBName",
                     "Either LB name or LB config name, not both");
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            return;
+        }
+
+        if (config==null && lbname==null) {
+            String msg = localStrings.getLocalString("SpecifyConfigOrLBName",
+                    "Please specify either LB name or LB config name.");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
             return;
@@ -193,7 +203,7 @@ public final class DeleteHTTPLBRefCommand extends LBCommandsBase
             }
             List<ApplicationRef> appRefs = domain.getApplicationRefsInTarget(target);
 
-            if (appRefs == null  || appRefs.size() == 0 ) {
+            if (appRefs == null) {
                 String msg = localStrings.getLocalString("AppRefsNotDefined",
                         "Application refs does not exist in server {0}", target);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
