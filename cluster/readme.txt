@@ -134,4 +134,43 @@ Successfully resolved host name to: bigapp-oblade-1/10.133.184.150
 Successfully connected to the DCOM port (135).
 The remote file, C: doesn't exist on bigapp-oblade-1 : The parameter is incorrect.
 ======================================
+Nov 9, 2011
+
+D:\gf\branches\3.1.2\cluster>asadmin -W d:\pw validate-dcom -w hudson bigapp-oblade-1
+remote failure:
+Successfully resolved host name to: bigapp-oblade-1/10.133.184.150
+Successfully connected to the DCOM port (135).
+Successfully accessed C: on bigapp-oblade-1 using DCOM.
+Successfully wrote delete_me.bat to C: on bigapp-oblade-1 using DCOM.
+Could not connect to WMI (Windows Management Interface) on bigapp-oblade-1. : Error setting up remote connection to WMI
+
+
+D:\gf\branches\3.1.2\cluster>asadmin -W d:\pw validate-dcom -w hudson bigapp-oblade-2
+remote failure:
+Successfully resolved host name to: bigapp-oblade-2/10.133.184.174
+Successfully connected to the DCOM port (135).
+The remote file, C: doesn't exist on bigapp-oblade-2 : Access is denied.
+
+
+try with bad username - note error is different...
+
+D:\gf\branches\3.1.2\cluster>asadmin -W d:\pw validate-dcom -w hudsonxxx bigapp-oblade-2
+remote failure:
+Successfully resolved host name to: bigapp-oblade-2/10.133.184.174
+Successfully connected to the DCOM port (135).
+The remote file, C: doesn't exist on bigapp-oblade-2 : Logon failure: unknown user name or bad password.
+
+==========================
+
+1. Launch 'regedit.exe' as 'Administrator' 
+2. Find the following registry key: 'HKEY_CLASSES_ROOT\CLSID\{76A64158-CB41-11D1-8B02-00600806D9B6}' 
+3. Right click and select 'Permissions' 
+4. Click the 'Advanced' button. 
+5. Select the tab labeled 'Owner' 
+6. Add the user you want to allow to connect to the owners list 
+7. Click the 'Ok' button. 
+8. Now highlight the user and grant Full Control 
+9. Click 'Ok' 
+Retrieved from "http://www.opennms.org/wiki/WmiConfiguration";
+==================================
 
