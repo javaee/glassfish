@@ -62,8 +62,8 @@
                         <Embed-Dependency>
                             *;scope=compile;inline=true
                         </Embed-Dependency>
-                        <!-- Export everything from the embedded jar 
-                             in the final bundle 
+                        <!-- Export everything from the embedded jar
+                             in the final bundle
                         -->
                         <_exportcontents>*</_exportcontents>
 						<Import-Package>!javax.servlet,!javax.servlet.http,*</Import-Package>
@@ -98,18 +98,18 @@
     </build>
     <dependencies>
         <!-- Mark them as optional so that GF distribution mechanism
-             won't package them. It is sufficient to package the wrapped jar. 
+             won't package them. It is sufficient to package the wrapped jar.
         -->
         <dependency>
             <groupId>org.jinterop</groupId>
             <artifactId>j-interop</artifactId>
-            <version>2.0.4</version>
+            <version>2.0.8</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.jinterop</groupId>
             <artifactId>j-interopdeps</artifactId>
-            <version>2.0.4</version>
+            <version>2.0.8</version>
             <optional>true</optional>
         </dependency>
         <dependency>
