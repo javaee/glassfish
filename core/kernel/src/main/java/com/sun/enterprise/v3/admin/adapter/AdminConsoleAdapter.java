@@ -367,31 +367,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         Thread thread = new Thread("Force REST Module Load Thread") {
             @Override
             public void run() {
-                InputStream is = null;
-                try {
-                    NetworkListener nl = domain.getServerNamed("server").getConfig().getNetworkConfig()
-                            .getNetworkListener("admin-listener");
-                    SecureAdmin secureAdmin = habitat.getComponent(SecureAdmin.class);
-                    
-                    URL url = new URL(
-                            (SecureAdmin.Util.isEnabled(secureAdmin) ? "https" : "http"),
-                            nl.getAddress(), 
-                            Integer.parseInt(nl.getPort()),
-                            "/management/domain");
-                    URLConnection conn = url.openConnection();
-                    is = conn.getInputStream();
-                    isRestStarted = true;
-                } catch (Exception ex) {
-                   Logger.getLogger(AdminConsoleAdapter.class.getName()).log(Level.FINE, null, ex);
-                } finally {
-                    if (is != null) {
-                        try {
-                            is.close();
-                        } catch (IOException ex1) {
-                            Logger.getLogger(AdminConsoleAdapter.class.getName()).log(Level.SEVERE, null, ex1);
-                        }
-                    }
-                }
+                initRest();
             }
         };
         thread.setDaemon(true);
@@ -524,12 +500,46 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      */
     @Override
     public void event(@RestrictTo(EventTypes.SERVER_READY_NAME) Event event) {
-        latch.countDown();
-        if (logger != null) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "AdminConsoleAdapter is ready.");
+        if (event.is(EventTypes.SERVER_READY)) {
+            latch.countDown();
+            if (logger != null) {
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.log(Level.FINE, "AdminConsoleAdapter is ready.");
+                }
+            }
+
+            // FIXME : Use ServerTags, when this is finalized. The following code till the end of the method is temporary.
+            Property initProp = adminService.getProperty("adminConsoleStartup"); 
+            String initPropVal = null;
+            if (initProp != null)
+                initPropVal = initProp.getValue();
+            if (initPropVal == null || initPropVal.equals("OPTIMIZE_OFF"))
+                return;
+            if (initPropVal.equals("SYSTEM_DEFAULT") || initPropVal.equals("OPTIMIZE_LOW") || initPropVal.equals("OPTIMIZE_HIGH")) {
+                initRest();
+            }
+            if (initPropVal.equals("OPTIMIZE_HIGH")) {
+                synchronized(this) {
+                    if (!isInstalling()) {
+                        if (!isApplicationLoaded()) {
+                            try {
+                                // We have permission and now we should install
+                                // (or load) the application.
+                                setInstalling(true);
+                                startThread();  // Thread must set installing false
+                            } catch (Exception ex) {
+                                // Ensure we haven't crashed with the installing
+                                // flag set to true (not likely).
+                                setInstalling(false);
+                                throw new RuntimeException(
+                                        "Unable to install Admin Console!", ex);
+                            }
+                        }
+                    }
+                }
             }
         }
+
     }
 
     /**
@@ -560,6 +570,35 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         initState();
         epd = new AdminEndpointDecider(serverConfig, logger);
         contextRoot = epd.getGuiContextRoot();
+    }
+
+
+    private void initRest() {
+        InputStream is = null;
+        try {
+            NetworkListener nl = domain.getServerNamed("server").getConfig().getNetworkConfig()
+                    .getNetworkListener("admin-listener");
+            SecureAdmin secureAdmin = habitat.getComponent(SecureAdmin.class);
+
+            URL url = new URL(
+                    (SecureAdmin.Util.isEnabled(secureAdmin) ? "https" : "http"),
+                    nl.getAddress(),
+                    Integer.parseInt(nl.getPort()),
+                    "/management/domain");
+            URLConnection conn = url.openConnection();
+            is = conn.getInputStream();
+            isRestStarted = true;
+        } catch (Exception ex) {
+           Logger.getLogger(AdminConsoleAdapter.class.getName()).log(Level.FINE, null, ex);
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException ex1) {
+                    Logger.getLogger(AdminConsoleAdapter.class.getName()).log(Level.SEVERE, null, ex1);
+                }
+            }
+        }
     }
 
     /**
