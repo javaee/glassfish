@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import com.sun.enterprise.config.serverbeans.customvalidators.RefConstraint;
+import com.sun.enterprise.config.serverbeans.customvalidators.RefValidator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,6 +84,7 @@ import javax.validation.constraints.Min;
 }) */
 
 @Configured
+@RefConstraint(message="{ref.invalid}", payload= RefValidator.class)
 public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
 
     String LAST_APPLIED_PROPERTY = "last-applied";

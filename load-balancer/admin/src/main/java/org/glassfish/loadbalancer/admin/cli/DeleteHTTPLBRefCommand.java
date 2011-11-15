@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -166,7 +166,7 @@ public final class DeleteHTTPLBRefCommand extends LBCommandsBase
             // does not exist, just return from here
             String msg = localStrings.getLocalString("ServerNotDefined",
                         "Server {0} cannot be used as target", target);
-            logger.finest(" server " + serverName +
+            logger.finest("Server " + serverName +
                     " does not exist in any cluster in the domain");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
@@ -226,6 +226,11 @@ public final class DeleteHTTPLBRefCommand extends LBCommandsBase
         ClusterRef cRef = lbConfig.getRefByRef(ClusterRef.class, clusterName);
         if (cRef == null) {
             // does not exist, just return from here
+            String msg = localStrings.getLocalString("ClusterNotDefined",
+                        "Cluster {0} cannot be used as target", target);
+            logger.finest("Cluster " + clusterName + " does not exist.");
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
             return;
         }
 
