@@ -15,6 +15,7 @@ This test, when run with 'all' target performs the following steps:
     Expected result: 3 rows found in xa database when verified from in2
   - reset (unsetup-cluster, reset-tables, setup-cluster)
   - run-cli (execute the same test with CLI-based delegated recovery) 
+  - run-autorecovery (execute the same test as in run-delegated but do not enable delegated recovery, and allow restarted instance to do its job) 
 
 - unsetup
   - unsetup-cluster (undeploy the application, stop and delete the cluster)
