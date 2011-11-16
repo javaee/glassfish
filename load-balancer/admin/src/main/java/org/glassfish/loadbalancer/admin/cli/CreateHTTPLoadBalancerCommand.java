@@ -58,10 +58,13 @@ import org.glassfish.internal.api.Target;
 import com.sun.enterprise.config.serverbeans.LoadBalancers;
 import com.sun.enterprise.config.serverbeans.LoadBalancer;
 import com.sun.enterprise.config.serverbeans.Applications;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.glassfish.api.admin.*;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
+import static org.glassfish.config.support.Constants.*;
 
 import org.glassfish.api.admin.CommandRunner.CommandInvocation;
 
@@ -182,6 +185,13 @@ public final class CreateHTTPLoadBalancerCommand extends LBCommandsBase
 
         if (load_balancer_name == null) {
             String msg = localStrings.getLocalString("NullLBName", "Load balancer name cannot be null");
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            return;
+        }
+
+        if(!Pattern.matches(NAME_REGEX, load_balancer_name)){
+            String msg = localStrings.getLocalString("loadbalancer.invalid.name", "Invalid load-balancer name");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
             return;
