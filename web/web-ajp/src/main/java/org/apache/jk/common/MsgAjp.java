@@ -63,6 +63,7 @@ import java.util.logging.*;
 
 import org.apache.jk.core.Msg;
 import com.sun.grizzly.util.buf.ByteChunk;
+import com.sun.grizzly.util.buf.CharChunk;
 import com.sun.grizzly.util.buf.MessageBytes;
 
 /**
@@ -192,9 +193,15 @@ public class MsgAjp extends Msg {
             return;
         }
 
-        // XXX Convert !!
-        ByteChunk bc= mb.getByteChunk();
-        appendByteChunk(bc);
+        if (mb.getType() == MessageBytes.T_BYTES) {
+            ByteChunk bc = mb.getByteChunk();
+            appendByteChunk(bc);
+        } else if (mb.getType() == MessageBytes.T_CHARS) {
+            CharChunk cc = mb.getCharChunk();
+            appendCharChunk(cc);
+        } else {
+            appendString(mb.toString());
+        }
     }
 
     public void appendByteChunk(ByteChunk bc) throws IOException {
@@ -209,6 +216,69 @@ public class MsgAjp extends Msg {
         int start=bc.getStart();
         appendInt( bc.getLength() );
         cpBytes(bytes, start, bc.getLength());
+        appendByte(0);
+    }
+
+    /**
+     * Write a CharChunk out at the current write position.
+     * A null CharChunk is encoded as a string with length 0.
+     */
+    private void appendCharChunk(CharChunk cc) {
+        if (cc == null) {
+            log.error("appendCharChunk() null");
+            appendInt(0);
+            appendByte(0);
+            return;
+        }
+        int start = cc.getStart();
+        int end = cc.getEnd();
+        appendInt(end - start);
+        char[] cbuf = cc.getBuffer();
+        for (int i = start; i < end; i) {
+            char c = cbuf[i];
+            // Note:  This is clearly incorrect for many strings,
+            // but is the only consistent approach within the current
+            // servlet framework.  It must suffice until servlet output
+            // streams properly encode their output.
+            if (((c <= 31) && (c != 9)) || c == 127 || c > 255) {
+                c = ' ';
+            }
+            appendByte((byte)c);
+        }
+        appendByte(0);
+    }
+
+    /**
+     * Write a String out at the current write position.  Strings are
+     * encoded with the length in two bytes first, then the string, and
+     * then a terminating \0 (which is <B>not</B> included in the
+     * encoded length).  The terminator is for the convenience of the C
+     * code, where it saves a round of copying.  A null string is
+     * encoded as a string with length 0.
+     */
+    private void appendString(String str) {
+        if (str == null) {
+            log.error("appendString() null");
+            appendInt(0);
+            appendByte(0);
+            return;
+        }
+        int len = str.length();
+        appendInt(len);
+        for (int i = 0; i < len; i
+
+                ) {
+
+            char c = str.charAt (i);
+            // Note:  This is clearly incorrect for many strings,
+            // but is the only consistent approach within the current
+            // servlet framework.  It must suffice until servlet output
+            // streams properly encode their output.
+            if (((c <= 31) && (c != 9)) || c == 127 || c > 255) {
+                c = ' ';
+            }
+            appendByte((byte)c);
+        }
         appendByte(0);
     }
 

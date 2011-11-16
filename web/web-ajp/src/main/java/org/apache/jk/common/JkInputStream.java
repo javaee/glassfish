@@ -357,11 +357,9 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
             MessageBytes hN=headers.getName(i);
             // no header to sc conversion - there's little benefit
             // on this direction
-            c2b.convert ( hN );
             outputMsg.appendBytes( hN );
                         
             MessageBytes hV=headers.getValue(i);
-            c2b.convert( hV );
             outputMsg.appendBytes( hV );
         }
         mc.getSource().send( outputMsg, mc );
