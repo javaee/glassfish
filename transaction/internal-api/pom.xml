@@ -95,6 +95,13 @@
             <version>${project.version}</version>
         </dependency>
 
+	<!-- Dependency on TransactionService -->
+        <dependency>
+            <groupId>org.glassfish.main.admin</groupId>
+            <artifactId>config-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
 	<!-- Dependency on StringManager -->
         <dependency>
             <groupId>org.glassfish.main.common</groupId>
