@@ -196,6 +196,8 @@
       <antcall target="run-delegated"/>
       <antcall target="reset-all"/>
       <antcall target="run-cli"/>
+      <antcall target="reset-all"/>
+      <antcall target="run-autorecovery"/>
     </target>
 
     <target name="reset-all" depends="init-common">
