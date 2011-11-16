@@ -42,16 +42,28 @@
 
 <f:verbatim>
     <script type="text/javascript">
-    function showSshSection(type, sheet1, sshDirId, configDirId ){
-         var sheet1 = document.getElementById(sheet1);
+    function showSection(type, sshSection, dcomSection, sshDirId, configDirId ){
+         var sshSheet = document.getElementById(sshSection);
+         var dcomSheet = document.getElementById(dcomSection);
          if (type == 'CONFIG'){
-             sheet1.style.display = 'none';
+             sshSheet.style.display = 'none';
+             dcomSheet.style.display = 'none';
              webui.suntheme.common.setVisible(sshDirId, false);
              webui.suntheme.common.setVisible(configDirId, true);
              //document.getElementById(sshDirId).style.display = 'none';
              //document.getElementById(configDirId).style.display = 'block';
-         }else{
-             sheet1.style.display = 'block';
+         }
+         if (type == 'SSH'){
+             sshSheet.style.display = 'block';
+             dcomSheet.style.display = 'none';
+             webui.suntheme.common.setVisible(sshDirId, true);
+             webui.suntheme.common.setVisible(configDirId, false);
+             //document.getElementById(sshDirId).style.display = 'block';
+             //document.getElementById(configDirId).style.display = 'none';
+         }
+         if (type == 'DCOM'){
+             sshSheet.style.display = 'none';
+             dcomSheet.style.display = 'block';
              webui.suntheme.common.setVisible(sshDirId, true);
              webui.suntheme.common.setVisible(configDirId, false);
              //document.getElementById(sshDirId).style.display = 'block';
@@ -60,9 +72,6 @@
     }
 
     function showPswdSection(type, ps1Id, ps2Id, pswdAId){
-        var p1 = document.getElementById(ps1Id);
-        var p2 = document.getElementById(ps2Id);
-        var pas = document.getElementById(pswdAId);
         if (type == '1'){
             disableComponent(ps1Id, 'text');
             disableComponent(ps2Id, 'text');
@@ -83,11 +92,12 @@
         }
     }
 
-    function checkSSHPswd(typeId, nodeHostId, psSelectId, ps1Id, ps2Id, notMatchMsg, emptyMsg, nodeHostRequiredMsg){
+    function checkSSHPswd(typeId, nodeHostId, psSelectId, ps1Id, ps2Id, winPsSelectId, winPs1Id, winPs2Id, notMatchMsg, emptyMsg, nodeHostRequiredMsg){
 	if (! guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
 	    return false;
 	}
-        if (document.getElementById(typeId).value == 'CONFIG'){
+        var atype=document.getElementById(typeId).value;
+        if ( atype == 'CONFIG'){
             return true;
         }
         var comp = document.getElementById(nodeHostId);
@@ -96,8 +106,15 @@
             comp.focus();
             return showAlert(nodeHostRequiredMsg);
         }
-        if ( document.getElementById(psSelectId).value == '2'){
-            return checkPSW( ps1Id, ps2Id, notMatchMsg, emptyMsg);
+        if (atype == 'SSH'){
+            if ( document.getElementById(psSelectId).value == '2'){
+                return checkPSW( ps1Id, ps2Id, notMatchMsg, emptyMsg);
+            }
+        }
+        if (atype == 'DCOM'){
+            if ( document.getElementById(winPsSelectId).value == '2'){
+                return checkPSW( winPs1Id, winPs2Id, notMatchMsg, emptyMsg);
+            }
         }
         return true;
     }

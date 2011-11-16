@@ -46,7 +46,7 @@
     setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.node.EditPageTitle}"
-    guiOnLoad="showSshSection('#{pageSession.valueMap['type']}', '#{pageSession.sshConnectorSectionId}', '#{pageSession.installdirSshId}', '#{pageSession.installdirConfigId}');
+    guiOnLoad="showSection('#{pageSession.valueMap['type']}', '#{pageSession.sshConnectorSectionId}', '#{pageSession.dcomSectionId}', '#{pageSession.installdirSshId}', '#{pageSession.installdirConfigId}');
                showPswdSection('#{pageSession.psSelected}', '#{pageSession.ps1Id}', '#{pageSession.ps2Id}', '#{pageSession.pswdAliasId}');" >
 <!define name="content">
 <event>
@@ -61,12 +61,15 @@
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.attrMap}");
 
+        println("--------");
+        println("#{pageSession.attrMap}");
         createMap(result="#{pageSession.valueMap}")
         mapPut(map="#{pageSession.valueMap}"  key="nodehost"  value="#{pageSession.attrMap['nodeHost']}");
         mapPut(map="#{pageSession.valueMap}"  key="nodedir"  value="#{pageSession.attrMap['nodeDir']}");
         mapPut(map="#{pageSession.valueMap}"  key="type",  value="#{pageSession.attrMap['type']}");
+        mapPut(map="#{pageSession.valueMap}"  key="windowsdomain",  value="#{pageSession.attrMap['windowsDomain']}");
 
-        if ("#{pageSession.attrMap['type']}=SSH"){
+        if ("(#{pageSession.attrMap['type']}=SSH) || (#{pageSession.attrMap['type']}=DCOM)"){
             mapPut(map="#{pageSession.valueMap}"  key="installdir",  value="#{pageSession.attrMap['installDir']}");
             //for edit, we don't want to clear install dir when switching from ssh to config node. GLASSFISH-15605
             mapPut(map="#{pageSession.valueMap}"  key="installdirConfig",  value="#{pageSession.attrMap['installDir']}");
@@ -89,7 +92,7 @@
         if (#{requestScope.sshConnectorExist}){
             gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector.json", currentMap="#{pageSession.attrMap}"  valueMap="#{pageSession.attrMap}");
             mapPut(map="#{pageSession.valueMap}"  key="sshport",  value="#{pageSession.attrMap['sshPort']}");
-
+            mapPut(map="#{pageSession.valueMap}"  key="winPort",  value="#{pageSession.attrMap['sshPort']}");
             gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}/ssh-connector/ssh-auth" exists="#{requestScope.sshConnectorExist}");
             if (#{requestScope.sshConnectorExist}){
                 gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector/ssh-auth.json", currentMap="#{pageSession.attrMap}"  valueMap="#{pageSession.attrMap}");
@@ -97,13 +100,20 @@
                 mapPut(map="#{pageSession.valueMap}"  key="sshkeyfile",  value="#{pageSession.attrMap['keyfile']}");
                 gf.convertNodePswd(pswd="#{pageSession.attrMap['password']}" pswdText="#{pageSession.pswdText}" pswdAlias="#{pageSession.pswdAlias}" psSelected="#{pageSession.psSelected}");
                 setPageSessionAttribute(key="confirmPassword" value="#{pageSession.pswdText}");
+
+                setPageSessionAttribute(key="winPsSelected" value="2");
+                mapPut(map="#{pageSession.valueMap}"  key="windowsuser",  value="#{pageSession.attrMap['userName']}");
+                gf.convertNodePswd(pswd="#{pageSession.attrMap['password']}" pswdText="#{pageSession.winPswdText}" pswdAlias="#{pageSession.winPswdAlias}" psSelected="#{pageSession.winPsSelected}");
+                setPageSessionAttribute(key="winConfirmPassword" value="#{pageSession.winPswdText}");
+
             }
         }
 
-        //fill in default for CONFIG -> SSH case.
+        //fill in default for CONFIG to SSH or DCOM case.
         if (! #{requestScope.sshConnectorExist}){
             mapPut(map="#{pageSession.valueMap}"  key="sshport", value="22");
             mapPut(map="#{pageSession.valueMap}"  key="sshuser", value="\\${user.name}");
+            mapPut(map="#{pageSession.valueMap}"  key="winUser", value="\\${user.name}");
         }
 
         setPageSessionAttribute(key="edit" value="#{true}");

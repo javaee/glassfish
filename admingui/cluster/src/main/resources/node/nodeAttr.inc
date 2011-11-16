@@ -44,16 +44,12 @@
 #include "/common/shared/commonHandlers.inc"
 
 <handler id="gfr.prepareNodeCmd" >
-    if (!#{pageSession.valueMap['force']}){
-        mapPut(map="#{pageSession.valueMap}"  key="force" value="false");
-    }
     createMap(result="#{pageSession.attrsMap}");
     foreach(var="attr" list="#{requestScope.attrsList}"){
         mapGet(Map="#{pageSession.valueMap}" Key="#{requestScope.attr}" Value="#{requestScope.val}");
         mapPut(map="#{pageSession.attrsMap}", key="#{requestScope.attr}" value="#{requestScope.val}");
     }
 </handler>
-
 
 <handler id="gfr.fixPswd" >
     if ("#{pageSession.psSelected}=2"){
@@ -65,15 +61,27 @@
     }
 </handler>
 
+<handler id="gfr.fixWinPswd" >
+    if ("#{pageSession.winPsSelected}=2"){
+        mapPut(map="#{pageSession.valueMap}" ,key="windowspassword" value="#{pageSession.winPswdText}");
+    }
+    if ("#{pageSession.winPsSelected}=3"){
+        gf.convertToAlias(in="#{pageSession.winPswdAlias}" out="#{requestScope.tmpv}");
+        mapPut(map="#{pageSession.valueMap}"  key="windowspassword" value="#{requestScope.tmpv}")
+    }
+</handler>
+
 
     <sun:title id="propertyContentPage" title="#{pageSession.title}" helpText="#{pageSession.titleHelp}">
 <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save} "
-                    onClick="if (checkSSHPswd('#{pageSession.typeId}','#{pageSession.nodeHostId}','#{pageSession.psSelectId}', '#{pageSession.ps1Id}', '#{pageSession.ps2Id}', 
-                        '$resource{i18n.msg.JS.manageUser.passwordNotMatch}', '$resource{i18ncs.msg.JS.confirmEmptyPswd}' , '$resource{i18ncs.msg.JS.nodeHostRequired}'))
-                    {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" 
-		>
+                onClick="if (checkSSHPswd('#{pageSession.typeId}','#{pageSession.nodeHostId}',
+                    '#{pageSession.psSelectId}', '#{pageSession.ps1Id}', '#{pageSession.ps2Id}',
+                    '#{pageSession.winPsSelectId}', '#{pageSession.winPs1Id}', '#{pageSession.winPs2Id}',
+                    '$resource{i18n.msg.JS.manageUser.passwordNotMatch}', '$resource{i18ncs.msg.JS.confirmEmptyPswd}' , '$resource{i18ncs.msg.JS.nodeHostRequired}'))
+                {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;"
+            >
                 <!command
                     setAttribute(key="includeInstallDir" value="false");
                     if ("#{pageSession.valueMap['type']}=CONFIG"){
@@ -84,21 +92,36 @@
                     }
                     if ("#{pageSession.valueMap['type']}=SSH"){
                         gfr.fixPswd();
+                        if (!#{pageSession.valueMap['force']}){
+                            mapPut(map="#{pageSession.valueMap}"  key="force" value="false");
+                        }
                         setAttribute(key="attrsList" value={"nodehost", "nodedir", "installdir", "sshport", "sshuser", "sshpassword" "sshkeyfile", "force"});
                         setAttribute(key="endpoint" value="nodes/node/#{pageSession.nodeName}/update-node-ssh");
                         gfr.prepareNodeCmd();
                     }
-                    
+                    if ("#{pageSession.valueMap['type']}=DCOM"){
+                        gfr.fixWinPswd();
+                        setAttribute(key="attrsList" value={"nodehost", "nodedir", "installdir", "windowsdomain", "windowsuser", "windowspassword"});
+                        setAttribute(key="endpoint" value="nodes/node/#{pageSession.nodeName}/update-node-dcom");
+                        if (!#{pageSession.valueMap['winForce']}){
+                            mapPut(map="#{pageSession.valueMap}"  key="winForce" value="false");
+                        }
+                        gfr.prepareNodeCmd();
+                        mapPut(map="#{pageSession.attrsMap}"  key="force" value="#{pageSession.valueMap['winForce']}");
+                       
+                    }
                     gf.restRequest(endpoint="#{sessionScope.REST_URL}/#{requestScope.endpoint}" method="POST" attrs="#{pageSession.attrsMap}")
                     prepareSuccessfulMsg();
-                    gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                    gf.redirect(page="#{request.contextPath}/cluster/#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
 
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
-                    onClick="if (checkSSHPswd('#{pageSession.typeId}', '#{pageSession.nodeHostId}', '#{pageSession.psSelectId}', '#{pageSession.ps1Id}', '#{pageSession.ps2Id}', 
-                         '$resource{i18n.msg.JS.manageUser.passwordNotMatch}', '$resource{i18ncs.msg.JS.confirmEmptyPswd}', '$resource{i18ncs.msg.JS.nodeHostRequired}'))
-                    {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" 
+                onClick="if (checkSSHPswd('#{pageSession.typeId}', '#{pageSession.nodeHostId}',
+                    '#{pageSession.psSelectId}', '#{pageSession.ps1Id}', '#{pageSession.ps2Id}',
+                    '#{pageSession.winPsSelectId}', '#{pageSession.winPs1Id}', '#{pageSession.winPs2Id}',
+                    '$resource{i18n.msg.JS.manageUser.passwordNotMatch}', '$resource{i18ncs.msg.JS.confirmEmptyPswd}', '$resource{i18ncs.msg.JS.nodeHostRequired}'))
+                {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;"
 	    >
             <!command
                 setAttribute(key="nameToCheck" value="#{pageSession.valueMap['id']}");
@@ -114,13 +137,26 @@
                     gfr.fixPswd();
                     setAttribute(key="attrsList" value={"id", "nodehost", "nodedir", "installdir", "sshport", "sshuser", "sshpassword" "sshkeyfile", "force"});
                     setAttribute(key="endpoint" value="nodes/create-node");
+                    if (!#{pageSession.valueMap['force']}){
+                        mapPut(map="#{pageSession.valueMap}"  key="force" value="false");
+                    }
                     gfr.prepareNodeCmd();
                 }
-                
+                if ("#{pageSession.valueMap['type']}=DCOM"){
+                    gfr.fixWinPswd();
+                    setAttribute(key="attrsList" value={"id", "nodehost", "nodedir", "installdir", "windowsuser", "windowsdomain", "windowspassword"});
+                    setAttribute(key="endpoint" value="nodes/create-node-dcom");
+                    if (!#{pageSession.valueMap['winForce']}){
+                        mapPut(map="#{pageSession.valueMap}"  key="winForce" value="false");
+                    }
+                    gfr.prepareNodeCmd();
+                    mapPut(map="#{pageSession.attrsMap}"  key="force" value="#{pageSession.valueMap['winForce']}");
+                }
                 gf.restRequest( endpoint="#{sessionScope.REST_URL}/#{requestScope.endpoint}" attrs="#{pageSession.attrsMap}" method="POST" )
                 gf.redirect(page="#{request.contextPath}/cluster/node/nodes.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
              />
             </sun:button>
+
             <sun:button id="cancelButton" immediate="#{true}" text="$resource{i18n.button.Cancel}" primary="#{false}" >
                 <!command
                     gf.redirect(page="#{request.contextPath}/cluster/node/nodes.jsf");
@@ -136,13 +172,24 @@
             setPageSessionAttribute(key="showSSH" value="#{false}");
             if ("#{pageSession.valueMap['type']}=SSH"){
                    setPageSessionAttribute(key="showSSH" value="#{true}")
+                   setPageSessionAttribute(key="showDCOM" value="#{false}")
+                   setPageSessionAttribute(key="showCONFIG" value="#{false}")
                    setPageSessionAttribute(key="showInstalldirSSH" value="#{true}");
                    setPageSessionAttribute(key="showInstalldirConfig" value="#{false}");
             }
             if ("#{pageSession.valueMap['type']}=CONFIG"){
                    setPageSessionAttribute(key="showSSH" value="#{false}")
+                   setPageSessionAttribute(key="showDCOM" value="#{false}")
+                   setPageSessionAttribute(key="showCONFIG" value="#{true}")
                    setPageSessionAttribute(key="showInstalldirSSH" value="#{false}");
                    setPageSessionAttribute(key="showInstalldirConfig" value="#{true}");
+            }
+            if ("#{pageSession.valueMap['type']}=DCOM"){
+                   setPageSessionAttribute(key="showSSH" value="#{false}")
+                   setPageSessionAttribute(key="showDCOM" value="#{true}")
+                   setPageSessionAttribute(key="showCONFIG" value="#{false}")
+                   setPageSessionAttribute(key="showInstalldirSSH" value="#{true}");
+                   setPageSessionAttribute(key="showInstalldirConfig" value="#{false}");
             }
         />
     </event>
@@ -156,8 +203,8 @@
                 <sun:staticText id="IdStatic" text="#{pageSession.nodeName}"/>
             </sun:property>
             <sun:property id="typeProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.type}" helpText="$resource{i18ncs.node.typeHelp}">
-                <sun:dropDown id="type" labels={"SSH" "CONFIG"}  selected="#{pageSession.valueMap['type']}"
-                              onChange="javascript:showSshSection(this.value, '#{pageSession.sshConnectorSectionId}', '#{pageSession.installdirSshId}', '#{pageSession.installdirConfigId}');">
+                <sun:dropDown id="type" labels={"SSH" "DCOM" "CONFIG"}  selected="#{pageSession.valueMap['type']}"
+                              onChange="javascript:showSection(this.value, '#{pageSession.sshConnectorSectionId}', '#{pageSession.dcomSectionId}', '#{pageSession.installdirSshId}', '#{pageSession.installdirConfigId}');">
                 <!afterCreate
                     getClientId(component="$this{component}" clientId="#{pageSession.typeId}");
                 />
@@ -202,10 +249,15 @@
             <!afterCreate
                 getClientId(component="$this{component}" clientId="#{pageSession.sshConnectorSectionId}");
             />
+            <sun:property id="setupSSH"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.runSetupSSH}" helpText="$resource{i18ncs.node.runSetupSSHHelp}">
+                <sun:checkbox id="setupSSH" disabled="true" selected="#{pageSession.valueMap['setupSSH']}" selectedValue="true" />
+            </sun:property>
+            <sun:property>
+                <sun:staticText text=" "/>
+            </sun:property>
             <sun:property id="force"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.force}" helpText="$resource{i18ncs.node.forceHelp}">
                 <sun:checkbox id="force" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['force']}" selectedValue="true" />
             </sun:property>
-
             <sun:property id="sshport"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.sshPort}" helpText="$resource{i18ncs.node.sshPortHelp}">
                 <sun:textField id="sshport" text="#{pageSession.valueMap['sshport']}" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.sshPort']}"  />
             </sun:property>
@@ -252,6 +304,59 @@
                 <sun:textField id="Keyfile" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.Keyfile']}" text="#{pageSession.valueMap['sshkeyfile']}" />
             </sun:property>
 
+        </sun:propertySheetSection>
+
+        <sun:propertySheetSection id="dcomSection" visible="#{pageSession.showDCOM}" label="$resource{i18ncs.node.DcomSection}" >
+            <!afterCreate
+                getClientId(component="$this{component}" clientId="#{pageSession.dcomSectionId}");
+            />
+            <sun:property id="force"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.force}" helpText="$resource{i18ncs.node.forceHelp}">
+                <sun:checkbox id="force" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['winForce']}" selectedValue="true" />
+            </sun:property>
+
+            <sun:property id="winDomain"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.windowDomain}" helpText="$resource{i18ncs.node.windowDomainHelp}">
+                <sun:textField id="winDomain" text="#{pageSession.valueMap['windowsdomain']}" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.windowDomain']}"  />
+            </sun:property>
+            <sun:property id="winUser"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.windowUser}" helpText="$resource{i18ncs.node.windowUserHelp}">
+                <sun:textField id="winUser" text="#{pageSession.valueMap['windowsuser']}" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.windowUser']}"  />
+            </sun:property>
+
+            <sun:property id="psSelected" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.selectWinPasswordSelect}" helpText="$resource{i18ncs.node.selectWinPasswordSelectHelp}">
+                <sun:dropDown id="psSelected" labels={"$resource{i18ncs.node.textPassword}", "$resource{i18ncs.node.usePasswordAlias}" } values={"2", "3"}
+                      selected="#{pageSession.winPsSelected}"
+                      onChange="javascript:showPswdSection(this.value, '#{pageSession.winPs1Id}', '#{pageSession.winPs2Id}', '#{pageSession.winPswdAliasId}');"
+                 >
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId="#{pageSession.winPsSelectId}");
+                />
+                </sun:dropDown>
+            </sun:property>
+            <sun:property id="newPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.winUserPassword}" helpText="$resource{i18ncs.node.winUserPasswordHelp}" >
+            <sun:passwordField id="NewPassword" text="#{pageSession.winPswdText}" columns="$int{25}" maxLength="#{sessionScope.fieldLengths['maxLength.server.NewPassword']}"  >
+                 <!afterCreate
+                    getClientId(component="$this{component}" clientId="#{pageSession.winPs1Id}");
+                />
+            </sun:passwordField>
+            </sun:property>
+
+            <sun:property id="confirmPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.confirmWinUserPassword}" helpText="$resource{i18ncs.node.confirmWinUserPasswordHelp}" >
+                <sun:passwordField id="ConfirmPassword" text="#{pageSession.winConfirmPassword}"  columns="$int{25}" maxLength="#{sessionScope.fieldLengths['maxLength.server.ConfirmNewPassword']}"   >
+                    <!afterCreate
+                        getClientId(component="$this{component}" clientId="#{pageSession.winPs2Id}");
+                    />
+                </sun:passwordField>
+            </sun:property>
+
+            <sun:property id="pswdAlias" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.passwordAlias}" helpText="$resource{i18ncs.node.passwordAliasHelp}">
+                <sun:dropDown id="pswdAlias" labels="#{pageSession.listOfAliases}" selected="#{pageSession.winPswdAlias}" >
+                    <!afterCreate
+                        getClientId(component="$this{component}" clientId="#{pageSession.winPswdAliasId}");
+                    />
+                    <!beforeCreate
+                        gfr.getPswdAliases();
+                    />
+                </sun:dropDown>
+            </sun:property>
         </sun:propertySheetSection>
     </sun:propertySheet>
          "<br /><br /><br />
