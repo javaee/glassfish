@@ -150,6 +150,20 @@ public class MonitorableThreadPool extends StatsThreadPool {
 
         }
 
+        public GrizzlyIntegrationThreadPoolConfig(final ThreadPoolConfig cfg) {
+            super(cfg);
+            
+            if (cfg instanceof GrizzlyIntegrationThreadPoolConfig) {
+                GrizzlyIntegrationThreadPoolConfig thatCasted = (GrizzlyIntegrationThreadPoolConfig) cfg;
+                monitoringId = thatCasted.monitoringId;
+                monitoring = thatCasted.monitoring;
+            } else {
+                monitoringId = null;
+                monitoring = null;
+            }
+        }
+
+        
 
         // --------------------------------------- Methods from ThreadPoolConfig
 
@@ -193,6 +207,11 @@ public class MonitorableThreadPool extends StatsThreadPool {
             }
             return super.setQueueLimit(limit);
 
+        }
+
+        @Override
+        public ThreadPoolConfig clone() {
+            return new GrizzlyIntegrationThreadPoolConfig(this);
         }
 
 

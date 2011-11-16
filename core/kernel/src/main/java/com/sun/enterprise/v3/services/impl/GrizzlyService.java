@@ -53,14 +53,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.IiopListener;
 import com.sun.enterprise.config.serverbeans.IiopService;
 import com.sun.enterprise.config.serverbeans.JmsHost;
 import com.sun.enterprise.config.serverbeans.JmsService;
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.Result;
 import com.sun.enterprise.util.StringUtils;
@@ -437,9 +435,9 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     public synchronized Future<Result<Thread>> createNetworkProxy(NetworkListener listener) {
 
         if (!Boolean.valueOf(listener.getEnabled())) {
-            logger.info("Network listener " + listener.getName() +
-                    " on port " + listener.getPort() +
-                    " disabled per domain.xml");
+            logger.log(Level.INFO, "Network listener {0} on port {1}"
+                    + " disabled per domain.xml",
+                    new Object[]{listener.getName(), listener.getPort()});
             return null;
         }
 
