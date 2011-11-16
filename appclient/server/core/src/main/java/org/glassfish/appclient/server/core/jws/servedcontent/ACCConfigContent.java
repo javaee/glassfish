@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -72,8 +72,8 @@ public class ACCConfigContent {
     public ACCConfigContent(File domainConfig, File installLibAppclient) throws FileNotFoundException, IOException {
 
         sunACC = SunACCPairedFiles.newSunACCPairedFiles(
-                new File(domainConfig, "sun-acc.xml"),
-                new File(domainConfig, "sun-acc.jws.xml"));
+                new File(domainConfig, "glassfish-acc.xml"),
+                new File(domainConfig, "glassfish-acc.jws.xml"));
 
         appClientLogin = PairedFiles.newPairedFiles(
                 new File(installLibAppclient, "appclientlogin.conf"),
@@ -187,7 +187,7 @@ public class ACCConfigContent {
         protected String loadContent(File f) throws FileNotFoundException, IOException {
             String origContent = super.loadContent(f);
             /*
-             * Replace the value in the sun-acc.xml content for the
+             * Replace the value in the glassfish-acc.xml content for the
              * security.config property with a placeholder that the client
              * will recognize and replace with a temp file constructed on
              * the client.

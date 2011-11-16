@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -57,19 +57,19 @@ import java.util.logging.SimpleFormatter;
 import org.glassfish.appclient.client.acc.config.LogService;
 
 /**
- * Logger that conforms to the sun-acc.xml config file settings for logging
+ * Logger that conforms to the glassfish-acc.xml config file settings for logging
  * while, in some cases, also adjusting other loggers.
  * <p>
- * Historically the logging level specified in the sun-acc.xml is used to set the level
+ * Historically the logging level specified in the glassfish-acc.xml is used to set the level
  * for all loggers.  Beginning with v3, which supports conventional log settings
  * via logging.properties as well, we make sure that each logger's level is
  * at least as detailed as the setting in the config file.
  * <p>
  * Also, in prior versions if the user specified a logging file in the
- * sun-acc.xml config file then all pre-existing handlers would be removed,
+ * glassfish-acc.xml config file then all pre-existing handlers would be removed,
  * essentially replaced with a single handler to send output to the user-specified
  * file.  Beginning with v3 the ACC augments - rather than replaces - existing
- * handlers if the settings in sun-acc.xml specify a file.
+ * handlers if the settings in glassfish-acc.xml specify a file.
  *
  * @author tjquinn
  */
