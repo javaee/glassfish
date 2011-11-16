@@ -325,24 +325,28 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 			// likely, but possible)
 			handleLoadedState();
 		    }else {
-			try {
-			    // We have permission and now we should install
-			    // (or load) the application.
-			    setInstalling(true);
-			    startThread();  // Thread must set installing false
-			} catch (Exception ex) {
-			    // Ensure we haven't crashed with the installing
-			    // flag set to true (not likely).
-			    setInstalling(false);
-			    throw new RuntimeException(
-				    "Unable to install Admin Console!", ex);
-			}
+                        loadConsole();
 			sendStatusPage(req, res);
 		    }
 		}
 	    }
 	}
 
+    }
+
+    void loadConsole() {
+        try {
+            // We have permission and now we should install
+            // (or load) the application.
+            setInstalling(true);
+            startThread();  // Thread must set installing false
+        } catch (Exception ex) {
+            // Ensure we haven't crashed with the installing
+            // flag set to true (not likely).
+            setInstalling(false);
+            throw new RuntimeException(
+                    "Unable to install Admin Console!", ex);
+        }
     }
 
     /**
@@ -500,46 +504,12 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      */
     @Override
     public void event(@RestrictTo(EventTypes.SERVER_READY_NAME) Event event) {
-        if (event.is(EventTypes.SERVER_READY)) {
-            latch.countDown();
-            if (logger != null) {
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.FINE, "AdminConsoleAdapter is ready.");
-                }
-            }
-
-            // FIXME : Use ServerTags, when this is finalized. The following code till the end of the method is temporary.
-            Property initProp = adminService.getProperty("adminConsoleStartup"); 
-            String initPropVal = null;
-            if (initProp != null)
-                initPropVal = initProp.getValue();
-            if (initPropVal == null || initPropVal.equals("OPTIMIZE_OFF"))
-                return;
-            if (initPropVal.equals("SYSTEM_DEFAULT") || initPropVal.equals("OPTIMIZE_LOW") || initPropVal.equals("OPTIMIZE_HIGH")) {
-                initRest();
-            }
-            if (initPropVal.equals("OPTIMIZE_HIGH")) {
-                synchronized(this) {
-                    if (!isInstalling()) {
-                        if (!isApplicationLoaded()) {
-                            try {
-                                // We have permission and now we should install
-                                // (or load) the application.
-                                setInstalling(true);
-                                startThread();  // Thread must set installing false
-                            } catch (Exception ex) {
-                                // Ensure we haven't crashed with the installing
-                                // flag set to true (not likely).
-                                setInstalling(false);
-                                throw new RuntimeException(
-                                        "Unable to install Admin Console!", ex);
-                            }
-                        }
-                    }
-                }
+        latch.countDown();
+        if (logger != null) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, "AdminConsoleAdapter is ready.");
             }
         }
-
     }
 
     /**
@@ -573,7 +543,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     }
 
 
-    private void initRest() {
+    void initRest() {
         InputStream is = null;
         try {
             NetworkListener nl = domain.getServerNamed("server").getConfig().getNetworkConfig()
