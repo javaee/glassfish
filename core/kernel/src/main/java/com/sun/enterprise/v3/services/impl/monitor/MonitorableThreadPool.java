@@ -210,7 +210,7 @@ public class MonitorableThreadPool extends StatsThreadPool {
         }
 
         @Override
-        public ThreadPoolConfig clone() {
+        public ThreadPoolConfig copy() {
             return new GrizzlyIntegrationThreadPoolConfig(this);
         }
 

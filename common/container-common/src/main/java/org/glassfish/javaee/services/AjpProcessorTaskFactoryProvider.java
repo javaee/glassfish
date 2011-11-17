@@ -44,8 +44,16 @@ import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.http.ProcessorTaskFactory;
 import com.sun.grizzly.http.ajp.AjpConfiguration;
 import com.sun.grizzly.http.ajp.ShutdownHandler;
+import com.sun.logging.LogDomains;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.component.Habitat;
@@ -59,7 +67,9 @@ import org.jvnet.hk2.component.Habitat;
 public class AjpProcessorTaskFactoryProvider
         extends com.sun.grizzly.http.ajp.AjpProcessorTaskFactory
         implements ConfigAwareElement<NetworkListener> {
-
+    
+    private static final Logger LOGGER = LogDomains.getLogger(
+            AjpProcessorTaskFactoryProvider.class, LogDomains.CORE_LOGGER);
     
     public AjpProcessorTaskFactoryProvider() {
         super(new AjpConfigurationImpl());
@@ -67,8 +77,37 @@ public class AjpProcessorTaskFactoryProvider
 
     @Override
     public void configure(final Habitat habitat,
-            final NetworkListener configuration) {
-        final String configFileName = configuration.getJkConfigurationFile();
+            final NetworkListener networkListener) {
+        final String configFileName = networkListener.getJkConfigurationFile();
+        
+        if (configFileName != null) {
+            final File configFile = new File(configFileName);
+            if (!configFile.exists()) {
+                LOGGER.log(Level.WARNING, "JK configuration file {0} is not found.",
+                        configFileName);
+                return;
+            }
+            
+            InputStream is = null;
+            final Properties props;
+            try {
+                is = new FileInputStream(configFile);
+                props = new Properties();
+                props.load(is);
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING, "Error loading JK configuration from file {0}: {1} '{2}'",
+                        new Object[] {configFileName, e.getClass().getName(), e.getMessage()});
+                return;
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException ignored) {
+                    }
+                }
+            }
+            configure(props);
+        }
     }
     
     private final static class AjpConfigurationImpl implements AjpConfiguration {
@@ -77,7 +116,8 @@ public class AjpProcessorTaskFactoryProvider
                 new ConcurrentLinkedQueue<ShutdownHandler>();
         private String secret;
         private boolean isTomcatAuthentication = true;
-
+        private boolean isShutdownEnabled = false;
+        
         /**
          * {@inheritDoc}
          */
@@ -117,5 +157,21 @@ public class AjpProcessorTaskFactoryProvider
         public void setSecret(String requiredSecret) {
             this.secret = requiredSecret;
         }
+        
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isShutdownEnabled() {
+            return isShutdownEnabled;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void setShutdownEnabled(final boolean isShutdownEnabled) {
+            this.isShutdownEnabled = isShutdownEnabled;
+        }        
     }
 }
