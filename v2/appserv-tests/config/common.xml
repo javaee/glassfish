@@ -43,6 +43,7 @@ Variables used:
     destdir="${build.classes.dir}"
     classpath="${s1astest.classpath}"
     debug="on"
+    includeantruntime="false"
     failonerror="true"/>
 </target>
 
@@ -54,6 +55,7 @@ Variables used:
     destdir="${build.classes.dir}"
     classpath="${s1astest.classpath}"
     debug="on"
+    includeantruntime="false"
     failonerror="true">
     <compilerarg line="-endorseddirs ${env.S1AS_HOME}/modules/endorsed"/>
    </javac>
