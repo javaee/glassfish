@@ -315,8 +315,6 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                     forceRestModuleLoad(req);
                 }
 	    synchronized(this) {
-		
-
 		if (isInstalling()) {
 		    sendStatusPage(req, res);
 		} else {
@@ -436,7 +434,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
     }
 
-    private boolean isApplicationLoaded() {
+    boolean isApplicationLoaded() {
         return (stateMsg == AdapterState.APPLICATION_LOADED);
     }
 

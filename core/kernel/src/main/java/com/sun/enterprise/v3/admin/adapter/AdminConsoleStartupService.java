@@ -47,28 +47,42 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.internal.api.PostStartup;
+import org.glassfish.server.ServerEnvironmentImpl;
 
-import com.sun.enterprise.config.serverbeans.AdminService;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.logging.LogDomains;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import java.util.List;
 
 @Service(name = "AdminConsoleStartupService")
 public class AdminConsoleStartupService implements  PostConstruct, PostStartup {
 
     @Inject
-    AdminService adminService; 
+    private AdminService adminService;
 
     @Inject
-    AdminConsoleAdapter adminConsoleAdapter;
+    private AdminConsoleAdapter adminConsoleAdapter;
+
+    @Inject
+    private ServerEnvironmentImpl env;
+
+    @Inject
+    private Domain domain;
 
     private static final Logger logger = LogDomains.getLogger(AdminConsoleStartupService.class, LogDomains.CORE_LOGGER);
 
     @Override
     public void postConstruct() {
-        // FIXME : Use ServerTags, when this is finalized. 
+        // FIXME : Use ServerTags, when this is finalized.
+
+        /* This service must run only on the server where the console should run. Currently, that server is DAS. If and when
+         *  the console becomes dis-associated with DAS, this logic will need to be modified.
+         */
+        if (!env.isDas())
+            return;
+
         Property initProp = adminService.getProperty("adminConsoleStartup");
         String initPropVal = null;
         if (initProp != null) {
@@ -76,10 +90,6 @@ public class AdminConsoleStartupService implements  PostConstruct, PostStartup {
         }
         if (initPropVal == null) {
             return;
-        }
-
-        if (!(initPropVal.equals("OPTIMIZE_LOW") || initPropVal.equals("OPTIMIZE_HIGH"))) {
-                return;
         }
 
         if (adminConsoleAdapter == null) { // should not happen
@@ -91,9 +101,32 @@ public class AdminConsoleStartupService implements  PostConstruct, PostStartup {
             logger.log(Level.FINE, "AdminConsoleStartupService, console loading option is {0}", initPropVal);
         }
 
+        if (initPropVal.equalsIgnoreCase("SYSTEM_DEFAULT")) {
+            handleDefault();
+        } else if (initPropVal.equalsIgnoreCase("OPTIMIZE_LOW")) {
+            handleLow();
+        } else if (initPropVal.equalsIgnoreCase("OPTIMIZE_HIGH")) {
+            handleHigh();
+        }
+    }
+
+    private void handleDefault() {
+
+        /* if there are servers other than DAS */
+        if ((domain.getServers().getServer().size() > 1)) {
+            handleHigh();
+        }
+    }
+
+    private void handleLow() {
         adminConsoleAdapter.initRest();
-        if (initPropVal.equals("OPTIMIZE_HIGH")) {
-            synchronized(this) {
+    }
+
+
+    private void handleHigh() {
+        handleLow();
+        synchronized(this) {
+            if (!adminConsoleAdapter.isInstalling() && !adminConsoleAdapter.isApplicationLoaded()) {
                 adminConsoleAdapter.loadConsole();
             }
         }
