@@ -121,6 +121,8 @@ public class MiniXmlParser {
         }
         return javaConfig;
     }
+    
+
 
     public List<String> getJvmOptions() throws MiniXmlParserException {
         if (!valid) {
@@ -206,6 +208,12 @@ public class MiniXmlParser {
 
     public boolean hasDefaultConfig() {
         return sawDefaultConfig;
+    }
+    public String getAdminRealmName() {
+        return adminRealm;
+    }
+    public Map<String,String> getAdminRealmProperties() {
+        return adminRealmProperties;
     }
 
     /////////////////////  all private below  /////////////////////////
@@ -375,6 +383,12 @@ public class MiniXmlParser {
                 }
                 else if ("monitoring-service".equals(name)) {
                     parseMonitoringService();
+                }
+                else if("admin-service".equals(name)) {
+                    parseAdminService();                    
+                }
+                else if("security-service".equals(name)) {
+                    populateAdminRealmProperties();
                 }
                 else {
                     skipTree(name);
@@ -662,6 +676,52 @@ public class MiniXmlParser {
             monitoringEnabled = true;  // case 3
         }
     }
+    
+    private void parseAdminService() throws XMLStreamException, EndDocumentException {
+        Map<String, String> attributes = null;
+
+        skipToButNotPast("admin-service", "jmx-connector");
+        String name = parser.getLocalName();
+        if ("jmx-connector".equals(name)) {
+            attributes = parseAttributes();
+            adminRealm = attributes.get("auth-realm-name");
+        }
+    }
+
+    private void populateAdminRealmProperties() throws
+            XMLStreamException, EndDocumentException {
+
+        //If the adminrealm name has not been parsed,
+        //or if the adminRealmProperties is already populated, return
+        if ((adminRealm == null) || (adminRealmProperties != null)) {
+            return;
+        }
+        Map<String, String> attributes = null;
+
+        while (true) {
+            skipToButNotPast("security-service", "auth-realm");
+            String name = parser.getLocalName();
+            if ("auth-realm".equals(name)) {
+                attributes = parseAttributes();
+                if (attributes.get("name").equals(adminRealm)) {
+                    adminRealmProperties = new HashMap<String, String>();
+                    adminRealmProperties.put("classname", attributes.get("classname"));
+                    while (true) {
+                        skipToButNotPast("auth-realm", "property");
+                        if ("property".equals(parser.getLocalName())) {
+                            attributes = parseAttributes();
+                            adminRealmProperties.put(attributes.get("name"), attributes.get("value"));
+                        } else if ("auth-realm".equals(parser.getLocalName())) {
+                            break;
+                        }
+                    }
+                }
+            } else if ("security-service".equals(name)) {
+                break;
+            }
+        }
+    }
+
 
     private void parseHttpService() throws XMLStreamException, EndDocumentException {
         // cursor --> <http-service> in <config>
@@ -692,7 +752,7 @@ public class MiniXmlParser {
         }
         addPortsForListeners(listenerNames);
     }
-
+    
     private void parseListeners() throws XMLStreamException, EndDocumentException {
         // cursor --> START_ELEMENT of network-listeners
         while (true) {
@@ -915,6 +975,8 @@ public class MiniXmlParser {
     private String domainName;
     private static final LocalStringsImpl strings = new LocalStringsImpl(MiniXmlParser.class);
     private boolean monitoringEnabled = true; // Issue 12762 Absent <monitoring-service /> element means monitoring-enabled=true by default
+    private String adminRealm = null;
+    private Map<String,String> adminRealmProperties = null;
     private List<Map<String, String>> vsAttributes = new ArrayList<Map<String, String>>();
     private List<Map<String, String>> listenerAttributes = new ArrayList<Map<String, String>>();
     private List<Map<String, String>> protocolAttributes = new ArrayList<Map<String, String>>();
@@ -923,4 +985,6 @@ public class MiniXmlParser {
     private boolean sawConfig;
     private SysPropsHandler sysProps = new SysPropsHandler();
     private List<ParsedCluster> clusters = null;
+    
+
 }
