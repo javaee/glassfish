@@ -62,8 +62,8 @@ public class AdminConsoleStartupService implements  PostConstruct, PostStartup {
     @Inject
     private AdminService adminService;
 
-    @Inject
-    private AdminConsoleAdapter adminConsoleAdapter;
+    @Inject(optional=true)
+    private AdminConsoleAdapter adminConsoleAdapter = null;
 
     @Inject
     private ServerEnvironmentImpl env;
@@ -75,7 +75,10 @@ public class AdminConsoleStartupService implements  PostConstruct, PostStartup {
 
     @Override
     public void postConstruct() {
-        // FIXME : Use ServerTags, when this is finalized.
+
+        if (adminConsoleAdapter == null) { // there may be no console in this environment.
+            return;
+        }
 
         /* This service must run only on the server where the console should run. Currently, that server is DAS. If and when
          *  the console becomes dis-associated with DAS, this logic will need to be modified.
@@ -83,6 +86,7 @@ public class AdminConsoleStartupService implements  PostConstruct, PostStartup {
         if (!env.isDas())
             return;
 
+        // FIXME : Use ServerTags, when this is finalized.
         Property initProp = adminService.getProperty("adminConsoleStartup");
         String initPropVal = null;
         if (initProp != null) {
@@ -92,10 +96,6 @@ public class AdminConsoleStartupService implements  PostConstruct, PostStartup {
             return;
         }
 
-        if (adminConsoleAdapter == null) { // should not happen
-            logger.log(Level.WARNING, "AdminConsoleAdapter is not initialized, could not process AdminConsoleStartupService");
-            return;
-        }
 
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "AdminConsoleStartupService, console loading option is {0}", initPropVal);
