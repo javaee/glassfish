@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,8 +52,6 @@ import com.sun.enterprise.admin.servermgmt.RepositoryConfig;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
 import com.sun.enterprise.security.store.PasswordAdapter;
-import java.util.HashMap;
-import java.util.Map;
 
 public class PEFileLayout
 {
@@ -628,15 +626,13 @@ public class PEFileLayout
         return new File(getInstallRootDir(), CONFIG_DIR);
     }
 
-    public static final String ACC_XML_TEMPLATE = "glassfish-acc.xml";
-    public Map<File,File> getAppClientContainerTemplateAndXml() {
-        final Map<File,File> result = new HashMap<File,File>();
-        result.put(new File(getTemplatesDir(), ACC_XML_TEMPLATE), new File(getConfigRoot(), ACC_XML));
-        return result;
+    public static final String ACC_XML_TEMPLATE = "sun-acc.xml";
+    public File getAppClientContainerXmlTemplate()
+    {
+        return new File(getTemplatesDir(), ACC_XML_TEMPLATE);
     }
-    
-    public static final String ACC_XML = "glassfish-acc.xml";
-    
+
+    public static final String ACC_XML = "sun-acc.xml";
     public File getAppClientContainerXml()
     {
         return new File(getConfigRoot(), ACC_XML);

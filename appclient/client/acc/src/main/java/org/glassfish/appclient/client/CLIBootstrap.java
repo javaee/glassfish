@@ -1054,8 +1054,7 @@ public class CLIBootstrap {
         private final File modules;
         private final File lib;
         private final File libAppclient;
-        private static final String ACC_CONFIG_PREFIX = "domains/domain1/config";
-        
+
         GlassFishInfo() {
             final String asInstallPath = System.getProperty(ENV_VAR_PROP_PREFIX + "_AS_INSTALL");
             if (asInstallPath == null || asInstallPath.length() == 0) {
@@ -1080,24 +1079,7 @@ public class CLIBootstrap {
         }
 
         File configxml() {
-            /*
-             * Try using glassfish-acc.xml.  If that does not exist then the user
-             * might have done an in-place upgrade from an earlier version that
-             * used sun-acc.xml.
-             */
-            final File configXMLFile = new File(new File(home, ACC_CONFIG_PREFIX), "glassfish-acc.xml");
-            if (configXMLFile.canRead()) {
-                return configXMLFile;
-            }
-            final File sunACCXMLFile = new File(new File(home, ACC_CONFIG_PREFIX), "sun-acc.xml");
-            if (sunACCXMLFile.canRead()) {
-                return sunACCXMLFile;
-            }
-            /*
-             * We found neither, but when an error is reported we want it to
-             * report the glassfish-acc.xml file is missing.
-             */
-            return configXMLFile;
+            return new File(new File(home, "domains/domain1/config"), "sun-acc.xml");
         }
 
         String[] endorsedPaths() {
