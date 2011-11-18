@@ -5,12 +5,12 @@
 <head>
 <!--DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009, 2011 Oracle and/or its affiliates. All rights reserved.
+Copyright 2010, 2012 Oracle and/or its affiliates. All rights reserved.
 
 Use is subject to License Terms-->
 <style type="text/css">  body,td,p,div,span,a,ul,ul li, ol, ol li, ol li b, dl,h1,h2,h3,h4,h5,h6,li {     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:10pt   }      body{margin-top:0}      h1 {font-size:18pt}   h2 {font-size:14pt}   h3 {font-size:12pt}   code,kbd,tt,pre {     font-family:monaco,courier,"courier new";     font-size:10pt;   }    p.copy, p.copy a {     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:8pt     }   p.copy {text-align: center}    table.grey1,tr.grey1,td.grey1{background:#f1f1f1}   th {   fontfamily:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:12pt   }   td.insidehead {     font-weight:bold;     background:white;     text-align: left;   }   a {text-decoration:none; color:#3E6B8A}   a:visited{color:#917E9C}   a:hover {text-decoration:underline}      
 </style>
-<title>GlassFish Server 3.1.1 Quick Start Guide</title>
+<title>GlassFish Server 3.1.2 Quick Start Guide</title>
 </head>
 <body style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);"
 link="#594fbf" vlink="#1005fb" alink="#333366"><table width="100%" border="0"
@@ -22,13 +22,13 @@ cellspacing="4" cellpadding="2">
 </tr>
 <tr>
 <td align="left" valign="top" bgcolor="#587993"> <font color="#ffffff"><b>GlassFish
-Server 3.1.1</b></font></td>
+Server 3.1.2</b></font></td>
 </tr>
 </tbody>
 </table><div class="maincontent">
-<a name="aboaa"></a><h3>GlassFish Server 3.1.1 Quick Start Guide</h3><p>GlassFish Server provides a server for the development and deployment of
+<a name="aboaa"></a><h3>GlassFish Server 3.1.2 Quick Start Guide</h3><p>GlassFish Server provides a server for the development and deployment of
 Java Platform, Enterprise Edition (Java EE platform) applications and web technologies based on
-Java technology. GlassFish Server 3.1.1 provides the following:</p>
+Java technology. GlassFish Server 3.1.2 provides the following:</p>
 
 
 <ul><li><p>A lightweight and extensible core based on OSGi Alliance standards</p>
@@ -70,7 +70,7 @@ Java technology. GlassFish Server 3.1.1 provides the following:</p>
 <li><p><a href="#gjahq">Updating and Extending an Existing Installation</a></p>
 
 </li>
-<li><p><a href="#ghgqg">Removing GlassFish Server 3.1.1 Software</a></p>
+<li><p><a href="#ghgqg">Removing GlassFish Server 3.1.2 Software</a></p>
 
 </li>
 <li><p><a href="#ggkzh">For More Information</a></p>
@@ -79,13 +79,13 @@ Java technology. GlassFish Server 3.1.1 provides the following:</p>
 
 
 <a name="ghgpe"></a><h3>About This Quick Start Guide</h3>
-<p><i>GlassFish Server 3.1.1 Quick Start Guide</i> demonstrates key features of the GlassFish Server product and enables you to
+<p><i>GlassFish Server 3.1.2 Quick Start Guide</i> demonstrates key features of the GlassFish Server product and enables you to
 quickly learn the basics. Step-by-step procedures introduce you to product features and
 enable you to use them immediately.</p>
 
 <p>This guide assumes that you have already obtained and installed the GlassFish
-Server 3.1.1 software. For more information about installing GlassFish Server 3.1.1, see the
-<a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2427"><i>Oracle GlassFish Server 3.1 Installation Guide</i></a>.</p>
+Server 3.1.2 software. For more information about installing GlassFish Server 3.1.2, see the
+<a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2427"><i>Oracle GlassFish Server 3.1.2 Installation Guide</i></a>.</p>
 
 <p>Instructions and examples in this guide that apply to all supported operating
 systems use the forward slash character (<tt>/</tt>) as path separators in all file
@@ -103,13 +103,13 @@ the system on which GlassFish Server is installed. For example:</p>
 and other entities mentioned in this guide, see <a href="#ggkzh">For More Information</a>. </p>
 
 <p>To review additional details about this release before you begin using the
-software, see the <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2434"><i>Oracle GlassFish Server 3.1 Release Notes</i></a>. The <i>Release Notes</i> provide important information about the GlassFish
-Server 3.1 release, including details about new features, information about known issues and
-possible workarounds, and tips for installing and working with GlassFish Server 3.1.1
+software, see the <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2434"><i>Oracle GlassFish Server 3.1.2 Release Notes</i></a>. The <i>Release Notes</i> provide important information about the GlassFish
+Server 3.1.2 release, including details about new features, information about known issues and
+possible workarounds, and tips for installing and working with GlassFish Server 3.1.2
 software.</p>
 
 <p>When this <i>Quick Start Guide</i> is updated, the most recent version is available in
-the <a href="http://download.oracle.com/docs/cd/E18930_01/index.htm">Oracle GlassFish Server 3.1.1 </a> documentation library.</p>
+the <a href="http://download.oracle.com/docs/cd/E18930_01/index.htm">Oracle GlassFish Server 3.1.2 </a> documentation library.</p>
 
 
 
@@ -305,7 +305,7 @@ port</p>
 <p>When you install GlassFish Server, a default domain named <tt>domain1</tt> is created.
 The following procedures describe how to start and stop <tt>domain1</tt> when it
 is the only domain. For information about starting and stopping a domain
-when there are multiple domains, see <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2416">Chapter 3, Administering Domains, in <i>Oracle GlassFish Server 3.1 Administration Guide</i></a>.</p>
+when there are multiple domains, see <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2416">Chapter 3, Administering Domains, in <i>Oracle GlassFish Server 3.1.2 Administration Guide</i></a>.</p>
 
 
 
@@ -332,9 +332,9 @@ server that is bundled with GlassFish Server. For information about starting and
 other database servers, see the documentation for your specific product. </p>
 
 <p>For the list of database products supported in this release, see the
-<a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2434"><i>Oracle GlassFish Server 3.1-3.1.1 Release Notes</i></a>.</p>
+<a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2434"><i>Oracle GlassFish Server 3.1.2 Release Notes</i></a>.</p>
 
-<p>For more information about database connectivity, see <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2416">Chapter 12, Administering Database Connectivity, in <i>Oracle GlassFish Server 3.1 Administration Guide</i></a>.</p>
+<p>For more information about database connectivity, see <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2416">Chapter 12, Administering Database Connectivity, in <i>Oracle GlassFish Server 3.1.2 Administration Guide</i></a>.</p>
 
 
 
@@ -416,7 +416,7 @@ started before you deploy the sample application.</p>
 your name.</p><pre>Hi, my name is Duke. What's yours?</pre></li>
 <li><b>Type your name and click Submit.</b><p>The application displays a customized response, giving you a personal <tt>Hello</tt>.</p></li></ol><h6>See Also</h6><p>For more information about the <tt>deploy</tt>subcommand, see <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2433"><tt>deploy</tt>(1)</a>.</p>
 
-<p>For more information about deploying applications from the command line, see <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2417"><i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p>
+<p>For more information about deploying applications from the command line, see <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2417"><i>Oracle GlassFish Server 3.1.2 Application Deployment Guide</i></a>.</p>
 
 
 
@@ -520,7 +520,7 @@ the application is as follows:</p><pre><tt><b>http://localhost:8080/hello/</b></
 to install updates and add-on components to your existing GlassFish Server installation. Update
 Tool can be accessed as a standalone graphical tool from the command
 line or as a browser-based graphical tool from the Administration Console. For
-more information about Update Tool, see <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2416">Update Tool in <i>Oracle GlassFish Server 3.1 Administration Guide</i></a>.</p>
+more information about Update Tool, see <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2416">Update Tool in <i>Oracle GlassFish Server 3.1.2 Administration Guide</i></a>.</p>
 
 
 
@@ -530,7 +530,7 @@ it. Install the tool if desired, then use the <tt>updatetool</tt> command to sta
 the tool. Extensive online help is available from the tool's Help menu.</p></li></ul><h6>See Also</h6><p>A command-line interface is also available for Update Tool. The command-line interface
 uses the <tt>pkg</tt> command and enables you to perform most of the tasks
 provided by the graphical version. For more information about the <tt>pkg</tt> command,
-see <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2416">Chapter 11, Extending and Updating GlassFish Server, in <i>Oracle GlassFish Server 3.1 Administration Guide</i></a>.</p>
+see <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2416">Chapter 11, Extending and Updating GlassFish Server, in <i>Oracle GlassFish Server 3.1.2 Administration Guide</i></a>.</p>
 
 
 
@@ -543,7 +543,7 @@ the Administration Console.</p>
 
 
 
-<a name="ghgqg"></a><h3>Removing GlassFish Server 3.1.1 Software</h3>
+<a name="ghgqg"></a><h3>Removing GlassFish Server 3.1.2 Software</h3>
 <p>Before removing the GlassFish Server software, stop the following processes:</p>
 
 
@@ -559,7 +559,7 @@ the Administration Console.</p>
 <li><p>Any applications that use files that are part of the Java Platform, Standard Edition (Java SE)</p>
 
 </li></ul>
-<p>For more information about performing these tasks, see <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2427">Chapter 2, Uninstalling Oracle GlassFish Server 3.1, in <i>Oracle GlassFish Server 3.1 Installation Guide</i></a>.</p>
+<p>For more information about performing these tasks, see <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2427">Chapter 2, Uninstalling Oracle GlassFish Server 3.1, in <i>Oracle GlassFish Server 3.1.2 Installation Guide</i></a>.</p>
 
 
 
@@ -580,7 +580,7 @@ dot.</b></li></ol>
 
 <a name="ggkzh"></a><h3>For More Information</h3>
 <p>Additional resources are available to help you learn more about GlassFish Server
-3.1.1 and related technologies.</p>
+3.1.2 and related technologies.</p>
 
 <p>The following resources are described here:</p>
 
@@ -603,7 +603,7 @@ dot.</b></li></ol>
 <p>Comprehensive product documentation is available and includes the following.</p>
 
 
-<ul><li><p><a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2434"><i>Oracle GlassFish Server 3.1-3.1.1 Release Notes</i></a>: Latest details about new features, known issues, and tips for installing and working with GlassFish Server software.</p>
+<ul><li><p><a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2434"><i>Oracle GlassFish Server 3.1.2 Release Notes</i></a>: Latest details about new features, known issues, and tips for installing and working with GlassFish Server software.</p>
 
 </li>
 <li><p><a href="http://download.oracle.com/docs/cd/E18930_01/index.htm">GlassFish Server Documentation Library</a>: Collection of guides that document GlassFish Server features and functions.</p>
@@ -658,6 +658,6 @@ SDK distributions. The SDK distributions are available from the <a href="http://
 </div> <hr style="width: 80%; height: 2px;"> <p
 class="copy"><a href="http://www.oracle.com/corporate/">Company Info</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a
 href="http://www.oracle.com/corporate/contact/">Contact</a> &nbsp;&nbsp;|&nbsp;&nbsp;
-Copyright &copy; 2011 Oracle Corporation &nbsp;&nbsp;|&nbsp;&nbsp; <a
+Copyright &copy; 2010, 2012 Oracle Corporation &nbsp;&nbsp;|&nbsp;&nbsp; <a
 href="./copyright.html">Legal Notices</a></p></body></html>
 <?Pub *0000031254 0>
