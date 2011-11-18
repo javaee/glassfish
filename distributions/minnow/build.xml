@@ -43,7 +43,7 @@
 
 <project name="glassfish minnow distribution creation" default="create.distribution" basedir=".">
     <import file="../distributions.xml"/>
-    <property name="source.distribution.name" value="GlassFish Open Source Edition 3.1.1 Minnow"/>
+    <property name="source.distribution.name" value="GlassFish Open Source Edition 3.1.2 Minnow"/>
     <target name="create.distribution">
         <echo message="Creating distribution: minnow"/>
         <unzip dest="target/stage">
