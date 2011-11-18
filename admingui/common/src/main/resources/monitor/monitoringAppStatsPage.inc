@@ -61,7 +61,11 @@
         getAppName(endpoint="#{sessionScope.REST_URL}/applications/application" name="#{viewVal}", appName=>$attribute{appValue}, appFullName=>$attribute{appFullName});
         //To get the sub components of a module
         if(#{viewVal}) {
-            if("!(#{viewVal}=#{appValue})") {
+            setAttribute(key="isAppScopedresourcesComp" value="$boolean{false}");
+            if(#{cVal}) {
+                startsWith(testStr="#{cVal}" pattern="resources/" result=>$attribute{isAppScopedresourcesComp});
+            }
+            if(!#{isAppScopedresourcesComp}) {
                 createMap(result="#{requestScope.attrsMap}");
                 mapPut(map="#{requestScope.attrsMap}"  key="modulename" value="#{viewVal}");
                 mapPut(map="#{requestScope.attrsMap}"  key="appname"  value="#{appValue}");
