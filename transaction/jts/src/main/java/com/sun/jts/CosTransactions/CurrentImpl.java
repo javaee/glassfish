@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -171,6 +171,11 @@ public class CurrentImpl extends org.omg.CORBA.LocalObject
             if( !active ) {
                 NO_PERMISSION exc = new NO_PERMISSION(0,CompletionStatus.COMPLETED_NO);
                 throw exc;
+            }
+
+            if (Configuration.isDBLoggingEnabled()) {
+                //Put a marker record into the log table
+                LogDBHelper.getInstance();
             }
 
             // Get a reference to the current ControlImpl object.
