@@ -117,10 +117,10 @@ import org.jvnet.hk2.config.TransactionFailure;
 @ExecuteOn({RuntimeType.DAS,RuntimeType.INSTANCE})
 public class EnableSecureAdminCommand extends SecureAdminCommand {
 
-    @Param(optional = true)
+    @Param(optional = true, defaultValue = SecureAdmin.Duck.DEFAULT_ADMIN_ALIAS)
     public String adminalias;
 
-    @Param(optional = true)
+    @Param(optional = true, defaultValue = SecureAdmin.Duck.DEFAULT_INSTANCE_ALIAS)
     public String instancealias;
 
     @Inject
