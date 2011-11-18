@@ -95,7 +95,12 @@
             <artifactId>config-api</artifactId>
             <version>${project.version}</version>
         </dependency> 
-        <dependency>
+         <dependency>
+            <groupId>org.glassfish.main.common</groupId>
+            <artifactId>common-util</artifactId>
+            <version>${project.version}</version>
+        </dependency> 
+       <dependency>
             <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-utils</artifactId>
         </dependency>

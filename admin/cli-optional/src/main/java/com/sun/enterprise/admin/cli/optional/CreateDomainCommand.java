@@ -39,6 +39,7 @@
  */
 package com.sun.enterprise.admin.cli.optional;
 
+import org.glassfish.security.common.FileRealmHelper;
 import com.sun.enterprise.admin.servermgmt.KeystoreManager;
 import java.io.File;
 import java.io.Console;
@@ -46,13 +47,13 @@ import java.util.*;
 import java.util.logging.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
-import org.glassfish.api.Param;
 import org.glassfish.internal.embedded.*;
-import org.glassfish.internal.embedded.Server;
 import org.glassfish.api.admin.config.*;
 import org.glassfish.api.admin.*;
-import org.glassfish.api.admin.CommandModel.ParamModel;
+import org.glassfish.api.Param;
+import org.glassfish.internal.embedded.Server;
 import com.sun.enterprise.admin.cli.*;
+import org.glassfish.api.admin.CommandModel.ParamModel;
 import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
 import com.sun.enterprise.admin.servermgmt.DomainsManager;
@@ -201,6 +202,14 @@ public final class CreateDomainCommand extends CLICommand {
                 //logger.info(strings.get("AdminUserRequired"));
                 throw new CommandValidationException(
                         strings.get("AdminUserRequired"));
+            }
+        }
+        if (programOpts.getUser() != null) {
+            try {
+                FileRealmHelper.validateUserName(programOpts.getUser());
+            } catch (IllegalArgumentException ise) {
+                throw new CommandValidationException(
+                        strings.get("InvalidUserName", programOpts.getUser()));
             }
         }
     }
