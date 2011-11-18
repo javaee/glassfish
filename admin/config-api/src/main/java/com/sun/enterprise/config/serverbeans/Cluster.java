@@ -46,6 +46,8 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import java.io.*;
+import com.sun.enterprise.config.serverbeans.customvalidators.ConfigRefConstraint;
+import com.sun.enterprise.config.serverbeans.customvalidators.ConfigRefValidator;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -89,6 +91,7 @@ import javax.validation.constraints.Pattern;
  */
 @Configured
 @SuppressWarnings("unused")
+@ConfigRefConstraint(message="{configref.invalid}", payload= ConfigRefValidator.class)
 @NotDuplicateTargetName(message="{cluster.duplicate.name}", payload=Cluster.class)
 public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer, Payload {
 
