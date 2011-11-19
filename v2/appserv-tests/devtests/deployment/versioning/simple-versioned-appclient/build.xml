@@ -36,7 +36,7 @@
 
   <!-- some properties to build the jvm.arguments property -->
   <property name="gfClientJar" value="${inst}/lib/gf-client.jar"/>
-  <property name="sunAccXml" value="${inst}/domains/domain1/config/sun-acc.xml"/>
+  <property name="sunAccXml" value="${inst}/domains/domain1/config/glassfish-acc.xml"/>
   <property name="appClientStubsFile" value="${build}/${untaggedName}Client.jar"/>
 
   <!-- the jvm args used in the runclient target -->
