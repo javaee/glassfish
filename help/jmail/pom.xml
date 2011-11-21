@@ -48,7 +48,7 @@
         <version>4.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>console-common-full-plugin</artifactId>
+    <artifactId>console-common-full-plugin-help</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Administration Console JavaMailSystem Help Content</name>
     <description>Online help content for the console-jmail-plugin bundle.</description>

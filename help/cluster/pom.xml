@@ -48,7 +48,7 @@
         <version>4.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>console-cluster-plugin</artifactId>
+    <artifactId>console-cluster-plugin-help</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Administration Console Cluster Help Content</name>
     <description>Online help content for the console-cluster-plugin bundle.</description>

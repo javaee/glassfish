@@ -48,7 +48,7 @@
         <version>4.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>console-ejb-lite-plugin</artifactId>
+    <artifactId>console-ejb-lite-plugin-help</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Administration Console EJB Lite Help Content</name>
     <description>Online help content for the console-ejb-lite-plugin bundle.</description>

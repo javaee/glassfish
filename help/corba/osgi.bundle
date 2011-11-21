@@ -1,1 +1,1 @@
-Fragment-Host: ${project.groupId}.${project.artifactId}; bundle-version="[3.0,4.0)"
+Fragment-Host: org.glassfish.main.admingui.console-corba-plugin; bundle-version="[3.0,4.0)"

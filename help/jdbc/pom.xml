@@ -48,7 +48,7 @@
         <version>4.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>console-jdbc-plugin</artifactId>
+    <artifactId>console-jdbc-plugin-help</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Administration Console JDBC Help Content</name>
     <description>Online help content for the console-jdbc-plugin bundle.</description>

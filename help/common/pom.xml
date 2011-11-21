@@ -48,7 +48,7 @@
         <version>4.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>console-common</artifactId>
+    <artifactId>console-common-help</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Administration Console Common Help Content</name>
     <description>Online help content for the console-common bundle.</description>

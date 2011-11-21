@@ -48,7 +48,7 @@
         <version>4.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>console-jca-plugin</artifactId>
+    <artifactId>console-jca-plugin-help</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Administration Console Connectors Help Content</name>
     <description>Online help content for the console-jca-plugin bundle.</description>

@@ -48,7 +48,7 @@
         <version>4.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>console-web-plugin</artifactId>
+    <artifactId>console-web-plugin-help</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Administration Console Web Container Help Content</name>
     <description>Online help content for the console-web-plugin bundle.</description>
