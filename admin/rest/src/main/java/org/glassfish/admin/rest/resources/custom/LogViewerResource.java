@@ -3,68 +3,58 @@
  *
  * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
- * The contents of this file are subject to the terms of either the GNU
- * General Public License Version 2 only ("GPL") or the Common Development
- * and Distribution License("CDDL") (collectively, the "License").  You
- * may not use this file except in compliance with the License.  You can
- * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
- * or packager/legal/LICENSE.txt.  See the License for the specific
- * language governing permissions and limitations under the License.
+ * The contents of this file are subject to the terms of either the GNU General
+ * Public License Version 2 only ("GPL") or the Common Development and
+ * Distribution License("CDDL") (collectively, the "License"). You may not use
+ * this file except in compliance with the License. You can obtain a copy of the
+ * License at https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html or
+ * packager/legal/LICENSE.txt. See the License for the specific language
+ * governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at packager/legal/LICENSE.txt.
  *
- * GPL Classpath Exception:
- * Oracle designates this particular file as subject to the "Classpath"
- * exception as provided by Oracle in the GPL Version 2 section of the License
- * file that accompanied this code.
+ * GPL Classpath Exception: Oracle designates this particular file as subject to
+ * the "Classpath" exception as provided by Oracle in the GPL Version 2 section
+ * of the License file that accompanied this code.
  *
- * Modifications:
- * If applicable, add the following below the License Header, with the fields
- * enclosed by brackets [] replaced by your own identifying information:
- * "Portions Copyright [year] [name of copyright owner]"
+ * Modifications: If applicable, add the following below the License Header,
+ * with the fields enclosed by brackets [] replaced by your own identifying
+ * information: "Portions Copyright [year] [name of copyright owner]"
  *
- * Contributor(s):
- * If you wish your version of this file to be governed by only the CDDL or
- * only the GPL Version 2, indicate your decision by adding "[Contributor]
- * elects to include this software in this distribution under the [CDDL or GPL
- * Version 2] license."  If you don't indicate a single choice of license, a
- * recipient has the option to distribute your version of this file under
- * either the CDDL, the GPL Version 2 or to extend the choice of license to
- * its licensees as provided above.  However, if you add GPL Version 2 code
- * and therefore, elected the GPL Version 2 license, then the option applies
- * only if the new code is made subject to such option by the copyright
- * holder.
+ * Contributor(s): If you wish your version of this file to be governed by only
+ * the CDDL or only the GPL Version 2, indicate your decision by adding
+ * "[Contributor] elects to include this software in this distribution under the
+ * [CDDL or GPL Version 2] license." If you don't indicate a single choice of
+ * license, a recipient has the option to distribute your version of this file
+ * under either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above. However, if you add GPL Version 2 code and
+ * therefore, elected the GPL Version 2 license, then the option applies only if
+ * the new code is made subject to such option by the copyright holder.
  */
-
 package org.glassfish.admin.rest.resources.custom;
 
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.jersey.api.core.ResourceContext;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 import java.io.Writer;
+import java.net.URI;
 import java.nio.charset.Charset;
-
-
+import java.util.zip.GZIPOutputStream;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-
-import java.io.OutputStreamWriter;
-import java.net.URI;
-import java.util.zip.GZIPOutputStream;
-import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
@@ -78,24 +68,21 @@ import org.jvnet.hk2.config.Dom;
 /**
  * Represents a large text data.
  *
- * <p>
- * This class defines methods for handling progressive text update.
+ * <p> This class defines methods for handling progressive text update.
  *
- * <h2>Usage</h2>
- * <p>
+ * <h2>Usage</h2> <p>
  *
  * @author Kohsuke Kawaguchi
  */
-//@Path("view-log/")
 public class LogViewerResource {
 
     @Context
     protected ResourceContext resourceContext;
     @Context
     protected UriInfo ui;
-
     @Context
     protected Habitat habitat;
+
     /**
      * Represents the data source of this text.
      */
@@ -123,24 +110,18 @@ public class LogViewerResource {
 
     @GET
     @Produces("text/plain;charset=UTF-8")
-    public Response get(@QueryParam("start")
-            @DefaultValue("0") long start, @Context HttpHeaders hh) throws IOException {
-        boolean gzipOK = true;
+    public Response get(@QueryParam("start") @DefaultValue("0") long start,
+            @Context HttpHeaders hh) throws IOException {
         MultivaluedMap<String, String> headerParams = hh.getRequestHeaders();
         String acceptEncoding = headerParams.getFirst("Accept-Encoding");
-        if (acceptEncoding == null || acceptEncoding.indexOf("gzip") == -1) {
-            gzipOK = false;
-        }
-
+        boolean gzipOK = (acceptEncoding == null || acceptEncoding.indexOf("gzip") == -1) ? false : true;
 
         ServerEnvironmentImpl env = habitat.getComponent(ServerEnvironmentImpl.class);
         String logLocation = env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/logs/server.log";
         initLargeText(new File(logLocation), false);
 
-
         if (!source.exists()) {
             // file doesn't exist yet
-
             return Response.ok(
                     new StreamingOutput() {
 
@@ -158,32 +139,26 @@ public class LogViewerResource {
         final CharSpool spool = new CharSpool();
         long size = writeLogTo(start, spool);
 
-        //       response.addHeader("X-Text-Size", String.valueOf(r));
-       // if (!completed) {
-            //           response.addHeader("X-More-Data", "true");
-       // }
         if (size < 10000) {
             gzipOK = false;
         }
         final boolean gz = gzipOK;
-        ResponseBuilder rp = Response.ok(
-                new StreamingOutput() {
+        ResponseBuilder rp = Response.ok(new StreamingOutput() {
 
-                    @Override
-                    public void write(OutputStream out) throws IOException, WebApplicationException {
-                        Writer w = getWriter(out, gz);
-                        spool.writeTo(new LineEndNormalizingWriter(w));
-                        w.flush();
-                        w.close();
-                    }
-                });
+            @Override
+            public void write(OutputStream out) throws IOException, WebApplicationException {
+                Writer w = getWriter(out, gz);
+                spool.writeTo(new LineEndNormalizingWriter(w));
+                w.flush();
+                w.close();
+            }
+        });
         URI next = ui.getAbsolutePathBuilder().queryParam("start", size).build();
         rp.header("X-Text-Append-Next", next);
         if (gzipOK) {
             rp = rp.header("Content-Encoding", "gzip");
         }
         return rp.build();
-        //   return rp.header("X-Text-Size", String.valueOf(r)).header("X-More-Data", "true").build();
     }
 
     private Writer getWriter(OutputStream out, boolean gzipOK) throws IOException {
