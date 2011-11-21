@@ -61,7 +61,7 @@ function logViewerRaw(url) {
     var timeout = 1000;
     
     var success = function(xhr, targetId, requestedUrl) {
-        if (xhr.responseText) {
+        if (xhr.status == 200 && xhr.responseText) {
             var records = document.createTextNode(xhr.responseText);
             var documentX = window.pageXOffset || document.body.scrollLeft /* IE */;
             var documentY = window.pageYOffset || document.body.scrollTop /* IE */;
@@ -73,9 +73,9 @@ function logViewerRaw(url) {
             if (atBottom) {
               window.scrollTo(documentX, document.documentElement.scrollHeight - document.documentElement.clientHeight);
             }
+            // get only new records next time
+            url = xhr.getResponseHeader('X-Text-Append-Next');
         }
-        // get only new records next time
-        url = xhr.getResponseHeader('X-Text-Append-Next');
         setTimeout(poll, timeout);
     };
 
