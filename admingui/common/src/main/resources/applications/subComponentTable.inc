@@ -82,6 +82,9 @@ println("sectionDetail =  $attribute{sectionDetail}");
             <sun:hyperlink id="appClientLink" rendered="#{td.value.hasAppClientLaunch}" text="$resource{i18n.deployTable.launch}"
                 url="#{request.contextPath}/common/applications/appclientLaunch.jsf?appName=#{appName}&moduleName=#{td.value.moduleName}"/>
             />
+            <sun:hyperlink id="downloadStubs" rendered="#{td.value.hasAppClientStub}" text="$resource{i18n.deployTable.downloadStubs}"
+                onClick="alert('download client stubs for #{appName} '); return false; "
+                           />
         </sun:tableColumn>
 
     </sun:tableRowGroup>
