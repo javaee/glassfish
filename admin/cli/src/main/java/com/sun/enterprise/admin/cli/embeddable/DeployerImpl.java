@@ -131,13 +131,11 @@ public class DeployerImpl implements Deployer {
             if (outboundPayload != null) {
                 extractPayload(outboundPayload, actionReport, retrieve);
             }
-            actionReport.writeReport(System.out);
+            
             return actionReport.getResultType(String.class);
         } catch (CommandException e) {
             throw new GlassFishException(e);
-        } catch (IOException e) {
-            throw new GlassFishException(e);
-        }
+        } 
     }
 
     @Override
