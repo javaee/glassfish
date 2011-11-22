@@ -45,7 +45,7 @@
     <parent>
         <groupId>org.glassfish.docs.man</groupId>
         <artifactId>manpages</artifactId>
-        <version>4.0-SNAPSHOT</version>
+        <version>4.0-b05</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>    
     <artifactId>core-logging-manpage</artifactId>
