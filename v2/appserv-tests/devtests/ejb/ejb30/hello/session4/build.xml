@@ -54,7 +54,7 @@ generation is working.
     </target>
 
     <target name="run" depends="init-common">
-        <echo message="appclient -client ${assemble.dir}/${appname}-clientClient.jar -name ${appname}Client -textauth -user j2ee -password j2ee -xml ${env.S1AS_HOME}/domains/${admin.domain}/config/sun-acc.xml ${appclient.application.args}"/>   
+        <echo message="appclient -client ${assemble.dir}/${appname}-clientClient.jar -name ${appname}Client -textauth -user j2ee -password j2ee -xml ${env.S1AS_HOME}/domains/${admin.domain}/config/glassfish-acc.xml ${appclient.application.args}"/>   
         <exec executable="${APPCLIENT}" failonerror="false">
 <!-- Don't deploy client in order to test that dynamic byte code
 generation is working.  
@@ -66,7 +66,7 @@ generation is working.
             <arg line="-textauth"/>
             <arg line="-user j2ee"/>
             <arg line="-password j2ee"/>
-            <arg line="-xml ${env.S1AS_HOME}/domains/${admin.domain}/config/sun-acc.xml"/>
+            <arg line="-xml ${env.S1AS_HOME}/domains/${admin.domain}/config/glassfish-acc.xml"/>
             <arg line="${appclient.application.args}"/>
         </exec>
     </target>

@@ -10,7 +10,7 @@
     &commonBuild;
     <property name="src-name" value="endpoint/HelloImpl.java"/>
     <property name="client-src-name" value="client/Client.java"/>
-    <property name="app-client-parameters" value="-xml ${env.S1AS_HOME}/domains/${admin.domain}/config/sun-acc.xml"/>
+    <property name="app-client-parameters" value="-xml ${env.S1AS_HOME}/domains/${admin.domain}/config/glassfish-acc.xml"/>
     <target name="all" depends="clean">
 	<antcall target="deploy"/>
         <basename file="${src-name}" property="server" suffix=".java"/>    

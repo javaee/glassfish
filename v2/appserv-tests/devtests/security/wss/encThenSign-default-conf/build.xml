@@ -87,7 +87,7 @@
             <param name="response.auth.recipient" value="after-content"/>
         </antcall>
 
-	<antcall target="backup-sun-acc.xml"/>
+	<antcall target="backup-glassfish-acc.xml"/>
 	<antcall target="enable-wss-appclient-message-security-provider">
             <param name="wss.client.provider.name" value="ClientProvider"/>
         </antcall>

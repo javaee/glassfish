@@ -72,7 +72,7 @@
     <property name="db.classpath" value="${db.root}/lib/derby.jar:${db.root}/lib/derbyclient.jar:${db.root}/lib/derbynet.jar:${env.APS_HOME}/sqetests/connector/lib/cci-derby-proc.jar"/>
 
 <!-- Test Harness properties -->
-    <property name="sun-acc.xml" value="${env.S1AS_HOME}/domains/domain1/config/sun-acc.xml"/>
+    <property name="glassfish-acc.xml" value="${env.S1AS_HOME}/domains/domain1/config/glassfish-acc.xml"/>
     <property name="build.base.dir" 
         value="${env.APS_HOME}/build/${execution.mode}/${os.arch}_${hostname}_${osname}/${module}"/>
     <property name="build.classes.dir" value="${build.base.dir}/classes"/>

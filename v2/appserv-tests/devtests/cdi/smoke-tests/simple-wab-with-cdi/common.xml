@@ -1416,7 +1416,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 
 <!-- run appclient in AppServ  -->
 <target name="runclient-common" depends="init-common">
-  <echo message="appclient -client ${assemble.dir}/${appname}AppClient.jar -name ${appname}Client -textauth -user j2ee -password j2ee -xml ${admin.domain.dir}/${admin.domain}/config/sun-acc.xml ${appclient.application.args}"/>
+  <echo message="appclient -client ${assemble.dir}/${appname}AppClient.jar -name ${appname}Client -textauth -user j2ee -password j2ee -xml ${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml ${appclient.application.args}"/>
   <exec executable="${APPCLIENT}" failonerror="false">
     <!-- set APPCPATH to include reporter.jar so that all app clients
          don't have to package the test framework in their apps -->
@@ -1426,7 +1426,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <arg line="-textauth"/>
     <arg line="-user j2ee"/>
     <arg line="-password j2ee"/>
-    <arg line="-xml ${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>
+    <arg line="-xml ${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>
     <arg line="${appclient.application.args}"/>
   </exec>
 
@@ -1659,7 +1659,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <echo message="So you are using Enterprise Edition"/>
     <property name="ee" value="Enterprise Edition"/>
     <property file="${env.APS_HOME}/eeconfig/ee-config.properties"/>
-    <loadfile property="target-server-port" srcFile="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>
+    <loadfile property="target-server-port" srcFile="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>
     <condition property="orbPortSet" value="true">
         <contains string="${target-server-port}" substring="${orb.port}"/>
     </condition>
@@ -1668,7 +1668,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 
 <target name="change-orb-port" unless="orbPortSet">
     <echo message="changing orb port from the default [3700] to ${orb.port}"/>
-    <replace file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml" token="3700" value="${orb.port}"/>
+    <replace file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml" token="3700" value="${orb.port}"/>
 </target>
 
 

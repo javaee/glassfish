@@ -59,7 +59,7 @@
         <arg value="temp"/>
         <arg value="-password"/>
         <arg value="temp"/>
-	<arg line="-xml &quot;${admin.domain.dir}/${admin.domain}/config/sun-acc.xml&quot;"/>
+	<arg line="-xml &quot;${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml&quot;"/>
       </exec>
       <!-- confirming report generation... -->
       <antcall target="checkReporting-common">
@@ -83,7 +83,7 @@
         <arg value="temp"/>
         <arg value="-password"/>
         <arg value="temp"/>
-	<arg line="-xml ${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>
+	<arg line="-xml ${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>
       </exec>
       <!-- confirming report generation... -->
       <antcall target="checkReporting-common">
@@ -110,7 +110,7 @@
         <arg value="temp"/>
         <arg value="-password"/>
         <arg value="temp"/>
-	<arg line="-xml ${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>
+	<arg line="-xml ${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>
       </exec>
       <!-- confirming report generation... -->
       <antcall target="checkReporting-common">
@@ -135,7 +135,7 @@
         <arg value="temp"/>
         <arg value="-password"/>
         <arg value="temp"/>
-	<arg line="-xml ${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>
+	<arg line="-xml ${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>
       </exec>
       <!-- confirming report generation... -->
       <antcall target="checkReporting-common">

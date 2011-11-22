@@ -166,7 +166,7 @@
         	<arg value="j2ee"/>
        		<arg value="-password"/>
         	<arg value="j2ee"/>
-        	<arg line="-xml ${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>
+        	<arg line="-xml ${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>
         	<arg line="${statetax-endpoint-url} ${fedtax-endpoint-url}"/>
       </exec>
    </target>

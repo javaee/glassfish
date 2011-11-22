@@ -43,8 +43,8 @@
 	<!-- *** The following is commented as message security level is being provided at application level. Uncomment only to test with default provider at server level policies. **
 	<antcall target="enable-wss-message-security-provider"/>
 	<antcall target="enable-wss-client-message-security-provider"/>
-	<copy failonerror="false" file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"
-                tofile="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml.baseconfig"/>
+	<copy failonerror="false" file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"
+                tofile="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml.baseconfig"/>
 	-->
 	<antcall target="setup-client-cert-s1as"/>
 	<antcall target="create-users"/>
@@ -58,33 +58,33 @@
   </target>
 
   <target name="enable-wss-client-message-security-provider-pe" unless="isEE">
-	<copy  failonerror="false" file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"
-                tofile="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml.sqe"/>
-        <copy overwrite="true"   failonerror="false" file="config/sun-acc.xml"
-                tofile="config/sun-acc.xml.org"/>
-        <replace token="localhost" value="${admin.host}" file="config/sun-acc.xml"/>
-        <replace token="3700" value="${orb.port}" file="config/sun-acc.xml"/>
-        <replace token="WSS-CLIENT-CONFIG" value="${env.S1AS_HOME}/lib/appclient/wss-client-config-2.0.xml" file="config/sun-acc.xml"/>
-        <copy overwrite="true"  failonerror="false" file="config/sun-acc.xml"
+	<copy  failonerror="false" file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"
+                tofile="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml.sqe"/>
+        <copy overwrite="true"   failonerror="false" file="config/glassfish-acc.xml"
+                tofile="config/glassfish-acc.xml.org"/>
+        <replace token="localhost" value="${admin.host}" file="config/glassfish-acc.xml"/>
+        <replace token="3700" value="${orb.port}" file="config/glassfish-acc.xml"/>
+        <replace token="WSS-CLIENT-CONFIG" value="${env.S1AS_HOME}/lib/appclient/wss-client-config-2.0.xml" file="config/glassfish-acc.xml"/>
+        <copy overwrite="true"  failonerror="false" file="config/glassfish-acc.xml"
                 todir="${admin.domain.dir}/${admin.domain}/config"/>
-        <copy overwrite="true" file="config/sun-acc.xml.org"
-                tofile="config/sun-acc.xml"/>
+        <copy overwrite="true" file="config/glassfish-acc.xml.org"
+                tofile="config/glassfish-acc.xml"/>
   </target>
 
  <target name="enable-wss-client-message-security-provider-ee" depends="init-common" if="isEE">
-        <copy  file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"
-                tofile="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml.sqe"/>
-        <copy overwrite="true" file="config/sun-acc.xml.ee"
-                tofile="config/sun-acc.xml.ee.org"/>
-        <replace token="localhost" value="${admin.host}" file="config/sun-acc.xml.ee"/>
-        <replace token="3700" value="${orb.port}" file="config/sun-acc.xml.ee"/>
-        <replace token="WSS-CLIENT-CONFIG" value="${env.S1AS_HOME}/lib/appclient/wss-client-config-2.0.xml" file="config/sun-acc.xml.ee"/>
-        <replace token="CERTDB-PATH" value="${admin.domain.dir}/${admin.domain}/config" file="config/sun-acc.xml.ee"/>
-        <replace token="CERTDB-PWD" value="${ssl.password}" file="config/sun-acc.xml.ee"/>
-        <copy overwrite="true" file="config/sun-acc.xml.ee"
-                tofile="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>
-        <copy overwrite="true" file="config/sun-acc.xml.ee.org"
-                tofile="config/sun-acc.xml.ee"/>
+        <copy  file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"
+                tofile="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml.sqe"/>
+        <copy overwrite="true" file="config/glassfish-acc.xml.ee"
+                tofile="config/glassfish-acc.xml.ee.org"/>
+        <replace token="localhost" value="${admin.host}" file="config/glassfish-acc.xml.ee"/>
+        <replace token="3700" value="${orb.port}" file="config/glassfish-acc.xml.ee"/>
+        <replace token="WSS-CLIENT-CONFIG" value="${env.S1AS_HOME}/lib/appclient/wss-client-config-2.0.xml" file="config/glassfish-acc.xml.ee"/>
+        <replace token="CERTDB-PATH" value="${admin.domain.dir}/${admin.domain}/config" file="config/glassfish-acc.xml.ee"/>
+        <replace token="CERTDB-PWD" value="${ssl.password}" file="config/glassfish-acc.xml.ee"/>
+        <copy overwrite="true" file="config/glassfish-acc.xml.ee"
+                tofile="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>
+        <copy overwrite="true" file="config/glassfish-acc.xml.ee.org"
+                tofile="config/glassfish-acc.xml.ee"/>
 
         <antcall target="update-wss-client-alias"/>
   </target>
@@ -98,10 +98,10 @@
 	<!-- *** The following is commented as message security level is being provided at application level. Uncomment only to test with default provider at server level policies. **
 
         <antcall target="disable-wss-message-security-provider"/>
-	<copy overwrite="true" failonerror="false" file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml.sqe"
-		tofile="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>
-	<delete file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml.sqe" failonerror="false"/>
-	<delete file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml.baseconfig" failonerror="false"/>
+	<copy overwrite="true" failonerror="false" file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml.sqe"
+		tofile="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>
+	<delete file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml.sqe" failonerror="false"/>
+	<delete file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml.baseconfig" failonerror="false"/>
 	-->
 	<antcall target="unsetup-client-cert-s1as"/>
 	<antcall target="delete-users"/>
@@ -246,7 +246,7 @@
 		 file="${env.S1AS_HOME}/lib/appclient/wss-client-config-2.0.xml"/>
 	<replace token="&quot;WARNING&quot;" 
                  value="&quot;INFO&quot;"
-		 file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>
+		 file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>
  </target>
 
  <target name="disable-wss-log" depends="init-common">
@@ -258,7 +258,7 @@
 		 file="${env.S1AS_HOME}/lib/appclient/wss-client-config-2.0.xml"/>
 	<replace token="&quot;INFO&quot;" 
                  value="&quot;WARNING&quot;"
-		 file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>
+		 file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>
  </target>
 
  <target name="create-users" depends="init-common">

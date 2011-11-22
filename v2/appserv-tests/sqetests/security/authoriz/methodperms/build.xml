@@ -50,7 +50,7 @@
         <arg value="-client" />
         <arg value="${assemble.dir}/${appname}AppClient.jar"/>
 	<arg value="-xml"/>
-	<arg value="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>
+	<arg value="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>
 	<arg value="-textauth"/>
 	<arg value="-user"/>
 	<arg value="j2ee"/>

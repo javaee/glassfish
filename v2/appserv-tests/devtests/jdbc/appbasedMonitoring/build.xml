@@ -73,14 +73,14 @@
     </target>
     
     <target name="run" depends="init-common">
-      <echo message="appclient -client ${assemble.dir}/appmonitoringAppClient.jar -name appmonitoringClient -textauth -user j2ee -password j2ee -xml ${env.S1AS_HOME}/domains/${admin.domain}/config/sun-acc.xml ${appclient.application.args}"/>
+      <echo message="appclient -client ${assemble.dir}/appmonitoringAppClient.jar -name appmonitoringClient -textauth -user j2ee -password j2ee -xml ${env.S1AS_HOME}/domains/${admin.domain}/config/glassfish-acc.xml ${appclient.application.args}"/>
       <exec executable="${APPCLIENT}" failonerror="false">
         <arg line="-client ${assemble.dir}/appmonitoringAppClient.jar"/>
         <arg line="-name appmonitoringClient"/>
         <arg line="-textauth"/>
         <arg line="-user j2ee"/>
         <arg line="-password j2ee"/>
-        <arg line="-xml ${env.S1AS_HOME}/domains/${admin.domain}/config/sun-acc.xml"/>
+        <arg line="-xml ${env.S1AS_HOME}/domains/${admin.domain}/config/glassfish-acc.xml"/>
         <arg line="${appclient.application.args}"/>
         <env key="APPCPATH" value="${env.APS_HOME}/lib/reporter.jar"/>
       </exec>

@@ -125,7 +125,19 @@ AS_ADMIN_MASTERPASSWORD=${master.password}</echo>
 </target>
 
 <target name="setToolWin" if="isWindows">  
-  <property name="APPCLIENT" value="${env.S1AS_HOME}/bin/appclient.bat"/>
+  <!--
+    Some tests launch app clients by directly running the appclient script, 
+    using the APPCLIENT property.  Others do so by invoking the
+    runclient-common target.  
+    
+    We use the test script (not appclient) if the user wants to launch
+    app clients using Java Web Start.
+  -->
+  <condition property="APPCLIENT" 
+    value="${env.APS_HOME}/config/jws-appclient.bat"
+    else="${env.S1AS_HOME}/bin/appclient.bat">
+        <isset property="use.javaws"/>
+  </condition>
   <property name="ASADMIN" value="${env.S1AS_HOME}/bin/asadmin.bat"/>
   <!--<property name="ASADMIN" value="${env.S1AS_HOME}/bin/asadmin"/>-->
   <property name="ASANT" value="${env.S1AS_HOME}/bin/asant.bat"/>
@@ -152,7 +164,11 @@ AS_ADMIN_MASTERPASSWORD=${master.password}</echo>
 </target>
 
 <target name="setToolUnix" if="isUnix">  
-  <property name="APPCLIENT" value="${env.S1AS_HOME}/bin/appclient"/>
+  <condition property="APPCLIENT" 
+    value="${env.APS_HOME}/config/jws-appclient" 
+    else="${env.S1AS_HOME}/bin/appclient">
+        <isset property="use.javaws"/>
+  </condition>
   <property name="ASADMIN" value="${env.S1AS_HOME}/bin/asadmin"/>
   <property name="ASANT" value="${env.S1AS_HOME}/bin/asant"/>
   <property name="CAPTURESCHEMA" value="${env.S1AS_HOME}/bin/capture-schema"/>

@@ -61,30 +61,30 @@
 
         <!--antcall target="restart"/-->
 
-        <copy file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"
-            tofile="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml.ORIG"/>
-        <replace file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml">
+        <copy file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"
+            tofile="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml.ORIG"/>
+        <replace file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml">
             <replacetoken><![CDATA[</message-security-config>]]></replacetoken>
             <replacevalue><![CDATA[<provider-config class-name="com.sun.s1asdev.security.jmac.soapdefault.SOAPDefaultTestClientAuthModule" provider-id="SOAPDefaultTestClientAuthModule" provider-type="client">
       <request-policy auth-source="sender"/>
     </provider-config>
   </message-security-config>]]></replacevalue>
         </replace>
-        <replace file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml">
+        <replace file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml">
             <replacetoken><![CDATA[<message-security-config]]></replacetoken>
             <replacevalue><![CDATA[<message-security-config default-client-provider="SOAPDefaultTestClientAuthModule"]]></replacevalue>
         </replace>
     </target>
 
     <target name="unsetup" depends="init-common">
-        <replace file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml">
+        <replace file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml">
             <replacetoken><![CDATA[<provider-config class-name="com.sun.s1asdev.security.jmac.soap.SOAPDefaultTestClientAuthModule" provider-id="SOAPDefaultTestClientAuthModule" provider-type="client">
       <request-policy auth-source="sender"/>
     </provider-config>
   </message-security-config>]]></replacetoken>
             <replacevalue><![CDATA[</message-security-config>]]></replacevalue>
         </replace>
-        <replace file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml">
+        <replace file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml">
             <replacetoken><![CDATA[<message-security-config default-client-provider="SOAPDefaultTestClientAuthModule"]]></replacetoken>
             <replacevalue><![CDATA[<message-security-config]]></replacevalue>
         </replace>

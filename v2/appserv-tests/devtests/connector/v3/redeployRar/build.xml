@@ -105,7 +105,7 @@
           <arg line="-textauth"/>
           <arg line="-user j2ee"/>
           <arg line="-password j2ee"/>
-              <arg line="-xml ${env.S1AS_HOME}/domains/${admin.domain}/config/sun-acc.xml"/>
+              <arg line="-xml ${env.S1AS_HOME}/domains/${admin.domain}/config/glassfish-acc.xml"/>
           <arg line= " 1 " />
            </exec>
            <antcall target="unsetup"/>
@@ -117,7 +117,7 @@
           <arg line="-textauth"/>
           <arg line="-user j2ee"/>
           <arg line="-password j2ee"/>
-              <arg line="-xml ${env.S1AS_HOME}/domains/${admin.domain}/config/sun-acc.xml"/>
+              <arg line="-xml ${env.S1AS_HOME}/domains/${admin.domain}/config/glassfish-acc.xml"/>
           <arg line= " 2 " />
            </exec>
            <antcall target="unsetup"/>

@@ -183,7 +183,7 @@
         <arg line="-textauth"/>
         <arg line="-user j2ee"/>
         <arg line="-password j2ee"/>
-        <arg line="-xml ${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>
+        <arg line="-xml ${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>
 	<env key="APPCPATH" value="${env.APS_HOME}/lib/reporter.jar"/>
       </exec>
       <echo message="${runclientCommonOutput}"/>
@@ -211,7 +211,7 @@
         <arg value="j2ee"/>
         <arg value="-password"/>
         <arg value="j2ee"/>
-        <arg line="-xml ${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>
+        <arg line="-xml ${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>
         <arg line="${endpoint-url}"/>
       </exec>
       <!-- confirming report generation... -->
@@ -238,7 +238,7 @@
         <arg value="temp"/>
         <arg value="-password"/>
         <arg value="temp"/>
-        <arg line="-xml ${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>
+        <arg line="-xml ${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>
         <arg line="${endpoint-url}"/>
       </exec>
       <!-- confirming report generation... -->

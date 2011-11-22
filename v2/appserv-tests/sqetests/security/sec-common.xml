@@ -510,7 +510,7 @@ Hardware Accelerator setup related targets
   <replace 
     token="WARNING" 
     value="${log.level}"
-    file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>      
+    file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>      
 </target>
 
 <target name="set-client-default-log-level" depends="init-common">
@@ -518,7 +518,7 @@ Hardware Accelerator setup related targets
   <replace 
     token="${log.level}" 
     value="WARNING"
-    file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>      
+    file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>      
 </target>
 
 <target name="set-server-security-log-level" depends="init-common">

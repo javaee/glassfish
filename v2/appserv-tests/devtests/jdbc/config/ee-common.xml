@@ -23,7 +23,7 @@
     <property name="ee-prefix" value="eeconfig/ee-"/>
     <property file="${env.APS_HOME}/devtests/jdbc/config/ee-config.properties"/>
     <setproxy proxyhost="webcache" proxyport="8080"/>
-    <loadfile property="target-server-port" srcFile="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>
+    <loadfile property="target-server-port" srcFile="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>
     <condition property="orbPortSet" value="true">
         <contains string="${target-server-port}" substring="33700"/>
     </condition>
@@ -36,7 +36,7 @@
 
 <target name="change-orb-port" unless="orbPortSet">
     <echo message="changing orb port from the default [3700] to ${orb.port}"/>
-    <replace file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml" token="3700" value="${orb.port}"/>
+    <replace file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml" token="3700" value="${orb.port}"/>
 </target>
 
 <target name="standalone" depends="ee">
@@ -1201,7 +1201,7 @@ successful"/>
     <arg line="-textauth"/>
     <arg line="-user j2ee"/>
     <arg line="-password j2ee"/>
-    <arg line="-xml ${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>
+    <arg line="-xml ${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>
     <arg line="${additional-params}"/>
   </exec>
 <!-- confirming report generation... -->
@@ -1292,7 +1292,7 @@ successful"/>
     <arg line="-textauth"/>
     <arg line="-user j2ee"/>
     <arg line="-password j2ee"/>
-    <arg line="-xml ${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>
+    <arg line="-xml ${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>
     <arg line="${appclient.application.args}"/>
   </exec>
   <!-- confirming report generation... -->

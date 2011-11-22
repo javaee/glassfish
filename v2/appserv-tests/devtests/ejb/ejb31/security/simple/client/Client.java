@@ -110,7 +110,9 @@ public class Client {
     }
 
     public static void main(String args[]) {
-
+        for (String arg : args) {
+            System.out.println("Arg: " + arg);
+        }
 	appName = args[0];
 	principal = args[1];
 	stat.addDescription(appName);

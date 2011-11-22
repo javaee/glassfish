@@ -179,7 +179,7 @@
         <arg value="munta"/>
         <arg value="-password"/>
         <arg value="munta"/>
-        <arg line="-xml &quot;${admin.domain.dir}/${admin.domain}/config/sun-acc.xml&quot;"/>
+        <arg line="-xml &quot;${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml&quot;"/>
         <arg line="${statetax-endpoint-url} ${fedtax-endpoint-url}"/>
       </exec>
       <!-- confirming report generation... -->
@@ -206,7 +206,7 @@
         <arg value="munta"/>
         <arg value="-password"/>
         <arg value="munta"/>
-        <arg line="-xml &quot;${admin.domain.dir}/${admin.domain}/config/sun-acc.xml&quot;"/>
+        <arg line="-xml &quot;${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml&quot;"/>
         <arg line="${statetax-endpoint-url} ${fedtax-endpoint-url}"/>
       </exec>
       <!-- confirming report generation... -->
@@ -237,7 +237,7 @@
         <arg value="munta"/>
         <arg value="-password"/>
         <arg value="munta"/>
-        <arg line="-xml ${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>
+        <arg line="-xml ${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>
         <arg line="${statetax-endpoint-url} ${fedtax-endpoint-url}"/>
       </exec>
       <!-- confirming report generation... -->
@@ -264,7 +264,7 @@
         <arg value="munta"/>
         <arg value="-password"/>
         <arg value="munta"/>
-        <arg line="-xml ${admin.domain.dir}/${admin.domain}/config/sun-acc.xml"/>
+        <arg line="-xml ${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>
         <arg line="${statetax-endpoint-url} ${fedtax-endpoint-url}"/>
       </exec>
       <!-- confirming report generation... -->

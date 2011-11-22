@@ -61,9 +61,9 @@
         sunaccdir
         sunaccname
         
-            define these to point to the sun-acc.xml directory and the file within that
+            define these to point to the glassfish-acc.xml directory and the file within that
             directory to be used when invoking the client - these default to 
-            ${env.S1AS_HOME}/domains/${admin.domain}/config and sun-acc.xml
+            ${env.S1AS_HOME}/domains/${admin.domain}/config and glassfish-acc.xml
             
         resultproperty
             the name of an ant property to be set with the completion status
@@ -74,7 +74,7 @@
     <macrodef name="run-jws">
         <attribute name="urlpath"/>
         <attribute name="sunaccdir" default="${env.S1AS_HOME}/domains/${admin.domain}/config"/>
-        <attribute name="sunaccname" default="sun-acc.xml"/>
+        <attribute name="sunaccname" default="glassfish-acc.xml"/>
         <attribute name="args" default=""/>
         <attribute name="argdelimiter" default=" "/>
         <attribute name="resultproperty" default="result"/>
@@ -108,9 +108,9 @@
         <!--
             Create a platform-neutral representation for the sunacc.xml file.
         -->
-        <neutralize property="sun-acc.xml.neutral" file="@{sunaccdir}/@{sunaccname}"/>
+        <neutralize property="glassfish-acc.xml.neutral" file="@{sunaccdir}/@{sunaccname}"/>
         
-        <property name="url" value="http://${http.host}:${http.port}@{urlpath}?arg=-xml&amp;arg=${sun-acc.xml.neutral}${user.args.introducer}${user.args.part.of.url}"/>
+        <property name="url" value="http://${http.host}:${http.port}@{urlpath}?arg=-xml&amp;arg=${glassfish-acc.xml.neutral}${user.args.introducer}${user.args.part.of.url}"/>
         <echo level="verbose">URL is ${url}</echo>
         <exec   executable="${javaws.cmd}" 
                 resultproperty="@{resultproperty}" 

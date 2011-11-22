@@ -324,32 +324,32 @@
    </exec>
 </target>
 
-<target name="backup-sun-acc.xml" depends="init-common">
-    <copy overwrite="true" failonerror="false" file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml" tofile="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml.SAVE"/>
+<target name="backup-glassfish-acc.xml" depends="init-common">
+    <copy overwrite="true" failonerror="false" file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml" tofile="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml.SAVE"/>
 </target>
 
 <target name="enable-wss-appclient-message-security-provider" depends="init-common">
-    <replace file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml" token="&quot;SOAP&quot;>" value="&quot;SOAP&quot; default-client-provider=&quot;${wss.client.provider.name}&quot;>"/>
+    <replace file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml" token="&quot;SOAP&quot;>" value="&quot;SOAP&quot; default-client-provider=&quot;${wss.client.provider.name}&quot;>"/>
 </target>
 
 <target name="set-wss-appclient-request-recipient">
-    <replace file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml" token="request-policy auth-source" value="request-policy auth-recipient=&quot;${request.auth.recipient}&quot; auth-source"/>
+    <replace file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml" token="request-policy auth-source" value="request-policy auth-recipient=&quot;${request.auth.recipient}&quot; auth-source"/>
 </target>
 
 <target name="set-wss-appclient-response-recipient">
-    <replace file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml" token="response-policy auth-source" value="response-policy auth-recipient=&quot;${response.auth.recipient}&quot; auth-source"/>
+    <replace file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml" token="response-policy auth-source" value="response-policy auth-recipient=&quot;${response.auth.recipient}&quot; auth-source"/>
 </target>
 
 <target name="disable-wss-appclient-message-security-provider" depends="init-common">
-    <replace file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml" token="&quot;SOAP&quot; default-client-provider=&quot;${wss.client.provider.name}&quot;>" value="&quot;SOAP&quot;>"/>
+    <replace file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml" token="&quot;SOAP&quot; default-client-provider=&quot;${wss.client.provider.name}&quot;>" value="&quot;SOAP&quot;>"/>
 </target>
 
 <target name="unset-wss-appclient-request-recipient">
-    <replace file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml" token="request-policy auth-recipient=&quot;${request.auth.recipient}&quot; auth-source" value="request-policy auth-source"/>
+    <replace file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml" token="request-policy auth-recipient=&quot;${request.auth.recipient}&quot; auth-source" value="request-policy auth-source"/>
 </target>
 
 <target name="unset-wss-appclient-response-recipient">
-    <replace file="${admin.domain.dir}/${admin.domain}/config/sun-acc.xml" token="response-policy auth-recipient=&quot;${response.auth.recipient}&quot; auth-source" value="response-policy auth-source"/>
+    <replace file="${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml" token="response-policy auth-recipient=&quot;${response.auth.recipient}&quot; auth-source" value="response-policy auth-source"/>
 </target>
 
 <target name="setJAXWSToolsForWin" if="isWindows">

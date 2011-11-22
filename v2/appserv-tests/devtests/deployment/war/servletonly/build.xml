@@ -282,9 +282,7 @@ public class ChangeableClass {
             <param name="log.id" value="18"/>
             <param name="desc" value="war/servletonly Test asadmin dotted enable application and enable ref"/>
         </antcall>
-
         <antcall target="undeploy.asadmin"/>
-
         <antcall target="deploy.jsr88"/>
         <antcall target="run.positive">
             <param name="log.id" value="6"/>
@@ -296,7 +294,6 @@ public class ChangeableClass {
             <param name="log.id" value="7"/>
             <param name="desc" value="war/servletonly Test jsr88 stopped state"/>
         </antcall>
-
         <antcall target="start.jsr88"/>
         <antcall target="run.positive">
             <param name="log.id" value="8"/>
