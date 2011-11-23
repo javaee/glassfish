@@ -45,7 +45,7 @@
     <parent>
         <groupId>org.glassfish.docs.help</groupId>
 	<artifactId>online</artifactId>
-        <version>4.0</version>
+        <version>4.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>console-ejb-plugin-help</artifactId>
