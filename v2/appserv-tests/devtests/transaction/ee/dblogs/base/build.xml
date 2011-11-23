@@ -43,7 +43,7 @@
 <!ENTITY testproperties SYSTEM "file:./build.properties">
 ]>
 
-<project name="tx-ee-dblogs" default="usage" basedir=".">
+<project name="tx-ee-dblogs-base" default="usage" basedir=".">
 
 
     &commonSetup;
