@@ -60,9 +60,9 @@
     <description>Annotation processors which handles source level annotations</description>
 
     <scm>
-        <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/main/annotation-processors</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/main/annotation-processors</developerConnection>
-        <url>https://svn.java.net/svn/glassfish~svn/trunk/main/annotation-processors</url>
+        <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/annotation-processors</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/annotation-processors</developerConnection>
+        <url>https://svn.java.net/svn/glassfish~svn/trunk/annotation-processors</url>
     </scm>
 
     <developers>
