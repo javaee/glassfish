@@ -41,10 +41,7 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                            http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                             http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>net.java</groupId>
@@ -54,15 +51,15 @@
 
     <groupId>org.glassfish.annotations</groupId>
     <artifactId>source-annotation-processor</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
     <name>GlassFish Source Annotation Processors</name>
     <description>Annotation processors which handles source level annotations</description>
 
     <scm>
-        <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/main/annotation-processors</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/main/annotation-processors</developerConnection>
-        <url>https://svn.java.net/svn/glassfish~svn/trunk/main/annotation-processors</url>
+        <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/tags/source-annotation-processor-1.0</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/tags/source-annotation-processor-1.0</developerConnection>
+        <url>https://svn.java.net/svn/glassfish~svn/tags/source-annotation-processor-1.0</url>
     </scm>
 
     <developers>
