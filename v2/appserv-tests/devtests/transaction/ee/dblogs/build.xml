@@ -103,6 +103,18 @@
 
     </target>
 
+    <target name="setup-cluster-delegated" depends="init-common">
+      <antcall target="setup-cluster">
+            <param name="delegated" value="true"/>
+       </antcall>
+    </target>
+
+    <target name="setup-cluster-non-delegated" depends="init-common">
+      <antcall target="setup-cluster">
+            <param name="delegated" value="false"/>
+       </antcall>
+    </target>
+
     <target name="setup-cluster" depends="init-common">
         <echo message="Starting cluster"/>
         <java  fork="on"
@@ -206,25 +218,19 @@
     </target>
 
     <target name="run-delegated" depends="init-common">
-      <antcall target="setup-cluster">
-            <param name="delegated" value="true"/>
-       </antcall>
+      <antcall target="setup-cluster-delegated"/>
       <antcall target="test-delegated"/>
       <antcall target="save-logs"/>
       <copy file="${module}-logs.zip" tofile="${module}-delegated-logs.zip"/>
     </target>
 
     <target name="run-cli" depends="init-common">
-      <antcall target="setup-cluster">
-            <param name="delegated" value="false"/>
-       </antcall>
+      <antcall target="setup-cluster-non-delegated"/>
       <antcall target="test-cli"/>
     </target>
 
     <target name="run-autorecovery" depends="init-common">
-      <antcall target="setup-cluster">
-            <param name="delegated" value="false"/>
-       </antcall>
+      <antcall target="setup-cluster-non-delegated"/>
       <antcall target="test-autorecovery"/>
       <antcall target="save-logs"/>
       <copy file="${module}-logs.zip" tofile="${module}-autorecovery-logs.zip"/>
