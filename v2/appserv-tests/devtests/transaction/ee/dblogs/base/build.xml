@@ -35,11 +35,11 @@
  holder.
 -->
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "./../../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
-<!ENTITY commonRun SYSTEM "./../../../../config/run.xml">
-<!ENTITY reporting SYSTEM "./../../../../config/report.xml">
-<!ENTITY eeCommon SYSTEM "file:./../ee.xml">
+<!ENTITY commonSetup SYSTEM "./../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "./../../../../../config/run.xml">
+<!ENTITY reporting SYSTEM "./../../../../../config/report.xml">
+<!ENTITY eeCommon SYSTEM "file:./../../ee.xml">
 <!ENTITY testproperties SYSTEM "file:./build.properties">
 ]>
 
