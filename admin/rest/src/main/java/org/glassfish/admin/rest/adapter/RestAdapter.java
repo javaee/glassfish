@@ -34,6 +34,7 @@
  */
 package org.glassfish.admin.rest.adapter;
 
+
 import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.module.common_impl.LogHelper;
@@ -47,10 +48,17 @@ import com.sun.logging.LogDomains;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
-import javax.security.auth.login.LoginException;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import javax.security.auth.login.LoginException;
+import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.LazyJerseyInterface;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
@@ -58,29 +66,13 @@ import org.glassfish.admin.rest.SessionManager;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.Adapter;
 import org.glassfish.api.container.EndpointRegistrationException;
-import org.glassfish.api.event.EventListener;
-import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
-import org.glassfish.api.event.RestrictTo;
+import org.glassfish.internal.api.AdminAccessController;
+import org.glassfish.internal.api.PostStartup;
+import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
-
-import java.net.HttpURLConnection;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
-import org.glassfish.admin.rest.Constants;
-
-import org.glassfish.internal.api.AdminAccessController;
-import org.glassfish.internal.api.ServerContext;
-import java.util.logging.Level;
-import org.glassfish.internal.api.PostStartup;
 
 /**
  * Adapter for REST interface

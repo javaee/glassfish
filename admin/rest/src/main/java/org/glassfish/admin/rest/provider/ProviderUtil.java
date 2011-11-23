@@ -40,6 +40,7 @@
 
 package org.glassfish.admin.rest.provider;
 
+import com.sun.appserv.server.util.Version;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -66,6 +67,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import org.jvnet.hk2.component.Habitat;
 
 
 /**
@@ -265,72 +267,12 @@ public class ProviderUtil {
         if (result.length() > 0) {
             return "<div><form action=\"" + uriInfo.getAbsolutePath().toString() +
                     "\" method=\"post\"><dl>" + result.toString() +
-                    "<dt class=\"button\"></dt><dd class=\"button\"><input value=\"Update\" type=\"submit\"></dd>" +
+                    "<dt class=\"button\"></dt><dd class=\"button\"><input value=\"Update\" type=\"button\" onclick=\"ajaxSubmit(this); return false;\"></dd>" +
                     "</dl></form></div>";
         } else {
             return "";
         }
-
-//        return result;
     }
-
-//    static protected String getHtmlRespresentationsForCommand(String command,
-//            String commandMethod, String commandDisplayName, UriInfo uriInfo) {
-//        return getHtmlRespresentationsForCommand(command, commandMethod,
-//            commandDisplayName, uriInfo, true);
-//    }
-
-//
-//    static protected String getHtmlRespresentationsForCommand(String command,
-//            String commandMethod, String commandDisplayName, UriInfo uriInfo,
-//                boolean displayId) {
-//        String result ="";
-//        if ((command != null) && (!command.equals(""))) {
-//            ResourceUtil resourceUtil = new ResourceUtil();
-//            MethodMetaData methodMetaData = resourceUtil.getMethodMetaData(
-//            command, RestService.getHabitat(), RestService.logger);
-//            Set<String> parameters = methodMetaData.parameters();
-//            Iterator<String> iterator = parameters.iterator();
-//            String parameter;
-//            ParameterMetaData parameterMetaData;
-//            while (iterator.hasNext()) {
-//                parameter = iterator.next();
-//                if (!(parameter.equals("id") && (!displayId))) { //do not display id in case of command resources. displayId = false for command resources.
-//                     if ((!commandMethod.equals("delete")) ||                                //in case of delete operation(command),
-//                        ((commandMethod.equals("delete")) && (!parameter.equals("id")))) {  //do not  display/provide id attribute.
-//                        parameterMetaData = methodMetaData.getParameterMetaData(parameter);
-//                        result = result +
-//                            getHtmlRespresentationForParameter(parameter, parameterMetaData);
-//                    }
-//                }
-//            }
-//
-//            //Fix to diplay component for commands with 0 arguments.
-//            //For example, rotate-log or restart.
-//            if (result.equals("")) {
-//                result = " ";
-//            }
-//
-//        }
-//
-//        if (!result.equals("")) {
-//            result = "<div><form action=\"" + uriInfo.getAbsolutePath().toString() +
-//                "\" method=\"" + /*commandMethod*/"post" + "\">" +  //hack-1 : support delete method for html
-//                "<dl>" + result;                       //hardcode "post" instead of commandMethod which chould be post or delete.
-//
-//            //hack-1 : support delete method for html
-//            //add hidden field
-//            if(commandMethod.equals("delete")) {
-//                result = result +
-//                    "<input name=\"operation\" value=\"__deleteoperation\" type=\"hidden\">";
-//            }
-//
-//            result = result + "<dt class=\"button\"></dt><dd class=\"button\"><input value=\"" + commandDisplayName + "\" type=\"submit\"></dd>";
-//            result = result + "</dl></form></div>";
-//        }
-//
-//        return result;
-//    }
 
     static protected String getHtmlRespresentationsForCommand(MethodMetaData methodMetaData, String commandMethod,
                                                               String commandDisplayName, UriInfo uriInfo) {
@@ -358,7 +300,7 @@ public class ProviderUtil {
 
         }
         //hack-1 : support delete method for html
-        //hardcode "post" instead of commandMethod which chould be post or delete.
+        //hardcode "post" instead of commandMethod which should be post or delete.
         String webMethod="post";
         if (commandMethod.equalsIgnoreCase("get")){
              webMethod="get";
@@ -382,7 +324,7 @@ public class ProviderUtil {
             result = result +
                     "<dd><input name=\"__remove_empty_entries__\" value=\"true\" type=\"hidden\"></dd>";
             
-            result = result + "<dt class=\"button\"></dt><dd class=\"button\"><input value=\"" + commandDisplayName + "\" type=\"submit\"></dd>";
+            result = result + "<dt class=\"button\"></dt><dd class=\"button\"><input value=\"" + commandDisplayName + "\" type=\"button\" onclick=\"ajaxSubmit(this); return false;\"></dd>";
             result = result + "</dl></form></div>";
         }
 
@@ -458,14 +400,14 @@ public class ProviderUtil {
         return result;
     }
 
-    static public String getHtmlHeader(String baseUri) {
+    static public String getHtmlHeader(Habitat habitat, String baseUri) {
+        String title = Version.getVersion() + " REST Interface";
         String result = "<html><head>";
-        result = result + "<title>GlassFish REST Interface</title>";
+        result = result + "<title>" + title + "</title>";
         result = result + getInternalStyleSheet(baseUri);
-        //FIXME - uncomment with the correct link for css file. This external file will override the internal style sheet.
-        ///result = result + "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://localhost:8080/glassfish_rest_interface.css\" />";
+        result = result + getAjaxJavascript(baseUri);
         result = result + "</head><body>";
-        result = result + "<h1 class=\"mainheader\">GlassFish REST Interface</h1>";
+        result = result + "<h1 class=\"mainheader\">" + title + "</h1>";
         result = result + "<hr/>";
         return result;
     }
@@ -583,7 +525,7 @@ public class ProviderUtil {
     }
 
     /**
-     *  This method converts a string into stringarray, uses the delimeter as the
+     *  This method converts a string into string array, uses the delimeter as the
      *  separator character. If the delimiter is null, uses space as default.
      */
     private static String[] stringToArray(String str, String delimiter) {
@@ -604,28 +546,10 @@ public class ProviderUtil {
     }
 
     private static String getInternalStyleSheet(String baseUri) {
-
         return " <link rel=\"stylesheet\" type=\"text/css\" href=\""+baseUri+"static/std.css\" />";
-       /* String result = "<style type=\"text/css\">";
-        result = result + "body {";
-        result = result + "font-size:75%;font-family:verdana,arial,'sans serif';";
-        result = result + "background-repeat:repeat-x;background-color:#F0F0F0;";
-        result = result + "color:#303030;";
-        result = result + "margin:60px;margin-top:20px;margin-bottom:20px;margin-right:60px;margin-left:60px;";
-        result = result + "}";
-        result = result + "h1 {font-size:200%;background-color:#E0E0E0}";
-        result = result + "h2 {font-size:140%;background-color:#E8E8E8}";
-        result = result + "h3 {font-size:110%;background-color:#E8E8E8}";
-        result = result + "h1.mainheader {color:#101010;font-size:200%;background-color:#D8D8D8;text-align:center}";
-        result = result + "a:link {color:#000080;}";
-        result = result + "a:hover {color:red;}";
-        result = result + "input[type=\"text\"] {background-color:#F8F8F8;border-style:inset;width:350px}";
-        result = result + "dl {position: relative;width:500px}";
-        result = result + "dt {clear: both;float:left;width: 210px;padding: 4px 0 2px 0;text-align:left}";
-        result = result + "dd {float: left;width: 200px;margin: 0 0 8px 0;padding-left: 6px;}";
-        result = result + ".separator{clear:both}";
-        result = result + "td {vertical-align: top}";
-        result = result + "</style>";
-        return result;*/
+    }
+    
+    private static String getAjaxJavascript(String baseUri) {
+        return " <script type=\"text/javascript\" src=\""+baseUri+"static/ajax.javascript\"></script>";
     }
 }

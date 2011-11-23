@@ -39,9 +39,36 @@ import com.sun.enterprise.v3.common.ActionReporter;
 import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
+import java.io.File;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
+import javax.ws.rs.POST;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.Util;
+import static org.glassfish.admin.rest.Util.eleminateHypen;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.results.OptionsResult;
@@ -49,16 +76,12 @@ import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.RestRedirect;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.config.*;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import java.io.*;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static org.glassfish.admin.rest.Util.eleminateHypen;
+import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.ConfigModel;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.ValidationException;
 
 /**
  * @author Ludovic Champenois ludo@dev.java.net
@@ -150,6 +173,21 @@ public class TemplateResource {
         }
     }
 
+    /**
+     * allows for remote files to be put in a tmp area and we pass the
+     * local location of this file to the corresponding command instead of the content of the file
+     * * Yu need to add  enctype="multipart/form-data" in the form
+     * for ex:  <form action="http://localhost:4848/management/domain/applications/application" method="post" enctype="multipart/form-data">
+     * then any param of type="file" will be uploaded, stored locally and the param will use the local location
+     * on the server side (ie. just the path)
+     */
+    @POST
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response post(FormDataMultiPart formData) {
+        HashMap<String, String> data = createDataBasedOnForm(formData);
+        return createEntity(data); //execute the deploy command with a copy of the file locally
+    }
+
     @DELETE
     public Response delete(HashMap<String, String> data) {
         if (entity == null) {//wrong resource
@@ -228,21 +266,6 @@ public class TemplateResource {
     @OPTIONS
     public Response options() {
         return Response.ok(buildActionReportResult(false)).build();
-    }
-
-    /**
-     * allows for remote files to be put in a tmp area and we pass the
-     * local location of this file to the corresponding command instead of the content of the file
-     * * Yu need to add  enctype="multipart/form-data" in the form
-     * for ex:  <form action="http://localhost:4848/management/domain/applications/application" method="post" enctype="multipart/form-data">
-     * then any param of type="file" will be uploaded, stored locally and the param will use the local location
-     * on the server side (ie. just the path)
-     */
-    @POST
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response post(FormDataMultiPart formData) {
-        HashMap<String, String> data = createDataBasedOnForm(formData);
-        return createEntity(data); //execute the deploy command with a copy of the file locally
     }
 
     public void setEntity(Dom p) {
