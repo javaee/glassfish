@@ -130,8 +130,11 @@ public class TokenAuthenticationTest extends RestTestBase {
     private void deleteUserAuthTestUser(String token) {
         if (token != null) {
             final String address = getAddress(URL_DELETE_USER);
-            ClientResponse response = client.resource(address).queryParam("id", AUTH_USER_NAME)
-                    .cookie(new Cookie(GF_REST_TOKEN_COOKIE_NAME, token)).delete(ClientResponse.class);            
+            ClientResponse response = client.resource(address)
+                    .queryParam("id", AUTH_USER_NAME)
+                    .accept(RESPONSE_TYPE)
+                    .cookie(new Cookie(GF_REST_TOKEN_COOKIE_NAME, token))
+                    .delete(ClientResponse.class);            
             assertTrue(isSuccess(response));
             resetClient();
         } else {

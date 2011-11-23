@@ -223,8 +223,8 @@ public class Util {
      * @param uriInfo the uriInfo context of the request
      * @return String the html representation of the given message
      */
-    protected static String getHtml(String message, UriInfo uriInfo, boolean delete) {
-        String result = ProviderUtil.getHtmlHeader(uriInfo.getBaseUri().toASCIIString());
+    protected static String getHtml(Habitat habitat, String message, UriInfo uriInfo, boolean delete) {
+        String result = ProviderUtil.getHtmlHeader(habitat, uriInfo.getBaseUri().toASCIIString());
         String uri = uriInfo.getAbsolutePath().toString();
         if (delete) {
             uri = uri + "/..";

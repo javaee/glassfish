@@ -160,10 +160,10 @@ public class PropertiesBagResource {
             
             String successMessage = localStrings.getLocalString("rest.resource.delete.message",
                         "\"{0}\" deleted successfully.", new Object[]{uriInfo.getAbsolutePath()});
-            return ResourceUtil.getResponse(200, successMessage, requestHeaders, uriInfo);
+            return ResourceUtil.getResponse(200, successMessage, requestHeaders, uriInfo, habitat);
         } catch (Exception ex) {
             if (ex.getCause() instanceof ValidationException) {
-                return ResourceUtil.getResponse(400, /*400 - bad request*/ ex.getMessage(), requestHeaders, uriInfo);
+                return ResourceUtil.getResponse(400, /*400 - bad request*/ ex.getMessage(), requestHeaders, uriInfo, habitat);
             } else {
                 throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
             }

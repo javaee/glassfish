@@ -81,7 +81,7 @@ public class TemplateCommandPostResource extends TemplateExecCommand {
     public Response processPost(ParameterMap data) {
         if (data.containsKey("error")) {
             String errorMessage = localStrings.getLocalString("rest.request.parsing.error", "Unable to parse the input entity. Please check the syntax.");
-            throw new WebApplicationException(ResourceUtil.getResponse(400, /*parsing error*/ errorMessage, requestHeaders, uriInfo));
+            throw new WebApplicationException(ResourceUtil.getResponse(400, /*parsing error*/ errorMessage, requestHeaders, uriInfo, habitat));
         }
 
         processCommandParams(data);

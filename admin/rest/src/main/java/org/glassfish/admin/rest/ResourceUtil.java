@@ -553,22 +553,22 @@ public class ResourceUtil {
      * @param requestHeaders request headers of the request
      * @return Response the response object to be returned to the client
      */
-    public static Response getResponse(int status, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
+    public static Response getResponse(int status, String message, HttpHeaders requestHeaders, UriInfo uriInfo, Habitat habitat) {
         if (isBrowser(requestHeaders)) {
-            message = getHtml(message, uriInfo, false);
+            message = getHtml(habitat, message, uriInfo, false);
         }
         return Response.status(status).entity(message).build();
     }
 
-    public static ActionReportResult getActionReportResult(ActionReport parentActionReport, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
-        ActionReportResult result = getActionReportResult(parentActionReport.getActionExitCode(), message, requestHeaders, uriInfo);
+    public static ActionReportResult getActionReportResult(ActionReport parentActionReport, String message, HttpHeaders requestHeaders, UriInfo uriInfo, Habitat habitat) {
+        ActionReportResult result = getActionReportResult(parentActionReport.getActionExitCode(), message, requestHeaders, uriInfo, habitat);
         result.getActionReport().getSubActionsReport().addAll(((ActionReporter)parentActionReport).getSubActionsReport());
         return result;
     }
 
-    public static ActionReportResult getActionReportResult(ActionReport.ExitCode status, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
+    public static ActionReportResult getActionReportResult(ActionReport.ExitCode status, String message, HttpHeaders requestHeaders, UriInfo uriInfo, Habitat habitat) {
         if (isBrowser(requestHeaders)) {
-            message = getHtml(message, uriInfo, false);
+            message = getHtml(habitat, message, uriInfo, false);
         }
         RestActionReporter ar = new RestActionReporter();
         ActionReportResult result = new ActionReportResult(ar);
@@ -595,9 +595,10 @@ public class ResourceUtil {
      */
     // FIXME: This doesn't do what the javadoc says it should
     public static Response getDeleteResponse(int status, String message,
-                                             HttpHeaders requestHeaders, UriInfo uriInfo) {
+                                             HttpHeaders requestHeaders, UriInfo uriInfo,
+                                             Habitat habitat) {
         if (isBrowser(requestHeaders)) {
-            message = getHtml(message, uriInfo, true);
+            message = getHtml(habitat, message, uriInfo, true);
         }
         return Response.status(status).entity(message).build();
     }

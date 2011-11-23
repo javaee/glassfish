@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,9 +47,11 @@ import org.glassfish.admin.rest.SessionManager;
 import org.glassfish.api.ActionReport;
 
 import javax.ws.rs.DELETE;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Represents a session with GlassFish Rest service
@@ -60,6 +62,9 @@ public class SessionResource {
     private String sessionId;
     private HttpHeaders requestHeaders;
     private UriInfo uriInfo;
+    
+    @Context
+    Habitat habitat;
 
     SessionManager sessionManager;
 
@@ -85,7 +90,7 @@ public class SessionResource {
             message = "Session with id " + sessionId + " deleted";
         }
 
-        return Response.status(status).entity(ResourceUtil.getActionReportResult(exitCode, message, requestHeaders, uriInfo) ).build();
+        return Response.status(status).entity(ResourceUtil.getActionReportResult(exitCode, message, requestHeaders, uriInfo, habitat) ).build();
 
     }
 
