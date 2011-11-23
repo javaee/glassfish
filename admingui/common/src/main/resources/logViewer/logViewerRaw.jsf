@@ -45,16 +45,52 @@
 <ui:event type="initPage">
     initSessionAttributes();
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
 </ui:event>
 
 <sun:page id="page1">
+<ui:event type="beforeCreate">
+    <!-- setPageSessionAttribute(key="instanceName" value="server"); -->
+    getRequestValue(key="instanceName" value=>$attribute{instanceName});
+</ui:event>
 <sun:html id="html2">
-<sun:head id="propertyhead" title="$resource{i18nc.logViewer.PageTitle}" debug="false" parseOnLoad="false">
+<sun:head id="propertyhead" title="$resource{i18nc.logViewerRaw.PageTitle}" debug="false" parseOnLoad="false">
     <sun:script url="/resource/common/js/adminjsf.js" />
 </sun:head>
-<sun:body onLoad="javascript: logViewerRaw('#{sessionScope.REST_URL}/view-log/')" id="body3" style="font-size: 100%">
+<sun:body onLoad="javascript: logViewerRaw('#{sessionScope.REST_URL}/view-log/?id=#{instanceName}')" id="body3">
+<sun:form id="propertyForm">
+#include "/common/shared/alertMsg.inc"
+    <!-- Page Title -->
+    <sun:title id="propertyContentPage" title="$resource{i18nc.logViewerRaw.PageTitle}" helpText="$resource{i18nc.logViewerRaw.PageHelp}">
+    <!facet pageButtonsTop>
+	<sun:panelGroup id="topButtons">
+	    <sun:button id="closeButton" text="$resource{i18n.button.Close}" onClick="javascript: window.close(); return false;" >
+	    </sun:button>
+	</sun:panelGroup>
+    </facet>
+    </sun:title>
+<sun:propertySheet id="propertySheetLogResults">
+    <sun:propertySheetSection id="propertSectionLogResults">
+	<sun:property id="instanceProp" labelAlign="left" noWrap="true" overlapLabel="false" label="$resource{i18nc.logViewer.instanceLabel}">
+	    <sun:dropDown id="instance" selected="#{instanceName}" labels="#{requestScope.servers}" submitForm="true">
+		<ui:event type="beforeCreate">
+		    /* Get the server list */
+		    gf.restRequest(
+			endpoint="#{sessionScope.REST_URL}/servers/server.json"
+			method="GET"
+			result="#{requestScope.servers}");
+		    gf.getMapKeys(Map="#{requestScope.servers.data.extraProperties.childResources}" Keys="#{requestScope.servers}");
+		</ui:event>
+		<ui:event type="command">
+		    gf.navigate(page="#{request.contextPath}/common/logViewer/logViewerRaw.jsf");
+		</ui:event>
+	    </sun:dropDown>
+	</sun:property>
+    </sun:propertySheetSection>
+
+</sun:propertySheet>
 <f:verbatim>
-<pre id="log"></pre>
+<pre id="log" style="padding: 10px; font-size: 143% /* it is 100% */"></pre>
 <script type="text/javascript">
 function logViewerRaw(url) {
 
@@ -87,6 +123,7 @@ function logViewerRaw(url) {
 }
 </script>
 </f:verbatim>
+</sun:form>
 </sun:body>
 </sun:html>
 </sun:page>
