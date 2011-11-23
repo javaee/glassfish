@@ -23,3 +23,20 @@ This test, when run with 'all' target performs the following steps:
   - stop-database
   - stopDomain
 
+Note: how to look at the log table:
+% asadmin stop-database
+% java -cp <gf-install>/javadb/lib/derbytools.jar:<gf-install>/javadb/lib/derbyclient.jar:<gf-install>/gfs/glassfish3/javadb/lib/derby.jar org.apache.derby.impl.tools.ij.Main
+ij version 10.8
+ij> connect 'jdbc:derby:<gf-install>/glassfish/databases/testdb';
+ij> show tables in dbuser;
+ij> describe DBUSER.TXN_LOG_TABLE;
+COLUMN_NAME         |TYPE_NAME|DEC&|NUM&|COLUM&|COLUMN_DEF|CHAR_OCTE&|IS_NULL&
+------------------------------------------------------------------------------
+LOCALTID            |VARCHAR  |NULL|NULL|20    |NULL      |40        |YES     
+SERVERNAME          |VARCHAR  |NULL|NULL|150   |NULL      |300       |YES     
+INSTANCENAME        |VARCHAR  |NULL|NULL|150   |NULL      |300       |YES     
+GTRID               |BLOB     |NULL|NULL|21474&|NULL      |NULL      |YES     
+
+4 rows selected
+ij> select LOCALTID, SERVERNAME, INSTANCENAME from DBUSER.TXN_LOG_TABLE;
+
