@@ -68,7 +68,7 @@ public class GetResultListHtmlProvider extends BaseProvider<GetResultList> {
 
     @Override
     public String getContent(GetResultList proxy) {
-        String result = getHtmlHeader(habitat, uriInfo.getBaseUri().toASCIIString());
+        String result = getHtmlHeader(uriInfo.getBaseUri().toASCIIString());
         final String typeKey = upperCaseFirstLetter((decode(getName(uriInfo.getPath(), '/'))));
         result = result + "<h1>" + typeKey + "</h1>";
 

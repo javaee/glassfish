@@ -112,7 +112,9 @@ public class ResourceUtil {
     private final static String QUERY_PARAMETERS = "queryParameters";
     private final static String MESSAGE_PARAMETERS = "messageParameters";
 
-    //TODO this is copied from org.jvnet.hk2.config.Dom. If we are not able to encapsulate the conversion in Dom, need to make sure that the method convertName is refactored into smaller methods such that trimming of prefixes stops. We will need a promotion of HK2 for this.
+    //TODO this is copied from org.jvnet.hk2.config.Dom. If we are not able to encapsulate the conversion in Dom, 
+    //need to make sure that the method convertName is refactored into smaller methods such that trimming of prefixes stops. 
+    //We will need a promotion of HK2 for this.
     static final Pattern TOKENIZER;
 
     static {
@@ -125,7 +127,6 @@ public class ResourceUtil {
         pattern = pattern.replace("x", "\\p{Lower}").replace("X", "\\p{Upper}");
         TOKENIZER = Pattern.compile(pattern);
     }
-
     private ResourceUtil() {
 
     }
@@ -213,28 +214,6 @@ public class ResourceUtil {
         cr.getCommandInvocation(commandName, ar).parameters(parameters).execute();
         return ar;
     }
-
-    /**
-     * Executes the specified __asadmin command.
-     *
-     * @param commandName the command to execute
-     * @param parameters  the command parameters
-     * @param habitat     the habitat
-     * @return ActionReport object with command execute status details.
-     */
-/*    public static ActionReport runCommand(String commandName,
-                                          Properties parameters, Habitat habitat, String typeOfResult) {
-        CommandRunner cr = habitat.getComponent(CommandRunner.class);
-        ActionReport ar = new RestActionReporter();
-        ParameterMap p = new ParameterMap();
-        for (String prop : parameters.stringPropertyNames()) {
-            p.set(prop, parameters.getProperty(prop));
-        }
-
-        cr.getCommandInvocation(commandName, ar).parameters(p).execute();
-        return ar;
-    }*/
-
 
     /**
      * Constructs and returns the resource method meta-data.
@@ -325,7 +304,6 @@ public class ResourceUtil {
             */
         }
     }
-
 
     /**
      * Constructs and returns the resource method meta-data. This method is
@@ -527,7 +505,6 @@ public class ResourceUtil {
     }
 
     //removes entries with empty value from the given Map
-
     public static void purgeEmptyEntries(Map<String, String> data) {
 
         //hack-2 : remove empty entries if the form has a hidden param for __remove_empty_entries__
@@ -553,22 +530,22 @@ public class ResourceUtil {
      * @param requestHeaders request headers of the request
      * @return Response the response object to be returned to the client
      */
-    public static Response getResponse(int status, String message, HttpHeaders requestHeaders, UriInfo uriInfo, Habitat habitat) {
+    public static Response getResponse(int status, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
         if (isBrowser(requestHeaders)) {
-            message = getHtml(habitat, message, uriInfo, false);
+            message = getHtml(message, uriInfo, false);
         }
         return Response.status(status).entity(message).build();
     }
 
-    public static ActionReportResult getActionReportResult(ActionReport parentActionReport, String message, HttpHeaders requestHeaders, UriInfo uriInfo, Habitat habitat) {
-        ActionReportResult result = getActionReportResult(parentActionReport.getActionExitCode(), message, requestHeaders, uriInfo, habitat);
+    public static ActionReportResult getActionReportResult(ActionReport parentActionReport, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
+        ActionReportResult result = getActionReportResult(parentActionReport.getActionExitCode(), message, requestHeaders, uriInfo);
         result.getActionReport().getSubActionsReport().addAll(((ActionReporter)parentActionReport).getSubActionsReport());
         return result;
     }
 
-    public static ActionReportResult getActionReportResult(ActionReport.ExitCode status, String message, HttpHeaders requestHeaders, UriInfo uriInfo, Habitat habitat) {
+    public static ActionReportResult getActionReportResult(ActionReport.ExitCode status, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
         if (isBrowser(requestHeaders)) {
-            message = getHtml(habitat, message, uriInfo, false);
+            message = getHtml(message, uriInfo, false);
         }
         RestActionReporter ar = new RestActionReporter();
         ActionReportResult result = new ActionReportResult(ar);
@@ -598,11 +575,10 @@ public class ResourceUtil {
                                              HttpHeaders requestHeaders, UriInfo uriInfo,
                                              Habitat habitat) {
         if (isBrowser(requestHeaders)) {
-            message = getHtml(habitat, message, uriInfo, true);
+            message = getHtml(message, uriInfo, true);
         }
         return Response.status(status).entity(message).build();
     }
-
 
     /**
      * <p>This method takes any query string parameters and adds them to the specified map.  This
@@ -648,7 +624,6 @@ public class ResourceUtil {
     }
 
     //Construct parameter meta-data from the attribute annotation
-
     static ParameterMetaData getParameterMetaData(Attribute attribute) {
         ParameterMetaData parameterMetaData = new ParameterMetaData();
         parameterMetaData.putAttribute(Constants.TYPE, getXsdType(attribute.dataType().toString()));
@@ -665,7 +640,6 @@ public class ResourceUtil {
     }
 
     //rename the given input parameter
-
     private static boolean renameParameter(Map<String, String> data,
                                            String parameterToRename, String newName) {
         if ((data.containsKey(parameterToRename))) {
@@ -678,7 +652,6 @@ public class ResourceUtil {
     }
 
     //print given parameter meta-data.
-
     private static void print(Collection<CommandModel.ParamModel> params) {
         for (CommandModel.ParamModel pm : params) {
             System.out.println("Command Param: " + pm.getName());
@@ -728,8 +701,6 @@ public class ResourceUtil {
     static String getAttributeMethodName(String attributeName) {
         return methodNameFromDtdName(attributeName, "get");
     }
-
-
 
     private static String split(String lookback, String lookahead) {
         return "((?<=" + lookback + ")(?=" + lookahead + "))";
@@ -896,11 +867,9 @@ public class ResourceUtil {
         return qualifiedTypeName.substring(qualifiedTypeName.lastIndexOf(".") + 1, qualifiedTypeName.length());
     }
 
-
-  public static boolean isOnlyATag (ConfigModel model){
+    public static boolean isOnlyATag (ConfigModel model){
         return (model.getAttributeNames().isEmpty()) && (model.getElementNames().isEmpty());
     }
-
 
     public static List<ConfigModel> getRealChildConfigModels(ConfigModel childModel, DomDocument domDocument) {
         List<ConfigModel> retlist = new ArrayList<ConfigModel>();
@@ -1024,7 +993,7 @@ public class ResourceUtil {
         ar.getExtraProperties().put("methods", methodMetaData);
     }
     
-     public static RestConfig getRestConfig(Habitat habitat) {
+    public static RestConfig getRestConfig(Habitat habitat) {
         if (habitat == null) {
             return null;
         }

@@ -400,7 +400,7 @@ public class ProviderUtil {
         return result;
     }
 
-    static public String getHtmlHeader(Habitat habitat, String baseUri) {
+    static public String getHtmlHeader(String baseUri) {
         String title = Version.getVersion() + " REST Interface";
         String result = "<html><head>";
         result = result + "<title>" + title + "</title>";

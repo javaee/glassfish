@@ -90,7 +90,7 @@ public class SessionResource {
             message = "Session with id " + sessionId + " deleted";
         }
 
-        return Response.status(status).entity(ResourceUtil.getActionReportResult(exitCode, message, requestHeaders, uriInfo, habitat) ).build();
+        return Response.status(status).entity(ResourceUtil.getActionReportResult(exitCode, message, requestHeaders, uriInfo)).build();
 
     }
 
