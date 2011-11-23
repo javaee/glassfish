@@ -119,7 +119,7 @@
             <version>${project.version}</version>
     	</dependency> 
     	<dependency>
-            <groupId>org.glassfish.admingui</groupId>
+            <groupId>org.glassfish.docs.help</groupId>
 	    <artifactId>console-jdbc-plugin-help</artifactId>
     	</dependency> 
 

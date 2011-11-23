@@ -122,7 +122,7 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.admingui</groupId>
+            <groupId>org.glassfish.docs.help</groupId>
             <artifactId>console-ejb-lite-plugin-help</artifactId>
         </dependency>
 
