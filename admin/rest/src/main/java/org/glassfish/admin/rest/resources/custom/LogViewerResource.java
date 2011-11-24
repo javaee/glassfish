@@ -34,6 +34,7 @@
  */
 package org.glassfish.admin.rest.resources.custom;
 
+import com.sun.enterprise.server.logging.logviewer.backend.LogFilter;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.jersey.api.core.ResourceContext;
 import java.io.File;
@@ -110,14 +111,18 @@ public class LogViewerResource {
 
     @GET
     @Produces("text/plain;charset=UTF-8")
-    public Response get(@QueryParam("start") @DefaultValue("0") long start,
+    public Response get(@QueryParam("start") @DefaultValue("0") long start, @QueryParam("instanceName") @DefaultValue("server") String instanceName,
             @Context HttpHeaders hh) throws IOException {
         MultivaluedMap<String, String> headerParams = hh.getRequestHeaders();
         String acceptEncoding = headerParams.getFirst("Accept-Encoding");
         boolean gzipOK = (acceptEncoding == null || acceptEncoding.indexOf("gzip") == -1) ? false : true;
 
-        ServerEnvironmentImpl env = habitat.getComponent(ServerEnvironmentImpl.class);
-        String logLocation = env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/logs/server.log";
+        // getting logFilter object from habitat
+        LogFilter logFilter = habitat.getComponent(LogFilter.class);
+        String logLocation = "";
+
+        // getting log file location on DAS for server/local instance/remote instance
+        logLocation = logFilter.getLogFileForGivenTarget(instanceName);
         initLargeText(new File(logLocation), false);
 
         if (!source.exists()) {
