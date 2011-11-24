@@ -59,36 +59,48 @@
     <target name="all-embedded" depends="init-common">
       <antcall target="build"/>
       <antcall target="setup"/>
-      <antcall target="setup-embedded"/>
-      <antcall target="common"/>
+      <antcall target="test-embedded"/>
       <antcall target="unsetup"/>
     </target>
 
     <target name="all-local" depends="init-common">
       <antcall target="build"/>
       <antcall target="setup"/>
-      <antcall target="setup-local"/>
-      <antcall target="common"/>
+      <antcall target="test-local"/>
       <antcall target="unsetup"/>
     </target>
 
     <target name="test-embedded" depends="init-common">
       <antcall target="setup-test"/>
       <antcall target="setup-embedded"/>
-      <antcall target="common"/>
+      <antcall target="test-autorecovery"/>
       <antcall target="unsetup-test"/>
+      <copy file="${module}-logs.zip" tofile="${module}-embedded-logs.zip"/>
     </target>
 
     <target name="test-local" depends="init-common">
       <antcall target="setup-test"/>
       <antcall target="setup-local"/>
-      <antcall target="common"/>
+      <antcall target="test-autorecovery"/>
+<!--
+      <antcall target="save-logs"/>
+      <copy file="${module}-logs.zip" tofile="${module}-local-auto-logs.zip"/>
+      <antcall target="restart-cluster"/>
+      <antcall target="test-delegated"/>
+-->
       <antcall target="unsetup-test"/>
     </target>
 
-    <target name="common" depends="init-common">
+    <target name="test-autorecovery" depends="init-common">
       <antcall target="deploy"/>
-      <antcall target="run"/>
+      <antcall target="run-autorecovery"/>
+      <antcall target="undeploy"/>
+      <antcall target="reset-tables"/>
+    </target>
+
+    <target name="test-delegated" depends="init-common">
+      <antcall target="deploy"/>
+      <antcall target="run-delegated"/>
       <antcall target="undeploy"/>
       <antcall target="reset-tables"/>
     </target>
@@ -96,19 +108,20 @@
     <target name="setup-local" depends="init-common">
       <antcall target="setup-cluster">
          <param name="type" value="LOCAL"/>
+         <param name="delegated" value="true"/>
       </antcall>
     </target>
 
     <target name="setup-embedded" depends="init-common">
       <antcall target="setup-cluster">
          <param name="type" value="EMBEDDED"/>
+         <param name="delegated" value="false"/>
       </antcall>
     </target>
 
     <target name="setup" depends="init-common">
       <antcall target="start-derby"/>
       <ant target="start-domain"/>
-      <antcall target="setup-database"/>
     </target>
 
     <target name="setup-test" depends="init-common">
@@ -159,6 +172,7 @@
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
               classname="${se.client}">
            <arg line="prepare"/>
+           <arg line="${delegated}"/>
            <sysproperty key="enableShoalLogger" value="${enableShoalLogger}"/>
         </java>
     </target>
@@ -181,7 +195,6 @@
     </target>
 
     <target name="unsetup" depends="init-common">
-        <antcall target="unsetup-test"/>
         <antcall target="stop-derby"/>
         <ant target="stop-domain"/>
     </target>
@@ -265,17 +278,9 @@
         </javac>
     </target>
 
-    <target name="run" depends="init-common">
-        <antcall target="run-auto-recover"/>
-    </target>
-
-    <target name="run-auto-recover" depends="init-common">
+    <target name="run-autorecovery" depends="init-common">
         <parallel>
-           <antcall target="insert-data">
-               <param name="port" value="28080"/>
-               <param name="operation" value="insert_xa_data"/>
-           </antcall>
-
+           <antcall target="insert-data"/>
            <antcall target="kill-instance"/>
         </parallel>
 
@@ -284,25 +289,45 @@
           <arg line="in1"/>
         </exec>
 
+        <!-- wait a little -->
+        <sleep seconds="35"/>
+
+        <antcall target="verify-results"/>
+    </target>
+
+    <target name="run-delegated" depends="init-common">
+        <parallel>
+           <antcall target="insert-data"/>
+           <antcall target="kill-instance"/>
+        </parallel>
+
+        <!-- wait a little -->
+        <sleep seconds="75"/>
+
+        <antcall target="verify-results"/>
+
+        <exec executable="${ASADMIN}" failonerror="false">
+          <arg line="start-local-instance"/>
+          <arg line="in1"/>
+        </exec>
+
+    </target>
+
+    <target name="verify-results">
         <echo message="Verifying results"/>
-        <sleep seconds="25"/>
         <java  fork="on"
               failonerror="true"
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
               classname="${se.client}">
            <arg line="verify_xa"/>
            <arg line="${appname}-web"/>
-           <arg line="28080"/>
+           <arg line="28081"/>
            <arg line="recover"/>
         </java>
-
     </target>
 
    <target name="run-no-failures" depends="init-common">
-        <antcall target="insert-data">
-            <param name="port" value="28080"/>
-            <param name="operation" value="insert_xa_data"/>
-        </antcall>
+        <antcall target="insert-data"/>
 
         <echo message="Verifying results"/>
         <java  fork="on"
@@ -329,9 +354,9 @@
               failonerror="true"
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
               classname="${se.client}">
-           <arg line="${operation}"/>
+           <arg line="insert_xa_data"/>
            <arg line="${appname}-web"/>
-           <arg line="${port}"/>
+           <arg line="28080"/>
         </java>
     </target>
 
@@ -351,6 +376,17 @@
           <param name="sql.file" value="sql/delete.sql"/>
           <param name="db.url" value="jdbc:derby://localhost:${db.port}/${db.name};create=true;"/>
         </antcall>
+    </target>
+
+    <target name="restart-cluster" depends="init-common">
+      <exec executable="${ASADMIN}" failonerror="false">
+          <arg line="stop-cluster"/>
+          <arg line="c1"/>
+      </exec>
+      <exec executable="${ASADMIN}" failonerror="false">
+          <arg line="start-cluster"/>
+          <arg line="c1"/>
+      </exec>
     </target>
 
 </project>

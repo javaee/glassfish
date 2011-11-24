@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2011 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,7 +60,7 @@ public class Client extends AdminBaseDevTest {
     public static void main(String[] args) {
 
         if ("prepare".equals(args[0])) {
-            (new Client()).prepare();
+            (new Client()).prepare(args[1]);
         } else if ("clean".equals(args[0])) {
             (new Client()).clean(args[1]);
         } else if ("deploy".equals(args[0])) {
@@ -81,10 +81,13 @@ public class Client extends AdminBaseDevTest {
         return "Unit test for transaction recovery with MDBs";
     }
 
-    public void prepare() {
+    public void prepare(String enable_delegate) {
         try {
             asadmin("create-cluster", CLUSTER_NAME);
             asadmin("set", "configs.config." + CLUSTER_NAME + "-config.transaction-service.property.db-logging-resource=" + NONTX_RESOURCE);
+            if (Boolean.valueOf(enable_delegate)) {
+                asadmin("set", "configs.config." + CLUSTER_NAME + "-config.transaction-service.property.delegated-recovery=true");
+            }
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE1_NAME);
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE2_NAME);
             System.out.println("Creating JMS resources");

@@ -57,8 +57,7 @@
 
         <record name="dblogs.output" action="start" />
 
-        <ant dir="base" target="test"/>
-        <ant dir="mdb" target="test"/>
+        <antcall target="test"/>
 
         <antcall target="stop-domain"/>
         <antcall target="stop-derby"/>
@@ -70,6 +69,7 @@
 
     <target name="test">
         <ant dir="base" target="test"/>
+        <ant dir="mdb" target="test"/>
     </target>
 
     <target name="usage">
