@@ -57,7 +57,7 @@
 <sun:head id="propertyhead" title="$resource{i18nc.logViewerRaw.PageTitle}" debug="false" parseOnLoad="false">
     <sun:script url="/resource/common/js/adminjsf.js" />
 </sun:head>
-<sun:body onLoad="javascript: logViewerRaw('#{sessionScope.REST_URL}/view-log/?id=#{instanceName}')" id="body3">
+<sun:body onLoad="javascript: logViewerRaw('#{sessionScope.REST_URL}/view-log/?instanceName=#{instanceName}')" id="body3">
 <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
     <!-- Page Title -->
