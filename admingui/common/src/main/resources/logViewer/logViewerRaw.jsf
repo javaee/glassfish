@@ -97,17 +97,19 @@ function logViewerRaw(url) {
     var timeout = 1000;
     
     var success = function(xhr, targetId, requestedUrl) {
-        if (xhr.status == 200 && xhr.responseText) {
-            var records = document.createTextNode(xhr.responseText);
-            var documentX = window.pageXOffset || document.body.scrollLeft /* IE */;
-            var documentY = window.pageYOffset || document.body.scrollTop /* IE */;
-            // http://stackoverflow.com/questions/5060389/how-do-you-know-the-scroll-bar-has-reached-bottom-of-a-page
-            //var atBottom = $(window).scrollTop() == $(document).height() - $(window).height();
-            var atBottom  = (documentY == document.documentElement.scrollHeight - document.documentElement.clientHeight);
-            var $log = document.getElementById(targetId);
-            $log.appendChild(records);
-            if (atBottom) {
-              window.scrollTo(documentX, document.documentElement.scrollHeight - document.documentElement.clientHeight);
+        if (xhr.status == 200) {
+            if (xhr.responseText) {
+                var records = document.createTextNode(xhr.responseText);
+                var documentX = window.pageXOffset || document.body.scrollLeft /* IE */;
+                var documentY = window.pageYOffset || document.body.scrollTop /* IE */;
+                // http://stackoverflow.com/questions/5060389/how-do-you-know-the-scroll-bar-has-reached-bottom-of-a-page
+                //var atBottom = $(window).scrollTop() == $(document).height() - $(window).height();
+                var atBottom  = (documentY == document.documentElement.scrollHeight - document.documentElement.clientHeight);
+                var $log = document.getElementById(targetId);
+                $log.appendChild(records);
+                if (atBottom) {
+                  window.scrollTo(documentX, document.documentElement.scrollHeight - document.documentElement.clientHeight);
+                }
             }
             // get only new records next time
             url = xhr.getResponseHeader('X-Text-Append-Next');
