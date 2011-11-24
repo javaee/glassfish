@@ -52,13 +52,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.StreamingOutput;
-import javax.ws.rs.core.UriInfo;
+
 import org.glassfish.admin.rest.logviewer.CharSpool;
 import org.glassfish.admin.rest.logviewer.LineEndNormalizingWriter;
 import org.glassfish.admin.rest.logviewer.WriterOutputStream;
@@ -127,6 +123,9 @@ public class LogViewerResource {
 
         if (!source.exists()) {
             // file doesn't exist yet
+            UriBuilder uriBuilder = ui.getAbsolutePathBuilder();
+            uriBuilder.queryParam("start",0);
+            uriBuilder.queryParam("instanceName",instanceName);
             return Response.ok(
                     new StreamingOutput() {
 
@@ -134,7 +133,7 @@ public class LogViewerResource {
                         public void write(OutputStream out) throws IOException, WebApplicationException {
                         }
                     }).
-                    header("X-Text-Append-Next", ui.getAbsolutePathBuilder().queryParam("start", 0).build()).build();
+                    header("X-Text-Append-Next", uriBuilder.build()).build();
         }
 
 
@@ -158,7 +157,10 @@ public class LogViewerResource {
                 w.close();
             }
         });
-        URI next = ui.getAbsolutePathBuilder().queryParam("start", size).build();
+        UriBuilder uriBuilder = ui.getAbsolutePathBuilder();
+        uriBuilder.queryParam("start",size);
+        uriBuilder.queryParam("instanceName",instanceName);
+        URI next = uriBuilder.build();
         rp.header("X-Text-Append-Next", next);
         if (gzipOK) {
             rp = rp.header("Content-Encoding", "gzip");
