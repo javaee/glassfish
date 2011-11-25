@@ -59,7 +59,7 @@ import java.util.TreeSet;
 import static admin.Constants.*;
 
 public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
-    static enum PasswordType { SSH_PASS, KEY_PASS, DCOM_PASS };
+    static enum PasswordType { SSH_PASS, KEY_PASS, DCOM_PASS, ALIAS_PASS };
 
 
     protected AdminBaseDevTest() {
@@ -412,6 +412,9 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
                     break;
                 case KEY_PASS:
                     out.write("AS_ADMIN_SSHKEYPASSPHRASE=" + value);
+                    break;
+                case ALIAS_PASS:
+                    out.write("AS_ADMIN_ALIASPASSWORD=" + value);
                     break;
                 default:
                     //do nothing

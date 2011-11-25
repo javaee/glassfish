@@ -58,6 +58,7 @@ public class InstallNodeTest extends SshBaseDevTest {
     private static final String LOCALHOST = "localhost";
     private static final String INSTALL = "--install";
     private static final String UNINSTALL = "--uninstall";
+    private static final String SSH_ALIAS_PASS = "ssh-pass";
 
     private final String host;
     private final File glassFishHome;
@@ -141,7 +142,7 @@ public class InstallNodeTest extends SshBaseDevTest {
 
         asadmin("start-domain");
 
-        if (remoteHost.equals(LOCALHOST) || remoteHost.equals(host)) {
+        if (isLocal()) {
             System.out.println("------------------------------------------------");
             System.out.println("INFO: Running install-node tests locally.");
             System.out.println("------------------------------------------------");
@@ -154,6 +155,8 @@ public class InstallNodeTest extends SshBaseDevTest {
             testInstallRemoteNode();
             testUnInstallRemoteNode();
         }
+
+        testPasswordAlias();
 
         asadmin("stop-domain");
         removePasswords("SSH");
@@ -215,5 +218,30 @@ public class InstallNodeTest extends SshBaseDevTest {
 
         //delete node with --uninstall
         report("delete-node-with-uninstall-remote", asadmin("delete-node-ssh", UNINSTALL, "n2"));
+    }
+
+    private void testPasswordAlias() {
+        //remove all previous entries
+        removePasswords("SSH");
+
+        addPassword(sshPass, PasswordType.ALIAS_PASS);
+        asadmin("create-password-alias", SSH_ALIAS_PASS);
+        removePasswords("ALIAS");
+
+        addPassword("${ALIAS=" + SSH_ALIAS_PASS + "}", PasswordType.SSH_PASS);
+
+        if (isLocal()) {
+            report("install-using-password-alias", asadmin("install-node", INSTALL_DIR, "/tmp/aa", LOCALHOST));
+            report("uninstall-using-password-alias", asadmin("uninstall-node", INSTALL_DIR, "/tmp/aa", LOCALHOST));
+        } else {
+            report("install-using-password-alias-remote", asadmin("install-node", "--sshuser", sshUser, INSTALL_DIR, "gf-test-11", remoteHost));
+            report("uninstall-using-password-alias-remote", asadmin("uninstall-node", "--sshuser", sshUser, INSTALL_DIR, "gf-test-11", remoteHost));
+        }
+
+        asadmin("delete-password-alias", "ssh-pass");
+    }
+
+    private boolean isLocal() {
+        return (remoteHost.equals(LOCALHOST) || remoteHost.equals(host)) ? true : false;
     }
 }
