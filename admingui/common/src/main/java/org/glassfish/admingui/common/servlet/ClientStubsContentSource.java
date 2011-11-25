@@ -94,11 +94,10 @@ public class ClientStubsContentSource  implements DownloadServlet.ContentSource 
             Date date = new Date();
             Map attrsMap = new HashMap();
             String tempDir = System.getProperty("java.io.tmpdir");
-            String fileName = "client-stubs.zip" /* + "." + dateFormat.format(date)*/;
+            String fileName = "client-stubs-" + appName + "-" + dateFormat.format(date) + ".zip";
             String filePath = tempDir + System.getProperty("file.separator") + fileName;
             File file = new File(filePath);
-            attrsMap.put("id", file); // ignored
-            attrsMap.put("localDir", tempDir);
+            attrsMap.put("localDir", filePath); // CAUTION: file instead of dir
             RestUtil.restRequest( endpoint , attrsMap, "get", null, false);
             tmpFile = new FileInputStream(file);
             file.delete();

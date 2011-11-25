@@ -682,7 +682,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             }
             
             if (retrieveArtifacts) {
-                File targetLocalFile = new File(targetLocalDir + System.getProperty("file.separator") + "client-stubs.zip");
+                File targetLocalFile = new File(targetLocalDir); // CAUTION: file instead of dir
                 if (targetLocalFile.exists()) {
                     final String msg = localStrings.getLocalString("download.errFileExists",
                             "Unable to generate files. File [{0}] already exists.", targetLocalFile.getAbsolutePath());
