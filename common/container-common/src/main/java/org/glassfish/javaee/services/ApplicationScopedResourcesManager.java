@@ -40,6 +40,10 @@
 
 package org.glassfish.javaee.services;
 
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.resource.common.PoolInfo;
 import org.glassfish.resource.common.ResourceInfo;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -422,6 +426,7 @@ public class ApplicationScopedResourcesManager implements PostStartup, PostConst
                 Resources resources = ((Application)instance).getResources();
                 if(resources != null){
                     addListenerToResources(resources.getResources());
+                    pingConnectionPool(resources);
                 }
 
                 Application app = (Application)instance;
@@ -430,6 +435,7 @@ public class ApplicationScopedResourcesManager implements PostStartup, PostConst
                     for(Module module : modules){
                         if(module.getResources() !=null && module.getResources().getResources() != null){
                             addListenerToResources(module.getResources().getResources());
+                            pingConnectionPool(module.getResources());
                         }
                     }
                 }
@@ -481,6 +487,42 @@ public class ApplicationScopedResourcesManager implements PostStartup, PostConst
                 np = new NotProcessed(msg);
             }
             return np;
+        }
+    }
+
+    private void pingConnectionPool(Resources resources) {
+        if(resources != null){
+            if(resources.getResources() != null){
+                for(Resource resource : resources.getResources()){
+                    if(resource instanceof ResourcePool){
+                        ResourcePool pool = (ResourcePool)resource;
+                        boolean ping = false;
+                        if(pool instanceof JdbcConnectionPool){
+                            ping = Boolean.valueOf(((JdbcConnectionPool)pool).getPing());
+                        }else if (pool instanceof ConnectorConnectionPool) {
+                            ping = Boolean.valueOf(((ConnectorConnectionPool)pool).getPing());
+                        }
+                        if(ping){
+                            PoolInfo poolInfo = ConnectorsUtil.getPoolInfo(pool);
+                            CommandRunner commandRunner = habitat.getComponent(CommandRunner.class);
+                            ActionReport report = habitat.getComponent(ActionReport.class);
+                            CommandRunner.CommandInvocation invocation =
+                                    commandRunner.getCommandInvocation("ping-connection-pool", report);
+                            ParameterMap params = new ParameterMap();
+                            params.add("appname",poolInfo.getApplicationName());
+                            params.add("modulename",poolInfo.getModuleName());
+                            params.add("DEFAULT", poolInfo.getName());
+                            invocation.parameters(params).execute();
+                            if(report.getActionExitCode() == ActionReport.ExitCode.SUCCESS){
+                                _logger.log(Level.INFO, "app-scoped.ping.connection.pool.success", poolInfo);
+                            }else{
+                                Object args[] = new Object[]{poolInfo, report.getFailureCause()};
+                                _logger.log(Level.WARNING, "app-scoped.ping.connection.pool.failed", args);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
