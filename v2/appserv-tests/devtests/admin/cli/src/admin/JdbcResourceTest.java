@@ -391,7 +391,7 @@ public class JdbcResourceTest extends AdminBaseDevTest {
         String testName = "testListJdbcConnectionPools";
         AsadminReturn result = asadminWithOutput(LIST_JDBC_CONNECTION_POOLS);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Nothing to list.");
+        //reportExpectedResult(testName, result, "");
         reportExpectedResult(testName, result, TIMER_POOL, DEFAULT_POOL);
         reportUnexpectedResult(testName, result, POOL_NAME);
     }
@@ -400,7 +400,7 @@ public class JdbcResourceTest extends AdminBaseDevTest {
         String testName = "testListJdbcResources";
         AsadminReturn result = asadminWithOutput(LIST_JDBC_RESOURCES);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Nothing to list.");
+        //reportExpectedResult(testName, result, "");
         reportExpectedResult(testName, result, TIMER_RESOURCE, DEFAULT_RESOURCE);
         reportUnexpectedResult(testName, result, RESOURCE_NAME);
 
@@ -437,7 +437,7 @@ public class JdbcResourceTest extends AdminBaseDevTest {
         {
         AsadminReturn result = asadminWithOutput(LIST_JDBC_RESOURCES);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Nothing to list.");
+        //reportExpectedResult(testName, result, "");
         reportExpectedResult(testName, result, TIMER_RESOURCE, DEFAULT_RESOURCE);
         reportUnexpectedResult(testName, result, RESOURCE_NAME);
         }
@@ -445,7 +445,7 @@ public class JdbcResourceTest extends AdminBaseDevTest {
         {
         AsadminReturn result = asadminWithOutput(LIST_JDBC_RESOURCES, SERVER);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Nothing to list.");
+        //reportExpectedResult(testName, result, "");
         reportExpectedResult(testName, result, TIMER_RESOURCE, DEFAULT_RESOURCE);
         reportUnexpectedResult(testName, result, RESOURCE_NAME);
         }
@@ -453,7 +453,7 @@ public class JdbcResourceTest extends AdminBaseDevTest {
         {
         AsadminReturn result = asadminWithOutput(LIST_JDBC_RESOURCES, CLUSTER_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
 /*
         reportExpectedResult(testName, result, TIMER_RESOURCE, DEFAULT_RESOURCE);
         reportUnexpectedResult(testName, result, RESOURCE_NAME);
@@ -463,7 +463,7 @@ public class JdbcResourceTest extends AdminBaseDevTest {
         {
         AsadminReturn result = asadminWithOutput(LIST_JDBC_RESOURCES, STANDALONE_INSTANCE_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
 /*
         reportExpectedResult(testName, result, TIMER_RESOURCE, DEFAULT_RESOURCE);
         reportUnexpectedResult(testName, result, RESOURCE_NAME);

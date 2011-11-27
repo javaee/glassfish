@@ -376,25 +376,25 @@ public class JavaMailResourceTest extends AdminBaseDevTest {
         {
         AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
         }
 
         {
         AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, SERVER);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
         }
 
         {
         AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, CLUSTER_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result,"Nothing to list.");
+        reportExpectedResult(testName, result,"");
         }
 
         {
         AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, STANDALONE_INSTANCE_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
         }
     }
 

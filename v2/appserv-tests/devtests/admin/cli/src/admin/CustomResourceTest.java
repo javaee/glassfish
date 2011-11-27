@@ -369,25 +369,25 @@ public class CustomResourceTest extends AdminBaseDevTest {
         {
         AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
         }
 
         {
         AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, SERVER);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
         }
 
         {
         AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, CLUSTER_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result,"Nothing to list.");
+        reportExpectedResult(testName, result,"");
         }
 
         {
         AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, STANDALONE_INSTANCE_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
         }
     }
 

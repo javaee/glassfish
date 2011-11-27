@@ -200,42 +200,42 @@ public class AdminObjectTest extends AdminBaseDevTest {
         String testName = "testListAdminObjects";
         AsadminReturn result = asadminWithOutput(LIST_ADMIN_OBJECTS, CLUSTER_CONFIG_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
     }
 
     public void testListAdminObjectsNothingToList(){
         String testName = "testListAdminObjects";
         AsadminReturn result = asadminWithOutput(LIST_ADMIN_OBJECTS);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
     }
 
     public void testListAdminObjectsTargetStandaloneInstanceNothingToList() {
         String testName = "testListAdminObjectsTargetStandaloneInstanceNothingToList";
         AsadminReturn result = asadminWithOutput(LIST_ADMIN_OBJECTS, STANDALONE_INSTANCE_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
     }
 
     public void testListAdminObjectsTargetClusterNothingToList() {
         String testName = "testListAdminObjectsTargetClusterNothingToList";
         AsadminReturn result = asadminWithOutput(LIST_ADMIN_OBJECTS, CLUSTER_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
     }
 
     public void testListAdminObjectsTargetClusteredInstance2NothingToList() {
         String testName = "testListAdminObjectsTargetClusteredInstance2NothingToList";
         AsadminReturn result = asadminWithOutput(LIST_ADMIN_OBJECTS, INSTANCE2_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
     }
 
     public void testListAdminObjectsTargetClusteredInstance1NothingToList() {
         String testName = "testListAdminObjectsTargetClusteredInstance1NothingToList";
         AsadminReturn result = asadminWithOutput(LIST_ADMIN_OBJECTS, INSTANCE1_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
     }
     
     private void testDeleteAdminObjectExpectFailure(String target){
@@ -428,25 +428,25 @@ public class AdminObjectTest extends AdminBaseDevTest {
         {
         AsadminReturn result = asadminWithOutput(LIST_ADMIN_OBJECTS);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
         }
 
         {
         AsadminReturn result = asadminWithOutput(LIST_ADMIN_OBJECTS, SERVER);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
         }
 
         {
         AsadminReturn result = asadminWithOutput(LIST_ADMIN_OBJECTS, CLUSTER_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result,"Nothing to list.");
+        reportExpectedResult(testName, result,"");
         }
 
         {
         AsadminReturn result = asadminWithOutput(LIST_ADMIN_OBJECTS, STANDALONE_INSTANCE_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
         }
     }
 

@@ -423,14 +423,14 @@ public class ConnectorResourceTest extends AdminBaseDevTest {
         String testName = "testListConnectorConnectionPools";
         AsadminReturn result = asadminWithOutput(LIST_CONNECTOR_CONNECTION_POOLS);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
     }
 
     public void testListConnectorResourcesNothingToList(){
         String testName = "testListConnectorResources";
         AsadminReturn result = asadminWithOutput(LIST_CONNECTOR_RESOURCES);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
     }
 
     public void testListConnectorResourceInServer() {
@@ -464,25 +464,25 @@ public class ConnectorResourceTest extends AdminBaseDevTest {
         {
         AsadminReturn result = asadminWithOutput(LIST_CONNECTOR_RESOURCES);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
         }
 
         {
         AsadminReturn result = asadminWithOutput(LIST_CONNECTOR_RESOURCES, SERVER);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
         }
 
         {
         AsadminReturn result = asadminWithOutput(LIST_CONNECTOR_RESOURCES, CLUSTER_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result,"Nothing to list.");
+        reportExpectedResult(testName, result,"");
         }
 
         {
         AsadminReturn result = asadminWithOutput(LIST_CONNECTOR_RESOURCES, STANDALONE_INSTANCE_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
         }
     }
 
@@ -526,28 +526,28 @@ public class ConnectorResourceTest extends AdminBaseDevTest {
         String testName = "testListConnectorResourceTargetStandaloneInstanceNothingToList";
         AsadminReturn result = asadminWithOutput(LIST_CONNECTOR_RESOURCES, STANDALONE_INSTANCE_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
     }
 
     public void testListConnectorResourceTargetClusterNothingToList() {
         String testName = "testListConnectorResourceTargetClusterNothingToList";
         AsadminReturn result = asadminWithOutput(LIST_CONNECTOR_RESOURCES, CLUSTER_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
     }
 
     public void testListConnectorResourceTargetClusteredInstance2NothingToList() {
         String testName = "testListConnectorResourceTargetClusteredInstance2NothingToList";
         AsadminReturn result = asadminWithOutput(LIST_CONNECTOR_RESOURCES, INSTANCE2_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
     }
 
     public void testListConnectorResourceTargetClusteredInstance1NothingToList() {
         String testName = "testListConnectorResourceTargetClusteredInstance1NothingToList";
         AsadminReturn result = asadminWithOutput(LIST_CONNECTOR_RESOURCES, INSTANCE1_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, "Nothing to list.");
+        reportExpectedResult(testName, result, "");
     }
 
     private void reportFailureResultStatus(String testName, AsadminReturn result) {
