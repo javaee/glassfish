@@ -332,4 +332,9 @@ public interface ModulesRegistry extends ModuleChangeListener, HabitatFactory {
      *      null if the class is loaded outside the module system.
      */
     Module find(Class clazz);
+
+    /**
+     * Gets the {@link Module} that provides the provider of the given name.
+     */
+    Module getProvidingModule(String providerClassName);
 }
