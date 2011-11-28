@@ -58,7 +58,6 @@
 
 package org.apache.catalina.core;
 
-import com.sun.grizzly.util.IntrospectionUtils;
 import org.apache.catalina.*;
 import org.apache.catalina.connector.RequestFacade;
 import org.apache.catalina.security.SecurityUtil;
@@ -877,17 +876,13 @@ public class StandardWrapper
         Throwable rootCause = e;
         Throwable rootCauseCheck;
         // Extra aggressive rootCause finding
+        int loops = 0;
         do {
-            try {
-                rootCauseCheck = (Throwable)IntrospectionUtils.getProperty
-                                            (rootCause, "rootCause");
-                if (rootCauseCheck!=null)
-                    rootCause = rootCauseCheck;
-
-            } catch (ClassCastException ex) {
-                rootCauseCheck = null;
-            }
-        } while (rootCauseCheck != null);
+            loops++;
+            rootCauseCheck = rootCause.getCause();
+            if (rootCauseCheck != null)
+                rootCause = rootCauseCheck;
+        } while (rootCauseCheck != null && (loops < 20));
         return rootCause;
     }
 
