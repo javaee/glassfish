@@ -598,9 +598,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
         return Collections.emptyList();
     }
 
-    /**
-     * Gets the {@link Module} that provides the provider of the given name.
-     */
+    @Override
     public Module getProvidingModule(String providerClassName) {
         return providers.get(providerClassName);
     }

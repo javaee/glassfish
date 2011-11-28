@@ -49,7 +49,6 @@ import org.osgi.service.packageadmin.RequiredBundle;
 import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.InhabitantsParser;
 import com.sun.enterprise.module.*;
-import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -81,6 +80,16 @@ public class OSGiModuleImpl implements Module {
        using any OSGi bundle management tool.
      */
     private LifecyclePolicy lifecyclePolicy;
+    private static final Enumeration<URL> EMPTY_URLS = new Enumeration<URL>() {
+
+        public boolean hasMoreElements() {
+            return false;
+        }
+
+        public URL nextElement() {
+            throw new NoSuchElementException();
+        }
+    };
 
     public OSGiModuleImpl(OSGiModulesRegistryImpl registry, Bundle bundle, ModuleDefinition md) {
         this.registry = registry;
@@ -390,40 +399,18 @@ public class OSGiModuleImpl implements Module {
          * class loader.
          */
         return new ClassLoader(Bundle.class.getClassLoader()) {
-            public static final String META_INF_SERVICES = "META-INF/services/";
 
             @Override
             protected synchronized Class<?> loadClass(final String name, boolean resolve) throws ClassNotFoundException {
                 try {
                     //doprivileged needed for running with SecurityManager
-                    Class<?> ret =(Class<?>)
-                    AccessController.doPrivileged(new PrivilegedAction() {
-                        public java.lang.Object run() {
-                            try {
-                                return bundle.loadClass(name);
-                            } catch (ClassNotFoundException e) {
-                                // punch in. find the provider class, no matter where we are.
-                                OSGiModuleImpl m =
-                                        (OSGiModuleImpl) registry.getProvidingModule(name);
-                                if (m != null) {
-                                    try {
-                                        m.resolve();
-                                        return m.bundle.loadClass(name);
-                                    } catch (ClassNotFoundException ex) {
-                                        throw new RuntimeException(ex);
-                                    }
-                                }
-                                throw new RuntimeException(e);
-                            }
+                    return AccessController.doPrivileged(new PrivilegedExceptionAction<Class>() {
+                        public Class run() throws ClassNotFoundException {
+                            return bundle.loadClass(name);
                         }
                     });
-                    return ret;
-                    
-                } catch (RuntimeException e) {
-                    if (e.getCause() instanceof ClassNotFoundException) {
-                        throw (ClassNotFoundException)e.getCause();
-                    }
-                    throw e;
+                } catch (PrivilegedActionException e) {
+                    throw (ClassNotFoundException)e.getException();
                 }
 
             }
@@ -432,60 +419,16 @@ public class OSGiModuleImpl implements Module {
             public URL getResource(String name) {
                 URL result = bundle.getResource(name);
                 if (result != null) return result;
-
-                // If this is a META-INF/services lookup, search in every
-                // modules that we know of.
-                if(name.startsWith(META_INF_SERVICES)) {
-                    // punch in. find the service loader from any module
-                    String serviceName = name.substring(
-                            META_INF_SERVICES.length());
-
-                    for( Module m : registry.getModules() ) {
-                        List<URL> list = m.getMetadata().getDescriptors(
-                                serviceName);
-                        if(!list.isEmpty())     return list.get(0);
-                    }
-                }
                 return null;
             }
 
             @Override
             public Enumeration<URL> getResources(String name) throws IOException {
-                if(name.startsWith(META_INF_SERVICES)) {
-                    // search in the parent classloader
-                    Enumeration<URL> parentResources =
-                            Bundle.class.getClassLoader().getResources(name);
-
-                    // punch in. find the service loader from any module
-                    String serviceName = name.substring(
-                            META_INF_SERVICES.length());
-
-                    List<URL> punchedInURLs = new ArrayList<URL>();
-
-                    for( Module m : registry.getModules() )
-                        punchedInURLs.addAll(m.getMetadata().getDescriptors(
-                                serviceName));
-
-                    List<Enumeration<URL>> enumerators = new ArrayList<Enumeration<URL>>();
-                    enumerators.add(parentResources);
-                    enumerators.add(Collections.enumeration(punchedInURLs));
-                    Enumeration<URL> result = new CompositeEnumeration(enumerators);
-                    return result;
-                }
                 Enumeration<URL> resources = bundle.getResources(name);
                 if (resources==null) {
                     // This check is needed, because ClassLoader.getResources()
                     // expects us to return an empty enumeration.
-                    resources = new Enumeration<URL>(){
-
-                        public boolean hasMoreElements() {
-                            return false;
-                        }
-
-                        public URL nextElement() {
-                            throw new NoSuchElementException();
-                        }
-                    };
+                    resources = EMPTY_URLS;
                 }
                 return resources;
             }
