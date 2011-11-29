@@ -48,12 +48,12 @@ import org.openqa.selenium.*;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.URL;
-import java.net.URLConnection;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.admingui.common.util.RestUtil;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
 public class BaseSeleniumTestClass {
@@ -117,6 +117,8 @@ public class BaseSeleniumTestClass {
     @BeforeClass
     public static void setUp() throws Exception {
         if (!DEBUG) {
+            RestUtil.post(helper.getBaseUrl() + "/management/domain/rotate-log", new HashMap<String, Object>());
+            /*
             URL rotateLogUrl = new URL(helper.getBaseUrl() + "/management/domain/rotate-log");
             URLConnection conn = rotateLogUrl.openConnection();
             conn.setDoOutput(true);
@@ -130,6 +132,7 @@ public class BaseSeleniumTestClass {
             }
             wr.close();
             rd.close();
+            */
         }
     }
 
@@ -452,13 +455,13 @@ public class BaseSeleniumTestClass {
                 Assert.fail("The operation timed out waiting for the page to load.");
             }
 
-            RenderedWebElement ajaxPanel = (RenderedWebElement) elementFinder.findElement(By.id(AJAX_INDICATOR), TIMEOUT,
+            WebElement ajaxPanel = (WebElement) elementFinder.findElement(By.id(AJAX_INDICATOR), TIMEOUT,
                     new ExpectedCondition<Boolean>() {
 
                         @Override
                         public Boolean apply(WebDriver driver) {
                             try {
-                                RenderedWebElement ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
+                                WebElement ajaxPanel = (WebElement) driver.findElement(By.id(AJAX_INDICATOR));
                                 return !ajaxPanel.isDisplayed();
                             } catch (Exception e) {
                                 return false;
@@ -953,7 +956,7 @@ public class BaseSeleniumTestClass {
         }
         
         try {
-            RenderedWebElement element = (RenderedWebElement) elementFinder.findElement(By.id(id), TIMEOUT);
+            WebElement element = (WebElement) elementFinder.findElement(By.id(id), TIMEOUT);
                     //driver.findElement(By.id(id));
             if (element.isDisplayed()) {
                 return;
@@ -963,7 +966,7 @@ public class BaseSeleniumTestClass {
         }
         
         final String parentId = id.substring(0, id.lastIndexOf(":"));
-        final RenderedWebElement parentElement = (RenderedWebElement) elementFinder.findElement(By.id(parentId), TIMEOUT);
+        final WebElement parentElement = (WebElement) elementFinder.findElement(By.id(parentId), TIMEOUT);
 //                driver.findElement(By.id(parentId));
         if (!parentElement.isDisplayed()) {
             insureElementIsVisible(parentId);

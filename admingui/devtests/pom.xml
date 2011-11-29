@@ -63,7 +63,7 @@
     </repositories>
 
     <properties>
-        <selenium.version>2.0b3</selenium.version>
+        <selenium.version>2.14.0</selenium.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -155,8 +155,13 @@
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
-            <version>1.8-ea03</version>
+            <version>${jersey.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.1-beta1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -174,11 +179,6 @@
                     <artifactId>testng</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-remote-control</artifactId>
-            <version>${selenium.version}</version>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.htmlunit</groupId>
