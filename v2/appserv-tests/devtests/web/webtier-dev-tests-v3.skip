@@ -1,4 +1,5 @@
 singleengine # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=7548 is fixed
 accessLoggingBadRequests # supported in 3.1.1
 genDocSchema
+responseErrorMessageEncoding # fixed in Grizzly 2.1.8. Remove when 2.1.8 is integrated.
 
