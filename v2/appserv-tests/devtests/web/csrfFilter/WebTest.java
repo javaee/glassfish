@@ -93,7 +93,7 @@ public class WebTest {
             int expectedCode) throws Exception {
 
         StringBuilder sb = new StringBuilder("http://");
-        sb.append(host).append(":").append(port).append(contextRoot);
+        sb.append(host).append(":").append(port).append(contextRoot).append(page);
         if (sessionId != null) {
             sb.append(";jsessionid=").append(sessionId);
         }
