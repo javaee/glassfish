@@ -39,17 +39,6 @@
  */
 package org.glassfish.hk2.tests.basic;
 
-import static org.glassfish.hk2.tests.basic.AssertionUtils.assertInjectedFactory;
-import static org.glassfish.hk2.tests.basic.AssertionUtils.assertInjectedInstance;
-import static org.glassfish.hk2.tests.basic.AssertionUtils.assertInjectedProvider;
-import static org.glassfish.hk2.tests.basic.AssertionUtils.assertQualifierInjectedContent;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -62,44 +51,28 @@ import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.Services;
 import org.glassfish.hk2.TypeLiteral;
 import org.glassfish.hk2.inject.Injector;
-import org.glassfish.hk2.tests.basic.annotations.MarkerA;
-import org.glassfish.hk2.tests.basic.annotations.MarkerB;
-import org.glassfish.hk2.tests.basic.arbitrary.ClassX;
-import org.glassfish.hk2.tests.basic.arbitrary.ConstructorQualifierInjectedClass;
-import org.glassfish.hk2.tests.basic.arbitrary.CustomScopeInjectedClass;
-import org.glassfish.hk2.tests.basic.arbitrary.QualifierInjectedClass;
-import org.glassfish.hk2.tests.basic.contracts.ContractA;
-import org.glassfish.hk2.tests.basic.contracts.ContractB;
-import org.glassfish.hk2.tests.basic.contracts.FactoryProvidedContractA;
-import org.glassfish.hk2.tests.basic.contracts.FactoryProvidedContractB;
-import org.glassfish.hk2.tests.basic.contracts.FactoryProvidedContractC;
-import org.glassfish.hk2.tests.basic.contracts.GenericContract;
-import org.glassfish.hk2.tests.basic.contracts.GenericContractStringImpl;
-import org.glassfish.hk2.tests.basic.contracts.InstanceBoundContract;
-import org.glassfish.hk2.tests.basic.injected.ConstructorInjectedFactoryBindingTestClass;
-import org.glassfish.hk2.tests.basic.injected.ConstructorInjectedInstanceBindingTestClass;
-import org.glassfish.hk2.tests.basic.injected.ConstructorInjectedTypeBindingTestClass;
-import org.glassfish.hk2.tests.basic.injected.FactoryProvidedContractAImpl;
-import org.glassfish.hk2.tests.basic.injected.FactoryProvidedContractBFactory;
-import org.glassfish.hk2.tests.basic.injected.FactoryProvidedContractBImpl;
-import org.glassfish.hk2.tests.basic.injected.FactoryProvidedContractCAImpl;
-import org.glassfish.hk2.tests.basic.injected.FactoryProvidedContractCBImpl;
-import org.glassfish.hk2.tests.basic.injected.FactoryProvidedContractCFactory;
-import org.glassfish.hk2.tests.basic.injected.FieldInjectedFactoryBindingTestClass;
-import org.glassfish.hk2.tests.basic.injected.FieldInjectedInstanceBindingTestClass;
-import org.glassfish.hk2.tests.basic.injected.FieldInjectedTypeBindingTestClass;
-import org.glassfish.hk2.tests.basic.scopes.CustomScope;
-import org.glassfish.hk2.tests.basic.services.ConstructorQualifierInjectedService;
-import org.glassfish.hk2.tests.basic.services.InstanceBoundService;
-import org.glassfish.hk2.tests.basic.services.QualifierInjectedService;
-import org.glassfish.hk2.tests.basic.services.ServiceA;
-import org.glassfish.hk2.tests.basic.services.ServiceB;
-import org.glassfish.hk2.tests.basic.services.ServiceB1;
-import org.glassfish.hk2.tests.basic.services.ServiceC;
-import org.glassfish.hk2.tests.basic.services.ServiceD;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.glassfish.hk2.tests.basic.annotations.*;
+import org.glassfish.hk2.tests.basic.arbitrary.*;
+import org.glassfish.hk2.tests.basic.contracts.*;
+import org.glassfish.hk2.tests.basic.injected.*;
+import org.glassfish.hk2.tests.basic.scopes.*;
+import org.glassfish.hk2.tests.basic.services.*;
+import static org.glassfish.hk2.tests.basic.AssertionUtils.assertInjectedFactory;
+import static org.glassfish.hk2.tests.basic.AssertionUtils.assertInjectedInstance;
+import static org.glassfish.hk2.tests.basic.AssertionUtils.assertInjectedProvider;
+import static org.glassfish.hk2.tests.basic.AssertionUtils.assertQualifierInjectedContent;
+
 import org.jvnet.hk2.annotations.Inject;
+
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * This is a test of basic injection features. To avoid the potential influence
@@ -133,6 +106,11 @@ public class BasicInjectionTest {
                 }
 
             });
+
+            // multibindings
+            binderFactory.bind(MultiBoundContract.class).to(MultiBoundContractServiceA.class);
+            binderFactory.bind(MultiBoundContract.class).to(MultiBoundContractServiceB.class);
+            binderFactory.bind(MultiBoundContract.class).to(MultiBoundContractServiceC.class);
 
             // instance bindings
             binderFactory.bind(InstanceBoundContract.class).toInstance(boundContractInstance);
@@ -174,6 +152,16 @@ public class BasicInjectionTest {
     @BeforeClass
     public static void setup() {
         services = HK2.get().create(null, new TestModule());
+    }
+
+    @Test
+    @Ignore
+    public void testAllContractBindingsRetrieval() {
+        assertEquals(3, services.forContract(MultiBoundContract.class).all().size());
+
+        assertEquals(1, services.forContract(ContractA.class).all().size());
+        assertEquals(1, services.forContract(ContractB.class).all().size());
+        assertEquals(1, services.forContract(ContractB.class).annotatedWith(MarkerA.class).all().size());
     }
 
     @Test
