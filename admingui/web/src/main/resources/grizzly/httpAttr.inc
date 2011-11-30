@@ -175,5 +175,12 @@
             <sun:checkbox id="xpoweredByEnabled" selected="#{pageSession.httpMap['xpoweredBy']}" selectedValue="true" />
         </sun:property>
 
+        <sun:property id="encodedSlash"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.EncodedSlash}" helpText="$resource{i18n_web.http.EncodedSlashHelp}" >
+            <sun:checkbox id="encodedSlashEnabled" label="$resource{i18n_web.common.enabled}" selected="#{pageSession.httpMap['encodedSlashEnabled']}" selectedValue="true" />
+        </sun:property>
 
+        <sun:property id="websockets"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.WebsocketsSupport}" helpText="$resource{i18n_web.http.WebsocketsSupportHelp}" >
+            <sun:checkbox id="websocketsEnabled" label="$resource{i18n_web.common.enabled}" selected="#{pageSession.httpMap['websocketsSupportEnabled']}" selectedValue="true" />
+        </sun:property>
+"<br /><br />
 </sun:propertySheetSection>
