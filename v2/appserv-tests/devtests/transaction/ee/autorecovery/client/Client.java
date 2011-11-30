@@ -115,8 +115,8 @@ public class Client extends AdminBaseDevTest {
 
         boolean res = execute(appname, port, servlet, "RESULT:3");
 
-        stat.addStatus("transaction-ee-" + operation, ((res)? stat.PASS : stat.FAIL));
-        stat.printSummary("transaction-ee-" + operation);
+        stat.addStatus("transaction-ee-autorecovery" + operation, ((res)? stat.PASS : stat.FAIL));
+        stat.printSummary("transaction-ee-autorecovery" + operation);
     }
 
     public void clean(String name) {

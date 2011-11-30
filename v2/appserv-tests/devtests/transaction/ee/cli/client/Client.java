@@ -204,8 +204,8 @@ public class Client extends AdminBaseDevTest {
 
         boolean res = execute(appname, port, servlet, "RESULT:3");
 
-        stat.addStatus("transaction-ee-" + operation, ((res)? stat.PASS : stat.FAIL));
-        stat.printSummary("transaction-ee-" + operation);
+        stat.addStatus("transaction-ee-cli" + operation, ((res)? stat.PASS : stat.FAIL));
+        stat.printSummary("transaction-ee-cli" + operation);
     }
 
     public void clean(String name) {

@@ -128,8 +128,8 @@ public class Client extends AdminBaseDevTest {
 
         boolean res = execute(appname, port, servlet, "RESULT:6");
 
-        stat.addStatus("transaction-ee-" + operation, ((res)? stat.PASS : stat.FAIL));
-        stat.printSummary("transaction-ee-" + operation);
+        stat.addStatus("transaction-ee-mdb" + operation, ((res)? stat.PASS : stat.FAIL));
+        stat.printSummary("transaction-ee-mdb" + operation);
     }
 
     public void clean(String name) {
