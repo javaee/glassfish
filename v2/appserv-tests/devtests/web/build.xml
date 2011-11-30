@@ -523,6 +523,7 @@
         <ant dir="sslServerName" target="all"/>
         <ant dir="v3HttpListenerDynamicConfig" target="all"/>
         <ant dir="wrongTransport" target="all"/>
+        <ant dir="trailerHeader" target="all"/>
     </target>
 
     <target name="comet" depends="init-report">
