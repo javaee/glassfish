@@ -164,6 +164,32 @@ public class BasicInjectionTest {
         assertEquals(1, services.forContract(ContractB.class).annotatedWith(MarkerA.class).all().size());
     }
 
+    private static class OptionallyInjected {
+        @Inject(optional=true)
+        ContractA contractA;
+    }
+
+    @Test
+    public void testOptionalNullFactoryValueInjection() {
+        Injector injector = HK2.get().create(null, new Module() {
+
+            @Override
+            public void configure(BinderFactory binderFactory) {
+                binderFactory.bind(ContractA.class).toFactory(new Factory<ContractA>() {
+
+                    @Override
+                    public ContractA get() throws ComponentException {
+                        return null;
+                    }
+                });
+            }
+        }).forContract(Injector.class).get();
+
+        OptionallyInjected oi = injector.inject(OptionallyInjected.class);
+        assertNotNull(oi);
+        assertNull(oi.contractA);
+    }
+
     @Test
     public void testTypeBindingProvisioningViaServicesApi() {
         final ServiceC sc = services.forContract(ServiceC.class).get();

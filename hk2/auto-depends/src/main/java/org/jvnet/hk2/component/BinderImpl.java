@@ -106,7 +106,7 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
         owner.add(resolvedBinder);
 //        in(Singleton.class);
     }
-    
+
     @Override
     public <T extends V> ResolvedBinder<T> toFactory(final org.glassfish.hk2.Factory<T> provider) {
 
@@ -119,13 +119,15 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
                 while(itrClasses.hasNext() && contractType==null) {
                     contractType = itrClasses.next();
                 }
-                if (contractType==null) 
+                if (contractType==null)
                     throw new RuntimeException("You must use a bind(Class contractType) API to bind a Provider");
                 Inhabitant<T> inh = new AbstractCreatorImpl<T>(contractType, habitat, metadataMap) {
                     @Override
                     public T create(Inhabitant onBehalfOf) throws ComponentException {
                         T t = provider.get();
-                        inject(habitat, t, onBehalfOf);
+                        if (t != null) {
+                            inject(habitat, t, onBehalfOf);
+                        }
                         return t;
                     }
                 };
@@ -189,7 +191,7 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
     void addContract(String contractName) {
         contracts.put(contractName, null);
     }
-    
+
     void addContract(String contractName, Class<?> rawContractType) {
         contracts.put(contractName, rawContractType);
     }
