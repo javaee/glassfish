@@ -60,7 +60,7 @@ package org.apache.naming;
 
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
-import com.sun.grizzly.util.Utils;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Utility methods originally defined in org.apache.catalina.util.RequestUtil
@@ -69,6 +69,8 @@ import com.sun.grizzly.util.Utils;
  */
 
 public final class Util {
+    private static final  ConcurrentHashMap<String, Charset> charsetAliasMap =
+            new ConcurrentHashMap<String, Charset>();
 
     /**
      * Normalize a relative URI path that may have relative values ("/./",
@@ -166,7 +168,7 @@ public final class Util {
             if (enc == null) {
                 bytes = str.getBytes(Charset.defaultCharset());
             } else {
-                bytes = str.getBytes(Utils.lookupCharset(enc));
+                bytes = str.getBytes(lookupCharset(enc));
             }
         } catch (UnsupportedCharsetException uee) {}
 
@@ -213,7 +215,7 @@ public final class Util {
         }
         if (enc != null) {
             try {
-                return new String(bytes, 0, ox, Utils.lookupCharset(enc));
+                return new String(bytes, 0, ox, lookupCharset(enc));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -234,4 +236,15 @@ public final class Util {
         return 0;
     }
 
+    private static Charset lookupCharset(final String charsetName) {
+        Charset charset = charsetAliasMap.get(charsetName);
+        if (charset == null) {
+            final Charset newCharset = Charset.forName(charsetName);
+            final Charset prevCharset = charsetAliasMap.putIfAbsent(charsetName, newCharset);
+                                                                    
+            charset = prevCharset == null ? newCharset : prevCharset;
+        }
+
+        return charset;
+    }
 }
