@@ -54,7 +54,10 @@ import com.sun.logging.LogDomains;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.List;
+import java.io.File;
+import java.io.IOException;
+import com.sun.enterprise.util.SystemPropertyConstants;
+
 
 @Service(name = "AdminConsoleStartupService")
 public class AdminConsoleStartupService implements  PostConstruct, PostStartup {
@@ -72,6 +75,7 @@ public class AdminConsoleStartupService implements  PostConstruct, PostStartup {
     private Domain domain;
 
     private static final Logger logger = LogDomains.getLogger(AdminConsoleStartupService.class, LogDomains.CORE_LOGGER);
+    private final long ONE_DAY = 24 * 60 * 60 * 1000;
 
     @Override
     public void postConstruct() {
@@ -93,28 +97,43 @@ public class AdminConsoleStartupService implements  PostConstruct, PostStartup {
             initPropVal = initProp.getValue();
         }
         if (initPropVal == null) {
-            return;
+            initPropVal = "DEFAULT";
         }
-
 
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "AdminConsoleStartupService, console loading option is {0}", initPropVal);
         }
 
-        if (initPropVal.equalsIgnoreCase("SYSTEM_DEFAULT")) {
+        if (initPropVal.equalsIgnoreCase("DEFAULT")) {
             handleDefault();
-        } else if (initPropVal.equalsIgnoreCase("OPTIMIZE_LOW")) {
+        } else if (initPropVal.equalsIgnoreCase("LOW")) {
             handleLow();
-        } else if (initPropVal.equalsIgnoreCase("OPTIMIZE_HIGH")) {
+        } else if (initPropVal.equalsIgnoreCase("HIGH")) {
             handleHigh();
         }
     }
 
     private void handleDefault() {
-
         /* if there are servers other than DAS */
         if ((domain.getServers().getServer().size() > 1)) {
+            if (logger.isLoggable(Level.FINER)) {
+                logger.log(Level.FINER, "AdminConsoleStartup DAS usecase");
+            }
             handleHigh();
+            return;
+        }
+        // if last access was within a day
+        long currentTime = System.currentTimeMillis();
+        try {
+            long lastTime = getTimeStamp();
+            if (currentTime  - lastTime < ONE_DAY) {
+                if (logger.isLoggable(Level.FINER)) {
+                    logger.log(Level.FINER, "AdminConsoleStartup frequent user, lastTime =  ", lastTime);
+                }
+                handleHigh();
+            }
+        } catch (IOException ex) {
+                logger.fine(ex.getMessage());
         }
     }
 
@@ -132,6 +151,12 @@ public class AdminConsoleStartupService implements  PostConstruct, PostStartup {
         }
     }
 
+    private long getTimeStamp() throws IOException {
+        File f = new File(env.getConfigDirPath(), ".consolestate");
+        if (!f.exists())
+            return 0L;
+        return f.lastModified();
+    }
 
 
 }

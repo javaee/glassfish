@@ -79,12 +79,17 @@ import javax.servlet.http.HttpServletRequest;
 import org.glassfish.admingui.common.security.AdminConsoleAuthModule;
 
 import org.jvnet.hk2.component.Habitat;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import java.io.IOException;
+import org.glassfish.server.ServerEnvironmentImpl;
+import org.jvnet.hk2.annotations.Inject;
 
 /**
  *
  * @author anilam
  */
 public class GuiUtil {
+
     /** Creates a new instance of GuiUtil */
     public GuiUtil() {
     }
@@ -228,8 +233,39 @@ public class GuiUtil {
                 nfe.printStackTrace();
             }
         }
+        try {
+            setTimeStamp();
+        } catch (Exception ex) {
+            logger.log(Level.FINE, ex.getMessage());
+        }
+
     }
 
+    private static File getTimeStampFile() {
+        Map result = RestUtil.restRequest(GuiUtil.getSessionValue("REST_URL") +
+                "/location", null, "GET", null, false);
+        String configDir = (String) ((Map)((Map)result.get("data")).get("properties")).get("Config-Dir");
+        if (configDir != null)
+            return new File(configDir, ".consolestate");
+        return null;
+    }
+
+    public static void setTimeStamp() throws Exception {
+        File f = getTimeStampFile();
+        if (!f.createNewFile()) {
+            f.setLastModified(System.currentTimeMillis());
+        }
+
+    }
+
+    public static long getTimeStamp() throws Exception {
+        File f = getTimeStampFile();
+        if (f == null)
+            throw new Exception("Could not get TimeStamp file for admin console");
+        if (!f.exists())
+            return 0L;
+        return f.lastModified();
+    }
 
     public static void setSessionValue(String key, Object value){
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
