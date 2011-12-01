@@ -280,7 +280,6 @@ public class RestUtil {
         return valueMap;
     }
 
-
     private static String getMessage(Map aMap){
         String message = "";
         if (aMap != null){
@@ -394,7 +393,6 @@ public class RestUtil {
         }
         return null;
     }
-
 
     public static boolean hasWarning(Map responseMap){
         if (responseMap.get("data") != null){
