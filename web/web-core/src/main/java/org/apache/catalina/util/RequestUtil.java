@@ -584,4 +584,31 @@ public final class RequestUtil {
         return sb.toString();
     }
 
+    /**
+     * This is a convenient API which wraps around the one in Grizzly and throws
+     * checked java.io.UnsupportedEncodingException instead of
+     * unchecked java.nio.charset.UnsupportedCharsetException.
+     * cf. String.getBytes(String charset) throws UnsupportedEncodingException
+     *
+     * @exception UnsupportedEncodingException
+     */
+    public static Charset lookupCharset(String enc) throws UnsupportedEncodingException {
+        Charset charset = null;
+        Throwable throwable = null;
+        try {
+            charset = Utils.lookupCharset(enc);
+        } catch(Throwable t) {
+            throwable = t;
+        }
+
+        if (charset == null) {
+            UnsupportedEncodingException uee = new UnsupportedEncodingException();
+            if (throwable != null) {
+                uee.initCause(throwable);
+            }
+            throw uee;
+        }
+
+        return charset;
+    }
 }

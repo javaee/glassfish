@@ -67,7 +67,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.grizzly.util.Utils;
+import org.apache.catalina.util.RequestUtil;
 
 /**
  * This class implements an output stream in which the data is 
@@ -348,7 +348,7 @@ public class ByteArrayOutputStream extends OutputStream {
      * @see java.io.ByteArrayOutputStream#toString(String)
      */
     public String toString(String enc) throws UnsupportedEncodingException {
-        return new String(toByteArray(), Utils.lookupCharset(enc));
+        return new String(toByteArray(), RequestUtil.lookupCharset(enc));
     }
 
 }

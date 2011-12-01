@@ -62,7 +62,6 @@ import com.sun.appserv.ProxyHandler;
 import com.sun.enterprise.security.integration.RealmInitializer;
 import com.sun.grizzly.tcp.ActionCode;
 import com.sun.grizzly.tcp.CompletionHandler;
-import com.sun.grizzly.util.Utils;
 import com.sun.grizzly.util.buf.B2CConverter;
 import com.sun.grizzly.util.buf.ByteChunk;
 import com.sun.grizzly.util.buf.CharChunk;
@@ -1772,14 +1771,19 @@ public class Request
                 AccessController.doPrivileged(new PrivilegedExceptionAction<String>() {
 
                     public String run() throws UnsupportedEncodingException {
-                        return new String(finalBuffer, Utils.lookupCharset(finalEnc));
+                        return new String(finalBuffer, RequestUtil.lookupCharset(finalEnc));
                     }
                 });
             } catch (PrivilegedActionException pae) {
-                throw (UnsupportedEncodingException) pae.getCause();
+                Throwable t = pae.getCause();
+                if (t instanceof UnsupportedEncodingException) {
+                    throw (UnsupportedEncodingException)t;
+                } else {
+                    throw new IllegalStateException(t);
+                }
             }
         } else {
-            new String(buffer, Utils.lookupCharset(enc));
+            new String(buffer, RequestUtil.lookupCharset(enc));
         }
         // END S1AS 6179607
 
