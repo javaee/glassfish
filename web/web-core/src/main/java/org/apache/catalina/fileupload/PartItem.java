@@ -63,10 +63,14 @@ import org.apache.catalina.Globals;
 
 import javax.servlet.http.Part;
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import com.sun.grizzly.util.Utils;
 
 /**
  * This class implements java.servlet.http.Part.
@@ -103,6 +107,7 @@ class PartItem
     private static final String UID =
             new java.rmi.server.UID().toString()
                 .replace(':', '_').replace('-', '_');
+
 
     /**
      * Counter used in unique identifier generation.
@@ -366,7 +371,7 @@ class PartItem
      */
     public String getString(final String charset)
         throws UnsupportedEncodingException {
-        return new String(get(), charset);
+        return new String(get(), Utils.lookupCharset(charset));
     }
 
 
@@ -390,9 +395,9 @@ class PartItem
             charset = Globals.ISO_8859_1_ENCODING;
         }
         try {
-            return new String(rawdata, charset);
-        } catch (UnsupportedEncodingException e) {
-            return new String(rawdata);
+            return new String(rawdata, Utils.lookupCharset(charset));
+        } catch (UnsupportedCharsetException e) {
+            return new String(rawdata, Charset.defaultCharset());
         }
     }
 

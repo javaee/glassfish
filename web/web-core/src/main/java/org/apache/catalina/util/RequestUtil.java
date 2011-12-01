@@ -58,10 +58,13 @@
 
 package org.apache.catalina.util;
 
+import com.sun.grizzly.util.Utils;
 import com.sun.grizzly.util.buf.ByteChunk;
 import org.apache.naming.Util;
 import javax.servlet.http.Cookie;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.*;
 
 /**
@@ -75,6 +78,8 @@ import java.util.*;
 public final class RequestUtil {
 
     private static final String SESSION_VERSION_SEPARATOR = ":";
+
+    private static final Charset UTF_8_CHARSET = Utils.lookupCharset("UTF-8");
 
 
     /**
@@ -289,11 +294,11 @@ public final class RequestUtil {
             byte[] bytes = null;
             try {
                 if (encoding == null) {
-                    bytes = data.getBytes();
+                    bytes = data.getBytes(Charset.defaultCharset());
                 } else {
-                    bytes = data.getBytes(encoding);
+                    bytes = data.getBytes(Utils.lookupCharset(encoding));
                 }
-            } catch (UnsupportedEncodingException uee) {
+            } catch (UnsupportedCharsetException uee) {
             }
 
             parseParameters(map, bytes, encoding);
@@ -466,7 +471,7 @@ public final class RequestUtil {
                 byte c = data[ix++];
                 switch ((char) c) {
                 case '&':
-                    value = new String(data, 0, ox, encoding);
+                    value = new String(data, 0, ox, Utils.lookupCharset(encoding));
                     if (key != null) {
                         putMapEntry(map, key, value);
                         key = null;
@@ -475,7 +480,7 @@ public final class RequestUtil {
                     break;
                 case '=':
                     if (key == null) {
-                        key = new String(data, 0, ox, encoding);
+                        key = new String(data, 0, ox, Utils.lookupCharset(encoding));
                         ox = 0;
                     } else {
                         data[ox++] = c;
@@ -494,7 +499,7 @@ public final class RequestUtil {
             }
             //The last value does not end in '&'.  So save it now.
             if (key != null) {
-                value = new String(data, 0, ox, encoding);
+                value = new String(data, 0, ox, Utils.lookupCharset(encoding));
                 putMapEntry(map, key, value);
             }
         }
@@ -525,9 +530,9 @@ public final class RequestUtil {
             if (st.hasMoreTokens()) {
                 try {
                     String contextPath = new String(
-                            HexUtils.convert(hexPath), "UTF-8");
+                            HexUtils.convert(hexPath), UTF_8_CHARSET);
                     result.put(contextPath, st.nextToken());
-                } catch(UnsupportedEncodingException ex) {
+                } catch(Exception ex) {
                     //should not be here
                     throw new IllegalArgumentException(ex);
                 }
@@ -567,8 +572,8 @@ public final class RequestUtil {
             String contextPath = e.getKey();
             // encode so that there is no / or %2F
             try {
-                sb.append(new String(HexUtils.convert(contextPath.getBytes("UTF-8"))));
-            } catch(UnsupportedEncodingException ex) {
+                sb.append(new String(HexUtils.convert(contextPath.getBytes(UTF_8_CHARSET))));
+            } catch(Exception ex) {
                 //should not be here
                 throw new IllegalArgumentException(ex);
             }
