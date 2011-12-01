@@ -60,7 +60,7 @@
     <target name="compile">
         <javac
             srcdir="."
-            classpath="${env.APS_HOME}/lib/reportbuilder.jar;${env.S1AS_HOME}/modules/javax.servlet.jsp.jar"
+            classpath="${env.APS_HOME}/lib/reportbuilder.jar;${env.S1AS_HOME}/modules/javax.el-api.jar"
             includes="WebTest.java"/>
 
     </target> 
@@ -69,8 +69,8 @@
         <java classname="WebTest">
           <classpath>
            <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
-           <pathelement location="${env.S1AS_HOME}/modules/javax.servlet.jsp.jar"/>
-           <pathelement location="${env.S1AS_HOME}/modules/el-impl.jar"/>
+           <pathelement location="${env.S1AS_HOME}/modules/javax.el-api.jar"/>
+           <pathelement location="${env.S1AS_HOME}/modules/javax.el.jar"/>
            <pathelement location="."/>
          </classpath>
         </java>
