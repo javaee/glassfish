@@ -191,20 +191,26 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
             }
 
         } else if (node.getType().equals("SSH")) {
-            try {
-                pidFile = new File (insDU.getLocalInstanceDir(instance.getName()) , "config/pid");
-            } catch (java.io.IOException eio){
-                // could not get the file name so can't see if it still exists.  Need to exit
-                return;
-            }
+            // create the absolute path to the pid file on the remote host.
+            String nodeDir = node.getNodeDirAbsolute();
+            File nodeDirFile = (nodeDir != null ?
+                 new File(nodeDir) :
+                  insDU.defaultLocalNodeDirFile());
+            String nodeConfigDir = node.getName()+File.separator + instance.getName()+File.separator+"config";
+            File insDirFile= new File(nodeDirFile, nodeConfigDir);
             //use SFTPClient to see if file exists.
             launcher = habitat.getComponent(SSHLauncher.class);
             launcher.init(node, logger);
             try {
+                // should look for the parent to make sure we have the correct path first
                 ftpClient = launcher.getSFTPClient();
-                if (ftpClient.exists(pidFile.toString())){
-                    // server still not down, do we poll?
-                    errorMessage = pollForRealDeath("SSH");
+                if (ftpClient.exists(insDirFile.toString())){
+                    // check if file is there
+                    pidFile = new File (insDirFile , "pid");
+                    if (ftpClient.exists(pidFile.toString())){
+                        // server still not down, do we poll?
+                        errorMessage = pollForRealDeath("SSH");
+                    }
                 }
             } catch (IOException ex) {
                 //could not get to other host
