@@ -316,6 +316,7 @@ ListLbConfig
         {"Node", "delete-node-config", "DELETE", "delete-node-config", "Delete Node Config", "id=$parent"},
         {"Node", "delete-node-ssh", "DELETE", "delete-node-ssh", "Delete Node SSH", "id=$parent"},
         {"Nodes", "create-node-ssh", "POST", "create-node-ssh", "Create Node SSH"},
+        {"Nodes", "_setup-ssh", "POST", "setup-ssh", "Setup SSH"},
         {"Nodes", "list-nodes-ssh", "GET", "list-nodes-ssh", "list-nodes-ssh"},
         {"Nodes", "validate-dcom", "POST", "validate-dcom", "Validate Node DCOM"},
         {"Node",    "ping-node-dcom",   "GET",      "ping-node-dcom",   "Ping DCOM Node",   "id=$parent"},
