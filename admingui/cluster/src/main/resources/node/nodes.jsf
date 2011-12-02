@@ -40,8 +40,6 @@
 
 -->
 
-<!-- cluster/clusters.jsf -->
-
 <!initPage
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
@@ -63,7 +61,18 @@
         />
     </sun:button>
 </define>
-
+<!define name="extraButton2">
+    <sun:button id="button2" text="$resource{i18ncs.button.DeleteAndUninstall}" disabled="#{true}" primary="#{false}"
+            onClick="if ( getConfirm(this,'$resource{i18ncs.msg.JS.confirmUninstallNodes}') )
+                { return submitAndDisable(this, '$resource{i18n.button.Processing}');}  else {return false;} " >
+        <!command
+            getUIComponent(clientId="$pageSession{tableRowGroupId}", component="#{requestScope.tableRowGroup}");
+            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows="#{requestScope.selectedRows}");
+            gf.nodeAction(rows="#{requestScope.selectedRows}", action="delete-node-uninstall" , nodeInstanceMap="#{pageSession.nodeInstanceMap}");
+            gf.redirect(page="/cluster/node/nodes.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+        />
+    </sun:button>
+</define>
 
 <!define name="content">
     <event>
@@ -100,10 +109,10 @@
 
 <sun:table id="nodesTable" title="#{tableTitle}"
     deselectMultipleButton="$boolean{true}"
-    deselectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
-    selectMultipleButton="$boolean{true}"
-    selectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)" >
-     <!afterCreate
+            deselectMultipleButtonOnClick="setTimeout('changeTwoTableButtons()', 0)"
+            selectMultipleButton="$boolean{true}"
+            selectMultipleButtonOnClick="setTimeout('changeTwoTableButtons()', 0)" >
+    <!afterCreate
         getClientId(component="$this{component}" clientId=>$page{tableId});
     />
 
@@ -118,7 +127,7 @@
         <sun:checkbox id="select"
             selected="#{td.value.selected}"
             selectedValue="$boolean{true}"
-            onClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
+            onClick="setTimeout('changeTwoTableButtons()', 0);"
         />
     </sun:tableColumn>
     <sun:tableColumn headerText="$resource{i18n.common.name.header}"  sort="name" rowHeader="$boolean{true}" valign="top" id="col1">

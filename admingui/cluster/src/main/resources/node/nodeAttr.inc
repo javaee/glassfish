@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -47,7 +47,9 @@
     createMap(result="#{pageSession.attrsMap}");
     foreach(var="attr" list="#{requestScope.attrsList}"){
         mapGet(Map="#{pageSession.valueMap}" Key="#{requestScope.attr}" Value="#{requestScope.val}");
-        mapPut(map="#{pageSession.attrsMap}", key="#{requestScope.attr}" value="#{requestScope.val}");
+        if ("#{requestScope.val}"){
+            mapPut(map="#{pageSession.attrsMap}", key="#{requestScope.attr}" value="#{requestScope.val}");
+        }
     }
 </handler>
 
@@ -108,7 +110,7 @@
                         }
                         gfr.prepareNodeCmd();
                         mapPut(map="#{pageSession.attrsMap}"  key="force" value="#{pageSession.valueMap['winForce']}");
-                       
+
                     }
                     gf.restRequest(endpoint="#{sessionScope.REST_URL}/#{requestScope.endpoint}" method="POST" attrs="#{pageSession.attrsMap}")
                     prepareSuccessfulMsg();
@@ -136,13 +138,28 @@
                 if ("#{pageSession.valueMap['type']}=SSH"){
                     gfr.fixPswd();
                     setAttribute(key="attrsList" value={"id", "nodehost", "nodedir", "installdir", "sshport", "sshuser", "sshpassword" "sshkeyfile", "force"});
-                    setAttribute(key="endpoint" value="nodes/create-node");
+                    setAttribute(key="endpoint" value="nodes/create-node-ssh");
                     if (!#{pageSession.valueMap['force']}){
                         mapPut(map="#{pageSession.valueMap}"  key="force" value="false");
                     }
                     gfr.prepareNodeCmd();
+                    if ("#{pageSession.valueMap['installOption']}=true"){
+                        mapPut(map="#{pageSession.attrsMap}"  key="install"  value="true")
+                        mapPut(map="#{pageSession.attrsMap}"  key="archive"  value="#{pageSession.valueMap['archive']}");
+                    }
                 }
                 if ("#{pageSession.valueMap['type']}=DCOM"){
+                    //call validate-dcom first
+                    if ("#{pageSession.valueMap['validateDcom']}"){
+                        createMap(result="#{pageSession.dMap}");
+                        foreach(var="dattr" list={"windowsuser", "windowsdomain", "nodehost", "windowspassword" "remotetestdir" } ){
+                            mapGet(Map="#{pageSession.valueMap}" Key="#{requestScope.dattr}" Value="#{requestScope.dval}");
+                            if ("#{requestScope.dval}"){
+                                mapPut(map="#{pageSession.dMap}", key="#{requestScope.dattr}" value="#{requestScope.dval}");
+                            }
+                        }
+                        gf.restRequest( endpoint="#{sessionScope.REST_URL}/nodes/validate-dcom" attrs="#{pageSession.dMap}" method="POST" )
+                    }
                     gfr.fixWinPswd();
                     setAttribute(key="attrsList" value={"id", "nodehost", "nodedir", "installdir", "windowsuser", "windowsdomain", "windowspassword"});
                     setAttribute(key="endpoint" value="nodes/create-node-dcom");
@@ -151,7 +168,12 @@
                     }
                     gfr.prepareNodeCmd();
                     mapPut(map="#{pageSession.attrsMap}"  key="force" value="#{pageSession.valueMap['winForce']}");
+                    if ("#{pageSession.valueMap['installOption']}=true"){
+                        mapPut(map="#{pageSession.attrsMap}"  key="install"  value="true")
+                        mapPut(map="#{pageSession.attrsMap}"  key="archive"  value="#{pageSession.valueMap['archive']}");
+                    }
                 }
+                
                 gf.restRequest( endpoint="#{sessionScope.REST_URL}/#{requestScope.endpoint}" attrs="#{pageSession.attrsMap}" method="POST" )
                 gf.redirect(page="#{request.contextPath}/cluster/node/nodes.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
              />
@@ -176,6 +198,8 @@
                    setPageSessionAttribute(key="showCONFIG" value="#{false}")
                    setPageSessionAttribute(key="showInstalldirSSH" value="#{true}");
                    setPageSessionAttribute(key="showInstalldirConfig" value="#{false}");
+                   setPageSessionAttribute(key="showInstallOp" value="#{true}");
+
             }
             if ("#{pageSession.valueMap['type']}=CONFIG"){
                    setPageSessionAttribute(key="showSSH" value="#{false}")
@@ -183,6 +207,7 @@
                    setPageSessionAttribute(key="showCONFIG" value="#{true}")
                    setPageSessionAttribute(key="showInstalldirSSH" value="#{false}");
                    setPageSessionAttribute(key="showInstalldirConfig" value="#{true}");
+                   setPageSessionAttribute(key="showInstallOp" value="#{false}");
             }
             if ("#{pageSession.valueMap['type']}=DCOM"){
                    setPageSessionAttribute(key="showSSH" value="#{false}")
@@ -190,21 +215,27 @@
                    setPageSessionAttribute(key="showCONFIG" value="#{false}")
                    setPageSessionAttribute(key="showInstalldirSSH" value="#{true}");
                    setPageSessionAttribute(key="showInstalldirConfig" value="#{false}");
+                   setPageSessionAttribute(key="showInstallOp" value="#{true}");
             }
+            mapPut(map="#{pageSession.valueMap}", key="archive" value="#{pageSession.valueMap['hiddenArchive']}");
         />
-    </event>
+     </event>
+
     <sun:propertySheet id="propertySheet">
         <sun:propertySheetSection id="propertSectionTextField">
             <sun:property id="nameProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" helpText="$resource{i18ncs.node.NameHelp}">
                 <sun:textField id="name" text="#{pageSession.valueMap['id']}" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.Name']}" styleClass="required" required="#{true}" />
             </sun:property>
 
+
             <sun:property id="staticnameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" >
                 <sun:staticText id="IdStatic" text="#{pageSession.nodeName}"/>
             </sun:property>
+
             <sun:property id="typeProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.type}" helpText="$resource{i18ncs.node.typeHelp}">
                 <sun:dropDown id="type" labels={"SSH" "DCOM" "CONFIG"}  selected="#{pageSession.valueMap['type']}"
-                              onChange="javascript:showSection(this.value, '#{pageSession.sshConnectorSectionId}', '#{pageSession.dcomSectionId}', '#{pageSession.installdirSshId}', '#{pageSession.installdirConfigId}');">
+                              onChange="javascript:showSection(this.value, '#{pageSession.sshConnectorSectionId}', '#{pageSession.dcomSectionId}', '#{pageSession.installdirSshId}', '#{pageSession.installdirConfigId}',
+                                        '#{pageSession.installProp}', '#{pageSession.archProp}');">
                 <!afterCreate
                     getClientId(component="$this{component}" clientId="#{pageSession.typeId}");
                 />
@@ -230,17 +261,53 @@
                     getClientId(component="$this{component}" clientId="#{pageSession.installdirSshId}");
                 />
             </sun:property>
-                
+
             <sun:property id="installdir-config" visible="#{pageSession.showInstalldirConfig}"   labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.InstallDir}" helpText="$resource{i18ncs.node.InstallDirHelp}">
                 <sun:textField id="installDirConfig" text="#{pageSession.valueMap['installdirConfig']}"  columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.InstallDir']}"  />
                  <!afterCreate
                     getClientId(component="$this{component}" clientId="#{pageSession.installdirConfigId}");
                 />
-                 
+
             </sun:property>
-               
+
             <sun:property>
                 <sun:staticText text=" "/>
+            </sun:property>
+
+            <sun:property id="installOption"  rendered="#{!edit}" visible="#{pageSession.showInstallOp}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.installNode}" helpText="$resource{i18ncs.node.installNodeHelp}">
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId="#{pageSession.installProp}");
+                />
+                <sun:checkbox id="installOption" selected="#{pageSession.valueMap['installOption']}" selectedValue="true"  label="Enabled"
+                              onChange="setDirPath('#{pageSession.installOptionId}', '#{pageSession.dirPathId}', '#{pageSession.filSelectBtnId}')" >
+                    <!afterCreate
+                        getClientId(component="$this{component}" clientId="#{pageSession.installOptionId}");
+                    />
+                </sun:checkbox>
+            </sun:property>
+
+
+            <sun:property id="dirPath"  rendered="#{!edit}" visible="#{pageSession.showInstallOp}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.archiveFile}" helpText="$resource{i18ncs.node.archiveFileHelp}">
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId="#{pageSession.archProp}");
+                />
+                <sun:textField id="dirPath" disabled="true" text="#{pageSession.valueMap['archive']}" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.deploy.dirPath']}"
+                               onChange="document.getElementById('#{pageSession.hiddenDirPathId}').value=this.value;" >
+                    <!afterCreate
+                        getClientId(component="$this{component}" clientId=>$page{dirPathId});
+                    />
+                </sun:textField>
+                <sun:hidden id="dirP" value="#{pageSession.valueMap['hiddenArchive']}">
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{hiddenDirPathId});
+                />
+            </sun:hidden>
+                <sun:button id="filSelectBtn" disabled="#{true}"  primary="#{false}" text="$resource{i18n.button.BrowseFile}"
+                    onClick="javascript: var win = window.open('#{request.contextPath}/cluster/node/nodeFileChooser.jsf?dirPathId=#{dirPathId}&hiddenDirPathId=#{hiddenDirPathId}', 'nodeFileChooserPopup', 'height=580, width=650, top='+((screen.height - (screen.height/1.618))-(500/2))+',left='+((screen.width-650)/2)+', scrollbars, resizable');win.focus(); return false" >
+                     <!afterCreate
+                        getClientId(component="$this{component}" clientId=>$page{filSelectBtnId});
+                    />
+                </sun:button>
             </sun:property>
 
         </sun:propertySheetSection>
@@ -312,6 +379,14 @@
             />
             <sun:property id="force"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.force}" helpText="$resource{i18ncs.node.forceHelp}">
                 <sun:checkbox id="force" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['winForce']}" selectedValue="true" />
+            </sun:property>
+
+            <sun:property id="validate"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.validateDcom}" helpText="$resource{i18ncs.node.validateDcomHelp}">
+                <sun:checkbox id="validate"  selected="#{pageSession.valueMap['validateDcom']}" label="$resource{i18n.common.Enabled}" selectedValue="true" />
+            </sun:property>
+
+            <sun:property id="testDir"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.remotetestdir}" helpText="$resource{i18ncs.node.remotetestdirHelp}">
+                <sun:textField id="testDir" text="#{pageSession.valueMap['remotetestdir']}" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.deploy.dirPath']}"  />
             </sun:property>
 
             <sun:property id="winDomain"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.windowDomain}" helpText="$resource{i18ncs.node.windowDomainHelp}">

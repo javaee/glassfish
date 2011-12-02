@@ -46,7 +46,8 @@
     setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.node.EditPageTitle}"
-    guiOnLoad="showSection('#{pageSession.valueMap['type']}', '#{pageSession.sshConnectorSectionId}', '#{pageSession.dcomSectionId}', '#{pageSession.installdirSshId}', '#{pageSession.installdirConfigId}');
+    guiOnLoad="showSection('#{pageSession.valueMap['type']}', '#{pageSession.sshConnectorSectionId}', '#{pageSession.dcomSectionId}', '#{pageSession.installdirSshId}', '#{pageSession.installdirConfigId}',
+                            '#{pageSession.installProp}', '#{pageSession.archProp}');
                showPswdSection('#{pageSession.psSelected}', '#{pageSession.ps1Id}', '#{pageSession.ps2Id}', '#{pageSession.pswdAliasId}');" >
 <!define name="content">
 <event>
@@ -61,8 +62,6 @@
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.attrMap}");
 
-        println("--------");
-        println("#{pageSession.attrMap}");
         createMap(result="#{pageSession.valueMap}")
         mapPut(map="#{pageSession.valueMap}"  key="nodehost"  value="#{pageSession.attrMap['nodeHost']}");
         mapPut(map="#{pageSession.valueMap}"  key="nodedir"  value="#{pageSession.attrMap['nodeDir']}");

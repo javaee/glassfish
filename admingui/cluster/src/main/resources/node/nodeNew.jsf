@@ -47,7 +47,8 @@
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.node.NewPageTitle}" 
         guiOnLoad="showPswdSection('#{pageSession.psSelected}', '#{pageSession.ps1Id}', '#{pageSession.ps2Id}', '#{pageSession.pswdAliasId}');
-                   showPswdSection('#{pageSession.winPsSelected}', '#{pageSession.winPs1Id}', '#{pageSession.winPs2Id}', '#{pageSession.winPswdAliasId}'); " >
+                   showPswdSection('#{pageSession.winPsSelected}', '#{pageSession.winPs1Id}', '#{pageSession.winPs2Id}', '#{pageSession.winPswdAliasId}'); 
+                   setDirPath('#{pageSession.installOptionId}', '#{pageSession.dirPathId}', '#{pageSession.filSelectBtnId}')" >
 <!define name="content">
     <event>
     <!beforeCreate
@@ -55,10 +56,13 @@
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/cluster/node/nodes.jsf");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/nodes");
 
-        setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/create-node");
+        setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/create-node-ssh");
         gf.getDefaultValues(endpoint="#{pageSession.selfUrl}",  valueMap="#{pageSession.valueMap}");
-        mapPut(map="#{pageSession.valueMap}", key="windowsuser" value="#{pageSession.valueMap['sshuser']}");
-
+        gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/create-node-dcom",  valueMap="#{requestScope.dcMap}");
+        gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/validate-dcom",    valueMap="#{requestScope.vMap}");
+        mapPut(map="#{pageSession.valueMap}", key="windowsuser" value="#{requestScope.dcMap['windowsuser']}");
+        mapPut(map="#{pageSession.valueMap}", key="remotetestdir" value="#{requestScope.vMap['remotetestdir']}");
+        mapPut(map="#{pageSession.valueMap}", key="validateDcom" value="true");
         mapPut(map="#{pageSession.valueMap}", key="type" value="SSH");
         mapPut(map="#{pageSession.valueMap}", key="installdirConfig" value="");
 

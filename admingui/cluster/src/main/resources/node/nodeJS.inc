@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -42,7 +42,7 @@
 
 <f:verbatim>
     <script type="text/javascript">
-    function showSection(type, sshSection, dcomSection, sshDirId, configDirId ){
+    function showSection(type, sshSection, dcomSection, sshDirId, configDirId, installProp, archProp){
          var sshSheet = document.getElementById(sshSection);
          var dcomSheet = document.getElementById(dcomSection);
          if (type == 'CONFIG'){
@@ -50,24 +50,31 @@
              dcomSheet.style.display = 'none';
              webui.suntheme.common.setVisible(sshDirId, false);
              webui.suntheme.common.setVisible(configDirId, true);
-             //document.getElementById(sshDirId).style.display = 'none';
-             //document.getElementById(configDirId).style.display = 'block';
+
+             if (installProp != null){
+                 webui.suntheme.common.setVisible(installProp, false);
+                 webui.suntheme.common.setVisible(archProp, false);
+             }
          }
          if (type == 'SSH'){
              sshSheet.style.display = 'block';
              dcomSheet.style.display = 'none';
              webui.suntheme.common.setVisible(sshDirId, true);
              webui.suntheme.common.setVisible(configDirId, false);
-             //document.getElementById(sshDirId).style.display = 'block';
-             //document.getElementById(configDirId).style.display = 'none';
+             if(installProp != null){
+                 webui.suntheme.common.setVisible(installProp, true);
+                 webui.suntheme.common.setVisible(archProp, true);
+             }
          }
          if (type == 'DCOM'){
              sshSheet.style.display = 'none';
              dcomSheet.style.display = 'block';
              webui.suntheme.common.setVisible(sshDirId, true);
              webui.suntheme.common.setVisible(configDirId, false);
-             //document.getElementById(sshDirId).style.display = 'block';
-             //document.getElementById(configDirId).style.display = 'none';
+             if(installProp != null){
+                 webui.suntheme.common.setVisible(installProp, true);
+                 webui.suntheme.common.setVisible(archProp, true);
+             }
          }
     }
 
@@ -117,6 +124,33 @@
             }
         }
         return true;
+    }
+
+    function populateDirName(fileChooserId, dirPathId, hiddenDirPathId){
+        var fc = document.getElementById(fileChooserId).getSelectionValue();
+        window.opener.getTextElement(dirPathId).value = fc;
+        window.opener.getTextElement(hiddenDirPathId).value = fc;
+    }
+
+    
+    function setDirPath(installOptionId, dirPathId, btnId ){
+        var doInstall = document.getElementById(installOptionId).checked;
+        if (doInstall){
+            enableComponent(dirPathId, 'text');
+            enableBtnComponent(btnId);
+        }else{
+            disableTextComponent(dirPathId);
+            disableBtnComponent(btnId);
+        }
+    }
+
+    function disableTextComponent(textId) {
+        var comp = document.getElementById(textId);
+        if (comp != null){
+            var textVal = comp.value;
+            disableComponent(textId, 'text');
+            comp.value=textVal;
+        }
     }
 
     </script>
