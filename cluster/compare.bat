@@ -19,9 +19,10 @@ echo ******  %h%
 diff %br%\%h% %tr%\%h%
 echo ******  %i%
 diff %br%\%i% %tr%\%i%
-echo ******  %j%
-diff %br%\%j% %tr%\%j%
-echo ******  %k%
-diff %br%\%k% %tr%\%k%
-echo ******  %l%
-diff %br%\%l% %tr%\%l%
+
+rem echo ******  %j%
+rem diff %br%\%j% %tr%\%j%
+rem echo ******  %k%
+rem diff %br%\%k% %tr%\%k%
+rem echo ******  %l%
+rem diff %br%\%l% %tr%\%l%

@@ -37,32 +37,35 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.enterprise.util.cluster.windows.process;
 
-/*
- * ProcessStreamDrainer.java
- *
- * Created on October 26, 2006, 9:56 PM
- *
- */
-
-package com.sun.enterprise.universal.process;
-
+import java.util.logging.Level;
+import org.jinterop.dcom.common.JISystem;
+import org.jinterop.dcom.core.IJIComObject;
+import org.jinterop.dcom.core.JIComServer;
+import org.jinterop.dcom.core.JIProgId;
+import org.jinterop.dcom.core.JISession;
+import org.jinterop.dcom.core.JIString;
+import org.jinterop.dcom.core.JIVariant;
+import org.jinterop.dcom.impls.JIObjectFactory;
+import org.jinterop.dcom.impls.automation.IJIDispatch;
 
 /**
- * Simple checked exception class for Windows errors.  We do NOT want
- * to throw j-interop exception classes out of this module.
- * The class is just a type -- it does not add any behavior
+ * See if remote is alive.  Simply run "asadmin version" and look for the string
+ * "GlassFish" in the output.  That can't possibly happen unless everything is
+ * setup OK.
+
  * @author Byron Nevins
  */
-public class WindowsException extends Exception {
+public class WindowsRemotePinger {
 
-    // do NOT use the base-class ctor that uses Throwable
-    // we don't want j-interop exceptions leaking out.
-    public WindowsException(String message) {
-        super(message);
+    private WindowsRemotePinger() {
+        // all static class.  No instances allowed.
     }
-    public WindowsException(Throwable t) {
-        super(t.getMessage());
+
+    public static boolean ping(String remoteInstallRoot, WindowsCredentials bonafides) throws WindowsException {
+        WindowsRemoteAsadmin rasadmin = new WindowsRemoteAsadmin(remoteInstallRoot, bonafides);
+        String out = rasadmin.run("version");
+        return out.indexOf("GlassFish") >= 0;
     }
 }
-

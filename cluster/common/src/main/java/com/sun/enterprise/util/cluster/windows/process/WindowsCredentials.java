@@ -37,42 +37,51 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.cluster.ssh.util;
 
-import com.sun.enterprise.config.serverbeans.Node;
-import com.sun.enterprise.config.serverbeans.SshAuth;
-import com.sun.enterprise.config.serverbeans.SshConnector;
-import com.sun.enterprise.universal.glassfish.TokenResolver;
-import com.sun.enterprise.util.cluster.windows.process.WindowsCredentials;
-import com.sun.enterprise.util.cluster.windows.process.WindowsException;
+package com.sun.enterprise.util.cluster.windows.process;
+
 import static com.sun.enterprise.util.StringUtils.ok;
-import java.util.*;
-import org.glassfish.internal.api.RelativePathResolver;
 
 /**
- * I hate to copy&paste identical code into more than one class.
- * Hence this class!
+ * A simple C-struct style class for organizing auth info for Windows
  * @author Byron Nevins
  */
-public final class DcomUtils {
-    private DcomUtils() {
-        // no instances allowed!
+public class WindowsCredentials {
+    private final String host;
+    private final String domain;
+    private final String user;
+    private final String password;
+
+    /**
+     *
+     * @param host - IP address ("1.2.3.4" format) or name of the remote machine
+     * @param domain - domain that user is in -- if no Windows Domain - use hostname
+     * @param user - username
+     * @param password - password
+     */
+    public WindowsCredentials(String host, String domain, String user, String password) {
+        this.host = host;
+        this.domain = domain;
+        this.user = user;
+        this.password = password;
+
+        if(!ok(host) || !ok(domain) || !ok(user) || !ok(password))
+            throw new IllegalArgumentException("Bad argument.");
     }
 
-    public static String resolvePassword(String raw) {
-
-        try {
-            return RelativePathResolver.getRealPasswordFromAlias(raw);
-        }
-        catch (Exception e) {
-            return raw;
-        }
+    public final String getHost() {
+        return host;
     }
 
-    public static List<String> resolvePasswordToList(String raw) {
-        List tokens = new ArrayList<String>(1);
-        String password = resolvePassword(raw);
-        tokens.add("AS_ADMIN_WINDOWSPASSWORD=" + password);
-        return tokens;
+    public final String getDomain() {
+        return domain;
+    }
+
+    public final String getUser() {
+        return user;
+    }
+
+    public final String getPassword() {
+        return password;
     }
 }

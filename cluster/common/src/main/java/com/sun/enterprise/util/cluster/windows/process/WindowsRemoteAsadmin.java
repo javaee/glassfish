@@ -37,14 +37,60 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.enterprise.util.cluster.windows.process;
 
-package com.sun.enterprise.util.io;
-
+import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import java.util.*;
 
 /**
- *
+ * Wrapper for calling asadmin -- since it is done all the time, this convenience class
+ * was created
  * @author Byron Nevins
  */
-public interface WindowsRemoteFileCopyProgress {
-    void callback(long numcopied, long numtotal);
+public class WindowsRemoteAsadmin extends WindowsRemoteScripter {
+    private final String asadminRemotePath;
+
+    public WindowsRemoteAsadmin(String remoteInstallRoot, WindowsCredentials bonafides) {
+        super(bonafides);
+        remoteInstallRoot = remoteInstallRoot.replace('/', '\\');
+
+        if (!remoteInstallRoot.endsWith("\\"))
+            remoteInstallRoot += "\\";
+
+        asadminRemotePath = StringUtils.quotePathIfNecessary(remoteInstallRoot +
+                SystemPropertyConstants.ASADMIN_RELATIVE_PATH_WINDOWS);
+    }
+
+    /**
+     * Run a remote asadmin script command
+     * @param cmdArgs e.g. "start-local-instance", "i1"
+     * @return the stdout from the asadmin command
+     *
+     */
+    public String run(Collection<String> cmdArgs) throws WindowsException {
+        StringBuilder sb = new StringBuilder(asadminRemotePath);
+        sb.append(' ');
+
+        for (String s : cmdArgs) {
+            sb.append(s).append(' ');
+        }
+
+        return super.run(sb.toString());
+    }
+
+    /**
+     * Run a remote asadmin script command
+     * @param cmd e.g. "start-local-instance i1"
+     * @return the stdout from the asadmin command
+     *
+     */
+    @Override
+    public final String run(String cmd) throws WindowsException {
+        StringBuilder sb = new StringBuilder(asadminRemotePath);
+        sb.append(' ');
+        sb.append(cmd);
+
+        return super.run(sb.toString());
+    }
 }

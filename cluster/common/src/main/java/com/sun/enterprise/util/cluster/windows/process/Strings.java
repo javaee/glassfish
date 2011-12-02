@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,50 +38,31 @@
  * holder.
  */
 
-package com.sun.enterprise.universal.process;
+package com.sun.enterprise.util.cluster.windows.process;
+import com.sun.enterprise.util.io.*;
 
-import static com.sun.enterprise.util.StringUtils.ok;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
- * A simple C-struct style class for organizing auth info for Windows
+ * Strings -- Get your Strings here.
+ * One file with Strings
+ * So one class for messing with them!
+ * Nothing in here is public protected.  Only for use by this one java package.
  * @author Byron Nevins
  */
-public class WindowsCredentials {
-    private final String host;
-    private final String domain;
-    private final String user;
-    private final String password;
 
-    /**
-     *
-     * @param host - IP address ("1.2.3.4" format) or name of the remote machine
-     * @param domain - domain that user is in -- if no Windows Domain - use hostname
-     * @param user - username
-     * @param password - password
-     */
-    public WindowsCredentials(String host, String domain, String user, String password) {
-        this.host = host;
-        this.domain = domain;
-        this.user = user;
-        this.password = password;
-
-        if(!ok(host) || !ok(domain) || !ok(user) || !ok(password))
-            throw new IllegalArgumentException("Bad argument.");
+final class Strings {
+    private Strings() {
+        // no instances allowed!
     }
 
-    public final String getHost() {
-        return host;
+    final static String get(String indexString) {
+        return strings.get(indexString);
     }
 
-    public final String getDomain() {
-        return domain;
+    final static String get(String indexString, Object... objects) {
+        return strings.get(indexString, objects);
     }
 
-    public final String getUser() {
-        return user;
-    }
-
-    public final String getPassword() {
-        return password;
-    }
+    final private static LocalStringsImpl strings = new LocalStringsImpl(Strings.class);
 }
