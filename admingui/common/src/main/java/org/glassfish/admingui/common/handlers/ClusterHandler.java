@@ -282,12 +282,39 @@ public class ClusterHandler {
             }
             if(action.equals("delete-node")){
                 try{
-                    String endpoint = prefix + nodeName + "/" + action;
+                    String endpoint = prefix + nodeName + "/delete-node";
                     GuiUtil.getLogger().info(endpoint);
                     RestUtil.restRequest(endpoint, null, "post",null, false);
                 }catch (Exception ex){
                     GuiUtil.getLogger().severe(
-                            GuiUtil.getCommonMessage("LOG_NODE_ACTION_ERROR", new Object[]{prefix + nodeName, action , "null"}));
+                            GuiUtil.getCommonMessage("LOG_NODE_ACTION_ERROR", new Object[]{prefix + nodeName, "delete-node" , "null"}));
+                    GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), ex.getMessage());
+                    return;
+                }
+            }
+            Map payload = null;
+            String type = (String) oneRow.get("type");
+            String endpoint = "";
+            if(action.equals("delete-node-uninstall")){
+                try{
+                    if ("CONFIG".equals(type)){
+                        endpoint = prefix + nodeName + "/delete-node-config";
+                    }else
+                    if ("SSH".equals(type)){
+                        endpoint = prefix + nodeName + "/delete-node-ssh";
+                        payload = new HashMap();
+                        payload.put("uninstall", "true");
+                    }else
+                    if ("DCOM".equals(type)){
+                        endpoint = prefix + nodeName + "/delete-node-dcom";
+                        payload = new HashMap();
+                        payload.put("uninstall", "true");
+                    }
+                    GuiUtil.getLogger().info(endpoint);
+                    RestUtil.restRequest(endpoint, payload, "post",null, false);
+                }catch (Exception ex){
+                    GuiUtil.getLogger().severe(
+                            GuiUtil.getCommonMessage("LOG_NODE_ACTION_ERROR", new Object[]{endpoint,"" , payload}));
                     GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), ex.getMessage());
                     return;
                 }
