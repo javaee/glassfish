@@ -46,7 +46,7 @@ import com.sun.enterprise.deployment.runtime.ws.ReliabilityConfig;
 import com.sun.logging.LogDomains;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.databinding.DatabindingModeFeature;
+import org.jvnet.ws.databinding.DatabindingModeFeature;
 import com.sun.xml.ws.api.server.*;
 import com.sun.xml.ws.developer.SchemaValidationFeature;
 import com.sun.xml.ws.developer.StreamingAttachmentFeature;
