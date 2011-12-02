@@ -174,3 +174,94 @@ The remote file, C: doesn't exist on bigapp-oblade-2 : Logon failure: unknown us
 Retrieved from "http://www.opennms.org/wiki/WmiConfiguration";
 ==================================
 
+seems like you're trying to do this the hard way.... You can install MSIs as group policy objects in an Active Directory domain. See: [Microsoft support info][1] If you want to do this in the manner you describe above, then you should put the MSI in a share with file share access, then you could use a remote command execution to execute the MSI. To do the remote execution you need to create a new instance of a Win32\_Process. See [this][2] for some C#/VB examples, but the mindeset is similar. Create the Win32_Process set the cmd line properties on it, then execute the "Create" method on the Win32\_Process. [1]: http://support.microsoft.com/kb/816102 [2]: http://www.dalun.com/blogs/05.09.2007.htm
+-------------------------
+WOW -- 2 hours of debugging to find this one!
+
+VAIO is working perfectly
+XPS fails in remote scripting
+
+Tne placve it fails is in JIWinRegStub.java method winreg_CloseKey()
+it is closing HKLM\Software\Classes\Wow6432Node 
+
+"Received unexpected PDU from server."
+============  Nov 17, 2011 ==============
+At SCA.  Trying to run validate-dcom from wnevins-lap to wnevins-loan
+
+Ping -- works fine both  ways.
+v-d from lap to loan -->  WMI error.
+run examples\MSWMI from lap to loan -> 
+
+org.jinterop.dcom.common.JIException: Message not found for errorCode: 0xC0000034
+        at org.jinterop.winreg.smb.JIWinRegStub.winreg_OpenHKCR(JIWinRegStub.java:134)
+        at org.jinterop.dcom.core.JIComServer.initialise(JIComServer.java:509)
+        at org.jinterop.dcom.core.JIComServer.<init>(JIComServer.java:414)
+        at org.jinterop.dcom.test.MSWMI.<init>(MSWMI.java:38)
+        at org.jinterop.dcom.test.MSWMI.main(MSWMI.java:145)
+Caused by: jcifs.smb.SmbException: The system cannot find the file specified.
+        at jcifs.smb.SmbTransport.checkStatus(SmbTransport.java:522)
+        at jcifs.smb.SmbTransport.send(SmbTransport.java:622)
+        at jcifs.smb.SmbSession.send(SmbSession.java:239)
+        at jcifs.smb.SmbTree.send(SmbTree.java:109)
+        at jcifs.smb.SmbFile.send(SmbFile.java:718)
+        at jcifs.smb.SmbFile.open0(SmbFile.java:923)
+        at jcifs.smb.SmbFile.open(SmbFile.java:940)
+        at jcifs.smb.SmbFileOutputStream.<init>(SmbFileOutputStream.java:142)
+        at jcifs.smb.TransactNamedPipeOutputStream.<init>(TransactNamedPipeOutputStream.java:32)
+        at jcifs.smb.SmbNamedPipe.getNamedPipeOutputStream(SmbNamedPipe.java:187)
+        at rpc.ncacn_np.RpcTransport.attach(RpcTransport.java:92)
+        at rpc.Stub.attach(Stub.java:106)
+        at rpc.Stub.call(Stub.java:110)
+        at org.jinterop.winreg.smb.JIWinRegStub.winreg_OpenHKCR(JIWinRegStub.java:132)
+        ... 4 more
+		remote registry?!?
+
+========  found remote registry turned off -- started it & set to automatic
+then got this:
+
+d:\gf_other\j-Interop208\j-Interop\examples\MSWMI>execute wnevins-loan wnevins-loan hudson hudson
+org.jinterop.dcom.common.JIException: Access is denied, please check whether the [domain-username-password] are correct. Also, if not already done ple
+ase check the GETTING STARTED and FAQ sections in readme.htm. They provide information on how to correctly configure the Windows machine for DCOM acce
+ss, so as to avoid such exceptions.  [0x00000005]
+        at org.jinterop.winreg.smb.JIWinRegStub.winreg_CreateKey(JIWinRegStub.java:310)
+        at org.jinterop.dcom.core.JIComServer.initialise(JIComServer.java:510)
+        at org.jinterop.dcom.core.JIComServer.<init>(JIComServer.java:414)
+        at org.jinterop.dcom.test.MSWMI.<init>(MSWMI.java:38)
+        at org.jinterop.dcom.test.MSWMI.main(MSWMI.java:145)
+Caused by: org.jinterop.dcom.common.JIRuntimeException: Access is denied, please check whether the [domain-username-password] are correct. Also, if no
+t already done please check the GETTING STARTED and FAQ sections in readme.htm. They provide information on how to correctly configure the Windows mac
+hine for DCOM access, so as to avoid such exceptions.  [0x00000005]
+        at org.jinterop.winreg.IJIWinReg$createKey.read(IJIWinReg.java:459)
+        at ndr.NdrObject.decode(NdrObject.java:36)
+        at rpc.ConnectionOrientedEndpoint.call(ConnectionOrientedEndpoint.java:137)
+        at rpc.Stub.call(Stub.java:113)
+        at org.jinterop.winreg.smb.JIWinRegStub.winreg_CreateKey(JIWinRegStub.java:304)
+        ... 4 more
+
+
+	OK something is wrong wirth connecting to WMI.  I tried this next:
+	
+Then go to Control Panel > Administrative Tools > Local Security Policy > Security Settings > Local Policies > Security Options :-
+
+    Double-click "DCOM: Machine Access Restrictions" policy, click Edit Security, add the user created above, allow "Remote Access"
+    Double-click "DCOM: Machine Launch Restrictions" policy, click Edit Security, add the user created above, allow "Local Launch", "Remote Launch", "Local Activation", "Remote Activation"
+	--- No help ---
+	Then tried this:
+	
+Go to Control Panel > Administrative Tools > Component Services > Computers > right-click My Computer > click Properties > click COM Security tab :-
+
+    In Access Permissions section, click Edit Default > add the user created above, allow "Remote Access"
+    In Launch and Activation Permissions section > click Edit Default > add the user created above, allow "Local Launch", "Remote Launch", "Local Activation", "Remote Activation"
+
+	===  no help at all ===
+
+	 Turned off UAc
+
+	 =============
+	 changed ownership and permissions on
+	 HKCR\WBemScripting.SWBemlocator
+
+
+------
+Now MSWMI example works but v-d still does not.  Getting closer!
+
