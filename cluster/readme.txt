@@ -265,3 +265,6 @@ Go to Control Panel > Administrative Tools > Component Services > Computers > ri
 ------
 Now MSWMI example works but v-d still does not.  Getting closer!
 
+
+
+I found the root cause of remote WMI access against a Windows 7 host. The following registry key (WbemScripting.SWbemLocator) is owned by an non-existing group called "TrunstedInstaller", and no other group or user have write access to it: HKLM\SOFTWARE\Classes\Wow6432Node\CLSID\{76A64158-CB41-11D1-8B02-00600806D9B6} My solution was (for the time being) to take ownership of this key and assign it to the Administrators group. Everything works immediately (with firewall disabled or properly configured). I have not found the Microsoft documentation that offers the "correct" ways to do this. It seems that the WbemScripting.SWbemLocator services was never properly registered and with the permission mentioned above, it prevented the autoRegistration feature of j-Interop to finish the job.
