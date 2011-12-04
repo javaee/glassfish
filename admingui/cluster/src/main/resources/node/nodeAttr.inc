@@ -207,6 +207,9 @@
                    setPageSessionAttribute(key="showInstalldirSSH" value="#{true}");
                    setPageSessionAttribute(key="showInstalldirConfig" value="#{false}");
                    setPageSessionAttribute(key="showInstallOp" value="#{true}");
+                   if ("#{pageSession.valueMap['validateDcom']}"){
+                        setPageSessionAttribute(key="showTestdir" value="#{true}");
+                   }
             }
         />
      </event>
@@ -347,11 +350,19 @@
             </sun:property>
 
             <sun:property id="validate"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.validateDcom}" helpText="$resource{i18ncs.node.validateDcomHelp}">
-                <sun:checkbox id="validate"  selected="#{pageSession.valueMap['validateDcom']}" label="$resource{i18n.common.Enabled}" selectedValue="true" />
+                <sun:checkbox id="validate"  selected="#{pageSession.valueMap['validateDcom']}" label="$resource{i18n.common.Enabled}" selectedValue="true"
+                      onChange="showTestDir('#{pageSession.validateId}', '#{pageSession.testdirId}');">
+                    <!afterCreate
+                        getClientId(component="$this{component}" clientId="#{pageSession.validateId}");
+                    />
+                </sun:checkbox>
             </sun:property>
 
-            <sun:property id="testDir"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.remotetestdir}" helpText="$resource{i18ncs.node.remotetestdirHelp}">
+            <sun:property id="testDir"  visible="#{pageSession.showTestdir}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.remotetestdir}" helpText="$resource{i18ncs.node.remotetestdirHelp}">
                 <sun:textField id="testDir" text="#{pageSession.valueMap['remotetestdir']}" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.deploy.dirPath']}"  />
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId="#{pageSession.testdirId}");
+                />
             </sun:property>
 
             <sun:property id="winDomain"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.windowDomain}" helpText="$resource{i18ncs.node.windowDomainHelp}">

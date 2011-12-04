@@ -136,5 +136,15 @@
         }
     }
 
+    function  showTestDir(validateId, testdirId ){
+        var ss = document.getElementById(validateId).checked;
+        if (ss){
+             webui.suntheme.common.setVisible(testdirId, true);
+        }else{
+            webui.suntheme.common.setVisible(testdirId, false);
+        }
+    }
+
+
     </script>
 </f:verbatim>
