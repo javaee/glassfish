@@ -126,24 +126,7 @@
         return true;
     }
 
-    function populateDirName(fileChooserId, dirPathId, hiddenDirPathId){
-        var fc = document.getElementById(fileChooserId).getSelectionValue();
-        window.opener.getTextElement(dirPathId).value = fc;
-        window.opener.getTextElement(hiddenDirPathId).value = fc;
-    }
-
     
-    function setDirPath(installOptionId, dirPathId, btnId ){
-        var doInstall = document.getElementById(installOptionId).checked;
-        if (doInstall){
-            enableComponent(dirPathId, 'text');
-            enableBtnComponent(btnId);
-        }else{
-            disableTextComponent(dirPathId);
-            disableBtnComponent(btnId);
-        }
-    }
-
     function disableTextComponent(textId) {
         var comp = document.getElementById(textId);
         if (comp != null){

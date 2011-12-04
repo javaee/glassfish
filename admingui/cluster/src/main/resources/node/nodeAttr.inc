@@ -137,16 +137,12 @@
                 }
                 if ("#{pageSession.valueMap['type']}=SSH"){
                     gfr.fixPswd();
-                    setAttribute(key="attrsList" value={"id", "nodehost", "nodedir", "installdir", "sshport", "sshuser", "sshpassword" "sshkeyfile", "force"});
+                    setAttribute(key="attrsList" value={"id", "nodehost", "nodedir", "installdir", "sshport", "sshuser", "sshpassword" "sshkeyfile", "force", "installOption"});
                     setAttribute(key="endpoint" value="nodes/create-node-ssh");
                     if (!#{pageSession.valueMap['force']}){
                         mapPut(map="#{pageSession.valueMap}"  key="force" value="false");
                     }
                     gfr.prepareNodeCmd();
-                    if ("#{pageSession.valueMap['installOption']}=true"){
-                        mapPut(map="#{pageSession.attrsMap}"  key="install"  value="true")
-                        mapPut(map="#{pageSession.attrsMap}"  key="archive"  value="#{pageSession.valueMap['archive']}");
-                    }
                 }
                 if ("#{pageSession.valueMap['type']}=DCOM"){
                     //call validate-dcom first
@@ -161,19 +157,14 @@
                         gf.restRequest( endpoint="#{sessionScope.REST_URL}/nodes/validate-dcom" attrs="#{pageSession.dMap}" method="POST" )
                     }
                     gfr.fixWinPswd();
-                    setAttribute(key="attrsList" value={"id", "nodehost", "nodedir", "installdir", "windowsuser", "windowsdomain", "windowspassword"});
+                    setAttribute(key="attrsList" value={"id", "nodehost", "nodedir", "installdir", "windowsuser", "windowsdomain", "windowspassword", "installOption" });
                     setAttribute(key="endpoint" value="nodes/create-node-dcom");
                     if (!#{pageSession.valueMap['winForce']}){
                         mapPut(map="#{pageSession.valueMap}"  key="winForce" value="false");
                     }
                     gfr.prepareNodeCmd();
                     mapPut(map="#{pageSession.attrsMap}"  key="force" value="#{pageSession.valueMap['winForce']}");
-                    if ("#{pageSession.valueMap['installOption']}=true"){
-                        mapPut(map="#{pageSession.attrsMap}"  key="install"  value="true")
-                        mapPut(map="#{pageSession.attrsMap}"  key="archive"  value="#{pageSession.valueMap['archive']}");
-                    }
                 }
-                
                 gf.restRequest( endpoint="#{sessionScope.REST_URL}/#{requestScope.endpoint}" attrs="#{pageSession.attrsMap}" method="POST" )
                 gf.redirect(page="#{request.contextPath}/cluster/node/nodes.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
              />
@@ -217,7 +208,6 @@
                    setPageSessionAttribute(key="showInstalldirConfig" value="#{false}");
                    setPageSessionAttribute(key="showInstallOp" value="#{true}");
             }
-            mapPut(map="#{pageSession.valueMap}", key="archive" value="#{pageSession.valueMap['hiddenArchive']}");
         />
      </event>
 
@@ -278,36 +268,11 @@
                 <!afterCreate
                     getClientId(component="$this{component}" clientId="#{pageSession.installProp}");
                 />
-                <sun:checkbox id="installOption" selected="#{pageSession.valueMap['installOption']}" selectedValue="true"  label="Enabled"
-                              onChange="setDirPath('#{pageSession.installOptionId}', '#{pageSession.dirPathId}', '#{pageSession.filSelectBtnId}')" >
+                <sun:checkbox id="installOption" selected="#{pageSession.valueMap['installOption']}" selectedValue="true"  label="Enabled" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId="#{pageSession.installOptionId}");
                     />
                 </sun:checkbox>
-            </sun:property>
-
-
-            <sun:property id="dirPath"  rendered="#{!edit}" visible="#{pageSession.showInstallOp}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.archiveFile}" helpText="$resource{i18ncs.node.archiveFileHelp}">
-                <!afterCreate
-                    getClientId(component="$this{component}" clientId="#{pageSession.archProp}");
-                />
-                <sun:textField id="dirPath" disabled="true" text="#{pageSession.valueMap['archive']}" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.deploy.dirPath']}"
-                               onChange="document.getElementById('#{pageSession.hiddenDirPathId}').value=this.value;" >
-                    <!afterCreate
-                        getClientId(component="$this{component}" clientId=>$page{dirPathId});
-                    />
-                </sun:textField>
-                <sun:hidden id="dirP" value="#{pageSession.valueMap['hiddenArchive']}">
-                <!afterCreate
-                    getClientId(component="$this{component}" clientId=>$page{hiddenDirPathId});
-                />
-            </sun:hidden>
-                <sun:button id="filSelectBtn" disabled="#{true}"  primary="#{false}" text="$resource{i18n.button.BrowseFile}"
-                    onClick="javascript: var win = window.open('#{request.contextPath}/cluster/node/nodeFileChooser.jsf?dirPathId=#{dirPathId}&hiddenDirPathId=#{hiddenDirPathId}', 'nodeFileChooserPopup', 'height=580, width=650, top='+((screen.height - (screen.height/1.618))-(500/2))+',left='+((screen.width-650)/2)+', scrollbars, resizable');win.focus(); return false" >
-                     <!afterCreate
-                        getClientId(component="$this{component}" clientId=>$page{filSelectBtnId});
-                    />
-                </sun:button>
             </sun:property>
 
         </sun:propertySheetSection>

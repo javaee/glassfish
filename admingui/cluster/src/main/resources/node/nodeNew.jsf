@@ -47,8 +47,7 @@
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.node.NewPageTitle}" 
         guiOnLoad="showPswdSection('#{pageSession.psSelected}', '#{pageSession.ps1Id}', '#{pageSession.ps2Id}', '#{pageSession.pswdAliasId}');
-                   showPswdSection('#{pageSession.winPsSelected}', '#{pageSession.winPs1Id}', '#{pageSession.winPs2Id}', '#{pageSession.winPswdAliasId}'); 
-                   setDirPath('#{pageSession.installOptionId}', '#{pageSession.dirPathId}', '#{pageSession.filSelectBtnId}')" >
+                   showPswdSection('#{pageSession.winPsSelected}', '#{pageSession.winPs1Id}', '#{pageSession.winPs2Id}', '#{pageSession.winPswdAliasId}'); " >
 <!define name="content">
     <event>
     <!beforeCreate
