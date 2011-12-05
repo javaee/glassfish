@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.tests.basic.resolving;
 
+import org.junit.Ignore;
 import org.glassfish.hk2.tests.basic.resolving.injected.*;
 import org.glassfish.hk2.BinderFactory;
 import org.glassfish.hk2.ComponentException;
@@ -65,7 +66,7 @@ import static org.glassfish.hk2.tests.basic.AssertionUtils.*;
  * This is a test of basic injection features. To avoid the potential influence
  * of being in the same package (e.g. implicit access to the package-private data),
  * all classes that the test works with are placed in separate nested packages.
- * 
+ *
  * @author Marek Potociar (marek.potociar at oracle.com)
  */
 public class CustomInjectionTest {
@@ -88,6 +89,11 @@ public class CustomInjectionTest {
             binderFactory.bind(new TypeLiteral<GenericContract<String>>() {
             }).to(GenericContractStringImpl.class);
 
+            // multibindings
+            binderFactory.bind(MultiBoundContract.class).to(MultiBoundContractServiceA.class);
+            binderFactory.bind(MultiBoundContract.class).to(MultiBoundContractServiceB.class);
+            binderFactory.bind(MultiBoundContract.class).to(MultiBoundContractServiceC.class);
+
             // instance bindings
             binderFactory.bind(InstanceBoundContract.class).toInstance(boundContractInstance);
             binderFactory.bind().toInstance(boundServiceInstance);
@@ -95,6 +101,13 @@ public class CustomInjectionTest {
             // scoped bindings
             binderFactory.bind(CustomScope.class).toInstance(new CustomScope());
             binderFactory.bind().to(CustomScopeInjectedClass.class).in(CustomScope.class);
+            binderFactory.bind(ScopedContract.class).toFactory(new Factory<ScopedContract>() {
+
+                @Override
+                public ScopedContract get() throws ComponentException {
+                    return new ScopedContract() {};
+                }
+            }).in(CustomScope.class);
 
             // factory provided bindings
             binderFactory.bind(FactoryProvidedContractA.class).toFactory(new Factory<FactoryProvidedContractA>() {
@@ -138,6 +151,16 @@ public class CustomInjectionTest {
     }
 
     @Test
+    @Ignore
+    public void testAllContractBindingsRetrieval() {
+        assertEquals(3, services.forContract(MultiBoundContract.class).all().size());
+
+        assertEquals(1, services.forContract(ContractA.class).all().size());
+        assertEquals(1, services.forContract(ContractB.class).all().size());
+        assertEquals(1, services.forContract(ContractB.class).annotatedWith(MarkerA.class).all().size());
+    }
+
+    @Test
     public void testTypeBindingFieldInjection() {
         final FieldInjectedTypeBinidngTestClass fi = services.byType(FieldInjectedTypeBinidngTestClass.class).get();
         fi.assertInjection();
@@ -167,7 +190,7 @@ public class CustomInjectionTest {
 
     @Test
     public void testFactoryProvidedContractProvisioningViaServicesApi() {
-        // binding defined using (annonymous) factory instance 
+        // binding defined using (annonymous) factory instance
         final FactoryProvidedContractA a = services.forContract(FactoryProvidedContractA.class).get();
         assertInjectedInstance(FactoryProvidedContractAImpl.class, a);
 
@@ -261,5 +284,73 @@ public class CustomInjectionTest {
         assertInjectedFactory(ServiceA.class, ci.cap);
         assertInjectedInstance(ServiceB.class, ci.cap.get().getB());
         assertInjectedInstance(ClassX.class, ci.cap.get().getB().getX());
+    }
+    
+    @Test
+    public void testScopes() {
+        final CustomScope customScope = services.forContract(CustomScope.class).get();
+
+        CustomScopeInjectedClass customScopeInjectedClass;
+
+        customScope.enter();
+        customScopeInjectedClass = services.forContract(CustomScopeInjectedClass.class).get();
+        assertNotNull("Instance not provisioned", customScopeInjectedClass);
+        customScope.leave();
+
+        try {
+            customScopeInjectedClass = services.forContract(CustomScopeInjectedClass.class).get();
+        } catch (IllegalStateException ex) {
+            assertEquals(ex.getMessage(), CustomScope.OUT_OF_SCOPE_MESSAGE);
+            return;
+        }
+
+        fail("IllegalStateException expected to be raised when trying to access a custom-scoped biding outside of the scope.");
+    }
+
+    @Test
+    public void testFactoryInjectedScopes() {
+        final CustomScope customScope = services.forContract(CustomScope.class).get();
+        final Injector injector = services.forContract(Injector.class).get();
+
+        ScopedContract[] sc_1 = new ScopedContract[4];
+        ScopedContract[] sc_2= new ScopedContract[4];
+
+        customScope.enter();
+        sc_1[0] = services.forContract(ScopedContract.class).in(customScope).get();
+        sc_1[1] = services.forContract(ScopedContract.class).in(customScope).get();
+        sc_1[2] = injector.inject(ScopedContract.class);
+        sc_1[3] = injector.inject(ScopedContract.class);
+        customScope.leave();
+        assertNotNull("Scope-injected instance was null", sc_1[0]);
+        assertSame("Scope-injected instances not same", sc_1[0], sc_1[1]);
+        assertSame("Scope-injected instances not same", sc_1[2], sc_1[3]);
+        assertSame("Scope-injected instances not same", sc_1[0], sc_1[2]);
+
+        customScope.enter();
+        sc_2[0] = services.forContract(ScopedContract.class).in(customScope).get();
+        sc_2[1] = services.forContract(ScopedContract.class).in(customScope).get();
+        sc_2[2] = injector.inject(ScopedContract.class);
+        sc_2[3] = injector.inject(ScopedContract.class);
+        customScope.leave();
+        assertNotNull("Scope-injected instance was null", sc_2[0]);
+        assertSame("Scope-injected instances not same", sc_2[0], sc_2[1]);
+        assertSame("Scope-injected instances not same", sc_2[2], sc_2[3]);
+        assertSame("Scope-injected instances not same", sc_1[0], sc_1[2]);
+
+        assertTrue("Scope-injected instances from different scope instances are not different", sc_1[0] != sc_2[0]);
+
+        try {
+            injector.inject(ScopedContract.class);
+        } catch (IllegalStateException ex) {
+            assertEquals(ex.getMessage(), CustomScope.OUT_OF_SCOPE_MESSAGE);
+            try {
+                services.forContract(ScopedContract.class).in(customScope).get();
+            } catch (IllegalStateException ex2) {
+                assertEquals(ex2.getMessage(), CustomScope.OUT_OF_SCOPE_MESSAGE);
+                return;
+            }
+        }
+
+        fail("IllegalStateException expected to be raised when trying to access a custom-scoped biding outside of the scope.");
     }
 }
