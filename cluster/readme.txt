@@ -268,3 +268,31 @@ Now MSWMI example works but v-d still does not.  Getting closer!
 
 
 I found the root cause of remote WMI access against a Windows 7 host. The following registry key (WbemScripting.SWbemLocator) is owned by an non-existing group called "TrunstedInstaller", and no other group or user have write access to it: HKLM\SOFTWARE\Classes\Wow6432Node\CLSID\{76A64158-CB41-11D1-8B02-00600806D9B6} My solution was (for the time being) to take ownership of this key and assign it to the Administrators group. Everything works immediately (with firewall disabled or properly configured). I have not found the Microsoft documentation that offers the "correct" ways to do this. It seems that the WbemScripting.SWbemLocator services was never properly registered and with the permission mentioned above, it prevented the autoRegistration feature of j-Interop to finish the job.
+
+========================
+   From MSWMI example's readme.txt file
+   This means WMI has rejected your connection request. This is not a j-Interop related problem. Make
+   sure you have access to WMI on both the managing and the managed machines. On the WMI enabled 
+   machines, open "Control Panel/Administrative Tools/Computer Management/", then click on  "Services 
+   and Applications", then right-click on the "WMI Control", choose "Properties"; open the "Security" 
+   pane, click on the "Security" Button, and add the necessary account. If you are still having 
+   troubles, please consult WMI documentation at Platform SDK: Windows Management Instrumentation 
+   (http://msdn.microsoft.com/library/en-us/wmisdk/wmi/wmi_start_page.asp)
+
+==================================================================
+
+Bone-headed J-interop message:
+
+
+d:\gf_other\j-Interop208\j-Interop\examples\MSWMI>asadmin install-node-dcom -w bnevins -W \pw_vaio --save LOANER XPS
+Created installation zip D:\gf_other\j-Interop208\j-Interop\examples\MSWMI\glassfish823632885693820612.zip
+Copying 87377982 bytes....................................................................................
+com.sun.enterprise.util.cluster.windows.process.WindowsException: org.jinterop.dcom.common.JIException: Message not found for errorCode: 0xC0000034
+
+==================================================================
+
+Dec 5
+
+Interesting:  ran validate-dcom on bigapp-oblade-1 -- it failed.  Ran it a second time with no changes -- it passed!!
+
+===================================================================
