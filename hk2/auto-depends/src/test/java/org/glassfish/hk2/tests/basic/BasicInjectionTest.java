@@ -119,6 +119,13 @@ public class BasicInjectionTest {
             // scoped bindings
             binderFactory.bind(CustomScope.class).toInstance(new CustomScope());
             binderFactory.bind().to(CustomScopeInjectedClass.class).in(CustomScope.class);
+            binderFactory.bind(ScopedContract.class).toFactory(new Factory<ScopedContract>() {
+
+                @Override
+                public ScopedContract get() throws ComponentException {
+                    return new ScopedContract() {};
+                }
+            }).in(CustomScope.class);
 
             // factory provided bindings
             binderFactory.bind(FactoryProvidedContractA.class).toFactory(new Factory<FactoryProvidedContractA>() {
@@ -361,6 +368,53 @@ public class BasicInjectionTest {
         } catch (IllegalStateException ex) {
             assertEquals(ex.getMessage(), CustomScope.OUT_OF_SCOPE_MESSAGE);
             return;
+        }
+
+        fail("IllegalStateException expected to be raised when trying to access a custom-scoped biding outside of the scope.");
+    }
+
+    @Test
+    public void testFactoryInjectedScopes() {
+        final CustomScope customScope = services.forContract(CustomScope.class).get();
+        final Injector injector = services.forContract(Injector.class).get();
+
+        ScopedContract[] sc_1 = new ScopedContract[4];
+        ScopedContract[] sc_2= new ScopedContract[4];
+
+        customScope.enter();
+        sc_1[0] = services.forContract(ScopedContract.class).in(customScope).get();
+        sc_1[1] = services.forContract(ScopedContract.class).in(customScope).get();
+        sc_1[2] = injector.inject(ScopedContract.class);
+        sc_1[3] = injector.inject(ScopedContract.class);
+        customScope.leave();
+        assertNotNull("Scope-injected instance was null", sc_1[0]);
+        assertSame("Scope-injected instances not same", sc_1[0], sc_1[1]);
+        assertSame("Scope-injected instances not same", sc_1[2], sc_1[3]);
+        assertSame("Scope-injected instances not same", sc_1[0], sc_1[2]);
+
+        customScope.enter();
+        sc_2[0] = services.forContract(ScopedContract.class).in(customScope).get();
+        sc_2[1] = services.forContract(ScopedContract.class).in(customScope).get();
+        sc_2[2] = injector.inject(ScopedContract.class);
+        sc_2[3] = injector.inject(ScopedContract.class);
+        customScope.leave();
+        assertNotNull("Scope-injected instance was null", sc_2[0]);
+        assertSame("Scope-injected instances not same", sc_2[0], sc_2[1]);
+        assertSame("Scope-injected instances not same", sc_2[2], sc_2[3]);
+        assertSame("Scope-injected instances not same", sc_1[0], sc_1[2]);
+
+        assertTrue("Scope-injected instances from different scope instances are not different", sc_1[0] != sc_2[0]);
+
+        try {
+            injector.inject(ScopedContract.class);
+        } catch (IllegalStateException ex) {
+            assertEquals(ex.getMessage(), CustomScope.OUT_OF_SCOPE_MESSAGE);
+            try {
+                services.forContract(ScopedContract.class).in(customScope).get();
+            } catch (IllegalStateException ex2) {
+                assertEquals(ex2.getMessage(), CustomScope.OUT_OF_SCOPE_MESSAGE);
+                return;
+            }
         }
 
         fail("IllegalStateException expected to be raised when trying to access a custom-scoped biding outside of the scope.");

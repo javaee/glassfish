@@ -60,7 +60,7 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
     String name;
     Class<? extends Scope> scope;
     final List<Class<? extends Annotation>> annotations = new ArrayList<Class<? extends Annotation>>();
-    final Map<String, Class> contracts = new HashMap<String,Class>();
+    final Map<String, Class> contracts = new HashMap<String, Class>();
     final BinderFactoryImpl owner;
 
     BinderImpl(BinderFactoryImpl owner) {
@@ -111,17 +111,20 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
     public <T extends V> ResolvedBinder<T> toFactory(final org.glassfish.hk2.Factory<T> provider) {
 
         AbstractResolvedBinder<T> resolvedBinder = new AbstractResolvedBinder<T>(this) {
+
             @Override
             Inhabitant<?> registerIn(Habitat habitat) {
                 MultiMap<String, String> metadataMap = super.populateMetadata();
-                Class contractType=null;
+                Class contractType = null;
                 Iterator<Class> itrClasses = contracts.values().iterator();
-                while(itrClasses.hasNext() && contractType==null) {
+                while (itrClasses.hasNext() && contractType == null) {
                     contractType = itrClasses.next();
                 }
-                if (contractType==null)
+                if (contractType == null) {
                     throw new RuntimeException("You must use a bind(Class contractType) API to bind a Provider");
-                Inhabitant<T> inh = new AbstractCreatorImpl<T>(contractType, habitat, metadataMap) {
+                }
+                Inhabitant<T> inh = com.sun.hk2.component.Inhabitants.wrapByScope(new AbstractCreatorImpl<T>(contractType, habitat, metadataMap) {
+
                     @Override
                     public T create(Inhabitant onBehalfOf) throws ComponentException {
                         T t = provider.get();
@@ -130,7 +133,7 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
                         }
                         return t;
                     }
-                };
+                }, habitat, metadata.scope);
                 super.registerIn(habitat, inh);
                 return inh;
             }
@@ -142,22 +145,26 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
     @Override
     public <T extends V> ResolvedBinder<T> toFactory(final Class<? extends org.glassfish.hk2.Factory<? extends T>> factoryType) {
         AbstractResolvedBinder<T> resolvedBinder = new AbstractResolvedBinder<T>(this) {
+
             @Override
             Inhabitant<?> registerIn(Habitat habitat) {
                 MultiMap<String, String> metadataMap = super.populateMetadata();
-                Class contractType=null;
+                Class contractType = null;
                 Iterator<Class> itrClasses = contracts.values().iterator();
-                while(itrClasses.hasNext() && contractType==null) {
+                while (itrClasses.hasNext() && contractType == null) {
                     contractType = itrClasses.next();
                 }
-                if (contractType==null) throw new RuntimeException("You must use a bind(Class contractType) API to bind a Provider");
+                if (contractType == null) {
+                    throw new RuntimeException("You must use a bind(Class contractType) API to bind a Provider");
+                }
 
-                Inhabitant<T> inh = new AbstractCreatorImpl<T>(contractType, habitat, metadataMap) {
+                Inhabitant<T> inh = com.sun.hk2.component.Inhabitants.wrapByScope(new AbstractCreatorImpl<T>(contractType, habitat, metadataMap) {
+
                     @Override
                     public T create(Inhabitant onBehalfOf) throws ComponentException {
                         Inhabitant<? extends org.glassfish.hk2.Factory<? extends T>> factoryInhabitant =
                                 habitat.getInhabitantByType(factoryType);
-                        if (factoryInhabitant==null) {
+                        if (factoryInhabitant == null) {
                             factoryInhabitant = new ConstructorCreator<Factory<? extends T>>(factoryType, habitat, null);
                         }
                         Factory<? extends T> f = factoryInhabitant.get();
@@ -165,7 +172,7 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
                         inject(habitat, t, onBehalfOf);
                         return t;
                     }
-                };
+                }, habitat, metadata.scope);
                 super.registerIn(habitat, inh);
                 return inh;
             }
