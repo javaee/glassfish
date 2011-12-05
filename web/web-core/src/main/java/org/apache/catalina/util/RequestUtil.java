@@ -58,7 +58,7 @@
 
 package org.apache.catalina.util;
 
-import com.sun.grizzly.util.Utils;
+import com.sun.grizzly.util.Charsets;
 import com.sun.grizzly.util.buf.ByteChunk;
 import org.apache.naming.Util;
 import javax.servlet.http.Cookie;
@@ -78,8 +78,6 @@ import java.util.*;
 public final class RequestUtil {
 
     private static final String SESSION_VERSION_SEPARATOR = ":";
-
-    private static final Charset UTF_8_CHARSET = Utils.lookupCharset("UTF-8");
 
 
     /**
@@ -296,7 +294,7 @@ public final class RequestUtil {
                 if (encoding == null) {
                     bytes = data.getBytes(Charset.defaultCharset());
                 } else {
-                    bytes = data.getBytes(Utils.lookupCharset(encoding));
+                    bytes = data.getBytes(Charsets.lookupCharset(encoding));
                 }
             } catch (UnsupportedCharsetException uee) {
             }
@@ -471,7 +469,7 @@ public final class RequestUtil {
                 byte c = data[ix++];
                 switch ((char) c) {
                 case '&':
-                    value = new String(data, 0, ox, Utils.lookupCharset(encoding));
+                    value = new String(data, 0, ox, Charsets.lookupCharset(encoding));
                     if (key != null) {
                         putMapEntry(map, key, value);
                         key = null;
@@ -480,7 +478,7 @@ public final class RequestUtil {
                     break;
                 case '=':
                     if (key == null) {
-                        key = new String(data, 0, ox, Utils.lookupCharset(encoding));
+                        key = new String(data, 0, ox, Charsets.lookupCharset(encoding));
                         ox = 0;
                     } else {
                         data[ox++] = c;
@@ -499,7 +497,7 @@ public final class RequestUtil {
             }
             //The last value does not end in '&'.  So save it now.
             if (key != null) {
-                value = new String(data, 0, ox, Utils.lookupCharset(encoding));
+                value = new String(data, 0, ox, Charsets.lookupCharset(encoding));
                 putMapEntry(map, key, value);
             }
         }
@@ -530,7 +528,7 @@ public final class RequestUtil {
             if (st.hasMoreTokens()) {
                 try {
                     String contextPath = new String(
-                            HexUtils.convert(hexPath), UTF_8_CHARSET);
+                            HexUtils.convert(hexPath), Charsets.UTF8_CHARSET);
                     result.put(contextPath, st.nextToken());
                 } catch(Exception ex) {
                     //should not be here
@@ -572,7 +570,7 @@ public final class RequestUtil {
             String contextPath = e.getKey();
             // encode so that there is no / or %2F
             try {
-                sb.append(new String(HexUtils.convert(contextPath.getBytes(UTF_8_CHARSET))));
+                sb.append(new String(HexUtils.convert(contextPath.getBytes(Charsets.UTF8_CHARSET))));
             } catch(Exception ex) {
                 //should not be here
                 throw new IllegalArgumentException(ex);
@@ -596,7 +594,7 @@ public final class RequestUtil {
         Charset charset = null;
         Throwable throwable = null;
         try {
-            charset = Utils.lookupCharset(enc);
+            charset = Charsets.lookupCharset(enc);
         } catch(Throwable t) {
             throwable = t;
         }

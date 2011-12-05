@@ -78,7 +78,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Locale;
 
-import com.sun.grizzly.util.Utils;
+import com.sun.grizzly.util.Charsets;
 
 /**
  * An implementation of SSIExternalResolver that is used with servlets.
@@ -574,7 +574,7 @@ public class SSIServletExternalResolver implements SSIExternalResolver {
             if (inputEncoding == null) {
                 retVal = new String(bytes, Charset.defaultCharset());
             } else {
-                retVal = new String(bytes, Utils.lookupCharset(inputEncoding));
+                retVal = new String(bytes, Charsets.lookupCharset(inputEncoding));
             }
 
             //make an assumption that an empty response is a failure. This is

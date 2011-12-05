@@ -60,7 +60,7 @@ package org.apache.naming;
 
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
-import com.sun.grizzly.util.Utils;
+import com.sun.grizzly.util.Charsets;
 
 /**
  * Utility methods originally defined in org.apache.catalina.util.RequestUtil
@@ -166,7 +166,7 @@ public final class Util {
             if (enc == null) {
                 bytes = str.getBytes(Charset.defaultCharset());
             } else {
-                bytes = str.getBytes(Utils.lookupCharset(enc));
+                bytes = str.getBytes(Charsets.lookupCharset(enc));
             }
         } catch (UnsupportedCharsetException uee) {}
 
@@ -213,7 +213,7 @@ public final class Util {
         }
         if (enc != null) {
             try {
-                return new String(bytes, 0, ox, Utils.lookupCharset(enc));
+                return new String(bytes, 0, ox, Charsets.lookupCharset(enc));
             } catch (Exception e) {
                 e.printStackTrace();
             }

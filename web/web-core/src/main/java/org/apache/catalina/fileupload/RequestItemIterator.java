@@ -69,7 +69,7 @@ import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.Map;
 
-import com.sun.grizzly.util.Utils;
+import com.sun.grizzly.util.Charsets;
 
 /**
  * <p>High level API for processing file uploads.</p>
@@ -234,9 +234,7 @@ class RequestItemIterator {
     private static final String MULTIPART_FORM_DATA = "multipart/form-data";
     private static final String MULTIPART_MIXED = "multipart/mixed";
 
-    private static final Charset ISO_8859_1_CHARSET =
-            Utils.lookupCharset(Globals.ISO_8859_1_ENCODING);
-
+    private static final Charset ISO_8859_1_CHARSET = Charsets.DEFAULT_CHARSET;
 
     // Multipart instance, for accessing global properties, e.g. maxFileSize
     private Multipart multipart;
