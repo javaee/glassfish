@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,12 +40,12 @@
 
 package com.sun.enterprise.resource.pool;
 
-import org.glassfish.resource.common.PoolInfo;
 import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
 import com.sun.enterprise.resource.ResourceSpec;
 import com.sun.enterprise.resource.ResourceState;
 import com.sun.enterprise.resource.ResourceHandle;
+import org.glassfish.resource.common.PoolInfo;
 
 import javax.transaction.*;
 import java.util.Hashtable;
@@ -88,6 +88,13 @@ public class UnpooledResource extends ConnectionPool{
     protected ResourceHandle prefetch(ResourceSpec spec, ResourceAllocator alloc,
             Transaction tran) {
         return null;
+    }
+
+    @Override
+    protected void reconfigureSteadyPoolSize(int oldSteadyPoolSize,
+                                           int newSteadyPoolSize) throws PoolingException {
+        //No-op as the steady pool size should not be reconfigured when connection
+        //pooling is switched off
     }
 
     @Override
