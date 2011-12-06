@@ -292,9 +292,9 @@ class LogDBHelper {
 
     private void initTable() {
         if (ds != null) {
-            if (_logger.isLoggable(Level.FINE)) {
-                _logger.fine("LogDBHelper.initTable for serverName: " + Configuration.getServerName());
-                _logger.fine("LogDBHelper.initTable for instanceName: " + Configuration.getPropertyValue(Configuration.INSTANCE_NAME));
+            if (_logger.isLoggable(Level.INFO)) {
+                _logger.info("LogDBHelper.initTable for serverName: " + Configuration.getServerName());
+                _logger.info("LogDBHelper.initTable for instanceName: " + Configuration.getPropertyValue(Configuration.INSTANCE_NAME));
             }
             Connection conn = null;
             Statement stmt1 = null;
@@ -305,7 +305,7 @@ class LogDBHelper {
                 _logger.fine("=== table created ===");
             } catch (Exception ex) {
                 _logger.log(Level.INFO,"jts.exception_in_db_log_resource_create");
-                _logger.log(Level.FINE,ex.getMessage(), ex);
+                _logger.log(Level.FINE,"jts.exception_in_db_log_table_create_error", ex);
             } finally {
                 try {
                 if (stmt1 != null)
