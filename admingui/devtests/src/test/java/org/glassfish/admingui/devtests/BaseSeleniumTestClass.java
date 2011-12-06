@@ -323,6 +323,10 @@ public class BaseSeleniumTestClass {
         selenium.waitForPopUp(windowId, timeout);
     }
     
+    protected void selectWindow(String windowId) {
+    	selenium.selectWindow(windowId);
+    }
+    
     protected String getSelectedLabel(String elem) {
         return selenium.getSelectedLabel(elem);
     }
