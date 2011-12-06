@@ -43,7 +43,7 @@ package org.glassfish.ejb.admin.cli;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import java.util.List;
+import java.util.*;
 
 import org.glassfish.ejb.api.DistributedEJBTimerService;
 import org.glassfish.api.ActionReport;
@@ -61,7 +61,6 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
-
 
 @Service(name="list-timers")
 @Scoped(PerLookup.class)
@@ -103,11 +102,22 @@ public class ListTimers implements AdminCommand {
             serverIds = new String[] {target};
         }
         try {
+            Properties extraProps = new Properties();
+            List ejbTimers = new ArrayList<Map<String, String>>(serverIds.length);
+
             String[] timerCounts = timerService.listTimers(serverIds);
             for (int i = 0; i < serverIds.length; i++) {
                 final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
                 part.setMessage(serverIds[i] + ": " + timerCounts[i]);
+
+                Map<String, String> ejbTimer = new HashMap();
+                ejbTimer.put("server", serverIds[i]);
+                ejbTimer.put("timerCount", timerCounts[i]);
+                ejbTimers.add(ejbTimer);
             }
+            extraProps.put("ejbTimers", ejbTimers);
+            report.setExtraProperties(extraProps);
+
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } catch (Exception e) {
             report.setMessage(localStrings.getLocalString("list.timers.failed",
