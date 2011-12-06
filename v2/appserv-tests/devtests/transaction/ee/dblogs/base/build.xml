@@ -129,8 +129,6 @@
     </target>
 
     <target name="unsetup-test" depends="init-common">
-        <antcall target="save-logs"/>
-        <copy file="${module}-logs.zip" tofile="${module}-cli-logs.zip"/>
         <antcall target="unsetup-cluster"/>
         <antcall target="unsetup-database"/>
     </target>
@@ -227,6 +225,8 @@
     <target name="run-cli" depends="init-common">
       <antcall target="setup-cluster-non-delegated"/>
       <antcall target="test-cli"/>
+      <antcall target="save-logs"/>
+      <copy file="${module}-logs.zip" tofile="${module}-cli-logs.zip"/>
     </target>
 
     <target name="run-autorecovery" depends="init-common">
