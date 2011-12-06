@@ -6,4 +6,3 @@ wrongTransport # Grizzly 2.1
 wrongTransportTarget # Grizzly 2.1
 virtualServerAlternateDocrootRestart # Grizzly 2.1
 programmaticLogin # different class in the trunk
-trailerHeader # wait for the next Grizzly 1.9.x integration
