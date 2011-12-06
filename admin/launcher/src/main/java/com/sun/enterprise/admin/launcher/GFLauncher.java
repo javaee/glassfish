@@ -166,6 +166,8 @@ public abstract class GFLauncher {
             }     
         }
         
+        secureAdminEnabled = parser.getSecureAdminEnabled();
+        
         renameOsgiCache();
         setupMonitoring(parser);
         sysPropsFromXml = parser.getSystemProperties();
@@ -202,6 +204,13 @@ public abstract class GFLauncher {
      */
     public String getAdminRealmKeyFile() {  
         return adminFileRealmKeyFile;
+    }
+    
+    /**
+     * Returns true if secure admin is enabled
+     */
+    public boolean isSecureAdminEnabled() {  
+        return secureAdminEnabled;
     }
     
     /**
@@ -928,6 +937,7 @@ public abstract class GFLauncher {
     private String javaExe;
     private String classpath;
     private String adminFileRealmKeyFile;
+    private boolean secureAdminEnabled;
     private List<String> debugOptions;
     private long startTime;
     private String logFilename;
