@@ -1194,6 +1194,9 @@ public class RecoveryManager {
         while (xaResources.hasMoreElements()) {
 
             XAResource xaResource = (XAResource) xaResources.nextElement();
+            if(_logger.isLoggable(Level.INFO)) {
+                _logger.log(Level.INFO, "RecoveryManager.dbXARecovery processing  xaResource: " + xaResource);
+            }
 
             // Get the list of XIDs which represent in-doubt transactions
             // for the database.
@@ -1210,6 +1213,10 @@ public class RecoveryManager {
                     String branchQualifier =
                         new String(inDoubtXids[i].getBranchQualifier());
                     //String serverName = Configuration.getServerName();
+                    if(_logger.isLoggable(Level.INFO)) {
+                        _logger.log(Level.INFO, "RecoveryManager.dbXARecovery inDoubtXid: " + 
+                                inDoubtXids[i] + " branchQualifier: " + branchQualifier);
+                    }
                     
                     if (branchQualifier.startsWith(serverName)) {
 
@@ -1237,6 +1244,9 @@ public class RecoveryManager {
                             byte[] gtrid = inDoubtXids[i].getGlobalTransactionId();
                             GlobalTID gtid = GlobalTID.fromTIDBytes(gtrid);
                             Long localTID = (Long)gtidMap.get(gtid);
+                            if(_logger.isLoggable(Level.INFO)) {
+                                _logger.log(Level.INFO, "RecoveryManager.dbXARecovery completing transaction for localTID: " + localTID);
+                            }
                             if (localTID == null) {
                                  xaResource.rollback(inDoubtXids[i]);
                             } else {
