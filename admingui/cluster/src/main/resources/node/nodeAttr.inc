@@ -74,129 +74,12 @@
 </handler>
 
 
-    <sun:title id="propertyContentPage" title="#{pageSession.title}" helpText="#{pageSession.titleHelp}">
+<sun:title id="propertyContentPage" title="#{pageSession.title}" helpText="#{pageSession.titleHelp}">
 <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
-            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save} "
-                onClick="if (checkSSHPswd('#{pageSession.typeId}','#{pageSession.nodeHostId}',
-                    '#{pageSession.psSelectId}', '#{pageSession.ps1Id}', '#{pageSession.ps2Id}',
-                    '#{pageSession.winPsSelectId}', '#{pageSession.winPs1Id}', '#{pageSession.winPs2Id}',
-                    '$resource{i18n.msg.JS.manageUser.passwordNotMatch}', '$resource{i18ncs.msg.JS.confirmEmptyPswd}' , '$resource{i18ncs.msg.JS.nodeHostRequired}'))
-                {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;"
-            >
-                <!command
-                    setAttribute(key="includeInstallDir" value="false");
-                    if ("#{pageSession.valueMap['type']}=CONFIG"){
-                        setAttribute(key="attrsList" value={"nodehost", "nodedir" });
-                        setAttribute(key="endpoint" value="nodes/node/#{pageSession.nodeName}/update-node-config");
-                        gfr.prepareNodeCmd();
-                        mapPut(map="#{pageSession.attrsMap}", key="installdir" value="#{pageSession.valueMap['installdirConfig']}");
-                    }
-                    if ("#{pageSession.valueMap['type']}=SSH"){
-                        gfr.fixPswd();
-                        if (!#{pageSession.valueMap['force']}){
-                            mapPut(map="#{pageSession.valueMap}"  key="force" value="false");
-                        }
-                        setAttribute(key="attrsList" value={"nodehost", "nodedir", "installdir", "sshport", "sshuser", "sshpassword" "sshkeyfile", "force"});
-                        setAttribute(key="endpoint" value="nodes/node/#{pageSession.nodeName}/update-node-ssh");
-                        gfr.prepareNodeCmd();
-                    }
-                    if ("#{pageSession.valueMap['type']}=DCOM"){
-                        gfr.fixWinPswd();
-                        setAttribute(key="attrsList" value={"nodehost", "nodedir", "installdir", "windowsdomain", "windowsuser", "windowspassword"});
-                        setAttribute(key="endpoint" value="nodes/node/#{pageSession.nodeName}/update-node-dcom");
-                        if (!#{pageSession.valueMap['winForce']}){
-                            mapPut(map="#{pageSession.valueMap}"  key="winForce" value="false");
-                        }
-                        gfr.prepareNodeCmd();
-                        mapPut(map="#{pageSession.attrsMap}"  key="force" value="#{pageSession.valueMap['winForce']}");
-
-                    }
-                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/#{requestScope.endpoint}" method="POST" attrs="#{pageSession.attrsMap}")
-                    prepareSuccessfulMsg();
-                    gf.redirect(page="#{request.contextPath}/cluster/#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
-                />
-            </sun:button>
-
-            <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
-                onClick="if (checkSSHPswd('#{pageSession.typeId}', '#{pageSession.nodeHostId}',
-                    '#{pageSession.psSelectId}', '#{pageSession.ps1Id}', '#{pageSession.ps2Id}',
-                    '#{pageSession.winPsSelectId}', '#{pageSession.winPs1Id}', '#{pageSession.winPs2Id}',
-                    '$resource{i18n.msg.JS.manageUser.passwordNotMatch}', '$resource{i18ncs.msg.JS.confirmEmptyPswd}', '$resource{i18ncs.msg.JS.nodeHostRequired}'))
-                {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;"
-	    >
-            <!command
-                setAttribute(key="nameToCheck" value="#{pageSession.valueMap['id']}");
-                gfj.checkNameExist();
-                setAttribute(key="includeInstallDir" value="true");
-                if ("#{pageSession.valueMap['type']}=CONFIG"){
-                    setAttribute(key="attrsList" value={"id", "nodehost", "nodedir"});
-                    setAttribute(key="endpoint" value="nodes/create-node-config");
-                    gfr.prepareNodeCmd();
-                    mapPut(map="#{pageSession.attrsMap}", key="installdir" value="#{pageSession.valueMap['installdirConfig']}");
-                }
-                if ("#{pageSession.valueMap['type']}=SSH"){
-                    gfr.fixPswd();
-                    setAttribute(key="attrsList" value={"id", "nodehost", "nodedir", "installdir", "sshport", "sshuser", "sshpassword" "sshkeyfile", "force", "install"});
-                    setAttribute(key="endpoint" value="nodes/create-node-ssh");
-                    if (!#{pageSession.valueMap['force']}){
-                        mapPut(map="#{pageSession.valueMap}"  key="force" value="false");
-                    }
-                    gfr.prepareNodeCmd();
-
-                    //Run setup-ssh
-                    if ("#{pageSession.valueMap['setupSsh']}=true"){
-                        createMap(result="#{pageSession.sMap}");
-                        if ("#{pageSession.valueMap['generatekey']}"){
-                            mapPut(map="#{pageSession.sMap}"  key="generatekey" value="true");
-                        }
-                        if ("#{pageSession.setupPswd}"){
-                            mapPut(map="#{pageSession.sMap}", key="sshpassword" value="#{pageSession.setupPswd}");
-                        }
-                        mapPut(map="#{pageSession.sMap}", key="hosts" value="#{pageSession.valueMap['nodehost']}");
-                        foreach(var="sattr" list={"nodehost", "sshport", "sshuser",  "sshkeyfile" "sshpublickeyfile" } ){
-                            mapGet(Map="#{pageSession.valueMap}" Key="#{requestScope.sattr}" Value="#{requestScope.sval}");
-                            if ("#{requestScope.sval}"){
-                                mapPut(map="#{pageSession.sMap}", key="#{requestScope.sattr}" value="#{requestScope.sval}");
-                            }
-                        }
-                        gf.restRequest( endpoint="#{sessionScope.REST_URL}/nodes/setup-ssh" attrs="#{pageSession.sMap}" method="POST" )
-                    }
-                }
-                if ("#{pageSession.valueMap['type']}=DCOM"){
-                    //call validate-dcom first
-                    if ("#{pageSession.valueMap['validateDcom']}"){
-                        createMap(result="#{pageSession.dMap}");
-                        foreach(var="dattr" list={"windowsuser", "windowsdomain", "nodehost", "windowspassword" "remotetestdir" } ){
-                            mapGet(Map="#{pageSession.valueMap}" Key="#{requestScope.dattr}" Value="#{requestScope.dval}");
-                            if ("#{requestScope.dval}"){
-                                mapPut(map="#{pageSession.dMap}", key="#{requestScope.dattr}" value="#{requestScope.dval}");
-                            }
-                        }
-                        gf.restRequest( endpoint="#{sessionScope.REST_URL}/nodes/validate-dcom" attrs="#{pageSession.dMap}" method="POST" )
-                    }
-                    gfr.fixWinPswd();
-                    setAttribute(key="attrsList" value={"id", "nodehost", "nodedir", "installdir", "windowsuser", "windowsdomain", "windowspassword", "install" });
-                    setAttribute(key="endpoint" value="nodes/create-node-dcom");
-                    if (!#{pageSession.valueMap['winForce']}){
-                        mapPut(map="#{pageSession.valueMap}"  key="winForce" value="false");
-                    }
-                    gfr.prepareNodeCmd();
-                    mapPut(map="#{pageSession.attrsMap}"  key="force" value="#{pageSession.valueMap['winForce']}");
-                }
-                gf.restRequest( endpoint="#{sessionScope.REST_URL}/#{requestScope.endpoint}" attrs="#{pageSession.attrsMap}" method="POST" )
-                gf.redirect(page="#{request.contextPath}/cluster/node/nodes.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
-             />
-            </sun:button>
-
-            <sun:button id="cancelButton" immediate="#{true}" text="$resource{i18n.button.Cancel}" primary="#{false}" >
-                <!command
-                    gf.redirect(page="#{request.contextPath}/cluster/node/nodes.jsf");
-                />
-            </sun:button>
-
+#include "/cluster/node/nodesButtons.inc"
         </sun:panelGroup>
-        </facet>
+</facet>
 
     </sun:title>
      <event>
@@ -387,8 +270,8 @@
                 <!afterCreate
                         getClientId(component="$this{component}" clientId="#{pageSession.setupPswdPropId}");
                 />
-                <sun:textField id="setupPswd" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.Keyfile']}" text="#{pageSession.setupPswd}" >
-                </sun:textField>
+                <sun:passwordField id="setupPswd" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.Keyfile']}" text="#{pageSession.setupPswd}" >
+                </sun:passwordField>
             </sun:property>
 
             <sun:property id="public"   visible="#{pageSession.showPublicKey}"   labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.publicKeyfile}" helpText="$resource{i18ncs.node.publicKeyfileHelp}">
@@ -483,4 +366,13 @@
             </sun:property>
         </sun:propertySheetSection>
     </sun:propertySheet>
-         "<br /><br /><br />
+         "<br />
+
+    <sun:title>
+        <!facet pageButtonsTop>
+            <sun:panelGroup id="bottomButtons">
+#include "/cluster/node/nodesButtons.inc"
+            </sun:panelGroup>
+        </facet>
+</sun:title>
+    "<br />
