@@ -1188,6 +1188,9 @@ public class RecoveryManager {
         Map gtidMap = LogDBHelper.getInstance().getGlobalTIDMap(serverName);
 
         Set uniqueXids = new HashSet();
+        if(_logger.isLoggable(Level.INFO)) {
+            _logger.log(Level.INFO, "RecoveryManager.dbXARecovery recovering for serverName: " + serverName);
+        }
 
         // if flag is set use commit_one_phase (old style), otherwise use commit
         boolean one_phase = getCommitOnePhaseDuringRecovery();
@@ -1255,18 +1258,18 @@ public class RecoveryManager {
                             }
                             } catch (Exception ex) { ex.printStackTrace(); }
                         } else {
-                            if(_logger.isLoggable(Level.FINE))
+                            if(_logger.isLoggable(Level.INFO))
                             {
-                                _logger.logp(Level.FINE,"RecoveryManager",
+                                _logger.logp(Level.INFO,"RecoveryManager",
                                             "dbXARecovery",
                                             " This xid is NOTUNIQUE " +
                                             inDoubtXids[i]);
                             }
                         }
                     } else {
-                        if(_logger.isLoggable(Level.FINE))
+                        if(_logger.isLoggable(Level.INFO))
                         {
-                            _logger.logp(Level.FINE,"RecoveryManager",
+                            _logger.logp(Level.INFO,"RecoveryManager",
                                         "dbXARecovery",
                                         " This xid doesn't belong to me " +
                                         inDoubtXids[i]);
