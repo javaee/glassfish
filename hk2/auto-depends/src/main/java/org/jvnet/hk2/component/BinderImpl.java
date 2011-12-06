@@ -41,6 +41,7 @@ package org.jvnet.hk2.component;
 
 import com.sun.hk2.component.AbstractCreatorImpl;
 import com.sun.hk2.component.ConstructorCreator;
+import com.sun.hk2.component.InhabitantsFile;
 import org.glassfish.hk2.*;
 import org.glassfish.hk2.Factory;
 import org.glassfish.hk2.Scope;
@@ -169,7 +170,9 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
                         }
                         Factory<? extends T> f = factoryInhabitant.get();
                         T t = f.get();
-                        inject(habitat, t, onBehalfOf);
+                        if (t != null) {
+                            inject(habitat, t, onBehalfOf);
+                        }
                         return t;
                     }
                 }, habitat, metadata.scope);
