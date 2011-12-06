@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -163,8 +163,8 @@ public class JDBCConnectionPoolManager implements ResourceManager {
             }
         }
 
-        if (this.validationmethod.equals("table")
-                && this.isconnectvalidatereq.equals(Boolean.TRUE.toString())
+        if ("table".equals(this.validationmethod)
+                && Boolean.TRUE.toString().equals(this.isconnectvalidatereq)
                 && this.validationtable == null) {
             String msg = localStrings.getLocalString("create.jdbc.connection.pool.validationtable_required",
                     "--validationtable is required if --validationmethod=table " +
