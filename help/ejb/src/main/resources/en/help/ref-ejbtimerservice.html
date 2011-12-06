@@ -1,60 +1,59 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
 Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+
 Use is subject to License Terms  -->
-<a name="ref-ejbtimerservice"></a><h4>EJB Timer Service</h4>
-<a name="indexterm-18"></a><a name="indexterm-19"></a><a name="indexterm-20"></a><p>Use the EJB Timer Service page to configure the EJB timer service.</p>
+<p><a id="ref-ejbtimerservice" name="ref-ejbtimerservice"></a><a id="GHEJB00003" name="GHEJB00003"></a></p>
 
-<p>The timer service is a persistent and transactional notification service that is provided
-by the enterprise bean container and is used to schedule notifications or events
-used by enterprise beans. All enterprise beans except stateful session beans can receive
-notifications from the timer service. Persistent timers set by the service are not
-destroyed when the server is shut down or restarted.</p>
-
+<h4><a id="sthref23" name="sthref23"></a><a id="sthref24" name="sthref24"></a><a id="sthref25" name="sthref25"></a>EJB Timer Service</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the EJB Timer Service page to configure the EJB timer service.</p>
+<p>The timer service is a persistent and transactional notification service that is provided by the enterprise bean container and is used to schedule notifications or events used by enterprise beans. All enterprise beans except stateful session beans can receive notifications from the timer service. Persistent timers set by the service are not destroyed when the server is shut down or restarted.</p>
 <p>The EJB Timer Service page contains the following options.</p>
-
-<dl><dt>Load Defaults</dt>
-<dd><p>Button to restore settings that have default values to their default values. Settings that do not have default values are not changed.</p>
-
+<dl>
+<dt>Load Defaults</dt>
+<dd>
+<p>Button to restore settings that have default values to their default values. Settings that do not have default values are not changed.</p>
 </dd>
 <dt>Configuration Name</dt>
-<dd><p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
-
+<dd>
+<p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
 </dd>
 <dt>Minimum Delivery Interval</dt>
-<dd><p>The minimum number of milliseconds allowed before the next timer expiration for a particular timer can occur. Setting this interval too low can cause server overload. The default value is 1000.</p>
-
+<dd>
+<p>The minimum number of milliseconds allowed before the next timer expiration for a particular timer can occur. Setting this interval too low can cause server overload. The default value is 1000.</p>
 </dd>
 <dt>Maximum Redeliveries</dt>
-<dd><p>The maximum number of attempts the timer service makes to deliver a timer expiration due for exception or rollback. The default value is 1.</p>
-
+<dd>
+<p>The maximum number of attempts the timer service makes to deliver a timer expiration due for exception or rollback. The default value is 1.</p>
 </dd>
 <dt>Redelivery Interval</dt>
-<dd><p>The interval, in milliseconds, between redelivery attempts. The default value is 5000.</p>
-
+<dd>
+<p>The interval, in milliseconds, between redelivery attempts. The default value is 5000.</p>
 </dd>
 <dt>Timer Datasource</dt>
-<dd><p>The JNDI name of the JDBC resource that will be used as the timer datasource. If specified, this value overrides the default value of <tt>jdbc/__TimerPool</tt> for the timer service system application.</p>
-
+<dd>
+<p>The JNDI name of the JDBC resource that will be used as the timer datasource. If specified, this value overrides the default value of <code>jdbc/__TimerPool</code> for the timer service system application.</p>
 </dd>
 </dl>
+<a id="sthref26" name="sthref26"></a>
 <h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-ejbtimerservice.html">To Configure the EJB Timer Service</a></p>
-
+<ul>
+<li>
+<p><a href="task-ejbtimerservice.html">To Configure the EJB Timer Service</a></p>
 </li>
-<li><p><a href="../../../ejb-lite/en/help/task-ejbgeneral.html">To Configure EJB Settings</a></p>
-
+<li>
+<p><a href="../../../ejb-lite/en/help/task-ejbgeneral.html">To Configure EJB Settings</a></p>
 </li>
-<li><p><a href="task-ejbmdbpoolsettings.html">To Configure MDB Pool Settings</a></p>
+<li>
+<p><a href="task-ejbmdbpoolsettings.html">To Configure MDB Pool Settings</a></p>
+</li>
+</ul>
+<a id="sthref27" name="sthref27"></a>
+<h5>Related asadmin Commands</h5>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00205"><code>list-timers</code>(1)</a></p>
 
-</li></ul>
-<h5>Related <tt>asadmin</tt> Commands</h5>
 
-<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=list-timers-1"><tt>list-timers</tt>(1)</a></p>
-
-</li></ul>
 
 
 <small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
