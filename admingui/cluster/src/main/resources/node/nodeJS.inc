@@ -78,27 +78,73 @@
          }
     }
 
-    function showPswdSection(type, ps1Id, ps2Id, pswdAId){
+    function showSshPswdSection(type, ps1Id, ps2Id, pswdAId){
         if (type == '1'){
-            disableComponent(ps1Id, 'text');
-            disableComponent(ps2Id, 'text');
-            disableComponent(pswdAId, 'select');
+            hide(ps1Id);
+            hide(ps2Id);
+            hide(pswdAId);
+            show('#{pageSession.setupSshPropId}');
+            show('#{pageSession.keyfilePropId}');
+            showSetupSSH();
             return;
         }
         if (type == '2'){
-            enableComponent(ps1Id, 'text');
-            enableComponent(ps2Id, 'text');
-            disableComponent(pswdAId, 'select');
+            show(ps1Id);
+            show(ps2Id);
+            hide(pswdAId);
+            hide('#{pageSession.setupSshPropId}');
+            hide('#{pageSession.keyfilePropId}');
+            hide('#{pageSession.generateId}');
+            hide('#{pageSession.setupPswdPropId}');
+            hide('#{pageSession.publicKeyId}');
             return;
         }
         if (type == '3'){
-            disableComponent(ps1Id, 'text');
-            disableComponent(ps2Id, 'text');
-            enableComponent(pswdAId, 'select');
+            hide(ps1Id);
+            hide(ps2Id);
+            show(pswdAId);
+            hide('#{pageSession.setupSshPropId}');
+            hide('#{pageSession.keyfilePropId}');
+            hide('#{pageSession.generateId}');
+            hide('#{pageSession.setupPswdPropId}');
+            hide('#{pageSession.publicKeyId}');
             return;
         }
     }
 
+    function showPswdSection(type, ps1Id, ps2Id, pswdAId){
+        if (type == '1'){
+            hide(ps1Id);
+            hide(ps2Id);
+            hide(pswdAId);
+            return;
+        }
+        if (type == '2'){
+            show(ps2Id);
+            hide(pswdAId);
+            return;
+        }
+        if (type == '3'){
+            hide(ps1Id);
+            hide(ps2Id);
+            show(pswdAId);
+            return;
+        }
+    }
+
+    function showSetupSSH(){
+        var checked = document.getElementById('#{pageSession.setupSshId}').checked;
+        if (checked){
+            show('#{pageSession.generateId}');
+            show('#{pageSession.setupPswdPropId}');
+            show('#{pageSession.publicKeyId}');
+        }else{
+            hide('#{pageSession.generateId}');
+            hide('#{pageSession.setupPswdPropId}');
+            hide('#{pageSession.publicKeyId}');
+        }
+
+    }
     function checkSSHPswd(typeId, nodeHostId, psSelectId, ps1Id, ps2Id, winPsSelectId, winPs1Id, winPs2Id, notMatchMsg, emptyMsg, nodeHostRequiredMsg){
 	if (! guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
 	    return false;
@@ -145,6 +191,13 @@
         }
     }
 
+    function show(compId){
+        webui.suntheme.common.setVisible(compId, true);
+    }
+
+    function hide(compId){
+        webui.suntheme.common.setVisible(compId, false);
+    }
 
     </script>
 </f:verbatim>

@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -46,7 +46,7 @@
     setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.node.NewPageTitle}" 
-        guiOnLoad="showPswdSection('#{pageSession.psSelected}', '#{pageSession.ps1Id}', '#{pageSession.ps2Id}', '#{pageSession.pswdAliasId}');
+        guiOnLoad="showSshPswdSection('#{pageSession.psSelected}', '#{pageSession.ps1PropId}', '#{pageSession.ps2PropId}', '#{pageSession.pswdAliasId}');
                    showPswdSection('#{pageSession.winPsSelected}', '#{pageSession.winPs1Id}', '#{pageSession.winPs2Id}', '#{pageSession.winPswdAliasId}'); " >
 <!define name="content">
     <event>
@@ -64,9 +64,18 @@
         mapPut(map="#{pageSession.valueMap}", key="validateDcom" value="true");
         mapPut(map="#{pageSession.valueMap}", key="type" value="SSH");
         mapPut(map="#{pageSession.valueMap}", key="installdirConfig" value="");
+        mapPut(map="#{pageSession.valueMap}", key="setupSsh" value="false");
 
         setPageSessionAttribute(key="showInstalldirSSH" value="#{true}");
         setPageSessionAttribute(key="showInstalldirConfig" value="#{false}");
+
+        setPageSessionAttribute(key="showSetupSsh" value="#{true}");
+        setPageSessionAttribute(key="showGenerateKey" value="#{false}");
+        setPageSessionAttribute(key="showPublicKey" value="#{false}");
+        setPageSessionAttribute(key="showSetupPswd" value="#{false}");
+        setPageSessionAttribute(key="showKeyFile" value="#{true}");
+
+
         setPageSessionAttribute(key="showTestdir" value="#{true}");
         setPageSessionAttribute(key="title" value="$resource{i18ncs.node.NewPageTitle}");
         setPageSessionAttribute(key="titleHelp" value="$resource{i18ncs.node.NewPageTitleHelp}");
