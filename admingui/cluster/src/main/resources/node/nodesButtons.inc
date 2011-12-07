@@ -63,6 +63,24 @@
             setAttribute(key="attrsList" value={"nodehost", "nodedir", "installdir", "sshport", "sshuser", "sshpassword" "sshkeyfile", "force"});
             setAttribute(key="endpoint" value="nodes/node/#{pageSession.nodeName}/update-node-ssh");
             gfr.prepareNodeCmd();
+            //Run setup-ssh
+            if ("#{pageSession.valueMap['setupSsh']}=true"){
+                createMap(result="#{pageSession.sMap}");
+                if ("#{pageSession.valueMap['generatekey']}"){
+                    mapPut(map="#{pageSession.sMap}"  key="generatekey" value="true");
+                }
+                if ("#{pageSession.setupPswd}"){
+                    mapPut(map="#{pageSession.sMap}", key="sshpassword" value="#{pageSession.setupPswd}");
+                }
+                mapPut(map="#{pageSession.sMap}", key="hosts" value="#{pageSession.valueMap['nodehost']}");
+                foreach(var="sattr" list={"nodehost", "sshport", "sshuser",  "sshkeyfile" "sshpublickeyfile" } ){
+                    mapGet(Map="#{pageSession.valueMap}" Key="#{requestScope.sattr}" Value="#{requestScope.sval}");
+                    if ("#{requestScope.sval}"){
+                        mapPut(map="#{pageSession.sMap}", key="#{requestScope.sattr}" value="#{requestScope.sval}");
+                    }
+                }
+                gf.restRequest( endpoint="#{sessionScope.REST_URL}/nodes/setup-ssh" attrs="#{pageSession.sMap}" method="POST" )
+            }
         }
         if ("#{pageSession.valueMap['type']}=DCOM"){
             gfr.fixWinPswd();
