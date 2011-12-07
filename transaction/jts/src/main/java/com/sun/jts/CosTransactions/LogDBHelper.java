@@ -60,8 +60,12 @@ import com.sun.jts.utils.LogFormatter;
 class LogDBHelper {
 
     String resName = "jdbc/TxnDS";
-    private final String serverName;
-    private final String instanceName;
+
+    // serverName cannot be final - the instance is first requested
+    // during auto-recovery when the server name is not yet final
+    private String serverName;
+
+    final private String instanceName;
 
     private DataSource ds = null;
     private Method getNonTxConnectionMethod = null;
@@ -88,7 +92,6 @@ class LogDBHelper {
     }
 
     LogDBHelper() {
-        serverName = Configuration.getServerName();
         instanceName = Configuration.getPropertyValue(Configuration.INSTANCE_NAME);
         if (Configuration.getPropertyValue(Configuration.DB_LOG_RESOURCE) != null) {
             resName = Configuration.getPropertyValue(Configuration.DB_LOG_RESOURCE);
@@ -114,9 +117,17 @@ class LogDBHelper {
 
     void initTable() {
         // Add a mapping between the serverName and the instanceName
+        serverName = Configuration.getServerName();
+        if (_logger.isLoggable(Level.INFO)) {
+            _logger.info("LogDBHelper.initTable for serverName: " + serverName);
+            _logger.info("LogDBHelper.initTable for instanceName: " + instanceName);
+        }
         String s = getServerNameForInstanceName(instanceName);
         if (s == null) {
             // Set the mapping
+            if (_logger.isLoggable(Level.INFO)) {
+                _logger.info("LogDBHelper.initTable adding marker record...");
+            }
             addRecord(0, null);
         } else if (!s.equals(serverName)) {
             // Override the mapping
@@ -310,9 +321,8 @@ class LogDBHelper {
 
     private void createTable() {
         if (ds != null) {
-            if (_logger.isLoggable(Level.INFO)) {
-                _logger.info("LogDBHelper.initTable for serverName: " + serverName);
-                _logger.info("LogDBHelper.initTable for instanceName: " + instanceName);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("LogDBHelper.createTable for instanceName: " + instanceName);
             }
             Connection conn = null;
             Statement stmt1 = null;

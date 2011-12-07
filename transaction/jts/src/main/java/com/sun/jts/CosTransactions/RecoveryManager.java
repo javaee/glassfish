@@ -1175,7 +1175,12 @@ public class RecoveryManager {
             return;
         }
 
-        dbXARecovery(Configuration.getServerName(), xaResources);
+        //dbXARecovery(Configuration.getServerName(), xaResources);
+        // Configuration.getServerName() might be not quite right at auto-recovery
+        String sname = LogDBHelper.getInstance().getServerNameForInstanceName(Configuration.getPropertyValue(Configuration.INSTANCE_NAME));
+        if (sname != null) {
+            dbXARecovery(sname, xaResources);
+        }
 
         try {
         resyncComplete(false, false);
