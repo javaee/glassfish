@@ -106,18 +106,17 @@ public class GMSCallBack implements CallBack {
 
                 Properties props = TransactionServiceProperties.getJTSProperties(habitat, false);
                 if (!Configuration.isDBLoggingEnabled()) {
-                    String instanceName = props.getProperty(Configuration.INSTANCE_NAME);
-                    String logdir = props.getProperty(Configuration.LOG_DIRECTORY);
                     if (Configuration.getORB() == null) {
                         // IIOP listeners are not setup yet,
                         // Create recoveryfile file so that automatic recovery will find it even 
                         // if no XA transaction is envolved.
-                        DefaultTransactionService.setServerName(props);
                         fence = RecoveryLockFile.getDelegatedTransactionRecoveryFence(this);
                     }
 
                     gms = gmsAdapter.getModule();
                     // Set the member details when GMS service is ready to store it
+                    String instanceName = props.getProperty(Configuration.INSTANCE_NAME);
+                    String logdir = props.getProperty(Configuration.LOG_DIRECTORY);
                     try {
                          _logger.log(Level.INFO, "Storing GMS instance " + instanceName +
                                  " data " + TXLOGLOCATION + " : " + logdir);

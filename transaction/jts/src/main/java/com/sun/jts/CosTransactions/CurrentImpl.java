@@ -175,7 +175,7 @@ public class CurrentImpl extends org.omg.CORBA.LocalObject
 
             if (Configuration.isDBLoggingEnabled()) {
                 //Put a marker record into the log table
-                LogDBHelper.getInstance();
+                LogDBHelper.getInstance().initTable();
             }
 
             // Get a reference to the current ControlImpl object.
