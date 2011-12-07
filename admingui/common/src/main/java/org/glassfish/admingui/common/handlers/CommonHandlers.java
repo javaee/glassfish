@@ -67,6 +67,8 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Properties;
 import java.text.SimpleDateFormat;
 
 import javax.faces.component.UIComponent;
@@ -709,7 +711,39 @@ public class CommonHandlers {
         Boolean isAIX = AIX.equalsIgnoreCase(System.getProperty("os.name"));
         handlerCtx.setOutputValue("result", isAIX);         
     }
+
+    /**
+     * 
+     * handler to get a property value
+     */
     
+    @Handler(id="gf.getPropertyValue",
+    input={
+        @HandlerInput(name="properties", type=java.util.Map.class),
+        @HandlerInput(name="default", type=String.class),
+        @HandlerInput(name="key", type=String.class)},
+    output={
+        @HandlerOutput(name="value", type=String.class)})
+
+    public static void getPropertyValue(HandlerContext handlerCtx) {
+        Map map = (Map)handlerCtx.getInputValue("properties");
+        List<Map> list = (List<Map>)map.get("properties");
+
+        String  key = (String) handlerCtx.getInputValue("key");
+        String  defaultValue = (String) handlerCtx.getInputValue("default");
+        for (Map m : list) {
+            String name = (String)(m.get("name"));
+
+            if (name != null && name.equals(key)) {
+                handlerCtx.setOutputValue("value", m.get("value"));
+                return;
+            }
+        }
+
+        handlerCtx.setOutputValue("value", defaultValue);
+    }
+
+
     /**
      * If the bare attribute is found in the query string and the value is "true",
      * then add "bare=true" to the specified url string.
