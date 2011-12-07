@@ -69,9 +69,9 @@ import org.jvnet.hk2.component.PerLookup;
 public class SetupSshCommand implements AdminCommand {
     @Param(name = "sshuser", optional = true, defaultValue = "${user.name}")
     private String user;
-    @Param(optional = false, password = true)
+    @Param(name = "sshpassword", optional = false, password = true)
     private String sshpassword;
-    @Param(optional = true, password = true)
+    @Param(name = "sshkeypassphrase",  optional = true, password = true)
     private String sshkeypassphrase;
     @Param(name = "sshport", optional = true, defaultValue = "22")
     private int port;
