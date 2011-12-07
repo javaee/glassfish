@@ -60,14 +60,11 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
-            <artifactId>jstl-impl</artifactId>
-        </dependency>
-        <!-- We need this as jstl-impl does not depend on
-             OSGied version of JSTL API -->
-        <dependency>
-            <groupId>org.glassfish.main.javaee-api</groupId>
             <artifactId>javax.servlet.jsp.jstl</artifactId>
-            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet.jsp.jstl</groupId>
+            <artifactId>javax.servlet.jsp.jstl-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.common</groupId>
