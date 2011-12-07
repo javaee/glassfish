@@ -99,23 +99,23 @@
 	  -->   
 
         <dependency>
-            <groupId>com.sun.corba</groupId>
+            <groupId>org.glassfish.corba</groupId>
             <artifactId>glassfish-corba-codegen</artifactId>
         </dependency>
 	<dependency>
-            <groupId>com.sun.corba</groupId>
+            <groupId>org.glassfish.corba</groupId>
             <artifactId>glassfish-corba-asm</artifactId>
         </dependency> 
        <dependency>
-            <groupId>com.sun.corba</groupId>
+            <groupId>org.glassfish.corba</groupId>
             <artifactId>glassfish-corba-newtimer</artifactId>
        </dependency>
        <dependency>
-            <groupId>com.sun.corba</groupId>
+            <groupId>org.glassfish.corba</groupId>
             <artifactId>glassfish-corba-orb</artifactId>
        </dependency>
        <dependency>
-            <groupId>com.sun.corba</groupId>
+            <groupId>org.glassfish.corba</groupId>
             <artifactId>glassfish-corba-csiv2-idl</artifactId>
         </dependency>
 

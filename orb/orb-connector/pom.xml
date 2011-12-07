@@ -69,15 +69,15 @@
     </developers>
     <dependencies>
         <dependency>
-            <groupId>com.sun.corba</groupId>
+            <groupId>org.glassfish.corba</groupId>
             <artifactId>glassfish-corba-orbgeneric</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.corba</groupId>
+            <groupId>org.glassfish.corba</groupId>
             <artifactId>glassfish-corba-omgapi</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.corba</groupId>
+            <groupId>org.glassfish.corba</groupId>
             <artifactId>glassfish-corba-internal-api</artifactId>
         </dependency>
         <dependency>
