@@ -145,10 +145,12 @@
         }
     }
     if ("#{pageSession.valueMap['type']}=DCOM"){
+        gfr.fixWinPswd();
         //call validate-dcom first
         if ("#{pageSession.valueMap['validateDcom']}"){
             createMap(result="#{pageSession.dMap}");
-            foreach(var="dattr" list={"windowsuser", "windowsdomain", "nodehost", "windowspassword" "remotetestdir" } ){
+            mapPut(map="#{pageSession.dMap}", key="host" value="#{pageSession.valueMap['nodehost']}");
+            foreach(var="dattr" list={"windowsuser", "windowsdomain", "windowspassword" "remotetestdir" } ){
                 mapGet(Map="#{pageSession.valueMap}" Key="#{requestScope.dattr}" Value="#{requestScope.dval}");
                 if ("#{requestScope.dval}"){
                     mapPut(map="#{pageSession.dMap}", key="#{requestScope.dattr}" value="#{requestScope.dval}");
@@ -156,7 +158,6 @@
             }
             gf.restRequest( endpoint="#{sessionScope.REST_URL}/nodes/validate-dcom" attrs="#{pageSession.dMap}" method="POST" )
         }
-        gfr.fixWinPswd();
         setAttribute(key="attrsList" value={"id", "nodehost", "nodedir", "installdir", "windowsuser", "windowsdomain", "windowspassword", "install" });
         setAttribute(key="endpoint" value="nodes/create-node-dcom");
         if (!#{pageSession.valueMap['winForce']}){
