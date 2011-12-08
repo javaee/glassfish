@@ -486,10 +486,11 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                     if (isJmsAvailabilityEnabled) {
                         //Set HARequired as true - irrespective of whether it is REMOTE or
                         //LOCAL
-                        ConnectorConfigProperty  envProp3 = new ConnectorConfigProperty  (
-                                                    HAREQUIRED , "true","HA Required",
-                                                   "java.lang.String");
-                        setProperty(cd, envProp3);
+                        //setHARequired was removed in MQ 4. hence removing the call to this method
+                        //ConnectorConfigProperty  envProp3 = new ConnectorConfigProperty  (
+                                                   // HAREQUIRED , "true","HA Required",
+                                                   //"java.lang.String");
+                        //setProperty(cd, envProp3);
                          /* The broker has a property to control whether
                          * it starts in HA mode or not and that's represented on
                          * the RA by BrokerEnableHA.
@@ -628,7 +629,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                 same values in all broker instances in the conventional cluster
 
                 */
-     if(dbProps == null) dbProps = new Properties();
+    if(dbProps == null) dbProps = new Properties();
 	dbProps.setProperty("imq.cluster.clusterid", getMQClusterName());
     dbProps.setProperty("imq.persist.store", jmsAvailability.getMessageStoreType());
 	if(Boolean.valueOf(jmsAvailability.getAvailabilityEnabled()) == false)
