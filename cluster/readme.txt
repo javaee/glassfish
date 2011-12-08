@@ -4,14 +4,19 @@ essential scrap of data: name of TrustedInstaller user == "NT SERVICE\TrustedIns
 
 ========================================================================
 this means remote registry is not running:
-Could not run the test script on xps using DCOM. : org.jinterop.dcom.common.JIException: Message not found for errorCode: 0xC0000034
+Could not run the test script on xps using DCOM. :
+org.jinterop.dcom.common.JIException:
+Message not found for errorCode: 0xC0000034
 
 
 =========================================
 
 
 This means that WScript.Shell won't run a script:
-Could not run the test script on xps using DCOM. : org.jinterop.dcom.common.JIException: Class not registered. If you are using a DLL/OCX , please mak e sure it has "DllSurrogate" flag set. Faq A(6) in readme.html. [0x80040154]
+Could not run the test script on xps using DCOM. :
+org.jinterop.dcom.common.JIException: Class not registered.
+If you are using a DLL/OCX , please mak e sure it has "DllSurrogate" flag set.
+Faq A(6) in readme.html. [0x80040154]
 
 From Hudson:
 
@@ -38,11 +43,22 @@ From Hudson:
 
 [Avatar]
 2011-06-08 17:39:21 UTC
-I found the root cause of remote WMI access against a Windows 7 host. The following registry key (WbemScripting.SWbemLocator) is owned by an non-existing group called "TrunstedInstaller", and no other group or user have write access to it: HKLM\SOFTWARE\Classes\Wow6432Node\CLSID\{76A64158-CB41-11D1-8B02-00600806D9B6} My solution was (for the time being) to take ownership of this key and assign it to the Administrators group. Everything works immediately (with firewall disabled or properly configured). I have not found the Microsoft documentation that offers the "correct" ways to do this. It seems that the WbemScripting.SWbemLocator services was never properly registered and with the permission mentioned above, it prevented the autoRegistration feature of j-Interop to finish the job. Thanks --Michael 
+I found the root cause of remote WMI access against a Windows 7 host.
+The following registry key (WbemScripting.SWbemLocator) is owned by an non-existing
+group called "TrunstedInstaller", and no other group or user have write access to it:
+HKLM\SOFTWARE\Classes\Wow6432Node\CLSID\{76A64158-CB41-11D1-8B02-00600806D9B6}
+My solution was (for the time being) to take ownership of this key and assign
+it to the Administrators group. Everything works immediately
+(with firewall disabled or properly configured).
+I have not found the Microsoft documentation that offers the "correct" ways to
+do this. It seems that the WbemScripting.SWbemLocator services was never properly
+registered and with the permission mentioned above, it prevented the
+autoRegistration feature of j-Interop to finish the job. Thanks --Michael
 
 
 ====   Nov 2, 2011
-Tried a new approach.  Since it works perfectly on XP and not at all on W7, why not try and make it break on XP to get information.
+Tried a new approach.  Since it works perfectly on XP and not at all on W7, why not
+try and make it break on XP to get information.
 
 Experiment start.  Ran these 2 commands
 
@@ -55,7 +71,7 @@ results:
 
 2. vaio
 Copying 45483 bytes.
-com.sun.enterprise.universal.process.WindowsException: org.jinterop.dcom.common.JIException: Class not registered. 
+com.sun.enterprise.universal.process.WindowsException: org.jinterop.dcom.common.JIException: Class not registered.
 If you are using a DLL/OCX , please make sure it has "DllSurrogate" flag set. Faq A(6) in readme.html. [0x80040154]
 
 3.  Now I went to the Registry and changed permissions of WScript.Shell like so:
@@ -65,7 +81,7 @@ KEY ==> HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{72C24DD5-D70A-438B-8A42-98424
 change Permissions so that Administrators do NOT have "Full Control"
 
 Copying 45483 bytes.
-com.sun.enterprise.universal.process.WindowsException: org.jinterop.dcom.common.JIException: Class not registered. 
+com.sun.enterprise.universal.process.WindowsException: org.jinterop.dcom.common.JIException: Class not registered.
   If you are using a DLL/OCX , please make sure it has "DllSurrogate" flag set. Faq A(6) in readme.html. [0x80040154]
 
   YEAH!!  I at least can get EXACTLY the same error by tweaking the Win XP registry.
@@ -91,7 +107,7 @@ com.sun.enterprise.universal.process.WindowsException: org.jinterop.dcom.common.
 http://stackoverflow.com/questions/5935714/dcom-access-via-j-interop-in-server-2008-r2
 
 1. Firewall
-2. set permissions on HKEY_CLASSES_ROOT\CLSID{76A64158-CB41-11D1-8B02-00600806D9B6}, 
+2. set permissions on HKEY_CLASSES_ROOT\CLSID{76A64158-CB41-11D1-8B02-00600806D9B6},
 3. Turn on remote registry
 4. JISystem.setAutoRegisteration(true);
 5. Deactivate UAC
@@ -162,15 +178,15 @@ The remote file, C: doesn't exist on bigapp-oblade-2 : Logon failure: unknown us
 
 ==========================
 
-1. Launch 'regedit.exe' as 'Administrator' 
-2. Find the following registry key: 'HKEY_CLASSES_ROOT\CLSID\{76A64158-CB41-11D1-8B02-00600806D9B6}' 
-3. Right click and select 'Permissions' 
-4. Click the 'Advanced' button. 
-5. Select the tab labeled 'Owner' 
-6. Add the user you want to allow to connect to the owners list 
-7. Click the 'Ok' button. 
-8. Now highlight the user and grant Full Control 
-9. Click 'Ok' 
+1. Launch 'regedit.exe' as 'Administrator'
+2. Find the following registry key: 'HKEY_CLASSES_ROOT\CLSID\{76A64158-CB41-11D1-8B02-00600806D9B6}'
+3. Right click and select 'Permissions'
+4. Click the 'Advanced' button.
+5. Select the tab labeled 'Owner'
+6. Add the user you want to allow to connect to the owners list
+7. Click the 'Ok' button.
+8. Now highlight the user and grant Full Control
+9. Click 'Ok'
 Retrieved from "http://www.opennms.org/wiki/WmiConfiguration";
 ==================================
 
@@ -182,7 +198,7 @@ VAIO is working perfectly
 XPS fails in remote scripting
 
 Tne placve it fails is in JIWinRegStub.java method winreg_CloseKey()
-it is closing HKLM\Software\Classes\Wow6432Node 
+it is closing HKLM\Software\Classes\Wow6432Node
 
 "Received unexpected PDU from server."
 ============  Nov 17, 2011 ==============
@@ -190,7 +206,7 @@ At SCA.  Trying to run validate-dcom from wnevins-lap to wnevins-loan
 
 Ping -- works fine both  ways.
 v-d from lap to loan -->  WMI error.
-run examples\MSWMI from lap to loan -> 
+run examples\MSWMI from lap to loan ->
 
 org.jinterop.dcom.common.JIException: Message not found for errorCode: 0xC0000034
         at org.jinterop.winreg.smb.JIWinRegStub.winreg_OpenHKCR(JIWinRegStub.java:134)
@@ -240,14 +256,14 @@ hine for DCOM access, so as to avoid such exceptions.  [0x00000005]
 
 
 	OK something is wrong wirth connecting to WMI.  I tried this next:
-	
+
 Then go to Control Panel > Administrative Tools > Local Security Policy > Security Settings > Local Policies > Security Options :-
 
     Double-click "DCOM: Machine Access Restrictions" policy, click Edit Security, add the user created above, allow "Remote Access"
     Double-click "DCOM: Machine Launch Restrictions" policy, click Edit Security, add the user created above, allow "Local Launch", "Remote Launch", "Local Activation", "Remote Activation"
 	--- No help ---
 	Then tried this:
-	
+
 Go to Control Panel > Administrative Tools > Component Services > Computers > right-click My Computer > click Properties > click COM Security tab :-
 
     In Access Permissions section, click Edit Default > add the user created above, allow "Remote Access"
@@ -272,11 +288,11 @@ I found the root cause of remote WMI access against a Windows 7 host. The follow
 ========================
    From MSWMI example's readme.txt file
    This means WMI has rejected your connection request. This is not a j-Interop related problem. Make
-   sure you have access to WMI on both the managing and the managed machines. On the WMI enabled 
-   machines, open "Control Panel/Administrative Tools/Computer Management/", then click on  "Services 
-   and Applications", then right-click on the "WMI Control", choose "Properties"; open the "Security" 
-   pane, click on the "Security" Button, and add the necessary account. If you are still having 
-   troubles, please consult WMI documentation at Platform SDK: Windows Management Instrumentation 
+   sure you have access to WMI on both the managing and the managed machines. On the WMI enabled
+   machines, open "Control Panel/Administrative Tools/Computer Management/", then click on  "Services
+   and Applications", then right-click on the "WMI Control", choose "Properties"; open the "Security"
+   pane, click on the "Security" Button, and add the necessary account. If you are still having
+   troubles, please consult WMI documentation at Platform SDK: Windows Management Instrumentation
    (http://msdn.microsoft.com/library/en-us/wmisdk/wmi/wmi_start_page.asp)
 
 ==================================================================
@@ -296,3 +312,64 @@ Dec 5
 Interesting:  ran validate-dcom on bigapp-oblade-1 -- it failed.  Ran it a second time with no changes -- it passed!!
 
 ===================================================================
+
+d:\gf_other\j-Interop208\j-Interop\examples\MSWMI>asadmin install-node-dcom -W \pw -w hudson --installdir c:/glassfish3  --archive glassfish8236328856
+93820612.zip bigapp-oblade-2
+Copying 87377982 bytes....................................................................................
+com.sun.enterprise.util.cluster.windows.process.WindowsException: org.jinterop.dcom.common.JIException: Class not registered. If you are using a DLL/O
+CX , please make sure it has "DllSurrogate" flag set. Faq A(6) in readme.html. [0x80040154]
+==================================================
+
+Dec 7, 2011
+Attempting to configure bigapp-oblade-3
+
+validate-dcom says this:
+
+Could not connect to WMI (Windows Management Interface) on bigapp-oblade-3. : Error setting up remote connection to WMI
+
+===============================
+Then I changed permissions on HKLM\Software\Classes\CLSID\76a64....
+and I got a bit further:
+
+Successfully accessed WMI (Windows Management Interface) on bigapp-oblade-3.  There are 76 processes running on bigapp-oblade-3.
+Could not run the test script on bigapp-oblade-3 using DCOM. :
+org.jinterop.dcom.common.JIException: Access is denied, please check whether
+ the [domain-username-password] are correct. Also, if not already done
+please check the GETTING STARTED and FAQ sections in readme.htm.
+They provide information on how to correctly configure the Windows
+machine for DCOM access, so as to avoid such exceptions.  [0x00000005]
+
+Then I changed permissions on HKLM\Software\Classes\CLSID\72C24DD5....
+Boom!  Works!!
+Successfully accessed WMI (Windows Management Interface) on bigapp-oblade-3.  There are 76 processes running on bigapp-oblade-3.
+Successfully ran the test script on bigapp-oblade-3 using DCOM.
+The script simply ran the DIR command.  Here are the first few lines from the output of the dir command on the remote machine:
+
+C:\Windows\system32>dir C:\
+ Volume in drive C has no label.
+ Volume Serial Number is 5851-CD05
+
+ Directory of C:\
+
+12/07/2011  05:26 PM    <DIR>          b
+12/07/2011  05:19 PM    <DIR>          batch
+12/07/2011  05:50 PM                 8 delete_me.bat
+07/08/2011  01:53 PM           272,748 ff5.jpg
+12/07/2011  05:15 PM    <DIR>          glassfish3
+
+=======================================
+bigapp-oblade-3 appeared to have a problem with the unpack script.
+I ran it in a debugger.  Just before remotel;y running the script I edited it on b-o-3 and
+replace "jar" with the full path to "jar"
+then it worked!!!
+There may be Path issues.  I set the jdk in the path for EVERYONE.  Maybe it needs to be in there explicitly
+for the actual user?!?
+
+Later -- it apparently needed a reboot.  It would have an old stale Path until the reboot.
+
+========================================
+
+
+
+
+
