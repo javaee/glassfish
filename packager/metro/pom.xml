@@ -240,6 +240,16 @@
                    <groupId>org.glassfish.metro</groupId>
                    <artifactId>webservices-osgi-aix</artifactId>
                    <classifier>aix</classifier>
+                   <exclusions>
+                       <exclusion>
+                           <groupId>com.sun.xml.ws</groupId>
+                           <artifactId>jaxws-eclipselink-plugin</artifactId>
+                       </exclusion>
+                       <exclusion>
+                           <groupId>com.sun.xml.ws</groupId>
+                           <artifactId>sdo-eclipselink-plugin</artifactId>
+                       </exclusion>
+                   </exclusions>
                 </dependency>
             </dependencies>
         </profile>
