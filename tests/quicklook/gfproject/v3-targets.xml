@@ -43,6 +43,7 @@
 
 <project name="v3-targets" default="all" basedir=".">
     
+    <property name="QL_DOMAIN" value="qltest-domain"/>
     <property name="db.root" value="${glassfish.home}/javadb"/>
     <property name="db.classpath" value="${db.root}/lib"/>
     <property name="dist.dir" value="${ws.root}/dist/${testsuite.name}"/>
@@ -72,7 +73,8 @@
 
 <target name="restart-server" depends="setOSConditions,asenv-unix,asenv-windows">
     <exec executable="${ASADMIN}" outputproperty="message1">
-        <arg line="restart-domain"/>
+        <arg value="restart-domain"/>
+        <arg value="${QL_DOMAIN}"/>
     </exec>
     <echo message="${message1}"/>
 </target>
@@ -137,6 +139,7 @@
     <exec executable="${glassfish.home}/bin/asadmin">
     <env key="GlassFish_Platform" value="Felix"/>
         <arg value="start-domain"/>
+        <arg value="${QL_DOMAIN}"/>
     </exec>
 </target>
 
@@ -146,6 +149,7 @@
         <arg value="/c"/>
         <arg value="${glassfish.home}\bin\asadmin.bat"/>
         <arg value="start-domain"/>
+        <arg value="${QL_DOMAIN}"/>
     </exec>
     <!-- JRuby deplyment needs GF start server to be fully done. 
          Introduce a delay for now and will investigate futher.  -->
@@ -161,6 +165,7 @@
     <echo message="stopping server on unix ..."/>
     <exec executable="${glassfish.home}/bin/asadmin">        
         <arg value="stop-domain"/>
+        <arg value="${QL_DOMAIN}"/>
     </exec>
 </target>
 
@@ -170,6 +175,7 @@
     <arg value="/c"/>
     <arg value="${glassfish.home}\bin\asadmin.bat"/>
         <arg value="stop-domain"/>
+       <arg value="${QL_DOMAIN}"/>
     </exec>
 </target>
     

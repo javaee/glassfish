@@ -43,6 +43,8 @@
 
 <project name="GlassFish-V3-QuickLook" default="all" basedir=".">
     <property environment="env"/>
+    <property name="QL_DOMAIN" value="qltest-domain"/>
+    <property name="QL_ADMIN_PORT" value="4848"/>
 
     <property file="build.properties"/>
     <property file="${basedir}/gfproject/derby.properties"/>
@@ -53,6 +55,7 @@
 
     <target name="all_cluster">
         <record name="allrun.output" action="start"/>
+        <antcall target="create-ql-domain"/>
         <antcall target="start-server-felix"/>
         <antcall target="build-cluster"/>
         <antcall target="runtest">
@@ -84,6 +87,7 @@
         <property name="env.security_manager" value="OFF"/>
         <antcall target="verify-xml"/>
         <antcall target="start-derby"/>
+        <antcall target="create-ql-domain"/>
         <antcall target="start-server-felix"/>
 	<antcall target="build-deploy"/>
         <antcall target="runtest">
@@ -124,6 +128,7 @@
         <property name="env.security_manager" value="ON"/>
         <antcall target="verify-xml"/>
         <antcall target="start-derby"/>        
+        <antcall target="create-ql-domain"/>
         <antcall target="start-server-felix"/>
 	<antcall target="enable-security-manager"/>
         <antcall target="stop-server"/>
@@ -145,6 +150,7 @@
         <property name="env.security_manager" value="OFF"/>
         <antcall target="verify-xml"/>
         <antcall target="start-derby"/>
+        <antcall target="create-ql-domain"/>
         <antcall target="start-server-felix"/>
         <antcall target="build-deploy"/>
         <antcall target="build-deploy-gd"/>
@@ -547,6 +553,13 @@
     <property name="APPCLIENT" value="${glassfish.home}\bin\appclient.bat"/>
 </target>
 
+<target name="create-ql-domain" depends="setOSConditions,asenv-unix,asenv-windows">
+    <exec executable="${ASADMIN}" outputproperty="message1">
+        <arg line="create-domain --adminport ${QL_ADMIN_PORT} --nopassword ${QL_DOMAIN}"/>
+    </exec>
+    <echo message="${message1}"/>
+</target>
+
 <target name="start-server-hk2" depends="setOSConditions" if="v3">
    
     <echo>+-----------------------------+</echo>
@@ -599,10 +612,10 @@
         <arg value="/c"/>
         <arg value="${glassfish.home}\bin\asadmin.bat"/>
         <arg value="start-domain"/>
-        <arg value="domain1"/>
+        <arg value="${QL_DOMAIN}"/>
     </exec>
     <waitfor maxwait="30" maxwaitunit="second" checkevery="500">
-        <http url="http://localhost:4848/"/>
+        <http url="http://localhost:${QL_ADMIN_PORT}/"/>
     </waitfor> 
 </target>
 
@@ -610,7 +623,7 @@
     <exec executable="${glassfish.home}/bin/asadmin">
         <arg value="start-domain"/>
 <!--        <arg value="dashdashdebug=true"/> -->
-        <arg value="domain1"/>
+        <arg value="${QL_DOMAIN}"/>
     </exec>
 </target>
 
@@ -644,12 +657,14 @@
          <arg value="/c"/>
          <arg value="${glassfish.home}\bin\asadmin.bat"/>
          <arg value="stop-domain"/>
+         <arg value="${QL_DOMAIN}"/>
      </exec>
 </target>
          
 <target name="stop-server-unix" if="isUnix">
      <exec executable="${glassfish.home}/bin/asadmin">
         <arg value="stop-domain"/>
+         <arg value="${QL_DOMAIN}"/>
     </exec>
 </target>
 
