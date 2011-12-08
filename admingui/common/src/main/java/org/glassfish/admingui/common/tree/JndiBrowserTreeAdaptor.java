@@ -184,7 +184,7 @@ public class JndiBrowserTreeAdaptor extends TreeAdaptorBase {
             Object retVal = getLayoutComponent().dispatchHandlers(
                     ctx, FilterTreeEvent.EVENT_TYPE,
                     new FilterTreeEvent(getParentUIComponent(), _children));
-            if ((retVal != null) && (retVal instanceof Object [])) {
+            if ((retVal != null) && (retVal instanceof List)) {
                 // We have a return value, use it instead of the original list
                 _children = (List<Object>) retVal;
             }
