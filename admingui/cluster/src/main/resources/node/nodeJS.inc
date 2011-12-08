@@ -120,6 +120,7 @@
             return;
         }
         if (type == '2'){
+            show(ps1Id);
             show(ps2Id);
             hide(pswdAId);
             return;

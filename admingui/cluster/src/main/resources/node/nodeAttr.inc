@@ -330,7 +330,7 @@
             <sun:property id="psSelected" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.selectWinPasswordSelect}" helpText="$resource{i18ncs.node.selectWinPasswordSelectHelp}">
                 <sun:dropDown id="psSelected" labels={"$resource{i18ncs.node.textPassword}", "$resource{i18ncs.node.usePasswordAlias}" } values={"2", "3"}
                       selected="#{pageSession.winPsSelected}"
-                      onChange="showPswdSection(this.value, '#{pageSession.winPs1Id}', '#{pageSession.winPs2Id}', '#{pageSession.winPswdAliasId}');"
+                      onChange="showPswdSection(this.value, '#{pageSession.winPs1PropId}', '#{pageSession.winPs2PropId}', '#{pageSession.winPswdAliasId}');"
                  >
                 <!afterCreate
                     getClientId(component="$this{component}" clientId="#{pageSession.winPsSelectId}");
@@ -339,6 +339,9 @@
             </sun:property>
 
             <sun:property id="newPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.winUserPassword}" helpText="$resource{i18ncs.node.winUserPasswordHelp}" >
+                <!afterCreate
+                        getClientId(component="$this{component}" clientId="#{pageSession.winPs1PropId}");
+                    />
                 <sun:passwordField id="NewPassword" text="#{pageSession.winPswdText}" columns="$int{25}" maxLength="#{sessionScope.fieldLengths['maxLength.server.NewPassword']}"  >
                      <!afterCreate
                         getClientId(component="$this{component}" clientId="#{pageSession.winPs1Id}");
@@ -347,6 +350,9 @@
             </sun:property>
 
             <sun:property id="confirmPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.confirmWinUserPassword}" helpText="$resource{i18ncs.node.confirmWinUserPasswordHelp}" >
+                <!afterCreate
+                        getClientId(component="$this{component}" clientId="#{pageSession.winPs2PropId}");
+                    />
                 <sun:passwordField id="ConfirmPassword" text="#{pageSession.winConfirmPassword}"  columns="$int{25}" maxLength="#{sessionScope.fieldLengths['maxLength.server.ConfirmNewPassword']}"   >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId="#{pageSession.winPs2Id}");
@@ -355,10 +361,10 @@
             </sun:property>
 
             <sun:property id="pswdAlias" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.passwordAlias}" helpText="$resource{i18ncs.node.passwordAliasHelp}">
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId="#{pageSession.winPswdAliasId}");
+                />
                 <sun:dropDown id="pswdAlias" labels="#{pageSession.listOfAliases}" selected="#{pageSession.winPswdAlias}" >
-                    <!afterCreate
-                        getClientId(component="$this{component}" clientId="#{pageSession.winPswdAliasId}");
-                    />
                     <!beforeCreate
                         gfr.getPswdAliases();
                     />
