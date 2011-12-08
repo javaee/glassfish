@@ -59,6 +59,12 @@
             setPageSessionAttribute(key="appPropertyEndpoint" value="#{sessionScope.REST_URL}/system-applications/application/__admingui/property.json")
             gf.restRequest(endpoint="#{pageSession.appPropertyEndpoint}" method="GET" result="#{requestScope.propList}");
             setPageSessionAttribute(key="appPropList" value="#{requestScope.propList.data.extraProperties.properties}");
+
+            setPageSessionAttribute(key="loadConsolePropertyEndpoint",
+                value="#{sessionScope.REST_URL}/configs/config/server-config/admin-service/property.json");
+            gf.restRequest(endpoint="#{pageSession.loadConsolePropertyEndpoint}" method="GET" result="#{requestScope.propList2}");
+            setPageSessionAttribute(key="loadConsolePropList" value="#{requestScope.propList2.data.extraProperties.properties}");
+
         />   
     </event>
             <sun:form id="propertyForm">
@@ -71,30 +77,32 @@
                     onClick="submitAndDisable(this, '$resource{i18n.button.Processing}'); return false;" >
                 <!command
                     gf.restRequest(endpoint="#{pageSession.selfUrl}" attrs="#{pageSession.valueMap}" method="POST");
-                    if(!#{pageSession.loadOnStartup}){
+
+                    if(!#{pageSession.loadConsoleOnStartup}){
                         //will be null if checkbox is unchecked.
-                        setPageSessionAttribute(key="loadOnStartup" value="false");
+                        setPageSessionAttribute(key="loadConsoleOnStartup" value="");
                     }
                     setAttribute(key="found" value="false");
-                    if('! #{pageSession.loadOnStartup}=#{pageSession.origLoadOnStartup}'){
-                        foreach (var="oneProp" list="#{pageSession.appPropList}") {
-                            if (#{requestScope.oneProp.name}=load-system-app-on-startup){
+//                    if('! #{pageSession.loadConsoleOnStartup}=#{pageSession.origLoadConsoleOnStartup}'){
+                        foreach (var="oneProp" list="#{pageSession.loadConsolePropList}") {
+                            if (#{requestScope.oneProp.name}=adminConsoleStartup){
                                 setAttribute(key="found" value="true");
-                                mapPut(map="#{requestScope.oneProp}" key="value" value="#{pageSession.loadOnStartup}")
+                                mapPut(map="#{requestScope.oneProp}" key="value" value="#{pageSession.loadConsoleOnStartup}")
                             }
                         }
                         if (!#{requestScope.found}){
                             createMap(result="#{requestScope.jmap}");
-                            mapPut(map="#{requestScope.jmap}" key="name" value="load-system-app-on-startup")
-                            mapPut(map="#{requestScope.jmap}" key="value" value="#{pageSession.loadOnStartup}")
-                            listAdd(list="#{pageSession.appPropList}" value="#{requestScope.jmap}");
+                            mapPut(map="#{requestScope.jmap}" key="name" value="adminConsoleStartup")
+                            mapPut(map="#{requestScope.jmap}" key="value" value="#{pageSession.loadConsoleOnStartup}")
+                            listAdd(list="#{pageSession.loadConsolePropList}" value="#{requestScope.jmap}");
                         }
-                        javaToJSON(obj="#{pageSession.appPropList}" json="#{requestScope.tmpJSON}");
-                        gf.restRequest(endpoint="#{pageSession.appPropertyEndpoint}", method="POST", data="#{requestScope.tmpJSON}");
-                    }
+                        javaToJSON(obj="#{pageSession.loadConsolePropList}" json="#{requestScope.tmpJSON}");
+                        gf.restRequest(endpoint="#{pageSession.loadConsolePropertyEndpoint}", method="POST", data="#{requestScope.tmpJSON}");
+//                    }
                     prepareSuccessfulMsg();
                     gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
-                />
+
+            />
             </sun:button>
         </sun:panelGroup>
     </facet>
@@ -102,26 +110,24 @@
 
 <sun:propertySheet id="propertySheet">
     <sun:propertySheetSection id="propertSectionTextField">
-
         
-        <sun:property id="loadOnStartup"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}"
-                      label="$resource{i18nc.domain.loadOnStartup}"  helpText="$resource{i18nc.domain.loadOnStartupHelp}">
-            <sun:checkbox  label="$resource{i18n.common.Enabled}" selected="#{pageSession.loadOnStartup}" selectedValue="true"  >
+        <sun:property id="loadConsoleOnStartupProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.loadOnStartup}" helpText="$resource{i18nc.domain.loadOnStartupHelp}">
+            <sun:dropDown id="loadConsoleOnStartup" selected="#{pageSession.loadConsoleOnStartup}"
+                      labels={"","SYSTEM-DEFAULT","OFF","LOW","HIGH"}  >
                 <!beforeCreate
-                    setPageSessionAttribute(key="loadOnStartup" value="false");
-                    setPageSessionAttribute(key="origLoadOnStartup" value="false");
-                    foreach (var="oneProp" list="#{pageSession.appPropList}") {
-                        if (#{requestScope.oneProp.name}=load-system-app-on-startup){
-                            setPageSessionAttribute(key="loadOnStartup" value="#{requestScope.oneProp.value}");
-                            setPageSessionAttribute(key="origLoadOnStartup" value="#{requestScope.oneProp.value}");
+                    setPageSessionAttribute(key="loadConsoleOnStartup" value="");
+                    setPageSessionAttribute(key="origLoadConsoleOnStartup" value="");
+                    foreach (var="oneProp" list="#{pageSession.loadConsolePropList}") {
+                        if (#{requestScope.oneProp.name}=adminConsoleStartup){
+                            setPageSessionAttribute(key="loadConsoleOnStartup" value="#{requestScope.oneProp.value}");
+                            setPageSessionAttribute(key="origLoadConsoleOnStartup" value="#{requestScope.oneProp.value}");
                         }
                     }
                 />
-            </sun:checkbox>
-        </sun:property>
-            <sun:property id="dummy"  >
-                <sun:staticText id="dummy"  text=" " />
-        </sun:property>
+            </sun:dropDown>
+         </sun:property>
+
+
         <sun:property id="appRootProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.AppRoot}" helpText="$resource{i18nc.domain.AppRootHelp}">
             <sun:textField id="AppRoot" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.domain.AppRoot']}" text="#{pageSession.valueMap['applicationRoot']}"/>
         </sun:property>
