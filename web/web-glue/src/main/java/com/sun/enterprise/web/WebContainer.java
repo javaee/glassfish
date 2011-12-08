@@ -704,7 +704,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         return jkConnector;
     }
 
-    HashMap<String, WebConnector> getConnectorMap() {
+    public HashMap<String, WebConnector> getConnectorMap() {
         return connectorMap;
     }
 
