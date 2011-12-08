@@ -113,7 +113,7 @@
         
         <sun:property id="loadConsoleOnStartupProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.loadOnStartup}" helpText="$resource{i18nc.domain.loadOnStartupHelp}">
             <sun:dropDown id="loadConsoleOnStartup" selected="#{pageSession.loadConsoleOnStartup}"
-                      labels={"","SYSTEM-DEFAULT","OFF","LOW","HIGH"}  >
+                      labels={"","DEFAULT","OFF","LOW","HIGH"}  >
                 <!beforeCreate
                     setPageSessionAttribute(key="loadConsoleOnStartup" value="");
                     setPageSessionAttribute(key="origLoadConsoleOnStartup" value="");
