@@ -77,12 +77,12 @@
          getClientId(component="$this{component}" clientId=>$page{tableRowGroupId});
         />
 
-    <sun:tableColumn headerText="$resource{i18ncs.general.serverNameCol}"  sort="name" rowHeader="$boolean{true}" id="col1">
-        <sun:staticText id="classnameCol" value="#{td.value.server}" />
+    <sun:tableColumn headerText="$resource{i18ncs.general.serverNameCol}" rowHeader="$boolean{true}" id="col1">
+        <sun:staticText id="serverNameCol" value="#{td.value.server}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18ncs.clusters.ejbTimers.TimerCountCol}"  sort="policyProvider" rowHeader="$boolean{true}" id="col6">
-        <sun:staticText id="Col" value="#{td.value.timerCount}" />
+    <sun:tableColumn headerText="$resource{i18ncs.clusters.ejbTimers.TimerCountCol}"  rowHeader="$boolean{true}" id="col6">
+        <sun:staticText id="timerCountCol" value="#{td.value.timerCount}" />
     </sun:tableColumn>
   </sun:tableRowGroup>
 </sun:table>
