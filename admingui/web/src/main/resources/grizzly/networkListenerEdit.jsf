@@ -105,6 +105,8 @@
         }
         />
     </event>
+"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":configurations:#{pageSession.configName}:networkConfig:networkListeners:#{pageSession.Name}");</script>
+
             <sun:form id="propertyForm">
 #include "listenerTabs.inc"
 #include "/common/shared/alertMsg.inc"
@@ -156,7 +158,7 @@
         <sun:property id="security"  rendered="#{!readOnly}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.security}"  >
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap2['securityEnabled']}" selectedValue="true" />
         </sun:property>
-        
+
         <sun:property id="JkEnabled"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.JkEnabled}" helpText="$resource{i18n_web.grizzly.networkListener.JkEnabledHelp}">
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['jkEnabled']}" selectedValue="true" />
         </sun:property>

@@ -70,6 +70,9 @@
         setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
     />
     </event>
+
+"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":configurations:#{pageSession.configName}:networkConfig:networkListeners");</script>
+
             <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
     <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.networkListenerNewPageTitle}" helpText="$resource{i18n_web.grizzly.networkListenerNewPageTitleHelp}">
@@ -104,10 +107,13 @@
                         mapPut(map="#{pageSession.protocolMap}", key="name", value="#{pageSession.valueMap['newProtocolName']}");
                         mapPut(map="#{pageSession.protocolMap}", key="target", value="#{pageSession.valueMap['target']}");
                         setPageSessionAttribute(key="protocolName", value="#{pageSession.valueMap['newProtocolName']}");
+
+
                         gf.createEntity(endpoint="#{pageSession.protocolUrl}", attrs="#{pageSession.protocolMap}");
                         createMap(result="#{pageSession.httpMap}");
                         mapPut(map="#{pageSession.httpMap}", key="defaultVirtualServer", value="#{pageSession.valueMap['defaultVirtualServer']}");
                         mapPut(map="#{pageSession.httpMap}", key="target", value="#{pageSession.valueMap['target']}");
+
                         gf.createEntity(endpoint="#{pageSession.protocolUrl}/#{pageSession.protocolName}/create-http", attrs="#{pageSession.httpMap}");
                     }
                     if ("!(#{pageSession.valueMap['protocolChoice']}=create)") {
