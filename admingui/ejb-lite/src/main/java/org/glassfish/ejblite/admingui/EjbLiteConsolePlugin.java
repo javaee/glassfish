@@ -43,7 +43,7 @@
  * and open the template in the editor.
  */
 
-package org.glassfish.ejb.admingui;
+package org.glassfish.ejblite.admingui;
 
 import org.glassfish.api.admingui.ConsoleProvider;
 import org.jvnet.hk2.annotations.Service;
@@ -55,7 +55,7 @@ import java.net.URL;
  */
 
 @Service
-public class EjbConsolePlugin implements ConsoleProvider {
+public class EjbLiteConsolePlugin implements ConsoleProvider {
 
 /**
  *  <p> Returns the URL of the Integration Point configuration file
