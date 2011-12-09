@@ -104,6 +104,7 @@
 
     <target name="all_wd_security">
         <record name="allrun.output" action="start"/>
+        <antcall target="create-ql-domain"/>
         <antcall target="add-quicklook-policy-grants" />
         <property name="env.security_manager" value="ON"/>
 
@@ -128,7 +129,6 @@
         <property name="env.security_manager" value="ON"/>
         <antcall target="verify-xml"/>
         <antcall target="start-derby"/>        
-        <antcall target="create-ql-domain"/>
         <antcall target="start-server-felix"/>
 	<antcall target="enable-security-manager"/>
         <antcall target="stop-server"/>
@@ -194,11 +194,11 @@
     <!-- Target for testing glassfish distribution (containing EJB)  -->
     <target name="all_gd_security" depends="clean">
         <record name="allrun.output" action="start"/>
-        <antcall target="add-quicklook-policy-grants" />
         <property name="env.security_manager" value="ON"/>
         <antcall target="verify-xml"/>
         <antcall target="start-derby"/>
         <antcall target="create-ql-domain"/>
+        <antcall target="add-quicklook-policy-grants" />
         <antcall target="start-server-felix"/>
         <antcall target="enable-security-manager"/>
         <antcall target="stop-server"/>
