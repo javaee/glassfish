@@ -3,9 +3,9 @@ call setfiles.bat
 
 echo ******  %a%
 diff %br%\%a% %tr%\%a%
+pause
 echo ******  %b%
 diff %br%\%b% %tr%\%b%
-pause
 echo ******  %c%
 diff %br%\%c% %tr%\%c%
 echo ******  %d%

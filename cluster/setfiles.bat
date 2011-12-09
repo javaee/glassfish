@@ -21,7 +21,7 @@ rem set g=ssh\src\main\java\org\glassfish\cluster\ssh\util\DcomInfo.java
 rem set h=admin\src\main\java\com\sun\enterprise\v3\admin\cluster\StopInstanceCommand.java
 rem set i=ssh\src\main\java\org\glassfish\cluster\ssh\connect\NodeRunnerDcom.java
 
-set a=admin\src\main\java\com\sun\enterprise\v3\admin\cluster\ValidateDcom.java
-set b=admin\src\main\java\com\sun\enterprise\v3\admin\cluster\LocalStrings.properties
+set a=admin\src\main\java\com\sun\enterprise\v3\admin\cluster\NodeUtils.java
+rem set b=admin\src\main\java\com\sun\enterprise\v3\admin\cluster\LocalStrings.properties
 set tr=d:\gf\trunk\main\nucleus\cluster
 set br=d:\gf\branches\3.1.2\cluster
