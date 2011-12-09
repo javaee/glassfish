@@ -61,7 +61,7 @@
      <!-- add the timer links -->
         <integration-point
                 id="ejbTimers"
-                type="org.glassfish.admingui:ejbTimers"
+                type="org.glassfish.admingui:ejbTimerButtons"
                 priority="200"
                 parentId=""
                 content="ejbTimerButtons.jsf"

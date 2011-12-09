@@ -75,6 +75,10 @@
     />
     </event>
             <sun:form id="propertyForm">
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$attribute{sheetId});
+                />
+
 #include "/cluster/cluster/clusterTabs.inc"
 #include "/common/shared/alertMsg.inc"
 
@@ -123,7 +127,8 @@
 
     <event>
         <!afterCreate
-            includeIntegrations(type="org.glassfish.admingui:ejbTimerButtons");
+            getUIComponent(clientId="#{sheetId}"  component=>$attribute{component})
+            includeIntegrations(type="org.glassfish.admingui:ejbTimerButtons" root="#{component}");
         />
     </event>
 
@@ -144,6 +149,9 @@
     </sun:button>
 
     <sun:propertySheet id="propertySheet">
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$attribute{sheetId});
+                />
 
         <!-- Text Field section -->
         <sun:propertySheetSection id="propertSectionTextField">
