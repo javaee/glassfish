@@ -25,13 +25,9 @@ CREATE TABLE expected_sql_trace (
     args	     char(200)
 );
 
-INSERT INTO expected_sql_trace VALUES('org.apache.derby.client.net.NetConnection40', 'getClientInfo', '');
-
 
 INSERT INTO expected_sql_trace VALUES('org.apache.derby.client.net.NetConnection40', 'prepareStatement', 'select * from customer_stmt_wrapper;1003;1007;');
 
 INSERT INTO expected_sql_trace VALUES('com.sun.gjc.spi.jdbc40.PreparedStatementWrapper40', 'getConnection', '');
 
 INSERT INTO expected_sql_trace VALUES('com.sun.gjc.spi.jdbc40.PreparedStatementWrapper40', 'close', '');
-
-INSERT INTO expected_sql_trace VALUES('org.apache.derby.client.net.NetConnection40', 'setClientInfo', '{};');

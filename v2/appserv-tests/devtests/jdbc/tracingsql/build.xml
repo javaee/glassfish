@@ -86,6 +86,11 @@
                    value="${resources.dottedname.prefix}.jdbc-connection-pool.ql-jdbc-pool.sql_trace_listeners=com.sun.s1asdev.jdbc.tracingsql.logger.TraceLogger,com.sun.gjc.util.SQLTraceLogger"/>
       </antcall>
 
+      <!--Drop sql_trace table and recreate a new one for TraceLogger to update-->
+      <antcall target="execute-sql-common">
+        <param name="sql.file" value="sql/recreate_sql_trace_table.sql"/>
+      </antcall>
+
       <!-- To check reconfiguration of SQL Trace listeners -->
       <antcall target="runclient-common"/>
     </target>
