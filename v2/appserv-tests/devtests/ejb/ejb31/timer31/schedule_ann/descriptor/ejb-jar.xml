@@ -10,6 +10,10 @@
             <second>*/2</second>
             <minute>*</minute>
             <hour>*</hour>
+            <day-of-month>*</day-of-month>
+            <month>*</month>
+            <day-of-week>*</day-of-week>
+            <year>*</year>
         </schedule>
         <timeout-method>
           <method-name>ddTimeout</method-name>
