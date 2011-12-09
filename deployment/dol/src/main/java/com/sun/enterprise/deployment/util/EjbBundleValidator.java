@@ -277,7 +277,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                             validator.validateScheduledTimerDescriptor(sd);
                         } catch (Exception e) {
                             throw new RuntimeException(ejb.getName() + ": Invalid schedule " + 
-                                " defined on method " + sd.getTimeoutMethod().getFormattedString() + 
+                                "defined on method " + sd.getTimeoutMethod().getFormattedString() + 
                                 ": " + e.getMessage());
                         }
                     }
