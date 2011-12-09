@@ -652,6 +652,7 @@
     <echo message="stopping server"/>
     <antcall target="stop-server-unix"/>
     <antcall target="stop-server-windows"/>
+    <copy file="${glassfish.home}/domains/${QL_DOMAIN}/logs/server.log" tofile="${glassfish.home}/domains/domain1/logs/server.log" failonerror="false"/>
 </target>
     
 <target name="stop-server-windows" if="isWindows">
