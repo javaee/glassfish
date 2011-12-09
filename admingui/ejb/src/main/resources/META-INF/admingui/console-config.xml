@@ -58,4 +58,13 @@
                 parentId="availabilityTabs"
                 content="configuration/ejbAvailabilityTabs.inc"
         />
+     <!-- add the timer links -->
+        <integration-point
+                id="ejbTimers"
+                type="org.glassfish.admingui:ejbTimers"
+                priority="200"
+                parentId=""
+                content="ejbTimerButtons.jsf"
+        />
+
 </console-config>
