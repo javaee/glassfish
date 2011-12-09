@@ -245,10 +245,12 @@ public class ChangeAdminPasswordCommand extends LocalDomainCommand {
                 //This is a FileRealm, instantiate it.
                 FileRealmHelper helper = new FileRealmHelper(adminKeyFile);
 
-                //Authenticate the old password
-                String[] groups = helper.authenticate(programOpts.getUser(), ((String) passwords.get(oldpwName)).toCharArray());
-                if (groups == null) {
-                    throw new CommandException(strings.get("InvalidCredentials", programOpts.getUser()));
+                //Authenticate the old password if the user does not have  RESET
+                if(helper.hasAuthenticatableUser()) {
+                    String[] groups = helper.authenticate(programOpts.getUser(), ((String) passwords.get(oldpwName)).toCharArray());
+                    if (groups == null) {
+                        throw new CommandException(strings.get("InvalidCredentials", programOpts.getUser()));
+                    }
                 }
                 helper.updateUser(programOpts.getUser(), programOpts.getUser(), ((String) passwords.get(newpwName)).toCharArray(), null);
                 helper.persist();
