@@ -5,9 +5,9 @@ echo ******  %a%
 diff %br%\%a% %tr%\%a%
 echo ******  %b%
 diff %br%\%b% %tr%\%b%
+pause
 echo ******  %c%
 diff %br%\%c% %tr%\%c%
-pause
 echo ******  %d%
 diff %br%\%d% %tr%\%d%
 echo ******  %e%
