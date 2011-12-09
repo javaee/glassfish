@@ -75,6 +75,7 @@ import org.jboss.weld.bootstrap.spi.Deployment;
 import org.jboss.weld.bootstrap.spi.Metadata;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
+import java.util.LinkedList;
 
 /*
  * Represents a deployment of a CDI (Weld) application. 
@@ -358,9 +359,17 @@ public class DeploymentImpl implements Deployment {
 
     @Override
     public Iterable<Metadata<Extension>> getExtensions() {
-        return context.getTransientAppMetaData(
-                WeldDeployer.WELD_BOOTSTRAP, WeldBootstrap.class).loadExtensions(
-                        Thread.currentThread().getContextClassLoader());
+        List<BeanDeploymentArchive> bdas = getBeanDeploymentArchives();
+        ArrayList<Metadata<Extension>> extnList = new ArrayList<Metadata<Extension>>();
+        for(BeanDeploymentArchive bda:bdas){
+            Iterable<Metadata<Extension>> bdaExtns = context.getTransientAppMetaData(
+                    WeldDeployer.WELD_BOOTSTRAP, WeldBootstrap.class).loadExtensions(
+                    ((BeanDeploymentArchiveImpl) bda).getModuleClassLoaderForBDA());
+            for(Metadata<Extension> bdaExtn : bdaExtns){
+                extnList.add(bdaExtn);
+            }
+        }
+        return extnList;
     }
 
     @Override
