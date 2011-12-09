@@ -46,6 +46,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.firefox.internal.ProfilesIni;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 
 /**
@@ -53,6 +55,7 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
  * @author jasonlee
  */
 public class SeleniumHelper {
+
     private static SeleniumHelper instance;
     private Selenium selenium;
     private WebDriver driver;
@@ -78,7 +81,15 @@ public class SeleniumHelper {
             String browser = getParameter("browser", "firefox");
 
             if ("firefox".equals(browser)) {
-                driver = new FirefoxDriver();
+                ProfilesIni allProfiles = new ProfilesIni();
+                FirefoxProfile profile = allProfiles.getProfile("default");
+                profile.setPreference("dom.disable_window_move_resize", false);
+                final FirefoxDriver firefoxDriver = new FirefoxDriver(profile);
+                driver = firefoxDriver;
+                Object o = firefoxDriver.executeScript("window.resizeTo(screen.availWidth, screen.availHeight);", new Object[]{});
+                if (o != null) {
+                    System.out.println(o.toString());
+                }
             } else if ("chrome".equals(browser)) {
                 driver = new ChromeDriver();
             } else if ("ie".contains(browser)) {
@@ -87,13 +98,17 @@ public class SeleniumHelper {
             elementFinder = new ElementFinder(driver);
 
             selenium = new WebDriverBackedSelenium(driver, getBaseUrl());
-            selenium.setTimeout("90000");
             (new BaseSeleniumTestClass()).openAndWait("/", BaseSeleniumTestClass.TRIGGER_COMMON_TASKS, 480); // Make sure the server has started and the user logged in
         }
 
+        selenium.windowFocus();
+        selenium.windowMaximize();
+        selenium.setTimeout("90000");
+//            String eval = selenium.getEval("window.moveTo(0,0); window.resizeTo(screen.availWidth, screen.availHeight); ");
+//            System.out.println(eval);
         return selenium;
     }
-    
+
     public void releaseSeleniumInstance() {
         if (selenium != null) {
             if (Boolean.parseBoolean(SeleniumHelper.getParameter("debug", "false"))) {
@@ -116,7 +131,6 @@ public class SeleniumHelper {
         return elementFinder;
     }
 
-    
     public static String getParameter(String paramName, String defaultValue) {
         String value = System.getProperty(paramName);
 
