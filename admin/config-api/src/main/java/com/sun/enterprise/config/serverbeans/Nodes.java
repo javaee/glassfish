@@ -41,15 +41,20 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.glassfish.api.I18n;
+import org.glassfish.api.Param;
 import org.glassfish.config.support.*;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.Element;
+import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.DuckTyped;
 
+import java.beans.PropertyVetoException;
 import java.util.List;
+
+import javax.validation.constraints.Pattern;
 
 
 /**
@@ -58,6 +63,25 @@ import java.util.List;
  */
 @Configured
 public interface Nodes extends ConfigBeanProxy, Injectable {
+
+    /**
+     * Sets the value of the freeze attribute on the nodes list.
+     * If the nodes list is frozen then no new nodes are allowed
+     * to be created.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
+     */
+    void setFreeze(String value) throws PropertyVetoException;
+
+    /**
+     * Check if nodes list is frozen. That is prevent creation of new nodes.
+     *
+     * @return value of freeze
+     */
+    @Attribute(defaultValue = "false", dataType=Boolean.class)
+    String getFreeze();
 
      /**
       * Return the list of nodes currently configured
@@ -89,6 +113,14 @@ public interface Nodes extends ConfigBeanProxy, Injectable {
     @DuckTyped
     public Node getNode(String name);
 
+    /**
+     * Can we create a node?
+     * @param node
+     * @return true if node creation is allowed, else false
+     */
+    @DuckTyped
+    public boolean nodeCreationAllowed();
+
     class Duck {
         public static Node getNode(Nodes nodes, String name) {
             if (name == null || nodes == null) {
@@ -114,6 +146,10 @@ public interface Nodes extends ConfigBeanProxy, Injectable {
                 }
             }
             return null;
+        }
+
+        public static boolean nodeCreationAllowed(Nodes nodes) {
+            return ! Boolean.parseBoolean(nodes.getFreeze());
         }
     }
 }
