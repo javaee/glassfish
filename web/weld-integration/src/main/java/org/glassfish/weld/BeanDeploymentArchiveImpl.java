@@ -558,5 +558,9 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     void putInjectionTarget(AnnotatedType<?> annotatedType, InjectionTarget<?> it) {
         itMap.put(annotatedType, it);
     }
+     
+    public ClassLoader getModuleClassLoaderForBDA() {
+        return moduleClassLoaderForBDA;
+    }
 
 }
