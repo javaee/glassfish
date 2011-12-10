@@ -111,7 +111,7 @@
 		<dependency>
             <groupId>commonj.sdo</groupId>
             <artifactId>commonj.sdo</artifactId>
-			<version>2.1.1.v200905221342</version>
+			<version>2.1.1.v201112051852</version>
             <scope>compile</scope>
 		</dependency>
         <dependency>
