@@ -48,7 +48,8 @@
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.node.EditPageTitle}"
     guiOnLoad="showSection('#{pageSession.valueMap['type']}', '#{pageSession.sshConnectorSectionId}', '#{pageSession.dcomSectionId}', '#{pageSession.installdirSshId}', '#{pageSession.installdirConfigId}',
                             '#{pageSession.installProp}', '#{pageSession.archProp}');
-               showSshPswdSection('#{pageSession.psSelected}', '#{pageSession.ps1PropId}', '#{pageSession.ps2PropId}', '#{pageSession.pswdAliasId}');" >
+               showSshPswdSection('#{pageSession.psSelected}', '#{pageSession.ps1PropId}',  '#{pageSession.pswdAliasId}');
+               showPswdSection('#{pageSession.winPsSelected}', '#{pageSession.winPs1PropId}',  '#{pageSession.winPswdAliasId}'); " >
 <!define name="content">
 <event>
     <!beforeCreate
@@ -67,7 +68,7 @@
         mapPut(map="#{pageSession.valueMap}"  key="nodedir"  value="#{pageSession.attrMap['nodeDir']}");
         mapPut(map="#{pageSession.valueMap}"  key="type",  value="#{pageSession.attrMap['type']}");
         mapPut(map="#{pageSession.valueMap}"  key="windowsdomain",  value="#{pageSession.attrMap['windowsDomain']}");
-
+        setPageSessionAttribute(key="winPsSelected" value="2");
         if ("(#{pageSession.attrMap['type']}=SSH) || (#{pageSession.attrMap['type']}=DCOM)"){
             mapPut(map="#{pageSession.valueMap}"  key="installdir",  value="#{pageSession.attrMap['installDir']}");
             //for edit, we don't want to clear install dir when switching from ssh to config node. GLASSFISH-15605
@@ -85,32 +86,37 @@
             setPageSessionAttribute(key="showInstalldirSSH" value="#{false}");
             setPageSessionAttribute(key="showInstalldirConfig" value="#{true}");
         }
-
         setPageSessionAttribute(key="psSelected" value="1");
+        setPageSessionAttribute(key="winPsSelected" value="2");
+
         gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}/ssh-connector" exists="#{requestScope.sshConnectorExist}");
         if (#{requestScope.sshConnectorExist}){
             gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector.json", currentMap="#{pageSession.attrMap}"  valueMap="#{pageSession.attrMap}");
-            mapPut(map="#{pageSession.valueMap}"  key="sshport",  value="#{pageSession.attrMap['sshPort']}");
-            mapPut(map="#{pageSession.valueMap}"  key="winPort",  value="#{pageSession.attrMap['sshPort']}");
+            if ("#{pageSession.attrMap['type']}=SSH"){
+                mapPut(map="#{pageSession.valueMap}"  key="sshport",  value="#{pageSession.attrMap['sshPort']}");
+            }
+            
+            if ("#{pageSession.attrMap['type']}=DCOM"){
+                mapPut(map="#{pageSession.valueMap}"  key="winPort",  value="#{pageSession.attrMap['sshPort']}");
+            }
             gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}/ssh-connector/ssh-auth" exists="#{requestScope.sshConnectorExist}");
             if (#{requestScope.sshConnectorExist}){
                 gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector/ssh-auth.json", currentMap="#{pageSession.attrMap}"  valueMap="#{pageSession.attrMap}");
                 mapPut(map="#{pageSession.valueMap}"  key="sshuser",  value="#{pageSession.attrMap['userName']}");
                 mapPut(map="#{pageSession.valueMap}"  key="sshkeyfile",  value="#{pageSession.attrMap['keyfile']}");
-                gf.convertNodePswd(pswd="#{pageSession.attrMap['password']}" pswdText="#{pageSession.pswdText}" pswdAlias="#{pageSession.pswdAlias}" psSelected="#{pageSession.psSelected}");
-                setPageSessionAttribute(key="confirmPassword" value="#{pageSession.pswdText}");
-
-                setPageSessionAttribute(key="winPsSelected" value="2");
-                mapPut(map="#{pageSession.valueMap}"  key="windowsuser",  value="#{pageSession.attrMap['userName']}");
-                gf.convertNodePswd(pswd="#{pageSession.attrMap['password']}" pswdText="#{pageSession.winPswdText}" pswdAlias="#{pageSession.winPswdAlias}" psSelected="#{pageSession.winPsSelected}");
-                setPageSessionAttribute(key="winConfirmPassword" value="#{pageSession.winPswdText}");
-
+                if ("#{pageSession.attrMap['type']}=SSH"){
+                    gf.convertNodePswd(pswd="#{pageSession.attrMap['password']}" pswdText="#{pageSession.pswdText}" pswdAlias="#{pageSession.pswdAlias}" psSelected="#{pageSession.psSelected}");
+                }
+                if ("#{pageSession.attrMap['type']}=DCOM"){
+                    mapPut(map="#{pageSession.valueMap}"  key="windowsuser",  value="#{pageSession.attrMap['userName']}");
+                    gf.convertNodePswd(pswd="#{pageSession.attrMap['password']}" pswdText="#{pageSession.winPswdText}" pswdAlias="#{pageSession.winPswdAlias}" psSelected="#{pageSession.winPsSelected}");
+                }
             }
         }
-
         //fill in default for CONFIG to SSH or DCOM case.
         if (! #{requestScope.sshConnectorExist}){
             mapPut(map="#{pageSession.valueMap}"  key="sshport", value="22");
+            mapPut(map="#{pageSession.valueMap}"  key="winPort",  value="135");
             mapPut(map="#{pageSession.valueMap}"  key="sshuser", value="\\${user.name}");
             mapPut(map="#{pageSession.valueMap}"  key="winUser", value="\\${user.name}");
         }

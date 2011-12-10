@@ -134,7 +134,6 @@
         <event>
             <!beforeEncode
                 setPageSessionAttribute(key="nodeName" value="#{td.value.name}");
-                //println("============ $attribute{listOfRows}");
             />
         </event>
         <sun:hyperlink id="link" text="#{td.value.name}" url="#{pageSession.editLink}?nodeName=#{td.value.name}" />

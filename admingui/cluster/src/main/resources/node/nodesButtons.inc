@@ -42,9 +42,10 @@
 
 <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save} "
     onClick="if (checkSSHPswd('#{pageSession.typeId}','#{pageSession.nodeHostId}',
-        '#{pageSession.psSelectId}', '#{pageSession.ps1Id}', '#{pageSession.ps2Id}',
-        '#{pageSession.winPsSelectId}', '#{pageSession.winPs1Id}', '#{pageSession.winPs2Id}',
-        '$resource{i18n.msg.JS.manageUser.passwordNotMatch}', '$resource{i18ncs.msg.JS.confirmEmptyPswd}' , '$resource{i18ncs.msg.JS.nodeHostRequired}'))
+        '#{pageSession.psSelectId}', '#{pageSession.ps1Id}', 
+        '#{pageSession.setupSshId}', '#{pageSession.setupPswdId}',
+        '#{pageSession.winPsSelectId}', '#{pageSession.winPs1Id}', 
+        '$resource{i18ncs.msg.JS.confirmEmptyPswd}' , '$resource{i18ncs.msg.JS.nodeHostRequired}'))
     {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;"
 >
     <!command
@@ -101,9 +102,10 @@
 
 <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
     onClick="if (checkSSHPswd('#{pageSession.typeId}', '#{pageSession.nodeHostId}',
-        '#{pageSession.psSelectId}', '#{pageSession.ps1Id}', '#{pageSession.ps2Id}',
-        '#{pageSession.winPsSelectId}', '#{pageSession.winPs1Id}', '#{pageSession.winPs2Id}',
-        '$resource{i18n.msg.JS.manageUser.passwordNotMatch}', '$resource{i18ncs.msg.JS.confirmEmptyPswd}', '$resource{i18ncs.msg.JS.nodeHostRequired}'))
+        '#{pageSession.psSelectId}', '#{pageSession.ps1Id}',
+        '#{pageSession.setupSshId}', '#{pageSession.setupPswdId}',
+        '#{pageSession.winPsSelectId}', '#{pageSession.winPs1Id}',
+        '$resource{i18ncs.msg.JS.confirmEmptyPswd}', '$resource{i18ncs.msg.JS.nodeHostRequired}'))
     {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;"
 >
 <!command
