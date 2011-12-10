@@ -101,17 +101,21 @@ abstract class NativeRemoteCommandsBase extends CLICommand {
     // all of this rigamarole is to get the right names for parameters in front
     // of user eyeballs
     abstract String getRawRemoteUser();
+
     abstract int getRawRemotePort();
+
     abstract String getSshKeyFile();
 
     @Override
     protected void validate() throws CommandException {
         remoteUser = resolver.resolve(getRawRemoteUser());
+        validateHosts();
     }
 
     final String getRemoteUser() {
         return remoteUser;
     }
+
     final int getRemotePort() {
         return remotePort;
     }
@@ -279,11 +283,21 @@ abstract class NativeRemoteCommandsBase extends CLICommand {
     /**
      * Parses static domain.xml of all domains to determine if a node is configured
      * for use.
-     * @param host remote host
+     * @param hostToCheck remote host
      * @return true|false
      */
-    boolean checkIfNodeExistsForHost(String host, String iDir) {
-        boolean result = false;
+    boolean checkIfNodeExistsForHost(String hostToCheck, String dirTOCheck) {
+        if (!StringUtils.ok(dirTOCheck))
+            return false;
+
+        // this should have been done already by validate() in the caller
+        // let's make sure anyways
+        if(NetUtils.isThisHostLocal(hostToCheck))
+            return true;
+
+
+        dirTOCheck = removeTrailingSlash(dirTOCheck.replace('\\', '/'));
+
         try {
             File domainsDirFile = DomainDirs.getDefaultDomainsDir();
 
@@ -312,14 +326,13 @@ abstract class NativeRemoteCommandsBase extends CLICommand {
 
                     for (Node node : nodes.getNode()) {
                         //make it Unix style and remove trailing slash
-                        iDir = removeTrailingSlash(iDir.replaceAll("\\\\", "/"));
-                        String d = removeTrailingSlash(node.getInstallDirUnixStyle());
+                        String dirInNode = removeTrailingSlash(node.getInstallDirUnixStyle());
+                        String hostInNode = node.getNodeHost();
+                        boolean sameHost = NetUtils.isEqual(node.getNodeHost(), hostToCheck);
+                        boolean sameDir = dirTOCheck.equals(dirInNode);
 
-                        //check both hostname and install location
-                        if ((NetUtils.isEqual(node.getNodeHost(), host)
-                                || NetUtils.isThisHostLocal(host)) && d.equals(iDir)) {
-                            result = true;
-                        }
+                        if(sameHost && sameDir)
+                            return true;
                     }
                 }
                 catch (Exception e) {
@@ -327,17 +340,14 @@ abstract class NativeRemoteCommandsBase extends CLICommand {
                         e.printStackTrace();
                     }
                 }
-
             }
-
-
         }
         catch (IOException ioe) {
             if (logger.isLoggable(Level.FINE)) {
                 ioe.printStackTrace();
             }
         }
-        return result;
+        return false;
     }
 
     /**
@@ -346,6 +356,9 @@ abstract class NativeRemoteCommandsBase extends CLICommand {
      * @return
      */
     String removeTrailingSlash(String s) {
+        if (!StringUtils.ok(s))
+            return s;
+
         if (s.endsWith("/")) {
             s = s.substring(0, s.length() - 1);
         }
@@ -461,6 +474,17 @@ abstract class NativeRemoteCommandsBase extends CLICommand {
         File f = new File(file);
         if (!f.exists()) {
             throw new CommandException(Strings.get("KeyDoesNotExist", file));
+        }
+    }
+
+    private void validateHosts() throws CommandException {
+        // it makes no sense to allow this command torun on the local machine!
+        // Obviously we are running on the local machine so it doesn't need
+        // GlassFish installed.
+
+        for (String host : hosts) {
+            if(NetUtils.isThisHostLocal(host))
+                throw new CommandException(Strings.get("install.node.nolocal", host));
         }
     }
 }
