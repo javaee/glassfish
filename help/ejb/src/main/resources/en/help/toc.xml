@@ -1,20 +1,19 @@
-<?xml version='1.0' encoding='iso-8859-1'?>
-<toc version="1.0">
-  <tocitem target="tasks-topic-group.html" text="GlassFish Server Administration Console Tasks">
-    <tocitem target="task-group-configejbcontainer.html-task-group-configejbcontainer" text="Configuring the EJB Container">
-      <tocitem target="task-ejbmdbpoolsettings.html-task-ejbmdbpoolsettings" text="To Configure MDB Pool Settings" />
-      <tocitem target="task-ejbtimerservice.html-task-ejbtimerservice" text="To Configure the EJB Timer Service" />
-      <tocitem target="task-ejbcontaineravailability.html-task-ejbcontaineravailability" text="To Configure Availability Settings for the EJB Container" />
+<toc version="2.0">
+  <tocitem target="tasks-topic-group" text="GlassFish Server Administration Console Tasks" expand="false">
+    <tocitem target="task-group-configejbcontainer" text="Configuring the EJB Container" expand="false">
+      <tocitem target="task-ejbmdbpoolsettings" text="To Configure MDB Pool Settings" expand="false"></tocitem>
+      <tocitem target="task-ejbtimerservice" text="To Configure the EJB Timer Service" expand="false"></tocitem>
+      <tocitem target="task-ejbcontaineravailability" text="To Configure Availability Settings for the EJB Container" expand="false"></tocitem>
     </tocitem>
   </tocitem>
-  <tocitem target="ref-topic-group.html" text="GlassFish Server Administration Console Reference">
-    <tocitem target="ref-group-configuration.html-ref-group-configuration" text="Configurations">
-      <tocitem target="ref-group-availabilityservice.html-ref-group-availabilityservice" text="Availability Service">
-        <tocitem target="ref-ejbcontaineravailability.html-ref-ejbcontaineravailability" text="EJB Container Availability" />
+  <tocitem target="ref-topic-group" text="GlassFish Server Administration Console Reference" expand="false">
+    <tocitem target="ref-group-configuration" text="Configurations" expand="false">
+      <tocitem target="ref-group-availabilityservice" text="Availability Service" expand="false">
+        <tocitem target="ref-ejbcontaineravailability" text="EJB Container Availability" expand="false"></tocitem>
       </tocitem>
-      <tocitem target="ref-group-ejbcontainer.html-ref-group-ejbcontainer" text="EJB Container">
-        <tocitem target="ref-ejbmdbpoolsettings.html-ref-ejbmdbpoolsettings" text="MDB Default Pool Settings" />
-        <tocitem target="ref-ejbtimerservice.html-ref-ejbtimerservice" text="EJB Timer Service" />
+      <tocitem target="ref-group-ejbcontainer" text="EJB Container" expand="false">
+        <tocitem target="ref-ejbmdbpoolsettings" text="MDB Default Pool Settings" expand="false"></tocitem>
+        <tocitem target="ref-ejbtimerservice" text="EJB Timer Service" expand="false"></tocitem>
       </tocitem>
     </tocitem>
   </tocitem>
