@@ -103,7 +103,7 @@
                     createMap(result="#{pageSession.hMap}");
                     mapPut(map="#{pageSession.hMap}", key="target", value="#{pageSession.valueMap['target']}");
                     if ("#{pageSession.httpMap['serverName']}"){
-                        mapPut(map="#{pageSession.hMap}", key="serverName" value="pageSession.httpMap['serverName']");
+                        mapPut(map="#{pageSession.hMap}", key="serverName" value="#{pageSession.httpMap['serverName']}");
                     }
                     mapPut(map="#{pageSession.hMap}", key="defaultVirtualServer" value="#{pageSession.httpMap['defaultVirtualServer']}");
                     gf.restRequest(endpoint="#{pageSession.protocolUrl}/#{pageSession.protocolName}/create-http", attrs="#{pageSession.hMap}" method="POST");
