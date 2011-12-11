@@ -47,6 +47,7 @@ import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.config.serverbeans.SecureAdminHelper.SecureAdminCommandException;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.security.SecurityUpgradeService;
+import com.sun.enterprise.security.ssl.SSLUtils;
 import com.sun.enterprise.universal.process.ProcessManager;
 import com.sun.enterprise.universal.process.ProcessManagerException;
 import com.sun.enterprise.util.net.NetUtils;
@@ -79,6 +80,7 @@ import org.glassfish.config.support.GrizzlyConfigSchemaMigrator;
 import org.glassfish.security.common.MasterPassword;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.RetryableException;
 import org.jvnet.hk2.config.Transaction;
@@ -203,7 +205,7 @@ public class SecureAdminConfigUpgrade extends SecureAdminUpgradeHelper implement
     private boolean requiresSecureAdmin() {
         return isOriginalAdminSecured() || securityUpgradeService.requiresSecureAdmin();
     }
-
+    
     private void prepareDASConfig() throws TransactionFailure, PropertyVetoException {
         final Config dasConfig = writableConfig(configs.getConfigByName(DAS_CONFIG_NAME));
         final NetworkConfig nc = dasConfig.getNetworkConfig();
@@ -320,6 +322,14 @@ public class SecureAdminConfigUpgrade extends SecureAdminUpgradeHelper implement
     }
 
     private void ensureKeyPairForInstanceAlias() throws IOException, NoSuchAlgorithmException, CertificateException, KeyStoreException, UnrecoverableKeyException, ProcessManagerException {
+        /*
+         * No need to add glassfish-instance to the keystore if it already exists.
+         */
+        final KeyStore ks = sslUtils().getKeyStore();
+        if (ks.containsAlias(SecureAdmin.Duck.DEFAULT_INSTANCE_ALIAS)) {
+            return;
+        }
+        
         /*
          * This is ugly but effective.  We need to add a new private key to 
          * the keystore and a new self-signed cert to the truststore.  To do so
