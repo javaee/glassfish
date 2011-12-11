@@ -346,6 +346,9 @@ abstract class NativeRemoteCommandsBase extends CLICommand {
      * @return
      */
     String removeTrailingSlash(String s) {
+        if (!StringUtils.ok(s))
+            return s;
+
         if (s.endsWith("/")) {
             s = s.substring(0, s.length() - 1);
         }
