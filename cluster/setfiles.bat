@@ -22,5 +22,6 @@ rem set h=admin\src\main\java\com\sun\enterprise\v3\admin\cluster\StopInstanceCo
 rem set i=ssh\src\main\java\org\glassfish\cluster\ssh\connect\NodeRunnerDcom.java
 set a=cli\src\main\java\com\sun\enterprise\admin\cli\cluster\NativeRemoteCommandsBase.java
 set b=cli\src\main\java\com\sun\enterprise\admin\cli\cluster\LocalStrings.properties
+set c=cli\src\main\java\com\sun\enterprise\admin\cli\cluster\InstallNodeDcomCommand.java
 set tr=d:\gf\trunk\main\nucleus\cluster
 set br=d:\gf\branches\3.1.2\cluster
