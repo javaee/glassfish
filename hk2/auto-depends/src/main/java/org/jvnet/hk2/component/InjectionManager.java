@@ -47,6 +47,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.lang.annotation.Annotation;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
@@ -281,27 +283,28 @@ public class InjectionManager {
                 
                 currentClass = currentClass.getSuperclass();
             }
-        } catch (LinkageError e) {
+        } catch (final LinkageError e) {
             // reflection could trigger additional classloading and resolution, so it can cause linkage error.
             // report more information to assist diagnosis.
             // can't trust component.toString() as the object could be in an inconsistent state.
-            Class<?> cls = type;
-            LinkageError x = new LinkageError("injection failed on " + cls + " from " + cls.getClassLoader());
-            x.initCause(e);
-            throw x;
+            final Class<?> cls = type;
+            AccessController.doPrivileged(new PrivilegedAction<Object>() {
+                @Override
+                public Object run() {
+                    LinkageError x = new LinkageError("injection failed on " + cls + " from " + cls.getClassLoader());
+                    x.initCause(e);
+                    throw x;
+                }
+            });
         }
     }
 
     /**
      * Prototype for the multi-threaded version of inject().
      * 
-     * @param component
-     * @param onBehalfOf
-     * @param type
-     * @param es
-     * @param targets
+     * @param ic Injection Contect
      */
-    protected void asyncDoInject(InjectContext ic) {
+    protected void asyncDoInject(final InjectContext ic) {
       ArrayList<Runnable> tasks = new ArrayList<Runnable>();
       Class<?> classType = ic.type;
       while (null != classType && Object.class != classType) {
@@ -322,8 +325,14 @@ public class InjectionManager {
           // report more information to assist diagnosis.
           // can't trust component.toString() as the object could be in an
           // inconsistent state.
-          LinkageError x = new LinkageError("injection failed on " + ic.type + 
-              " from " + ic.type.getClassLoader());
+          LinkageError x = AccessController.doPrivileged(new PrivilegedAction<LinkageError>() {
+              @Override
+              public LinkageError run() {
+                  return new LinkageError("injection failed on " + ic.type +
+                          " from " + ic.type.getClassLoader());
+              }
+          });
+
           x.initCause(e);
           throw x;
         }

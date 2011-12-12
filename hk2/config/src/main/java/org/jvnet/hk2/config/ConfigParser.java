@@ -239,9 +239,11 @@ public class ConfigParser {
     // XMLInputFactory to load the factory, otherwise by default StAX uses
     // Thread's context class loader to locate the factory. See:
     // https://glassfish.dev.java.net/issues/show_bug.cgi?id=6428
-    private static final XMLInputFactory xif =
-            XMLInputFactory.class.getClassLoader() == null ?
-                    XMLInputFactory.newInstance() :
-                    XMLInputFactory.newInstance(XMLInputFactory.class.getName(),
-                            XMLInputFactory.class.getClassLoader());
+
+    // as of Hk2 version 1.5, we do not support JDK 1.5 any more.
+    private static final XMLInputFactory xif =  XMLInputFactory.newInstance();
+//            XMLInputFactory.class.getClassLoader() == null ?
+//                    XMLInputFactory.newInstance() :
+//                    XMLInputFactory.newInstance(XMLInputFactory.class.getName(),
+//                            XMLInputFactory.class.getClassLoader());
 }

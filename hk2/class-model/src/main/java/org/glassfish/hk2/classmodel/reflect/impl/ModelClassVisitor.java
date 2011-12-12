@@ -159,10 +159,11 @@ public class ModelClassVisitor implements ClassVisitor {
                     for (String intf : interfaces) {
                         String interfaceName = org.objectweb.asm.Type.getObjectType(intf).getClassName();
                         TypeProxy<InterfaceModel> typeProxy = typeBuilder.getHolder(interfaceName, InterfaceModel.class);
-
-                        classModel.isImplementing(typeProxy);
-                        if (classModel instanceof ClassModel)
-                            typeProxy.addImplementation((ClassModel) classModel);
+                        if (typeProxy!=null) {
+                            classModel.isImplementing(typeProxy);
+                            if (classModel instanceof ClassModel)
+                                typeProxy.addImplementation((ClassModel) classModel);
+                        }
 
                     }
                 }
@@ -235,6 +236,7 @@ public class ModelClassVisitor implements ClassVisitor {
         org.objectweb.asm.Type asmType = org.objectweb.asm.Type.getType(desc);
 
         TypeProxy<?> fieldType =  typeBuilder.getHolder(asmType.getClassName());
+        if (fieldType==null) return null;
         final FieldModelImpl field = typeBuilder.getFieldModel(name, fieldType, cm);
         fieldVisitor.getContext().field = field;
         fieldVisitor.getContext().typeDesc = desc;

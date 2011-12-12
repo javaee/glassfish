@@ -57,6 +57,8 @@ import org.jvnet.hk2.component.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Properties;
@@ -167,7 +169,13 @@ public class Main {
 
 
     protected void setParentClassLoader(StartupContext context, ModulesRegistry mr) throws BootException {
-        mr.setParentClassLoader(this.getClass().getClassLoader());
+        mr.setParentClassLoader(
+                AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                    @Override
+                    public ClassLoader run() {
+                        return Main.this.getClass().getClassLoader();
+                    }
+                }));
     }
     
     /**
@@ -352,17 +360,36 @@ public class Main {
             }
 
             Class<? extends ModuleStartup> targetClass=null;
-            ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
-            Thread.currentThread().setContextClassLoader(mainModule.getClassLoader());
+            final ClassLoader currentCL =
+                AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                    @Override
+                    public ClassLoader run() {
+                        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                        Thread.currentThread().setContextClassLoader(mainModule.getClassLoader());
+                        return cl;
+                    }
+                });
             try {
-                targetClass = mainModule.getClassLoader().loadClass(targetClassName).asSubclass(ModuleStartup.class);
+                ClassLoader moduleClassLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                    @Override
+                    public ClassLoader run() {
+                        return mainModule.getClassLoader();
+                    }
+                });
+                targetClass = moduleClassLoader.loadClass(targetClassName).asSubclass(ModuleStartup.class);
                 startupCode = habitat.getComponent(targetClass);
             } catch (ClassNotFoundException e) {
                 throw new BootException("Unable to load component of type " + targetClassName,e);
             } catch (ComponentException e) {
                 throw new BootException("Unable to load component of type " + targetClassName,e);
             } finally {
-                Thread.currentThread().setContextClassLoader(currentCL);
+                AccessController.doPrivileged(new PrivilegedAction<Object>() {
+                    @Override
+                    public Object run() {
+                        Thread.currentThread().setContextClassLoader(currentCL);
+                        return null;
+                    }
+                });
             }
         } else {
             Collection<Inhabitant<ModuleStartup>> startups = habitat.getInhabitantsByContract(ModuleStartup.class);
@@ -419,12 +446,25 @@ public class Main {
         habitat.add(new ExistingSingletonInhabitant<Logger>(Logger.global));
         // the root registry must be added as other components sometimes inject it
         habitat.add(new ExistingSingletonInhabitant(ModulesRegistry.class, registry));
-        ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+        final ClassLoader oldCL = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+            @Override
+            public ClassLoader run() {
+                ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+                return cl;
+            }
+        });
+
         try {
             registry.createHabitat(HABITAT_NAME, createInhabitantsParser(habitat));
         } finally {
-            Thread.currentThread().setContextClassLoader(oldCL);
+            AccessController.doPrivileged(new PrivilegedAction<Object>() {
+                @Override
+                public Object run() {
+                    Thread.currentThread().setContextClassLoader(oldCL);
+                    return null;
+                }
+            });
         }
         return habitat;
     }

@@ -42,6 +42,8 @@ package org.jvnet.hk2.component;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.AnnotationTypeMismatchException;
 import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1009,23 +1011,29 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
     }
 
     @Override
-    public <T> T getComponent(Class<T> contract, String name)
+    public <T> T getComponent(final Class<T> contract, String name)
             throws ComponentException {
         if (name != null && name.length() == 0) {
             name = null;
         }
 
-        Inhabitant i = getInhabitant(contract, name);
+        final Inhabitant i = getInhabitant(contract, name);
         if (i != null) {
             try {
                 return contract.cast(i.get());
             } catch (ClassCastException e) {
-                logger.severe("ClassCastException between contract " + contract
-                        + " and service " + i.get());
-                logger.severe("Contract class loader "
-                        + contract.getClassLoader());
-                logger.severe("Service class loader "
-                        + i.get().getClass().getClassLoader());
+                AccessController.doPrivileged(new PrivilegedAction<Object>() {
+                    @Override
+                    public Object run() {
+                        logger.severe("ClassCastException between contract " + contract
+                                + " and service " + i.get());
+                        logger.severe("Contract class loader "
+                                + contract.getClassLoader());
+                        logger.severe("Service class loader "
+                                + i.get().getClass().getClassLoader());
+                        return null;
+                    }
+                });
                 throw e;
             }
         } else {

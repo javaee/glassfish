@@ -45,6 +45,8 @@ import javax.xml.stream.XMLStreamReader;
 import java.beans.*;
 import java.lang.reflect.Type;
 import java.lang.reflect.Proxy;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.Condition;
@@ -248,8 +250,19 @@ public class ConfigBean extends Dom implements ConfigView {
      * @param proxyType requested proxy type
      * @return Java SE proxy
      */
-    public <T extends ConfigBeanProxy> T getProxy(Class<T> proxyType) {
-        return proxyType.cast(Proxy.newProxyInstance(proxyType.getClassLoader(), new Class[] { proxyType} , this));
+    public <T extends ConfigBeanProxy> T getProxy(final Class<T> proxyType) {
+        ClassLoader cl;
+        if (System.getSecurityManager()!=null) {
+            cl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                @Override
+                public ClassLoader run() {
+                    return proxyType.getClassLoader();
+                }
+            });
+        } else {
+            cl = proxyType.getClassLoader();
+        }
+        return proxyType.cast(Proxy.newProxyInstance(cl, new Class[] { proxyType} , this));
     }
 
     /**

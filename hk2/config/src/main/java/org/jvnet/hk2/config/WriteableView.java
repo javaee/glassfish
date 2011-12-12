@@ -45,6 +45,8 @@ import java.lang.reflect.Method;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.lang.annotation.ElementType;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -83,7 +85,13 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         changedAttributes = new HashMap<String, PropertyChangeEvent>();
         changedCollections = new HashMap<String, ProtectedList>();
         if (beanValidator == null) {
-            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            ClassLoader cl = System.getSecurityManager()==null?Thread.currentThread().getContextClassLoader():
+                    AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                        @Override
+                        public ClassLoader run() {
+                            return Thread.currentThread().getContextClassLoader();
+                        }
+                    });
             try {
                 Thread.currentThread().setContextClassLoader(null);
                 TraversableResolver traversableResolver =
@@ -477,14 +485,25 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
     }
 
     @SuppressWarnings("unchecked")    
-    public <T extends ConfigBeanProxy> T getProxy(Class<T> type) {
+    public <T extends ConfigBeanProxy> T getProxy(final Class<T> type) {
         final ConfigBean sourceBean = getMasterView();
         if (!(type.getName().equals(sourceBean.model.targetTypeName))) {
             throw new IllegalArgumentException("This config bean interface is " + sourceBean.model.targetTypeName
                     + " not "  + type.getName());
         }
         Class[] interfacesClasses = { type };
-        return (T) Proxy.newProxyInstance(type.getClassLoader(), interfacesClasses, this);
+        ClassLoader cl;
+        if (System.getSecurityManager()!=null) {
+            cl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                @Override
+                public ClassLoader run() {
+                    return type.getClassLoader();
+                }
+            });
+        } else {
+            cl = type.getClassLoader();
+        }
+        return (T) Proxy.newProxyInstance(cl, interfacesClasses, this);
     }
 
 /**
