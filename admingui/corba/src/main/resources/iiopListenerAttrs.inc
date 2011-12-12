@@ -61,7 +61,7 @@
         <sun:property id="ListenerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_corba.iiopListener.listenerLabel}" helpText="$resource{i18n_corba.iiopListener.listenerHelp}" >
             <sun:checkbox label="$resource{i18n.desc.Enabled}" selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />
         </sun:property>
-        <sun:property id="SecurityProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_corba.iiopListener.securityEnable}"  helpText="$resource{i18n_corba.iiopListener.securityEnableHelp}" >
+        <sun:property id="SecurityProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_corba.iiopListener.securityEnable}"   >
             <sun:checkbox id="Security" label="$resource{i18n.desc.Enabled}" selected="#{pageSession.valueMap['securityEnabled']}" selectedValue="true" />
         </sun:property>
     </sun:propertySheetSection>

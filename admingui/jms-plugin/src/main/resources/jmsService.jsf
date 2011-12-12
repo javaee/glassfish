@@ -195,10 +195,10 @@
                                     />
                                 </sun:dropDown>
                             </sun:property>
-                            <sun:property id="behaviorProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Behavior}" helpText="$resource{i18njms.jms.BehaviorHelp}">
+                            <sun:property id="behaviorProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.AddressListBehavior}" helpText="$resource{i18njms.jms.BehaviorHelp}">
                                 <sun:dropDown id="Behavior" selected="#{pageSession.valueMap['addresslistBehavior']}" labels={"random" "priority"} />
                             </sun:property>
-                            <sun:property id="iterationsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Iterations}" helpText="$resource{i18njms.jms.IterationsHelp}">
+                            <sun:property id="iterationsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.AddressListIterations}" helpText="$resource{i18njms.jms.IterationsHelp}">
                                 <sun:textField id="Iterations" styleClass="intAllowMinusOne" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jms.Iterations']}" text="#{pageSession.valueMap['addresslistIterations']}" />
                             </sun:property>
                             <sun:property id="schemeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Scheme}" helpText="$resource{i18njms.jms.SchemeHelp}">

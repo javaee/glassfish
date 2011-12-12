@@ -51,7 +51,7 @@
 <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
     <sun:title id="propertyContentPage" title="$resource{i18n.commonTasks.group.Monitoring}"
-               helpText="$resource{i18n.monitoringInfo.pageHelp}" />
+               helpText="$resource{common.monitoringInfo.pageHelp}" />
     "<br />
 #include "/common/shared/monitorHandlers.inc"
     <sun:table id="monitorInstancesTable" title="$resource{i18n.commonTasks.group.Monitoring}">

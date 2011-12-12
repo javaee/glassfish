@@ -44,7 +44,7 @@
 
 
 <sun:tabSet id="loggingTabs" immediate="true" selected="#{sessionScope.loggingTabs}" >
-    <sun:tab id="loggerGeneral" immediate="true" text="$resource{i18n.common.General}" toolTip="$resource{i18n.common.GeneralTab}">
+    <sun:tab id="loggerGeneral" immediate="true" text="$resource{i18nc.log.LoggingGeneralTab}" toolTip="$resource{i18n.common.GeneralTab}">
 	<!command
             setSessionAttribute(key="loggingTabs" value="loggerGeneral");
             gf.redirect(page="#{request.contextPath}/common/configuration/loggerGeneral.jsf?configName=#{configName}");
