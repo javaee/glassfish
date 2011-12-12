@@ -49,10 +49,10 @@
         <version>3.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    
+
     <artifactId>cluster-cli</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Cluster Admin CLI</name>
+    <name>Cluster Admin CLI 3.1.2</name>
     <build>
         <plugins>
             <plugin>
