@@ -121,7 +121,7 @@ public class SetupSshCommand implements AdminCommand {
                 throw new CommandException(Strings.get("setup.ssh.invalid.path", sshkeyfile));
             }
 
-            SSHUtil.validateKeyFile(sshpublickeyfile);
+            SSHUtil.validateKeyFile(sshkeyfile);
             if (SSHUtil.isEncryptedKey(sshkeyfile)) {
                 sshkeypassphrase = getSSHPassphrase();
             }
