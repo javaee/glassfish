@@ -45,6 +45,7 @@
 
 package org.glassfish.admingui.common.util;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -689,6 +690,17 @@ public class RestUtil {
         return token;
     }
 
+    public static void postRestRequestFromServlet(HttpServletRequest request, String endpoint, Map<String, Object> attrs, boolean quiet, boolean throwException) {
+        String token = (String) request.getSession().getAttribute(AdminConsoleAuthModule.REST_TOKEN);
+        WebResource webResource = JERSEY_CLIENT.resource(endpoint);
+        MultivaluedMap formData = buildMultivalueMap(attrs);
+        ClientResponse cr = webResource
+                .cookie(new Cookie(REST_TOKEN_COOKIE, token))
+                .accept(RESPONSE_TYPE).post(ClientResponse.class, formData);
+        RestResponse rr = RestResponse.getRestResponse(cr);
+        parseResponse(rr, null, endpoint, attrs, quiet, throwException);
+
+    }
     //******************************************************************************************************************
     // Jersey client methods
     //******************************************************************************************************************
