@@ -167,7 +167,7 @@ public class ContainerTransactionStyle3 extends EjbTest implements EjbCheck {
                 String ejbClassSymbol = methodDescriptor.getEjbClassSymbol();
                 String intf = ejbClassSymbol;
                 if(ejbClassSymbol == null) {
-                    intf = smh.getLocalString(getClass().getName() + ".msg", "any of bean");
+                    intf = smh.getLocalString(getClass().getName() + ".msg", "any of the beans");
                 } else if(ejbClassSymbol.equals(MethodDescriptor.EJB_REMOTE)) {
                     intf = "Remote or RemoteBusiness";
                 } else if(ejbClassSymbol.equals(MethodDescriptor.EJB_LOCAL)) { 

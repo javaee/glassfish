@@ -105,6 +105,7 @@ public final class ListDomainsCommand extends LocalDomainCommand {
         HostAndPort addr = getAdminAddress();
         programOpts.setHostAndPort(addr);
         boolean status = isThisDAS(getDomainRootDir());
+        String p="domain";
         if (status) {
             try {
                 RemoteCommand cmd =
@@ -113,11 +114,11 @@ public final class ListDomainsCommand extends LocalDomainCommand {
                 String restartRequired =
                     cmd.executeAndReturnOutput("_get-restart-required");
                 if (Boolean.parseBoolean(restartRequired.trim()))
-                    return strings.get("list.domains.StatusRestartRequired");
+                    return strings.get("list.domains.StatusRestartRequired",p);
             } catch (Exception ex) {
             }
             return strings.get("list.domains.StatusRunning");
         } else
-            return strings.get("list.domains.StatusNotRunning");
+            return strings.get("list.domains.StatusNotRunning",p);
     }
 }

@@ -71,6 +71,7 @@ public class BasicCDITest{
 
     @Test
     public void test() throws Exception {
+         System.out.println(this.hashCode());
 
         GlassFishProperties props = new GlassFishProperties();
         props.setPort("http-listener", 8080);
@@ -105,6 +106,12 @@ public class BasicCDITest{
 
         glassfish.dispose();
 
+    }
+
+   @Test
+   public void sample()
+    {
+      //System.out.println(this.hashCode());
     }
 
     private void get(String urlStr, String result) throws Exception {
