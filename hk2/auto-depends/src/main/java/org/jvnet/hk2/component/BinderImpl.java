@@ -47,6 +47,8 @@ import org.glassfish.hk2.Factory;
 import org.glassfish.hk2.Scope;
 
 import java.lang.annotation.Annotation;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.*;
 
 /**
@@ -82,7 +84,16 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
 
     @Override
     public ResolvedBinder<V> to(String className) {
-        AbstractResolvedBinder<V> resolvedBinder = new ClassNameBasedBinder(this, className, getClass().getClassLoader());
+        final Class<?> clazz = getClass();
+        AbstractResolvedBinder<V> resolvedBinder = new ClassNameBasedBinder(this, className,
+                System.getSecurityManager()==null?
+                        clazz.getClassLoader():
+                        AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                            @Override
+                            public ClassLoader run() {
+                                return clazz.getClassLoader();
+                            }
+                        }));
         owner.add(resolvedBinder);
         return resolvedBinder;
     }

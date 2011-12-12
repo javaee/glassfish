@@ -42,6 +42,8 @@ package com.sun.enterprise.module.maven;
 import com.sun.istack.Nullable;
 import com.sun.istack.NotNull;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
@@ -194,7 +196,12 @@ final class ServiceFinder<T> implements Iterable<T> {
      * @see #find(Class, ClassLoader)
      */
     public static <T> ServiceFinder<T> find(Class<T> service) {
-        return find(service,Thread.currentThread().getContextClassLoader());
+        return find(service, AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+            @Override
+            public ClassLoader run() {
+                return Thread.currentThread().getContextClassLoader();
+            }
+        }));
     }
 
     private ServiceFinder(Class<T> service, ClassLoader loader) {

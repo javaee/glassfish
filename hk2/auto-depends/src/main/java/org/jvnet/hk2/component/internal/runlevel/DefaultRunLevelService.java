@@ -39,6 +39,8 @@
  */
 package org.jvnet.hk2.component.internal.runlevel;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -1408,7 +1410,16 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
                     if (ClassLoaderHolder.class.isInstance(i)) {
                         cl = ((ClassLoaderHolder) i).getClassLoader();
                     } else {
-                        cl = i.getClass().getClassLoader();
+                        if (System.getSecurityManager()==null) {
+                            cl = i.getClass().getClassLoader();
+                        } else {
+                            cl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                                @Override
+                                public ClassLoader run() {
+                                    return i.getClass().getClassLoader();
+                                }
+                            });
+                        }
                     }
                     return cl;
                 }

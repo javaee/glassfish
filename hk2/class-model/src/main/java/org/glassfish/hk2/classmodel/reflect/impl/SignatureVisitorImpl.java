@@ -117,8 +117,10 @@ public class SignatureVisitorImpl implements SignatureVisitor {
             String interfaceName = formalTypes.get(s).getName();
             TypeProxy<InterfaceModel> interfaceTypeProxy = typeBuilder.getHolder(
                     interfaceName, InterfaceModel.class);
-            ParameterizedInterfaceModelImpl childParameterized = new ParameterizedInterfaceModelImpl(interfaceTypeProxy);
-            stack.peek().addParameterizedType(childParameterized);
+            if (interfaceTypeProxy!=null) {
+                ParameterizedInterfaceModelImpl childParameterized = new ParameterizedInterfaceModelImpl(interfaceTypeProxy);
+                stack.peek().addParameterizedType(childParameterized);
+            }
         }
     }
 
@@ -131,17 +133,19 @@ public class SignatureVisitorImpl implements SignatureVisitor {
     public void visitClassType(String s) {
         String interfaceName = org.objectweb.asm.Type.getObjectType(s).getClassName();
         TypeProxy<InterfaceModel> interfaceTypeProxy = typeBuilder.getHolder(interfaceName, InterfaceModel.class);
-        ParameterizedInterfaceModelImpl childParameterized = new ParameterizedInterfaceModelImpl(interfaceTypeProxy);
-        if (!s.equals("java/lang/Object")) {
-            if (formalTypesNames.empty()) {
-                if (!stack.empty()) {
-                    stack.peek().addParameterizedType(childParameterized);
+        if (interfaceTypeProxy!=null) {
+            ParameterizedInterfaceModelImpl childParameterized = new ParameterizedInterfaceModelImpl(interfaceTypeProxy);
+            if (!s.equals("java/lang/Object")) {
+                if (formalTypesNames.empty()) {
+                    if (!stack.empty()) {
+                        stack.peek().addParameterizedType(childParameterized);
+                    }
+                } else {
+                    formalTypes.put(formalTypesNames.pop(), childParameterized);
                 }
-            } else {
-                formalTypes.put(formalTypesNames.pop(), childParameterized);
             }
+            stack.push(childParameterized);
         }
-        stack.push(childParameterized);
     }
 
     @Override
@@ -161,6 +165,7 @@ public class SignatureVisitorImpl implements SignatureVisitor {
 
     @Override
     public void visitEnd() {
+        if (stack.empty()) return;
         ParameterizedInterfaceModelImpl lastElement = stack.pop();
         if (stack.isEmpty()) {
             parameterizedIntf.add(lastElement);

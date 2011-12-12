@@ -45,6 +45,8 @@ import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 /**
  * Finds out where a class file is loaded from.
@@ -52,9 +54,14 @@ import java.net.URL;
  * @author dochez
  */
 public class Which {
-    public static File jarFile(Class clazz) throws IOException {
-        String resourceName = clazz.getName().replace(".","/")+".class";
-        URL resource = clazz.getClassLoader().getResource(resourceName);
+    public static File jarFile(final Class clazz) throws IOException {
+        final String resourceName = clazz.getName().replace(".","/")+".class";
+        URL resource = AccessController.doPrivileged(new PrivilegedAction<URL>() {
+            @Override
+            public URL run() {
+                return clazz.getClassLoader().getResource(resourceName);
+            }
+        });
         if (resource==null) {
             throw new IllegalArgumentException("Cannot get bootstrap path from "+ clazz + " class location, aborting");
         }

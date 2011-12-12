@@ -44,6 +44,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
 import java.lang.annotation.Annotation;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.logging.Level;
@@ -153,7 +155,14 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T>, Bindin
 
         try {
             ObjectInputStream is = new ObjectInputStream(new ByteArrayInputStream(new BASE64Decoder().decodeBuffer(v))) {
-                final ClassLoader cl = type.getClassLoader();
+                final ClassLoader cl = System.getSecurityManager()!=null?
+                        AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                            @Override
+                            public ClassLoader run() {
+                                return type.getClassLoader();
+                            }
+                        }):
+                        type.getClassLoader();
 
                 /**
                  * Use ClassLoader of the given type. Otherwise by default we end up using the classloader

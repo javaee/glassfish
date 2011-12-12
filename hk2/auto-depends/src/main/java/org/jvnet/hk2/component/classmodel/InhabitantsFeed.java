@@ -40,6 +40,8 @@
 package org.jvnet.hk2.component.classmodel;
 
 import java.io.IOException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.logging.Level;
@@ -81,7 +83,17 @@ public abstract class InhabitantsFeed {
 
     protected InhabitantsFeed(InhabitantsParser ip) {
         this.ip = ip;
-        setClassLoaderContext(getClass().getClassLoader());
+        if (System.getSecurityManager()!=null) {
+            AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                @Override
+                public Void run() {
+                    setClassLoaderContext(getClass().getClassLoader());
+                    return null;
+                }
+            });
+        } else {
+            setClassLoaderContext(getClass().getClassLoader());
+        }
     }
 
     public void setClassLoaderContext(ClassLoader cl) {

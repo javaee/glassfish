@@ -49,6 +49,8 @@ import org.jvnet.tiger_types.Types;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.*;
 
 /**
@@ -111,7 +113,16 @@ public final class ConfigModel {
      */
     public final Holder<ClassLoader> classLoaderHolder = new Holder<ClassLoader>() {
         public ClassLoader get() {
-            return injector.get().getClass().getClassLoader();
+            if (System.getSecurityManager()!=null) {
+                return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                    @Override
+                    public ClassLoader run() {
+                        return injector.get().getClass().getClassLoader();
+                    }
+                });
+            } else {
+                return injector.get().getClass().getClassLoader();
+            }
         }
     };
 
@@ -237,8 +248,15 @@ public final class ConfigModel {
             Method duckMethod = duckMethods.get(method);
             if(duckMethod!=null)    return duckMethod;
 
-            Class<?> clz = method.getDeclaringClass();
-            Class<?> duck = clz.getClassLoader().loadClass(clz.getName() + "$Duck");
+            final Class<?> clz = method.getDeclaringClass();
+            ClassLoader cl = System.getSecurityManager()==null?clz.getClassLoader():
+                    AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                        @Override
+                        public ClassLoader run() {
+                            return clz.getClassLoader();
+                        }
+                    });
+            Class<?> duck = cl.loadClass(clz.getName() + "$Duck");
 
             Class<?>[] types = method.getParameterTypes();
             Class[] paramTypes = new Class[types.length+1];

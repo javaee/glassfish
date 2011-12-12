@@ -41,6 +41,8 @@ package com.sun.hk2.component;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
@@ -103,7 +105,15 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
                                     // that's the parameterized type we are looking for.
                                     String parameterizedType = onBehalfOf.metadata().get(InhabitantsFile.PARAMETERIZED_TYPE).get(i);
                                     try {
-                                        Class<?> clazz = component.getClass().getClassLoader().loadClass(parameterizedType);
+                                        ClassLoader classLoader = System.getSecurityManager()==null?
+                                                component.getClass().getClassLoader():
+                                                AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                                                    @Override
+                                                    public ClassLoader run() {
+                                                        return component.getClass().getClassLoader();
+                                                    }
+                                                });
+                                        Class<?> clazz = classLoader.loadClass(parameterizedType);
                                         ContractLocatorImpl<V> contractLocator = new ContractLocatorImpl<V>(habitat, clazz, habitat.isContract(clazz));
                                         populateContractLocator(contractLocator, target, inject);
                                         result = contractLocator.get();

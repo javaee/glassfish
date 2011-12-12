@@ -50,6 +50,8 @@ import javax.xml.stream.XMLStreamWriter;
 import java.beans.PropertyVetoException;
 import java.lang.reflect.*;
 import java.lang.annotation.Annotation;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -855,8 +857,19 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
      * Creates a strongly-typed proxy to access values in this {@link Dom} object,
      * by using the specified interface type as the proxy type.
      */
-    public <T extends ConfigBeanProxy> T createProxy(Class<T> proxyType) {
-        return proxyType.cast(Proxy.newProxyInstance(proxyType.getClassLoader(),new Class[]{proxyType},this));
+    public <T extends ConfigBeanProxy> T createProxy(final Class<T> proxyType) {
+        ClassLoader cl;
+        if (System.getSecurityManager()!=null) {
+            cl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                @Override
+                public ClassLoader run() {
+                    return proxyType.getClassLoader();
+                }
+            });
+        } else {
+            cl = proxyType.getClassLoader();
+        }
+        return proxyType.cast(Proxy.newProxyInstance(cl,new Class[]{proxyType},this));
     }
 
     /**

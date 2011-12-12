@@ -39,6 +39,8 @@
  */
 package org.jvnet.hk2.config;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Locale;
@@ -134,9 +136,20 @@ public class MessageInterpolatorImpl implements MessageInterpolator {
         // if the message is not already in the cache we have to run step 1-3 of the message resolution
         if (resolvedMessage == null) {
             ResourceBundle userResourceBundle = new ContextResourceBundle(context, locale);
+            ClassLoader cl;
+            if (System.getSecurityManager()!=null) {
+                cl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                    @Override
+                    public ClassLoader run() {
+                        return MessageInterpolator.class.getClassLoader();
+                    }
+                });
+            } else {
+                cl = MessageInterpolator.class.getClassLoader();
+            }
             ResourceBundle defaultResourceBundle = ResourceBundle.getBundle(DEFAULT_VALIDATION_MESSAGES,
                     locale,
-                    MessageInterpolator.class.getClassLoader());
+                    cl);
 
             String userBundleResolvedMessage;
             resolvedMessage = message;
@@ -261,9 +274,19 @@ public class MessageInterpolatorImpl implements MessageInterpolator {
             // Load the LogStrings.properties for the argument Locale, from the ClassLoader
             // of the payload.
             if (!payload.isEmpty()) {
-                Class payloadClass = payload.iterator().next();
+                final Class payloadClass = payload.iterator().next();
                 String baseName = payloadClass.getPackage().getName() + ".LocalStrings";
-                ClassLoader cl = payloadClass.getClassLoader();
+                ClassLoader cl;
+                if (System.getSecurityManager()!=null) {
+                    cl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                        @Override
+                        public ClassLoader run() {
+                            return payloadClass.getClassLoader();
+                        }
+                    });
+                } else {
+                    cl = payloadClass.getClassLoader();
+                }
 
                 try {
                     contextBundle = ResourceBundle.getBundle(baseName, locale, cl);
@@ -272,9 +295,16 @@ public class MessageInterpolatorImpl implements MessageInterpolator {
                 }
             }
             try {
+                ClassLoader cl = System.getSecurityManager()==null?Thread.currentThread().getContextClassLoader():
+                        AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                            @Override
+                            public ClassLoader run() {
+                                return Thread.currentThread().getContextClassLoader();
+                            }
+                        });
                 userBundle = ResourceBundle.getBundle(USER_VALIDATION_MESSAGES, 
                         locale,
-                        Thread.currentThread().getContextClassLoader());
+                        cl);
             } catch (MissingResourceException mre) {
                     userBundle = null;
             }
