@@ -224,6 +224,14 @@
         </runtest>
     </target>
 
+    <target name="setup-ssh-remote" depends="init">
+        <runtest classname="admin.SetupSshRemoteTest">
+            <jvmarg value="-Dssh.host=${ssh.host}"/>
+            <jvmarg value="-Dssh.user=${ssh.user}"/>
+            <jvmarg value="-Dssh.password=${ssh.password}"/>
+        </runtest>
+    </target>
+
     <target name="install-node" depends="init, setup-ssh">
         <java classname="admin.InstallNodeTest"  fork="true" classpath="${test}">
             <jvmarg value="-Xdebug"/>
