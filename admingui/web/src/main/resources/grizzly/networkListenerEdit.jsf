@@ -55,11 +55,11 @@
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
         urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
-        getRequestValue(key="cancelTo" value="#{pageSession.cancelTo}" default="networkListeners.jsf");
+        getRequestValue(key="cancelTo" value="#{pageSession.cancelTo}" default="web/grizzly/networkListeners.jsf");
         setPageSessionAttribute(key="listenerName" value="#{pageSession.Name}");
         urlencode(value="#{pageSession.listenerName}" encoding="UTF-8" result="#{pageSession.encodedListenerName}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/networkListenerEdit.jsf?name=#{pageSession.encodedName}&cancelTo=#{pageSession.cancelTo}&configName=#{pageSession.configName}");
-        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/grizzly/#{pageSession.cancelTo}");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/#{pageSession.cancelTo}");
         setPageSessionAttribute(key="childType" value="network-listener");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/network-listeners");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.Name}");
