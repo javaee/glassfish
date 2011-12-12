@@ -91,7 +91,7 @@ public class GetHealthCommand implements AdminCommand {
     @Param(optional=false, primary=true)
     @I18n("get.health.cluster.name")
     private String clusterName;
-    
+
     private ActionReport report;
     private Logger logger;
     private GMSAdapter gmsAdapter;
@@ -178,15 +178,14 @@ public class GetHealthCommand implements AdminCommand {
             instanceStateAndTime.put("status", ih.state.name());
 
             if (HealthHistory.NOTIME == ih.time) {
-                result.append(Strings.get("get.health.instance.state",
-                    name, ih.state));
+                result.append(name + " " + ih.state);
                 instanceStateAndTime.put("time", "");
             } else {
                 result.append(Strings.get("get.health.instance.state.since",
                     name, ih.state, new Date(ih.time).toString()));
                 instanceStateAndTime.put("time", String.valueOf(ih.time));
             }
-            
+
             result.append("\n");
             statesAndTimes.add(instanceStateAndTime);
         }
