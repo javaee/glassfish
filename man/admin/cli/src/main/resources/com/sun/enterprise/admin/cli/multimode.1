@@ -36,40 +36,34 @@ DESCRIPTION
      see the asadmin(1M) help page.
 
 OPTIONS
-     --help
-     -?
+     --help , -?
+          Displays the help text for the subcommand.
 
-         Displays the help text for the subcommand.
-
-     --file
-     -f
-         Reads the subcommands in the specified file.
+     --file , -f
+          Reads the subcommands in the specified file.
 
      --printprompt
+          Controls printing of the asadmin  prompt.  By  default,
+          this  option  is  set  to  the  same  value  as  the --
+          interactiveasadmin utility option.  Normally  you  will
+          not need to specify this option. Default is true.
 
-         Controls printing of the  asadmin  prompt.  By  default,
+     --encoding
+          Specifies the character set for the file to be decoded.
+          By default, the system character set is used.
 
 Java EE 6           Last change: 20 Dec 2010                    1
 
 asadmin Utility Subcommands                          multimode(1)
-
-         this  option  is  set  to  the  same  value  as  the  --
-         interactive asadmin utility option.  Normally  you  will
-         not need to specify this option. Default is true.
-
-     --encoding
-
-         Specifies the character set for the file to be  decoded.
-         By default, the system character set is used.
 
 EXAMPLES
      Example 1 Starting a Multimode Session
 
      This example starts a multimode session where: % is the sys-
      tem prompt.
+     % asadmin multimode
 
-       % asadmin multimode
-       asadmin>
+     asadmin>
 
      You can also start a multimode  session  by  typing  asadmin
      without options or subcommands at the system prompt.
@@ -78,23 +72,17 @@ EXAMPLES
 
      This  example  runs  a  sequence  of  subcommands  from  the
      commands_file.txt file.
-
-       % asadmin multimode --file commands_file.txt
+     % asadmin multimode --file commands_file.txt
 
 EXIT STATUS
-     0                           subcommand executed successfully
+     0    subcommand executed successfully
 
-     1                           error in executing  the  subcom-
-                                 mand
+     1    error in executing the subcommand
 
 SEE ALSO
      export(1), unset(1)
 
-Java EE 6           Last change: 20 Dec 2010                    2
-
-asadmin Utility Subcommands                          multimode(1)
-
      asadmin(1M)
 
-Java EE 6           Last change: 20 Dec 2010                    3
+Java EE 6           Last change: 20 Dec 2010                    2
 

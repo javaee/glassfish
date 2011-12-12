@@ -7,7 +7,7 @@ NAME
 
 SYNOPSIS
      disable-http-lb-application [--help] [--timeout 30]
-      --name application_name target
+      --name application_nametarget
 
 DESCRIPTION
      The disable disable-http-lb-application subcommand  disables
@@ -31,57 +31,51 @@ DESCRIPTION
      use  this  subcommand  to  disable it in that instance while
      leaving the instance itself enabled.
 
-     Note -
+     Note
 
-       This subcommand is only  applicable  to  Oracle  GlassFish
-       Server.  This  subcommand  is  not applicable to GlassFish
-       Server Open Source Edition.
+     This subcommand  is  only  applicable  to  Oracle  GlassFish
+     Server.  This  subcommand  is  not  applicable  to GlassFish
+     Server Open Source Edition.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --timeout
-         The timeout (in minutes) to wait  before  disabling  the
-         specified application. This time allows for the graceful
-         shutdown (quiescing) of the specified  application.  The
-         default  value  is  30  minutes.  The minimum value is 1
+          The timeout (in minutes) to wait before  disabling  the
+          specified  application. This time allows for the grace-
+          ful shutdown (quiescing) of the specified  application.
+          The default value is 30 minutes. The minimum value is 1
+          minute.
+
+     --name
+          The name of the application to be disabled.
 
 Java EE 6           Last change: 26 Aug 2010                    1
 
 asadmin Utility Subcommands        disable-http-lb-application(1)
 
-         minute.
-
-     --name
-
-         The name of the application to be disabled.
-
 OPERANDS
      target
-         This operand specifies the server instance or cluster on
-         which to disable the application. Valid values are:
+          This operand specifies the server instance  or  cluster
+          on which to disable the application. Valid values are:
 
-             o    cluster_name- The name of a target cluster.
+          o cluster_name- The name of a target cluster.
 
-             o    instance_name- The  name  of  a  target  server
-                  instance.
+          o instance_name- The name of a target server instance.
 
 EXAMPLES
      Example 1 Disabling an Application for Load Balancing
 
      This example, disables an application for load balancing
+     asadmin> disable-http-lb-application --name webapps-simple mycluster
 
-       asadmin> disable-http-lb-application --name webapps-simple mycluster
-       Command disable-http-lb-application executed successfully.
+     Command disable-http-lb-application executed successfully.
 
 EXIT STATUS
-     0                           subcommand executed successfully
+     0    subcommand executed successfully
 
-     1                           error in executing  the  subcom-
-                                 mand
+     1    error in executing the subcommand
 
 SEE ALSO
      enable-http-lb-application(1)

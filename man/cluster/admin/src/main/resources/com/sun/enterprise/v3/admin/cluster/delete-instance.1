@@ -5,20 +5,22 @@ NAME
      delete-instance - deletes a GlassFish Server instance
 
 SYNOPSIS
-     delete-instance [--help]  instance-name
+     delete-instance [--help] instance-name
 
 DESCRIPTION
      The delete-instance subcommand deletes  a  GlassFish  Server
-     instance.  This subcommand requires secure shell (SSH) to be
-     configured on  the  host  where  the  domain  administration
-     server  (DAS) is running and on the host that is represented
+     instance. This subcommand requires the Distributed Component
+     Object Model (DCOM) remote protocol or secure shell (SSH) to
+     be  configured  on  the host where the domain administration
+     server (DAS) is running and on the host that is  represented
      by the node where the instance resides.
 
-     Note -
+     Note
 
-       SSH is not required if the instance resides on a  node  of
-       type CONFIG that represents the local host. A node of type
-       CONFIG is not enabled for communication over SSH.
+     DCOM or SSH is not required if the  instance  resides  on  a
+     node  of  type CONFIG that represents the local host. A node
+     of type CONFIG is not enabled for remote communication  over
+     DCOM or SSH.
 
      You may run this subcommand from any host that  can  contact
      the DAS.
@@ -34,10 +36,10 @@ DESCRIPTION
      The subcommand deletes an instance by performing the follow-
      ing actions:
 
-         o    Removing the instance from the configuration of the
-              domain administration server (DAS)
+     o Removing the instance from the configuration of the domain
+       administration server (DAS)
 
-         o    Deleting the instance's files from file system
+     o Deleting the instance's files from file system
 
      If the instance that is being deleted is the  only  instance
      that  is  using  the  node directory, that directory is also
@@ -46,46 +48,43 @@ DESCRIPTION
      If a standalone instance is deleted,  the  instance's  stan-
      dalone  configuration is also deleted. A standalone instance
      refers to a configuration that is named instance-name-config
-
-Java EE 6           Last change: 19 Aug 2010                    1
-
-asadmin Utility Subcommands                    delete-instance(1)
-
      to which no other clusters or unclustered instances refer.
 
      This subcommand is supported in remote mode only.
 
-OPTIONS
-     --help
-     -?
+Java EE 6           Last change: 08 Dec 2011                    1
 
-         Displays the help text for the subcommand.
+asadmin Utility Subcommands                    delete-instance(1)
+
+OPTIONS
+     --help , -?
+          Displays the help text for the subcommand.
 
 OPERANDS
      instance-name
-         The name of the instance to delete.
+          The name of the instance to delete.
 
 EXAMPLES
      Example 1 Deleting a GlassFish Server Instance
 
      This  example  deletes   the   GlassFish   Server   instance
      pmdsainst.
+     asadmin> delete-instance pmdsainst
 
-       asadmin> delete-instance pmdsainst
-
-       Command delete-instance executed successfully.
+     Command delete-instance executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0    command executed successfully
 
-     1                           error in executing the command
+     1    error in executing the command
 
 SEE ALSO
      create-instance(1), create-local-instance(1),  delete-local-
      instance(1),  setup-ssh(1),  start-instance(1), start-local-
-     instance(1), stop-instance(1), stop-local-instance(1)
+     instance(1),    stop-instance(1),    stop-local-instance(1),
+     validate-dcom(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 19 Aug 2010                    2
+Java EE 6           Last change: 08 Dec 2011                    2
 

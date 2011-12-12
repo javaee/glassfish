@@ -16,47 +16,43 @@ DESCRIPTION
      only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --target
-         This option  specifies  the  target  on  which  you  are
-         unfreezing the transaction service. Valid values are:
+          This option specifies  the  target  on  which  you  are
+          unfreezing the transaction service. Valid values are:
 
-         server
+          server
+               Unfreezes the transaction service for the  default
+               server instance server and is the default value.
 
-             Unfreezes the transaction service  for  the  default
-             server instance server and is the default value.
+          configuration_name
+               Unfreezes the transaction service for  all  server
+               instances that use the named configuration.
 
-         configuration_name
-             Unfreezes the transaction  service  for  all  server
-             instances that use the named configuration.
+          cluster_name
+               Unfreezes the transaction service for every server
+               instance in the cluster.
 
-         cluster_name
-
-             Unfreezes the transaction service for  every  server
-             instance in the cluster.
-
-         instance_name
-             Unfreezes the transaction service for  a  particular
-             server instance.
+          instance_name
+               Unfreezes the transaction service for a particular
+               server instance.
 
 EXAMPLES
      Example 1 Using unfreeze-transaction-service
+     % asadmin unfreeze-transaction-service
+
+     Command unfreeze-transaction-service executed successfully
+
+EXIT STATUS
+     0    command executed successfully
+
+     1    error in executing the command
 
 Java EE 6           Last change: 17 Nov 2010                    1
 
 asadmin Utility Subcommands       unfreeze-transaction-service(1)
-
-       % asadmin unfreeze-transaction-service
-       Command unfreeze-transaction-service executed successfully
-
-EXIT STATUS
-     0                   command executed successfully
-
-     1                   error in executing the command
 
 SEE ALSO
      freeze-transaction-service(1),      rollback-transaction(1),
@@ -64,10 +60,10 @@ SEE ALSO
 
      asadmin(1M)
 
-     Chapter 19, Administering Transactions, in Oracle  GlassFish
-     Server 3.1 Administration Guide
+     Administering  Transactions  in  Oracle   GlassFish   Server
+     Administration Guide
 
-     Chapter 43, Transactions, in The Java EE 6 Tutorial
+     Transactions in The Java EE 6 Tutorial
 
 Java EE 6           Last change: 17 Nov 2010                    2
 

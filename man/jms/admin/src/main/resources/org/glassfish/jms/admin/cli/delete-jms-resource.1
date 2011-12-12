@@ -20,66 +20,61 @@ DESCRIPTION
      server (DAS).
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --target
-         Deletes the JMS resource only from the specified target.
-         Valid values are as follows:
+          Deletes the JMS resource only from the  specified  tar-
+          get. Valid values are as follows:
 
-         Note -
+          Note
 
-           Resources are always created for a domain as  a  whole
-           but   are   only   active  for  targets  for  which  a
-           <resource-ref> has been  created  using  the  --target
-           option  when the resource was created. This means that
-           deleting a resource only  deletes  the  <resource-ref>
-           element  for  the  specified  --target,  and  does not
-           delete the resource from the domain as a whole  unless
-           domain is specified as the --target for the deletion.
+          Resources are always created for a domain  as  a  whole
+          but  are only active for targets for which a <resource-
+          ref> has been created using the  --target  option  when
+          the  resource  was  created. This means that deleting a
+          resource only deletes the  <resource-ref>  element  for
+          the   specified  --target,  and  does  not  delete  the
+          resource from the domain as a whole  unless  domain  is
+          specified as the --target for the deletion.
 
-         server
+          server
+               Deletes the JMS resource from the  default  server
+               instance. This is the default value.
 
-             Deletes the JMS resource  from  the  default  server
-             instance. This is the default value.
+          domain
+               Deletes the JMS resource from the domain.
 
-         domain
-             Deletes the JMS resource from the domain.
+          cluster-name
+               Deletes  the  JMS  resource  from   every   server
+               instance in the specified cluster.
+
+          instance-name
+               Deletes the JMS resource from the specified server
+               instance.
 
 Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands                delete-jms-resource(1)
 
-         cluster-name
-
-             Deletes the JMS resource from every server  instance
-             in the specified cluster.
-
-         instance-name
-             Deletes the JMS resource from the  specified  server
-             instance.
-
 OPERANDS
      jndi_name
-
-         The JNDI name of the JMS resource to be deleted.
+          The JNDI name of the JMS resource to be deleted.
 
 EXAMPLES
      Example 1 Deleting a JMS destination resource
 
      The  following  subcommand  deletes  the   JMS   destination
      resource named jms/MyQueue.
+     asadmin> delete-jms-resource jms/MyQueue
 
-       asadmin> delete-jms-resource jms/MyQueue
-       Administered object jms/MyQueue deleted.
-       Command delete-jms-resource executed successfully.
+     Administered object jms/MyQueue deleted.
+     Command delete-jms-resource executed successfully.
 
 EXIT STATUS
-     0            subcommand executed successfully
+     0    subcommand executed successfully
 
-     1            error in executing the subcommand
+     1    error in executing the subcommand
 
 SEE ALSO
      create-jms-resource(1), list-jms-resources(1)

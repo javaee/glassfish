@@ -1,5 +1,5 @@
 
-Utility Commands                                      asadmin(1M)
+Utility Commands                                      asadmin(1m)
 
 NAME
      asadmin - utility for performing  administrative  tasks  for
@@ -22,49 +22,46 @@ DESCRIPTION
      Oracle GlassFish Server. You can use this utility instead of
      the Administration Console interface.
 
-  Subcommands of the asadmin Utility
+  SUBCOMMANDS OF THE asadmin UTILITY
      The subcommand identifies the operation or task that you are
      performing.  Subcommands are case-sensitive. Each subcommand
      is either a local subcommand or a remote subcommand.
 
-         o    A local subcommand can be  run  without  a  running
-              domain administration server (DAS). However, to run
-              the subcommand and have access to the  installation
-              directory  and  the domain directory, the user must
-              be logged in to the machine that hosts the domain.
+     o A local subcommand can be run  without  a  running  domain
+       administration  server  (DAS). However, to run the subcom-
+       mand and have access to the installation directory and the
+       domain  directory,  the  user  must  be  logged  in to the
+       machine that hosts the domain.
 
-         o    A remote subcommand is always run by connecting  to
-              a  DAS  and running the subcommand there. A running
-              DAS is required.
+     o A remote subcommand is always run by connecting to  a  DAS
+       and  running  the  subcommand  there.  A  running  DAS  is
+       required.
 
-  asadmin Utility Options and Subcommand Options
+  asadmin UTILITY OPTIONS AND SUBCOMMAND OPTIONS
      Options control the behavior of the asadmin utility and  its
      subcommands. Options are also case-sensitive.
 
      The asadmin utility has the following types of options:
 
-         o    asadmin utility options. These options control  the
-              behavior  of  the  asadmin utility, not the subcom-
-              mand. The asadmin utility options  may  precede  or
-              follow  the subcommand, but asadmin utility options
-              after the subcommand are  deprecated.  All  asadmin
-              utility  options  must either precede or follow the
-              subcommand. If asadmin utility options  are  speci-
-              fied both before and after the subcommand, an error
+     o asadminutility options. These options control the behavior
+       of  the  asadmin  utility, not the subcommand. The asadmin
+       utility options may precede or follow the subcommand,  but
+       asadmin  utility  options  after the subcommand are depre-
+       cated. All asadmin utility options must either precede  or
+       follow  the  subcommand.  If  asadmin  utility options are
+       specified both before and after the subcommand,  an  error
+       occurs.  For a description of the asadmin utility options,
+       see the "Options" section of this help information.
 
-Java EE 6           Last change: 13 Jun 2011                    1
+Java EE 6           Last change: 08 Dec 2011                    1
 
-Utility Commands                                      asadmin(1M)
+Utility Commands                                      asadmin(1m)
 
-              occurs. For a description of  the  asadmin  utility
-              options,  see  the  "Options"  section of this help
-              information.
-
-         o    Subcommand  options.  These  options  control   the
-              behavior  of  the subcommand, not the asadmin util-
-              ity. Subcommand options must follow the subcommand.
-              For  a  description  of a subcommand's options, see
-              the help information for the subcommand.
+     o Subcommand options. These options control the behavior  of
+       the   subcommand,  not  the  asadmin  utility.  Subcommand
+       options must follow the subcommand. For a description of a
+       subcommand's  options,  see  the  help information for the
+       subcommand.
 
      A subcommand option may have the same  name  as  an  asadmin
      utility  option, but the effects of the two options are dif-
@@ -73,116 +70,111 @@ Utility Commands                                      asadmin(1M)
      The asadmin utility options and some subcommand options have
      a long form and a short form.
 
-         o    The long form of an option has two dashes (--) fol-
-              lowed by an option word.
+     o The long form of an option has two dashes (--) followed by
+       an option word.
 
-         o    The short form of an option has a single  dash  (-)
-              followed by a single character.
+     o The short form of an option has a single dash (-) followed
+       by a single character.
 
      For example, the long form and the short form of the  option
      for specifying terse output are as follows:
 
-         o    Long form: --terse
+     o Long form: --terse
 
-         o    Short form: -t
+     o Short form: -t
 
      Most  options  require  argument  values,   except   Boolean
      options, which toggle to enable or disable a feature.
 
-  Operands of asadmin Subcommands
+  OPERANDS OF asadmin SUBCOMMANDS
      Operands specify the items on which  the  subcommand  is  to
      act.  Operands must follow the argument values of subcommand
      options, and are set off by a space, a tab, or double dashes
      (--).  The  asadmin utility treats anything that follows the
      subcommand options and their values as an operand.
 
-  Escape Characters in Options for the asadmin Utility
+  ESCAPE CHARACTERS IN OPTIONS FOR THE asadmin UTILITY
      Escape characters are required in  options  of  the  asadmin
      utility for the following types of characters:
 
-         o    Meta characters in  the  UNIXTM  operating  system.
-              These  characters  have special meaning in a shell.
-              Meta  characters  in  the  UNIX  operating   system
-              include: \/,.!$%^&*|{}[]"'`~;.
+     o Meta characters in the UNIX operating system. These  char-
+       acters have special meaning in a shell. Meta characters in
+       the UNIX operating system include: \/,.!$%^&*|{}[]"'`~;.
 
-Java EE 6           Last change: 13 Jun 2011                    2
+       To disable these characters, use the backslash (\)  escape
+       character  or  enclose the entire command-line argument in
+       single quote (') characters.
 
-Utility Commands                                      asadmin(1M)
+       The following examples illustrate  the  effect  of  escape
+       characters  on  the  *  character.  In these examples, the
+       current working directory is the domains directory.
 
-              To disable these characters, use the backslash  (\)
-              escape character or enclose the entire command-line
-              argument in single quote  (') characters.
+Java EE 6           Last change: 08 Dec 2011                    2
 
-              The following examples  illustrate  the  effect  of
-              escape  characters  on  the  *  character. In these
-              examples, the  current  working  directory  is  the
-              domains directory.
+Utility Commands                                      asadmin(1m)
 
-             o    The following command, without the escape char-
-                  acter,  echoes  all files in the current direc-
-                  tory:
+       o The following command,  without  the  escape  character,
+         echoes all files in the current directory:
+         prompt% echo *
 
-                    prompt% echo *
-                    domain1 domain2
+         domain1 domain2
 
-             o    The following command, in which  the  backslash
-                  (\)  escape character precedes the * character,
-                  echoes the * character:
+       o The following command, in which the backslash (\) escape
+         character precedes the * character, echoes the * charac-
+         ter:
+         prompt% echo \*
 
-                    prompt% echo \*
-                    *
+         *
 
-             o    The following command, in which the * character
-                  is  enclosed  in  single  quote (') characters,
-                  echoes the * character:
+       o The following command,  in  which  the  *  character  is
+         enclosed  in  single  quote (') characters, echoes the *
+         character:
+         prompt% echo '*'
 
-                    prompt% echo '*'
-                    *
+         *
 
-         o    Option delimiters. The  asadmin  utility  uses  the
-              colon   character  (:)  as  a  delimiter  for  some
-              options. The  backslash  (\)  escape  character  is
-              required if the colon is part of any of the follow-
-              ing items:
+     o Option delimiters. The  asadmin  utility  uses  the  colon
+       character  (:)  as  a  delimiter  for  some  options.  The
+       backslash (\) escape character is required if the colon is
+       part of any of the following items:
 
-             o    A property
+       o A property
 
-             o    An option of the Virtual Machine for the JavaTM
-                  platform   (Java   Virtual  Machine  or   JVMTM
-                  machine)
+       o An option of the Virtual Machine for the  Java  platform
+         (Java  Virtual  Machine  or  JVM machine)The terms "Java
+         Virtual Machine" and "JVM" mean a  Virtual  Machine  for
+         the Java platform.
 
-             The terms "Java Virtual Machine" and  "JVM"  mean  a
-             Virtual Machine for the Java platform.
-         For example, the operand of the  subcommand  create-jvm-
+     For example,  the  operand  of  the  subcommand  create-jvm-
+     options(1)  specifies  JVM  machine options in the following
+     format:
+     (jvm-option-name[=jvm-option-value])
 
-Java EE 6           Last change: 13 Jun 2011                    3
+     [:jvm-option-name[=jvm-option-value]]*
 
-Utility Commands                                      asadmin(1M)
+     Multiple JVM machine options in the operand of  the  create-
+     jvm-options subcommand are separated by the colon (:) delim-
+     iter. If  jvm-option-name  or  jvm-option-value  contains  a
 
-         options(1)  specifies JVM machine options in the follow-
-         ing format:
+Java EE 6           Last change: 08 Dec 2011                    3
 
-           (jvm-option-name[=jvm-option-value])
-           [:jvm-option-name[=jvm-option-value]]*
+Utility Commands                                      asadmin(1m)
 
-         Multiple JVM machine  options  in  the  operand  of  the
-         create-jvm-options subcommand are separated by the colon
-         (:) delimiter. If  jvm-option-name  or  jvm-option-value
-         contains  a colon, the backslash (\) escape character is
-         required before the colon.
+     colon, the backslash (\) escape character is required before
+     the colon.
 
      Instead of using the backslash (\) escape character, you can
      use the double quote (") character or single quote (') char-
      acter. The effects of the different types of  quote  charac-
      ters on the backslash (\) character are as follows:
 
-         o    Between double quote (") characters, the  backslash
-              (\) character is a special character.
+     o Between double quote (")  characters,  the  backslash  (\)
+       character is a special character.
 
-         o    Between single quote (') characters, the  backslash
-              (\) character is not a special character.
+     o Between single quote (')  characters,  the  backslash  (\)
+       character is not a special character.
 
-     When used without  single quote (') characters,  the  escape
+     When used without single quote (')  characters,  the  escape
      character  disables the delimiter in the command-line inter-
      face. The escape character is also a  special  character  in
      the  UNIX  operating system and in the Java language. There-
@@ -195,46 +187,41 @@ Utility Commands                                      asadmin(1M)
      character  in  the  option argument Test\Escape\Character is
      specified on UNIX and Windows systems as follows:
 
-         o    On UNIX systems, each  backslash  must  be  escaped
-              with a second backslash:
+     o On UNIX systems, each backslash must  be  escaped  with  a
+       second backslash:
+       Test\\Escape\\Character
 
-                Test\\Escape\\Character
+     o On Windows systems, no escape character is required:
+       Test\Escape\Character
 
-         o    On  Windows  systems,  no   escape   character   is
-              required:
-
-                Test\Escape\Character
-
-Java EE 6           Last change: 13 Jun 2011                    4
-
-Utility Commands                                      asadmin(1M)
-
-  Requirements for Using the --secure Option
+  REQUIREMENTS FOR USING THE --secure OPTION
      The requirements for using the --secure option are  as  fol-
      lows:
 
-         o    The domain that you are administering must be  con-
-              figured for security.
+     o The domain that you are administering must  be  configured
+       for security.
 
-         o    The security-enabled attribute of the http-listener
-              element  in  the  DAS  configuration must be set to
-              true.
+     o The security-enabled attribute of the  http-listener  ele-
+       ment in the DAS configuration must be set to true.
 
-              To set this attribute, use the set(1) subcommand.
+       To set this attribute, use the set(1) subcommand.
 
-  Server Restart After Creation or Deletion
+Java EE 6           Last change: 08 Dec 2011                    4
+
+Utility Commands                                      asadmin(1m)
+
+  SERVER RESTART AFTER CREATION OR DELETION
      When you use the asadmin subcommands to create or  delete  a
      configuration  item, you must restart the DAS for the change
      to take  effect.  To  restart  the  DAS,  use  the  restart-
      domain(1) subcommand.
 
-  Help Information for Subcommands and the asadmin Utility
+  HELP INFORMATION FOR SUBCOMMANDS AND THE asadmin UTILITY
      To obtain help information for an  asadmin  utility  subcom-
      mand,  specify  the subcommand of interest as the operand of
      the help subcommand. For example, to obtain help information
      for the start-domain(1) subcommand, type:
-
-       asadmin help start-domain
+     asadmin help start-domain
 
      If you run the help subcommand without an operand, this help
      information for the asadmin utility is displayed.
@@ -243,171 +230,162 @@ Utility Commands                                      asadmin(1M)
      the list-commands(1) subcommand.
 
 OPTIONS
-     --host
-     -H
+     --host , -H
+          The machine name where the DAS is running. The  default
+          value is localhost.
 
-         The machine name where the DAS is running.  The  default
-         value is localhost.
+     --port , -p
+          The HTTP port or HTTPS port  for  administration.  This
+          port  is  the  port in the URL that you specify in your
+          web browser to manage the domain. For example,  in  the
+          URL http://localhost:4949, the port is 4949.
 
-     --port
-     -p
-         The HTTP port or HTTPS  port  for  administration.  This
-         port is the port in the URL that you specify in your web
-         browser to  manage  the  domain.  For  example,  in  the
-         URLhttp://localhost:4949, the port is 4949.
+          The default port number for administration is 4848.
 
-Java EE 6           Last change: 13 Jun 2011                    5
+     --user , -u
+          The user name of the authorized administrative user  of
+          the DAS.
 
-Utility Commands                                      asadmin(1M)
+          If you have authenticated to  a  domain  by  using  the
+          asadmin  login command, you need not specify the --user
+          option for subsequent operations on the domain.
 
-         The default port number for administration is 4848.
+     --passwordfile , -W
+          Specifies the name, including the full path, of a  file
+          that contains password entries in a specific format.
 
-     --user
-     -u
-
-         The user name of the authorized administrative  user  of
-         the DAS.
-
-         If you have authenticated to a domain by using the asad-
-         min  login  command,  you  need  not  specify the --user
-         option for subsequent operations on the domain.
-
-     --passwordfile
-     -W
-         Specifies the name, including the full path, of  a  file
-         that contains password entries in a specific format.
-
-         The entry for a password must have the AS_ADMIN_  prefix
-         followed  by  the password name in uppercase letters, an
-         equals sign, and the password.
+          The entry for a password must have the AS_ADMIN_ prefix
+          followed  by the password name in uppercase letters, an
+          equals sign, and the password.
 
           The entries in the file that are read  by  the  asadmin
-         utility are as follows:
+          utility are as follows:
 
-             o    AS_ADMIN_PASSWORD=administration-password
+Java EE 6           Last change: 08 Dec 2011                    5
 
-             o    AS_ADMIN_MASTERPASSWORD=master-password
-         The entries in this file that are  read  by  subcommands
-         are as follows:
+Utility Commands                                      asadmin(1m)
 
-             o    AS_ADMIN_USERPASSWORD=user-password  (read   by
-                  the create-file-user(1) subcommand)
+          o AS_ADMIN_PASSWORD=administration-password
 
-             o    AS_ADMIN_ALIASPASSWORD=alias-password (read  by
-                  the create-password-alias(1) subcommand)
+          o AS_ADMIN_MASTERPASSWORD=master-password
 
-             o    AS_ADMIN_MAPPEDPASSWORD=mapped-password   (read
-                  by the create-connector-security-map(1) subcom-
-                  mand)
+     The entries in this file that are read by subcommands are as
+     follows:
 
-             o    AS_ADMIN_SSHPASSWORD=sshd-password (read by the
-                  create-node-ssh(1),     install-node(1),    and
-                  update-node-ssh(1) subcommands)
+          o AS_ADMIN_NEWPASSWORD=new-administration-password
+            (read by the start-domain(1) subcommand)
 
-             o    AS_ADMIN_SSHKEYPASSPHRASE=sshd-passphrase(read
-                  by the create-node-ssh(1), install-node(1), and
-                  update-node-ssh(1) subcommands)
+          o AS_ADMIN_USERPASSWORD=user-password  (read   by   the
+            create-file-user(1) subcommand)
 
-             o    AS_ADMIN_JMSDBPASSWORD=      jdbc-user-password
-                  (read     by    the    configure-jms-cluster(1)
+          o AS_ADMIN_ALIASPASSWORD=alias-password  (read  by  the
+            create-password-alias(1) subcommand)
 
-Java EE 6           Last change: 13 Jun 2011                    6
+          o AS_ADMIN_MAPPEDPASSWORD=mapped-password (read by  the
+            create-connector-security-map(1) subcommand)
 
-Utility Commands                                      asadmin(1M)
+          o AS_ADMIN_WINDOWSPASSWORD=windows-password  (read   by
+            the  create-node-dcom(1),  install-node-dcom(1),  and
+            update-node-dcom(1) subcommands)
 
-                  subcommand)
-         These password entries are stored in clear text  in  the
-         password  file.  To  provide  additional  security,  the
-         create-password-alias subcommand can be used  to  create
-         an  alias  for  the password. The password for which the
-         alias is created is stored in an encrypted form.  If  an
-         alias  exists  for a password, the alias is specified in
-         the entry for the password as follows:
+          o AS_ADMIN_SSHPASSWORD=sshd-password   (read   by   the
+            create-node-ssh(1),   install-node(1),  install-node-
+            ssh(1), and update-node-ssh(1) subcommands)
 
-           AS_ADMIN_password-name=${ALIAS=password-alias-name}
+          o AS_ADMIN_SSHKEYPASSPHRASE=sshd-passphrase  (read   by
+            the   create-node-ssh(1),  install-node(1),  install-
+            node-ssh(1), and update-node-ssh(1) subcommands)
 
-         For example:
+          o AS_ADMIN_JMSDBPASSWORD=jdbc-user-password  (read   by
+            the configure-jms-cluster(1) subcommand)
 
-           AS_ADMIN_SSHPASSWORD=${ALIAS=ssh-password-alias}
-           AS_ADMIN_SSHKEYPASSPHRASE=${ALIAS=ssh-key-passphrase-alias}
+     These password entries are stored in clear text in the pass-
+     word  file.  To  provide  additional  security,  the create-
+     password-alias subcommand can be used to create an alias for
+     the password. The password for which the alias is created is
+     stored in an encrypted form. If an alias exists for a  pass-
+     word,  the  alias is specified in the entry for the password
+     as follows:
+     AS_ADMIN_password-name=${ALIAS=password-alias-name}
 
-         In domains that do not allow unauthenticated login,  all
-         remote subcommands must specify the administration pass-
-         word to authenticate to the DAS.  The  password  can  be
-         specified by one of the following means:
+     For example:
+     AS_ADMIN_SSHPASSWORD=${ALIAS=ssh-password-alias}
 
-             o    Through the --passwordfile option
+     AS_ADMIN_SSHKEYPASSPHRASE=${ALIAS=ssh-key-passphrase-alias}
 
-             o    Through the login(1) subcommand
+Java EE 6           Last change: 08 Dec 2011                    6
 
-             o    Interactively at the command prompt
-         The login subcommand can be used  to  specify  only  the
-         administration password. For other passwords that remote
-         subcommands require, use the  --passwordfile  option  or
-         specify them at the command prompt.
+Utility Commands                                      asadmin(1m)
 
-         After authenticating to a domain by  using  the  asadmin
-         login  command,  you need not specify the administration
-         password through the --passwordfile  option  for  subse-
-         quent  operations  on  the  domain.  However,  only  the
-         AS_ADMIN_PASSWORD option is not required. You still must
-         provide    the    other    passwords,    for    example,
-         AS_ADMIN_USERPASSWORD, when required by individual  sub-
-         commands, such as update-file-user(1).
+     In domains that do  not  allow  unauthenticated  login,  all
+     remote  subcommands must specify the administration password
+     to authenticate to the DAS. The password can be specified by
+     one of the following means:
 
-         For security reasons, a password that is specified as an
-         environment variable is not read by the asadmin utility.
+          o Through the --passwordfile option
 
-         The master password is not  propagated  on  the  command
-         line or an environment variable, but can be specified in
-         the file that the --passwordfile option specifies.
+          o Through the login(1) subcommand
 
-         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
-         changeit.
+          o Interactively at the command prompt
 
-Java EE 6           Last change: 13 Jun 2011                    7
+     The login  subcommand  can  be  used  to  specify  only  the
+     administration  password.  For  other  passwords that remote
+     subcommands  require,  use  the  --passwordfile  option   or
+     specify them at the command prompt.
 
-Utility Commands                                      asadmin(1M)
+     After authenticating to a domain by using the asadmin  login
+     command,  you  need  not specify the administration password
+     through the --passwordfile option for subsequent  operations
+     on the domain. However, only the AS_ADMIN_PASSWORD option is
+     not required. You still must provide  the  other  passwords,
+     for example, AS_ADMIN_USERPASSWORD, when required by indivi-
+     dual subcommands, such as update-file-user(1).
 
-     --terse
-     -t
+     For security reasons, a password that  is  specified  as  an
+     environment variable is not read by the asadmin utility.
 
-         If true, output data is very concise  and  in  a  format
-         that  is  optimized  for  use  in scripts instead of for
-         reading  by  humans.  Typically,  descriptive  text  and
-         detailed  status messages are also omitted from the out-
-         put data. Default is false.
+     The master password is not propagated on the command line or
+     an  environment  variable,  but can be specified in the file
+     that the --passwordfile option specifies.
 
-     --secure
-     -s
-         If set to true, uses SSL/TLS  to  communicate  with  the
-         DAS.
+     The default value for AS_ADMIN_MASTERPASSWORD is changeit.
 
-         The default is false.
+     --terse , -t
+          If true, output data is very concise and  in  a  format
+          that  is  optimized  for  use in scripts instead of for
+          reading by  humans.  Typically,  descriptive  text  and
+          detailed status messages are also omitted from the out-
+          put data. Default is false.
 
-     --echo
-     -e
+     --secure , -s
+          If set to true, uses SSL/TLS to  communicate  with  the
+          DAS.
 
-         If set to true, the command-line statement is echoed  on
-         the standard output. Default is false.
+          The default is false.
 
-     --interactive
-     -I
-         If set to true, only the required options are prompted.
+     --echo , -e
+          If set to true, the command-line statement is echoed on
+          the standard output. Default is false.
 
-         The default depends on how the asadmin utility is run:
+     --interactive , -I
 
-             o    If the asadmin utility is run  from  a  console
-                  window, the default is true.
+Java EE 6           Last change: 08 Dec 2011                    7
 
-             o    If the asadmin utility is run without a console
-                  window,  for example, from within a script, the
-                  default is false.
+Utility Commands                                      asadmin(1m)
 
-     --help
-     -?
+          If set to true, only the required options are prompted.
 
-         Displays the help text for the asadmin utility.
+          The default depends on how the asadmin utility is run:
+
+          o If the asadmin utility is run from a console  window,
+            the default is true.
+
+          o If the asadmin utility is run without a console  win-
+            dow,  for  example, from within a script, the default
+            is false.
+
+     --help , -?
+          Displays the help text for the asadmin utility.
 
 EXAMPLES
      Example 1 Running an asadmin Utility  Subcommand  in  Single
@@ -417,57 +395,52 @@ EXAMPLES
      single  mode.  In  this  example, the default values for all
      options are used.
 
-Java EE 6           Last change: 13 Jun 2011                    8
-
-Utility Commands                                      asadmin(1M)
-
      The example shows that the application hello is deployed  on
      the local host.
+     asadmin list-applications
 
-       asadmin list-applications
-       hello <web>
+     hello <web>
 
-       Command list-applications executed successfully.
+     Command list-applications executed successfully.
 
      Example 2 Specifying an asadmin Utility Option With  a  Sub-
      command
 
-     This example specifies the  --host  asadmin  utility  option
-     with  the  list-applications  subcommand  in single mode. In
-     this   example,   the   DAS   is   running   on   the   host
-     srvr1.example.com.
+     This example specifies the --hostasadmin utility option with
+     the  list-applications  subcommand  in  single mode. In this
+     example, the DAS is running on the host srvr1.example.com.
 
      The example shows that the applications basic-ezcomp, scrum-
      toys, ejb31-war, and automatic-timer-ejb are deployed on the
      host srvr1.example.com.
+     asadmin --host srvr1.example.com list-applications
 
-       asadmin --host srvr1.example.com list-applications
-       basic-ezcomp <web>
-       scrumtoys <web>
-       ejb31-war <ejb, web>
-       automatic-timer-ejb <ejb>
+     basic-ezcomp <web>
+     scrumtoys <web>
+     ejb31-war <ejb, web>
+     automatic-timer-ejb <ejb>
 
-       Command list-applications executed successfully.
+     Command list-applications executed successfully.
 
      Example 3 Specifying an asadmin Utility Option and a Subcom-
      mand Option
 
-     This example specifies the --host asadmin utility option and
+Java EE 6           Last change: 08 Dec 2011                    8
+
+Utility Commands                                      asadmin(1m)
+
+     This example specifies the --hostasadmin utility option  and
      the --type subcommand option with the list-applications sub-
      command in single mode. In this example, the DAS is  running
      on  the  host srvr1.example.com and applications of type web
      are to be listed.
+     asadmin --host srvr1.example.com list-applications --type web
 
-       asadmin --host srvr1.example.com list-applications --type web
-       basic-ezcomp <web>
-       scrumtoys <web>
-       ejb31-war <ejb, web>
+     basic-ezcomp <web>
+     scrumtoys <web>
+     ejb31-war <ejb, web>
 
-Java EE 6           Last change: 13 Jun 2011                    9
-
-Utility Commands                                      asadmin(1M)
-
-       Command list-applications executed successfully.
+     Command list-applications executed successfully.
 
      Example 4 Escaping a Command-Line Argument With Single Quote
      Characters
@@ -477,21 +450,21 @@ Utility Commands                                      asadmin(1M)
      delimiter in the property value c:\extras\pmdapp.
 
      For the UNIX operating system in single mode and  multimode,
-     and  for  all operating systems in multimode,  the backslash
-     (\) is required to escape the  backslash (\) meta  character
+     and  for  all  operating systems in multimode, the backslash
+     (\) is required to escape the backslash (\)  meta  character
      and the colon (:) option delimiter:
+     asadmin deploy --property extras.home='c\:\\extras\\pmdapp' pmdapp.war
 
-       asadmin deploy --property extras.home='c\:\\extras\\pmdapp' pmdapp.war
-       Application deployed with name pmdapp.
-       Command deploy executed successfully
+     Application deployed with name pmdapp.
+     Command deploy executed successfully
 
      For the Windows operating system in single mode, the  single
      quote  (')  characters  eliminate  the need for other escape
      characters:
+     asadmin deploy --property extras.home='c:\extras\pmdapp' pmdapp.war
 
-       asadmin deploy --property extras.home='c:\extras\pmdapp' pmdapp.war
-       Application deployed with name pmdapp.
-       Command deploy executed successfully
+     Application deployed with name pmdapp.
+     Command deploy executed successfully
 
      Example 5 Specifying a UNIX Operating System Meta  Character
      in an Option
@@ -501,25 +474,25 @@ Utility Commands                                      asadmin(1M)
      Test\Escape\Character.
 
      For the UNIX operating system in single mode and  multimode,
-     and  for  all operating systems in multimode,  the backslash
-     (\) is required to escape the  backslash (\) meta character:
+     and  for  all  operating systems in multimode, the backslash
+     (\) is required to escape the backslash (\) meta character:
+     asadmin --user admin --passwordfile gfpass create-jdbc-connection-pool
 
-Java EE 6           Last change: 13 Jun 2011                   10
+     --datasourceclassname sampleClassName
+     --description Test\\Escape\\Character
+     sampleJDBCConnectionPool
 
-Utility Commands                                      asadmin(1M)
+Java EE 6           Last change: 08 Dec 2011                    9
 
-       asadmin --user admin --passwordfile gfpass create-jdbc-connection-pool
-       --datasourceclassname sampleClassName
-       --description Test\\Escape\\Character
-       sampleJDBCConnectionPool
+Utility Commands                                      asadmin(1m)
 
      For the Windows operating system in single mode,  no  escape
      character is required:
+     asadmin --user admin --passwordfile gfpass create-jdbc-connection-pool
 
-       asadmin --user admin --passwordfile gfpass create-jdbc-connection-pool
-       --datasourceclassname sampleClassName
-       --description Test\Escape\Character
-       sampleJDBCConnectionPool
+     --datasourceclassname sampleClassName
+     --description Test\Escape\Character
+     sampleJDBCConnectionPool
 
      Example 6 Specifying a Meta Character and an  Option  Delim-
      iter Character in a Property
@@ -531,50 +504,51 @@ Utility Commands                                      asadmin(1M)
 
      The name and value pairs for the --property  option  are  as
      follows:
+     user=dbuser
 
-       user=dbuser
-       passwordfile=dbpasswordfile
-       DatabaseName=jdbc:derby
-       server=http://localhost:9092
+     passwordfile=dbpasswordfile
+     DatabaseName=jdbc:derby
+     server=http://localhost:9092
 
      For the UNIX operating system in single mode and  multimode,
-     and for all operating systems in multimode,  a backslash (\)
+     and  for all operating systems in multimode, a backslash (\)
      is required to escape the colon (:) and the backslash (\):
+     asadmin --user admin --passwordfile gfpass create-jdbc-connection-pool
 
-       asadmin --user admin --passwordfile gfpass create-jdbc-connection-pool
-       --datasourceclassname com.derby.jdbc.jdbcDataSource
-       --property user=dbuser:passwordfile=dbpasswordfile:
-       DatabaseName=jdbc\\:derby:server=http\\://localhost\\:9092 javadb-pool
-
-Java EE 6           Last change: 13 Jun 2011                   11
-
-Utility Commands                                      asadmin(1M)
+     --datasourceclassname com.derby.jdbc.jdbcDataSource
+     --property user=dbuser:passwordfile=dbpasswordfile:
+     DatabaseName=jdbc\\:derby:server=http\\://localhost\\:9092 javadb-pool
 
      Alternatively, the entire argument to the --property  option
      can be enclosed single quote (') characters:
+     asadmin --user admin --passwordfile gfpass create-jdbc-connection-pool
 
-       asadmin --user admin --passwordfile gfpass create-jdbc-connection-pool
-       --datasourceclassname com.derby.jdbc.jdbcDataSource
-       --property 'user=dbnuser:passwordfile=dbpasswordfile:
-       DatabaseName="jdbc:derby":server="http://localhost:9092"'
+     --datasourceclassname com.derby.jdbc.jdbcDataSource
+     --property 'user=dbnuser:passwordfile=dbpasswordfile:
+     DatabaseName="jdbc:derby":server="http://localhost:9092"'
 
      For the Windows operating system in single mode, a backslash
      (\)  is  required  to escape only the colon (:), but not the
      backslash (\):
+     asadmin --user admin --passwordfile gfpass create-jdbc-connection-pool
 
-       asadmin --user admin --passwordfile gfpass create-jdbc-connection-pool
-       --datasourceclassname com.derby.jdbc.jdbcDataSource
-       --property user-dbuser:passwordfile-dbpasswordfile:
-       DatabaseName=jdbc\:derby:server=http\://localhost\:9092 javadb-pool
+     --datasourceclassname com.derby.jdbc.jdbcDataSource
+     --property user-dbuser:passwordfile-dbpasswordfile:
+     DatabaseName=jdbc\:derby:server=http\://localhost\:9092 javadb-pool
 
      For all operating systems, the need to escape the colon  (:)
      in  a  value can be avoided by enclosing the value in double
-     quote characters or single quote characters:
 
-       asadmin --user admin --passwordfile gfpass create-jdbc-connection-pool
-       --datasourceclassname com.derby.jdbc.jdbcDataSource
-       --property user=dbuser:passwordfile=dbpasswordfile:
-       DatabaseName=\"jdbc:derby\":server=\"http://localhost:9092\" javadb-pool
+Java EE 6           Last change: 08 Dec 2011                   10
+
+Utility Commands                                      asadmin(1m)
+
+     quote characters or single quote characters:
+     asadmin --user admin --passwordfile gfpass create-jdbc-connection-pool
+
+     --datasourceclassname com.derby.jdbc.jdbcDataSource
+     --property user=dbuser:passwordfile=dbpasswordfile:
+     DatabaseName=\"jdbc:derby\":server=\"http://localhost:9092\" javadb-pool
 
      Example 7 Specifying an Option Delimiter and an Escape Char-
      acter in a JVM Machine Option
@@ -582,43 +556,37 @@ Utility Commands                                      asadmin(1M)
      The commands in this example specify the  following  charac-
      ters in the -Dlocation=c:\sun\appserver JVM machine option:
 
-         o    The colon (:) option delimiter
+     o The colon (:) option delimiter
 
-         o    The backslash (\) escape character
+     o The backslash (\) escape character
 
      For the UNIX operating system in single mode and  multimode,
      and for all operating systems in multimode, these characters
-
-Java EE 6           Last change: 13 Jun 2011                   12
-
-Utility Commands                                      asadmin(1M)
-
      must be specified as follows:
 
-         o    To pass a literal backslash to  a  subcommand,  two
-              backslashes  are required. Therefore, the colon (:)
-              must be escaped by two backslashes (\\).
+     o To  pass  a  literal  backslash  to  a   subcommand,   two
+       backslashes are required. Therefore, the colon (:) must be
+       escaped by two backslashes (\\).
 
-         o    To  prevent  the  subcommand  from   treating   the
-              backslash  as  a  special  character, the backslash
-              must  be  escaped.  As  a   result,   two   literal
-              backslashes  (\\) must be passed to the subcommand.
-              To  prevent  the  shell  from  interpreting   these
-              backslashes  as  special characters, each backslash
-              must be escaped. Therefore, the backslash  must  be
-              specified by a total of four backslashes (\\\\).
+     o To prevent the subcommand from treating the backslash as a
+       special  character,  the  backslash  must be escaped. As a
+       result, two literal backslashes (\\) must be passed to the
+       subcommand.  To  prevent the shell from interpreting these
+       backslashes as special characters, each backslash must  be
+       escaped.  Therefore,  the backslash must be specified by a
+       total of four backslashes (\\\\).
 
      The resulting command is as follows:
+     asadmin create-jvm-options --target test-server
 
-       asadmin create-jvm-options --target test-server
-       -e -Dlocation=c\\:\\\\sun\\\\appserver
+     -e -Dlocation=c\\:\\\\sun\\\\appserver
 
      For the Windows operating system in single mode, a backslash
      (\)  is  required  to escape the colon (:) and the backslash
      (\):
+     asadmin create-jvm-options --target test-server
 
-       asadmin create-jvm-options --target test-server
-       -e -Dlocation=c\:\\sun\\appserver
+     -e -Dlocation=c\:\\sun\\appserver
 
      Example 8 Specifying an Option That Contains an Escape Char-
      acter
@@ -627,65 +595,66 @@ Utility Commands                                      asadmin(1M)
      acter   and   the   double   quote  (")  characters  in  the
      "Hello\App"\authentication option argument.
 
+Java EE 6           Last change: 08 Dec 2011                   11
+
+Utility Commands                                      asadmin(1m)
+
      For the UNIX operating system in single mode and  multimode,
-     and for all operating systems in multimode,  a backslash (\)
+     and  for all operating systems in multimode, a backslash (\)
      is required to escape the double quote character (") and the
      backslash (\):
+     asadmin set-web-env-entry --name="Hello User" --type=java.lang.String
 
-Java EE 6           Last change: 13 Jun 2011                   13
-
-Utility Commands                                      asadmin(1M)
-
-       asadmin set-web-env-entry --name="Hello User" --type=java.lang.String
-       --value=techscribe --description=\"Hello\\App\"\\authentication hello
+     --value=techscribe --description=\"Hello\\App\"\\authentication hello
 
      For the Windows operating system in single mode, a backslash
      (\) is required to escape only the double quote ("), but not
      the backslash (\):
+     asadmin set-web-env-entry --name="Hello User" --type=java.lang.String
 
-       asadmin set-web-env-entry --name="Hello User" --type=java.lang.String
-       --value=techscribe --description=\"Hello\App\"\authentication hello
+     --value=techscribe --description=\"Hello\App\"\authentication hello
 
 ENVIRONMENT VARIABLES
      Environment variables modify the default values  of  asadmin
      utility options as shown in the following table.
 
-      Environment Variable          asadmin Utility Option
-     __________________________________________________________
-     AS_ADMIN_TERSE            --terse
-     AS_ADMIN_ECHO             --echo
-     AS_ADMIN_INTERACTIVE      --interactive
-     AS_ADMIN_HOST             --host
-     AS_ADMIN_PORT             --port
-     AS_ADMIN_SECURE           --secure
-     AS_ADMIN_USER             --user
-     AS_ADMIN_PASSWORDFILE     --passwordfile
-     AS_ADMIN_HELP             --help
+     ______________________________________________________
+    | Environment Variable          \fIasadmin\fR  Utility|
+    |                               Option                |
+    | \fIAS_ADMIN_TERSE\fR          \fI--terse\fR         |
+    | \fIAS_ADMIN_ECHO\fR           \fI--echo\fR          |
+    | \fIAS_ADMIN_INTERACTIVE\fR    \fI--interactive\fR   |
+    | \fIAS_ADMIN_HOST\fR           \fI--host\fR          |
+    | \fIAS_ADMIN_PORT\fR           \fI--port\fR          |
+    | \fIAS_ADMIN_SECURE\fR         \fI--secure\fR        |
+    | \fIAS_ADMIN_USER\fR           \fI--user\fR          |
+    | \fIAS_ADMIN_PASSWORDFILE\fR   \fI--passwordfile\fR  |
+    |_____________________________________________________|
 
 ATTRIBUTES
-     See attributes(5) for descriptions of the  following  attri-
+     Seeattributes(5) for descriptions of  the  following  attri-
      butes:
 
-     ____________________________________________________________
-    |       ATTRIBUTE TYPE        |       ATTRIBUTE VALUE       |
-    |_____________________________|_____________________________|
-    |_____________________________|_____________________________|
+     _______________________________________
+    | ATTRIBUTE TYPE        ATTRIBUTE VALUE|
+    |______________________________________|
 
 SEE ALSO
      configure-jms-cluster(1),  create-connector-security-map(1),
      create-file-user(1),         create-jdbc-connection-pool(1),
-     create-jvm-options(1), create-node-ssh(1),  create-password-
-     alias(1),deploy(1),  install-node(1),  list-applications(1),
-     list-commands(1),   login(1),   restart-domain(1),   set(1),
+     create-jvm-options(1),   create-node-dcom(1),   create-node-
+     ssh(1),    create-password-alias(1),   deploy(1),   install-
+     node(1),  install-node-dcom(1),  install-node-ssh(1),  list-
+     applications(1),    list-commands(1),   login(1),   restart-
 
-Java EE 6           Last change: 13 Jun 2011                   14
+Java EE 6           Last change: 08 Dec 2011                   12
 
-Utility Commands                                      asadmin(1M)
+Utility Commands                                      asadmin(1m)
 
-     set-web-env-entry(1),  start-domain(1), update-file-user(1),
-     update-node-ssh(1)
+     domain(1),  set(1),  set-web-env-entry(1),  start-domain(1),
+     update-file-user(1), update-node-dcom(1), update-node-ssh(1)
 
      attributes(5)
 
-Java EE 6           Last change: 13 Jun 2011                   15
+Java EE 6           Last change: 08 Dec 2011                   13
 

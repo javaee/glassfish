@@ -21,88 +21,77 @@ DESCRIPTION
      This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --connectionpoolid
-         The name of the JDBC connection pool.  If  two  or  more
-         JDBC resource elements point to the same connection pool
-         element, they use the same pool connection at runtime.
+          The name of the JDBC connection pool. If  two  or  more
+          JDBC  resource  elements  point  to the same connection
+          pool element, they use the same pool connection at run-
+          time.
 
      --enabled
-
-         Determines whether the JDBC resource is enabled at  run-
-         time. The default value is true.
+          Determines whether the JDBC resource is enabled at run-
+          time. The default value is true.
 
      --description
-         Text  providing  descriptive  details  about  the   JDBC
-         resource.
+          Text  providing  descriptive  details  about  the  JDBC
+          resource.
 
      --property
+          Optional attribute name/value pairs for configuring the
+          resource.
 
-         Optional attribute name/value pairs for configuring  the
-         resource.
+     --target
+          This option helps specify the target to which  you  are
+          deploying. Valid values are:
+
+          server
+               Deploys  the  component  to  the  default   server
+               instance. This is the default value.
+
+          domain
+               Deploys the component to the domain.
 
 Java EE 6           Last change: 10 Feb 2011                    1
 
 asadmin Utility Subcommands               create-jdbc-resource(1)
 
-     --target
+          cluster_name
+               Deploys the component to every server instance  in
+               the cluster.
 
-         This option helps specify the target to  which  you  are
-         deploying. Valid values are:
+          instance_name
+               Deploys  the  component  to  a  particular   sever
+               instance.
 
-         server
-             Deploys  the  component  to   the   default   server
-             instance. This is the default value.
+     Note
 
-         domain
-
-             Deploys the component to the domain.
-
-         cluster_name
-             Deploys the component to every  server  instance  in
-             the cluster.
-
-         instance_name
-
-             Deploys  the  component  to   a   particular   sever
-             instance.
-
-     Note -
-
-       The resource is always created for the domain as a  whole,
-       but  the resource-ref for the resource is only created for
-       the specified  --target.  This  means  that  although  the
-       resource is defined at the domain level, it is only avail-
-       able at  the  specified  target  level.  Use  the  create-
-       resource-ref subcommand to refer to the resource in multi-
-       ple targets if needed.
+     The resource is always created for the domain  as  a  whole,
+     but  the  resource-ref  for the resource is only created for
+     the  specified  --target.  This  means  that  although   the
+     resource  is  defined at the domain level, it is only avail-
+     able  at  the  specified  target  level.  Use  the   create-
+     resource-ref subcommand to refer to the resource in multiple
+     targets if needed.
 
 OPERANDS
      jndi_name
-         The JNDI name of this JDBC resource.
+          The JNDI name of this JDBC resource.
 
 EXAMPLES
      Example 1 Creating a JDBC Resource
 
      This example creates a JDBC resource named jdbc/DerbyPool.
+     asadmin> create-jdbc-resource
 
-       asadmin> create-jdbc-resource
-       --connectionpoolid sample_derby_pool jdbc/DerbyPool
-       Command create-jdbc-resource executed successfully.
-
-Java EE 6           Last change: 10 Feb 2011                    2
-
-asadmin Utility Subcommands               create-jdbc-resource(1)
+     --connectionpoolid sample_derby_pool jdbc/DerbyPool
+     Command create-jdbc-resource executed successfully.
 
 EXIT STATUS
-     0                           subcommand executed successfully
+     0    subcommand executed successfully
 
-     1                           error in executing  the  subcom-
-                                 mand
+     1    error in executing the subcommand
 
 SEE ALSO
      delete-jdbc-resource(1),   list-jdbc-resources(1),   create-
@@ -110,5 +99,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 10 Feb 2011                    3
+Java EE 6           Last change: 10 Feb 2011                    2
 

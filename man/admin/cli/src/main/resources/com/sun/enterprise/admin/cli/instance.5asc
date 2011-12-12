@@ -1,5 +1,5 @@
 
-GlassFish Server Concepts                          instance(5ASC)
+GlassFish Server Concepts                          instance(5asc)
 
 NAME
      instance - an instance in GlassFish Server has its own  Java
@@ -20,6 +20,9 @@ DESCRIPTION
      Because you can easily add or delete a server instance,  you
      can  use them to create temporary "sandbox" areas to experi-
      ment with while developing.
+
+SEE ALSO
+     create-instance(1)
 
 Java EE 6           Last change: 24 Sep 2008                    1
 

@@ -2,7 +2,7 @@
 asadmin Utility Subcommands             list-lifecycle-modules(1)
 
 NAME
-     list-lifecycle-modules -  lists the lifecycle modules
+     list-lifecycle-modules - lists the lifecycle modules
 
 SYNOPSIS
      list-lifecycle-modules [--help] [target]
@@ -15,50 +15,46 @@ DESCRIPTION
      remote mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
 OPERANDS
      target
-         Indicates the location where lifecycle modules are to be
-         listed. Valid values are
+          Indicates the location where lifecycle modules  are  to
+          be listed. Valid values are
 
-             o    server- Specifies the default  server  instance
-                  as  the  target  for listing lifecycle modules.
-                  server  is  the  name  of  the  default  server
-                  instance  and  is  the  default  value for this
-                  operand.
+          o server- Specifies the default server instance as  the
+            target  for  listing lifecycle modules. server is the
+            name of  the  default  server  instance  and  is  the
+            default value for this operand.
 
-             o    cluster_name- Specifies a particular cluster as
-                  the target for listing lifecycle modules.
+          o cluster_name- Specifies a particular cluster  as  the
+            target for listing lifecycle modules.
 
-             o    instance_name- Specifies  a  particular  server
-                  instance  as  the  target for listing lifecycle
-                  modules.
+          o instance_name- Specifies a particular server instance
+            as the target for listing lifecycle modules.
 
 EXAMPLES
      Example 1 Listing Lifecycle Modules
+     asadmin> list-lifecycle-modules
 
-       asadmin> list-lifecycle-modules
-       WSTCPConnectorLCModule
-       Command list-lifecycle-modules executed successfully
+     WSTCPConnectorLCModule
+     Command list-lifecycle-modules executed successfully
 
      WSTCPConnectorLCModule is the only lifecycle  module  listed
      for the default target, server.
 
-Java EE 6           Last change: 16 Nov 2010                    1
-
-asadmin Utility Subcommands             list-lifecycle-modules(1)
-
 EXIT STATUS
-     0                           command executed successfully
+     0    command executed successfully
 
-     1                           error in executing the command
+     1    error in executing the command
 
 SEE ALSO
      create-lifecycle-module(1), delete-lifecycle-module(1)
+
+Java EE 6           Last change: 16 Nov 2010                    1
+
+asadmin Utility Subcommands             list-lifecycle-modules(1)
 
      asadmin(1M)
 

@@ -1,24 +1,24 @@
 
-Utility Commands                                    appclient(1M)
+Utility Commands                                    appclient(1m)
 
 NAME
-     appclient  - launches the Application Client  Container  and
+     appclient - launches the Application  Client  Container  and
      invokes  the  client  application  typically packaged in the
      application JAR file
 
 SYNOPSIS
-     appclient [client_application_classfile | -client client_application_jar]
-     [-mainclass main_class_name | -name display_name]
-     [-xml sun-acc.xml file] [-textauth]
-     [ -targetserver  host[:port][,host[:port]...]]
-     [-user username] [-passwordfile password_file]
+     appclient [client_application_classfile | -clientclient_application_jar]
+     [-mainclassmain_class_name | -namedisplay_name]
+     [-xmlsun-acc.xml file] [-textauth]
+     [-targetserverhost[:port][,host[:port]...]]
+     [-userusername] [-passwordfilepassword_file]
      [application-options]
 
      appclient [jvm-options]
-     [-mainclass main_class_name | -name display_name]
-     [-xml client_config_xml_file] [-textauth]
-     [ -targetserver  host[:port][,host[:port]...]]
-     [-user username] [-passwordfile password_file]
+     [-mainclassmain_class_name | -namedisplay_name]
+     [-xmlclient_config_xml_file] [-textauth]
+     [-targetserverhost[:port][,host[:port]...]]
+     [-userusername] [-passwordfilepassword_file]
      class-selector [application-options]
 
 DESCRIPTION
@@ -33,9 +33,8 @@ DESCRIPTION
      The Application Client Container is a set of  Java  classes,
      libraries,  and  other  files that are required to execute a
      first-tier application client program on a  Virtual  Machine
-     for  the  JavaTM  platform  (JVMTM machine). The Application
-     Client Container communicates with  the  server  using  RMI-
-     IIOP.
+     for  the Java platform (JVM machine). The Application Client
+     Container communicates with the server using RMI-IIOP.
 
      The client JAR file that is  retrieved  after  deploying  an
      application should be passed with the -client or -jar option
@@ -48,168 +47,150 @@ DESCRIPTION
      only client in an EAR file, the Application Client Container
      can find the client without using the  -mainclass  or  -name
      options.  If  you  provide  a -mainclass or -name value that
-
-Java EE 6           Last change: 16 Dec 2010                    1
-
-Utility Commands                                    appclient(1M)
-
      does not match what is in the client, the Application Client
      Container  launches  the  client anyway but issues a warning
      that the selection did not  match  the  information  in  the
      client. The warning also displays what the actual main class
      and name values are for the client.
 
+Java EE 6           Last change: 16 Dec 2010                    1
+
+Utility Commands                                    appclient(1m)
+
 OPTIONS
      jvm-options
-
-         optional; you can set JVM options for the client  appli-
-         cation.  These  can  be  any  valid java command options
-         except -client or -jar. JVM options  can  be  intermixed
-         with  other  appclient  command  options as long as both
-         types of options appear before the class-selector.
+          optional; you can set JVM options for the client appli-
+          cation.  These  can  be  any valid java command options
+          except -client or -jar. JVM options can  be  intermixed
+          with  other  appclient  command options as long as both
+          types of options appear before the class-selector.
 
      client_application_classfile
-         optional; the file system pathname of the client  appli-
-         cation .class file. A relative pathname must be relative
-         to the current directory. This class file  must  contain
-         the  main()  method  to  be  invoked  by the Application
-         Client Container.
+          optional; the file system pathname of the client appli-
+          cation  .class  file. A relative pathname must be rela-
+          tive to the current directory.  This  class  file  must
+          contain the main() method to be invoked by the Applica-
+          tion Client Container.
 
-         If you use client_application_classfile and the class is
-         dependent  on  other user classes, you must also set the
-         classpath. You can either use the -classpath JVM  option
-         in  the  appclient command or set the CLASSPATH environ-
-         ment variable. For  more  information  about  setting  a
-         classpath,  see  Setting  the Class Path, Oracle Solaris
-         Version
-         (http://download.oracle.com/javase/6/docs/technotes/tools/solaris/classpath.html)
-         or   Setting   the   Class   Path,    Windows    Version
-         (http://download.oracle.com/javase/6/docs/technotes/tools/windows/classpath.html).
+          If you use client_application_classfile and  the  class
+          is  dependent  on other user classes, you must also set
+          the classpath. You can either use  the  -classpath  JVM
+          option  in  the  appclient command or set the CLASSPATH
+          environment variable. For more information  about  set-
+          ting  a  classpath,  see Setting the Class Path, Oracle
+          Solaris                                         Version
+          (http://download.oracle.com/javase/6/docs/technotes/tools/solaris/classpath.html)
+          or   Setting   the   Class   Path,   Windows    Version
+          (http://download.oracle.com/javase/6/docs/technotes/tools/windows/classpath.html).
 
-      -client
+     -client
+          optional; the name and  location  for  the  client  JAR
+          file.
 
-         optional; the name and location for the client JAR file.
+     -mainclass
+          optional; the full classname of the main client  appli-
+          cation  as  specified  in  the  Main-Class entry in the
+          MANIFEST.MF file. Used for a multiple  client  applica-
+          tions.  By  default,  uses  the  class specified in the
+          client jar. For example, com.example.test.AppClient.
 
-      -mainclass
-         optional; the full classname of the main client applica-
-         tion  as  specified  in  the  Main-Class  entry  in  the
-         MANIFEST.MF file. Used for a  multiple  client  applica-
-         tions.  By  default,  uses  the  class  specified in the
-         client jar. For example, com.example.test.AppClient.
+     -name
+          optional; the display name for the client  application.
+          Used  for multiple client applications. By default, the
+          display  name  is   specified   in   the   client   jar
+          application-client.xml  file which is identified by the
+          display-name attribute.
 
-      -name
+     -xml optional if using the  default  domain,  instance,  and
+          name  (sun-acc.xml),  otherwise it is required; identi-
+          fies the name and location of the client  configuration
+          XML file. If not specified, defaults to the sun-acc.xml
+          file in the domain-dir/config directory.
 
-         optional; the display name for the  client  application.
-         Used  for  multiple client applications. By default, the
-         display  name   is   specified   in   the   client   jar
+     -textauth
+          optional;   used   to   specify   using   text   format
 
 Java EE 6           Last change: 16 Dec 2010                    2
 
-Utility Commands                                    appclient(1M)
+Utility Commands                                    appclient(1m)
 
-         application-client.xml  file  which is identified by the
-         display-name attribute.
-
-      -xml
-
-         optional if using the default domain, instance, and name
-         (sun-acc.xml),  otherwise it is required; identifies the
-         name and location of the client configuration XML  file.
-         If  not  specified,  defaults to the sun-acc.xml file in
-         the domain-dir/config directory.
-
-      -textauth
-         optional; used to specify using text format  authentica-
-         tion when authentication is needed.
+          authentication when authentication is needed.
 
      -targetserver
-
-         optional; a comma-separated list of one or  more  server
-         specifications for ORB endpoints. Each server specifica-
-         tion must include  at  least  the  host.  Optionally,  a
-         server  specification  can  include the port as well. If
-         the port is omitted from  a  server  specification,  the
-         default value, 3700, is used for that host.
+          optional; a comma-separated list of one or more  server
+          specifications  for ORB endpoints. Each server specifi-
+          cation must include at least the  host.  Optionally,  a
+          server  specification  can include the port as well. If
+          the port is omitted from a  server  specification,  the
+          default value, 3700, is used for that host.
 
      -user
-         optional; the application user who is authorized to have
-         access  to particular guarded components in the applica-
-         tion, such as EJB components.
+          optional; the application user  who  is  authorized  to
+          have  access  to  particular  guarded components in the
+          application, such as EJB components.
 
      -passwordfile
+          optional; specifies the name, including the full  path,
+          of  a  file  that contains the password for application
+          clients in the following format:
+          PASSWORD=appclient-password
 
-         optional; specifies the name, including the  full  path,
-         of  a  file  that  contains  the  password  entries in a
-         specific format.
+          If this option is omitted, the  password  is  specified
+          interactively at the command prompt.
+          Caution
 
-         The entry for a password must have the AS_ADMIN_  prefix
-         followed  by  the password name in uppercase letters, an
-         equals sign and the password.
+          __________________________________
+         | Caution Avoid specifying a pass-|
+         | word  interactively  at the com-|
+         | mand prompt\&. Such  a  password|
+         | can be seen by users who can run|
+         | commands  to   display   running|
+         | processes  and  the  commands to|
+         |_________________________________|
 
-          The entry in the  file  that  matters  for  application
-         clients is as follows:
+     For security reasons, a password that  is  specified  as  an
+     environment variable is not read by the appclient utility.
 
-           AS_ADMIN_USERPASSWORD=user-password
+     class-selector
+          required; you must specify the client application class
+          using one of the following class selectors.
 
-         This password is used by  the  client-side  security  to
-         authenticate the user to the application.
-
-         The password can be specified by one  of  the  following
+          -jarjar-file
+               the name and location of the client JAR file.  The
+               application  client  JAR  file  is  specified  and
+               created during deployment by  the  asadmin  deploy
+               command.  If  specified, the -classpath setting is
 
 Java EE 6           Last change: 16 Dec 2010                    3
 
-Utility Commands                                    appclient(1M)
+Utility Commands                                    appclient(1m)
 
-         means:
+               ignored in deference to the Class-Path setting  in
+               the client JAR file's manifest.
 
-             o    Through the -passwordfile option
+          class-name
+               the  fully  qualified  name  of  the   application
+               client's  main  class. The Application Client Con-
+               tainer invokes the main method of  this  class  to
+               start      the      client.      For      example,
+               com.example.test.AppClient.
 
-             o    Interactively at the command prompt
-         For security reasons, a password that is specified as an
-         environment  variable is not read by the appclient util-
-         ity.
-
-     class-selector
-
-         required; you must specify the client application  class
-         using one of the following class selectors.
-
-         -jar jar-file
-             the name and location of the client  JAR  file.  The
-             application client JAR file is specified and created
-             during deployment by the asadmin deploy command.  If
-             specified,  the  -classpath  setting  is  ignored in
-             deference to the Class-Path setting  in  the  client
-             JAR file's manifest.
-
-         class-name
-
-             the fully qualified name of the application client's
-             main class. The Application Client Container invokes
-             the main method of this class to start  the  client.
-             For example, com.example.test.AppClient.
-
-             If you use class-name as  the  class  selector,  you
-             must  also set the classpath. You can either use the
-             -classpath JVM option in the  appclient  command  or
-             set  the  CLASSPATH  environment  variable. For more
-             information about setting a classpath,  see  Setting
-             the    Class    Path,    Oracle    Solaris   Version
-             (http://download.oracle.com/javase/6/docs/technotes/tools/solaris/classpath.html)
-             or   Setting   the   Class   Path,  Windows  Version
-             (http://download.oracle.com/javase/6/docs/technotes/tools/windows/classpath.html).
+               If you use class-name as the class  selector,  you
+               must  also  set  the classpath. You can either use
+               the -classpath JVM option in the appclient command
+               or  set  the  CLASSPATH  environment variable. For
+               more information about setting  a  classpath,  see
+               Setting  the  Class  Path,  Oracle Solaris Version
+               (http://download.oracle.com/javase/6/docs/technotes/tools/solaris/classpath.html)
+               or   Setting   the  Class  Path,  Windows  Version
+               (http://download.oracle.com/javase/6/docs/technotes/tools/windows/classpath.html).
 
      application-options
-         optional; you can set client application arguments.
+          optional; you can set client application arguments.
 
 EXAMPLES
      Example 1 Using the appclient command
-
-       appclient -xml sun-acc.xml -jar myclientapp.jar scott sample
-
-Java EE 6           Last change: 16 Dec 2010                    4
-
-Utility Commands                                    appclient(1M)
+     appclient -xml sun-acc.xml -jar myclientapp.jar scott sample
 
      Where: sun-acc.xml is the name of the  client  configuration
      XML  file,  myclientapp.jar  is  the client application .jar
@@ -221,16 +202,19 @@ Utility Commands                                    appclient(1M)
      executed.
 
 ATTRIBUTES
-     See attributes(5) for descriptions of the  following  attri-
+     Seeattributes(5) for descriptions of  the  following  attri-
      butes:
 
-     ____________________________________________________________
-    |_____________________________|_____________________________|
-    | Interface Stability         | Unstable                    |
-    |_____________________________|_____________________________|
+     _______________________________________
+    | ATTRIBUTE TYPE        ATTRIBUTE VALUE|
+    |______________________________________|
 
 SEE ALSO
      get-client-stubs(1)
+
+Java EE 6           Last change: 16 Dec 2010                    4
+
+Utility Commands                                    appclient(1m)
 
      asadmin(1M), package-appclient(1M)
 

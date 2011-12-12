@@ -22,45 +22,43 @@ DESCRIPTION
      This subcommand is supported in local mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
 OPERANDS
      variable-list
-         A space-separated list of the environment  variables  to
-         remove.
+          A space-separated list of the environment variables  to
+          remove.
 
 EXAMPLES
      Example 1 Listing the Environment Variables That Are Set
 
      This example uses the export subcommand to list the environ-
      ment variables that have been set.
+     asadmin> export
 
-       asadmin> export
-       AS_ADMIN_USER = admin
-       AS_ADMIN_HOST = bluestar
-       AS_ADMIN_PREFIX = server1.jms-service
-       AS_ADMIN_PORT = 8000
-       Command export executed successfully
-
-Java EE 6           Last change: 20 Dec 2010                    1
-
-asadmin Utility Subcommands                              unset(1)
+     AS_ADMIN_USER = admin
+     AS_ADMIN_HOST = bluestar
+     AS_ADMIN_PREFIX = server1.jms-service
+     AS_ADMIN_PORT = 8000
+     Command export executed successfully
 
      Example 2 Removing an Environment Variable
 
      This example removes the AS_ADMIN_PREFIX  environment  vari-
      able.
+     asadmin> unset AS_ADMIN_PREFIX
 
-       asadmin> unset AS_ADMIN_PREFIX
-       Command unset executed successfully
+     Command unset executed successfully
+
+Java EE 6           Last change: 20 Dec 2010                    1
+
+asadmin Utility Subcommands                              unset(1)
 
 EXIT STATUS
-     0                   subcommand executed successfully
+     0    subcommand executed successfully
 
-     1                   error in executing the subcommand
+     1    error in executing the subcommand
 
 SEE ALSO
      export(1), multimode(1)

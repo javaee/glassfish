@@ -15,49 +15,44 @@ DESCRIPTION
      only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --target
-         Deletes the HTTP redirect only from the  specified  tar-
-         get. Valid values are as follows:
+          Deletes the HTTP redirect only from the specified  tar-
+          get. Valid values are as follows:
 
-         server
+          server
+               Deletes the HTTP redirect from the default  server
+               instance. This is the default value.
 
-             Deletes the HTTP redirect from  the  default  server
-             instance. This is the default value.
+          configuration-name
+               Deletes the HTTP redirect from the specified  con-
+               figuration.
 
-         configuration-name
-             Deletes the HTTP redirect from the specified  confi-
-             guration.
+          cluster-name
+               Deletes  the  HTTP  redirect   from   all   server
+               instances in the specified cluster.
 
-         cluster-name
-
-             Deletes the HTTP redirect from all server  instances
-             in the specified cluster.
-
-         standalone-instance-name
-             Deletes the HTTP redirect from the  specified  stan-
-             dalone server instance.
+          standalone-instance-name
+               Deletes the HTTP redirect from the specified stan-
+               dalone server instance.
 
 OPERANDS
      protocol-name
+          The name of the associated protocol.
 
-         The name of the associated protocol.
+EXIT STATUS
+     0    command executed successfully
+
+     1    error in executing the command
+
+SEE ALSO
+     create-http-redirect(1)
 
 Java EE 6           Last change: 08 Oct 2010                    1
 
 asadmin Utility Subcommands               delete-http-redirect(1)
-
-EXIT STATUS
-     0            command executed successfully
-
-     1            error in executing the command
-
-SEE ALSO
-     create-http-redirect(1)
 
      asadmin(1M)
 

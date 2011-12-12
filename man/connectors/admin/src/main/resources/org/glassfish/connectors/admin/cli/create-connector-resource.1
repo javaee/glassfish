@@ -22,108 +22,108 @@ DESCRIPTION
      This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --poolname
-         The name of  the  connection  pool.  When  two  or  more
-         resource elements point to the same connection pool ele-
-         ment, they use the same pool connections at runtime.
+          The name of the  connection  pool.  When  two  or  more
+          resource  elements  point  to  the same connection pool
+          element, they use the same pool connections at runtime.
 
      --enabled
-
-         This option determines whether the resource  is  enabled
-         at runtime. The default value is true.
+          This option determines whether the resource is  enabled
+          at runtime. The default value is true.
 
      --objecttype
-         Defines the type of the connector resource.  Default  is
-         user. Allowed values are:
+          Defines the type of the connector resource. Default  is
+          user. Allowed values are:
 
-         system-all
+          system-all
+               A system resource for all server instances and the
+               domain administration server (DAS).
 
-             A system resource for all server instances  and  the
-             domain administration server (DAS).
+          system-admin
+               A system resource only for the DAS.
+
+          system-instance
+               A system resource for all server instances only.
+
+          user A user resource.
+
+     --description
 
 Java EE 6           Last change: 10 Feb 2011                    1
 
 asadmin Utility Subcommands          create-connector-resource(1)
 
-         system-admin
-
-             A system resource only for the DAS.
-
-         system-instance
-             A system resource for all server instances only.
-
-         user
-
-             A user resource.
-
-     --description
-         Text providing details about the connector resource.
+          Text providing details about the connector resource.
 
      --property
-
-         Optional attribute name value pairs for configuring  the
-         resource.
+          Optional attribute name value pairs for configuring the
+          resource.
 
      --target
-         This option specifies the ending location of the connec-
-         tor resources. Valid targets are:
+          This option specifies the ending location of  the  con-
+          nector resources. Valid targets are:
 
-         server
+          server
+               Creates the  connector  resource  in  the  default
+               server instance. This is the default value.
 
-             Creates the connector resource in the default server
-             instance. This is the default value.
+          domain
+               Creates the connector resource in the domain.
 
-         domain
-             Creates the connector resource in the domain.
+          cluster_name
+               Creates the connector  resource  in  every  server
+               instance in the cluster.
 
-         cluster_name
+          instance_name
+               Creates the connector resource  in  the  specified
+               server instance.
 
-             Creates  the  connector  resource  in  every  server
-             instance in the cluster.
+     Note
 
-         instance_name
-             Creates the  connector  resource  in  the  specified
-             server instance.
-
-         Note -
-
-Java EE 6           Last change: 10 Feb 2011                    2
-
-asadmin Utility Subcommands          create-connector-resource(1)
-
-           The resource is always created for  the  domain  as  a
-           whole,  but  the resource-ref for the resource is only
-           created for the specified --target.  This  means  that
-           although  the resource is defined at the domain level,
-           it is only available at the  specified  target  level.
-           Use the create-resource-ref subcommand to refer to the
-           resource in multiple targets if needed.
+     The resource is always created for the domain  as  a  whole,
+     but  the  resource-ref  for the resource is only created for
+     the  specified  --target.  This  means  that  although   the
+     resource  is  defined at the domain level, it is only avail-
+     able  at  the  specified  target  level.  Use  the   create-
+     resource-ref subcommand to refer to the resource in multiple
+     targets if needed.
 
 OPERANDS
      jndi_name
-
-         The JNDI name of this connector resource.
+          The JNDI name of this connector resource.
 
 EXAMPLES
      Example 1 Creating a Connector Resource
 
      This   example   creates   a   connector   resource    named
      jms/qConnFactory.
+     asadmin> create-connector-resource --poolname jms/qConnPool
 
-       asadmin> create-connector-resource --poolname jms/qConnPool
-       --description "sample connector resource" jms/qConnFactory
-       Command create-connector-resource executed successfully
+     --description "sample connector resource" jms/qConnFactory
+     Command create-connector-resource executed successfully
+
+     Example 2 Using the create-connector-resource subcommand
+
+Java EE 6           Last change: 10 Feb 2011                    2
+
+asadmin Utility Subcommands          create-connector-resource(1)
+
+     This example shows the usage of this subcommand.
+     asadmin> create-connector-resource --target server --poolname jms/qConnPool
+
+     --description "sample connector resource" jms/qConnFactory
+     Command create-connector-resource executed successfully
+
+     Where jms/qConnFactory is the sample connector resource that
+     is created.
 
 EXIT STATUS
-     0                           subcommand executed successfully
+     0    subcommand executed successfully
 
-     1                           error in executing  the  subcom-
-                                 mand
+     1    error in executing the subcommand
 
 SEE ALSO
      delete-connector-resource(1),   list-connector-resources(1),

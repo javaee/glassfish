@@ -11,56 +11,51 @@ DESCRIPTION
      The list-admin-objects subcommand lists all the administered
      objects.
 
-      This subcommand is supported in remote mode only.
+     This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
 OPERANDS
      target
-         The target for which  administered  objects  are  to  be
-         listed. Valid values are as follows:
+          The target for which administered  objects  are  to  be
+          listed. Valid values are as follows:
 
-         server
+          server
+               Lists the  administered  objects  on  the  default
+               server instance. This is the default value.
 
-             Lists the administered objects on the default server
-             instance. This is the default value.
+          configuration-name
+               Lists the administered objects  in  the  specified
+               configuration.
 
-         configuration-name
-             Lists the administered objects in the specified con-
-             figuration.
+          cluster-name
+               Lists  the  administered  objects  on  all  server
+               instances in the specified cluster.
 
-         cluster-name
-
-             Lists  the  administered  objects  on   all   server
-             instances in the specified cluster.
-
-         instance-name
-             Lists the administered objects on a specified server
-             instance.
+          instance-name
+               Lists the  administered  objects  on  a  specified
+               server instance.
 
 EXAMPLES
      Example 1 Listing Administered Objects
+
+     This example lists all the administered objects.
+     asadmin> list-admin-objects
+
+     jms/samplequeue
+     jms/anotherqueue
+     Command list-admin-objects executed successfully
+
+EXIT STATUS
+     0    subcommand executed successfully
 
 Java EE 6           Last change: 21 Jun 2011                    1
 
 asadmin Utility Subcommands                 list-admin-objects(1)
 
-     This example lists all the administered objects.
-
-       asadmin> list-admin-objects
-       jms/samplequeue
-       jms/anotherqueue
-       Command list-admin-objects executed successfully
-
-EXIT STATUS
-     0                           subcommand executed successfully
-
-     1                           error in executing  the  subcom-
-                                 mand
+     1    error in executing the subcommand
 
 SEE ALSO
      create-admin-object(1), delete-admin-object(1)

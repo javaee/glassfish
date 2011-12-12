@@ -20,16 +20,14 @@ DESCRIPTION
      other and to authorize admin operations.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
 OPERANDS
      admin-username
-         The admin user name that GlassFish Server should not use
-         to  authenticate  the  DAS and instances with each other
-         and to authorize admin operations.
+          The admin user name that GlassFish  Server  should  not
+          use  to  authenticate  the  DAS and instances with each
+          other and to authorize admin operations.
 
 EXAMPLES
      Example 1 Disabling a user name for secure admin
@@ -37,26 +35,24 @@ EXAMPLES
      The following example disables secure admin from using user-
      name  tester to authenticate the DAS and instances with each
      other and to authorize admin operations.
+     asadmin> disable-secure-admin-internal-user tester
 
-       asadmin> disable-secure-admin-internal-user tester
-
-       Command disable-secure-admin-internal-user executed successfully.
+     Command disable-secure-admin-internal-user executed successfully.
 
 EXIT STATUS
-     0                           subcommand executed successfully
+     0    subcommand executed successfully
 
-Java EE 6           Last change: 25 Jun 2011                    1
-
-asadmin Utility Subcommands
-                            disable-secure-admin-internal-user(1)
-
-     1                           error in executing  the  subcom-
-                                 mand
+     1    error in executing the subcommand
 
 SEE ALSO
      enable-secure-admin(1)
 
      enable-secure-admin-internal-user(1)
+
+Java EE 6           Last change: 25 Jun 2011                    1
+
+asadmin Utility Subcommands
+                            disable-secure-admin-internal-user(1)
 
      asadmin(1M)
 

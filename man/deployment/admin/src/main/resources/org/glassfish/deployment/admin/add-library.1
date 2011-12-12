@@ -1,0 +1,174 @@
+
+asadmin Utility Subcommands                        add-library(1)
+
+NAME
+     add-library - adds one or  more  library  archive  files  to
+     GlassFish Server
+
+SYNOPSIS
+     add-library [--help] [--type={common|ext|app}] [--upload={false|true}]
+     [--target target]
+     library-file-path [library-file-path ... ]
+
+DESCRIPTION
+     The add-library subcommand adds one or more library  archive
+     files to GlassFish Server.
+
+     The --type option specifies the library type and the GlassF-
+     ish Server directory to which the library is added.
+
+     The --target option specifies the target to  which  you  are
+     adding  the  libraries. If this option specifies the domain,
+     the libraries are added only to  the  configuration  of  the
+     domain administration server (DAS). If this option specifies
+     any other target, the libraries are added to the  configura-
+     tion  of  the  DAS and references are added to the libraries
+     from the specified target.
+
+     The library-file-path operand is the path to  the  JAR  file
+     that  contains  the library to be added. To specify multiple
+     libraries, specify multiple paths separated by spaces.
+
+     Note
+
+     The library archive file is added to the  DAS.  To  add  the
+     libraries  to  other server instances, synchronize them with
+     the DAS by restarting them.
+
+     This Note will no longer be valid when the  --target  option
+     is implemented.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help , -?
+          Displays the help text for the subcommand.
+
+     --type
+          Specifies the library type  and  the  GlassFish  Server
+          directory  to  which the library is added. Valid values
+          are as follows:
+
+          common
+               Adds the library files to the Common class  loader
+               directory, domain-dir/lib. This is the default.
+
+Java EE 6           Last change: 16 Nov 2011                    1
+
+asadmin Utility Subcommands                        add-library(1)
+
+          ext  Adds the library files to the Java optional  pack-
+               age directory, domain-dir/lib/ext.
+
+          app  Adds the library files to the application-specific
+               class loader directory, domain-dir/lib/applibs.
+
+     For  more  information  about  these  directories,  seeClass
+     Loaders  in  Oracle GlassFish Server Application Development
+     Guide .
+
+     --upload
+          Specifies whether the subcommand uploads  the  file  to
+          the  DAS.  In most situations, this option can be omit-
+          ted.
+
+          Valid values are as follows:
+
+          false
+               The  subcommand  does  not  upload  the  file  and
+               attempts  to access the file through the specified
+               file name. If the DAS cannot access the file,  the
+               subcommand fails.
+
+               For example, the DAS might be running  as  a  dif-
+               ferent  user than the administration user and does
+               not have read access to the file. In  this  situa-
+               tion,  the subcommand fails if the --upload option
+               is false.
+
+          true The subcommand uploads the file to  the  DAS  over
+               the network connection.
+
+     The default value depends on whether the DAS is on the  host
+     where the subcommand is run or is on a remote host.
+
+          o If the DAS is on the host  where  the  subcommand  is
+            run, the default is false.
+
+          o If the DAS is on a remote host, the default is true.
+
+     If  a  directory  filepath  is  specified,  this  option  is
+     ignored.
+
+     --target
+          Specifies the  target  to  which  you  are  adding  the
+          libraries. Valid values are as follows:
+
+          server
+               Adds the libraries to the default server  instance
+
+Java EE 6           Last change: 16 Nov 2011                    2
+
+asadmin Utility Subcommands                        add-library(1)
+
+               server. This is the default.
+
+          domain
+               Adds the libraries to the domain.
+
+          cluster-name
+               Adds the libraries to every server instance in the
+               cluster.
+
+          instance-name
+               Adds  the  libraries  to  a  particular  GlassFish
+               Server instance.
+
+OPERANDS
+     library-file-path
+          The  paths  to  the  archive  files  that  contain  the
+          libraries  that  are  to  be  added. You can specify an
+          absolute path, only the file name, or a relative path.
+
+          o If you specify an absolute path, the archive file can
+            be anywhere.
+
+          o If you specify only the file name, the  archive  file
+            must reside in the domain-dir/config directory on the
+            DAS host. This requirement must be met  even  if  you
+            run the subcommand from another host.
+
+          o If you specify a relative path, the archive file must
+            be  relative  to  the  path  indicated  by the --type
+            option.
+
+EXAMPLES
+     Example 1 Adding Libraries
+
+     This example adds the library in the archive file  mylib.jar
+     to  the  application-specific  class loader directory on the
+     default server instance.
+     asadmin> add-library --type app /tmp/mylib.jar
+
+     Archive mylib.jar added to lib/applibs on server.
+     Command add-library executed successfully.
+
+EXIT STATUS
+     0    subcommand executed successfully
+
+     1    error in executing the subcommand
+
+SEE ALSO
+     remove-library(1), list-libraries(1)
+
+Java EE 6           Last change: 16 Nov 2011                    3
+
+asadmin Utility Subcommands                        add-library(1)
+
+     asadmin(1M)
+
+     Class  Loaders  in  Oracle  GlassFish   Server   Application
+     Development Guide
+
+Java EE 6           Last change: 16 Nov 2011                    4
+

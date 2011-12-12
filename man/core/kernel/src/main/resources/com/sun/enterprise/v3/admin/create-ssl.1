@@ -30,184 +30,169 @@ OPTIONS
      precedes  the  long option name. Short options have one dash
      whereas long options have two dashes.
 
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --target
-         Specifies the target on which you  are  configuring  the
-         ssl element. The following values are valid:
+          Specifies the target on which you are  configuring  the
+          ssl element. The following values are valid:
 
-         server
+          server
+               Specifies the server in which the iiop-service  or
+               HTTP/IIOP listener is to be configured for SSL.
 
-             Specifies the server in which  the  iiop-service  or
-             HTTP/IIOP listener is to be configured for SSL.
+          config
+               Specifies  the  configuration  that  contains  the
+               HTTP/IIOP  listener  or iiop-service for which SSL
+               is to be configured.
 
-         config
-             Specifies  the  configuration  that   contains   the
-             HTTP/IIOP  listener or iiop-service for which SSL is
-             to be configured.
+          cluster
+               Specifies  the  cluster  in  which  the  HTTP/IIOP
+               listener  or  iiop-service is to be configured for
+               SSL. All the server instances in the cluster  will
+               get  the  SSL  configuration  for  the  respective
+               listener or iiop-service.
 
 Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands                         create-ssl(1)
 
-         cluster
-
-             Specifies  the  cluster  in  which   the   HTTP/IIOP
-             listener  or  iiop-service  is  to be configured for
-             SSL. All the server instances in  the  cluster  will
-             get   the   SSL  configuration  for  the  respective
-             listener or iiop-service.
-
-         instance
-             Specifies  the  instance  in  which  the   HTTP/IIOP
-             listener  or  iiop-service  is  to be configured for
-             SSL.
+          instance
+               Specifies the  instance  in  which  the  HTTP/IIOP
+               listener  or  iiop-service is to be configured for
+               SSL.
 
      --type
+          The type of service or listener for which  the  SSL  is
+          created. The type can be:
 
-         The type of service or listener for  which  the  SSL  is
-         created. The type can be:
+          o network-listener
 
-             o    network-listener
+          o http-listener
 
-             o    http-listener
+          o iiop-listener
 
-             o    iiop-listener
+          o iiop-service
 
-             o    iiop-service
+          o jmx-connector
 
-             o    jmx-connector
-         When the type  is  iiop-service,  the  ssl-client-config
-         along  with  the  embedded  ssl  element  is  created in
-         domain.xml.
+     When the type is iiop-service, the  ssl-client-config  along
+     with the embedded ssl element is created in domain.xml.
 
      --certname
-         The nickname of the server certificate in  the  certifi-
-         cate  database  or  the PKCS#11 token. The format of the
-         name in the certificate is tokenname:nickname. For  this
-         property, the tokenname: is optional.
+          The nickname of the server certificate in the  certifi-
+          cate  database  or the PKCS#11 token. The format of the
+          name in the certificate is tokenname:nickname. For this
+          property, the tokenname: is optional.
 
      --ssl2enabled
+          Set this property to true to enable SSL2.  The  default
+          value is false. If both SSL2 and SSL3 are enabled for a
+          virtual server, the server tries SSL3 encryption first.
+          In  the  event  SSL3  encryption fails, the server then
+          tries SSL2 encryption.
 
-         Set this property to true to enable  SSL2.  The  default
-         value  is false. If both SSL2 and SSL3 are enabled for a
-         virtual server, the server tries SSL3 encryption  first.
-         In  the  event  SSL3  encryption  fails, the server then
-         tries SSL2 encryption.
+     --ssl2ciphers
+          A comma-separated list of the SSL2 ciphers to be  used.
+          Ciphers  not explicitly listed will be disabled for the
+          target, even if those ciphers are available in the par-
+          ticular  cipher  suite you are using. If this option is
+          not used, all  supported  ciphers  are  assumed  to  be
+          enabled. Allowed values are:
+
+          o rc4
+
+          o rc4export
+
+          o rc2
+
+          o rc2export
 
 Java EE 6           Last change: 11 Feb 2011                    2
 
 asadmin Utility Subcommands                         create-ssl(1)
 
-     --ssl2ciphers
+          o idea
 
-         A comma-separated list of the SSL2 ciphers to  be  used.
-         Ciphers  not  explicitly listed will be disabled for the
-         target, even if those ciphers are available in the  par-
-         ticular  cipher  suite  you are using. If this option is
-         not used,  all  supported  ciphers  are  assumed  to  be
-         enabled. Allowed values are:
+          o des
 
-             o    rc4
-
-             o    rc4export
-
-             o    rc2
-
-             o    rc2export
-
-             o    idea
-
-             o    des
-
-             o    desede3
+          o desede3
 
      --ssl3enabled
-         Set this property to false to disable SSL3. The  default
-         value  is  true. If both SSL2 and SSL3 are enabled for a
-         virtual server, the server tries SSL3 encryption  first.
-         In  the  event  SSL3  encryption  fails, the server then
-         tries SSL2 encryption.
+          Set this property to false to disable SSL3. The default
+          value  is true. If both SSL2 and SSL3 are enabled for a
+          virtual server, the server tries SSL3 encryption first.
+          In  the  event  SSL3  encryption fails, the server then
+          tries SSL2 encryption.
 
      --tlsenabled
-
-         Set this property to false to disable TLS.  The  default
-         value  is  true It is good practice to enable TLS, which
-         is a more secure version of SSL.
+          Set this property to false to disable TLS. The  default
+          value  is true It is good practice to enable TLS, which
+          is a more secure version of SSL.
 
      --ssl3tlsciphers
-         A comma-separated list of the SSL3 and/or TLS ciphers to
-         be  used. Ciphers not explicitly listed will be disabled
-         for the target, even if those ciphers are  available  in
-         the  particular  cipher  suite  you  are  using. If this
-         option is not used, all supported ciphers are assumed to
-         be enabled. Allowed values are:
+          A comma-separated list of the SSL3 and/or  TLS  ciphers
+          to  be used. Ciphers not explicitly listed will be dis-
+          abled for the target, even if those ciphers are  avail-
+          able  in  the particular cipher suite you are using. If
+          this option is not  used,  all  supported  ciphers  are
+          assumed to be enabled. Allowed values are:
 
-             o    SSL_RSA_WITH_RC4_128_MD5
+          o SSL_RSA_WITH_RC4_128_MD5
 
-             o    SSL_RSA_WITH_3DES_EDE_CBC_SHA
+          o SSL_RSA_WITH_3DES_EDE_CBC_SHA
 
-             o    SSL_RSA_WITH_DES_CBC_SHA
+          o SSL_RSA_WITH_DES_CBC_SHA
+
+          o SSL_RSA_EXPORT_WITH_RC4_40_MD5
+
+          o SSL_RSA_WITH_NULL_MD5
+
+          o SSL_RSA_WITH_RC4_128_SHA
+
+          o SSL_RSA_WITH_NULL_SHA
+
+     --tlsrollbackenabled
+          Set to true (default) to enable TLS rollback. TLS roll-
+          back  should be enabled for Microsoft Internet Explorer
+          5.0  and  5.5.  This  option   is   only   valid   when
+          -tlsenabled=true.
+
+     --clientauthenabled
+          Set to true if you want SSL3 client authentication per-
+          formed on every request independent of ACL-based access
+          control. Default value is false.
 
 Java EE 6           Last change: 11 Feb 2011                    3
 
 asadmin Utility Subcommands                         create-ssl(1)
 
-             o    SSL_RSA_EXPORT_WITH_RC4_40_MD5
-
-             o    SSL_RSA_WITH_NULL_MD5
-
-             o    SSL_RSA_WITH_RC4_128_SHA
-
-             o    SSL_RSA_WITH_NULL_SHA
-
-     --tlsrollbackenabled
-
-         Set to true (default) to enable TLS rollback. TLS  roll-
-         back  should  be enabled for Microsoft Internet Explorer
-         5.0  and  5.5.  This   option   is   only   valid   when
-         -tlsenabled=true.
-
-     --clientauthenabled
-         Set to true if you want  SSL3 client authentication per-
-         formed  on every request independent of ACL-based access
-         control. Default value is false.
-
 OPERANDS
      listener_id
-
           The ID of the HTTP or IIOP listener for which  the  SSL
-         element  is  to  be  created.  The  listener_id  is  not
-         required if the --type is iiop-service.
+          element  is  to  be  created.  The  listener_id  is not
+          required if the --type is iiop-service.
 
 EXAMPLES
      Example 1 Creating an SSL element for an HTTP listener
 
      The following example shows how to create an SSL element for
      an HTTP listener named http-listener-1.
+     asadmin> create-ssl
 
-       asadmin> create-ssl
-       --type http-listener
-       --certname sampleCert http-listener-1
-       Command create-ssl executed successfully.
+     --type http-listener
+     --certname sampleCert http-listener-1
+     Command create-ssl executed successfully.
 
 EXIT STATUS
-     0                           subcommand executed successfully
+     0    subcommand executed successfully
 
-     1                           error in executing  the  subcom-
-                                 mand
-
-Java EE 6           Last change: 11 Feb 2011                    4
-
-asadmin Utility Subcommands                         create-ssl(1)
+     1    error in executing the subcommand
 
 SEE ALSO
      delete-ssl(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 11 Feb 2011                    5
+Java EE 6           Last change: 11 Feb 2011                    4
 

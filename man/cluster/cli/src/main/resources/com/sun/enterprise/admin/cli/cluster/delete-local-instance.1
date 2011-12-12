@@ -13,9 +13,10 @@ SYNOPSIS
 DESCRIPTION
      The delete-local-instance  subcommand  deletes  a  GlassFish
      Server  instance on the machine where the subcommand is run.
-     This subcommand does not require secure shell  (SSH)  to  be
-     configured. You must run this command from the machine where
-     the instance resides.
+     This subcommand does not require the  Distributed  Component
+     Object Model (DCOM) remote protocol or secure shell (SSH) to
+     be configured. You must run this command  from  the  machine
+     where the instance resides.
 
      The subcommand can delete  any  GlassFish  Server  instance,
      regardless  of  how  the  instance was created. For example,
@@ -28,10 +29,10 @@ DESCRIPTION
      The subcommand deletes an instance by performing the follow-
      ing actions:
 
-         o    Removing the instance from the configuration of the
-              domain administration server (DAS)
+     o Removing the instance from the configuration of the domain
+       administration server (DAS)
 
-         o    Deleting the instance's files from file system
+     o Deleting the instance's files from file system
 
      If the instance that is being deleted is the  only  instance
      that  is  using  the  node directory, that directory is also
@@ -45,64 +46,56 @@ DESCRIPTION
      The delete-local-instance subcommand does  not  contact  the
      DAS  to determine the node on which the instance resides. To
      determine the node on which the instance resides,  the  sub-
-     command  searches  the  directory  that  contains  the  node
-
-Java EE 6            Last change: 7 Dec 2010                    1
-
-asadmin Utility Subcommands              delete-local-instance(1)
-
-     directories. If multiple node directories  exist,  the  node
-     must be specified as an option of the subcommand.
+     command searches the directory that contains the node direc-
+     tories. If multiple node directories exist, the node must be
+     specified as an option of the subcommand.
 
      If no operand is specified and only one instance resides  on
      the  specified node, the subcommand deletes the instance. If
+
+Java EE 6            Last change: 8 Dec 2011                    1
+
+asadmin Utility Subcommands              delete-local-instance(1)
+
      no operand is specified and multiple instances reside on the
      node, an error occurs.
 
      This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --nodedir
-         Specifies the directory  that  contains  the  instance's
-         node  directory.  The instance's files are stored in the
-         instance's  node   directory.   The   default   is   as-
-         install/nodes.
+          Specifies the directory that  contains  the  instance's
+          node  directory. The instance's files are stored in the
+          instance's  node  directory.   The   default   is   as-
+          install/nodes.
 
      --node
-
-         Specifies the node on which the instance  resides.  This
-         option  may be omitted only if the directory that the --
-         nodedir option specifies contains only one  node  direc-
-         tory. Otherwise, this option is required.
+          Specifies the node on which the instance resides.  This
+          option  may  be  omitted only if the directory that the
+          --nodedir  option  specifies  contains  only  one  node
+          directory. Otherwise, this option is required.
 
 OPERANDS
      instance-name
-         The name of the instance to delete. This operand may  be
-         omitted  if  only  one instance resides on the specified
-         node. Otherwise, this operand is required.
+          The name of the instance to delete. This operand may be
+          omitted  if  only one instance resides on the specified
+          node. Otherwise, this operand is required.
 
 EXAMPLES
      Example 1 Deleting an Instance
 
      This example deletes the instance pmdsainst.
+     asadmin> delete-local-instance pmdsainst
 
-       asadmin> delete-local-instance pmdsainst
-
-       Command delete-local-instance executed successfully.
-
-Java EE 6            Last change: 7 Dec 2010                    2
-
-asadmin Utility Subcommands              delete-local-instance(1)
+     Command delete-local-instance executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0    command executed successfully
 
-     1                           error in executing the command
+     1    error in executing the command
 
 SEE ALSO
      create-instance(1),    create-local-instance(1),     delete-
@@ -111,5 +104,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 7 Dec 2010                    3
+Java EE 6            Last change: 8 Dec 2011                    2
 

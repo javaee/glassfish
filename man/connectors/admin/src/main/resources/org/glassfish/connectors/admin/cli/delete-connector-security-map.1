@@ -20,46 +20,42 @@ DESCRIPTION
      This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --poolname
-         Specifies the name of the connector connection  pool  to
-         which the security map that is to be deleted belongs.
+          Specifies the name of the connector connection pool  to
+          which the security map that is to be deleted belongs.
 
      --target
-
-         Do not specify this option. This option is retained  for
-         compatibility with earlier releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and displays a warning message
-         that the option is ignored.
+          Do not specify this option. This option is retained for
+          compatibility  with  earlier  releases.  If you specify
+          this option, a syntax error does  not  occur.  Instead,
+          the subcommand runs successfully and displays a warning
+          message that the option is ignored.
 
 OPERANDS
      mapname
-         Name of the security map to be deleted.
+          Name of the security map to be deleted.
 
 EXAMPLES
      Example 1 Deleting a Connector Security Map
+
+     This example deletes securityMap1 for the  existing  connec-
+     tion pool named connector-pool1.
+     asadmin> delete-connector-security-map
+
+     --poolname connector-pool1 securityMap1
+     Command delete-connector-security-map executed successfully
+
+EXIT STATUS
+     0    subcommand executed successfully
 
 Java EE 6           Last change: 14 Sep 2010                    1
 
 asadmin Utility Subcommands      delete-connector-security-map(1)
 
-     This example deletes securityMap1 for the  existing  connec-
-     tion pool named connector-pool1.
-
-       asadmin> delete-connector-security-map
-       --poolname connector-pool1 securityMap1
-       Command delete-connector-security-map executed successfully
-
-EXIT STATUS
-     0                           subcommand executed successfully
-
-     1                           error in executing  the  subcom-
-                                 mand
+     1    error in executing the subcommand
 
 SEE ALSO
      create-connector-security-map(1),   list-connector-security-

@@ -16,58 +16,53 @@ DESCRIPTION
      redirect. This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --redirect-port
-         Port number for redirects. If the HTTP listener is  sup-
-         porting  non-SSL requests, and a request is received for
-         which a matching security-constraint requires SSL  tran-
-         sport,  GlassFishTM  Server  automatically redirects the
-         request to this port number.
+          Port number for redirects. If the HTTP listener is sup-
+          porting non-SSL requests, and a request is received for
+          which a matching security-constraint requires SSL tran-
+          sport,  GlassFish  Server  automatically  redirects the
+          request to this port number.
 
      --secure-redirect
-
-         If set to true, the HTTP redirect runs SSL. The  default
-         value is false.
+          If set to true, the HTTP redirect runs SSL. The default
+          value is false.
 
      --target
-         Creates the HTTP redirect only on the specified  target.
-         Valid values are as follows:
+          Creates the HTTP redirect only on the specified target.
+          Valid values are as follows:
 
-         server
+          server
+               Creates the HTTP redirect on  the  default  server
+               instance. This is the default value.
 
-             Creates the HTTP  redirect  on  the  default  server
-             instance. This is the default value.
+          configuration-name
+               Creates the HTTP redirect in the specified  confi-
+               guration.
 
-         configuration-name
-             Creates the HTTP redirect in  the  specified  confi-
-             guration.
+          cluster-name
+               Creates the HTTP redirect on all server  instances
+               in the specified cluster.
+
+          standalone-instance-name
+               Creates the HTTP redirect on the  specified  stan-
+               dalone server instance.
 
 Java EE 6           Last change: 08 Oct 2010                    1
 
 asadmin Utility Subcommands               create-http-redirect(1)
 
-         cluster-name
-
-             Creates the HTTP redirect on all server instances in
-             the specified cluster.
-
-         standalone-instance-name
-             Creates the HTTP redirect  on  the  specified  stan-
-             dalone server instance.
-
 OPERANDS
      protocol-name
-
-         The name of the protocol to which to apply the redirect.
+          The  name  of  the  protocol  to  which  to  apply  the
+          redirect.
 
 EXIT STATUS
-     0            command executed successfully
+     0    command executed successfully
 
-     1            error in executing the command
+     1    error in executing the command
 
 SEE ALSO
      delete-http-redirect(1)

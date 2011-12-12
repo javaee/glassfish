@@ -36,147 +36,134 @@ DESCRIPTION
      izes  the  instance with changes since the last synchroniza-
      tion as follows:
 
-         o    For the config directory, the DAS synchronizes  the
-              instance with all changes.
+     o For  the  config  directory,  the  DAS  synchronizes   the
+       instance with all changes.
 
-         o    For the applications directory and  docroot  direc-
-              tory,  only  a  change  to a top-level subdirectory
-              causes the DAS to synchronize all files under  that
-              subdirectory.
+     o For the applications directory and docroot directory, only
+       a  change  to  a  top-level subdirectory causes the DAS to
+       synchronize all files under that subdirectory.
 
-              If a file below a top level subdirectory is changed
-              without  a  change  to a file in the top level sub-
-              directory, full  synchronization  is  required.  In
-              normal  operation,  files  below the top level sub-
-              directories of these directories are  not  changed.
+       If a file  below  a  top  level  subdirectory  is  changed
+       without  a change to a file in the top level subdirectory,
+       full synchronization is  required.  In  normal  operation,
+       files  below  the top level subdirectories of these direc-
+       tories are not changed. If an application is deployed  and
+       undeployed,  full  synchronization  is  not  necessary  to
+       update the instance with the change.
 
 Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands             restart-local-instance(1)
 
-              If  an application is deployed and undeployed, full
-              synchronization is  not  necessary  to  update  the
-              instance with the change.
-
      If  different  synchronization  behavior  is  required,  the
      instance  must  be  stopped and restarted by using following
      sequence of subcommands:
 
-         1.   stop-local-instance(1)
+     1.  stop-local-instance(1)
 
-         2.   start-local-instance(1)
+     2.  start-local-instance(1)
 
      This subcommand is supported in local mode. However, to syn-
      chronize  the instance with the DAS, this subcommand must be
      run in remote mode.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --nodedir
-         Specifies the directory  that  contains  the  instance's
-         node  directory.  The instance's files are stored in the
-         instance's  node   directory.   The   default   is   as-
-         install/nodes.
+          Specifies the directory that  contains  the  instance's
+          node  directory. The instance's files are stored in the
+          instance's  node  directory.   The   default   is   as-
+          install/nodes.
 
      --node
-
-         Specifies the node on which the instance  resides.  This
-         option  may be omitted only if the directory that the --
-         nodedir option specifies contains only one  node  direc-
-         tory. Otherwise, this option is required.
+          Specifies the node on which the instance resides.  This
+          option  may  be  omitted only if the directory that the
+          --nodedir  option  specifies  contains  only  one  node
+          directory. Otherwise, this option is required.
 
      --debug
-         Specifies whether the instance is  restarted  with  Java
-         Platform Debugger Architecture (JPDA) debugging enabled.
+          Specifies whether the instance is restarted  with  Java
+          Platform       Debugger       Architecture       (JPDA)
+          (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
+          debugging enabled.
 
-         Possible values are as follows:
+          Possible values are as follows:
 
-         true
+          true The instance  is  restarted  with  JPDA  debugging
+               enabled  and the port number for JPDA debugging is
+               displayed.
 
-             The  instance  is  restarted  with  JPDA   debugging
-             enabled  and  the  port number for JPDA debugging is
-             displayed.
+          false
+               The instance is restarted with JPDA debugging dis-
+               abled (default).
+
+     The default is the current setting of this  option  for  the
+     instance that is being restarted.
+
+     --force
+          Specifies whether  the  instance  is  forcibly  stopped
+          immediately before it is restarted.
 
 Java EE 6           Last change: 11 Feb 2011                    2
 
 asadmin Utility Subcommands             restart-local-instance(1)
 
-         false
+          Possible values are as follows:
 
-             The instance is restarted with JPDA  debugging  dis-
-             abled (default).
+          true The  instance  is  forcibly  stopped   immediately
+               (default).
 
-         The default is the current setting of  this  option  for
-         the instance that is being restarted.
-
-     --force
-         Specifies  whether  the  instance  is  forcibly  stopped
-         immediately before it is restarted.
-
-         Possible values are as follows:
-
-         true
-
-             The  instance  is   forcibly   stopped   immediately
-             (default).
-
-         false
-             The subcommand waits  until  all  threads  that  are
-             associated with the instance are exited before stop-
-             ping the instance.
+          false
+               The subcommand waits until all  threads  that  are
+               associated  with  the  instance  are exited before
+               stopping the instance.
 
      --kill
+          Specifies whether the instance is killed before  it  is
+          restarted  by using functionality of the operating sys-
+          tem to terminate the instance process.
 
-         Specifies whether the instance is killed  before  it  is
-         restarted by using functionality of the operating system
-         to terminate the instance process.
+          Possible values are as follows:
 
-         Possible values are as follows:
+          false
+               The instance is not killed.  The  subcommand  uses
+               functionality  of  the  Java platform to terminate
+               the instance process (default).
 
-         false
-             The instance is  not  killed.  The  subcommand  uses
-             functionality  of  the  JavaTM platform to terminate
-             the instance process (default).
-
-         true
-
-             The instance is killed. The  subcommand  uses  func-
-             tionality  of  the operating system to terminate the
-             instance process.
+          true The instance is killed. The subcommand uses  func-
+               tionality of the operating system to terminate the
+               instance process.
 
 OPERANDS
-
-Java EE 6           Last change: 11 Feb 2011                    3
-
-asadmin Utility Subcommands             restart-local-instance(1)
-
      instance-name
-
-         The name of the GlassFish Server instance to restart. If
-         the  instance  is not running, the subcommand displays a
-         warning message and attempts to start the instance.
+          The name of the GlassFish Server instance  to  restart.
+          If the instance is not running, the subcommand displays
+          a warning message and attempts to start the instance.
 
 EXAMPLES
      Example 1 Restarting an Instance Locally
 
      This example restarts the  instance  ymlsa1  in  the  domain
      domain1 on the host where the subcommand is run.
+     asadmin> restart-local-instance --node localhost-domain1 ymlsa1
 
-       asadmin> restart-local-instance --node localhost-domain1 ymlsa1
-       Command restart-local-instance executed successfully.
+     Command restart-local-instance executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0    command executed successfully
 
-     1                           error in executing the command
+     1    error in executing the command
 
 SEE ALSO
      create-instance(1),    create-local-instance(1),     delete-
      instance(1),  delete-local-instance(1), restart-instance(1),
+
+Java EE 6           Last change: 11 Feb 2011                    3
+
+asadmin Utility Subcommands             restart-local-instance(1)
+
      start-instance(1),      start-local-instance(1),       stop-
      instance(1), stop-local-instance(1)
 

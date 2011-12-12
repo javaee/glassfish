@@ -1,5 +1,5 @@
 
-Utility Commands                            package-appclient(1M)
+Utility Commands                            package-appclient(1m)
 
 NAME
      package-appclient - packs the application  client  container
@@ -11,66 +11,67 @@ SYNOPSIS
 DESCRIPTION
      Use the package-appclient command to  pack  the  application
      client   container   libraries   and   jar   files  into  an
-     appclient.jar file, which is created in the current  working
-     directory.  The  appclient.jar  file provides an application
-     client container package targeted at remote  hosts  that  do
+     appclient.jar file, which is created in  the  as-install/lib
+     directory  on  the  machine  on  which  GlassFish  Server is
+     installed. The appclient.jar file  provides  an  application
+     client  container  package  targeted at remote hosts that do
      not contain a server installation.
 
      After copying the appclient.jar file to a  remote  location,
-     unjar   it  to  get  a set of libraries and jar files in the
-     appclient directory
+     unjar  it  to  get  a  set of libraries and jar files in the
+     appclient directory under the current directory.
 
      After   unjarring   on   the    client    machine,    modify
-     appclient_install_dir/config/asenv.conf  (asenv.bat for Win-
+     appclient/glassfish/config/asenv.conf  (asenv.bat  for  Win-
      dows) as follows:
 
-         o    set AS_WEBSERVICES_LIB to appclient_install_dir/lib
+     o set AS_WEBSERVICES_LIB to path-to-appclient/appclient/lib
 
-         o    set AS_IMQ_LIB to appclient_install_dir/imq/lib
+     o set AS_IMQ_LIB to path-to-appclient/appclient/mq/lib
 
-         o    set AS_INSTALL to appclient_install_dir
+     o set AS_INSTALL to path-to-appclient/appclient
 
-         o    set AS_JAVA to your JDK 1.6 home directory
+     o set AS_JAVA to your JDK 1.6 home directory
 
-         o    set                AS_ACC_CONFIG                 to
-              appclient_install_dir/config/sun-acc.xml
+     o set          AS_ACC_CONFIG           to           path-to-
+       appclient/appclient/glassfish/domains/domain1/config/sun-
+       acc.xml
 
-     Modify appclient_install_dir/config/sun-acc.xml as follows:
+     Modify       appclient/glassfish/domains/domain1/config/sun-
+     acc.xml as follows:
 
-         o    Ensure     the     DOCTYPE     file      references
-              appclient_install_dir/lib/dtds
+     o Ensure    the    DOCTYPE    file    references    path-to-
+       appclient/appclient/glassfish/lib/dtds
 
-         o    Ensure that target-server address attribute  refer-
-              ences the server machine.
+     o Ensure that target-server address attribute references the
+       server machine.
 
-         o    Ensure that target-server port attribute references
-              the ORB port on the remote machine.
+     o Ensure that target-server port  attribute  references  the
+       ORB port on the remote machine.
 
-         o    Ensure that log-service references a log  file;  if
-              the user wants to put log messages to a log file.
+     o Ensure that log-service references a log file; if the user
+       wants to put log messages to a log file.
 
 Java EE 6           Last change: 17 Nov 2010                    1
 
-Utility Commands                            package-appclient(1M)
+Utility Commands                            package-appclient(1m)
 
      To use the newly installed application client container, you
      must do the following:
 
-         o    Obtain the application client files for your target
-              application,      including      the      generated
-              yourAppClient.jar file.
+     o Obtain the application client files for your target appli-
+       cation, including the generated yourAppClient.jar file.
 
-         o    Execute the appclient  utility:  appclient  -client
-              yourAppClient.jar
+     o Execute   the   appclient   utility:   appclient   -client
+       yourAppClient.jar
 
 ATTRIBUTES
-     See attributes(5) for descriptions of the  following  attri-
+     Seeattributes(5) for descriptions of  the  following  attri-
      butes:
 
-     ____________________________________________________________
-    |_____________________________|_____________________________|
-    | Interface Stability         | Unstable                    |
-    |_____________________________|_____________________________|
+     _______________________________________
+    | ATTRIBUTE TYPE        ATTRIBUTE VALUE|
+    |______________________________________|
 
 SEE ALSO
      appclient(1M)

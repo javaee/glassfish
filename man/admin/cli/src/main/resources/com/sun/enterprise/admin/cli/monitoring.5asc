@@ -1,5 +1,5 @@
 
-GlassFish Server Concepts                        monitoring(5ASC)
+GlassFish Server Concepts                        monitoring(5asc)
 
 NAME
      monitoring - reviewing the runtime state of  components  and
@@ -30,13 +30,12 @@ DESCRIPTION
      Monitoring data can be viewed by  using  the  Administration
      Console or by using the subcommands of the asadmin utility.
 
-         o    The monitor subcommand displays monitoring data for
-              a  given type, similar to the UNIX top command. The
-              data is presented at given intervals.
+     o The monitor subcommand  displays  monitoring  data  for  a
+       given  type,  similar to the UNIX top command. The data is
+       presented at given intervals.
 
-         o    The list and get subcommands display  comprehensive
-              data.  Both use dotted names to specify monitorable
-              objects.
+     o The list and get subcommands display  comprehensive  data.
+       Both use dotted names to specify monitorable objects.
 
      Alternate tools for monitoring GlassFish  Server  components
      and services include JConsole and the REST interface.
@@ -48,20 +47,19 @@ DESCRIPTION
      are only usable if their modules are present.
 
 SEE ALSO
-
-Java EE 6           Last change: 21 Oct 2009                    1
-
-GlassFish Server Concepts                        monitoring(5ASC)
-
      monitor(1),   enable-monitoring(1),   disable-monitoring(1),
      list(1), get(1), set(1)
 
      dotted-names(5ASC)
 
+Java EE 6           Last change: 21 Oct 2009                    1
+
+GlassFish Server Concepts                        monitoring(5asc)
+
      asadmin(1M)
 
-     Chapter 8, Administering the Monitoring Service,  in  Oracle
-     GlassFish Server 3.1 Administration Guide
+     Administering the Monitoring  Service  in  Oracle  GlassFish
+     Server Administration Guide
 
 Java EE 6           Last change: 21 Oct 2009                    2
 

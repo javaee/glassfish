@@ -21,14 +21,14 @@ DESCRIPTION
      attributes.  For  more detailed information on dotted names,
      see the dotted-names(5ASC) help page.
 
-     Note -
+     Note
 
-       Characters that have special meaning to the shell or  com-
-       mand  interpreter,  such as * (asterisk), should be quoted
-       or escaped as appropriate to the shell,  for  example,  by
-       enclosing the argument in quotes. In multimode, quotes are
-       needed only for arguments that include spaces, quotes,  or
-       backslash.
+     Characters that have special meaning to the shell or command
+     interpreter,  such  as  *  (asterisk),  should  be quoted or
+     escaped as appropriate to the shell, for example, by enclos-
+     ing  the argument in quotes. In multimode, quotes are needed
+     only  for  arguments  that  include   spaces,   quotes,   or
+     backslash.
 
      By modifying attributes, you can  enable  and  disable  ser-
      vices,  and  customize how an existing element functions. An
@@ -44,55 +44,48 @@ DESCRIPTION
      associated GlassFish Server configuration file.
 
 OPTIONS
-     --help
-     -?
+     --help , -?
+          Displays the help text for the subcommand.
 
-         Displays the help text for the subcommand.
+OPERANDS
+     attribute-name=value
+          Identifies the full dotted name of the  attribute  name
+          and its value.
 
 Java EE 6           Last change: 10 Sep 2009                    1
 
 asadmin Utility Subcommands                                set(1)
-
-OPERANDS
-     attribute-name=value        Identifies the full dotted  name
-                                 of  the  attribute  name and its
-                                 value.
 
 EXAMPLES
      Example 1 Setting a JDBC Connection Pool Attribute
 
      This example changes the steady pool size of  the  DerbyPool
      connection pool to 9.
+     asadmin> set resources.jdbc-connection-pool.DerbyPool.steady-pool-size=9
 
-       asadmin> set resources.jdbc-connection-pool.DerbyPool.steady-pool-size=9
-       Command set executed successfully.
+     Command set executed successfully.
 
      Example 2 Enabling the Monitoring Service for a  Monitorable
      Object
 
      This example enables monitoring for the JVM.
+     asadmin> set server.monitoring-service.module-monitoring-levels.jvm=HIGH
 
-       asadmin> set server.monitoring-service.module-monitoring-levels.jvm=HIGH
-       Command set executed successfully.
+     Command set executed successfully.
 
      Example 3 Turning on Automatic Recovery for the  Transaction
      Service
 
      This example turns on automatic recovery for the transaction
      service.
+     asadmin> set server.transaction-service.automatic-recovery=true
 
-       asadmin> set server.transaction-service.automatic-recovery=true
-       Command set executed successfully.
+     Command set executed successfully.
 
 EXIT STATUS
-     0                           subcommand executed successfully
+     0    subcommand executed successfully
 
-     1                           error in executing  the  subcom-
-                                 mand
-
-Java EE 6           Last change: 10 Sep 2009                    2
-
-asadmin Utility Subcommands                                set(1)
+     1    error in executing the subcommand
 
 SEE ALSO
      get(1), list(1)
@@ -101,7 +94,7 @@ SEE ALSO
 
      asadmin(1M)
 
-     Oracle GlassFish Server 3.1 Administration Guide
+     Oracle GlassFish Server Administration Guide
 
-Java EE 6           Last change: 10 Sep 2009                    3
+Java EE 6           Last change: 10 Sep 2009                    2
 

@@ -14,50 +14,47 @@ DESCRIPTION
      This subcommand is supported in local mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --domaindir
-         The directory where the domain to be deleted is located.
-         If  specified,  the  path must be accessible in the file
-         system. If not specified,  the  domain  in  the  default
-         install-dir/domains directory is deleted.
+          The  directory  where  the  domain  to  be  deleted  is
+          located.  If  specified, the path must be accessible in
+          the file system. If not specified, the domain under the
+          domain   root   directory,   which   defaults   to  as-
+          install/domains, is deleted.
 
 OPERANDS
      domain-name
-
-         The unique name of the domain you want to delete.
+          The unique name of the domain you want to delete.
 
 EXAMPLES
      Example 1 Deleting a Domain
 
      This example deletes  a  domain  named  mydomain4  from  the
      default domains directory.
+     asadmin> delete-domain mydomain4
 
-       asadmin> delete-domain mydomain4
-       Domain mydomain4 deleted.
-       Command delete-domain executed successfully.
+     Domain mydomain4 deleted.
+     Command delete-domain executed successfully.
 
      Example 2 deleting a Domain From an Alternate Location
+
+     This example deletes a domain named  sampleDomain  from  the
+     /home/someuser/domains directory.
+     asadmin> delete-domain --domaindir /home/someuser/domains sampleDomain
+
+     Domain sampleDomain deleted
+     Command delete-domain executed successfully.
+
+EXIT STATUS
+     0    subcommand executed successfully
+
+     1    error in executing the subcommand
 
 Java EE 6           Last change: 16 Oct 2009                    1
 
 asadmin Utility Subcommands                      delete-domain(1)
-
-     This example deletes a domain named  sampleDomain  from  the
-     /home/someuser/domains directory.
-
-       asadmin> delete-domain --domaindir /home/someuser/domains sampleDomain
-       Domain sampleDomain deleted
-       Command delete-domain executed successfully.
-
-EXIT STATUS
-     0                           subcommand executed successfully
-
-     1                           error in executing  the  subcom-
-                                 mand
 
 SEE ALSO
      create-domain(1),  start-domain(1),  stop-domain(1),   list-

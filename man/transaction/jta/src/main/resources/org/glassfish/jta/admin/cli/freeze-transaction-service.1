@@ -19,47 +19,43 @@ DESCRIPTION
      subcommand is supported in remote mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --target
-         This option specifies the target on which you are freez-
-         ing the transaction service. Valid values are:
+          This option specifies  the  target  on  which  you  are
+          freezing the transaction service. Valid values are:
 
-         server
+          server
+               Freezes the transaction service  for  the  default
+               server instance server and is the default value.
 
-             Freezes the  transaction  service  for  the  default
-             server instance server and is the default value.
+          configuration_name
+               Freezes the transaction  service  for  all  server
+               instances that use the named configuration.
 
-         configuration_name
-             Freezes  the  transaction  service  for  all  server
-             instances that use the named configuration.
+          cluster_name
+               Freezes the transaction service for  every  server
+               instance in the cluster.
 
-         cluster_name
+          instance_name
+               Freezes the transaction service for  a  particular
+               server instance.
 
-             Freezes the transaction  service  for  every  server
-             instance in the cluster.
+EXAMPLES
+     Example 1 Using freeze-transaction-service
+     % asadmin freeze-transaction-service
 
-         instance_name
-             Freezes the transaction  service  for  a  particular
-             server instance.
+     Command freeze-transaction-service executed successfully
+
+EXIT STATUS
+     0    command executed successfully
 
 Java EE 6           Last change: 17 Nov 2010                    1
 
 asadmin Utility Subcommands         freeze-transaction-service(1)
 
-EXAMPLES
-     Example 1 Using freeze-transaction-service
-
-       % asadmin freeze-transaction-service
-       Command freeze-transaction-service executed successfully
-
-EXIT STATUS
-     0                   command executed successfully
-
-     1                   error in executing the command
+     1    error in executing the command
 
 SEE ALSO
      unfreeze-transaction-service(1),    rollback-transaction(1),
@@ -67,10 +63,10 @@ SEE ALSO
 
      asadmin(1M)
 
-     Chapter 19, Administering Transactions, in Oracle  GlassFish
-     Server 3.1 Administration Guide
+     Administering  Transactions  in  Oracle   GlassFish   Server
+     Administration Guide
 
-     Chapter 43, Transactions, in The Java EE 6 Tutorial
+     Transactions in The Java EE 6 Tutorial
 
 Java EE 6           Last change: 17 Nov 2010                    2
 

@@ -8,7 +8,7 @@ NAME
 SYNOPSIS
      create-node-ssh [--help]
      --nodehost node-host
-     [--installdir install-dir] [--nodedir node-dir]
+     [--installdir as-install-parent] [--nodedir node-dir]
      [--sshport ssh-port] [--sshuser ssh-user]
      [--sshkeyfile ssh-keyfile]
      [--force={false|true}]
@@ -23,12 +23,12 @@ DESCRIPTION
      software  is  installed. A node must exist for every host on
      which GlassFish Server instances reside.
 
-     The domain administration server  (DAS)  contacts  a  node's
-     host  through  the  SSH connector to manage GlassFish Server
-     instances that reside on the node. However, the DAS does not
-     use  the  SSH connector to contact the host where the DAS is
-     running because the DAS  can  run  all  asadmin  subcommands
-     locally.
+     The domain  administration  server  (DAS)  contacts  an  SSH
+     node's  host  through  the SSH connector to manage GlassFish
+     Server instances that reside on the node. However,  the  DAS
+     does not use the SSH connector to contact the host where the
+     DAS is running because the DAS can run all  asadmin  subcom-
+     mands locally.
 
      By default, the subcommand fails and the node is not created
      if  the  DAS  cannot contact the node's host through SSH. To
@@ -39,187 +39,171 @@ DESCRIPTION
      This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --nodehost
-         The name of the host that the node represents. The  name
-         of  the  host  must  be  specified.  Otherwise, an error
-
-Java EE 6           Last change: 14 Jun 2011                    1
-
-asadmin Utility Subcommands                    create-node-ssh(1)
-
-         occurs.
+          The name of the host that the node represents. The name
+          of  the  host  must  be  specified. Otherwise, an error
+          occurs.
 
      --installdir
+          The full path to the parent of  the  base  installation
+          directory of the GlassFish Server software on the host,
+          for example, /export/glassfish3/. The  default  is  the
+          parent  of  the  default base installation directory of
 
-         The full path to the parent  of  the  base  installation
-         directory  of the GlassFish Server software on the host,
-         for example, /export/glassfish3/.  The  default  is  the
-         parent of the default base installation directory of the
-         GlassFish Server software for the DAS. This  default  is
-         useful only if GlassFish Server is installed in the same
-         location on all hosts.
+Java EE 6           Last change: 08 Dec 2011                    1
+
+asadmin Utility Subcommands                    create-node-ssh(1)
+
+          the GlassFish Server software for the DAS. This default
+          is  useful only if GlassFish Server is installed in the
+          same location on all hosts.
 
      --nodedir
-         The path to the directory that is to  contain  GlassFish
-         Server  instances  that  are  created  on  the node. The
-         default is as-install/nodes,  where  as-install  is  the
-         base  installation  directory  of  the  GlassFish Server
-         software on the host. If a relative path  is  specified,
-         the path is relative to the as-install directory.
+          The path to the directory that is to contain  GlassFish
+          Server  instances  that  are  created  on the node. The
+          default is as-install/nodes, where  as-install  is  the
+          base  installation  directory  of  the GlassFish Server
+          software on the host. If a relative path is  specified,
+          the path is relative to the as-install directory.
 
      --sshport
-
-         The port to use for SSH connections to this node's host.
-         The  default  is  22. If the --nodehost option is set to
-         localhost-domain, the --sshport option is ignored.
+          The port to use for  SSH  connections  to  this  node's
+          host.  The  default  is 22. If the --nodehost option is
+          set  to  localhost-domain,  the  --sshport  option   is
+          ignored.
 
      --sshuser
-         The user on this node's host that is to run the  process
-         for  connecting  to the host through SSH. The default is
-         the user that is running the DAS process. To ensure that
-         the  DAS  can  read  this  user's  SSH private key file,
-         specify the user that is running the DAS process. If the
-         --nodehost  option  is  set  to localhost-domain, the --
-         sshuser option is ignored.
+          The user on this node's host that is to run the process
+          for  connecting to the host through SSH. The default is
+          the user that is running the  DAS  process.  To  ensure
+          that the DAS can read this user's SSH private key file,
+          specify the user that is running the  DAS  process.  If
+          the  --nodehost  option is set to localhost-domain, the
+          --sshuser option is ignored.
 
      --sshkeyfile
+          The absolute path to the SSH private key file for  user
+          that  the --sshuser option specifies. This file is used
+          for authentication to the sshd  daemon  on  the  node's
+          host.
 
-         The absolute path to the SSH private key file  for  user
-         that  the  --sshuser option specifies. This file is used
-         for authentication to the  sshd  daemon  on  the  node's
-         host.
+          Note
 
-         Note -
+          GlassFish Server also supports password  authentication
+          through  the AS_ADMIN_SSHPASSWORD entry in the password
+          file.  The  password  file  is  specified  in  the   --
+          paswordfile option of the asadmin(1M) utility.
 
-           GlassFish Server also supports password authentication
-           through the AS_ADMIN_SSHPASSWORD entry in the password
-           file.  The  password  file  is  specified  in  the  --
-           paswordfile option of the asadmin(1M) utility.
+          If  the  SSH  private  key  file  is  protected  by   a
+          passphrase,   the   password   file  must  contain  the
+          AS_ADMIN_SSHKEYPASSPHRASE entry.
 
-Java EE 6           Last change: 14 Jun 2011                    2
+          The path to the key file must be reachable by  the  DAS
+          and the key file must be readable by the DAS.
+
+          The default is the a key file in the user's .ssh direc-
+          tory.  If  multiple key files are found, the subcommand
+          uses the following order of preference:
+
+          1.  id_rsa
+
+Java EE 6           Last change: 08 Dec 2011                    2
 
 asadmin Utility Subcommands                    create-node-ssh(1)
 
-         If  the  SSH  private  key  file  is  protected   by   a
-         passphrase,   the   password   file   must  contain  the
-         AS_ADMIN_SSHKEYPASSPHRASE entry.
+          2.  id_dsa
 
-         The path to the key file must be reachable  by  the  DAS
-         and the key file must be readable by the DAS.
-
-         The default is the a key file in the user's .ssh  direc-
-         tory.  If  multiple  key files are found, the subcommand
-         uses the following order of preference:
-
-             1.   id_rsa
-
-             2.   id_dsa
-
-             3.   identity
+          3.  identity
 
      --force
+          Specifies whether the node is created in the DAS confi-
+          guration  even  if  validation of the node's parameters
+          fails. To validate a node's parameters, the DAS must be
+          able  to  contact the node's host through SSH. Possible
+          values are as follows:
 
-         Specifies whether the node is created in the DAS  confi-
-         guration  even  if  validation  of the node's parameters
-         fails. To validate a node's parameters, the DAS must  be
-         able  to  contact  the node's host through SSH. Possible
-         values are as follows:
+          false
+               The node is  not  created  if  validation  of  the
+               node's parameters fails (default).
 
-         false
-             The node is not created if validation of the  node's
-             parameters fails (default).
-
-         true
-
-             The node is created even if validation of the node's
-             parameters fails.
+          true The node is created  even  if  validation  of  the
+               node's parameters fails.
 
      --install
-         Specifies  whether  the  GlassFish  Server  software  is
-         installed on host that the node represents.
+          Specifies whether  the  GlassFish  Server  software  is
+          installed on host that the node represents.
 
-         Possible values are as follows:
+          Possible values are as follows:
 
-         false
+          false
+               The GlassFish Server software is not installed  on
+               the host (default).
 
-             The GlassFish Server software is  not  installed  on
-             the host (default).
-
-         true
-             The GlassFish Server software is  installed  on  the
-
-Java EE 6           Last change: 14 Jun 2011                    3
-
-asadmin Utility Subcommands                    create-node-ssh(1)
-
-             host.
+          true The GlassFish Server software is installed on  the
+               host.
 
      --archive
-
-         The absolute path to the archive file of  the  GlassFish
-         Server  software that is to be installed. If this option
-         is omitted and the --install  is  true,  the  subcommand
-         creates  a  ZIP archive of the GlassFish Server software
-         from the installation where this subcommand is run.  The
-         archive  does  not  contain the domains directory or the
-         nodes directory.
+          The absolute path to the archive file of the  GlassFish
+          Server software that is to be installed. If this option
+          is omitted and the --install is  true,  the  subcommand
+          creates  a ZIP archive of the GlassFish Server software
+          from the installation where this subcommand is run. The
+          archive  does  not contain the domains directory or the
+          nodes directory.
 
 OPERANDS
      node-name
-         The name of the node.
+          The name of the node.
 
-         The name must meet the following requirements:
+          The name must meet the following requirements:
 
-             o    The name may contain only ASCII characters.
+          o The name may contain only ASCII characters.
 
-             o    The name must start with a letter, a number, or
-                  an underscore.
+          o The name must start with a letter, a  number,  or  an
 
-             o    The name may contain only the following charac-
-                  ters:
-
-                 o    Lowercase letters
-
-                 o    Uppercase letters
-
-                 o    Numbers
-
-                 o    Hyphen
-
-                 o    Period
-
-                 o    Underscore
-
-             o    The name must be unique in the domain and  must
-                  not  be  the name of another node, a cluster, a
-                  named  configuration,  or  a  GlassFish  Server
-                  instance.
-
-             o    The name must not be  domain,  server,  or  any
-                  other  keyword  that  is  reserved by GlassFish
-                  Server.
-
-Java EE 6           Last change: 14 Jun 2011                    4
+Java EE 6           Last change: 08 Dec 2011                    3
 
 asadmin Utility Subcommands                    create-node-ssh(1)
 
-EXAMPLES
-     This  example  creates   the   node   adc   for   the   host
-     adc.example.com.  The parent of the base installation direc-
-     tory of the GlassFish Server software is /export/glassfish3.
+            underscore.
 
+          o The name may contain only the following characters:
+
+            o Lowercase letters
+
+            o Uppercase letters
+
+            o Numbers
+
+            o Hyphen
+
+            o Period
+
+            o Underscore
+
+          o The name must be unique in the domain and must not be
+            the  name  of another node, a cluster, a named confi-
+            guration, or a GlassFish Server instance.
+
+          o The name must not be domain,  server,  or  any  other
+            keyword that is reserved by GlassFish Server.
+
+EXAMPLES
      Example 1 Creating a Node
 
-       asadmin> create-node-ssh
-       --nodehost adc.example.com
-       --installdir /export/glassfish3  adc
+     This  example  creates   the   node   adc   for   the   host
+     adc.example.com.  By default, the parent of the base instal-
+     lation  directory  of  the  GlassFish  Server  software   is
+     /export/glassfish3.
+     asadmin> create-node-ssh
 
-       Command create-node-ssh executed successfully.
+     --nodehost adc.example.com
+     --installdir /export/glassfish3 adc
+
+     Command create-node-ssh executed successfully.
 
      Example 2 Forcing the Creation of a Node
 
@@ -227,27 +211,32 @@ EXAMPLES
      eghost.example.com.  The node is created despite the failure
      of the DAS to contact the host eghost.example.com  to  vali-
      date the node's parameters.
+     asadmin> create-node-ssh --force --nodehost eghost.example.com eg1
 
-       asadmin> create-node-ssh --force --nodehost eghost.example.com eg1
-       Warning: some parameters appear to be invalid.
-       Could not connect to host eghost.example.com using SSH.
-       There was a problem while connecting to eghost.example.com:22
-       eghost.example.com
-       Continuing with node creation due to use of --force.
+     Warning: some parameters appear to be invalid.
+     Could not connect to host eghost.example.com using SSH.
+     There was a problem while connecting to eghost.example.com:22
+     eghost.example.com
+     Continuing with node creation due to use of --force.
 
-       Command create-node-ssh executed successfully.
+Java EE 6           Last change: 08 Dec 2011                    4
+
+asadmin Utility Subcommands                    create-node-ssh(1)
+
+     Command create-node-ssh executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0    command executed successfully
 
-     1                           error in executing the command
+     1    error in executing the command
 
 SEE ALSO
-     create-node-config(1), delete-node-ssh(1),  install-node(1),
-     list-nodes(1),  ping-node-ssh(1),  setup-ssh(1),  uninstall-
-     node(1), update-node-ssh(1)
+     create-node-config(1),   create-node-dcom(1),   delete-node-
+     ssh(1), install-node(1), install-node-ssh(1), list-nodes(1),
+     ping-node-ssh(1),      setup-ssh(1),      uninstall-node(1),
+     uninstall-node-ssh(1), update-node-ssh(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 14 Jun 2011                    5
+Java EE 6           Last change: 08 Dec 2011                    5
 

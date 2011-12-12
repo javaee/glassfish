@@ -21,73 +21,67 @@ DESCRIPTION
      If one or  more  instances  are  not  available,  they  will
      receive the new resource the next time they start.
 
-     Note -
+     Note
 
-       A resource-ref can only be created for bindable resources,
-       such   as   a  jdbc-resource,  connector-resource,  admin-
-       object-resource, mail-resource, custom-resource, or  jndi-
-       resource.
+     A resource-ref can only be created for  bindable  resources,
+     such  as  a jdbc-resource, connector-resource, admin-object-
+     resource, mail-resource, custom-resource, or jndi-resource.
 
-       A jdbc-connection-pool or a connector-connection-pool  are
-       not  referred  to  directly by applications. Instead, they
-       are referred to  through  a  jdbc-resource  or  connector-
-       resource, respectively.
+     A jdbc-connection-pool or  a  connector-connection-pool  are
+     not  referred to directly by applications. Instead, they are
+     referred to through a jdbc-resource  or  connector-resource,
+     respectively.
 
      This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --target
-         Specifies the target for  which  you  are  creating  the
-         resource reference. Valid targets are as follows:
+          Specifies the target for which  you  are  creating  the
+          resource reference. Valid targets are as follows:
 
-         server
+          server
+               Creates the resource  reference  for  the  default
+               server instance. This is the default target.
 
-             Creates  the  resource  reference  for  the  default
-             server instance. This is the default target.
+          cluster_name
+               Creates the resource reference  for  every  server
+               instance in the cluster.
+
+          instance_name
+               Creates  the  resource  reference  for  the  named
 
 Java EE 6           Last change: 20 Jun 2011                    1
 
 asadmin Utility Subcommands                create-resource-ref(1)
 
-         cluster_name
-
-             Creates the  resource  reference  for  every  server
-             instance in the cluster.
-
-         instance_name
-             Creates  the  resource  reference  for   the   named
-             unclustered server instance.
+               unclustered server instance.
 
      --enabled
-
-         Indicates whether the resource should be  enabled.  This
-         value  will  take effect only if the resource is enabled
-         at the global level. The default is true.
+          Indicates whether the resource should be enabled.  This
+          value  will take effect only if the resource is enabled
+          at the global level. The default is true.
 
 OPERANDS
      reference_name
-         The name or JNDI name of the resource.
+          The name or JNDI name of the resource.
 
 EXAMPLES
      Example 1 Creating a Reference to a JMS Destination Resource
 
      This example creates a  reference  to  the  JMS  destination
      resource jms/Topic on the cluster Cluster1.
+     asadmin> create-resource-ref --target Cluster1 jms/Topic
 
-       asadmin> create-resource-ref --target Cluster1 jms/Topic
-       resource-ref jms/Topic created successfully.
-       Command create-resource-ref executed successfully.
+     resource-ref jms/Topic created successfully.
+     Command create-resource-ref executed successfully.
 
 EXIT STATUS
-     0                           subcommand executed successfully
+     0    subcommand executed successfully
 
-     1                           error in executing  the  subcom-
-                                 mand
+     1    error in executing the subcommand
 
 SEE ALSO
      delete-resource-ref(1), list-resource-refs(1)

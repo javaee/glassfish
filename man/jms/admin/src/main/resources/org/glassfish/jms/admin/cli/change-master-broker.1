@@ -22,39 +22,32 @@ DESCRIPTION
      server (DAS).
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
 OPERANDS
      clustered-instance-name
-         The name of the  server  instance  whose  Message  Queue
-         broker  is  to  become  the master broker of the Message
-         Queue cluster. This server instance must be an  instance
-         in a GlassFish Server cluster.
+          The name of the server  instance  whose  Message  Queue
+          broker  is  to  become the master broker of the Message
+          Queue cluster. This server instance must be an instance
+          in a GlassFish Server cluster.
 
 EXAMPLES
      Example 1 Changing the master broker
 
      The following subcommand changes the  Message  Queue  master
      broker to the one for the clustinst3 clustered instance.
+     asadmin> change-master-broker clustinst3
 
-       asadmin> change-master-broker clustinst3
-       Command change-master-broker executed successfully.
+     Command change-master-broker executed successfully.
 
 EXIT STATUS
+     0    subcommand executed successfully
 
-Java EE 6           Last change: 11 Feb 2011                    1
-
-asadmin Utility Subcommands               change-master-broker(1)
-
-     0            subcommand executed successfully
-
-     1            error in executing the subcommand
+     1    error in executing the subcommand
 
 SEE ALSO
      asadmin(1M)
 
-Java EE 6           Last change: 11 Feb 2011                    2
+Java EE 6           Last change: 11 Feb 2011                    1
 

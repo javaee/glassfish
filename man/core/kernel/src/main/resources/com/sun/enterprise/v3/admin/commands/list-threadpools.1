@@ -14,55 +14,51 @@ DESCRIPTION
      This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
 OPERANDS
      target
-         This operand specifies the  target  for  which  you  are
-         listing thread pools. This operand is required.
+          This operand specifies the target  for  which  you  are
+          listing thread pools. This operand is required.
 
-         Valid values are as follows:
+          Valid values are as follows:
 
-         server
+          server
+               Lists the thread pools for the  default  GlassFish
+               Server instance server.
 
-             Lists the thread pools  for  the  default  GlassFish
-             Server  instance server.
+          configuration-name
+               Lists the thread pools for  the  named  configura-
+               tion.
 
-         configuration-name
-             Lists the thread pools for the named configuration.
+          cluster-name
+               Lists the thread pools for every instance  in  the
+               cluster.
 
-         cluster-name
-
-             Lists the thread pools for  every  instance  in  the
-             cluster.
-
-         instance-name
-             Lists the thread pools for a particular instance.
+          instance-name
+               Lists the thread pools for a particular instance.
 
 EXAMPLES
      Example 1 Listing Thread Pools
+
+     This example lists the current thread pools for the  default
+     instance server.
+     asadmin> list-threadpools server
+
+     admin-thread-pool
+     http-thread-pool
+     thread-pool-1
+     Command list-threadpools executed successfully.
 
 Java EE 6           Last change: 20 Dec 2010                    1
 
 asadmin Utility Subcommands                   list-threadpools(1)
 
-     This example lists the current thread pools for the  default
-     instance server.
-
-       asadmin> list-threadpools server
-       admin-thread-pool
-       http-thread-pool
-       thread-pool-1
-       Command list-threadpools executed successfully.
-
 EXIT STATUS
-     0                           subcommand executed successfully
+     0    subcommand executed successfully
 
-     1                           error in executing  the  subcom-
-                                 mand
+     1    error in executing the subcommand
 
 SEE ALSO
      create-threadpool(1), delete-threadpool(1)

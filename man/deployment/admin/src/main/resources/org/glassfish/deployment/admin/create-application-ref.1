@@ -28,96 +28,90 @@ DESCRIPTION
      This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --target
-         Specifies the target for  which  you  are  creating  the
-         application reference. Valid values are
+          Specifies the target for which  you  are  creating  the
+          application reference. Valid values are
 
-             o    server- Specifies the default  server  instance
-                  as  the  target  for  creating  the application
-                  reference. server is the name  of  the  default
-                  server  instance  and  is the default value for
-                  this option.
+          o server- Specifies the default server instance as  the
+            target for creating the application reference. server
+            is the name of the default server instance and is the
+            default value for this option.
 
-             o    cluster_name- Specifies a particular cluster as
-                  the  target for creating the application refer-
-                  ence.
+          o cluster_name- Specifies a particular cluster  as  the
+            target for creating the application reference.
 
-             o    instance_name- Specifies  a  particular  stand-
-                  alone   server   instance  as  the  target  for
+          o instance_name-  Specifies  a  particular  stand-alone
+            server instance as the target for creating the appli-
+            cation reference.
+
+     --virtualservers
+          Specifies a comma-separated list of virtual server  IDs
+          on  which  to  deploy.  This option applies only to Web
+          modules  (either   standalone   or   in   a   Java   EE
 
 Java EE 6           Last change: 17 Nov 2010                    1
 
 asadmin Utility Subcommands             create-application-ref(1)
 
-                  creating the application reference.
-
-     --virtualservers
-
-         Specifies a comma-separated list of virtual  server  IDs
-         on  which  to  deploy.  This  option applies only to Web
-         modules (either standalone or in a Java EE application).
-         If  this  option  is  not  specified, the application is
-         deployed to all virtual servers except  the  administra-
-         tive server, __asadmin.
+          application).  If  this  option  is  not specified, the
+          application is deployed to all virtual  servers  except
+          the administrative server, __asadmin.
 
      --enabled
-         Indicates whether  the  application  should  be  enabled
-         (that  is,  loaded). This value will take effect only if
-         the application is enabled  at  the  global  level.  The
-         default is true.
+          Indicates whether the  application  should  be  enabled
+          (that  is, loaded). This value will take effect only if
+          the application is enabled at  the  global  level.  The
+          default is true.
 
      --lbenabled
-
-         Controls whether the deployed application  is  available
-         for load balancing. The default is true.
+          Controls whether the deployed application is  available
+          for load balancing. The default is true.
 
 OPERANDS
      reference_name
-         The name of the application or module, which  can  be  a
-         Java  EE  application, Web module, EJB module, connector
-         module, application client module, or lifecycle module.
+          The name of the application or module, which can  be  a
+          Java  EE application, Web module, EJB module, connector
+          module, application client module, or lifecycle module.
 
-         The name can include  an  optional  version  identifier,
-         which follows the name and is separated from the name by
-         a colon (:). The version identifier must  begin  with  a
-         letter or number. It can contain alphanumeric characters
-         plus underscore (_), dash (-), and  period  (.)  charac-
-         ters.  If  the --enabled option is set to false, you can
-         create references to multiple disabled versions by using
-         an asterisk (*) as a wildcard character. For more infor-
-         mation about module and application  versions,  see  the
-         Module  and  Application  Versions  in  Oracle GlassFish
-         Server 3.1 Application Deployment Guide.
+          The name can include an  optional  version  identifier,
+          which  follows  the name and is separated from the name
+          by a colon (:). The version identifier must begin  with
+          a letter or number. It can contain alphanumeric charac-
+          ters plus underscore (_),  dash  (-),  and  period  (.)
+          characters.  If  the  --enabled option is set to false,
+          you can create references to multiple disabled versions
+          by  using  an asterisk (*) as a wildcard character. For
+          more information about module and application versions,
+          see   theModule  and  Application  Versions  in  Oracle
+          GlassFish Server Application Deployment Guide .
 
 EXAMPLES
      Example 1 Creating an Application Reference
 
      The following example creates a reference to the Web  module
      MyWebApp on the unclustered server instance NewServer.
+     asadmin> create-application-ref --target NewServer MyWebApp
 
-Java EE 6           Last change: 17 Nov 2010                    2
-
-asadmin Utility Subcommands             create-application-ref(1)
-
-       asadmin> create-application-ref --target NewServer MyWebApp
-       Command create-application-ref executed successfully.
+     Command create-application-ref executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0    command executed successfully
 
-     1                           error in executing the command
+     1    error in executing the command
 
 SEE ALSO
      delete-application-ref(1), list-application-refs(1)
 
      asadmin(1M)
 
-     Oracle GlassFish Server 3.1 Application Deployment Guide
+Java EE 6           Last change: 17 Nov 2010                    2
+
+asadmin Utility Subcommands             create-application-ref(1)
+
+     Oracle GlassFish Server Application Deployment Guide
 
 Java EE 6           Last change: 17 Nov 2010                    3
 

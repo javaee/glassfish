@@ -1,5 +1,5 @@
 
-GlassFish Server Concepts                     configuration(5ASC)
+GlassFish Server Concepts                     configuration(5asc)
 
 NAME
      configuration - the data set that determines  how  GlassFish
@@ -11,14 +11,13 @@ DESCRIPTION
      determine the  operation  of  specific  parts  of  GlassFish
      Server, such as the following:
 
-         o    Services, such as the transaction service
+     o Services, such as the transaction service
 
-         o    Resources, such as databases
+     o Resources, such as databases
 
-         o    Deployed  applications  or  modules,  such  as  web
-              applications
+     o Deployed applications or modules, such as web applications
 
-         o    Clusters and server instances
+     o Clusters and server instances
 
      The term configuration is also used to describe  a  part  of
      the  overall  configuration, such as the transaction service
@@ -48,12 +47,8 @@ SEE ALSO
 
      dotted-names(5ASC)
 
+     Configuration Tasks in Oracle GlassFish  Server  Administra-
+     tion Guide
+
 Java EE 6           Last change: 17 Nov 2010                    1
-
-GlassFish Server Concepts                     configuration(5ASC)
-
-     Configuration Tasks in Oracle GlassFish Server 3.1  Adminis-
-     tration Guide
-
-Java EE 6           Last change: 17 Nov 2010                    2
 

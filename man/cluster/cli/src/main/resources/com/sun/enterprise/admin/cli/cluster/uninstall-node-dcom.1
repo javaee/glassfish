@@ -1,0 +1,158 @@
+
+asadmin Utility Subcommands                uninstall-node-dcom(1)
+
+NAME
+     uninstall-node-dcom - uninstalls GlassFish  Server  software
+     from specified DCOM-enabled hosts
+
+SYNOPSIS
+     uninstall-node-dcom [--help]
+     [--installdir as-install-parent]
+     [--windowsuser windows-user] [--windowsdomain windows-domain]
+     [--force={false|true}]
+     host-list
+
+DESCRIPTION
+     The  uninstall-node-dcom  subcommand  uninstalls   GlassFish
+     Server  software  from  the  hosts that are specified as the
+     operand of the subcommand. This subcommand requires the Dis-
+     tributed Component Object Model (DCOM) remote protocol to be
+     configured on the host where the subcommand is  run  and  on
+     each host where the GlassFish Server software is being unin-
+     stalled.
+
+     Note
+
+     To uninstall GlassFish Server software  on  hosts  that  use
+     secure  shell  (SSH),  use the uninstall-node-ssh(1) subcom-
+     mand.
+
+     By  default,  if  any  node  except  the   predefined   node
+     localhost-domain  resides  on  any host from which GlassFish
+     Server software is being uninstalled, the subcommand  fails.
+     To  uninstall  the  GlassFish Server software from a host on
+     which user-defined nodes reside, set the --force  option  to
+     true.  If the --force option is true, the subcommand removes
+     the entire content of the parent of  the  base  installation
+     directory.
+
+     If multiple hosts are specified, the  configuration  of  the
+     following items must be the same on all hosts:
+
+     o Parent of the base installation directory for the  GlassF-
+       ish Server software
+
+     o Windows user
+
+     o Windows domain
+
+     The subcommand does not  modify  the  configuration  of  the
+     domain administration server (DAS).
+
+     This subcommand is supported in local mode only.
+
+Java EE 6           Last change: 06 Dec 2011                    1
+
+asadmin Utility Subcommands                uninstall-node-dcom(1)
+
+OPTIONS
+     --help , -?
+          Displays the help text for the subcommand.
+
+     --installdir
+          The absolute path to the parent of the  base  installa-
+          tion  directory  where the GlassFish Server software is
+          installed on each host, for example, C:\glassfish3.
+
+          The user that is  running  this  subcommand  must  have
+          write  access to the specified directory. Otherwise, an
+          error occurs.
+
+          The specified directory must contain  the  installation
+          of  the  GlassFish  Server software on the host. Other-
+          wise, an error occurs.
+
+          The default is the  parent  of  the  base  installation
+          directory  of the GlassFish Server software on the host
+          where this subcommand is run.
+
+     --windowsuser , -w
+          The user on this node's host that is to run the process
+          for connecting to the host through DCOM. The default is
+          the user that is running the DAS process.
+
+     --windowsdomain , -d
+          The name of the Windows domain that contains  the  user
+          that the --windowsuser option specifies. The default is
+          the name of the host on which the subcommand is run.
+
+     --force
+          Specifies whether the subcommand uninstalls the GlassF-
+          ish  Server software from a host even if a user-defined
+          node resides on the host. Possible values are  as  fol-
+          lows:
+
+          false
+               If a user-defined node  resides  on  a  host,  the
+               software  is  not  uninstalled  and the subcommand
+               fails (default).
+
+               If the --force option  is  false,  the  subcommand
+               removes  only the GlassFish Server software files.
+               Other content if the parent of the base  installa-
+               tion  directory,  such as configuration files, are
+               not removed.
+
+          true The subcommand  uninstalls  the  GlassFish  Server
+               software from the host even if a user-defined node
+               resides on the host.
+
+Java EE 6           Last change: 06 Dec 2011                    2
+
+asadmin Utility Subcommands                uninstall-node-dcom(1)
+
+               If the --force  option  is  true,  the  subcommand
+               removes  the  entire  content of the parent of the
+               base installation directory.
+
+OPERANDS
+     host-list
+          A space-separated list of the names of the  hosts  from
+          which  the  GlassFish  Server  software  is to be unin-
+          stalled.
+
+EXAMPLES
+     Example 1 Uninstalling GlassFish Server  Software  From  the
+     Default Location
+
+     This example uninstalls GlassFish  Server  software  on  the
+     hosts  wpmdl1.example.com  and  wpmdl2.example.com  from the
+     default location.
+     asadmin> uninstall-node-dcom wpmdl1 wpmdl2
+
+     Command uninstall-node-dcom executed successfully.
+
+     Example 2 Forcibly Uninstalling GlassFish Server Software
+
+     This example uninstalls GlassFish  Server  software  on  the
+     host xkyd.example.com.
+
+     The software is uninstalled  even  if  a  user-defined  node
+     resides on the host. The entire content of the C:\glassfish3
+     directory is removed.
+     asadmin> uninstall-node-dcom --force --installdir C:\glassfish3 xkyd.example.com
+
+     Command uninstall-node-dcom executed successfully.
+
+EXIT STATUS
+     0    command executed successfully
+
+     1    error in executing the command
+
+SEE ALSO
+     install-node-dcom(1), uninstall-node-ssh(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 06 Dec 2011                    3
+

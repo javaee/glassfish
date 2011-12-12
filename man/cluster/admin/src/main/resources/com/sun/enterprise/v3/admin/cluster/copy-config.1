@@ -8,7 +8,7 @@ NAME
 SYNOPSIS
      copy-config [--help]
      [--systemproperties (name=value)[:name=value]*]
-     source-configuration-name destination-configuration-name
+     source-configuration-namedestination-configuration-name
 
 DESCRIPTION
      The copy-config subcommand creates a named configuration  in
@@ -24,145 +24,136 @@ DESCRIPTION
      This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --systemproperties
-         Optional attribute name-value pairs for  the  configura-
-         tion.  These  properties  override  port settings in the
-         configuration.
+          Optional attribute name-value pairs for the  configura-
+          tion.  These  properties  override port settings in the
+          configuration.
 
-         The following properties are available:
+          The following properties are available:
 
-         ASADMIN_LISTENER_PORT
+          ASADMIN_LISTENER_PORT
+               This property specifies the  port  number  of  the
+               HTTP port or HTTPS port through which the DAS con-
+               nects to the  instance  to  manage  the  instance.
+               Valid  values are 1-65535. On UNIX, creating sock-
+               ets that listen on ports 1-1024 requires superuser
+               privileges.
 
-             This property specifies the port number of the  HTTP
-             port or HTTPS port through which the DAS connects to
-             the instance to manage the  instance.  Valid  values
-             are  1-65535.  On UNIX, creating sockets that listen
-             on ports 1-1024 requires superuser privileges.
+          HTTP_LISTENER_PORT
+               This property specifies the  port  number  of  the
+               port  that  is  used  to listen for HTTP requests.
+               Valid values are 1-65535. On UNIX, creating  sock-
+               ets that listen on ports 1-1024 requires superuser
+               privileges.
 
-         HTTP_LISTENER_PORT
-             This property specifies the port number of the  port
-             that  is  used  to  listen  for HTTP requests. Valid
-             values are 1-65535. On UNIX, creating  sockets  that
+          HTTP_SSL_LISTENER_PORT
+               This property specifies the  port  number  of  the
+               port  that  is  used to listen for HTTPS requests.
 
 Java EE 6           Last change: 14 Jun 2011                    1
 
 asadmin Utility Subcommands                        copy-config(1)
 
-             listen    on   ports   1-1024   requires   superuser
-             privileges.
+               Valid values are 1-65535. On UNIX, creating  sock-
+               ets that listen on ports 1-1024 requires superuser
+               privileges.
 
-         HTTP_SSL_LISTENER_PORT
+          IIOP_LISTENER_PORT
+               This property specifies the  port  number  of  the
+               port  that  is  used  for  IIOP connections. Valid
+               values are 1-65535. On UNIX, creating sockets that
+               listen   on   ports   1-1024   requires  superuser
+               privileges.
 
-             This property specifies the port number of the  port
-             that  is  used  to listen for HTTPS requests.  Valid
-             values are 1-65535. On UNIX, creating  sockets  that
-             listen    on   ports   1-1024   requires   superuser
-             privileges.
+          IIOP_SSL_LISTENER_PORT
+               This property specifies the  port  number  of  the
+               port  that  is  used  for secure IIOP connections.
+               Valid values are 1-65535. On UNIX, creating  sock-
+               ets that listen on ports 1-1024 requires superuser
+               privileges.
 
-         IIOP_LISTENER_PORT
-             This property specifies the port number of the  port
-             that  is used for IIOP connections. Valid values are
-             1-65535. On UNIX, creating sockets  that  listen  on
-             ports 1-1024 requires superuser privileges.
+          IIOP_SSL_MUTUALAUTH_PORT
+               This property specifies the  port  number  of  the
+               port that is used for secure IIOP connections with
+               client authentication. Valid values  are  1-65535.
+               On  UNIX,  creating  sockets  that listen on ports
+               1-1024 requires superuser privileges.
 
-         IIOP_SSL_LISTENER_PORT
+          JAVA_DEBUGGER_PORT
+               This property specifies the  port  number  of  the
+               port  that  is  used  for  connections to the Java
+               Platform     Debugger     Architecture      (JPDA)
+               (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
+               debugger.  Valid  values  are  1-65535.  On  UNIX,
+               creating  sockets  that  listen  on  ports  1-1024
+               requires superuser privileges.
 
-             This property specifies the port number of the  port
-             that  is  used  for  secure  IIOP connections. Valid
-             values are 1-65535. On UNIX, creating  sockets  that
-             listen    on   ports   1-1024   requires   superuser
-             privileges.
+          JMS_PROVIDER_PORT
+               This property specifies the port  number  for  the
+               Java  Message  Service  provider. Valid values are
+               1-65535. On UNIX, creating sockets that listen  on
+               ports 1-1024 requires superuser privileges.
 
-         IIOP_SSL_MUTUALAUTH_PORT
-             This property specifies the port number of the  port
-             that is used for secure IIOP connections with client
-             authentication. Valid values are 1-65535.  On  UNIX,
-             creating   sockets   that  listen  on  ports  1-1024
-             requires superuser privileges.
+          JMX_SYSTEM_CONNECTOR_PORT
+               This property specifies the port number  on  which
+               the  JMX  connector  listens.  Valid values are 1-
+               65535. On UNIX, creating sockets  that  listen  on
+               ports 1-1024 requires superuser privileges.
 
-         JAVA_DEBUGGER_PORT
-
-             This property specifies the port number of the  port
-             that  is  used  for connections to the Java Platform
-             Debugger Architecture (JPDA) debugger. Valid  values
-             are  1-65535.  On UNIX, creating sockets that listen
-             on ports 1-1024 requires superuser privileges.
-
-         JMS_PROVIDER_PORT
-             This property specifies the port number for the Java
-             Message  Service provider. Valid values are 1-65535.
-             On UNIX,  creating  sockets  that  listen  on  ports
-             1-1024 requires superuser privileges.
+          OSGI_SHELL_TELNET_PORT
+               This property specifies the  port  number  of  the
+               port  that  is  used for connections to the Apache
+               Felix                 Remote                 Shell
+               (http://felix.apache.org/site/apache-felix-
+               remote-shell.html).  This  shell  uses  the  Felix
 
 Java EE 6           Last change: 14 Jun 2011                    2
 
 asadmin Utility Subcommands                        copy-config(1)
 
-         JMX_SYSTEM_CONNECTOR_PORT
-
-             This property specifies the port number on which the
-             JMX  connector listens. Valid values are 1-65535. On
-             UNIX, creating sockets that listen on  ports  1-1024
-             requires superuser privileges.
-
-         OSGI_SHELL_TELNET_PORT
-             This property specifies the port number of the  port
-             that  is  used  for  connections to the Apache Felix
-             Remote Shell. This shell uses the Felix  shell  ser-
-             vice  to  interact  with the OSGi  module management
-             subsystem. Valid values are 1-65535. On UNIX, creat-
-             ing  sockets  that  listen  on ports 1-1024 requires
-             superuser privileges.
+               shell  service  to  interact  with the OSGi module
+               management subsystem. Valid values are 1-65535. On
+               UNIX, creating sockets that listen on ports 1-1024
+               requires superuser privileges.
 
 OPERANDS
      source-configuration-name
-
-         The name of the configuration that you are copying.
+          The name of the configuration that you are copying.
 
      destination-configuration-name
-         The name of the configuration that you are  creating  by
-         copying the source configuration.
+          The name of the configuration that you are creating  by
+          copying the source configuration.
 
-         The name must meet the following requirements:
+          The name must meet the following requirements:
 
-             o    The name may contain only ASCII characters.
+          o The name may contain only ASCII characters.
 
-             o    The name must start with a letter, a number, or
-                  an underscore.
+          o The name must start with a letter, a  number,  or  an
+            underscore.
 
-             o    The name may contain only the following charac-
-                  ters:
+          o The name may contain only the following characters:
 
-                 o    Lowercase letters
+            o Lowercase letters
 
-                 o    Uppercase letters
+            o Uppercase letters
 
-                 o    Numbers
+            o Numbers
 
-                 o    Hyphen
+            o Hyphen
 
-                 o    Period
+            o Period
 
-                 o    Underscore
+            o Underscore
 
-             o    The name must be unique in the domain and  must
+          o The name must be unique in the domain and must not be
+            the name of a another named configuration, a cluster,
+            a GlassFish Server instance , or a node.
 
-Java EE 6           Last change: 14 Jun 2011                    3
-
-asadmin Utility Subcommands                        copy-config(1)
-
-                  not  be  the name of a another named configura-
-                  tion, a cluster, a GlassFishTM Server  instance
-                  , or a node.
-
-             o    The name must not be  domain,  server,  or  any
-                  other  keyword  that  is  reserved by GlassFish
-                  Server.
+          o The name must not be domain,  server,  or  any  other
+            keyword that is reserved by GlassFish Server.
 
 EXAMPLES
      Example 1 Copying a Configuration
@@ -171,20 +162,24 @@ EXAMPLES
      pmdsaconfig  configuration,  overriding the settings for the
      following ports:
 
-         o    HTTP listener port
+     o HTTP listener port
 
-         o    HTTPS listener port
+Java EE 6           Last change: 14 Jun 2011                    3
 
+asadmin Utility Subcommands                        copy-config(1)
+
+     o HTTPS listener port
        asadmin> copy-config
+
        --systemproperties HTTP_LISTENER_PORT=2000:HTTP_SSL_LISTENER_PORT=3000
        default-config pmdsaconfig
 
        Command copy-config executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0    command executed successfully
 
-     1                           error in executing the command
+     1    error in executing the command
 
 SEE ALSO
      delete-config(1), list-configs(1)

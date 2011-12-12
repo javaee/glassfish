@@ -23,19 +23,16 @@ DESCRIPTION
      This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --raname
-         Indicates the connector module name with which the  work
-         security map is associated.
+          Indicates the connector module name with which the work
+          security map is associated.
 
 OPERANDS
      mapname
-
-         The name of the work security map to be deleted.
+          The name of the work security map to be deleted.
 
 EXAMPLES
      Example 1 Deleting a Connector Work Security Map
@@ -43,22 +40,20 @@ EXAMPLES
      This  example  deletes   the   work   security   map   named
      work_security_map_name   for   the  resource  adapter  named
      ra_name.
+     asadmin delete-connector-work-security-map
 
-       asadmin delete-connector-work-security-map
-       --raname ra_name work_security_map_name
+     --raname ra_name work_security_map_name
+     Command delete-connector-work-security-map executed successfully.
+
+EXIT STATUS
+     0    subcommand executed successfully
+
+     1    error in executing the subcommand
 
 Java EE 6           Last change: 10 Feb 2011                    1
 
 asadmin Utility Subcommands
                             delete-connector-work-security-map(1)
-
-       Command delete-connector-work-security-map executed successfully.
-
-EXIT STATUS
-     0                           subcommand executed successfully
-
-     1                           error in executing  the  subcom-
-                                 mand
 
 SEE ALSO
      create-connector-work-security-map(1),  list-connector-work-

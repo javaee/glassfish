@@ -20,63 +20,58 @@ DESCRIPTION
      server (DAS).
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --desttype
-         This option indicates the type of  physical  destination
-         from  which  you  want  to purge messages. The supported
-         destination types are topic and queue.
+          This option indicates the type of physical  destination
+          from  which  you  want to purge messages. The supported
+          destination types are topic and queue.
 
      --target
+          Purges messages from the physical destination only  for
+          the specified target. Valid values are as follows:
 
-         Purges messages from the physical destination  only  for
-         the specified target. Valid values are as follows:
+          server
+               Purges messages from the physical destination  for
+               the  default  server instance. This is the default
+               value.
 
-         server
-             Purges messages from the  physical  destination  for
-             the  default  server  instance.  This is the default
-             value.
+          configuration-name
+               Purges messages from the physical  destination  in
+               the specified configuration.
 
-         configuration-name
+          cluster-name
+               Purges messages from the physical destination  for
+               every server instance in the specified cluster.
 
-             Purges messages from the physical destination in the
-             specified configuration.
+          instance-name
+               Purges messages from the physical destination  for
+               the specified server instance.
 
-         cluster-name
-             Purges messages from the  physical  destination  for
+OPERANDS
+     dest_name
 
 Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands                      flush-jmsdest(1)
 
-             every server instance in the specified cluster.
-
-         instance-name
-
-             Purges messages from the  physical  destination  for
-             the specified server instance.
-
-OPERANDS
-     dest_name
-         The unique identifier  of  the  JMS  destination  to  be
-         purged.
+          The unique identifier of  the  JMS  destination  to  be
+          purged.
 
 EXAMPLES
      Example 1 Purging messages from a physical destination
 
      The following subcommand  purges  messages  from  the  queue
      named PhysicalQueue.
+     asadmin> flush-jmsdest --desttype queue PhysicalQueue
 
-       asadmin> flush-jmsdest --desttype queue PhysicalQueue
-       Command flush-jmsdest executed successfully.
+     Command flush-jmsdest executed successfully.
 
 EXIT STATUS
-     0            subcommand executed successfully
+     0    subcommand executed successfully
 
-     1            error in executing the subcommand
+     1    error in executing the subcommand
 
 SEE ALSO
      create-jmsdest(1), list-jmsdest(1), create-jmsdest(1)

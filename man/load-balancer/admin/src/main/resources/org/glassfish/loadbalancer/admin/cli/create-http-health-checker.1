@@ -16,61 +16,55 @@ DESCRIPTION
      health checker is unique for the combination of  target  and
      load balancer configuration.
 
-     Note -
+     Note
 
-       This subcommand is only  applicable  to  Oracle  GlassFish
-       Server.  This  subcommand  is  not applicable to GlassFish
-       Server Open Source Edition.
+     This subcommand  is  only  applicable  to  Oracle  GlassFish
+     Server.  This  subcommand  is  not  applicable  to GlassFish
+     Server Open Source Edition.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --url
-         The URL to ping to determine  whether  the  instance  is
-         healthy.
+          The URL to ping to determine whether  the  instance  is
+          healthy.
 
      --interval
-
-         The interval in seconds the health checker waits between
-         checks  of  an  unhealthy instance to see whether it has
-         become healthy. The default value is 30 seconds. A value
-         of 0 disables the health checker.
+          The  interval  in  seconds  the  health  checker  waits
+          between  checks of an unhealthy instance to see whether
+          it has become healthy. The default value is 30 seconds.
+          A value of 0 disables the health checker.
 
      --timeout
-         The interval in seconds  the  health  checker  waits  to
-         receive  a  response  from  an  instance.  If the health
-         checker has not received a response  in  this  interval,
-         the instance is considered unhealthy.
+          The interval in seconds the  health  checker  waits  to
+          receive  a  response  from  an  instance. If the health
+          checker has not received a response in  this  interval,
+          the instance is considered unhealthy.
 
      --config
+          The load balancer configuration for  which  you  create
+          the  health-checker. If you do not specify a configura-
+          tion, the subcommand creates a health checker for every
+          load balancer configuration associated with the target.
+          If no configuration references the target, the  subcom-
+          mand fails.
 
-         The load balancer configuration for which you create the
-         health-checker.  If  you do not specify a configuration,
+OPERANDS
+     target
 
 Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands         create-http-health-checker(1)
 
-         the subcommand creates a health checker for  every  load
-         balancer configuration associated with the target. If no
-         configuration  references  the  target,  the  subcommand
-         fails.
+          Specifies  the  target  to  which  the  health  checker
+          applies.
 
-OPERANDS
-     target
+          Valid values are:
 
-         Specifies  the  target  to  which  the  health   checker
-         applies.
+          o cluster_name- The name of a target cluster.
 
-         Valid values are:
-
-             o    cluster_name- The name of a target cluster.
-
-             o    instance_name- The  name  of  a  target  server
-                  instance.
+          o instance_name- The name of a target server instance.
 
 EXAMPLES
      Example 1 Creating a Health Checker for a Load Balancer Con-
@@ -79,15 +73,14 @@ EXAMPLES
      This example creates a health checker for  a  load  balancer
      configuration  named  mycluster-http-lb-config  on a cluster
      named mycluster.
+     asadmin> create-http-health-checker --config mycluster-http-lb-config mycluster
 
-       asadmin> create-http-health-checker --config mycluster-http-lb-config mycluster
-       Command create-http-health-checker executed successfully.
+     Command create-http-health-checker executed successfully.
 
 EXIT STATUS
-     0                           subcommand executed successfully
+     0    subcommand executed successfully
 
-     1                           error in executing  the  subcom-
-                                 mand
+     1    error in executing the subcommand
 
 SEE ALSO
      delete-http-health-checker(1)

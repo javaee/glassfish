@@ -15,51 +15,48 @@ DESCRIPTION
      only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --target
           Specifies the target on  which  you  are  deleting  the
-         authentication realm. Valid values are
+          authentication realm. Valid values are
 
-         server
+          server
+               Deletes the realm for the default server  instance
+               server and is the default value.
 
-             Deletes the realm for the  default  server  instance
-             server and is the default value.
+          configuration_name
+               Deletes the realm for the named configuration.
 
-         configuration_name
-             Deletes the realm for the named configuration.
+          cluster_name
+               Deletes the realm for every server instance in the
+               cluster.
 
-         cluster_name
-
-             Deletes the realm for every server instance  in  the
-             cluster.
-
-         instance_name
-             Deletes the realm for a particular server instance.
+          instance_name
+               Deletes  the  realm  for   a   particular   server
+               instance.
 
 OPERANDS
-     auth_realm_name             Name of the realm to be deleted.
+     auth_realm_name
+          Name of the realm to be deleted.
 
 EXAMPLES
+     Example 1 Deleting an Authentication Realm
+
+     This example deletes the authentication realm db.
+     asadmin> delete-auth-realm db
+
+     Command delete-auth-realm executed successfully
 
 Java EE 6           Last change: 22 Dec 2010                    1
 
 asadmin Utility Subcommands                  delete-auth-realm(1)
 
-     Example 1 Deleting an Authentication Realm
-
-     This example deletes the authentication realm db.
-
-       asadmin> delete-auth-realm db
-       Command delete-auth-realm executed successfully
-
 EXIT STATUS
-     0                           command executed successfully
+     0    command executed successfully
 
-     1                           error in executing the command
+     1    error in executing the command
 
 SEE ALSO
      create-auth-realm(1), list-auth-realms(1)

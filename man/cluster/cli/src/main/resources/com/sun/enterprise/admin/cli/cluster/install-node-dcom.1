@@ -1,0 +1,215 @@
+
+asadmin Utility Subcommands                  install-node-dcom(1)
+
+NAME
+     install-node-dcom - installs GlassFish  Server  software  on
+     specified DCOM-enabled hosts
+
+SYNOPSIS
+     install-node-dcom [--help]
+     [--archive archive]
+     [--create={false|true}] [--save[={false|true}]
+     [--installdir as-install-parent]
+     [--windowsuser windows-user] [--windowsdomain windows-domain]
+     [--force={false|true}]
+     host-list
+
+DESCRIPTION
+     The install-node-dcom subcommand installs  GlassFish  Server
+     software  on  the hosts that are specified as the operand of
+     the subcommand. This  subcommand  requires  the  Distributed
+     Component  Object Model (DCOM) remote protocol to be config-
+     ured on the host where the subcommand is  run  and  on  each
+     host where the GlassFish Server software is being installed.
+     The DCOM protocol is available only on Windows systems.
+
+     Note
+
+     To install GlassFish  Server  software  on  hosts  that  use
+     secure shell (SSH), use the install-node-ssh(1) subcommand.
+
+     If necessary, the subcommand creates a ZIP  archive  of  the
+     GlassFish  Server  software from the installation where this
+     subcommand is run. The archive does not contain the  domains
+     directory or the nodes directory. These directories are syn-
+     chronized from the domain administration server  (DAS)  when
+     instances  on nodes that represent the hosts are created and
+     started. The subcommand does not delete  the  archive  after
+     installing the GlassFish Server software from the archive on
+     the specified hosts.
+
+     If multiple hosts are specified, the  configuration  of  the
+     following items is the same on all hosts:
+
+     o Base installation directory
+
+     o Windows user
+
+     o Windows domain
+
+     By default, the subcommand runs  interactively  and  prompts
+     for a password to authenticate the Windows user on each host
+     where the GlassFish Server software is being  installed.  To
+     enable the subcommand to run noninteractively, the following
+     conditions must be met:
+
+Java EE 6           Last change: 06 Dec 2011                    1
+
+asadmin Utility Subcommands                  install-node-dcom(1)
+
+     o The --interactive option of the asadmin(1M)  utility  must
+       be false.
+
+     o The --passwordfile option  of  the  asadmin  utility  must
+       specify a password file.
+
+     o The     password      file      must      contain      the
+       AS_ADMIN_WINDOWSPASSWORD entry.
+
+     The subcommand does not modify the configuration of the DAS.
+
+     This subcommand is supported in local mode only.
+
+OPTIONS
+     --help , -?
+          Displays the help text for the subcommand.
+
+     --archive
+          The absolute path to the archive file of the  GlassFish
+          Server  software that is to be installed. If no archive
+          file is specified, the subcommand  creates  an  archive
+          from the installation of GlassFish Server software from
+          which the subcommand is run. This archive is created in
+          the home directory of the user that is running the com-
+          mand.
+
+     --create
+          Specifies  whether  the  subcommand  should  create  an
+          archive  file  of  the  GlassFish  Server  software  to
+          install.
+
+          false
+               No  archive  file  is  created.   The   subcommand
+               installs  the  software  from the existing archive
+               file   that   the   --archive   option   specifies
+               (default).
+
+          true The subcommand creates an archive  file  from  the
+               installation  of  GlassFish  Server  software from
+               which the subcommand is run.
+
+     --save
+          Specifies whether  the  archive  file  from  which  the
+          software is installed is saved after installation.
+
+          false
+               The archive file  is  not  saved.  The  subcommand
+               deletes  the  file  after  installing the software
+               (default).
+
+          true The archive file is saved.
+
+Java EE 6           Last change: 06 Dec 2011                    2
+
+asadmin Utility Subcommands                  install-node-dcom(1)
+
+     --installdir
+          The absolute path to the parent of the  base  installa-
+          tion  directory  where the GlassFish Server software is
+          to  be   installed   on   each   host,   for   example,
+          C:\glassfish3.  If  the  directory  does not exist, the
+          subcommand creates the directory.
+
+          The user that is  running  this  subcommand  must  have
+          write  access to the specified directory. Otherwise, an
+          error occurs.
+
+          To overwrite an existing an installation of the GlassF-
+          ish Server software, set the --force option to true. If
+          the directory already contains an installation and  the
+          --force option is false, an error occurs.
+
+          The default is the  parent  of  the  base  installation
+          directory  of the GlassFish Server software on the host
+          where this subcommand is run.
+
+     --windowsuser , -w
+          The  user  on  the  host  where  the  GlassFish  Server
+          software  is to be installed that is to run the process
+          for connecting through DCOM to the host. The default is
+          the user that is running this subcommand.
+
+     --windowsdomain , -d
+          The name of the Windows domain that contains  the  user
+          that the --windowsuser option specifies. The default is
+          the name of the host on which the subcommand is run.
+
+     --force
+          Specifies whether the subcommand overwrites an existing
+          installation  of  the  GlassFish Server software in the
+          directory that the --installdir option specifies.  Pos-
+          sible values are as follows:
+
+          false
+               The  existing  installation  is  not   overwritten
+               (default).
+
+          true The existing installation is overwritten.
+
+OPERANDS
+     host-list
+          A space-separated list of the names of the hosts  where
+          the GlassFish Server software is to be installed.
+
+EXAMPLES
+     Example  1  Installing  GlassFish  Server  Software  at  the
+     Default Location
+
+Java EE 6           Last change: 06 Dec 2011                    3
+
+asadmin Utility Subcommands                  install-node-dcom(1)
+
+     This example installs GlassFish Server software on the hosts
+     wpmdl1.example.com  and  wpmdl2.example.com  at  the default
+     location.
+
+     Some lines of output are omitted from this example for  rea-
+     dability.
+     asadmin> install-node-dcom wpmdl1.example.com wpmdl2.example.com
+
+     Created installation zip C:\glassfish8107276692860773166.zip
+     Copying 85760199 bytes..........................................................
+     ....................................
+     WROTE FILE TO REMOTE SYSTEM: C:/glassfish3/glassfish_install.zip and C:/glassfish3/unpack.bat
+     Output from Windows Unpacker:
+
+     C:\Windows\system32>C:
+
+     C:\Windows\system32>cd "C:\glassfish3"
+
+     C:\glassfish3>jar xvf glassfish_install.zip
+      inflated: bin/asadmin
+      inflated: bin/asadmin.bat
+      inflated: glassfish/bin/appclient
+      inflated: glassfish/bin/appclient.bat
+      inflated: glassfish/bin/appclient.js
+      inflated: glassfish/bin/asadmin
+      inflated: glassfish/bin/asadmin.bat
+     ...
+      inflated: mq/lib/props/broker/default.properties
+      inflated: mq/lib/props/broker/install.properties
+
+     Command install-node-dcom executed successfully.
+
+EXIT STATUS
+     0    command executed successfully
+
+     1    error in executing the command
+
+SEE ALSO
+     install-node-ssh(1), uninstall-node-dcom(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 06 Dec 2011                    4
+

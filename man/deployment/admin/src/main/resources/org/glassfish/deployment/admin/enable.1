@@ -16,81 +16,69 @@ DESCRIPTION
      This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --target
-         This option specifies the target on which you  are  ena-
-         bling the component. Valid values are:
+          This option specifies the target on which you are  ena-
+          bling the component. Valid values are:
 
-         server
+          server
+               Enables the default server instance server and  is
+               the default value.
 
-             Enables the default server instance  server  and  is
-             the default value.
+          domain_name
+               Enables the named domain.
 
-         domain_name
-             Enables the named domain.
+          cluster_name
+               Enables every server instance in the cluster.
 
-         cluster_name
-
-             Enables every server instance in the cluster.
-
-         instance_name
-             Enables a particular clustered or stand-alone server
-             instance.
+          instance_name
+               Enables  a  particular  clustered  or  stand-alone
+               server instance.
 
 OPERANDS
-     component_name              name  of  the  component  to  be
-                                 enabled.
+     component_name
+          name of the component to be enabled.
+
+          The name can include an  optional  version  identifier,
+          which  follows  the name and is separated from the name
+          by a colon (:). The version identifier must begin  with
+          a letter or number. It can contain alphanumeric charac-
+          ters plus underscore (_),  dash  (-),  and  period  (.)
+          characters.  For  more  information  about  module  and
+          application versions,  see  theModule  and  Application
+          Versions in Oracle GlassFish Server Application Deploy-
+          ment Guide .
 
 Java EE 6           Last change: 17 Nov 2010                    1
 
 asadmin Utility Subcommands                             enable(1)
 
-                                 The name can include an optional
-                                 version  identifier,  which fol-
-                                 lows the name and  is  separated
-                                 from  the  name  by a colon (:).
-                                 The  version   identifier   must
-                                 begin  with  a letter or number.
-                                 It  can   contain   alphanumeric
-                                 characters  plus underscore (_),
-                                 dash (-), and period (.) charac-
-                                 ters. For more information about
-                                 module and application versions,
-                                 see  the  Module and Application
-                                 Versions  in  Oracle   GlassFish
-                                 Server  3.1  Application Deploy-
-                                 ment Guide.
-
-                                 At most one version of a  module
-                                 or application can be enabled on
-                                 a  server  instance.  All  other
-                                 versions  are disabled. Enabling
-                                 one version  automatically  dis-
-                                 ables all others.
+          At most one version of a module or application  can  be
+          enabled  on  a  server instance. All other versions are
+          disabled. Enabling one version  automatically  disables
+          all others.
 
 EXAMPLES
      Example 1 Enabling a Component
 
      This example enables the disabled component, sampleApp.
+     asadmin> enable sampleApp
 
-       asadmin> enable sampleApp
-       Command enable executed successfully
+     Command enable executed successfully
 
 EXIT STATUS
-     0                   subcommand executed successfully
+     0    subcommand executed successfully
 
-     1                   error in executing the subcommand
+     1    error in executing the subcommand
 
 SEE ALSO
      deploy(1), , undeploy(1), disable(1)
 
      asadmin(1M)
 
-     Oracle GlassFish Server 3.1 Application Deployment Guide
+     Oracle GlassFish Server Application Deployment Guide
 
 Java EE 6           Last change: 17 Nov 2010                    2
 

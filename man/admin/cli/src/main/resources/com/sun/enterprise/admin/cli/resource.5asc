@@ -1,8 +1,8 @@
 
-GlassFish Server Concepts                          resource(5ASC)
+GlassFish Server Concepts                          resource(5asc)
 
 NAME
-     resources - Provide connectivity to various types of EIS .
+     resource - Provide connectivity to various types of EIS .
 
 DESCRIPTION
      GlassFish Server provides support for JDBC,  JMS,  and  JNDI

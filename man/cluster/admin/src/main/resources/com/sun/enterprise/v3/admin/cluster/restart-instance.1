@@ -16,11 +16,11 @@ DESCRIPTION
      tion  server  (DAS)  is running and on the machine where the
      instance resides.
 
-     Note -
+     Note
 
-       SSH is not required if the instance resides on a  node  of
-       type CONFIG that represents the local host. A node of type
-       CONFIG is not enabled for communication over SSH.
+     SSH is not required if the instance resides  on  a  node  of
+     type  CONFIG  that represents the local host. A node of type
+     CONFIG is not enabled for communication over SSH.
 
      You may run this subcommand from any machine that  can  con-
      tact the DAS.
@@ -34,89 +34,82 @@ DESCRIPTION
      izes  the  instance with changes since the last synchroniza-
      tion as follows:
 
-         o    For the config directory, the DAS synchronizes  the
-              instance with all changes.
+     o For  the  config  directory,  the  DAS  synchronizes   the
+       instance with all changes.
 
-         o    For the applications directory and  docroot  direc-
-              tory,  only  a  change  to a top-level subdirectory
-              causes the DAS to synchronize all files under  that
-              subdirectory.
+     o For the applications directory and docroot directory, only
+       a  change  to  a  top-level subdirectory causes the DAS to
+       synchronize all files under that subdirectory.
 
-              If a file below a top level subdirectory is changed
-              without  a  change  to a file in the top level sub-
-              directory, full  synchronization  is  required.  In
-              normal  operation,  files  below the top level sub-
-              directories of these directories are  not  changed.
-              If  an application is deployed and undeployed, full
-              synchronization is  not  necessary  to  update  the
-
-Java EE 6           Last change: 20 Oct 2010                    1
-
-asadmin Utility Subcommands                   restart-instance(1)
-
-              instance with the change.
+       If a file  below  a  top  level  subdirectory  is  changed
+       without  a change to a file in the top level subdirectory,
+       full synchronization is  required.  In  normal  operation,
+       files  below  the top level subdirectories of these direc-
+       tories are not changed. If an application is deployed  and
+       undeployed,  full  synchronization  is  not  necessary  to
+       update the instance with the change.
 
      If  different  synchronization  behavior  is  required,  the
      instance  must  be  stopped and restarted by using following
      sequence of subcommands:
 
-         1.   stop-instance(1)
+Java EE 6           Last change: 20 Oct 2010                    1
 
-         2.   start-instance(1)
+asadmin Utility Subcommands                   restart-instance(1)
+
+     1.  stop-instance(1)
+
+     2.  start-instance(1)
 
      This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --debug
-         Specifies whether the instance is  restarted  with  Java
-         Platform Debugger Architecture (JPDA) debugging enabled.
+          Specifies whether the instance is restarted  with  Java
+          Platform       Debugger       Architecture       (JPDA)
+          (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
+          debugging enabled.
 
-         Possible values are as follows:
+          Possible values are as follows:
 
-         true
+          true The instance  is  restarted  with  JPDA  debugging
+               enabled  and the port number for JPDA debugging is
+               displayed.
 
-             The  instance  is  restarted  with  JPDA   debugging
-             enabled  and  the  port number for JPDA debugging is
-             displayed.
+          false
+               The instance is restarted with JPDA debugging dis-
+               abled.
 
-         false
-             The instance is restarted with JPDA  debugging  dis-
-             abled.
-
-         The default is the current setting of  this  option  for
-         the instance that is being restarted.
+     The default is the current setting of this  option  for  the
+     instance that is being restarted.
 
 OPERANDS
      instance-name
-
-         The name of the GlassFish Server instance to restart. If
-         the  instance  is not running, the subcommand displays a
-         warning message and attempts to start the instance.
+          The name of the GlassFish Server instance  to  restart.
+          If the instance is not running, the subcommand displays
+          a warning message and attempts to start the instance.
 
 EXAMPLES
+     Example 1 Restarting a GlassFish Server Instance
+
+     This example restarts the GlassFish Server instance pmdsa1.
+     asadmin> restart-instance pmdsa1
+
+     Instance pmdsa1 was restarted.
+
+     Command restart-instance executed successfully.
+
+EXIT STATUS
+     0    command executed successfully
+
+     1    error in executing the command
 
 Java EE 6           Last change: 20 Oct 2010                    2
 
 asadmin Utility Subcommands                   restart-instance(1)
-
-     Example 1 Restarting a GlassFish Server Instance
-
-     This example restarts the GlassFish Server instance pmdsa1.
-
-       asadmin> restart-instance pmdsa1
-       Instance pmdsa1 was restarted.
-
-       Command restart-instance executed successfully.
-
-EXIT STATUS
-     0                           command executed successfully
-
-     1                           error in executing the command
 
 SEE ALSO
      create-instance(1),    create-local-instance(1),     delete-

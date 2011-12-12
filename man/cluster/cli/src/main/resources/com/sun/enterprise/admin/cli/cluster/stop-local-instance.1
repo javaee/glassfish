@@ -33,92 +33,82 @@ DESCRIPTION
      This subcommand is supported in local mode.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --nodedir
-         Specifies the directory  that  contains  the  instance's
-         node  directory.  The instance's files are stored in the
-         instance's  node   directory.   The   default   is   as-
-         install/nodes.
+          Specifies the directory that  contains  the  instance's
+          node  directory. The instance's files are stored in the
+          instance's  node  directory.   The   default   is   as-
+          install/nodes.
 
      --node
+          Specifies the node on which the instance resides.  This
+          option  may  be  omitted only if the directory that the
+          --nodedir  option  specifies  contains  only  one  node
+          directory. Otherwise, this option is required.
 
-         Specifies the node on which the instance  resides.  This
-         option  may be omitted only if the directory that the --
+     --force
+          Specifies whether  the  instance  is  forcibly  stopped
+          immediately.
 
 Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands                stop-local-instance(1)
 
-         nodedir option specifies contains only one  node  direc-
-         tory. Otherwise, this option is required.
+          Possible values are as follows:
 
-     --force
+          true The  instance  is  forcibly  stopped   immediately
+               (default).
 
-         Specifies  whether  the  instance  is  forcibly  stopped
-         immediately.
-
-         Possible values are as follows:
-
-         true
-             The  instance  is   forcibly   stopped   immediately
-             (default).
-
-         false
-
-             The subcommand waits  until  all  threads  that  are
-             associated with the instance are exited before stop-
-             ping the instance.
+          false
+               The subcommand waits until all  threads  that  are
+               associated  with  the  instance  are exited before
+               stopping the instance.
 
      --kill
-         Specifies whether the instance is killed by using  func-
-         tionality  of  the  operating  system  to  terminate the
-         instance process.
+          Specifies whether the instance is killed by using func-
+          tionality  of  the  operating  system  to terminate the
+          instance process.
 
-         Possible values are as follows:
+          Possible values are as follows:
 
-         false
+          false
+               The instance is not killed.  The  subcommand  uses
+               functionality  of  the  Java platform to terminate
+               the instance process (default).
 
-             The instance is  not  killed.  The  subcommand  uses
-             functionality  of the Java platform to terminate the
-             instance process (default).
-
-         true
-             The instance is killed. The  subcommand  uses  func-
-             tionality  of  the operating system to terminate the
-             instance process.
+          true The instance is killed. The subcommand uses  func-
+               tionality of the operating system to terminate the
+               instance process.
 
 OPERANDS
      instance-name
-
-         The name of the instance to stop.
-
-Java EE 6           Last change: 11 Feb 2011                    2
-
-asadmin Utility Subcommands                stop-local-instance(1)
+          The name of the instance to stop.
 
 EXAMPLES
      Example 1 Stopping an Instance Locally
 
      This example stops the instance yml-i-sj01  on  the  machine
      where the subcommand is run.
+     asadmin> stop-local-instance --node sj01 yml-i-sj01
 
-       asadmin> stop-local-instance --node sj01 yml-i-sj01
-       Waiting for the instance to stop ...
-       Command stop-local-instance executed successfully.
+     Waiting for the instance to stop ...
+     Command stop-local-instance executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0    command executed successfully
 
-     1                           error in executing the command
+     1    error in executing the command
 
 SEE ALSO
      create-instance(1),    create-local-instance(1),     delete-
      instance(1),   delete-local-instance(1),  start-instance(1),
      start-local-instance(1), stop-instance(1)
+
+Java EE 6           Last change: 11 Feb 2011                    2
+
+asadmin Utility Subcommands                stop-local-instance(1)
 
      asadmin(1M)
 

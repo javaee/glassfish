@@ -10,7 +10,7 @@ SYNOPSIS
       [--classpath classpath] [--loadorder loadorder]
       [--failurefatal={false|true} ] [--description description]
       [--property (name=value)[:name=value]*]
-      module_name
+     module_name
 
 DESCRIPTION
      The create-lifecycle-module subcommand creates  a  lifecycle
@@ -20,112 +20,105 @@ DESCRIPTION
      remote mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --classname
-         This is the fully qualified name of the startup class.
+          This is the fully qualified name of the startup class.
 
      --target
+          Indicates the location where the lifecycle module is to
+          be created. Valid values are
 
-         Indicates the location where the lifecycle module is  to
-         be created. Valid values are
+          o server- Specifies the default server instance as  the
+            target  for  creating the lifecycle module. server is
+            the name of the default server instance  and  is  the
+            default value for this option.
 
-             o    server- Specifies the default  server  instance
-                  as   the  target  for  creating  the  lifecycle
-                  module. server  is  the  name  of  the  default
-                  server  instance  and  is the default value for
-                  this option.
+          o cluster_name- Specifies a particular cluster  as  the
+            target for creating the lifecycle module.
 
-             o    cluster_name- Specifies a particular cluster as
-                  the target for creating the lifecycle module.
-
-             o    instance_name- Specifies  a  particular  stand-
-                  alone  server instance as the target for creat-
-                  ing the lifecycle module.
+          o instance_name-  Specifies  a  particular  stand-alone
+            server  instance  as  the  target  for  creating  the
+            lifecycle module.
 
      --classpath
-         This option indicates  where  the  lifecycle  module  is
-         located.  It  is  a  classpath with the standard format:
+          This option indicates where  the  lifecycle  module  is
+          located.  It  is  a classpath with the standard format:
+          either colon-separated  (Unix)  or  semicolon-separated
+          (Windows) JAR files and directories. The referenced JAR
+          files and directories are not uploaded  to  the  server
+          instance.
+
+     --loadorder
 
 Java EE 6           Last change: 18 Nov 2010                    1
 
 asadmin Utility Subcommands            create-lifecycle-module(1)
 
-         either  colon-separated  (Unix)  or  semicolon-separated
-         (Windows)  JAR files and directories. The referenced JAR
-         files and directories are not  uploaded  to  the  server
-         instance.
-
-     --loadorder
-
-         This option represents an integer value that can be used
-         to  force  the order in which deployed lifecycle modules
-         are loaded at server startup. Smaller  numbered  modules
-         are  loaded  sooner. Order is unspecified if two or more
-         lifecycle modules have the same  load-order  value.  The
-         default  is Integer.MAX_VALUE, which means the lifecycle
-         module is loaded last.
+          This option represents an integer  value  that  can  be
+          used  to  force  the  order in which deployed lifecycle
+          modules are loaded at server startup. Smaller  numbered
+          modules  are loaded sooner. Order is unspecified if two
+          or more lifecycle  modules  have  the  same  load-order
+          value.  The  default  is Integer.MAX_VALUE, which means
+          the lifecycle module is loaded last.
 
      --failurefatal
-         This option tells the system what to do if the lifecycle
-         module  does not load correctly. When this option is set
-         to true, the system aborts the server  startup  if  this
-         module  does  not  load  properly.  The default value is
-         false.
+          This option tells the system what to do if the  lifecy-
+          cle module does not load correctly. When this option is
+          set to true, the system aborts the  server  startup  if
+          this  module  does not load properly. The default value
+          is false.
 
      --enabled
-
-         This option determines whether the lifecycle  module  is
-         enabled at runtime. The default value is true.
+          This option determines whether the lifecycle module  is
+          enabled at runtime. The default value is true.
 
      --description
-         This is the text description of the lifecycle module.
+          This is the text description of the lifecycle module.
 
      --property
-
-         This is  an  optional  attribute  containing  name/value
-         pairs used to configure the lifecycle module.
+          This is an  optional  attribute  containing  name/value
+          pairs used to configure the lifecycle module.
 
 OPERANDS
      module_name
-         This operand is a unique  identifier  for  the  deployed
-         server lifecycle event listener module.
+          This operand is a unique identifier  for  the  deployed
+          server lifecycle event listener module.
 
 EXAMPLES
      Example 1 Creating a Lifecycle Module
 
-Java EE 6           Last change: 18 Nov 2010                    2
-
-asadmin Utility Subcommands            create-lifecycle-module(1)
-
      The following example creates a lifecycle module named  cus-
      tomSetup.
+     asadmin> create-lifecycle-module --classname "com.acme.CustomSetup"
 
-       asadmin> create-lifecycle-module --classname "com.acme.CustomSetup"
-       --classpath "/export/customSetup" --loadorder 1 --failurefatal=true
-       --description "this is a sample customSetup"
-       --property rmi="Server=acme1:7070":timeout=30 customSetup
-       Command create-lifecycle-module executed successfully
+     --classpath "/export/customSetup" --loadorder 1 --failurefatal=true
+     --description "this is a sample customSetup"
+     --property rmi="Server\=acme1\:7070":timeout=30 customSetup
+     Command create-lifecycle-module executed successfully
 
-     The escape character \fR is used in the property  option  to
+     The escape character \ is used in  the  property  option  to
      specify  that  the  equal sign (=) and colon (:) are part of
      the rmi property value.
 
 EXIT STATUS
-     0                           command executed successfully
+     0    command executed successfully
 
-     1                           error in executing the command
+     1    error in executing the command
+
+Java EE 6           Last change: 18 Nov 2010                    2
+
+asadmin Utility Subcommands            create-lifecycle-module(1)
 
 SEE ALSO
      delete-lifecycle-module(1), list-lifecycle-modules(1)
 
      asadmin(1M)
 
-     Chapter  12,  Developing  Lifecycle  Listeners,  in   Oracle
-     GlassFish Server 3.1 Application Development Guide
+     Developing Lifecycle Listeners in  Oracle  GlassFish  Server
+     Application Development Guide
 
 Java EE 6           Last change: 18 Nov 2010                    3
 

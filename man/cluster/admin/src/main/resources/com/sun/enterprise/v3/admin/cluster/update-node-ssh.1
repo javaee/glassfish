@@ -7,7 +7,8 @@ NAME
 SYNOPSIS
      update-node-ssh [--help]
      [--nodehost node-host]
-     [--installdir install-dir] [--nodedir node-dir]
+     [--installdir
+     as-install-parent] [--nodedir node-dir]
      [--sshport ssh-port] [--sshuser ssh-user]
      [--sshkeyfile ssh-keyfile]
      [--force={false|true}]
@@ -34,11 +35,11 @@ DESCRIPTION
      default values are applied if any of the  following  options
      is omitted:
 
-         o    --sshport
+     o --sshport
 
-         o    --sshuser
+     o --sshuser
 
-         o    --sshkeyfile
+     o --sshkeyfile
 
      By default, the subcommand fails and the node is not updated
      if  the  DAS  cannot contact the node's host through SSH. To
@@ -47,172 +48,163 @@ DESCRIPTION
 
      This subcommand is supported in remote mode only.
 
-Java EE 6           Last change: 14 Dec 2010                    1
+OPTIONS
+     --help , -?
+          Displays the help text for the subcommand.
+
+Java EE 6            Last change: 8 Dec 2011                    1
 
 asadmin Utility Subcommands                    update-node-ssh(1)
-
-OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
 
      --nodehost
-         The name of the host that the node is to represent after
-         the node is updated.
+          The name of the host that  the  node  is  to  represent
+          after the node is updated.
 
      --installdir
-
-         The full path to the parent  of  the  base  installation
-         directory  of the GlassFish Server software on the host,
-         for example, /export/glassfish3/.
+          The full path to the parent of  the  base  installation
+          directory of the GlassFish Server software on the host,
+          for example, /export/glassfish3.
 
      --nodedir
-         The path to the directory that is to  contain  GlassFish
-         Server  instances  that  are  created on the node.  If a
-         relative path is specified, the path is relative to  the
-         as-install  directory, where as-install is the base ins-
-         tallation directory of the GlassFish Server software  on
-         the host.
+          The path to the directory that is to contain  GlassFish
+          Server  instances  that  are  created on the node. If a
+          relative path is specified, the path is relative to the
+          as-install directory, where as-install is the base ins-
+          tallation directory of the GlassFish Server software on
+          the host.
 
      --sshport
+          The port to use for  SSH  connections  to  this  node's
+          host. The default depends on whether this subcommand is
+          run to enable SSH communication for the node:
 
-         The port to use for SSH connections to this node's host.
-         The  default  depends on whether  this subcommand is run
-         to enable SSH communication for the node:
+          o If the node is already enabled for communication over
+            SSH, the default is to leave the port unchanged.
 
-             o    If the node is already enabled  for  communica-
-                  tion over SSH, the default is to leave the port
-                  unchanged.
+          o If this subcommand is run to enable SSH communication
+            for the node, the default port is 22.
 
-             o    If this subcommand is run to enable SSH commun-
-                  ication for the node, the default port is 22.
-         If the --nodehost is set  to  localhost,  the  --sshport
-         option is ignored.
+     If the --nodehost is set to localhost, the --sshport  option
+     is ignored.
 
      --sshuser
-         The user on this node's host that is to run the  process
-         for  connecting  to  the  host  through SSH. The default
-         depends on whether this subcommand is run to enable  SSH
-         communication for the node:
+          The user on this node's host that is to run the process
+          for  connecting  to  the  host through SSH. The default
+          depends on whether this subcommand is run to enable SSH
+          communication for the node:
 
-             o    If the node is already enabled  for  communica-
-                  tion over SSH, the default is to leave the user
+          o If the node is already enabled for communication over
+            SSH, the default is to leave the user unchanged.
 
-Java EE 6           Last change: 14 Dec 2010                    2
+          o If this subcommand is run to enable SSH communication
+            for the node, the default is the user that is running
+            the DAS process.
 
-asadmin Utility Subcommands                    update-node-ssh(1)
-
-                  unchanged.
-
-             o    If this subcommand is run to enable SSH commun-
-                  ication  for the node, the default  is the user
-                  that is running the DAS process.
-         If the --nodehost option is set  to  localhost,  the  --
-         sshuser option is ignored.
+     If the --nodehost option is set to localhost, the  --sshuser
+     option is ignored.
 
      --sshkeyfile
+          The absolute path to the SSH private key file for  user
+          that  the --sshuser option specifies. This file is used
 
-         The absolute path to the SSH private key file  for  user
-         that  the  --sshuser option specifies. This file is used
-         for authentication to the  sshd  daemon  on  the  node's
-         host.
-
-         Note -
-
-           GlassFish Server also supports password authentication
-           through the AS_ADMIN_SSHPASSWORD entry in the password
-           file.  The  password  file  is  specified  in  the  --
-           paswordfile option of the asadmin(1M) utility.
-         If  the  SSH  private  key  file  is  protected   by   a
-         passphrase,   the   password   file   must  contain  the
-         AS_ADMIN_SSHKEYPASSPHRASE entry.
-
-         The path to the key file must be reachable  by  the  DAS
-         and the key file must be readable by the DAS.
-
-         The default depends on whether this subcommand is run to
-         enable SSH communication for the node:
-
-             o    If the node is already enabled  for  communica-
-                  tion  over SSH, the default is to leave the key
-                  file unchanged.
-
-             o    If this subcommand is run to enable SSH commun-
-                  ication  for  the  node, the default is the key
-                  file in the user's .ssh directory. If  multiple
-                  key  files  are  found, the subcommand uses the
-                  following order of preference:
-
-                 1.   id_rsa
-
-                 2.   id_dsa
-
-                 3.   identity
-
-     --force
-         Specifies whether the node is updated even if validation
-         of  the  node's  parameters  fails. To validate a node's
-
-Java EE 6           Last change: 14 Dec 2010                    3
+Java EE 6            Last change: 8 Dec 2011                    2
 
 asadmin Utility Subcommands                    update-node-ssh(1)
 
-         parameters, the DAS must be able to contact  the  node's
-         host through SSH. Possible values are as follows:
+          for authentication to the sshd  daemon  on  the  node's
+          host.
 
-         false
+          Note
 
-             The node is not updated if validation of the  node's
-             parameters fails (default).
+          GlassFish Server also supports password  authentication
+          through  the AS_ADMIN_SSHPASSWORD entry in the password
+          file.  The  password  file  is  specified  in  the   --
+          paswordfile option of the asadmin(1M) utility.
 
-         true
-             The node is updated even if validation of the node's
-             parameters fails.
+          If  the  SSH  private  key  file  is  protected  by   a
+          passphrase,   the   password   file  must  contain  the
+          AS_ADMIN_SSHKEYPASSPHRASE entry.
+
+          The path to the key file must be reachable by  the  DAS
+          and the key file must be readable by the DAS.
+
+          The default depends on whether this subcommand  is  run
+          to enable SSH communication for the node:
+
+          o If the node is already enabled for communication over
+            SSH, the default is to leave the key file unchanged.
+
+          o If this subcommand is run to enable SSH communication
+            for  the  node,  the  default  is the key file in the
+            user's .ssh directory.  If  multiple  key  files  are
+            found,  the  subcommand  uses  the following order of
+            preference:
+
+            1.  id_rsa
+
+            2.  id_dsa
+
+            3.  identity
+
+     --force
+          Specifies whether the node is updated even  if  valida-
+          tion  of  the  node's  parameters  fails. To validate a
+          node's parameters, the DAS must be able to contact  the
+          node's  host  through  SSH. Possible values are as fol-
+          lows:
+
+          false
+               The node is  not  updated  if  validation  of  the
+               node's parameters fails (default).
+
+          true The node is updated  even  if  validation  of  the
+               node's parameters fails.
+
+Java EE 6            Last change: 8 Dec 2011                    3
+
+asadmin Utility Subcommands                    update-node-ssh(1)
 
 OPERANDS
      node-name
-
-         The name of the node to update.  The  node  must  exist.
-         Otherwise, an error occurs.
+          The name of the node to update. The  node  must  exist.
+          Otherwise, an error occurs.
 
 EXAMPLES
      Example 1 Updating the Host That a Node Represents
 
      This example updates the host that the node lssh  represents
      to sj04.
+     asadmin> update-node-ssh --nodehost sj04 lssh
 
-       asadmin> update-node-ssh --nodehost sj04 lssh
-       Command update-node-ssh executed successfully.
+     Command update-node-ssh executed successfully.
 
      Example 2 Forcing the Update of a Node
 
      This example forces the update of the node  sj01  to  enable
      the node to communicate over SSH.
+     asadmin> update-node-ssh --force sj01
 
-       asadmin> update-node-ssh --force sj01
-       Warning: some parameters appear to be invalid.
-       Could not connect to host sj01 using SSH.
-       Could not authenticate. Tried authenticating with specified key at
-       /home/gfuser/.ssh/id_rsa
-       Continuing with node update due to use of --force.
-       Command update-node-ssh executed successfully.
-
-Java EE 6           Last change: 14 Dec 2010                    4
-
-asadmin Utility Subcommands                    update-node-ssh(1)
+     Warning: some parameters appear to be invalid.
+     Could not connect to host sj01 using SSH.
+     Could not authenticate. Tried authenticating with specified key at
+     /home/gfuser/.ssh/id_rsa
+     Continuing with node update due to use of --force.
+     Command update-node-ssh executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0    command executed successfully
 
-     1                           error in executing the command
+     1    error in executing the command
 
 SEE ALSO
-     create-node-config(1),   create-node-ssh(1),    delete-node-
-     config(1),    delete-node-ssh(1),   install-node(1),   list-
-     nodes(1), uninstall-node(1)
+     create-node-dcom(1),   create-node-config(1),   create-node-
+     ssh(1),  delete-node-config(1), delete-node-dcom(1), delete-
+     node-ssh(1),     install-node(1),      install-node-dcom(1),
+     install-node-ssh(1),    list-nodes(1),    uninstall-node(1),
+     uninstall-node-dcom(1), uninstall-node-ssh(1),  update-node-
+     config(1), update-node-dcom(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 14 Dec 2010                    5
+Java EE 6            Last change: 8 Dec 2011                    4
 

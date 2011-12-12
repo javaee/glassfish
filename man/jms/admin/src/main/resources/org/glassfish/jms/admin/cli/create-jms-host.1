@@ -12,7 +12,7 @@ SYNOPSIS
      jms_host_name
 
 DESCRIPTION
-     Creates a JavaTM Message Service (JMS) host within  the  JMS
+     Creates a Java Message Service (JMS)  host  within  the  JMS
      service.
 
      This subcommand is supported in  remote  mode  only.  Remote
@@ -20,70 +20,65 @@ DESCRIPTION
      server (DAS).
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --mqhost
-         The host name for the JMS service.
+          The host name for the JMS service.
 
      --mqport
-
-         The port number used by the JMS service.
+          The port number used by the JMS service.
 
      --mquser
-         The user name for the JMS service.
+          The user name for the JMS service.
 
      --mqpassword
-
-         The password for the JMS service.
+          The password for the JMS service.
 
      --target
-         Creates the JMS host  only  for  the  specified  target.
-         Valid values are as follows:
+          Creates the JMS host only  for  the  specified  target.
+          Valid values are as follows:
 
-         server
+          server
+               Creates  the  JMS  host  for  the  default  server
+               instance. This is the default value.
 
-             Creates  the  JMS  host  for  the   default   server
-             instance. This is the default value.
+          configuration-name
+               Creates the JMS host in the  specified  configura-
+               tion.
+
+          cluster-name
+               Creates the JMS host for every server instance  in
+               the specified cluster.
+
+          instance-name
 
 Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands                    create-jms-host(1)
 
-         configuration-name
-
-             Creates the JMS host in the specified configuration.
-
-         cluster-name
-             Creates the JMS host for every  server  instance  in
-             the specified cluster.
-
-         instance-name
-
-             Creates  the  JMS  host  for  the  specified  server
-             instance.
+               Creates the JMS  host  for  the  specified  server
+               instance.
 
 OPERANDS
      jms_host_name
-         A unique identifier for the JMS host to be created.
+          A unique identifier for the JMS host to be created.
 
 EXAMPLES
      Example 1 Creating a JMS host using a non-default port
 
      The following command creates a JMS host named MyNewHost  on
      the system pigeon.
+     asadmin> create-jms-host --mqhost pigeon.example.com --mqport 7677
 
-       asadmin> create-jms-host --mqhost pigeon.example.com --mqport 7677
-       --mquser admin --mqpassword admin MyNewHost
-       Jms Host MyNewHost created.
-       Command create-jms-host executed successfully.
+     --mquser admin --mqpassword admin MyNewHost
+     Jms Host MyNewHost created.
+     Command create-jms-host executed successfully.
 
 EXIT STATUS
-     0            subcommand executed successfully
+     0    subcommand executed successfully
 
-     1            error in executing the subcommand
+     1    error in executing the subcommand
 
 SEE ALSO
      list-jms-hosts(1), delete-jms-host(1), jms-ping(1)

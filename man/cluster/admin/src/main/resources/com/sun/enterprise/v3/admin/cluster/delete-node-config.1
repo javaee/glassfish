@@ -11,15 +11,24 @@ SYNOPSIS
 DESCRIPTION
      The delete-node-config subcommand deletes a node that is not
      enabled  for remote communication from the domain. This sub-
-     command does not require secure shell (SSH)  to  be  config-
-     ured.
+     command does not require the  Distributed  Component  Object
+     Model  (DCOM)  remote  protocol  or secure shell (SSH) to be
+     configured.
 
      This subcommand can delete only a node that is  not  enabled
-     for remote communication. A node that is enabled for commun-
-     ication over SSH must be deleted by using  the  delete-node-
-     ssh(1)  subcommand.  To  determine whether a node is enabled
-     for communication over SSH, use  the  list-nodes(1)  subcom-
-     mand.
+     for  remote communication. The subcommand for deleting other
+     types of nodes depends on the type of the node:
+
+     o A node that is enabled for remote communication over  DCOM
+       must  be  deleted by using the delete-node-dcom(1) subcom-
+       mand.
+
+     o A node that is enabled for remote communication  over  SSH
+       must  be  deleted  by using the delete-node-ssh(1) subcom-
+       mand.
+
+     To determine whether a node is enabled for remote communica-
+     tion, use the list-nodes(1) subcommand.
 
      No GlassFish Server instances must reside on the  node  that
      is  being  deleted.  Otherwise, the subcommand fails. Before
@@ -27,52 +36,50 @@ DESCRIPTION
      the  node by using, for example, the delete-instance(1) sub-
      command or the delete-local-instance(1) subcommand.
 
-     Note -
+     Note
 
-       The predefined node localhost-domain cannot be deleted.
+     The predefined node localhost-domain cannot be deleted.
 
      This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
 OPERANDS
      node-name
-         The name of the node to delete. The  node  must  not  be
-         enabled  for communication over SSH. Otherwise, an error
-         occurs.
+          The name of the node to delete. The node  must  not  be
+          enabled  for communication over DCOM or SSH. Otherwise,
+          an error occurs.
 
-EXAMPLES
-
-Java EE 6           Last change: 16 Dec 2010                    1
+Java EE 6            Last change: 8 Dec 2011                    1
 
 asadmin Utility Subcommands                 delete-node-config(1)
 
-     Example 1 Deleting a Node That Is Not Enabled for Communica-
-     tion Over SSH
+EXAMPLES
+     Example 1 Deleting a Node That Is  Not  Enabled  for  Remote
+     Communication
 
      This example deletes the node sj03, which is not enabled for
-     communication over SSH.
+     remote communication.
+     asadmin> delete-node-config sj03
 
-       asadmin> delete-node-config sj03
-
-       Command delete-node-config executed successfully.
+     Command delete-node-config executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0    command executed successfully
 
-     1                           error in executing the command
+     1    error in executing the command
 
 SEE ALSO
-     create-node-config(1),      delete-node-ssh(1),      delete-
-     instance(1),    delete-local-instance(1),   install-node(1),
-     list-nodes(1),   uninstall-node(1),   update-node-config(1),
-     update-node-ssh(1)
+     create-node-config(1),   create-node-dcom(1),   delete-node-
+     ssh(1),     delete-instance(1),    delete-local-instance(1),
+     install-node(1), install-node-dcom(1),  install-node-ssh(1),
+     list-nodes(1),   uninstall-node(1),  uninstall-node-dcom(1),
+     uninstall-node-ssh(1),  update-node-config(1),  update-node-
+     dcom(1), update-node-ssh(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 16 Dec 2010                    2
+Java EE 6            Last change: 8 Dec 2011                    2
 

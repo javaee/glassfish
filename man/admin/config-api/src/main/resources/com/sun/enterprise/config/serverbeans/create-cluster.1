@@ -39,372 +39,430 @@ DESCRIPTION
      the  name  of the cluster when using either of the following
      subcommands:
 
-         o    create-instance(1)
+     o create-instance(1)
 
-         o    create-local-instance(1)
+     o create-local-instance(1)
 
      To delete server instances from the cluster at any time, use
      one of the following subcommands:
 
-         o    delete-instance(1)
+     o delete-instance(1)
 
-         o    delete-local-instance(1)
-
-Java EE 6           Last change: 14 Jun 2011                    1
-
-asadmin Utility Subcommands                     create-cluster(1)
+     o delete-local-instance(1)
 
      To associate applications and resources with  all  instances
      in  the  cluster, set the --target option to the name of the
+
+Java EE 6           Last change: 01 Dec 2011                    1
+
+asadmin Utility Subcommands                     create-cluster(1)
+
      cluster when performing the following operations:
 
-         o    Deploying applications by using the deploy(1)  sub-
-              command
+     o Deploying applications by using the deploy(1) subcommand
 
-         o    Creating resources by  using  subcommands  such  as
-              create-jdbc-resource(1)
+     o Creating resources by using subcommands  such  as  create-
+       jdbc-resource(1)
 
-         o    Creating  references  to  applications   that   are
-              already  deployed  in  other  targets  by using the
-              create-application-ref(1) subcommand
+     o Creating  references  to  applications  that  are  already
+       deployed   in   other   targets   by   using  the  create-
+       application-ref(1) subcommand
 
-         o    Creating references to resources that  are  already
-              created  in  other  targets  by  using  the create-
-              resource-ref(1) subcommand
+     o Creating references to resources that are already  created
+       in  other targets by using the create-resource-ref(1) sub-
+       command
 
      This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help
-     -?
-
-         Displays the help text for the subcommand.
+     --help , -?
+          Displays the help text for the subcommand.
 
      --config
-         Specifies  the  named  configuration  that  the  cluster
-         references. The configuration must exist and must not be
-         named default-config or  server-config.  Specifying  the
-         --config  option  creates  a  shared  cluster.   If this
-         option is omitted, a standalone cluster is created.
+          Specifies the  named  configuration  that  the  cluster
+          references.  The  configuration must exist and must not
+          be named default-config  or  server-config.  Specifying
+          the  --config  option creates a shared cluster. If this
+          option is omitted, a standalone cluster is created.
 
      --systemproperties
+          Defines system properties for the configuration that is
+          created  for the cluster. These properties override the
+          property values in  the  default-config  configuration.
+          The following properties are available:
 
-         Defines system properties for the configuration that  is
-         created  for  the cluster. These properties override the
-         property values in the default-config configuration. The
-         following properties are available:
+          ASADMIN_LISTENER_PORT
+               This property specifies the  port  number  of  the
+               HTTP port or HTTPS port through which the DAS con-
+               nects to the  instance  to  manage  the  instance.
+               Valid  values are 1-65535. On UNIX, creating sock-
+               ets that listen on ports 1-1024 requires superuser
+               privileges.
 
-         ASADMIN_LISTENER_PORT
-             This property specifies the port number of the  HTTP
-             port or HTTPS port through which the DAS connects to
-             the instance to manage the  instance.  Valid  values
-             are  1-65535.  On UNIX, creating sockets that listen
-             on ports 1-1024 requires superuser privileges.
+          HTTP_LISTENER_PORT
+               This property specifies the  port  number  of  the
+               port  that  is  used  to listen for HTTP requests.
+               Valid values are 1-65535. On UNIX, creating  sock-
+               ets that listen on ports 1-1024 requires superuser
+               privileges.
 
-Java EE 6           Last change: 14 Jun 2011                    2
+          HTTP_SSL_LISTENER_PORT
+               This property specifies the  port  number  of  the
+               port  that  is  used to listen for HTTPS requests.
 
-asadmin Utility Subcommands                     create-cluster(1)
-
-         HTTP_LISTENER_PORT
-
-             This property specifies the port number of the  port
-             that  is  used  to  listen  for HTTP requests. Valid
-             values are 1-65535. On UNIX, creating  sockets  that
-             listen    on   ports   1-1024   requires   superuser
-             privileges.
-
-         HTTP_SSL_LISTENER_PORT
-             This property specifies the port number of the  port
-             that  is  used  to listen for HTTPS requests.  Valid
-             values are 1-65535. On UNIX, creating  sockets  that
-             listen    on   ports   1-1024   requires   superuser
-             privileges.
-
-         IIOP_LISTENER_PORT
-
-             This property specifies the port number of the  port
-             that  is used for IIOP connections. Valid values are
-             1-65535. On UNIX, creating sockets  that  listen  on
-             ports 1-1024 requires superuser privileges.
-
-         IIOP_SSL_LISTENER_PORT
-             This property specifies the port number of the  port
-             that  is  used  for  secure  IIOP connections. Valid
-             values are 1-65535. On UNIX, creating  sockets  that
-             listen    on   ports   1-1024   requires   superuser
-             privileges.
-
-         IIOP_SSL_MUTUALAUTH_PORT
-
-             This property specifies the port number of the  port
-             that is used for secure IIOP connections with client
-             authentication. Valid values are 1-65535.  On  UNIX,
-             creating   sockets   that  listen  on  ports  1-1024
-             requires superuser privileges.
-
-         JAVA_DEBUGGER_PORT
-             This property specifies the port number of the  port
-             that  is  used  for connections to the Java Platform
-             Debugger Architecture (JPDA) debugger. Valid  values
-             are  1-65535.  On UNIX, creating sockets that listen
-             on ports 1-1024 requires superuser privileges.
-
-         JMS_PROVIDER_PORT
-
-             This property specifies the port number for the Java
-
-Java EE 6           Last change: 14 Jun 2011                    3
+Java EE 6           Last change: 01 Dec 2011                    2
 
 asadmin Utility Subcommands                     create-cluster(1)
 
-             Message  Service provider. Valid values are 1-65535.
-             On UNIX,  creating  sockets  that  listen  on  ports
-             1-1024 requires superuser privileges.
+               Valid values are 1-65535. On UNIX, creating  sock-
+               ets that listen on ports 1-1024 requires superuser
+               privileges.
 
-         JMX_SYSTEM_CONNECTOR_PORT
+          IIOP_LISTENER_PORT
+               This property specifies the  port  number  of  the
+               port  that  is  used  for  IIOP connections. Valid
+               values are 1-65535. On UNIX, creating sockets that
+               listen   on   ports   1-1024   requires  superuser
+               privileges.
 
-             This property specifies the port number on which the
-             JMX  connector listens. Valid values are 1-65535. On
-             UNIX, creating sockets that listen on  ports  1-1024
-             requires superuser privileges.
+          IIOP_SSL_LISTENER_PORT
+               This property specifies the  port  number  of  the
+               port  that  is  used  for secure IIOP connections.
+               Valid values are 1-65535. On UNIX, creating  sock-
+               ets that listen on ports 1-1024 requires superuser
+               privileges.
 
-         OSGI_SHELL_TELNET_PORT
-             This property specifies the port number of the  port
-             that  is  used  for  connections to the Apache Felix
-             Remote Shell. This shell uses the Felix  shell  ser-
-             vice  to  interact  with the OSGi  module management
-             subsystem. Valid values are 1-65535. On UNIX, creat-
-             ing  sockets  that  listen  on ports 1-1024 requires
-             superuser privileges.
+          IIOP_SSL_MUTUALAUTH_PORT
+               This property specifies the  port  number  of  the
+               port that is used for secure IIOP connections with
+               client authentication. Valid values  are  1-65535.
+               On  UNIX,  creating  sockets  that listen on ports
+               1-1024 requires superuser privileges.
+
+          JAVA_DEBUGGER_PORT
+               This property specifies the  port  number  of  the
+               port  that  is  used  for  connections to the Java
+               Platform     Debugger     Architecture      (JPDA)
+               (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
+               debugger.  Valid  values  are  1-65535.  On  UNIX,
+               creating  sockets  that  listen  on  ports  1-1024
+               requires superuser privileges.
+
+          JMS_PROVIDER_PORT
+               This property specifies the port  number  for  the
+               Java  Message  Service  provider. Valid values are
+               1-65535. On UNIX, creating sockets that listen  on
+               ports 1-1024 requires superuser privileges.
+
+          JMX_SYSTEM_CONNECTOR_PORT
+               This property specifies the port number  on  which
+               the  JMX  connector  listens.  Valid values are 1-
+               65535. On UNIX, creating sockets  that  listen  on
+               ports 1-1024 requires superuser privileges.
+
+          OSGI_SHELL_TELNET_PORT
+               This property specifies the  port  number  of  the
+               port  that  is  used for connections to the Apache
+               Felix                 Remote                 Shell
+               (http://felix.apache.org/site/apache-felix-
+               remote-shell.html).  This  shell  uses  the  Felix
+
+Java EE 6           Last change: 01 Dec 2011                    3
+
+asadmin Utility Subcommands                     create-cluster(1)
+
+               shell  service  to  interact  with the OSGi module
+               management subsystem. Valid values are 1-65535. On
+               UNIX, creating sockets that listen on ports 1-1024
+               requires superuser privileges.
 
      --properties
+          Defines properties for the cluster. The following  pro-
+          perties are available:
 
-         Defines properties for the cluster. The  following  pro-
-         perties are available:
+          GMS_LISTENER_PORT
+               The port number of the port on which  the  cluster
+               listens  for  messages  from  the Group Management
+               Service (GMS).
 
-         GMS_LISTENER_PORT
-             The port number of the port  on  which  the  cluster
-             listens  for messages from the Group Management Ser-
-             vice (GMS). The default value should suffice in most
-             situations.
+               The default value is  ${GMS_LISTENER_PORT-cluster-
+               name}.  In  most  situations,  this  default value
+               should suffice.
 
-         GMS_LOOPBACK
+               However, if GMS is not using multicast for  broad-
+               casting  messages,  this  property  must specify a
+               port number that is valid for all GlassFish Server
+               instances in the cluster. To use the default value
+               to meet this requirement, use a system property to
+               set   the   port   number  individually  for  each
+               instance.
 
-             Specifies  whether  an  instance  may  receive  from
-             itself  application-level messages that the instance
-             broadcasts to the cluster.
+               For example, use the create-system-properties sub-
+               command    to    create    the   system   property
+               GMS_LISTENER_PORT-cluster-name.  Then,  for   each
+               instance     in     the     cluster,    set    the
+               GMS_LISTENER_PORT-cluster-name system property  to
+               the  port number on which the instance listens for
+               messages  from  GMS.  The  default  value  of  the
+               GMS_LISTENER_PORT  property for the cluster refer-
+               ences this system property.
 
-             Possible values are as follows:
+          GMS_LOOPBACK
+               Specifies whether an  instance  may  receive  from
+               itself   application-level   messages   that   the
+               instance broadcasts to the cluster.
 
-             false
-                 The  instance  may  not  receive  messages  from
-                 itself (default).
+               Possible values are as follows:
 
-             true
+               false
+                    The instance may not  receive  messages  from
+                    itself (default).
 
-                 The instance may receive messages  from  itself.
-                 Use  this  setting  for testing an instance when
+               true The  instance  may  receive   messages   from
+                    itself.  Use  this  setting  for  testing  an
+                    instance  when  the  instance  is  the   only
+                    instance in a cluster.
 
-Java EE 6           Last change: 14 Jun 2011                    4
+Java EE 6           Last change: 01 Dec 2011                    4
 
 asadmin Utility Subcommands                     create-cluster(1)
 
-                 the instance is the only instance in a cluster.
+          GMS_MULTICAST_TIME_TO_LIVE
+               The maximum number of iterations or  transmissions
+               that  a  multicast message for the following types
+               of events can experience  before  the  message  is
+               discarded:
 
-         GMS_MULTICAST_TIME_TO_LIVE
+               o Group discovery
 
-             The maximum number of  iterations  or  transmissions
-             that  a multicast message for the following types of
-             events can experience before  the  message  is  dis-
-             carded:
+               o Member heartbeats
 
-                 o    Group discovery
+               o Membership changes
 
-                 o    Member heartbeats
+          To match the configuration of the network on which  the
+          DAS  and  clustered  instances  are  deployed, set this
+          value as low as possible. To determine the lowest  pos-
+          sible   value   for  your  system,  use  the  validate-
+          multicast(1) subcommand.
 
-                 o    Membership changes
-             To match the configuration of the network  on  which
-             the  DAS  and  clustered instances are deployed, set
-             this value as low  as  possible.  To  determine  the
-             lowest  possible  value  for  your  system,  use the
-             validate-multicast(1) subcommand.
+          A value of 0  ensures  that  multicast  messages  never
+          leave the host from which they are broadcast.
 
-             A value of 0 ensures that multicast  messages  never
-             leave the host from which they are broadcast.
+          A value of 1 might prevent the  broadcast  of  messages
+          between  hosts  on  same subnet that are connected by a
+          switch or a router.
 
-             A value of 1 might prevent the broadcast of messages
-             between hosts on same subnet that are connected by a
-             switch or a router.
+          The default is 4, which ensures that messages are  suc-
+          cessfully  broadcast to all cluster members in networks
+          where hosts are connected by switches or routers.
 
-             The default is 4, which ensures  that  messages  are
-             successfully  broadcast  to  all  cluster members in
-             networks where hosts are connected  by  switches  or
-             routers.
+          GMS_DISCOVERY_URI_LIST
+               The locations of the GlassFish Server instances to
+               which  GMS  is to send group events. This property
+               is required only if GMS is not using multicast for
+               broadcasting messages.
+
+               Valid values for this property are as follows:
+
+               o A comma-separated list of uniform resource iden-
+                 tifiers (URIs). Each URI must locate a GlassFish
+                 Server instance. This format is required if mul-
+                 tiple  GlassFish Server instances are running on
+                 the same host.
+
+                 The format of each URI in the list  is  as  fol-
+                 lows:
+
+                 scheme://host-name-or -IP-address:port
+
+                 o scheme is the URI scheme, which is tcp.
+
+                 o host-name-or -IP-address is the host  name  or
+
+Java EE 6           Last change: 01 Dec 2011                    5
+
+asadmin Utility Subcommands                     create-cluster(1)
+
+                   IP  address  of the host on which the instance
+                   is running.
+
+                 o port is the port number of the port  on  which
+                   the  instance  listens  for messages from GMS.
+                   The   system    property    GMS_LISTENER_PORT-
+                   clustername  must be set for the instance. For
+                   information about how to set this system  pro-
+                   perty  for  an instance, seeLocating GlassFish
+                   Server Instances When Multicast  Is  Disabled,
+                   in  Oracle  GlassFish Server High Availability
+                   Administration Guide .
+
+               o A comma-separated list of IP addresses  or  host
+                 names.  The  list  can  contain  a mixture of IP
+                 addresses and host names.  This  format  can  be
+                 used  only  if one clustered instance is running
+                 on each host. The value of the GMS_LISTENER_PORT
+                 property  must  be  unique for each cluster in a
+                 domain.
+
+               o The keyword generate. This format  can  be  used
+                 only  if one instance in a cluster is running on
+                 each host. Multiple instances on the  same  host
+                 cannot be members of the same cluster. The value
+                 of the GMS_LISTENER_PORT property must be unique
+                 for each cluster in a domain.
 
      --gmsenabled
-         Specifies whether GMS is enabled for the cluster.
+          Specifies whether GMS is enabled for the cluster.
 
-         Possible values are as follows:
+          Possible values are as follows:
 
-         true
+          true GMS is enabled for the cluster (default).
 
-             GMS is enabled for the cluster (default).
+               When GMS is enabled for a cluster, GMS is  started
+               in  each server instance in the cluster and in the
+               DAS. The DAS  participates  in  each  cluster  for
+               which this option is set to true.
 
-             When GMS is enabled for a cluster, GMS is started in
-             each  server instance in the cluster and in the DAS.
-             The DAS participates in each cluster for which  this
-             option is set to true.
-
-Java EE 6           Last change: 14 Jun 2011                    5
-
-asadmin Utility Subcommands                     create-cluster(1)
-
-         false
-
-             GMS is disabled for the cluster.
+          false
+               GMS is disabled for the cluster.
 
      --multicastaddress
-         The address on which GMS listens for group events.  This
-         option  must  specify  a  multicast address in the range
-         224.0.0.0  through  239.255.255.255.  The   default   is
-         228.9.XX.YY, where XX and YY are automatically generated
-         independent values between 0 and 255.
+          The address on which GMS listens for group events. This
+          option  must  specify  a multicast address in the range
+          224.0.0.0  through  239.255.255.255.  The  default   is
+          228.9.XX.YY,   where   XX   and  YY  are  automatically
+
+Java EE 6           Last change: 01 Dec 2011                    6
+
+asadmin Utility Subcommands                     create-cluster(1)
+
+          generated independent values between 0 and 255.
 
      --multicastport
-
-         The port number  of  communication  port  on  which  GMS
-         listens  for  group  events.  This option must specify a
-         valid port number in the range 2048-32000.  The  default
-         is an automatically generated value in this range.
+          The port number of  communication  port  on  which  GMS
+          listens  for  group  events. This option must specify a
+          valid port number in the range 2048-32000. The  default
+          is an automatically generated value in this range.
 
      --bindaddress
-         The Internet Protocol (IP) address of the network inter-
-         face to which GMS binds. This option must specify the IP
-         address of a local network interface. The default is all
-         public network interface addresses.
+          The Internet  Protocol  (IP)  address  of  the  network
+          interface  to which GMS binds. This option must specify
+          the IP  address  of  a  local  network  interface.  The
+          default is all public network interface addresses.
 
-         On a multihome machine, this option configures the  net-
-         work  interface  that  is  used for the GMS. A multihome
-         machine possesses two or more network interfaces.
+          On a multihome machine, this option configures the net-
+          work  interface  that  is used for the GMS. A multihome
+          machine possesses two or more network interfaces.
 
-         To specify an address that is valid  for  all  GlassFish
-         Server  instances  in the cluster, use a system property
-         to set the address individually for each instance.
+          To specify an address that is valid for  all  GlassFish
+          Server  instances in the cluster, use a system property
+          to set the address individually for each instance.
 
-         For example, use the create-system-properties subcommand
-         to   create   the  system  property  GMS-BIND-INTERFACE-
-         ADDRESS-cluster-name. Then set the --bindaddress  option
-         of   this  subcommand  to  ${GMS-BIND-INTERFACE-ADDRESS-
-         cluster-name} to specify the system  property.  Finally,
-         for  each  instance  in  the  cluster, set the GMS-BIND-
-         INTERFACE-ADDRESS-cluster-name system  property  to  the
-         required  network  interface  address  on the instance's
-         machine.
+          For example, use the  create-system-properties  subcom-
+          mand  to create the system property GMS-BIND-INTERFACE-
+          ADDRESS-cluster-name. Then set the --bindaddress option
+          of  this  subcommand  to  ${GMS-BIND-INTERFACE-ADDRESS-
+          cluster-name} to specify the system property.  Finally,
+          for  each  instance  in  the cluster, set the GMS-BIND-
+          INTERFACE-ADDRESS-cluster-name system property  to  the
+          required  network  interface  address on the instance's
+          machine.
 
      --hosts
-
-         Do not specify this option. This option is retained  for
-         compatibility with earlier releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and displays a warning message
-
-Java EE 6           Last change: 14 Jun 2011                    6
-
-asadmin Utility Subcommands                     create-cluster(1)
-
-         that the option is ignored.
+          Do not specify this option. This option is retained for
+          compatibility  with  earlier  releases.  If you specify
+          this option, a syntax error does  not  occur.  Instead,
+          the subcommand runs successfully and displays a warning
+          message that the option is ignored.
 
      --haagentport
-
-         Do not specify this option. This option is retained  for
-         compatibility with earlier releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and displays a warning message
-         that the option is ignored.
+          Do not specify this option. This option is retained for
+          compatibility  with  earlier  releases.  If you specify
+          this option, a syntax error does  not  occur.  Instead,
+          the subcommand runs successfully and displays a warning
+          message that the option is ignored.
 
      --haadminpassword
-         Do not specify this option. This option is retained  for
-         compatibility with earlier releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and displays a warning message
-         that the option is ignored.
+          Do not specify this option. This option is retained for
+          compatibility  with  earlier  releases.  If you specify
+          this option, a syntax error does  not  occur.  Instead,
+          the subcommand runs successfully and displays a warning
+          message that the option is ignored.
 
-     --haadminpasswordfile
-
-         Do not specify this option. This option is retained  for
-         compatibility with earlier releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and displays a warning message
-         that the option is ignored.
-
-     --devicesize
-         Do not specify this option. This option is retained  for
-         compatibility with earlier releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and displays a warning message
-         that the option is ignored.
-
-     --haproperty
-
-         Do not specify this option. This option is retained  for
-         compatibility with earlier releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and displays a warning message
-         that the option is ignored.
-
-     --autohadb
-         Do not specify this option. This option is retained  for
-         compatibility with earlier releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and displays a warning message
-         that the option is ignored.
-
-Java EE 6           Last change: 14 Jun 2011                    7
+Java EE 6           Last change: 01 Dec 2011                    7
 
 asadmin Utility Subcommands                     create-cluster(1)
 
-     --portbase
+     --haadminpasswordfile
+          Do not specify this option. This option is retained for
+          compatibility  with  earlier  releases.  If you specify
+          this option, a syntax error does  not  occur.  Instead,
+          the subcommand runs successfully and displays a warning
+          message that the option is ignored.
 
-         Do not specify this option. This option is retained  for
-         compatibility with earlier releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and displays a warning message
-         that the option is ignored.
+     --devicesize
+          Do not specify this option. This option is retained for
+          compatibility  with  earlier  releases.  If you specify
+          this option, a syntax error does  not  occur.  Instead,
+          the subcommand runs successfully and displays a warning
+          message that the option is ignored.
+
+     --haproperty
+          Do not specify this option. This option is retained for
+          compatibility  with  earlier  releases.  If you specify
+          this option, a syntax error does  not  occur.  Instead,
+          the subcommand runs successfully and displays a warning
+          message that the option is ignored.
+
+     --autohadb
+          Do not specify this option. This option is retained for
+          compatibility  with  earlier  releases.  If you specify
+          this option, a syntax error does  not  occur.  Instead,
+          the subcommand runs successfully and displays a warning
+          message that the option is ignored.
+
+     --portbase
+          Do not specify this option. This option is retained for
+          compatibility  with  earlier  releases.  If you specify
+          this option, a syntax error does  not  occur.  Instead,
+          the subcommand runs successfully and displays a warning
+          message that the option is ignored.
 
 OPERANDS
      cluster-name
-         The name of the cluster.
+          The name of the cluster.
 
-         The name must meet the following requirements:
+          The name must meet the following requirements:
 
-             o    The name may contain only ASCII characters.
+          o The name may contain only ASCII characters.
 
-             o    The name must start with a letter, a number, or
-                  an underscore.
+          o The name must start with a letter, a  number,  or  an
+            underscore.
 
-             o    The name may contain only the following charac-
-                  ters:
+          o The name may contain only the following characters:
 
-                 o    Lowercase letters
+            o Lowercase letters
 
-                 o    Uppercase letters
+            o Uppercase letters
 
-                 o    Numbers
+Java EE 6           Last change: 01 Dec 2011                    8
 
-                 o    Hyphen
+asadmin Utility Subcommands                     create-cluster(1)
 
-                 o    Period
+            o Numbers
 
-                 o    Underscore
+            o Hyphen
 
-             o    The name must be unique in the domain and  must
-                  not  be  the  name  of another cluster, a named
-                  configuration, a GlassFish Server instance , or
-                  a node.
+            o Period
 
-             o    The name must not be  domain,  server,  or  any
-                  other  keyword  that  is  reserved by GlassFish
-                  Server.
+            o Underscore
+
+          o The name must be unique in the domain and must not be
+            the name of another cluster, a named configuration, a
+            GlassFish Server instance, or a node.
+
+          o The name must not be domain,  server,  or  any  other
+            keyword that is reserved by GlassFish Server.
 
 EXAMPLES
      Example 1 Creating a Cluster
@@ -412,23 +470,55 @@ EXAMPLES
      This example creates a cluster that is named ltscluster  for
      which  port  1169 is to be used for secure IIOP connections.
      Because the --config option is not  specified,  the  cluster
+     references  a copy of the named configuration default-config
+     that is named ltscluster-config.
+     asadmin> create-cluster
 
-Java EE 6           Last change: 14 Jun 2011                    8
+     --systemproperties IIOP_SSL_LISTENER_PORT=1169
+     ltscluster
+     Command create-cluster executed successfully.
+
+     Example 2 Creating a Cluster for Which GMS Does Not Use Mul-
+     ticast
+
+     This example creates a cluster that is named tcpcluster.  In
+     this  example,  GMS  is not using multicast for broadcasting
+     messages. Therefore, the GMS_DISCOVERY_URI_LIST property  is
+     set  to  the  locations of the GlassFish Server instances to
+     which GMS is to send group events.  These  GlassFish  Server
+     instances   reside   on   the   host  whose  IP  address  is
+     10.152.23.224 and listen for GMS events on ports 9090, 9091,
+     and 9092.
+
+     To distinguish colon (:) characters in URIs from  separators
+     in  a  property list, colons in URIs are escaped with single
+     quote characters (') and backslash (\) characters. For  more
+     information about escape characters in options for the asad-
+     min utility, see the asadmin(1M) help page.
+
+     This example assumes that the port on  which  each  instance
+     listens  for  GMS  messages  is  set  independently  for the
+     instance  through  the  GMS_LISTENER_PORT-tcpcluster  system
+
+Java EE 6           Last change: 01 Dec 2011                    9
 
 asadmin Utility Subcommands                     create-cluster(1)
 
-     references  a copy of the named configuration default-config
-     that is named ltscluster-config.
+     property. For information about how to set the port on which
+     an instance listens for GMS messages, seeLocating  GlassFish
+     Server  Instances  When  Multicast  Is  Disabled,  in Oracle
+     GlassFish Server High Availability Administration Guide .
+     asadmin> create-cluster --properties GMS_DISCOVERY_URI_LIST=
 
-       asadmin> create-cluster
-       --systemproperties IIOP_SSL_LISTENER_PORT=1169
-       ltscluster
-       Command create-cluster executed successfully.
+     tcp'\\:'//10.152.23.224'\\:'9090,
+     tcp'\\:'//10.152.23.224'\\:'9091,
+     tcp'\\:'//10.152.23.224'\\:'9092 tcpcluster
+     Command create-cluster executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0    command executed successfully
 
-     1                           error in executing the command
+     1    error in executing the command
 
 SEE ALSO
      create-application-ref(1), create-instance(1),  create-jdbc-
@@ -439,10 +529,14 @@ SEE ALSO
 
      asadmin(1M)
 
+     Locating GlassFish Server Instances When Multicast  Is  Dis-
+     abled, in Oracle GlassFish Server High Availability Adminis-
+     tration Guide
+
      Apache            Felix             Remote             Shell
      (http://felix.apache.org/site/apache-felix-remote-
      shell.html),  Java  Platform  Debugger  Architecture  (JPDA)
      (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
 
-Java EE 6           Last change: 14 Jun 2011                    9
+Java EE 6           Last change: 01 Dec 2011                   10
 
