@@ -53,12 +53,12 @@
     <groupId>org.glassfish.main.cluster</groupId>
     <artifactId>cluster</artifactId>
     <packaging>pom</packaging>
-    <name>Cluster</name>
+    <name>Cluster 3.1.2</name>
     <developers>
-         <developer>           
+         <developer>
             <name>Sheetal Vartak</name>
             <organization>Oracle, Inc.</organization>
-            <roles>                
+            <roles>
                 <role>developer</role>
             </roles>
         </developer>

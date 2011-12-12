@@ -51,7 +51,7 @@
     </parent>    
     <artifactId>cluster-common</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Cluster Common</name>
+    <name>Cluster Common 3.1.2</name>
     <build>
 	<resources>
             <resource>
