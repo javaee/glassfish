@@ -1,111 +1,147 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
+<p><a id="task-jmsservice" name="task-jmsservice"></a><a id="GHJMS00026" name="GHJMS00026"></a></p>
 
-
-<a name="task-jmsservice"></a><h3>To Configure the JMS Service</h3><a name="indexterm-13"></a><p>Use the JMS Service page to configure settings to be used by
-all JMS connections.</p>
-
-<p>For more information about configuring the JMS service, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2418&id=beaob">Chapter 16, Using the Java Message Service, in <i>Oracle GlassFish Server 3.1 Application Development Guide</i></a>.</p>
-
+<h4><a id="sthref20" name="sthref20"></a>To Configure the JMS Service</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the JMS Service page to configure settings to be used by all JMS connections.</p>
+<p>For more information about configuring the JMS service, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSDVG00020">Chapter 19, <i>Using the Java Message Service,</i> in <i>Oracle GlassFish Server Application Development Guide</i></a>.</p>
 <ol>
-<li><b>In the navigation tree, expand the Configuration node.</b></li>
-<li><b>Under the Configuration node, select the Java Message Service node.</b><p>The JMS Service page opens.</p></li>
-<li><b>From the Type drop-down list:</b><ul>
-<li><b>Select EMBEDDED to access the JMS service on the local host.</b><p>The JMS service is started in the same JVM machine as the
-GlassFish Server. Lazy initialization starts the default embedded broker on the first access of
-JMS services rather than at GlassFish Server startup. This is the default type
-of JMS Service.</p></li>
-<li><b>Select LOCAL to access the JMS service on the local host.</b><p>The JMS service is started along with the GlassFish Server.</p></li>
-<li><b>Select REMOTE to access the JMS service on another system.</b><p>If you choose REMOTE, the JMS service is not started by the
-GlassFish Server the next time the server starts. Instead, the JMS service is
-started and managed by Message Queue, so you must start the Message Queue
-broker separately. For information about starting the broker, see the <a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2438&id=aeoby">Starting Brokers in <i>Oracle GlassFish Server Message Queue 4.5 Administration Guide</i></a>. If you choose
-this value and are using a remote host, follow the instructions in <a href="task-jmshostedit.html">To Edit a JMS Host</a>
-to specify the name of the remote host.</p></li></ul></li>
-<li><b>In the Startup Timeout field, type the number of seconds the GlassFish
-Server waits for the JMS service to start before aborting the startup.</b><p>On a slow or overloaded system, increase the value from the default. The
-default value is 60.</p></li>
-<li><b>In the Start Arguments field, type arguments to customize the JMS service startup.</b><p>Use any arguments available through the <tt><i>as-install-parent</i>/mq/bin/imqbrokerd</tt> command.</p></li>
-<li><b>Select the Reconnect Enabled checkbox to make the JMS service attempt to reconnect
-to a message server (or the list of addresses in the AddressList) when
-a connection is lost.</b><p>This option is enabled by default.</p></li>
-<li><b>In the Reconnect Interval field, type the number of seconds between reconnect attempts.</b><p>This interval applies for attempts on each address in the AddressList and for
-successive addresses in the list. If it is too short, this time interval
-does not give a broker time to recover. If it is too long,
-the reconnect might represent an unacceptable delay. The default value is 5 seconds.</p></li>
-<li><b>In the Reconnect Attempts field, type the number of attempts to connect (or
-reconnect) for each address in the AddressList before the client runtime tries the
-next address in the list.</b><p>A value of -1 indicates that the number of reconnect attempts is unlimited
-(the client runtime attempts to connect to the first address until it succeeds).
-The default value is 3.</p></li>
-<li><b>From the Default JMS Host drop-down list, select the name of the default
-JMS host.</b><p>The default value is <tt>default_JMS_host</tt>.</p></li>
-<li><b>From the Address List Behavior drop-down list, select the order of connection attempts.</b><ul>
-<li><b><tt>random</tt> means to select an address from the AddressList randomly.</b><p>If there are many clients attempting a connection using the same connection factory,
-specify <tt>random</tt> to prevent them from all being connected to the same address.
-This option is the default.</p></li>
-<li><b><tt>priority</tt> means that the reconnect always tries to connect to the first server
-address in the AddressList and uses another one only if the first broker
-is not available.</b></li></ul></li>
-<li><b>In the Address List Iterations field, type the number of times the JMS
-service iterates through the AddressList in an effort to establish (or reestablish) a
-connection).</b><p>A value of -1 indicates that the number of attempts is unlimited. The
-default value is 3.</p></li>
-<li><b>In the MQ Scheme and MQ Service fields, type the Message Queue address
-scheme name and the Message Queue connection service name if a non-default scheme
-or service is to be used. </b><p>See <a href="ref-mqschemeservice.html">MQ Scheme and MQ Service Address Syntax</a> for syntax information.</p></li>
-<li>(Optional) <b>In the Additional Properties area, specify additional properties for the JMS service.</b><p>For information on available properties, see <a href="ref-jmsservice-additional-props.html">Properties Specific to the JMS Service</a>.</p><ul>
-<li><b>To add a property, click the Add Property button. In the blank row
-that appears, type the property name in the Name field, and type
-the property value in the Value field.</b></li>
-<li><b>To modify a property, edit that property's Value field.</b></li>
-<li><b>To delete a property, select the checkbox to the left of the
-Name field of the property that you are deleting, then click the Delete
-Properties button.</b></li></ul></li>
-<li><b>Click Ping to verify that the JMS service is running on the
-default JMS host.</b><p>If the JMS service is up and running, a message reports that the
-ping succeeded.</p></li>
-<li><b>Click Save.</b>
-<hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
-Save.</p>
+<li>
+<p>In the navigation tree, expand the Configuration node.</p>
+</li>
+<li>
+<p>Under the Configuration node, select the Java Message Service node.</p>
+<p>The JMS Service page opens.</p>
+</li>
+<li>
+<p>From the Type drop-down list:</p>
+<ul>
+<li>
+<p>Select EMBEDDED to access the JMS service on the local host.</p>
+<p>The JMS service is started in the same JVM machine as the GlassFish Server. Lazy initialization starts the default embedded broker on the first access of JMS services rather than at GlassFish Server startup. This is the default type of JMS Service.</p>
+</li>
+<li>
+<p>Select LOCAL to access the JMS service on the local host.</p>
+<p>The JMS service is started along with the GlassFish Server.</p>
+</li>
+<li>
+<p>Select REMOTE to access the JMS service on another system.</p>
+<p>If you choose REMOTE, the JMS service is not started by the GlassFish Server the next time the server starts. Instead, the JMS service is started and managed by Message Queue, so you must start the Message Queue broker separately. For information about starting the broker, see the <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GMADG00227"><i>Starting Brokers</i> in <i>Oracle GlassFish Server Message Queue Administration Guide</i></a>. If you choose this value and are using a remote host, follow the instructions in <a href="task-jmshostedit.html">To Edit a JMS Host</a> to specify the name of the remote host.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>In the Startup Timeout field, type the number of seconds the GlassFish Server waits for the JMS service to start before aborting the startup.</p>
+<p>On a slow or overloaded system, increase the value from the default. The default value is 60.</p>
+</li>
+<li>
+<p>In the Start Arguments field, type arguments to customize the JMS service startup.</p>
+<p>Use any arguments available through the <i>as-install-parent</i><code>/mq/bin/imqbrokerd</code> command.</p>
+</li>
+<li>
+<p>Select the Reconnect Enabled checkbox to make the JMS service attempt to reconnect to a message server (or the list of addresses in the AddressList) when a connection is lost.</p>
+<p>This option is enabled by default.</p>
+</li>
+<li>
+<p>In the Reconnect Interval field, type the number of seconds between reconnect attempts.</p>
+<p>This interval applies for attempts on each address in the AddressList and for successive addresses in the list. If it is too short, this time interval does not give a broker time to recover. If it is too long, the reconnect might represent an unacceptable delay. The default value is 5 seconds.</p>
+</li>
+<li>
+<p>In the Reconnect Attempts field, type the number of attempts to connect (or reconnect) for each address in the AddressList before the client runtime tries the next address in the list.</p>
+<p>A value of -1 indicates that the number of reconnect attempts is unlimited (the client runtime attempts to connect to the first address until it succeeds). The default value is 3.</p>
+</li>
+<li>
+<p>From the Default JMS Host drop-down list, select the name of the default JMS host.</p>
+<p>The default value is <code>default_JMS_host</code>.</p>
+</li>
+<li>
+<p>From the Address List Behavior drop-down list, select the order of connection attempts.</p>
+<ul>
+<li>
+<p><code>random</code> means to select an address from the AddressList randomly.</p>
+<p>If there are many clients attempting a connection using the same connection factory, specify <code>random</code> to prevent them from all being connected to the same address. This option is the default.</p>
+</li>
+<li>
+<p><code>priority</code> means that the reconnect always tries to connect to the first server address in the AddressList and uses another one only if the first broker is not available.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>In the Address List Iterations field, type the number of times the JMS service iterates through the AddressList in an effort to establish (or reestablish) a connection).</p>
+<p>A value of -1 indicates that the number of attempts is unlimited. The default value is 3.</p>
+</li>
+<li>
+<p>In the MQ Scheme and MQ Service fields, type the Message Queue address scheme name and the Message Queue connection service name if a non-default scheme or service is to be used.</p>
+<p>See <a href="ref-mqschemeservice.html">MQ Scheme and MQ Service Address Syntax</a> for syntax information.</p>
+</li>
+<li>
+<p>In the Additional Properties area, specify additional properties for the JMS service.</p>
+<p>For information on available properties, see <a href="ref-jmsservice-additional-props.html">Properties Specific to the JMS Service</a>.</p>
+<ul>
+<li>
+<p>To add a property, click the Add Property button. In the blank row that appears, type the property name in the Name field, and type the property value in the Value field.</p>
+</li>
+<li>
+<p>To modify a property, edit that property's Value field.</p>
+</li>
+<li>
+<p>To delete a property, select the checkbox to the left of the Name field of the property that you are deleting, then click the Delete Properties button.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Click Ping to verify that the JMS service is running on the default JMS host.</p>
+<p>If the JMS service is up and running, a message reports that the ping succeeded.</p>
+</li>
+<li>
+<p>Click Save.</p>
 
+<br />
+<p><b>Tip:</b></p>
+<p>To return to the default settings, click the Load Defaults button, then click Save.</p>
 
-<hr>
-</li></ol><p><b>More Information<br>Accessing Remote Servers</b></p><p>Changing the provider and host to a remote system causes all JMS
-applications to run on the remote server. To use both the local server
-and one or more remote servers, create a connection factory resource with the
-<tt>AddressList</tt> property to create connections that access remote servers. See <a href="task-jmsconnectionnew.html">To Create a JMS Connection Factory Resource</a>.</p>
-
-Equivalent asadmin command</b></p><p><tt>jms-ping</tt></p>
-
-<p></b>See Also</b></p>
-<ul><li><p><a href="task-jmshostnew.html">To Create a JMS Host</a></p>
+<br />
 
 </li>
-<li><p><a href="task-jmshostedit.html">To Edit a JMS Host</a></p>
-
+</ol>
+<a id="sthref21" name="sthref21"></a>
+<h5>Accessing Remote Servers</h5>
+<p>Changing the provider and host to a remote system causes all JMS applications to run on the remote server. To use both the local server and one or more remote servers, create a connection factory resource with the <code>AddressList</code> property to create connections that access remote servers. See <a href="task-jmsconnectionnew.html">To Create a JMS Connection Factory Resource</a>.</p>
+<a id="sthref22" name="sthref22"></a>
+<h5>Equivalent asadmin command</h5>
+<p><code>jms-ping</code></p>
+<a id="sthref23" name="sthref23"></a>
+<h5>See Also</h5>
+<ul>
+<li>
+<p><a href="task-jmshostnew.html">To Create a JMS Host</a></p>
 </li>
-<li><p><a href="task-jmshostdelete.html">To Delete a JMS Host</a></p>
-
+<li>
+<p><a href="task-jmshostedit.html">To Edit a JMS Host</a></p>
 </li>
-<li><p><a href="task-jmsphysicaldestnew.html">To Create a JMS Physical Destination</a></p>
-
+<li>
+<p><a href="task-jmshostdelete.html">To Delete a JMS Host</a></p>
 </li>
-<li><p><a href="task-jmsphysicaldestedit.html">To Edit a JMS Physical Destination</a></p>
-
+<li>
+<p><a href="task-jmsphysicaldestnew.html">To Create a JMS Physical Destination</a></p>
 </li>
-<li><p><a href="task-jmsphysicaldestdelete.html">To Delete a JMS Physical Destination</a></p>
-
+<li>
+<p><a href="task-jmsphysicaldestedit.html">To Edit a JMS Physical Destination</a></p>
 </li>
-<li><p><a href="task-jmsflushmessages.html">To Remove Messages from a JMS Physical Destination</a></p>
-
+<li>
+<p><a href="task-jmsphysicaldestdelete.html">To Delete a JMS Physical Destination</a></p>
 </li>
-<li><p><a href="task-jmsphysicaldeststats.html">To View Statistics for a JMS Physical Destination</a></p>
+<li>
+<p><a href="task-jmsflushmessages.html">To Remove Messages from a JMS Physical Destination</a></p>
+</li>
+<li>
+<p><a href="task-jmsphysicaldeststats.html">To View Statistics for a JMS Physical Destination</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

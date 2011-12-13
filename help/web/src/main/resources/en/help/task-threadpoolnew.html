@@ -1,43 +1,62 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
+<p><a id="task-threadpoolnew" name="task-threadpoolnew"></a><a id="GHWEB00051" name="GHWEB00051"></a></p>
 
-
-<a name="task-threadpoolnew"></a><h3>To Create a Thread Pool</h3><a name="indexterm-36"></a><p>Thread pools are used by network listeners and by the ORB. Commonly, a
-network listener uses one of the two thread pools that are created
-when you install the GlassFish Server, and the ORB uses the other. You
-may edit either of these default thread pools to specify settings appropriate to
-your applications or hardware systems, or you can create and use a thread
-pool with these settings.</p>
-
+<h4><a id="sthref73" name="sthref73"></a>To Create a Thread Pool</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Thread pools are used by network listeners and by the ORB. Commonly, a network listener uses one of the two thread pools that are created when you install the GlassFish Server, and the ORB uses the other. You may edit either of these default thread pools to specify settings appropriate to your applications or hardware systems, or you can create and use a thread pool with these settings.</p>
 <ol>
-<li><b>In the navigation tree, expand the Configuration node.</b></li>
-<li><b>Under the Configuration node, select the Thread Pools node.</b><p>The Thread Pools page opens.</p></li>
-<li><b>On the Thread Pools page, click New.</b><p>The New Thread Pool page opens.</p></li>
-<li><b>In the Name field, type a name for the thread pool.</b></li>
-<li><b>In the Class Name field, type the fully qualified name of the class
-that implements the thread pool.</b><p>The default value is <tt>com.sun.grizzly.http.StatsThreadPool</tt>.</p></li>
-<li><b>In the Max Queue Size field, type the maximum number of messages that
-can be queued until threads are available to process them.</b><p>A value of  &#8211;1 indicates that there is no limit to the
-queue size. The default value is 4096.</p></li>
-<li><b>In the Max Thread Pool Size field, type the largest number of threads
-that can exist in the thread pool.</b><p>The default value is 5. This is the recommended value for network listener
-thread pools.</p></li>
-<li><b>In the Min Thread Pool Size field, type the smallest number of threads
-that can exist in the thread pool.</b><p>These threads are created when the thread pool is instantiated. The default value
-is 2.</p></li>
-<li><b>In the Idle Thread Timeout field, type the maximum amount of time, in
-seconds, that a thread can remain idle in the pool.</b><p>After this time expires, the thread is removed from the pool. The default
-value is 900.</p></li>
-<li><b>Click OK.</b></li></ol><p></b>See Also</b></p>
-<ul><li><p><a href="task-threadpooledit.html">To Edit a Thread Pool</a></p>
-
+<li>
+<p>In the navigation tree, expand the Configuration node.</p>
 </li>
-<li><p><a href="task-threadpooldelete.html">To Delete a Thread Pool</a></p>
+<li>
+<p>Under the Configuration node, select the Thread Pools node.</p>
+<p>The Thread Pools page opens.</p>
+</li>
+<li>
+<p>On the Thread Pools page, click New.</p>
+<p>The New Thread Pool page opens.</p>
+</li>
+<li>
+<p>In the Name field, type a name for the thread pool.</p>
+</li>
+<li>
+<p>In the Class Name field, type the fully qualified name of the class that implements the thread pool.</p>
+<p>The default value is <code>com.sun.grizzly.http.StatsThreadPool</code>.</p>
+</li>
+<li>
+<p>In the Max Queue Size field, type the maximum number of messages that can be queued until threads are available to process them.</p>
+<p>A value of -1 indicates that there is no limit to the queue size. The default value is 4096.</p>
+</li>
+<li>
+<p>In the Max Thread Pool Size field, type the largest number of threads that can exist in the thread pool.</p>
+<p>The default value is 5. This is the recommended value for network listener thread pools.</p>
+</li>
+<li>
+<p>In the Min Thread Pool Size field, type the smallest number of threads that can exist in the thread pool.</p>
+<p>These threads are created when the thread pool is instantiated. The default value is 2.</p>
+</li>
+<li>
+<p>In the Idle Thread Timeout field, type the maximum amount of time, in seconds, that a thread can remain idle in the pool.</p>
+<p>After this time expires, the thread is removed from the pool. The default value is 900.</p>
+</li>
+<li>
+<p>Click OK.</p>
+</li>
+</ol>
+<a id="sthref74" name="sthref74"></a>
+<h5>See Also</h5>
+<ul>
+<li>
+<p><a href="task-threadpooledit.html">To Edit a Thread Pool</a></p>
+</li>
+<li>
+<p><a href="task-threadpooldelete.html">To Delete a Thread Pool</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

@@ -1,89 +1,97 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
+<p><a id="task-createnode" name="task-createnode"></a><a id="GHCLU00081" name="GHCLU00081"></a></p>
 
-
-<a name="task-createnode"></a><h3>To Create a Node</h3><a name="indexterm-154"></a><p>A node represents a host on which the GlassFish Server software is
-installed. A node must exist for every host on which GlassFish Server
-instances reside. </p>
-
+<h4><a id="sthref224" name="sthref224"></a>To Create a Node</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>A node represents a host on which the GlassFish Server software is installed. A node must exist for every host on which GlassFish Server instances reside.</p>
 <ol>
-<li><b>In the navigation tree, select the Nodes node.</b><p>The Nodes page opens.</p></li>
-<li><b>On the Nodes page, click New.</b><p>The New Node page opens.</p></li>
-<li><b>In the Name field, type your choice of name for the node.</b></li>
-<li><b>From the Type drop-down list, select the type of the node to
-create.</b><ul>
-<li><b>To create a node supports communication over secure shell (SSH), select SSH.</b></li>
-<li><b>To create a node that does not support remote communication, select CONFIG.</b></li></ul></li>
-<li><b>In the Node Host field, type the name of the host that
-the node represents.</b><p>Whether this field is mandatory depends on the type of the node:</p>
-<ul><li><p>If the type of the node is CONFIG, the name of the host may be omitted. The name of the host can be determined when instances that reside on the node are created.</p>
-
+<li>
+<p>In the navigation tree, select the Nodes node.</p>
+<p>The Nodes page opens.</p>
 </li>
-<li><p>If the type of the node is SSH, the name of the host must be specified. Otherwise, an error occurs.</p>
-
-</li></ul>
+<li>
+<p>On the Nodes page, click New.</p>
+<p>The New Node page opens.</p>
 </li>
-<li><b>In the Node Directory field, type the path to the directory that
-is to contain GlassFish Server instances that are created on the node.</b><p>If the type of the node is CONFIG, leave this field empty. The
-node directory can be determined when instances that reside on the node
-are created.</p><p>If you type a relative path, the path is relative to the
-<i>as-install</i> directory, where <i>as-install</i> is the base installation directory of the GlassFish
-Server software on the host.</p></li>
-<li><b>In the Installation Directory field, type the full path to the parent
-of the base installation directory of the GlassFish Server software on the host,
-for example, <tt>/export/glassfish3/</tt>.</b><p>If the type of the node is CONFIG, leave this field empty.
-The installation directory can be determined when instances that reside on the node
-are created.</p></li>
-<li><b>To force the node to be created  in the configuration of
-the domain administration server (DAS) even if validation of the node's parameters
-fails, enable the Force option.</b></li>
-<li><b>In the SSH Port field, type the port to use for SSH
-connections to this node's host.</b></li>
-<li><b>In the SSH User Name field, type the name of the user
-on this node's host that is to run the process for connecting
-to the host through SSH.</b></li>
-<li><b>Specify how the SSH user will be authenticated when logging in to
-this node's host.</b><ul>
-<li><b>To specify authentication through an SSH private key file, perform these steps:</b><ol style="list-style-type: lower-alpha">
-<li><b>From the SSH User Authentication drop-down list, select Key File.</b></li>
-<li><b>In the Key File field, type the absolute path to the SSH
-private key file for user that the SSH User Name option specifies.
-</b>
-<hr><p><b>Note - </b>GlassFish Server also supports password authentication through the <tt>AS_ADMIN_SSHPASSWORD</tt> entry in the
-password file. The password file is specified in the <tt>--paswordfile</tt> option of the
-<a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=asadmin-1m"><tt>asadmin</tt>(1M)</a> utility.</p>
-
-
-<hr>
-</li></ol></li>
-<li><b>To specify authentication through a password that is stored in the DAS
-configuration, perform these steps:</b>
-<hr><p><b>Caution - </b>This password is stored in clear text in the DAS configuration. For
-enhanced security, use a key file or a password alias </p>
-
-
-<hr>
-<ol style="list-style-type: lower-alpha">
-<li><b>From the SSH User Authentication drop-down list, select Password.</b></li>
-<li><b>In the SSH Password field, type the password that the SSH user
-will use when logging in to this node's host. </b></li>
-<li><b>In the Confirm SSH Password field, type the password again.</b></li></ol></li>
-<li><b>To specify authentication through a password alias, perform these steps:</b><ol style="list-style-type: lower-alpha">
-<li><b>From the SSH User Authentication drop-down list, select Password Alias.</b></li>
-<li><b>From the Password Alias drop-down list, select an existing alias.</b></li></ol></li></ul></li>
-<li><b>Click Save.</b></li></ol><p></b>See Also</b></p>
-<ul><li><p><a href="task-deletenode.html">To Delete Nodes</a></p>
-
+<li>
+<p>In the Name field, type your choice of name for the node.</p>
 </li>
-<li><p><a href="task-listnodes.html">To List All Nodes in the Current Domain</a></p>
-
+<li>
+<p>From the Type drop-down list, select the type of the node to create.</p>
+<ul>
+<li>
+<p>To enable the node to support communication over the Distributed Component Object Model (DCOM) remote protocol, select DCOM.</p>
 </li>
-<li><p><a href="task-editnode.html">To Edit a Node</a></p>
+<li>
+<p>To create a node supports communication over secure shell (SSH), select SSH.</p>
+</li>
+<li>
+<p>To create a node that does not support remote communication, select CONFIG.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>In the Node Host field, type the name of the host that the node represents.</p>
+<p>Whether this field is mandatory depends on the type of the node:</p>
+<ul>
+<li>
+<p>If the type of the node is CONFIG, the name of the host may be omitted. The name of the host can be determined when instances that reside on the node are created.</p>
+</li>
+<li>
+<p>If the type of the node is DCOM or SSH, the name of the host must be specified. Otherwise, an error occurs.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>In the Node Directory field, type the path to the directory that is to contain GlassFish Server instances that are created on the node.</p>
+<p>If the type of the node is CONFIG, leave this field empty. The node directory can be determined when instances that reside on the node are created.</p>
+<p>If you type a relative path, the path is relative to the <i>as-install</i> directory, where <i>as-install</i> is the base installation directory of the GlassFish Server software on the host.</p>
+</li>
+<li>
+<p>In the Installation Directory field, type the full path to the <i>parent</i> of the base installation directory of the GlassFish Server software on the host, for example, <code>/export/glassfish3</code>.</p>
+<p>If the type of the node is CONFIG, leave this field empty. The installation directory can be determined when instances that reside on the node are created.</p>
+</li>
+<li>
+<p>Finish the creation of the node as required by the type of the node.</p>
+<ol>
+<li>
+<p>If the type of the node is CONFIG, click Save.</p>
+</li>
+<li>
+<p>If the type of the node is DCOM, follow the instructions in <a href="task-nodenewdcom.html">To Finish the Creation of a DCOM Node</a>.</p>
+</li>
+<li>
+<p>If the type of the node is SSH, follow the instructions in <a href="task-nodenewssh.html">To Finish the Creation of an SSH Node</a>.</p>
+</li>
+</ol>
+</li>
+</ol>
+<a id="sthref225" name="sthref225"></a>
+<h5>See Also</h5>
+<ul>
+<li>
+<p><a href="task-nodenewdcom.html">To Finish the Creation of a DCOM Node</a></p>
+</li>
+<li>
+<p><a href="task-nodenewssh.html">To Finish the Creation of an SSH Node</a></p>
+</li>
+<li>
+<p><a href="task-deletenode.html">To Delete Nodes</a></p>
+</li>
+<li>
+<p><a href="task-listnodes.html">To List All Nodes in the Current Domain</a></p>
+</li>
+<li>
+<p><a href="task-pingnode.html">To Test if a Node Is Reachable</a></p>
+</li>
+<li>
+<p><a href="task-editnode.html">To Edit a Node</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

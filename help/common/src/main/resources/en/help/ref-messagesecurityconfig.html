@@ -1,74 +1,80 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-messagesecurityconfig"></a><h4>Message Security Configurations</h4>
-<a name="indexterm-229"></a><p>Use the Message Security Configurations page to view and modify the available configurations
-for message security providers.</p>
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="ref-group-messagesecurity.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="ref-messagesecurityconfignew.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="ref-messagesecurityconfig" name="ref-messagesecurityconfig"></a><a id="GHCOM00118" name="GHCOM00118"></a></p>
 
-<p>To configure message security, you need a basic understanding of security and web
-services concepts. For more information, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2435&id=ablrk">Chapter 3, Administering Message Security, in <i>Oracle GlassFish Server 3.1 Security Guide</i></a> and <a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2416&id=gbbjk">Chapter 6, Administering Web Applications, in <i>Oracle GlassFish Server 3.1 Administration Guide</i></a>.</p>
-
-<p>GlassFish Server implements message security using message security providers integrated in its SOAP
-processing layer. The message security providers depend on other security facilities of GlassFish
-Server.</p>
-
+<h4><a id="sthref420" name="sthref420"></a>Message Security Configurations</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the Message Security Configurations page to view and modify the available configurations for message security providers.</p>
+<p>To configure message security, you need a basic understanding of security and web services concepts. For more information, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSSCG00037">Chapter 3, <i>Administering Message Security,</i> in <i>Oracle GlassFish Server Security Guide</i></a> and <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSADG00009">Chapter 6, <i>Administering Web Applications,</i> in <i>Oracle GlassFish Server Administration Guide</i></a>.</p>
+<p>GlassFish Server implements message security using message security providers integrated in its SOAP processing layer. The message security providers depend on other security facilities of GlassFish Server.</p>
 <p>For each configuration, the following information is provided.</p>
-
-<dl><dt>Authentication Layer</dt>
-<dd><p>The message layer at which authentication is performed. By default, a SOAP configuration is provided. It is also possible to provide an HttpServlet configuration.</p>
-
+<dl>
+<dt>Authentication Layer</dt>
+<dd>
+<p>The message layer at which authentication is performed. By default, a SOAP configuration is provided. It is also possible to provide an HttpServlet configuration.</p>
 </dd>
 <dt>Default Provider</dt>
-<dd><p>The default server provider for this configuration. By default, no default server provider is configured.</p>
-
+<dd>
+<p>The default server provider for this configuration. By default, no default server provider is configured.</p>
 </dd>
 <dt>Default Client Provider</dt>
-<dd><p>The default client provider for this configuration. By default, no default client provider is configured.</p>
-
+<dd>
+<p>The default client provider for this configuration. By default, no default client provider is configured.</p>
 </dd>
 </dl>
 <p>The Message Security Configuration table also contains the following options.</p>
-
-<dl><dt>New</dt>
-<dd><p>Button to create a new configuration.</p>
-
+<dl>
+<dt>New</dt>
+<dd>
+<p>Button to create a new configuration.</p>
 </dd>
 <dt>Delete</dt>
-<dd><p>Button to delete one or more selected configurations.</p>
-
+<dd>
+<p>Button to delete one or more selected configurations.</p>
 </dd>
 </dl>
-<a name="gkoky"></a><h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-configmsgsecproviders.html">To Configure GlassFish Server Facilities for Use by Message Security Providers</a></p>
-
+<a id="sthref421" name="sthref421"></a>
+<h5>Related Tasks</h5>
+<ul>
+<li>
+<p><a href="task-configmsgsecproviders.html">To Configure GlassFish Server Facilities for Use by Message Security Providers</a></p>
 </li>
-<li><p><a href="task-messagesecurityconfignew.html">To Create a Message Security Configuration</a></p>
-
+<li>
+<p><a href="task-messagesecurityconfignew.html">To Create a Message Security Configuration</a></p>
 </li>
-<li><p><a href="task-messagesecurityconfigedit.html">To Edit a Message Security Configuration</a></p>
-
+<li>
+<p><a href="task-messagesecurityconfigedit.html">To Edit a Message Security Configuration</a></p>
 </li>
-<li><p><a href="task-messagesecurityconfigdelete.html">To Delete a Message Security Configuration</a></p>
-
+<li>
+<p><a href="task-messagesecurityconfigdelete.html">To Delete a Message Security Configuration</a></p>
 </li>
-<li><p><a href="task-messagesecurityproviderconfignew.html">To Create a Message Security Provider Configuration</a></p>
-
+<li>
+<p><a href="task-messagesecurityproviderconfignew.html">To Create a Message Security Provider Configuration</a></p>
 </li>
-<li><p><a href="task-messagesecurityproviderconfigedit.html">To Edit a Message Security Provider Configuration</a></p>
-
+<li>
+<p><a href="task-messagesecurityproviderconfigedit.html">To Edit a Message Security Provider Configuration</a></p>
 </li>
-<li><p><a href="task-messagesecurityproviderconfigdelete.html">To Delete a Message Security Provider Configuration</a></p>
-
+<li>
+<p><a href="task-messagesecurityproviderconfigdelete.html">To Delete a Message Security Provider Configuration</a></p>
 </li>
-<li><p><a href="task-enablemesec4appclients.html">To Enable Message Security for Application Clients</a></p>
-
-</li></ul>
-<a name="gkong"></a><h5>Related <tt>asadmin</tt> Commands</h5>
+<li>
+<p><a href="task-enablemesec4appclients.html">To Enable Message Security for Application Clients</a></p>
+</li>
+</ul>
+<a id="sthref422" name="sthref422"></a>
+<h5>Related asadmin Commands</h5>
 <p>None.</p>
 
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

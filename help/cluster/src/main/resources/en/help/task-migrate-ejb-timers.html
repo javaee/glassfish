@@ -1,34 +1,63 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
+<p><a id="task-migrate-ejb-timers" name="task-migrate-ejb-timers"></a><a id="GHCLU00085" name="GHCLU00085"></a></p>
 
-
-<a name="task-migrate-ejb-timers"></a><h3>To Migrate EJB Timers</h3><a name="indexterm-158"></a><a name="indexterm-159"></a><a name="indexterm-160"></a><p>If a GlassFish Server instance is stopped, Enterprise JavaBeans (EJB) technology timers
-that are installed on that instance also stop running. If the instance was
-stopped abnormally or unexpectedly, To enable these timers run while the instance
-is stopped, you must migrate the timers to a running server instance in
-the cluster.</p>
-
+<h4><a id="sthref240" name="sthref240"></a><a id="sthref241" name="sthref241"></a><a id="sthref242" name="sthref242"></a>To Migrate EJB Timers</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>If a GlassFish Server instance is stopped, Enterprise JavaBeans (EJB) technology timers that are installed on that instance also stop running. If the instance was stopped abnormally or unexpectedly, To enable these timers run while the instance is stopped, you must migrate the timers to a running server instance in the cluster.</p>
 <ol>
-<li><b>In the navigation tree, expand the Clusters node.</b></li>
-<li><b>Under the Clusters node in the navigation tree, select the cluster.</b><p>The General Information page for the cluster opens.</p></li>
-<li><b>On the General Information page, click Migrate EJB Timers.</b><p>The Migrate EJB Timers page opens.</p>
-<hr><p><b>Note - </b>If all instances in the cluster are running, the Migrate EJB Timers
-button is deactivated.</p>
-
-
-<hr>
+<li>
+<p>In the navigation tree, expand the Clusters node.</p>
 </li>
-<li><b>On the Migrate EJB Timers page, select the instance from which and
-to which to migrate the timers.</b><ol style="list-style-type: lower-alpha">
-<li><b>From the Source drop-down list, select the stopped instance from which to
-migrate the timers.</b></li>
-<li>(Optional) <b>From the Destination drop-down list, select the running instance to which to
-migrate the timers. </b></li>
-<li><b>Click OK.</b></li></ol></li>
-<li><b>Stop and restart the instance to which you migrated the EJB timers.</b><p>If the source instance is running or if the destination instance is not
-running, the Administration Console displays an error message.</p></li></ol>
+<li>
+<p>Under the Clusters node in the navigation tree, select the cluster.</p>
+<p>The General Information page for the cluster opens.</p>
+</li>
+<li>
+<p>On the General Information page, click Migrate EJB Timers.</p>
+<p>The Migrate EJB Timers page opens.</p>
 
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<br />
+<p><b>Note:</b></p>
+<p>If all instances in the cluster are running, the Migrate EJB Timers button is deactivated.</p>
+
+<br />
+
+<p>To assist you in migrating timers, the Migrate EJB Timers page contains a table of EJB timers with the following information.</p>
+<dl>
+<dt>Server Name</dt>
+<dd>
+<p>List of GlassFish Server instances in the cluster.</p>
+</dd>
+<dt>Timer Count</dt>
+<dd>
+<p>Number of persistent timers on each instance.</p>
+</dd>
+</dl>
+</li>
+<li>
+<p>On the Migrate EJB Timers page, select the instance from which and to which to migrate the timers.</p>
+<ol>
+<li>
+<p>From the Source drop-down list, select the stopped instance from which to migrate the timers.</p>
+</li>
+<li>
+<p>From the Destination drop-down list, select the running instance to which to migrate the timers.</p>
+</li>
+<li>
+<p>Click OK.</p>
+</li>
+</ol>
+</li>
+<li>
+<p>Stop and restart the instance to which you migrated the EJB timers.</p>
+<p>If the source instance is running or if the destination instance is not running, the Administration Console displays an error message.</p>
+</li>
+</ol>
+
+
+
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

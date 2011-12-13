@@ -1,80 +1,83 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-orb"></a><h4>ORB</h4>
-<a name="indexterm-8"></a><a name="indexterm-9"></a><p>Use the ORB page to configure the Object Request Broker.</p>
+<p><a id="ref-orb" name="ref-orb"></a><a id="GHCOR00001" name="GHCOR00001"></a></p>
 
-<p>The ORB provides the required infrastructure to identify and locate objects, handle connection
-management, deliver data, and request communication. Remote clients of enterprise beans (EJB modules)
-communicate with the GlassFish Server using the ORB.</p>
-
+<h4><a id="sthref14" name="sthref14"></a><a id="sthref15" name="sthref15"></a>ORB</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the ORB page to configure the Object Request Broker.</p>
+<p>The ORB provides the required infrastructure to identify and locate objects, handle connection management, deliver data, and request communication. Remote clients of enterprise beans (EJB modules) communicate with the GlassFish Server using the ORB.</p>
 <p>The ORB page contains the following options.</p>
-
-<dl><dt>Load Defaults</dt>
-<dd><p>Button to restore settings that have default values to their default values. Settings that do not have default values are not changed.</p>
-
+<dl>
+<dt>Load Defaults</dt>
+<dd>
+<p>Button to restore settings that have default values to their default values. Settings that do not have default values are not changed.</p>
 </dd>
 <dt>Configuration Name</dt>
-<dd><p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
-
+<dd>
+<p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
 </dd>
 <dt>Thread Pool ID</dt>
-<dd><p>The thread pool used by the ORB. The ORB uses thread pools to respond to requests from remote clients of enterprise beans and other clients that communicate by using RMI-IIOP. The default thread pool for the ORB is <tt>thread-pool-1</tt>, which uses defaults appropriate for RMI/IIOP requests.</p>
-
+<dd>
+<p>The thread pool used by the ORB. The ORB uses thread pools to respond to requests from remote clients of enterprise beans and other clients that communicate by using RMI-IIOP. The default thread pool for the ORB is <code>thread-pool-1</code>, which uses defaults appropriate for RMI/IIOP requests.</p>
 </dd>
 <dt>Max Message Fragment Size</dt>
-<dd><p>The maximum fragment size for IIOP messages. Messages larger than this size are fragmented. The default value is 1024 bytes.</p>
-
+<dd>
+<p>The maximum fragment size for IIOP messages. Messages larger than this size are fragmented. The default value is 1024 bytes.</p>
 </dd>
 <dt>Total Connections</dt>
-<dd><p>The maximum number of incoming connections for all IIOP listeners. The default value is 1024.</p>
-
+<dd>
+<p>The maximum number of incoming connections for all IIOP listeners. The default value is 1024.</p>
 </dd>
 <dt>IIOP Client Authentication</dt>
-<dd><p>If the Enabled checkbox is selected, the server rejects unauthenticated requests and inserts an authentication-required bit in Interoperable Object References (IORs) sent to clients. IIOP client authentication can be enabled or disabled. This option is disabled by default.</p>
-
+<dd>
+<p>If the Enabled checkbox is selected, the server rejects unauthenticated requests and inserts an authentication-required bit in Interoperable Object References (IORs) sent to clients. IIOP client authentication can be enabled or disabled. This option is disabled by default.</p>
 </dd>
 <dt>Additional Properties</dt>
-<dd><p>Additional properties for the ORB. The GlassFish Serverdoes not define any additional properties for the ORB.</p>
-
+<dd>
+<p>Additional properties for the ORB. The GlassFish Serverdoes not define any additional properties for the ORB.</p>
 </dd>
 </dl>
+<a id="sthref16" name="sthref16"></a>
 <h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-orb.html">To Configure the ORB</a></p>
-
+<ul>
+<li>
+<p><a href="task-orb.html">To Configure the ORB</a></p>
 </li>
-<li><p><a href="task-iioplistenernew.html">To Create an IIOP Listener</a></p>
-
+<li>
+<p><a href="task-iioplistenernew.html">To Create an IIOP Listener</a></p>
 </li>
-<li><p><a href="task-iioplisteneredit.html">To Edit an IIOP Listener</a></p>
-
+<li>
+<p><a href="task-iioplisteneredit.html">To Edit an IIOP Listener</a></p>
 </li>
-<li><p><a href="task-editiiopssl.html">To Edit SSL Settings for a Secure IIOP Listener</a></p>
-
+<li>
+<p><a href="task-editiiopssl.html">To Edit SSL Settings for a Secure IIOP Listener</a></p>
 </li>
-<li><p><a href="task-iioplistenerdelete.html">To Delete an IIOP Listener</a></p>
-
-</li></ul>
-<h5>Related <tt>asadmin</tt> Commands</h5>
-
-<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=create-iiop-listener-1"><tt>create-iiop-listener</tt>(1)</a></p>
-
+<li>
+<p><a href="task-iioplistenerdelete.html">To Delete an IIOP Listener</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=list-iiop-listeners-1"><tt>list-iiop-listeners</tt>(1)</a></p>
-
+</ul>
+<a id="sthref17" name="sthref17"></a>
+<h5>Related asadmin Commands</h5>
+<ul>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00032"><code>create-iiop-listener</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=delete-iiop-listener-1"><tt>delete-iiop-listener</tt>(1)</a></p>
-
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00169"><code>list-iiop-listeners</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=create-ssl-1"><tt>create-ssl</tt>(1)</a></p>
-
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00084"><code>delete-iiop-listener</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=delete-ssl-1"><tt>delete-ssl</tt>(1)</a></p>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00058"><code>create-ssl</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00109"><code>delete-ssl</code>(1)</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

@@ -1,102 +1,125 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
+<p><a id="task-change-standalone-instance-ports" name="task-change-standalone-instance-ports"></a><a id="GHCLU00073" name="GHCLU00073"></a></p>
 
-
-<a name="task-change-standalone-instance-ports"></a><h3>To Modify the Port Numbers of a Standalone GlassFish Server Instance</h3><a name="indexterm-131"></a><a name="indexterm-132"></a><a name="indexterm-133"></a><p>The port numbers of a standalone GlassFish Server instance are initially set
-in the configuration that the instance references. You must modify these port numbers
-if, for example, two instances that reference the same configuration reside on
-the same host. In this situation, port numbers for one instance must be
-modified because both instances reference the same configuration.</p>
-
-<p>The port numbers of an instance are stored as Java system properties.
-These properties are passed to the Java application launcher through the <tt>-D</tt> option
-of the Java application launcher whenGlassFish Server is started. </p>
-
+<h4><a id="sthref190" name="sthref190"></a><a id="sthref191" name="sthref191"></a><a id="sthref192" name="sthref192"></a>To Modify the Port Numbers of a Standalone GlassFish Server Instance</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>The port numbers of a standalone GlassFish Server instance are initially set in the configuration that the instance references. You must modify these port numbers if, for example, two instances that reference the same configuration reside on the same host. In this situation, port numbers for one instance must be modified because both instances reference the same configuration.</p>
+<p>The port numbers of an instance are stored as Java system properties. These properties are passed to the Java application launcher through the <code>-D</code> option of the Java application launcher whenGlassFish Server is started.</p>
 <ol>
-<li><b>In the navigation tree, select the Standalone Instances node.</b><p>The Standalone Server Instances page opens.</p></li>
-<li><b>Select the instance for which to modify port numbers.</b><p>The General Information page for the instance opens.</p></li>
-<li><b>On the General Information page, click the Properties tab.</b><p>The Instance System Properties page opens.</p><p>This page displays the current values of the following system properties for
-the instance:</p>
-<ul><li><p><a href="../../../common/en/help/ref-predefinedconfigsysproperties.html">Port numbers that are predefined in the instance's configuration</a></p>
-
+<li>
+<p>In the navigation tree, select the Standalone Instances node.</p>
+<p>The Standalone Server Instances page opens.</p>
 </li>
-<li><p>Custom properties that are defined for the instance, if any</p>
-
-</li></ul>
+<li>
+<p>Select the instance for which to modify port numbers.</p>
+<p>The General Information page for the instance opens.</p>
 </li>
-<li><b>For each existing property that you are modifying, type the new value
-in the Override Value field for the property.</b></li>
-<li><b>Set values for any additional properties that you require.</b><ol style="list-style-type: lower-alpha">
-<li><b>In the Additional Properties table, click Add Property.</b><p>A row is added to the Additional Properties table.</p></li>
-<li><b>In the Instance Variable Name field, type the property name.</b></li>
-<li><b>In the Override Value field, type the value.</b></li></ol></li>
-<li><b>Click Save.</b></li></ol><p></b>See Also</b></p>
-<ul><li><p><a href="task-create-standalone-instance.html">To Create a Standalone GlassFish Server Instance</a></p>
-
+<li>
+<p>On the General Information page, click the Properties tab.</p>
+<p>The Instance System Properties page opens.</p>
+<p>This page displays the current values of the following system properties for the instance:</p>
+<ul>
+<li>
+<p><a href="../../../common/en/help/ref-predefinedconfigsysproperties.html">Port numbers that are predefined in the instance's configuration</a></p>
 </li>
-<li><p><a href="task-delete-standalone-instances.html">To Delete Standalone GlassFish Server Instances</a></p>
-
+<li>
+<p>Custom properties that are defined for the instance, if any</p>
 </li>
-<li><p><a href="task-start-standalone-instances.html">To Start Standalone GlassFish Server Instances</a></p>
-
+</ul>
 </li>
-<li><p><a href="task-stop-standalone-instances.html">To Stop Standalone GlassFish Server Instances</a></p>
-
+<li>
+<p>For each existing property that you are modifying, type the new value in the Override Value field for the property.</p>
 </li>
-<li><p><a href="task-view-logs-standalone-instance.html">To View Log Files for a Standalone GlassFish Server Instance</a></p>
-
+<li>
+<p>Set values for any additional properties that you require.</p>
+<ol>
+<li>
+<p>In the Additional Properties table, click Add Property.</p>
+<p>A row is added to the Additional Properties table.</p>
 </li>
-<li><p><a href="task-recovertransactions-standalone-instance.html">To Recover Transactions for a Standalone GlassFish Server Instance</a></p>
-
+<li>
+<p>In the Instance Variable Name field, type the property name.</p>
 </li>
-<li><p><a href="task-standalone-instance-app-deploy.html">To Deploy an Application to a Standalone GlassFish Server Instance</a></p>
-
+<li>
+<p>In the Override Value field, type the value.</p>
 </li>
-<li><p><a href="task-standalone-instance-app-list.html">To List Applications That Are Deployed to a Standalone GlassFish Server Instance</a></p>
-
+</ol>
 </li>
-<li><p><a href="task-standalone-instance-app-undeploy.html">To Undeploy Applications From a Standalone GlassFish Server Instance</a></p>
-
+<li>
+<p>Click Save.</p>
 </li>
-<li><p><a href="task-standalone-instance-app-remove.html">To Remove Applications From a Standalone GlassFish Server Instance</a></p>
-
+</ol>
+<a id="sthref193" name="sthref193"></a>
+<h5>See Also</h5>
+<ul>
+<li>
+<p><a href="task-create-standalone-instance.html">To Create a Standalone GlassFish Server Instance</a></p>
 </li>
-<li><p><a href="task-standalone-instance-app-edit.html">To Edit an Application That Is Deployed to a Standalone GlassFish Server Instance</a></p>
-
+<li>
+<p><a href="task-delete-standalone-instances.html">To Delete Standalone GlassFish Server Instances</a></p>
 </li>
-<li><p><a href="task-standalone-instance-app-enable-disable.html">To Enable or Disable an Application That Is Deployed to a Standalone GlassFish Server Instance</a></p>
-
+<li>
+<p><a href="task-start-standalone-instances.html">To Start Standalone GlassFish Server Instances</a></p>
 </li>
-<li><p><a href="task-standalone-instance-app-lb-enable-disable.html">To Enable or Disable Load Balancing for an Application That Is Deployed to a Standalone GlassFish Server Instance</a></p>
-
+<li>
+<p><a href="task-stop-standalone-instances.html">To Stop Standalone GlassFish Server Instances</a></p>
 </li>
-<li><p><a href="task-standalone-instance-resource-create.html">To Create a Resource for a Standalone GlassFish Server Instance</a></p>
-
+<li>
+<p><a href="task-view-logs-standalone-instance.html">To View Log Files for a Standalone GlassFish Server Instance</a></p>
 </li>
-<li><p><a href="task-standalone-instance-resource-display.html">To List Resources for a Standalone GlassFish Server Instance</a></p>
-
+<li>
+<p><a href="task-recovertransactions-standalone-instance.html">To Recover Transactions for a Standalone GlassFish Server Instance</a></p>
 </li>
-<li><p><a href="task-standalone-instance-resource-enable-disable.html">To Enable or Disable a Resource for a Standalone GlassFish Server Instance</a></p>
-
+<li>
+<p><a href="task-standalone-instance-app-deploy.html">To Deploy an Application to a Standalone GlassFish Server Instance</a></p>
 </li>
-<li><p><a href="task-standalone-instance-resource-edit.html">To Edit a Resource for a Standalone GlassFish Server Instance</a></p>
-
+<li>
+<p><a href="task-standalone-instance-app-list.html">To List Applications That Are Deployed to a Standalone GlassFish Server Instance</a></p>
 </li>
-<li><p><a href="task-set-props-standalone-instance.html">To Set Instance-Only Properties for a Standalone GlassFish Server Instance</a></p>
-
+<li>
+<p><a href="task-standalone-instance-app-undeploy.html">To Undeploy Applications From a Standalone GlassFish Server Instance</a></p>
 </li>
-<li><p><a href="task-mon-app-standalone-instance.html">To View Application Monitoring Data for a Standalone GlassFish Server Instance</a></p>
-
+<li>
+<p><a href="task-standalone-instance-app-remove.html">To Remove Applications From a Standalone GlassFish Server Instance</a></p>
 </li>
-<li><p><a href="task-mon-server-standalone-instance.html">To View Virtual-Server Monitoring Data for a Standalone GlassFish Server Instance</a></p>
-
+<li>
+<p><a href="task-standalone-instance-app-edit.html">To Edit an Application That Is Deployed to a Standalone GlassFish Server Instance</a></p>
 </li>
-<li><p><a href="task-mon-resource-standalone-instance.html">To View Resource Monitoring Data for a Standalone GlassFish Server Instance</a></p>
+<li>
+<p><a href="task-standalone-instance-app-enable-disable.html">To Enable or Disable an Application That Is Deployed to a Standalone GlassFish Server Instance</a></p>
+</li>
+<li>
+<p><a href="task-standalone-instance-app-lb-enable-disable.html">To Enable or Disable Load Balancing for an Application That Is Deployed to a Standalone GlassFish Server Instance</a></p>
+</li>
+<li>
+<p><a href="task-standalone-instance-resource-create.html">To Create a Resource for a Standalone GlassFish Server Instance</a></p>
+</li>
+<li>
+<p><a href="task-standalone-instance-resource-display.html">To List Resources for a Standalone GlassFish Server Instance</a></p>
+</li>
+<li>
+<p><a href="task-standalone-instance-resource-enable-disable.html">To Enable or Disable a Resource for a Standalone GlassFish Server Instance</a></p>
+</li>
+<li>
+<p><a href="task-standalone-instance-resource-edit.html">To Edit a Resource for a Standalone GlassFish Server Instance</a></p>
+</li>
+<li>
+<p><a href="task-set-props-standalone-instance.html">To Set Instance-Only Properties for a Standalone GlassFish Server Instance</a></p>
+</li>
+<li>
+<p><a href="task-mon-app-standalone-instance.html">To View Application Monitoring Data for a Standalone GlassFish Server Instance</a></p>
+</li>
+<li>
+<p><a href="task-mon-server-standalone-instance.html">To View Virtual-Server Monitoring Data for a Standalone GlassFish Server Instance</a></p>
+</li>
+<li>
+<p><a href="task-mon-resource-standalone-instance.html">To View Resource Monitoring Data for a Standalone GlassFish Server Instance</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

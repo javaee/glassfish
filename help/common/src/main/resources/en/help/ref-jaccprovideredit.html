@@ -1,57 +1,71 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-jaccprovideredit"></a><h4>Edit JACC Provider</h4>
-<a name="indexterm-228"></a><p>Use the Edit JACC Provider page to modify a JACC provider for
-the selected GlassFish Server instance or cluster.</p>
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="ref-jaccproviderprop.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="ref-group-messagesecurity.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="ref-jaccprovideredit" name="ref-jaccprovideredit"></a><a id="GHCOM00117" name="GHCOM00117"></a></p>
 
+<h4><a id="sthref417" name="sthref417"></a>Edit JACC Provider</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the Edit JACC Provider page to modify a JACC provider for the selected GlassFish Server instance or cluster.</p>
 <p>The Edit JACC Provider page contains the following options.</p>
-
-<dl><dt>Configuration Name</dt>
-<dd><p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
-
+<dl>
+<dt>Configuration Name</dt>
+<dd>
+<p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
 </dd>
 <dt>Name</dt>
-<dd><p>The name of the JACC provider. This is a read-only field. You can only specify the name when you create a new JACC provider.</p>
-
+<dd>
+<p>The name of the JACC provider. This is a read-only field. You can only specify the name when you create a new JACC provider.</p>
 </dd>
 <dt>Policy Configuration</dt>
-<dd><p>The fully qualified class name for the <tt>javax.security.jacc.PolicyConfigurationFactory.provider</tt> that implements the provider-specific <tt>javax.security.jacc.PolicyConfigurationFactory</tt>.</p>
-
+<dd>
+<p>The fully qualified class name for the <code>javax.security.jacc.PolicyConfigurationFactory.provider</code> that implements the provider-specific <code>javax.security.jacc.PolicyConfigurationFactory</code>.</p>
 </dd>
 <dt>Policy Provider</dt>
-<dd><p>The fully qualified class name for the <tt>javax.security.jacc.policy.provider</tt> that implements the <tt>java.security.Policy</tt>.</p>
-
+<dd>
+<p>The fully qualified class name for the <code>javax.security.jacc.policy.provider</code> that implements the <code>java.security.Policy</code>.</p>
 </dd>
 <dt>Additional Properties</dt>
-<dd><p>Additional properties for the JACC provider. For a description of the additional properties that are available for JACC providers, see <a href="ref-jaccproviderprop.html">Properties Specific to JACC Providers</a>.</p>
-
+<dd>
+<p>Additional properties for the JACC provider. For a description of the additional properties that are available for JACC providers, see <a href="ref-jaccproviderprop.html">Properties Specific to JACC Providers</a>.</p>
 </dd>
 </dl>
-<a name="gkolt"></a><h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-jaccprovidernew.html">To Create a JACC Provider</a></p>
-
+<a id="sthref418" name="sthref418"></a>
+<h5>Related Tasks</h5>
+<ul>
+<li>
+<p><a href="task-jaccprovidernew.html">To Create a JACC Provider</a></p>
 </li>
-<li><p><a href="task-jaccprovideredit.html">To Edit a JACC Provider</a></p>
-
+<li>
+<p><a href="task-jaccprovideredit.html">To Edit a JACC Provider</a></p>
 </li>
-<li><p><a href="task-jaccproviderdelete.html">To Delete a JACC Provider</a></p>
-
-</li></ul>
-<a name="gkomb"></a><h5>Related <tt>asadmin</tt> Commands</h5>
-
-<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=create-jacc-provider-1"><tt>create-jacc-provider</tt>(1)</a></p>
-
+<li>
+<p><a href="task-jaccproviderdelete.html">To Delete a JACC Provider</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=delete-jacc-provider-1"><tt>delete-jacc-provider</tt>(1)</a></p>
-
+</ul>
+<a id="sthref419" name="sthref419"></a>
+<h5>Related asadmin Commands</h5>
+<ul>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00034"><code>create-jacc-provider</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=list-jacc-providers-1"><tt>list-jacc-providers</tt>(1)</a></p>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00086"><code>delete-jacc-provider</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00171"><code>list-jacc-providers</code>(1)</a></p>
+</li>
+</ul>
 
-</li></ul>
 
 
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

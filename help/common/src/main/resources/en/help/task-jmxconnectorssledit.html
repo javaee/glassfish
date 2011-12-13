@@ -1,43 +1,79 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="task-jmxconnectoredit.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="task-group-monitor.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="task-jmxconnectorssledit" name="task-jmxconnectorssledit"></a><a id="GHCOM00212" name="GHCOM00212"></a></p>
 
-
-<a name="task-jmxconnectorssledit"></a><h3>To Edit SSL Settings for the JMX Connector</h3><a name="indexterm-116"></a><a name="indexterm-117"></a><a name="indexterm-118"></a><p><b>Before You Begin</b></p><p>This task is meaningful only if security is enabled for the JMX
-connector.</p>
-
+<h4><a id="sthref201" name="sthref201"></a><a id="sthref202" name="sthref202"></a><a id="sthref203" name="sthref203"></a>To Edit SSL Settings for the JMX Connector</h4>
+<a name="BEGIN" id="BEGIN"></a><a id="sthref204" name="sthref204"></a>
+<h5>Before You Begin</h5>
+<p>This task is meaningful only if security is enabled for the JMX connector.</p>
 <ol>
-<li><b>In the navigation tree, expand the Configuration node.</b></li>
-<li><b>Under the Configuration node, select the Admin Service node.</b><p>The Edit JMX Connector page opens.</p></li>
-<li><b>Select the Security Enabled checkbox to cause JMX communication to be encrypted.</b><p>This option is disabled by default.</p></li>
-<li><b>Click the SSL tab.</b><p>The SSL page opens.</p></li>
-<li><b>On the SSL page, select the SSL3 Enabled checkbox to enable SSL3.</b><p>This option is enabled by default.</p></li>
-<li><b>Select the TLS Enabled checkbox to enable Transport Layer Security (TLS).</b><p>This option is enabled by default.</p></li>
-<li><b>Select the Client Authentication Enabled checkbox to require clients to identify themselves to
-the server on every request.</b><p>This option is disabled by default.</p></li>
-<li><b>In the Certificate Nickname field, type the nickname of the server certificate in
-the certificate database or the PKCS#11 token.</b><p>In the certificate, the name format is <tt><i>tokenname</i>:<i>nickname</i></tt>. Including the <tt><i>tokenname</i>:</tt> part of
-the name in this attribute is optional.</p></li>
-<li><b>In the Key Store field, type the name of the keystore file
-(for example, <tt>keystore.jks</tt>).</b></li>
-<li><b>In the Trust Algorithm field, type the name of the trust management algorithm
-(for example, PKIX) to use for certification path validation.</b></li>
-<li><b>In the Max Certificate Length field, type the maximum number of non-self-issued intermediate
-certificates that can exist in a certification path.</b><p>This field is used only if the Trust Algorithm field is set to
-PKIX. A value of 0 implies that the path can only contain
-a single certificate. A value of -1 implies that the path length is
-unconstrained (there is no maximum). Setting a value less than -1 causes an
-exception to be thrown.</p></li>
-<li><b>In the Trust Store field, type the name of the truststore file (for
-example, <tt>cacerts.jks</tt>).</b></li>
-<li><b>In the Cipher Suites area, specify the cipher suites to be used.</b><p>If you do not add any cipher suites, all cipher suites will
-be used.</p></li>
-<li><b>Click OK.</b></li></ol><p></b>See Also</b></p>
-<ul><li><p><a href="task-jmxconnectoredit.html">To Edit the JMX Connector</a></p>
+<li>
+<p>In the navigation tree, expand the Configuration node.</p>
+</li>
+<li>
+<p>Under the Configuration node, select the Admin Service node.</p>
+<p>The Edit JMX Connector page opens.</p>
+</li>
+<li>
+<p>Select the Security Enabled checkbox to cause JMX communication to be encrypted.</p>
+<p>This option is disabled by default.</p>
+</li>
+<li>
+<p>Click the SSL tab.</p>
+<p>The SSL page opens.</p>
+</li>
+<li>
+<p>On the SSL page, select the SSL3 Enabled checkbox to enable SSL3.</p>
+<p>This option is enabled by default.</p>
+</li>
+<li>
+<p>Select the TLS Enabled checkbox to enable Transport Layer Security (TLS).</p>
+<p>This option is enabled by default.</p>
+</li>
+<li>
+<p>Select the Client Authentication Enabled checkbox to require clients to identify themselves to the server on every request.</p>
+<p>This option is disabled by default.</p>
+</li>
+<li>
+<p>In the Certificate Nickname field, type the nickname of the server certificate in the certificate database or the PKCS#11 token.</p>
+<p>In the certificate, the name format is <i>tokenname</i><code>:</code><i>nickname</i>. Including the <i>tokenname</i><code>:</code> part of the name in this attribute is optional.</p>
+</li>
+<li>
+<p>In the Key Store field, type the name of the keystore file (for example, <code>keystore.jks</code>).</p>
+</li>
+<li>
+<p>In the Trust Algorithm field, type the name of the trust management algorithm (for example, PKIX) to use for certification path validation.</p>
+</li>
+<li>
+<p>In the Max Certificate Length field, type the maximum number of non-self-issued intermediate certificates that can exist in a certification path.</p>
+<p>This field is used only if the Trust Algorithm field is set to PKIX. A value of 0 implies that the path can only contain a single certificate. A value of -1 implies that the path length is unconstrained (there is no maximum). Setting a value less than -1 causes an exception to be thrown.</p>
+</li>
+<li>
+<p>In the Trust Store field, type the name of the truststore file (for example, <code>cacerts.jks</code>).</p>
+</li>
+<li>
+<p>In the Cipher Suites area, specify the cipher suites to be used.</p>
+<p>If you do not add any cipher suites, all cipher suites will be used.</p>
+</li>
+<li>
+<p>Click OK.</p>
+</li>
+</ol>
+<a id="sthref205" name="sthref205"></a>
+<h5>See Also</h5>
+<p><a href="task-jmxconnectoredit.html">To Edit the JMX Connector</a></p>
 
-</li></ul>
 
 
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

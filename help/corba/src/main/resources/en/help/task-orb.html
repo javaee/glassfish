@@ -1,58 +1,93 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
+<p><a id="task-orb" name="task-orb"></a><a id="GHCOR00006" name="GHCOR00006"></a></p>
 
-
-<a name="task-orb"></a><h3>To Configure the ORB</h3><a name="indexterm-1"></a><a name="indexterm-2"></a><ol>
-<li><b>In the tree component, expand the Configuration node.</b></li>
-<li><b>Select the instance to configure:</b><ul>
-<li><b>To configure a particular instance, select the instance&#8217;s config node. For example, for
-the default instance, <tt>server</tt>, select the <tt>server-config</tt> node.</b></li>
-<li><b>To configure the default settings for future instances that use a copy of
-<tt>default-config</tt>, select the <tt>default-config</tt> node.</b></li></ul></li>
-<li><b>Select the ORB node.</b><p>The ORB page opens.</p></li>
-<li><b>Choose the thread pool the ORB uses from the Thread Pool ID drop-down
-list.</b><p>The ORB uses thread pools to respond to requests from remote clients of
-enterprise beans and other clients that communicate by using RMI-IIOP. The default thread
-pool for the ORB is <tt>thread-pool-1</tt>, which uses defaults appropriate for RMI/IIOP requests.</p><p>See <a href="../../../web/en/help/ref-threadpools.html">Thread Pools</a> for more information.</p></li>
-<li><b>From the Max Message Fragment Size drop-down list, select the maximum fragment size
-for IIOP messages.</b><p>Messages larger than this size are fragmented. The default value is 1024 bytes.</p></li>
-<li><b>In the Total Connections field, set the maximum number of incoming connections for
-all IIOP listeners.</b><p>The default value is 1024.</p></li>
-<li><b>Select the IIOP Client Authentication Required checkbox to specify that IIOP client authentication
-is required.</b><p>If IIOP client authentication is enabled, the server rejects unauthenticated requests and inserts an
-authentication-required bit in Interoperable Object References (IORs) sent to clients. This option is
-disabled by default.</p></li>
-<li>(Optional) <b>In the Additional Properties area, specify additional properties.</b><p>The GlassFish Serverdoes not define any additional properties for the ORB.</p><ul>
-<li><b>To add a property, click the Add Property button. In the blank row
-that appears, type the property name in the Name field, and type the
-property value in the Value field.</b></li>
-<li><b>To modify a property, edit that property's Value field.</b></li>
-<li><b>To delete a property, select the checkbox to the left of the Name
-field of the property that you are deleting, then click the Delete Properties
-button.</b></li></ul></li>
-<li><b>Click Save.</b>
-<hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
-Save.</p>
-
-
-<hr>
+<h4><a id="sthref2" name="sthref2"></a><a id="sthref3" name="sthref3"></a>To Configure the ORB</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<ol>
+<li>
+<p>In the tree component, expand the Configuration node.</p>
 </li>
-<li><b>Restart the GlassFish Server.</b></li></ol><p></b>See Also</b></p>
-<ul><li><p><a href="task-iioplistenernew.html">To Create an IIOP Listener</a></p>
+<li>
+<p>Select the instance to configure:</p>
+<ul>
+<li>
+<p>To configure a particular instance, select the instance's config node. For example, for the default instance, <code>server</code>, select the <code>server-config</code> node.</p>
+</li>
+<li>
+<p>To configure the default settings for future instances that use a copy of <code>default-config</code>, select the <code>default-config</code> node.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Select the ORB node.</p>
+<p>The ORB page opens.</p>
+</li>
+<li>
+<p>Choose the thread pool the ORB uses from the Thread Pool ID drop-down list.</p>
+<p>The ORB uses thread pools to respond to requests from remote clients of enterprise beans and other clients that communicate by using RMI-IIOP. The default thread pool for the ORB is <code>thread-pool-1</code>, which uses defaults appropriate for RMI/IIOP requests.</p>
+<p>See <a href="../../../web/en/help/ref-threadpools.html">Thread Pools</a> for more information.</p>
+</li>
+<li>
+<p>From the Max Message Fragment Size drop-down list, select the maximum fragment size for IIOP messages.</p>
+<p>Messages larger than this size are fragmented. The default value is 1024 bytes.</p>
+</li>
+<li>
+<p>In the Total Connections field, set the maximum number of incoming connections for all IIOP listeners.</p>
+<p>The default value is 1024.</p>
+</li>
+<li>
+<p>Select the IIOP Client Authentication Required checkbox to specify that IIOP client authentication is required.</p>
+<p>If IIOP client authentication is enabled, the server rejects unauthenticated requests and inserts an authentication-required bit in Interoperable Object References (IORs) sent to clients. This option is disabled by default.</p>
+</li>
+<li>
+<p>In the Additional Properties area, specify additional properties.</p>
+<p>The GlassFish Serverdoes not define any additional properties for the ORB.</p>
+<ul>
+<li>
+<p>To add a property, click the Add Property button. In the blank row that appears, type the property name in the Name field, and type the property value in the Value field.</p>
+</li>
+<li>
+<p>To modify a property, edit that property's Value field.</p>
+</li>
+<li>
+<p>To delete a property, select the checkbox to the left of the Name field of the property that you are deleting, then click the Delete Properties button.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Click Save.</p>
+
+<br />
+<p><b>Tip:</b></p>
+<p>To return to the default settings, click the Load Defaults button, then click Save.</p>
+
+<br />
 
 </li>
-<li><p><a href="task-iioplisteneredit.html">To Edit an IIOP Listener</a></p>
-
+<li>
+<p>Restart the GlassFish Server.</p>
 </li>
-<li><p><a href="task-editiiopssl.html">To Edit SSL Settings for a Secure IIOP Listener</a></p>
-
+</ol>
+<a id="sthref4" name="sthref4"></a>
+<h5>See Also</h5>
+<ul>
+<li>
+<p><a href="task-iioplistenernew.html">To Create an IIOP Listener</a></p>
 </li>
-<li><p><a href="task-iioplistenerdelete.html">To Delete an IIOP Listener</a></p>
+<li>
+<p><a href="task-iioplisteneredit.html">To Edit an IIOP Listener</a></p>
+</li>
+<li>
+<p><a href="task-editiiopssl.html">To Edit SSL Settings for a Secure IIOP Listener</a></p>
+</li>
+<li>
+<p><a href="task-iioplistenerdelete.html">To Delete an IIOP Listener</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

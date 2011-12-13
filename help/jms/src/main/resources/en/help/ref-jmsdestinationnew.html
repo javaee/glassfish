@@ -1,71 +1,73 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-jmsdestinationnew"></a><h4>New JMS Destination Resource</h4>
-<a name="indexterm-37"></a><a name="indexterm-38"></a><p>Use the New JMS Destination Resource page to create a new JMS
-destination resource.</p>
+<p><a id="ref-jmsdestinationnew" name="ref-jmsdestinationnew"></a><a id="GHJMS00007" name="GHJMS00007"></a></p>
 
+<h4><a id="sthref63" name="sthref63"></a><a id="sthref64" name="sthref64"></a>New JMS Destination Resource</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the New JMS Destination Resource page to create a new JMS destination resource.</p>
 <p>The New JMS Destination Resource page contains the following options.</p>
-
-<dl><dt>JNDI Name</dt>
-<dd><p>A unique name that identifies the destination resource.</p>
-
-<p>It is a recommended practice to use the naming subcontext prefix <tt>jms/</tt> for JMS resources. For example: <tt>jms/Queue</tt>.</p>
-
+<dl>
+<dt>JNDI Name</dt>
+<dd>
+<p>A unique name that identifies the destination resource.</p>
+<p>It is a recommended practice to use the naming subcontext prefix <code>jms/</code> for JMS resources. For example: <code>jms/Queue</code>.</p>
 </dd>
 <dt>Physical Destination Name</dt>
-<dd><p>The name of the physical destination to be associated with this resource.</p>
-
+<dd>
+<p>The name of the physical destination to be associated with this resource.</p>
 <p>The GlassFish Server creates the physical destination automatically when it is needed and deletes it when you delete the destination resource.</p>
-
 </dd>
 <dt>Resource Type</dt>
-<dd><p>The type of the destination resource. Available choices are <tt>javax.jms.Topic</tt> and <tt>javax.jms.Queue</tt>.</p>
-
+<dd>
+<p>The type of the destination resource. Available choices are <code>javax.jms.Topic</code> and <code>javax.jms.Queue</code>.</p>
 </dd>
 <dt>Description</dt>
-<dd><p>A description of the destination resource.</p>
-
+<dd>
+<p>A description of the destination resource.</p>
 </dd>
 <dt>Status</dt>
-<dd><p>The status of the destination resource. The destination resource can be enabled or disabled. This option is enabled by default.</p>
-
+<dd>
+<p>The status of the destination resource. The destination resource can be enabled or disabled. This option is enabled by default.</p>
 </dd>
 <dt>Additional Properties</dt>
-<dd><p>Additional properties for the destination resource. The GlassFish Serverdoes not define any additional properties for JMS destination resources.</p>
-
+<dd>
+<p>Additional properties for the destination resource. The GlassFish Serverdoes not define any additional properties for JMS destination resources.</p>
 </dd>
 <dt>Targets</dt>
-<dd><p>Clusters and standalone instances for the destination resource. Move desired targets to the Selected Targets column using the Add and Add All buttons. Move any unneeded targets to the Available Targets column using the Remove and Remove All buttons.</p>
-
+<dd>
+<p>Clusters and standalone instances for the destination resource. Move desired targets to the Selected Targets column using the Add and Add All buttons. Move any unneeded targets to the Available Targets column using the Remove and Remove All buttons.</p>
 <p>This option is displayed only if clusters or standalone instances have been created in the domain.</p>
-
 </dd>
 </dl>
+<a id="sthref65" name="sthref65"></a>
 <h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-jmsdestinationnew.html">To Create a JMS Destination Resource</a></p>
-
+<ul>
+<li>
+<p><a href="task-jmsdestinationnew.html">To Create a JMS Destination Resource</a></p>
 </li>
-<li><p><a href="task-jmsdestinationedit.html">To Edit a JMS Destination Resource</a></p>
-
+<li>
+<p><a href="task-jmsdestinationedit.html">To Edit a JMS Destination Resource</a></p>
 </li>
-<li><p><a href="task-jmsdestinationdelete.html">To Delete a JMS Destination Resource</a></p>
-
-</li></ul>
-<h5>Related <tt>asadmin</tt> Commands</h5>
-
-<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=create-jms-resource-1"><tt>create-jms-resource</tt>(1)</a></p>
-
+<li>
+<p><a href="task-jmsdestinationdelete.html">To Delete a JMS Destination Resource</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=list-jms-resources-1"><tt>list-jms-resources</tt>(1)</a></p>
-
+</ul>
+<a id="sthref66" name="sthref66"></a>
+<h5>Related asadmin Commands</h5>
+<ul>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00040"><code>create-jms-resource</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=delete-jms-resource-1"><tt>delete-jms-resource</tt>(1)</a></p>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00177"><code>list-jms-resources</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00092"><code>delete-jms-resource</code>(1)</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

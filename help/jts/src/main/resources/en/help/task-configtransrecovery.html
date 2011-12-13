@@ -1,52 +1,69 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
+<p><a id="task-configtransrecovery" name="task-configtransrecovery"></a><a id="GHJTS00005" name="GHJTS00005"></a></p>
 
-
-<a name="task-configtransrecovery"></a><h3>To Configure How the GlassFish Server Recovers Transactions</h3><a name="indexterm-2"></a><p>Transactions might be incomplete either because the server crashed or because a resource
-manager crashed. It is essential to complete these stranded transactions and recover from
-the failures. GlassFish Server is designed to recover from these failures and complete
-the transactions upon server startup.</p>
-
-<p>While performing the recovery, if some of the resources are unreachable, the server
-restart may be delayed as it tries to recover the transactions.</p>
-
-<p>When the transaction spans across servers, the server that started the transaction can
-contact the other servers to get the outcome of the transactions. If the
-other servers are unreachable, the transaction uses the Heuristic Decision field to determine
-the outcome.</p>
-
+<h4><a id="sthref4" name="sthref4"></a>To Configure How the GlassFish Server Recovers Transactions</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Transactions might be incomplete either because the server crashed or because a resource manager crashed. It is essential to complete these stranded transactions and recover from the failures. GlassFish Server is designed to recover from these failures and complete the transactions upon server startup.</p>
+<p>While performing the recovery, if some of the resources are unreachable, the server restart may be delayed as it tries to recover the transactions.</p>
+<p>When the transaction spans across servers, the server that started the transaction can contact the other servers to get the outcome of the transactions. If the other servers are unreachable, the transaction uses the Heuristic Decision field to determine the outcome.</p>
 <ol>
-<li><b>In the navigation tree, expand the Configuration node.</b></li>
-<li><b>Select the instance to configure:</b><ul>
-<li><b>To configure a particular instance, select the instance&#8217;s config node. For example, the
-default instance, <tt>server</tt>, select the <tt>server-config</tt> node.</b></li>
-<li><b>To configure the default settings for all instances, select the <tt>default-config</tt> node.</b></li></ul></li>
-<li><b>Select the Transaction Service node.</b><p>The Transaction Service page opens.</p></li>
-<li><b>On the Transaction Service page, select the On Restart Enabled checkbox to enable
-the recovery of incomplete transactions.</b><p>By default, the Enabled checkbox is not selected.</p></li>
-<li><b>In the Retry Timeout field, type the number of seconds the GlassFish Server
-tries to connect to an unreachable server.</b><p>The default value is 600 (10 minutes).</p></li>
-<li><b>From the Heuristic Decision drop-down list, select the policy for unreachable servers in
-a transaction.</b><p>Unless there is a good reason to select Commit, leave Heuristic Decision set to
-Rollback (the default). Committing indeterminate transactions can compromise the data integrity of your
-application.</p></li>
-<li><b>Click Save.</b></li>
-<li><b>Restart the GlassFish Server.</b></li></ol><p></b>See Also</b></p>
-<ul><li><p><a href="task-configtransservice.html">To Configure the Transaction Service</a></p>
-
+<li>
+<p>In the navigation tree, expand the Configuration node.</p>
 </li>
-<li><p><a href="task-settranstimeout.html">To Set a Transaction Timeout Value</a></p>
-
+<li>
+<p>Select the instance to configure:</p>
+<ul>
+<li>
+<p>To configure a particular instance, select the instance's config node. For example, the default instance, <code>server</code>, select the <code>server-config</code> node.</p>
 </li>
-<li><p><a href="task-settranslog.html">To Set the Location of the Transaction Logs</a></p>
-
+<li>
+<p>To configure the default settings for all instances, select the <code>default-config</code> node.</p>
 </li>
-<li><p><a href="task-setkeyptinterval.html">To Set the Keypoint Interval</a></p>
+</ul>
+</li>
+<li>
+<p>Select the Transaction Service node.</p>
+<p>The Transaction Service page opens.</p>
+</li>
+<li>
+<p>On the Transaction Service page, select the On Restart Enabled checkbox to enable the recovery of incomplete transactions.</p>
+<p>By default, the Enabled checkbox is not selected.</p>
+</li>
+<li>
+<p>In the Retry Timeout field, type the number of seconds the GlassFish Server tries to connect to an unreachable server.</p>
+<p>The default value is 600 (10 minutes).</p>
+</li>
+<li>
+<p>From the Heuristic Decision drop-down list, select the policy for unreachable servers in a transaction.</p>
+<p>Unless there is a good reason to select Commit, leave Heuristic Decision set to Rollback (the default). Committing indeterminate transactions can compromise the data integrity of your application.</p>
+</li>
+<li>
+<p>Click Save.</p>
+</li>
+<li>
+<p>Restart the GlassFish Server.</p>
+</li>
+</ol>
+<a id="sthref5" name="sthref5"></a>
+<h5>See Also</h5>
+<ul>
+<li>
+<p><a href="task-configtransservice.html">To Configure the Transaction Service</a></p>
+</li>
+<li>
+<p><a href="task-settranstimeout.html">To Set a Transaction Timeout Value</a></p>
+</li>
+<li>
+<p><a href="task-settranslog.html">To Set the Location of the Transaction Logs</a></p>
+</li>
+<li>
+<p><a href="task-setkeyptinterval.html">To Set the Keypoint Interval</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

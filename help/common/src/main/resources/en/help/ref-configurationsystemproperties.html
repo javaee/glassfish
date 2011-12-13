@@ -1,83 +1,88 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-configurationsystemproperties"></a><h4>System Properties</h4>
-<a name="indexterm-243"></a><a name="indexterm-244"></a><p>The System Properties page displays a list of the Java system properties that
-are defined in the selected named configuration. Java system properties are passed to
-the Java application launcher through the <tt>-D</tt> option of the Java application launcher whenGlassFish
-Server is started</p>
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="ref-group-configurationsystemproperties.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="ref-sysinstancevalues.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="ref-configurationsystemproperties" name="ref-configurationsystemproperties"></a><a id="GHCOM00130" name="GHCOM00130"></a></p>
 
-<p>These properties define the default values of port settings for all GlassFish
-Server instances that reference the configuration.</p>
-
-<p>For information about predefined port settings in a configuration, see <a href="ref-predefinedconfigsysproperties.html">Predefined System Properties </a>.</p>
-
+<h4><a id="sthref452" name="sthref452"></a><a id="sthref453" name="sthref453"></a>System Properties</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>The System Properties page displays a list of the Java system properties that are defined in the selected named configuration. Java system properties are passed to the Java application launcher through the <code>-D</code> option of the Java application launcher whenGlassFish Server is started</p>
+<p>These properties define the default values of port settings for all GlassFish Server instances that reference the configuration.</p>
+<p>For information about predefined port settings in a configuration, see <a href="ref-predefinedconfigsysproperties.html">Predefined System Properties</a>.</p>
 <p>For each property, the following information is displayed:</p>
-
-<dl><dt>Instance Variable Name</dt>
-<dd><p>The name of the system property.</p>
-
+<dl>
+<dt>Instance Variable Name</dt>
+<dd>
+<p>The name of the system property.</p>
 </dd>
 <dt>Default Value</dt>
-<dd><p>The value that is set for the property in the named configuration that the instance references. This field is read only.</p>
-
+<dd>
+<p>The value that is set for the property in the named configuration that the instance references. This field is read only.</p>
 </dd>
 <dt>Instance Values</dt>
-<dd><p>A link to the <a href="ref-sysinstancevalues.html">Instance Values</a> page for the property.</p>
-
+<dd>
+<p>A link to the <a href="ref-sysinstancevalues.html">Instance Values</a> page for the property.</p>
 </dd>
 </dl>
 <p>The Additional Properties table also contains the following options.</p>
-
-<dl><dt>Add Property</dt>
-<dd><p>Button to add a property. Clicking this button adds a row to the Additional Properties table.</p>
-
+<dl>
+<dt>Add Property</dt>
+<dd>
+<p>Button to add a property. Clicking this button adds a row to the Additional Properties table.</p>
 </dd>
 <dt>Delete Properties</dt>
-<dd><p>Button to delete one or more selected properties. Any property that is deleted reverts to its default value or, if no default value is set, is undefined.</p>
-
+<dd>
+<p>Button to delete one or more selected properties. Any property that is deleted reverts to its default value or, if no default value is set, is undefined.</p>
 </dd>
 </dl>
 <p>The System Properties page also contains the following options:</p>
-
-<dl><dt>Configuration Name</dt>
-<dd><p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
-
+<dl>
+<dt>Configuration Name</dt>
+<dd>
+<p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
 </dd>
 <dt>Dynamic Reconfiguration</dt>
-<dd><p>If this option is enabled, changes to the configuration are applied to the instances that reference the configuration without the need to restart the instances.</p>
-
+<dd>
+<p>If this option is enabled, changes to the configuration are applied to the instances that reference the configuration without the need to restart the instances.</p>
 </dd>
 <dt>Clusters and/or Instances Using This Configuration</dt>
-<dd><p>A list of the clusters and instances that reference the configuration with an indication of whether each cluster or instance is running:</p>
-
-
-<ul><li><p>If the cluster or instance is running, a check mark (&#10003;) is displayed.</p>
-
+<dd>
+<p>A list of the clusters and instances that reference the configuration with an indication of whether each cluster or instance is running:</p>
+<ul>
+<li>
+<p>If the cluster or instance is running, a check mark (&#10003;) is displayed.</p>
 </li>
-<li><p>If the cluster or instance is stopped, an exclamation point (<tt>!</tt>) is displayed.</p>
-
-</li></ul>
+<li>
+<p>If the cluster or instance is stopped, an exclamation point (<code>!</code>) is displayed.</p>
+</li>
+</ul>
 </dd>
 </dl>
+<a id="sthref454" name="sthref454"></a>
 <h5>Related Tasks</h5>
-
-<ul><li><p>To Set Default Values for Configuration Properties</p>
-
-</li></ul>
-<h5>Equivalent <tt>asadmin</tt> Subcommands</h5>
-
-<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=create-system-properties-1"><tt>create-system-properties</tt>(1)</a></p>
-
+<p>To Set Default Values for Configuration Properties</p>
+<a id="sthref455" name="sthref455"></a>
+<h5>Equivalent asadmin Subcommands</h5>
+<ul>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00059"><code>create-system-properties</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=delete-system-property-1"><tt>delete-system-property</tt>(1)</a></p>
-
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00110"><code>delete-system-property</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=list-system-properties-1"><tt>list-system-properties</tt>(1)</a></p>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00203"><code>list-system-properties</code>(1)</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

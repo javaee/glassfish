@@ -1,127 +1,154 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-realmsnew"></a><h4>New Realm</h4>
-<a name="indexterm-201"></a><p>Use the New Realm page to create a realm.</p>
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="ref-realms.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="ref-realmedit.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="ref-realmsnew" name="ref-realmsnew"></a><a id="GHCOM00098" name="GHCOM00098"></a></p>
 
+<h4><a id="sthref369" name="sthref369"></a>New Realm</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the New Realm page to create a realm.</p>
 <p>The New Realm page contains the following options.</p>
-
-<dl><dt>Configuration Name</dt>
-<dd><p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
-
+<dl>
+<dt>Configuration Name</dt>
+<dd>
+<p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
 </dd>
 <dt>Name</dt>
-<dd><p>The name for the new realm.</p>
-
+<dd>
+<p>The name for the new realm.</p>
 </dd>
 <dt>Class Name</dt>
-<dd><p>The class name for the new realm.</p>
-
+<dd>
+<p>The class name for the new realm.</p>
 <p>Valid choices are shown in the following table.</p>
 
-<table><col width="16%"><col width="83%"><tr><th align="left" valign="top" scope="column"><p>Realm Name</p>
-
-</th>
-<th align="left" valign="top" scope="column"><p>Class Name</p>
-
-</th>
+<table  summary="Add Summary attribute value here." dir="ltr" border="1" width="100%" frame="hsides" rules="rows" cellpadding="3" cellspacing="0">
+<col width="16%" />
+<col width="*" />
+<thead>
+<tr align="left" valign="top">
+<th align="left" valign="bottom" id="r1c1-t5">Realm Name</th>
+<th align="left" valign="bottom" id="r1c2-t5">Class Name</th>
 </tr>
-<tr><td align="left" valign="top" scope="row"><p><tt>file</tt></p>
-
+</thead>
+<tbody>
+<tr align="left" valign="top">
+<td align="left" id="r2c1-t5" headers="r1c1-t5">
+<p><code>file</code></p>
 </td>
-<td align="left" valign="top" scope="row"><p><tt>com.sun.enterprise.security.auth.realm.file.FileRealm</tt></p>
-
-</td>
-</tr>
-<tr><td align="left" valign="top" scope="row"><p><tt>certificate</tt></p>
-
-</td>
-<td align="left" valign="top" scope="row"><p><tt>com.sun.enterprise.security.auth.realm.certificate.CertificateRealm</tt></p>
-
+<td align="left" headers="r2c1-t5 r1c2-t5">
+<p><code>com.sun.enterprise.security.auth.realm.file.FileRealm</code></p>
 </td>
 </tr>
-<tr><td align="left" valign="top" scope="row"><p><tt>ldap</tt></p>
-
+<tr align="left" valign="top">
+<td align="left" id="r3c1-t5" headers="r1c1-t5">
+<p><code>certificate</code></p>
 </td>
-<td align="left" valign="top" scope="row"><p><tt>com.sun.enterprise.security.auth.realm.ldap.LDAPRealm</tt></p>
-
-</td>
-</tr>
-<tr><td align="left" valign="top" scope="row"><p><tt>JDBC</tt></p>
-
-</td>
-<td align="left" valign="top" scope="row"><p><tt>com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm</tt></p>
-
+<td align="left" headers="r3c1-t5 r1c2-t5">
+<p><code>com.sun.enterprise.security.auth.realm.certificate.CertificateRealm</code></p>
 </td>
 </tr>
-<tr><td align="left" valign="top" scope="row"><p><tt>solaris</tt></p>
-
+<tr align="left" valign="top">
+<td align="left" id="r4c1-t5" headers="r1c1-t5">
+<p><code>ldap</code></p>
 </td>
-<td align="left" valign="top" scope="row"><p><tt>com.sun.enterprise.security.auth.realm.solaris.SolarisRealm</tt></p>
-
-</td>
-</tr>
-<tr><td align="left" valign="top" scope="row"><p><tt>PAM</tt></p>
-
-</td>
-<td align="left" valign="top" scope="row"><p><tt>com.sun.enterprise.security.auth.realm.solaris.PamRealm</tt></p>
-
+<td align="left" headers="r4c1-t5 r1c2-t5">
+<p><code>com.sun.enterprise.security.auth.realm.ldap.LDAPRealm</code></p>
 </td>
 </tr>
-</table><p>To specify a custom realm, select the lower radio button and type the class name for the custom realm being created.</p>
+<tr align="left" valign="top">
+<td align="left" id="r5c1-t5" headers="r1c1-t5">
+<p><code>JDBC</code></p>
+</td>
+<td align="left" headers="r5c1-t5 r1c2-t5">
+<p><code>com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm</code></p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td align="left" id="r6c1-t5" headers="r1c1-t5">
+<p><code>solaris</code></p>
+</td>
+<td align="left" headers="r6c1-t5 r1c2-t5">
+<p><code>com.sun.enterprise.security.auth.realm.solaris.SolarisRealm</code></p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td align="left" id="r7c1-t5" headers="r1c1-t5">
+<p><code>PAM</code></p>
+</td>
+<td align="left" headers="r7c1-t5 r1c2-t5">
+<p><code>com.sun.enterprise.security.auth.realm.solaris.PamRealm</code></p>
+</td>
+</tr>
+</tbody>
+</table>
+<br />
 
+<p>To specify a custom realm, select the lower radio button and type the class name for the custom realm being created.</p>
 </dd>
 <dt>Additional Properties</dt>
-<dd><p>Additional properties for the realm. Valid properties depend on the type of realm.</p>
-
-
-<ul><li><p><a href="ref-editfile-adminrealm.html">Properties Specific to the <tt>FileRealm</tt> Class</a></p>
-
+<dd>
+<p>Additional properties for the realm. Valid properties depend on the type of realm.</p>
+<ul>
+<li>
+<p><a href="ref-editfile-adminrealm.html">Properties Specific to the <code>FileRealm</code> Class</a></p>
 </li>
-<li><p><a href="ref-editcertrealm.html">Properties Specific to the <tt>CertificateRealm</tt> Class</a></p>
-
+<li>
+<p><a href="ref-editcertrealm.html">Properties Specific to the <code>CertificateRealm</code> Class</a></p>
 </li>
-<li><p><a href="ref-editjdbcrealm.html">Properties Specific to the <tt>JDBCRealm</tt> Class</a></p>
-
+<li>
+<p><a href="ref-editjdbcrealm.html">Properties Specific to the <code>JDBCRealm</code> Class</a></p>
 </li>
-<li><p><a href="ref-ldaprealmprop.html">Properties Specific to the <tt>LDAPRealm</tt> Class</a></p>
-
+<li>
+<p><a href="ref-ldaprealmprop.html">Properties Specific to the <code>LDAPRealm</code> Class</a></p>
 </li>
-<li><p><a href="ref-solarisrealmprop.html">Properties Specific to the <tt>SolarisRealm</tt> Class</a></p>
-
+<li>
+<p><a href="ref-solarisrealmprop.html">Properties Specific to the <code>SolarisRealm</code> Class</a></p>
 </li>
-<li><p><a href="ref-pamrealmprop.html">Properties Specific to the <tt>PamRealm</tt> Class</a></p>
-
-</li></ul>
+<li>
+<p><a href="ref-pamrealmprop.html">Properties Specific to the <code>PamRealm</code> Class</a></p>
+</li>
+</ul>
 </dd>
 </dl>
-<a name="gkooj"></a><h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-realmnew.html">To Create a Realm</a></p>
-
+<a id="sthref370" name="sthref370"></a>
+<h5>Related Tasks</h5>
+<ul>
+<li>
+<p><a href="task-realmnew.html">To Create a Realm</a></p>
 </li>
-<li><p><a href="task-realmedit.html">To Edit a Realm</a></p>
-
+<li>
+<p><a href="task-realmedit.html">To Edit a Realm</a></p>
 </li>
-<li><p><a href="task-todeleterealm.html">To Delete a Realm</a></p>
-
+<li>
+<p><a href="task-todeleterealm.html">To Delete a Realm</a></p>
 </li>
-<li><p><a href="task-createcustomrealm.html">To Create a Custom Realm</a></p>
-
-</li></ul>
-<a name="gkomd"></a><h5>Related <tt>asadmin</tt> Commands</h5>
-
-<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=create-auth-realm-1"><tt>create-auth-realm</tt>(1)</a></p>
-
+<li>
+<p><a href="task-createcustomrealm.html">To Create a Custom Realm</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=delete-auth-realm-1"><tt>delete-auth-realm</tt>(1)</a></p>
-
+</ul>
+<a id="sthref371" name="sthref371"></a>
+<h5>Related asadmin Commands</h5>
+<ul>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00015"><code>create-auth-realm</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=list-auth-realms-1"><tt>list-auth-realms</tt>(1)</a></p>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00066"><code>delete-auth-realm</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00150"><code>list-auth-realms</code>(1)</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

@@ -1,103 +1,116 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-eelogginglevels"></a><h4>Module Log Levels</h4>
-<a name="indexterm-196"></a><a name="indexterm-197"></a><p>Use the Module Log Levels page to configure the logging levels for
-individual modules.</p>
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="ref-eelogging.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="ref-group-security.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="ref-eelogginglevels" name="ref-eelogginglevels"></a><a id="GHCOM00095" name="GHCOM00095"></a></p>
 
+<h4><a id="sthref358" name="sthref358"></a><a id="sthref359" name="sthref359"></a>Module Log Levels</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the Module Log Levels page to configure the logging levels for individual modules.</p>
 <p>For each module, the following information is provided.</p>
-
-<dl><dt>Logger Name</dt>
-<dd><p>The name of the logger for the module (for example, <tt>javax.enterprise.system.tools.admin</tt>).</p>
-
+<dl>
+<dt>Logger Name</dt>
+<dd>
+<p>The name of the logger for the module (for example, <code>javax.enterprise.system.tools.admin</code>).</p>
 </dd>
 <dt>Logger Level</dt>
-<dd><p>The current logging level for the module.</p>
-
+<dd>
+<p>The current logging level for the module.</p>
 </dd>
 </dl>
 <p>The Logger Settings table also contains the following options.</p>
-
-<dl><dt>Add Logger</dt>
-<dd><p>Button to add a logger module. Clicking this button adds a row to the Logger Settings table. Enter information about the logger module in the new row.</p>
-
+<dl>
+<dt>Add Logger</dt>
+<dd>
+<p>Button to add a logger module. Clicking this button adds a row to the Logger Settings table. Enter information about the logger module in the new row.</p>
 </dd>
 <dt>Delete Logger</dt>
-<dd><p>Button to delete one or more selected modules.</p>
-
+<dd>
+<p>Button to delete one or more selected modules.</p>
 </dd>
 <dt>Level</dt>
-<dd><p>Drop-down list from which you can select a logging level to be applied to all selected modules.</p>
-
+<dd>
+<p>Drop-down list from which you can select a logging level to be applied to all selected modules.</p>
 </dd>
 <dt>Change Level</dt>
-<dd><p>Button to change the logging level for one or more selected modules.</p>
-
+<dd>
+<p>Button to change the logging level for one or more selected modules.</p>
 </dd>
 </dl>
-<p>The following log levels are available. They are listed in order from highest
-to lowest.</p>
-
-<dl><dt>SEVERE</dt>
-<dd><p>Events that interfere with normal program execution.</p>
-
+<p>The following log levels are available. They are listed in order from highest to lowest.</p>
+<dl>
+<dt>SEVERE</dt>
+<dd>
+<p>Events that interfere with normal program execution.</p>
 </dd>
 <dt>WARNING</dt>
-<dd><p>Warnings, including exceptions.</p>
-
+<dd>
+<p>Warnings, including exceptions.</p>
 </dd>
 <dt>INFO</dt>
-<dd><p>Messages related to server configuration or server status, excluding errors.</p>
-
+<dd>
+<p>Messages related to server configuration or server status, excluding errors.</p>
 </dd>
 <dt>CONFIG</dt>
-<dd><p>Messages related to server configuration.</p>
-
+<dd>
+<p>Messages related to server configuration.</p>
 </dd>
 <dt>FINE</dt>
-<dd><p>Minimal verbosity.</p>
-
+<dd>
+<p>Minimal verbosity.</p>
 </dd>
 <dt>FINER</dt>
-<dd><p>Moderate verbosity.</p>
-
+<dd>
+<p>Moderate verbosity.</p>
 </dd>
 <dt>FINEST</dt>
-<dd><p>Maximum verbosity.</p>
-
+<dd>
+<p>Maximum verbosity.</p>
 </dd>
 <dt>OFF</dt>
-<dd><p>No logging messages.</p>
-
+<dd>
+<p>No logging messages.</p>
 </dd>
 </dl>
+<a id="sthref360" name="sthref360"></a>
 <h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-eelogging.html">To Configure General Logging Settings</a></p>
-
+<ul>
+<li>
+<p><a href="task-eelogging.html">To Configure General Logging Settings</a></p>
 </li>
-<li><p><a href="task-eelogginglevels.html">To Configure Log Levels</a></p>
-
+<li>
+<p><a href="task-eelogginglevels.html">To Configure Log Levels</a></p>
 </li>
-<li><p><a href="task-logviewer.html">To View Log Files for the DAS</a></p>
-
-</li></ul>
-<h5>Related <tt>asadmin</tt> Commands</h5>
-
-<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=collect-log-files-1"><tt>collect-log-files</tt>(1)</a></p>
-
+<li>
+<p><a href="task-logviewer.html">To View Log Files for the DAS</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=list-log-levels-1"><tt>list-log-levels</tt>(1)</a></p>
-
+</ul>
+<a id="sthref361" name="sthref361"></a>
+<h5>Related asadmin Commands</h5>
+<ul>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00007"><code>collect-log-files</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=rotate-log-1"><tt>rotate-log</tt>(1)</a></p>
-
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00183"><code>list-log-levels</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=set-log-levels-1"><tt>set-log-levels</tt>(1)</a></p>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00224"><code>rotate-log</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00228"><code>set-log-levels</code>(1)</a></p>
+</li>
+</ul>
 
-</li></ul>
 
 
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

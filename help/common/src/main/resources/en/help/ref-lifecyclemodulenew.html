@@ -1,70 +1,83 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-lifecyclemodulenew"></a><h4>New Lifecycle Module</h4>
-<a name="indexterm-189"></a><p>Use the New Lifecycle Module page to define a new lifecycle module.</p>
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="ref-lifecyclemodules.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="ref-lifecyclemoduleedit.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="ref-lifecyclemodulenew" name="ref-lifecyclemodulenew"></a><a id="GHCOM00080" name="GHCOM00080"></a></p>
 
+<h4><a id="sthref332" name="sthref332"></a>New Lifecycle Module</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the New Lifecycle Module page to define a new lifecycle module.</p>
 <p>The New Lifecycle Module page contains the following options.</p>
-
-<dl><dt>Name</dt>
-<dd><p>The name of the lifecycle module.</p>
-
+<dl>
+<dt>Name</dt>
+<dd>
+<p>The name of the lifecycle module.</p>
 </dd>
 <dt>Class Name</dt>
-<dd><p>The fully qualified name of the lifecycle module's class file. The class must implement the <tt>com.sun.appserv.server.LifecycleListener</tt> interface.</p>
-
+<dd>
+<p>The fully qualified name of the lifecycle module's class file. The class must implement the <code>com.sun.appserv.server.LifecycleListener</code> interface.</p>
 </dd>
 <dt>Classpath</dt>
-<dd><p>The classpath for the lifecycle module. The classpath specifies where the lifecycle module is located. The default value is <tt></tt><i>domain-dir</i><tt>/applications</tt>. If the module is already in this directory (that is, in the server classpath), this field can be left blank.</p>
-
+<dd>
+<p>The classpath for the lifecycle module. The classpath specifies where the lifecycle module is located. The default value is <i>domain-dir</i><code>/applications</code>. If the module is already in this directory (that is, in the server classpath), this field can be left blank.</p>
 </dd>
 <dt>Load Order</dt>
-<dd><p>The order in which this lifecycle module is to be loaded at startup. Modules with smaller integer load order values are loaded sooner. The value can range from 101 to the operating system's <tt>MAXINT</tt>. Values from 1 to 100 are reserved.</p>
-
+<dd>
+<p>The order in which this lifecycle module is to be loaded at startup. Modules with smaller integer load order values are loaded sooner. The value can range from 101 to the operating system's <code>MAXINT</code>. Values from 1 to 100 are reserved.</p>
 </dd>
 <dt>Description</dt>
-<dd><p>A description of the lifecycle module.</p>
-
+<dd>
+<p>A description of the lifecycle module.</p>
 </dd>
 <dt>Status</dt>
-<dd><p>If this option is selected, the lifecycle module is enabled. This option is enabled by default.</p>
-
+<dd>
+<p>If this option is selected, the lifecycle module is enabled. This option is enabled by default.</p>
 </dd>
 <dt>On Load Failure</dt>
-<dd><p>If this option is selected, the server will be shut down if the lifecycle module fails to load. This option is disabled by default.</p>
-
+<dd>
+<p>If this option is selected, the server will be shut down if the lifecycle module fails to load. This option is disabled by default.</p>
 </dd>
 <dt>Targets</dt>
-<dd><p>Clusters and standalone instances for the lifecycle module. Move desired targets to the Selected Targets column using the Add and Add All buttons. Move any unneeded targets to the Available Targets column using the Remove and Remove All buttons.</p>
-
+<dd>
+<p>Clusters and standalone instances for the lifecycle module. Move desired targets to the Selected Targets column using the Add and Add All buttons. Move any unneeded targets to the Available Targets column using the Remove and Remove All buttons.</p>
 <p>This option is displayed only if clusters or standalone instances have been created in the domain.</p>
-
 </dd>
 </dl>
+<a id="sthref333" name="sthref333"></a>
 <h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-lifecyclemodulenew.html">To Create a Lifecycle Module</a></p>
-
+<ul>
+<li>
+<p><a href="task-lifecyclemodulenew.html">To Create a Lifecycle Module</a></p>
 </li>
-<li><p><a href="task-lifecyclemoduleedit.html">To Edit a Lifecycle Module</a></p>
-
+<li>
+<p><a href="task-lifecyclemoduleedit.html">To Edit a Lifecycle Module</a></p>
 </li>
-<li><p><a href="task-lifecyclemoduledelete.html">To Delete a Lifecycle Module</a></p>
-
-</li></ul>
-<h5>Related <tt>asadmin</tt> Commands</h5>
-
-<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=create-lifecycle-module-1"><tt>create-lifecycle-module</tt>(1)</a></p>
-
+<li>
+<p><a href="task-lifecyclemoduledelete.html">To Delete a Lifecycle Module</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=list-lifecycle-modules-1"><tt>list-lifecycle-modules</tt>(1)</a></p>
-
+</ul>
+<a id="sthref334" name="sthref334"></a>
+<h5>Related asadmin Commands</h5>
+<ul>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00043"><code>create-lifecycle-module</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=delete-lifecycle-module-1"><tt>delete-lifecycle-module</tt>(1)</a></p>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00181"><code>list-lifecycle-modules</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00095"><code>delete-lifecycle-module</code>(1)</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

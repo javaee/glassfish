@@ -1,104 +1,148 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="task-setadvancedomainattributes.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="task-setadminpassword.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="task-setadvanceappconfig" name="task-setadvanceappconfig"></a><a id="GHCOM00144" name="GHCOM00144"></a></p>
 
-
-<a name="task-setadvanceappconfig"></a><h3>To Set the Applications Configuration</h3><a name="indexterm-4"></a><a name="indexterm-5"></a><a name="indexterm-6"></a><a name="indexterm-7"></a><a name="indexterm-8"></a><p>Use the Applications Configuration page to set properties that help ensure that changes
-to deployed applications are detected and that the modified classes are reloaded.</p>
-
+<h4><a id="sthref6" name="sthref6"></a><a id="sthref7" name="sthref7"></a><a id="sthref8" name="sthref8"></a><a id="sthref9" name="sthref9"></a><a id="sthref10" name="sthref10"></a>To Set the Applications Configuration</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the Applications Configuration page to set properties that help ensure that changes to deployed applications are detected and that the modified classes are reloaded.</p>
 <ol>
-<li><b>In the navigation tree, select the GlassFish Server node.</b><p>The General Information page opens.</p></li>
-<li><b>On the General Information page, click the Advanced tab.</b><p>The Applications Configuration page opens.</p></li>
-<li><b>Select the Reload Enabled checkbox to enable dynamic reloading of applications.</b><p>When dynamic reloading is enabled, you do not have to redeploy an application
-or module when you change its code or deployment descriptors. All you have
-to do is copy the changed JavaServer Pages (JSP) or class files into
-the deployment directory for the application or module. The server periodically checks for changes
-in the deployment directory and redeploys the application, automatically and dynamically, with the
-changes. This is useful in a development environment, because it allows code changes
-to be tested quickly. In a production environment, however, dynamic reloading might degrade
-performance. In addition, whenever a reload is done, the sessions at that transit
-time become invalid. The client must restart the session.</p><p>This option is enabled by default.</p></li>
-<li><b>In the Reload Poll Interval field, type the length, in seconds, of the
-interval at which applications and modules are to be checked for code changes
-and dynamically reloaded. </b><p>The default value is 2.</p></li>
-<li><b>In the Admin Session Timeout field, type the number of minutes of inactivity
-after which the Administration Console session is to time out.</b><p>The default value is 60.</p></li>
-<li><b>Select the Auto Deploy Enabled checkbox to enable automatic deployment of applications.</b><p>If you copy an application or module file (JAR, WAR, RAR, or EAR)
-into a special directory and then enable automatic deployment, the application or module
-is automatically deployed by the GlassFish Server. This option is enabled by default.</p></li>
-<li><b>In the Auto Deploy Poll Interval field, type the length, in seconds, of
-the interval at which applications and modules are to be checked for
-code changes and dynamically reloaded. </b><p>The default value is 2. Changing the poll interval does not affect the
-time taken for deploying an application or module.</p></li>
-<li><b>In the Auto Deploy Retry Timeout field, type the number of seconds that
-a partially copied file can remain unchanged in size before an error occurs.</b><p>The default value is 4.</p></li>
-<li><b>In the Auto Deploy Directory field, type the full path of the directory
-to monitor for automatic deployment of applications.</b><p>The default value is <tt></tt><i>domain-dir</i><tt>/autodeploy</tt>.</p></li>
-<li><b>From the XML Validation drop-down list, select the type of XML validation to
-be performed on standard and GlassFish Server deployment descriptors.</b><p>The type may be any of the following:</p><dl><dt><tt>full</tt></dt>
-<dd><p>If XML validation fails, deployment fails. This value is the default.</p>
-
+<li>
+<p>In the navigation tree, select the Domain node.</p>
+<p>The Domain Attributes page opens.</p>
+</li>
+<li>
+<p>Select the Applications Configuration tab.</p>
+<p>The Applications Configuration page opens.</p>
+</li>
+<li>
+<p>Select the Reload Enabled checkbox to enable dynamic reloading of applications.</p>
+<p>When dynamic reloading is enabled, you do not have to redeploy an application or module when you change its code or deployment descriptors. All you have to do is copy the changed JavaServer Pages (JSP) or class files into the deployment directory for the application or module. The server periodically checks for changes in the deployment directory and redeploys the application, automatically and dynamically, with the changes. This is useful in a development environment, because it allows code changes to be tested quickly. In a production environment, however, dynamic reloading might degrade performance. In addition, whenever a reload is done, the sessions at that transit time become invalid. The client must restart the session.</p>
+<p>This option is enabled by default.</p>
+</li>
+<li>
+<p>In the Reload Poll Interval field, type the length, in seconds, of the interval at which applications and modules are to be checked for code changes and dynamically reloaded.</p>
+<p>The default value is 2.</p>
+</li>
+<li>
+<p>In the Admin Session Timeout field, type the number of minutes of inactivity after which the Administration Console session is to time out.</p>
+<p>The default value is 60.</p>
+</li>
+<li>
+<p>Select the Auto Deploy Enabled checkbox to enable automatic deployment of applications.</p>
+<p>If you copy an application or module file (JAR, WAR, RAR, or EAR) into a special directory and then enable automatic deployment, the application or module is automatically deployed by the GlassFish Server. This option is enabled by default.</p>
+</li>
+<li>
+<p>In the Auto Deploy Poll Interval field, type the length, in seconds, of the interval at which applications and modules are to be checked for code changes and dynamically reloaded.</p>
+<p>The default value is 2. Changing the poll interval does not affect the time taken for deploying an application or module.</p>
+</li>
+<li>
+<p>In the Auto Deploy Retry Timeout field, type the number of seconds that a partially copied file can remain unchanged in size before an error occurs.</p>
+<p>The default value is 4.</p>
+</li>
+<li>
+<p>In the Auto Deploy Directory field, type the full path of the directory to monitor for automatic deployment of applications.</p>
+<p>The default value is <i>domain-dir</i><code>/autodeploy</code>.</p>
+</li>
+<li>
+<p>From the XML Validation drop-down list, select the type of XML validation to be performed on standard and GlassFish Server deployment descriptors.</p>
+<p>The type may be any of the following:</p>
+<dl>
+<dt><code>full</code></dt>
+<dd>
+<p>If XML validation fails, deployment fails. This value is the default.</p>
 </dd>
-<dt><tt>parsing</tt></dt>
-<dd><p>XML validation errors are reported, but deployment occurs.</p>
-
+<dt><code>parsing</code></dt>
+<dd>
+<p>XML validation errors are reported, but deployment occurs.</p>
 </dd>
-<dt><tt>none</tt></dt>
-<dd><p>No XML validation is performed.</p>
-
+<dt><code>none</code></dt>
+<dd>
+<p>No XML validation is performed.</p>
 </dd>
 </dl>
 </li>
-<li><b>Select the Verifier Enabled checkbox to verify your deployment descriptor files.</b><p>The verifier examines the structure and content of the file before autodeployment. If
-verification fails, deployment is not performed. Verification of large applications is often time-consuming.
-This option is disabled by default.</p></li>
-<li><b>Select the Precompile Enabled checkbox to precompile any JSP files.</b><p>If this option is disabled, JSP files are compiled at runtime when they
-are first accessed. This option is disabled by default.</p></li>
-<li>(Optional) <b>In the Additional Properties section, specify additional properties.</b><p>The GlassFish Server does not define any additional properties for applications.</p><ul>
-<li><b>To add a property, click the Add Property button. In the blank row
-that appears, type the property name in the Name field, and type
-the property value in the Value field.</b></li>
-<li><b>To modify a property, edit that property's Value field.</b></li>
-<li><b>To delete a property, select the checkbox to the left of the
-Name field of the property that you are deleting, then click the Delete
-Properties button.</b></li></ul></li>
-<li><b>Click Save.</b>
-<hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
-Save.</p>
-
-
-<hr>
+<li>
+<p>Select the Verifier Enabled checkbox to verify your deployment descriptor files.</p>
+<p>The verifier examines the structure and content of the file before autodeployment. If verification fails, deployment is not performed. Verification of large applications is often time-consuming. This option is disabled by default.</p>
 </li>
-<li><b>Restart the server.</b></li></ol><p></b>See Also</b></p>
-<ul><li><p><a href="task-generaltab.html">To View General Information for the DAS</a></p>
-
+<li>
+<p>Select the Precompile Enabled checkbox to precompile any JSP files.</p>
+<p>If this option is disabled, JSP files are compiled at runtime when they are first accessed. This option is disabled by default.</p>
 </li>
-<li><p><a href="task-logviewer.html">To View Log Files for the DAS</a></p>
-
+<li>
+<p>In the Additional Properties section, specify additional properties.</p>
+<p>The GlassFish Server does not define any additional properties for applications.</p>
+<ul>
+<li>
+<p>To add a property, click the Add Property button. In the blank row that appears, type the property name in the Name field, and type the property value in the Value field.</p>
 </li>
-<li><p><a href="task-filter-logs.html">To Filter Displayed Log Records</a></p>
-
+<li>
+<p>To modify a property, edit that property's Value field.</p>
 </li>
-<li><p><a href="task-setadvancedomainattributes.html">To Set the Domain Attributes</a></p>
-
+<li>
+<p>To delete a property, select the checkbox to the left of the Name field of the property that you are deleting, then click the Delete Properties button.</p>
 </li>
-<li><p><a href="task-setadminpassword.html">To Change the Administrator Password</a></p>
+</ul>
+</li>
+<li>
+<p>Click Save.</p>
+
+<br />
+<p><b>Tip:</b></p>
+<p>To return to the default settings, click the Load Defaults button, then click Save.</p>
+
+<br />
 
 </li>
-<li><p><a href="task-systemproperties.html">To Manage System Properties</a></p>
-
+<li>
+<p>Restart the server.</p>
 </li>
-<li><p><a href="task-appmonitoringdata.html">To View Application Monitoring Data</a></p>
-
+</ol>
+<a id="sthref11" name="sthref11"></a>
+<h5>See Also</h5>
+<ul>
+<li>
+<p><a href="task-generaltab.html">To View General Information for the DAS</a></p>
 </li>
-<li><p><a href="task-servermonitoringdata.html">To View Server Monitoring Data</a></p>
-
+<li>
+<p><a href="task-logviewer.html">To View Log Files for the DAS</a></p>
 </li>
-<li><p><a href="task-resourcemonitoringdata.html">To View Resource Monitoring Data</a></p>
+<li>
+<p><a href="task-filter-logs.html">To Filter Displayed Log Records</a></p>
+</li>
+<li>
+<p><a href="task-setadvancedomainattributes.html">To Set the Domain Attributes</a></p>
+</li>
+<li>
+<p><a href="task-collectdomainlogs.html">To Collect and Download Domain Logs</a></p>
+</li>
+<li>
+<p><a href="task-setadminpassword.html">To Change the Administrator Password</a></p>
+</li>
+<li>
+<p><a href="task-systemproperties.html">To Manage System Properties</a></p>
+</li>
+<li>
+<p><a href="task-appmonitoringdata.html">To View Application Monitoring Data</a></p>
+</li>
+<li>
+<p><a href="task-servermonitoringdata.html">To View Server Monitoring Data</a></p>
+</li>
+<li>
+<p><a href="task-resourcemonitoringdata.html">To View Resource Monitoring Data</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

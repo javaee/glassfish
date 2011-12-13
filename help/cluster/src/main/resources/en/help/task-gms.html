@@ -1,48 +1,80 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
+<p><a id="task-gms" name="task-gms"></a><a id="GHCLU00080" name="GHCLU00080"></a></p>
 
-
-<a name="task-gms"></a><h3>To Configure the Group Management Service</h3><a name="indexterm-153"></a><p>The Group Management Service (GMS) is an in-process service that provides cluster
-monitoring, cluster membership, and group communication services. The GMS performs the following functions:</p>
-
-
-<ul><li><p>Notifies registered modules in a GlassFish Server instance when one or more member instances are added to or removed from a cluster, or are suspected or confirmed to have failed.</p>
-
+<h4><a id="sthref222" name="sthref222"></a>To Configure the Group Management Service</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>The Group Management Service (GMS) is an in-process service that provides cluster monitoring, cluster membership, and group communication services. The GMS performs the following functions:</p>
+<ul>
+<li>
+<p>Notifies registered modules in a GlassFish Server instance when one or more member instances are added to or removed from a cluster, or are suspected or confirmed to have failed.</p>
 </li>
-<li><p>Provides the ability to send and receive messages between a group of processes.</p>
-
-</li></ul>
+<li>
+<p>Provides the ability to send and receive messages between a group of processes.</p>
+</li>
+</ul>
 <ol>
-<li><b>In the navigation tree, expand the Configuration node.</b></li>
-<li><b>Select the configuration for the cluster that you are changing.</b></li>
-<li><b>Under the configuration's node, select the Group Management Service node.</b><p>The Group Management Service page opens.</p></li>
-<li><b>In the Maximum Missed Heartbeats field, enter the maximum number of monitoring
-attempts before the GMS confirms that a failure is suspected.</b><p>The default is 3.</p></li>
-<li><b>In the Heartbeat Frequency field, enter the period of time between monitoring
-attempts.</b><p>The default is 2000 milliseconds.</p></li>
-<li><b>In the Group Discovery Timeout field, enter the amount of time that
-the GMS waits for discovery of other cluster members.</b><p>The default is 5000 milliseconds.</p></li>
-<li><b>In the Failure Verification Wait Time field, enter the amount of time
-after which a suspected failure is marked as verified.</b><p>The default is 1500 milliseconds.</p></li>
-<li><b>To restore default values, click the Load Defaults button.</b></li>
-<li>(Optional) <b>In the Additional Properties section, specify additional properties.</b><p>The GlassFish Server does not define any additional GMS properties.</p><ul>
-<li><b>To add a property, click the Add Property button. In the blank
-row that appears, type the property name in the Name field, and
-type the property value in the Value field.</b></li>
-<li><b>To modify a property, edit that property's Value field.</b></li>
-<li><b>To delete a property, select the checkbox to the left of the
-Name field of the property that you are deleting, then click the
-Delete Properties button.</b></li></ul></li>
-<li><b>Click Save.</b></li></ol><p></b>See Also</b></p>
-<ul><li><p><a href="task-gmsenable.html">To Enable the Group Management Service</a></p>
-
+<li>
+<p>In the navigation tree, expand the Configuration node.</p>
 </li>
-<li><p><a href="task-gmscluster.html">To Configure Group Management Service Settings for a Cluster</a></p>
+<li>
+<p>Select the configuration for the cluster that you are changing.</p>
+</li>
+<li>
+<p>Under the configuration's node, select the Group Management Service node.</p>
+<p>The Group Management Service page opens.</p>
+</li>
+<li>
+<p>In the Maximum Missed Heartbeats field, enter the maximum number of monitoring attempts before the GMS confirms that a failure is suspected.</p>
+<p>The default is 3.</p>
+</li>
+<li>
+<p>In the Heartbeat Frequency field, enter the period of time between monitoring attempts.</p>
+<p>The default is 2000 milliseconds.</p>
+</li>
+<li>
+<p>In the Group Discovery Timeout field, enter the amount of time that the GMS waits for discovery of other cluster members.</p>
+<p>The default is 5000 milliseconds.</p>
+</li>
+<li>
+<p>In the Failure Verification Wait Time field, enter the amount of time after which a suspected failure is marked as verified.</p>
+<p>The default is 1500 milliseconds.</p>
+</li>
+<li>
+<p>To restore default values, click the Load Defaults button.</p>
+</li>
+<li>
+<p>In the Additional Properties section, specify additional properties.</p>
+<ul>
+<li>
+<p>To add a property, click the Add Property button. In the blank row that appears, type the property name in the Name field, and type the property value in the Value field.</p>
+</li>
+<li>
+<p>To modify a property, edit that property's Value field.</p>
+</li>
+<li>
+<p>To delete a property, select the checkbox to the left of the Name field of the property that you are deleting, then click the Delete Properties button.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Click Save.</p>
+</li>
+</ol>
+<a id="sthref223" name="sthref223"></a>
+<h5>See Also</h5>
+<ul>
+<li>
+<p><a href="task-gmsenable.html">To Enable the Group Management Service</a></p>
+</li>
+<li>
+<p><a href="task-gmscluster.html">To Configure Group Management Service Settings for a Cluster</a></p>
+</li>
+</ul>
 
-</li></ul>
 
 
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

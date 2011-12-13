@@ -1,66 +1,73 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-realms"></a><h4>Realms</h4>
-<a name="indexterm-200"></a><p>The GlassFish Server comes preconfigured with three realms: <tt>file</tt>, <tt>certificate</tt>, and <tt>admin-realm</tt>.
-It is also possible to create <tt>ldap</tt>, <tt>JDBC</tt>, <tt>solaris</tt>, and custom realms. Generally, you
-will have one realm of each type on a server, but on the
-GlassFish Server there are two file realms: <tt>file</tt> and <tt>admin-realm</tt>. These are
-two realms of the same type used for two different purposes. It is
-also possible to have a different certificate database for each virtual server on
-your system.</p>
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="ref-group-realms.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="ref-realmsnew.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="ref-realms" name="ref-realms"></a><a id="GHCOM00097" name="GHCOM00097"></a></p>
 
+<h4><a id="sthref366" name="sthref366"></a>Realms</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>The GlassFish Server comes preconfigured with three realms: <code>file</code>, <code>certificate</code>, and <code>admin-realm</code>. It is also possible to create <code>ldap</code>, <code>JDBC</code>, <code>solaris</code>, and custom realms. Generally, you will have one realm of each type on a server, but on the GlassFish Server there are two file realms: <code>file</code> and <code>admin-realm</code>. These are two realms of the same type used for two different purposes. It is also possible to have a different certificate database for each virtual server on your system.</p>
 <p>Use the Realms page to configure realms.</p>
-
 <p>For each realm, the following information is provided.</p>
-
-<dl><dt>Name</dt>
-<dd><p>The name of the realm.</p>
-
+<dl>
+<dt>Name</dt>
+<dd>
+<p>The name of the realm.</p>
 </dd>
 <dt>Class Name</dt>
-<dd><p>The class name for the realm.</p>
-
+<dd>
+<p>The class name for the realm.</p>
 </dd>
 </dl>
 <p>The Realms table also contains the following options.</p>
-
-<dl><dt>New</dt>
-<dd><p>Button to create a new realm.</p>
-
+<dl>
+<dt>New</dt>
+<dd>
+<p>Button to create a new realm.</p>
 </dd>
 <dt>Delete</dt>
-<dd><p>Button to delete one or more selected realms.</p>
-
+<dd>
+<p>Button to delete one or more selected realms.</p>
 </dd>
 </dl>
-<a name="gkonm"></a><h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-realmnew.html">To Create a Realm</a></p>
-
+<a id="sthref367" name="sthref367"></a>
+<h5>Related Tasks</h5>
+<ul>
+<li>
+<p><a href="task-realmnew.html">To Create a Realm</a></p>
 </li>
-<li><p><a href="task-realmedit.html">To Edit a Realm</a></p>
-
+<li>
+<p><a href="task-realmedit.html">To Edit a Realm</a></p>
 </li>
-<li><p><a href="task-todeleterealm.html">To Delete a Realm</a></p>
-
+<li>
+<p><a href="task-todeleterealm.html">To Delete a Realm</a></p>
 </li>
-<li><p><a href="task-createcustomrealm.html">To Create a Custom Realm</a></p>
-
-</li></ul>
-<a name="gkole"></a><h5>Related <tt>asadmin</tt> Commands</h5>
-
-<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=create-auth-realm-1"><tt>create-auth-realm</tt>(1)</a></p>
-
+<li>
+<p><a href="task-createcustomrealm.html">To Create a Custom Realm</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=delete-auth-realm-1"><tt>delete-auth-realm</tt>(1)</a></p>
-
+</ul>
+<a id="sthref368" name="sthref368"></a>
+<h5>Related asadmin Commands</h5>
+<ul>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00015"><code>create-auth-realm</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=list-auth-realms-1"><tt>list-auth-realms</tt>(1)</a></p>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00066"><code>delete-auth-realm</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00150"><code>list-auth-realms</code>(1)</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

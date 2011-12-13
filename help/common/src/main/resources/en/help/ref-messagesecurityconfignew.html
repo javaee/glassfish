@@ -1,85 +1,97 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-messagesecurityconfignew"></a><h4>New Message Security Configuration</h4>
-<a name="indexterm-230"></a><p>Use the New Message Security Configuration page to create an HttpServlet configuration for
-message security.</p>
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="ref-messagesecurityconfig.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="ref-messagesecurityconfigedit.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="ref-messagesecurityconfignew" name="ref-messagesecurityconfignew"></a><a id="GHCOM00119" name="GHCOM00119"></a></p>
 
+<h4><a id="sthref423" name="sthref423"></a>New Message Security Configuration</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the New Message Security Configuration page to create an HttpServlet configuration for message security.</p>
 <p>The New Message Security Configuration page contains the following options.</p>
-
-<dl><dt>Configuration Name</dt>
-<dd><p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
-
+<dl>
+<dt>Configuration Name</dt>
+<dd>
+<p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
 </dd>
 <dt>Authentication Layer</dt>
-<dd><p>Specifies the message layer at which authentication is performed. The value must be <tt>SOAP</tt> or <tt>HttpServlet</tt>. Because a SOAP configuration is available by default, the only choice is <tt>HttpServlet</tt>.</p>
-
+<dd>
+<p>Specifies the message layer at which authentication is performed. The value must be <code>SOAP</code> or <code>HttpServlet</code>. Because a SOAP configuration is available by default, the only choice is <code>HttpServlet</code>.</p>
 </dd>
 <dt>Provider ID</dt>
-<dd><p>The unique identifier of the provider configuration for this message security configuration.</p>
-
+<dd>
+<p>The unique identifier of the provider configuration for this message security configuration.</p>
 </dd>
 <dt>Default Provider</dt>
-<dd><p>If this option is selected, this provider is the default provider.  The default provider will be invoked for any application that does not identify a specific provider. Whether the provider is the default client provider, the default server provider, or both is determined by the Provider Type.</p>
-
+<dd>
+<p>If this option is selected, this provider is the default provider. The default provider will be invoked for any application that does not identify a specific provider. Whether the provider is the default client provider, the default server provider, or both is determined by the Provider Type.</p>
 </dd>
 <dt>Provider Type</dt>
-<dd><p>Specifies the type of the provider. Available choices are:</p>
-
-<dl><dt><tt>client</tt></dt>
-<dd><p>Specifies that the provider is the client authentication provider.</p>
-
+<dd>
+<p>Specifies the type of the provider. Available choices are:</p>
+<dl>
+<dt><code>client</code></dt>
+<dd>
+<p>Specifies that the provider is the client authentication provider.</p>
 </dd>
-<dt><tt>server</tt></dt>
-<dd><p>Specifies that the provider is the server authentication provider.</p>
-
+<dt><code>server</code></dt>
+<dd>
+<p>Specifies that the provider is the server authentication provider.</p>
 </dd>
-<dt><tt>client-server</tt></dt>
-<dd><p>Specifies that the provider is both a client and a server authentication provider.</p>
-
+<dt><code>client-server</code></dt>
+<dd>
+<p>Specifies that the provider is both a client and a server authentication provider.</p>
 </dd>
 </dl>
 </dd>
 <dt>Class Name</dt>
-<dd><p>The name of the Java implementation class of the provider. Client authentication providers must implement the <tt>com.sun.enterprise.security.jauth.ClientAuthModule</tt> interface. Server-side providers must implement the <tt>com.sun.enterprise.security.jauth.ServerAuthModule</tt> interface. Client-server providers must implement both interfaces.</p>
-
+<dd>
+<p>The name of the Java implementation class of the provider. Client authentication providers must implement the <code>com.sun.enterprise.security.jauth.ClientAuthModule</code> interface. Server-side providers must implement the <code>com.sun.enterprise.security.jauth.ServerAuthModule</code> interface. Client-server providers must implement both interfaces.</p>
 </dd>
 <dt>Additional Properties</dt>
-<dd><p>Additional properties for the message security configuration.</p>
-
+<dd>
+<p>Additional properties for the message security configuration.</p>
 </dd>
 </dl>
-<a name="gkokx"></a><h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-configmsgsecproviders.html">To Configure GlassFish Server Facilities for Use by Message Security Providers</a></p>
-
+<a id="sthref424" name="sthref424"></a>
+<h5>Related Tasks</h5>
+<ul>
+<li>
+<p><a href="task-configmsgsecproviders.html">To Configure GlassFish Server Facilities for Use by Message Security Providers</a></p>
 </li>
-<li><p><a href="task-messagesecurityconfignew.html">To Create a Message Security Configuration</a></p>
-
+<li>
+<p><a href="task-messagesecurityconfignew.html">To Create a Message Security Configuration</a></p>
 </li>
-<li><p><a href="task-messagesecurityconfigedit.html">To Edit a Message Security Configuration</a></p>
-
+<li>
+<p><a href="task-messagesecurityconfigedit.html">To Edit a Message Security Configuration</a></p>
 </li>
-<li><p><a href="task-messagesecurityconfigdelete.html">To Delete a Message Security Configuration</a></p>
-
+<li>
+<p><a href="task-messagesecurityconfigdelete.html">To Delete a Message Security Configuration</a></p>
 </li>
-<li><p><a href="task-messagesecurityproviderconfignew.html">To Create a Message Security Provider Configuration</a></p>
-
+<li>
+<p><a href="task-messagesecurityproviderconfignew.html">To Create a Message Security Provider Configuration</a></p>
 </li>
-<li><p><a href="task-messagesecurityproviderconfigedit.html">To Edit a Message Security Provider Configuration</a></p>
-
+<li>
+<p><a href="task-messagesecurityproviderconfigedit.html">To Edit a Message Security Provider Configuration</a></p>
 </li>
-<li><p><a href="task-messagesecurityproviderconfigdelete.html">To Delete a Message Security Provider Configuration</a></p>
-
+<li>
+<p><a href="task-messagesecurityproviderconfigdelete.html">To Delete a Message Security Provider Configuration</a></p>
 </li>
-<li><p><a href="task-enablemesec4appclients.html">To Enable Message Security for Application Clients</a></p>
-
-</li></ul>
-<a name="gkone"></a><h5>Related <tt>asadmin</tt> Commands</h5>
+<li>
+<p><a href="task-enablemesec4appclients.html">To Enable Message Security for Application Clients</a></p>
+</li>
+</ul>
+<a id="sthref425" name="sthref425"></a>
+<h5>Related asadmin Commands</h5>
 <p>None.</p>
 
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

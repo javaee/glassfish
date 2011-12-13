@@ -1,0 +1,88 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
+Use is subject to License Terms  -->
+<p><a id="task-nodenewdcom" name="task-nodenewdcom"></a></p>
+<!-- infolevel="all" infotype="General" -->
+<h4>To Finish the Creation of a DCOM Node</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>This task is the continuation for a DCOM node of <a href="task-createnode.html">To Create a Node</a>.</p>
+<ol>
+<li>
+<p>To copy GlassFish Server software from the DAS host to the node host, enable the Install GlassFish Server option.</p>
+</li>
+<li>
+<p>To force the node to be created in the configuration of the domain administration server (DAS) even if validation of the node's parameters fails, enable the Force option.</p>
+</li>
+<li>
+<p>If you require GlassFish Server to test the connection over DCOM to the node host before creating the node, perform these steps:</p>
+<ol>
+<li>
+<p>Enable the Validate DCOM option.</p>
+</li>
+<li>
+<p>In the Remote Test Directory field, type the name of the folder on the remote host in which GlassFish Server should create a file to test the connection.</p>
+</li>
+</ol>
+</li>
+<li>
+<p>In the Windows Domain field, type the name of the Windows domain that contains the user that the Windows User Name option specifies.</p>
+</li>
+<li>
+<p>In the Windows User Name field, type the name of the user on this node's host that is to run the process for connecting to the host through DCOM.</p>
+</li>
+<li>
+<p>Specify how the Windows user will be authenticated when logging in to this node's host.</p>
+
+<br />
+<p><b>Note:</b></p>
+<p>GlassFish Server also supports password authentication through the <code>AS_ADMIN_WINDOWSPASSWORD</code> entry in the password file. The password file is specified in the <code>--paswordfile</code> option of the <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00263"><code>asadmin</code>(1)</a> utility.</p>
+
+<br />
+
+<ol>
+<li>
+<p>To specify authentication through a password that is stored in the DAS configuration, perform these steps:</p>
+
+<br />
+<p><b>Caution:</b></p>
+<p>This password is stored in clear text in the DAS configuration. For enhanced security, use a password alias</p>
+
+<br />
+
+<ol>
+<li>
+<p>From the Windows User Authentication drop-down list, select Password.</p>
+</li>
+<li>
+<p>In the Windows User Password field, type the password that the SSH user will use when logging in to this node's host.</p>
+</li>
+<li>
+<p>In the Confirm Password field, type the password again.</p>
+</li>
+</ol>
+</li>
+<li>
+<p>To specify authentication through a password alias, perform these steps:</p>
+<ol>
+<li>
+<p>From the Windows User Authentication drop-down list, select Password Alias.</p>
+</li>
+<li>
+<p>From the Password Alias drop-down list, select an existing alias.</p>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>
+<p>Click Save.</p>
+</li>
+</ol>
+<a id="sthref226" name="sthref226"></a>
+<h5>See Also</h5>
+<p><a href="task-createnode.html">To Create a Node</a></p>
+
+
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

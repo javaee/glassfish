@@ -1,37 +1,37 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-httpserviceprops"></a><h4>Properties Specific to the HTTP Service</h4>
-<a name="indexterm-57"></a><a name="indexterm-58"></a><p>The following additional properties are available for the HTTP service. If you specify
-these properties, they apply to all <a href="ref-group-networklisteners.html">Network Listeners</a>.</p>
+<p><a id="ref-httpserviceprops" name="ref-httpserviceprops"></a><a id="GHWEB00009" name="GHWEB00009"></a></p>
 
-<dl><dt><tt>ssl-cache-entriese</tt></dt>
-<dd><p>The number of SSL sessions to be cached. The default value is 10,000.</p>
-
+<h4><a id="sthref108" name="sthref108"></a><a id="sthref109" name="sthref109"></a>Properties Specific to the HTTP Service</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>The following additional properties are available for the HTTP service. If you specify these properties, they apply to all <a href="ref-group-networklisteners.html">Network Listeners</a>.</p>
+<dl>
+<dt><code>ssl-cache-entriese</code></dt>
+<dd>
+<p>The number of SSL sessions to be cached. The default value is 10,000.</p>
 </dd>
-<dt><tt>ssl3-session-timeout</tt></dt>
-<dd><p>The interval at which SSL3 sessions are cached. The default value is 86,400.</p>
-
+<dt><code>ssl3-session-timeout</code></dt>
+<dd>
+<p>The interval at which SSL3 sessions are cached. The default value is 86,400.</p>
 </dd>
-<dt><tt>ssl-session-timeout</tt></dt>
-<dd><p>The interval at which SSL2 sessions are cached. The default value is 100.</p>
-
+<dt><code>ssl-session-timeout</code></dt>
+<dd>
+<p>The interval at which SSL2 sessions are cached. The default value is 100.</p>
 </dd>
-<dt><tt>proxyHandler</tt></dt>
-<dd><p>The fully qualified class name of a custom implementation of the <tt>com.sun.appserv.ProxyHandler</tt> abstract class, which allows a back-end GlassFish Server instance to retrieve information about the original client request that was intercepted by an SSL-terminating proxy server (for example, a load balancer). An implementation of this abstract class inspects a given request for the custom request headers through which the proxy server communicates the information about the original client request to the Enterprise Server instance, and returns that information to its caller.</p>
-
-<p>The default implementation reads the client IP address from an HTTP request header named <tt>Proxy-ip</tt>, the SSL <tt>keysize</tt> from an HTTP request header named <tt>Proxy-keysize</tt>, and the SSL client certificate chain from an HTTP request header named <tt>Proxy-auth-cert</tt>. The <tt>Proxy-auth-cert</tt> value must contain the BASE-64 encoded client certificate chain without the <tt>BEGIN CERTIFICATE</tt> and <tt>END CERTIFICATE</tt> boundaries and with <tt>\n</tt> replaced with <tt>% d% a</tt>.</p>
-
+<dt><code>proxyHandler</code></dt>
+<dd>
+<p>The fully qualified class name of a custom implementation of the <code>com.sun.appserv.ProxyHandler</code> abstract class, which allows a back-end GlassFish Server instance to retrieve information about the original client request that was intercepted by an SSL-terminating proxy server (for example, a load balancer). An implementation of this abstract class inspects a given request for the custom request headers through which the proxy server communicates the information about the original client request to the Enterprise Server instance, and returns that information to its caller.</p>
+<p>The default implementation reads the client IP address from an HTTP request header named <code>Proxy-ip</code>, the SSL <code>keysize</code> from an HTTP request header named <code>Proxy-keysize</code>, and the SSL client certificate chain from an HTTP request header named <code>Proxy-auth-cert</code>. The <code>Proxy-auth-cert</code> value must contain the BASE-64 encoded client certificate chain without the <code>BEGIN CERTIFICATE</code> and <code>END CERTIFICATE</code> boundaries and with <code>\n</code> replaced with <code>% d% a</code>.</p>
 <p>This setting is used only if the Auth Pass Through checkbox for the network listener protocol's HTTP page is set to true.</p>
-
 </dd>
-<dt><tt>connectionTimeout</tt></dt>
-<dd><p>Specifies the number of seconds that network listeners wait, after accepting a connection, for the request URI line to be presented. The default value is 30.</p>
-
+<dt><code>connectionTimeout</code></dt>
+<dd>
+<p>Specifies the number of seconds that network listeners wait, after accepting a connection, for the request URI line to be presented. The default value is 30.</p>
 </dd>
 </dl>
 
 
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

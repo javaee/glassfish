@@ -1,68 +1,64 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-uc-concepts"></a><h4>Update Tool Key Concepts</h4>
-<a name="indexterm-253"></a><p>Update Tool manages the installations of GlassFish Server software components that are contained
-under a single file system directory on your system.</p>
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="ref-group-uc.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="ref-uc-addon.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="ref-uc-concepts" name="ref-uc-concepts"></a><a id="GHCOM00133" name="GHCOM00133"></a></p>
 
+<h4><a id="sthref466" name="sthref466"></a>Update Tool Key Concepts</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Update Tool manages the installations of GlassFish Server software components that are contained under a single file system directory on your system.</p>
 <p>The Administration Console version of Update Tool allows you to do the following:</p>
-
-
-<ul><li><p>Install add-on components</p>
-
+<ul>
+<li>
+<p>Install add-on components</p>
 </li>
-<li><p>View updates to installed components</p>
-
+<li>
+<p>View updates to installed components</p>
 </li>
-<li><p>View installed components</p>
-
-</li></ul>
-<p>To update or remove installed components, you must stop the GlassFish Server
-domain, then use one of the following commands:</p>
-
-
-<ul><li><p><tt><i>as-install-parent</i>/bin/updatetool</tt>, which starts the Update Tool graphical utility</p>
-
+<li>
+<p>View installed components</p>
 </li>
-<li><p><tt><i>as-install-parent</i>/bin/pkg</tt>, a command-line version of the Update Tool</p>
-
-</li></ul>
+</ul>
+<p>To update or remove installed components, you must stop the GlassFish Server domain, then use one of the following commands:</p>
+<ul>
+<li>
+<p><i>as-install-parent</i><code>/bin/updatetool</code>, which starts the Update Tool graphical utility</p>
+</li>
+<li>
+<p><i>as-install-parent</i><code>/bin/pkg</code>, a command-line version of the Update Tool</p>
+</li>
+</ul>
 <p>The key concepts for Update Tool are described in the sections that follow.</p>
-
-<a name="ref-uc-about-component"></a><h5>Component</h5>
-<p>A <b>component</b> is the installable unit that Update Tool manages. A component consists
-of files that are installed as a unit on your system within an
-installation image.</p>
-
-<a name="ref-uc-about-image"></a><h5>Installation Image</h5>
-<p>An <b>installation image</b> is the directory that contains the software components, including the content
-of the directory. The installation image is added to Update Tool as the
-result of downloading and installing  GlassFish Server software. To enable the addition
-and update of GlassFish Server software components, each installation image contains information about the
-installation of components.</p>
-
-<a name="ref-uc-about-repository"></a><h5>Network Repository</h5>
-<p>A <b>network repository</b> contains the following items:</p>
-
-
-<ul><li><p>Components that can be added to an installation image</p>
-
+<a id="ref-uc-about-component" name="ref-uc-about-component"></a>
+<h5>Component</h5>
+<p>A component is the installable unit that Update Tool manages. A component consists of files that are installed as a unit on your system within an installation image.</p>
+<a id="ref-uc-about-image" name="ref-uc-about-image"></a>
+<h5>Installation Image</h5>
+<p>An installation image is the directory that contains the software components, including the content of the directory. The installation image is added to Update Tool as the result of downloading and installing GlassFish Server software. To enable the addition and update of GlassFish Server software components, each installation image contains information about the installation of components.</p>
+<a id="ref-uc-about-repository" name="ref-uc-about-repository"></a>
+<h5>Network Repository</h5>
+<p>A network repository contains the following items:</p>
+<ul>
+<li>
+<p>Components that can be added to an installation image</p>
 </li>
-<li><p>Updates to existing components in an installation image</p>
-
-</li></ul>
-<p>An installation image is associated with one or more network repositories. Each network
-repository is represented by a name and an associated URL. A repository name
-is unique for each installation image, and represents both the organization or project
-that manages the repository and a well defined scope of content. To learn
-about the network repositories preconfigured for GlassFish Server, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2416&id=gjzko">Preconfigured Repositories for GlassFish Server in <i>Oracle GlassFish Server 3.1 Administration Guide</i></a>.</p>
-
-<a name="ref-uc-about-addon"></a><h5>Add-On Component</h5>
-<p>An <b>add-on component</b> is a component of the installation image that is not yet
-installed.</p>
+<li>
+<p>Updates to existing components in an installation image</p>
+</li>
+</ul>
+<p>An installation image is associated with one or more network repositories. Each network repository is represented by a name and an associated URL. A repository name is unique for each installation image, and represents both the organization or project that manages the repository and a well defined scope of content. To learn about the network repositories preconfigured for GlassFish Server, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSADG00569"><i>Preconfigured Repositories for GlassFish Server</i> in <i>Oracle GlassFish Server Administration Guide</i></a>.</p>
+<a id="ref-uc-about-addon" name="ref-uc-about-addon"></a>
+<h5>Add-On Component</h5>
+<p>An add-on component is a component of the installation image that is not yet installed.</p>
 
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

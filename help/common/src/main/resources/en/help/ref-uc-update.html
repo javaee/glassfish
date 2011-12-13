@@ -1,69 +1,75 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-uc-update"></a><h4>Available Updates</h4>
-<a name="indexterm-256"></a><p>The Available Updates page provides information about newer versions of <a href="ref-uc-concepts.html#ref-uc-about-component">components</a> of the <a href="ref-uc-concepts.html#ref-uc-about-repository">installation image</a>
-that are installed.</p>
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="ref-uc-addon.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="ref-uc-installed.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="ref-uc-update" name="ref-uc-update"></a><a id="GHCOM00135" name="GHCOM00135"></a></p>
 
-<p>To install available updates, first stop the GlassFish Server domain. Then use one
-of these commands:</p>
-
-
-<ul><li><p><tt>glassfish3/bin/updatetool</tt>, which starts the Update Tool graphical utility</p>
-
+<h4><a id="sthref471" name="sthref471"></a>Available Updates</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>The Available Updates page provides information about newer versions of components of the installation image that are installed.</p>
+<p>To install available updates, first stop the GlassFish Server domain. Then use one of these commands:</p>
+<ul>
+<li>
+<p><code>glassfish3/bin/updatetool</code>, which starts the Update Tool graphical utility</p>
 </li>
-<li><p><tt>glassfish3/bin/pkg</tt>, a command-line version of the Update Tool</p>
-
-</li></ul>
-<p>For information on using the <tt>pkg</tt> command, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2416&id=ghapp">Chapter 11, Extending and Updating GlassFish Server, in <i>Oracle GlassFish Server 3.1 Administration Guide</i></a>. The Update Tool utility
-has its own online help.</p>
-
+<li>
+<p><code>glassfish3/bin/pkg</code>, a command-line version of the Update Tool</p>
+</li>
+</ul>
+<p>For information on using the <code>pkg</code> command, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSADG00014">Chapter 11, <i>Extending and Updating GlassFish Server,</i> in <i>Oracle GlassFish Server Administration Guide</i></a>. The Update Tool utility has its own online help.</p>
 <p>Restart the server after you have finished installing the updates.</p>
-
 <p>The Available Updates page contains the following options.</p>
-
-<dl><dt>Installation Path</dt>
-<dd><p>The file system path of the root or top level directory of the installation image.</p>
-
+<dl>
+<dt>Installation Path</dt>
+<dd>
+<p>The file system path of the root or top level directory of the installation image.</p>
 </dd>
 <dt>Available Updates</dt>
-<dd><p>For each component for which a newer version is available, this table provides the following information.</p>
-
-<dl><dt>Component</dt>
-<dd><p>The name of the component.</p>
-
+<dd>
+<p>For each component for which a newer version is available, this table provides the following information.</p>
+<dl>
+<dt>Component</dt>
+<dd>
+<p>The name of the component.</p>
 </dd>
 <dt>Category</dt>
-<dd><p>The category of software with which the component is associated, for example, Application Servers, System Tools, and Databases. The category is assigned to the component by the author of the component when the component is created.</p>
-
+<dd>
+<p>The category of software with which the component is associated, for example, Application Servers, System Tools, and Databases. The category is assigned to the component by the author of the component when the component is created.</p>
 </dd>
 <dt>Installed Version</dt>
-<dd><p>The version number of the package in which the current component is supplied.</p>
-
+<dd>
+<p>The version number of the package in which the current component is supplied.</p>
 </dd>
 <dt>New Version</dt>
-<dd><p>The version number of the available update.</p>
-
+<dd>
+<p>The version number of the available update.</p>
 </dd>
 <dt>Change</dt>
-<dd><p>Difference in size between the installed version and the available update.</p>
-
+<dd>
+<p>Difference in size between the installed version and the available update.</p>
 </dd>
 <dt>Source</dt>
-<dd><p>The name of the <a href="ref-uc-concepts.html#ref-uc-about-repository">Network Repository</a> from which the component would be obtained.</p>
-
+<dd>
+<p>The name of the <a href="ref-uc-concepts.html#ref-uc-about-repository">Network Repository</a> from which the component would be obtained.</p>
 </dd>
 </dl>
 </dd>
 </dl>
+<a id="sthref472" name="sthref472"></a>
 <h5>Related Tasks</h5>
 <p><a href="task-uc-update.html">To View Available Updates for Components</a></p>
-
-<h5>Related <tt>asadmin</tt> Commands</h5>
+<a id="sthref473" name="sthref473"></a>
+<h5>Related asadmin Commands</h5>
 <p>None.</p>
 
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

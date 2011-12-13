@@ -1,67 +1,73 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-jmshostedit"></a><h4>Edit JMS Host</h4>
-<a name="indexterm-48"></a><p>Use the Edit JMS Host page to modify the settings for a
-JMS host.</p>
+<p><a id="ref-jmshostedit" name="ref-jmshostedit"></a><a id="GHJMS00015" name="GHJMS00015"></a></p>
 
+<h4><a id="sthref85" name="sthref85"></a>Edit JMS Host</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the Edit JMS Host page to modify the settings for a JMS host.</p>
 <p>The Edit JMS Host page contains the following options.</p>
-
-<dl><dt>Load Defaults</dt>
-<dd><p>Button to restore settings that have default values to their default values. Settings that do not have default values are not changed.</p>
-
+<dl>
+<dt>Load Defaults</dt>
+<dd>
+<p>Button to restore settings that have default values to their default values. Settings that do not have default values are not changed.</p>
 </dd>
 <dt>Configuration Name</dt>
-<dd><p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
-
+<dd>
+<p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
 </dd>
 <dt>Name</dt>
-<dd><p>The name of the host. The Name field is a read-only field. You can only specify the Name field when you create a new JMS host.</p>
-
+<dd>
+<p>The name of the host. The Name field is a read-only field. You can only specify the Name field when you create a new JMS host.</p>
 </dd>
 <dt>Host</dt>
-<dd><p>The name or Internet Protocol (IP) address of the system where the JMS host will run (<tt>localhost</tt> or the name of the local or remote system).</p>
-
+<dd>
+<p>The name or Internet Protocol (IP) address of the system where the JMS host will run (<code>localhost</code> or the name of the local or remote system).</p>
 </dd>
 <dt>Port</dt>
-<dd><p>The port number of the JMS service. Change this field only if the JMS service to be used is running on a non-default port. The default port is 7676.</p>
-
+<dd>
+<p>The port number of the JMS service. Change this field only if the JMS service to be used is running on a non-default port. The default port is 7676.</p>
 </dd>
 <dt>Admin Username and Admin Password</dt>
-<dd><p>The Message Queue broker user name and password. These are different from the GlassFish Server user name and password. Edit these fields only if the Message Queue broker values have been changed using the <tt><i>as-install-parent</i>/mq/bin/imqusermgr</tt> command. The default values are <tt>admin</tt> and <tt>admin</tt>.</p>
-
+<dd>
+<p>The Message Queue broker user name and password. These are different from the GlassFish Server user name and password. Edit these fields only if the Message Queue broker values have been changed using the <i>as-install-parent</i><code>/mq/bin/imqusermgr</code> command. The default values are <code>admin</code> and <code>admin</code>.</p>
 </dd>
 </dl>
+<a id="sthref86" name="sthref86"></a>
 <h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-jmsservice.html">To Configure the JMS Service</a></p>
-
+<ul>
+<li>
+<p><a href="task-jmsservice.html">To Configure the JMS Service</a></p>
 </li>
-<li><p><a href="task-jmshostnew.html">To Create a JMS Host</a></p>
-
+<li>
+<p><a href="task-jmshostnew.html">To Create a JMS Host</a></p>
 </li>
-<li><p><a href="task-jmshostedit.html">To Edit a JMS Host</a></p>
-
+<li>
+<p><a href="task-jmshostedit.html">To Edit a JMS Host</a></p>
 </li>
-<li><p><a href="task-jmshostdelete.html">To Delete a JMS Host</a></p>
-
-</li></ul>
-<h5>Related <tt>asadmin</tt> Commands</h5>
-
-<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=create-jms-host-1"><tt>create-jms-host</tt>(1)</a></p>
-
+<li>
+<p><a href="task-jmshostdelete.html">To Delete a JMS Host</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=list-jms-hosts-1"><tt>list-jms-hosts</tt>(1)</a></p>
-
+</ul>
+<a id="sthref87" name="sthref87"></a>
+<h5>Related asadmin Commands</h5>
+<ul>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00039"><code>create-jms-host</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=delete-jms-host-1"><tt>delete-jms-host</tt>(1)</a></p>
-
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00176"><code>list-jms-hosts</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=jms-ping-1"><tt>jms-ping</tt>(1)</a></p>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00091"><code>delete-jms-host</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00144"><code>jms-ping</code>(1)</a></p>
+</li>
+</ul>
 
-</li></ul>
 
 
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

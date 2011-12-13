@@ -1,83 +1,91 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-serverinstjvmgeneral"></a><h4>JVM General Settings</h4>
-<a name="indexterm-191"></a><p>The Java Virtual Machine (JVM) enables Java byte codes to run on a
-physical machine. Tuning the JVM settings improves performance and avoids memory allocation errors.</p>
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="ref-group-jvm.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="ref-serverinstjvmpathsettings.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="ref-serverinstjvmgeneral" name="ref-serverinstjvmgeneral"></a><a id="GHCOM00090" name="GHCOM00090"></a></p>
 
-<p>The Java Virtual Machine is included in the Java Platform, Standard Edition (Java
-SE platform), which is required by the GlassFish Server. Incorrect JVM settings will
-prevent the server from running, so use care when changing these settings.</p>
+<h4><a id="sthref343" name="sthref343"></a>JVM General Settings</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>The Java Virtual Machine (JVM) enables Java byte codes to run on a physical machine. Tuning the JVM settings improves performance and avoids memory allocation errors.</p>
+<p>The Java Virtual Machine is included in the Java Platform, Standard Edition (Java SE platform), which is required by the GlassFish Server. Incorrect JVM settings will prevent the server from running, so use care when changing these settings.</p>
 
+<br />
+<p><b>Note:</b></p>
+<p>The terms "Java Virtual Machine" and "JVM" mean a Virtual Machine for the Java platform.</p>
 
-<hr><p><b>Note - </b>The terms &#8220;Java Virtual Machine&#8221; and &#8220;JVM&#8221; mean a Virtual Machine for the
-Java platform.</p>
+<br />
 
-
-<hr>
 <p>The JVM General Settings page contains the following options.</p>
-
-<dl><dt>Load Defaults</dt>
-<dd><p>Button to restore settings that have default values to their default values. Settings that do not have default values are not changed.</p>
-
+<dl>
+<dt>Load Defaults</dt>
+<dd>
+<p>Button to restore settings that have default values to their default values. Settings that do not have default values are not changed.</p>
 </dd>
 <dt>Configuration Name</dt>
-<dd><p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
-
+<dd>
+<p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
 </dd>
 <dt>Java Home</dt>
-<dd><p>The name of the installation directory of the Java SE software, which is required for GlassFish Server to run. To verify that the version of Java SE software that you specify is supported in this release, see the <a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2434&id=sjsaseern"><i>Oracle GlassFish Server 3.1-3.1.1 Release Notes</i></a>. If you enter a nonexistent directory name or the directory for an unsupported version of Java SE software, GlassFish Server will not start.</p>
-
+<dd>
+<p>The name of the installation directory of the Java SE software, which is required for GlassFish Server to run. To verify that the version of Java SE software that you specify is supported in this release, see the <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRLN"><i>Oracle GlassFish Server Release Notes</i></a>. If you enter a nonexistent directory name or the directory for an unsupported version of Java SE software, GlassFish Server will not start.</p>
 </dd>
 <dt>Javac Options</dt>
-<dd><p>The command-line options for the Java programming language compiler. The GlassFish Server runs the compiler when Enterprise JavaBeans (EJB) components are deployed.</p>
-
+<dd>
+<p>The command-line options for the Java programming language compiler. The GlassFish Server runs the compiler when Enterprise JavaBeans (EJB) components are deployed.</p>
 </dd>
 <dt>Debug</dt>
-<dd><p>Enables debugging with the Java Platform Debugger Architecture (JPDA).</p>
-
-<p>JPDA is used by application developers. For more information, see the <a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2418&id=sjsaseedg"><i>Oracle GlassFish Server 3.1 Application Development Guide</i></a>.</p>
-
+<dd>
+<p>Enables debugging with the Java Platform Debugger Architecture (JPDA).</p>
+<p>JPDA is used by application developers. For more information, see the <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSDVG"><i>Oracle GlassFish Server Application Development Guide</i></a>.</p>
 </dd>
 <dt>Debug Options</dt>
-<dd><p>Specifies the JPDA options passed to the JVM when debugging is enabled.</p>
-
+<dd>
+<p>Specifies the JPDA options passed to the JVM when debugging is enabled.</p>
 </dd>
 <dt>RMI Compile Options</dt>
-<dd><p>The command-line options for the <tt>rmic</tt> compiler. The GlassFish Server runs the <tt>rmic</tt> compiler when EJB components are deployed.</p>
-
+<dd>
+<p>The command-line options for the <code>rmic</code> compiler. The GlassFish Server runs the <code>rmic</code> compiler when EJB components are deployed.</p>
 </dd>
 <dt>Bytecode Preprocessor</dt>
-<dd><p>Names of classes for bytecode preprocessing. Use commas to separate class names. Each class must implement the com.sun.appserv.BytecodePreprocessor interface. The classes are called in the order specified.</p>
-
+<dd>
+<p>Names of classes for bytecode preprocessing. Use commas to separate class names. Each class must implement the com.sun.appserv.BytecodePreprocessor interface. The classes are called in the order specified.</p>
 </dd>
 <dt>Additional Properties</dt>
-<dd><p>Additional properties for the JVM. The GlassFish Server does not define any additional properties for the JVM.</p>
-
+<dd>
+<p>Additional properties for the JVM. The GlassFish Server does not define any additional properties for the JVM.</p>
 </dd>
 </dl>
+<a id="sthref344" name="sthref344"></a>
 <h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-jvmsettings.html">To Configure the JVM General Settings</a></p>
-
+<ul>
+<li>
+<p><a href="task-jvmsettings.html">To Configure the JVM General Settings</a></p>
 </li>
-<li><p><a href="task-jvmpathsettings.html">To Configure the JVM Path Settings</a></p>
-
+<li>
+<p><a href="task-jvmpathsettings.html">To Configure the JVM Path Settings</a></p>
 </li>
-<li><p><a href="task-jvmoptions.html">To Configure the JVM Options</a></p>
-
+<li>
+<p><a href="task-jvmoptions.html">To Configure the JVM Options</a></p>
 </li>
-<li><p><a href="task-securitymanagerdisable.html">To Disable the Security Manager</a></p>
-
+<li>
+<p><a href="task-securitymanagerdisable.html">To Disable the Security Manager</a></p>
 </li>
-<li><p><a href="task-jvmprofilersettings.html">To Configure the JVM Profiler Settings</a></p>
-
-</li></ul>
-<h5>Related <tt>asadmin</tt> Commands</h5>
+<li>
+<p><a href="task-jvmprofilersettings.html">To Configure the JVM Profiler Settings</a></p>
+</li>
+</ul>
+<a id="sthref345" name="sthref345"></a>
+<h5>Related asadmin Commands</h5>
 <p>None.</p>
 
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

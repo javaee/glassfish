@@ -1,134 +1,166 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="task-rawlogviewer.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="task-enable-secure-admin.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="task-filter-logs" name="task-filter-logs"></a><a id="GHCOM00148" name="GHCOM00148"></a></p>
 
-
-<a name="task-filter-logs"></a><h3>To Filter Displayed Log Records</h3><p><b>Before You Begin</b></p><p>Ensure that you are viewing log files for the domain administration server (DAS),
-a clustered GlassFish Server instance, or a standalone instance. For more information, see
-the following topics:</p>
-
-
-<ul><li><p><a href="task-logviewer.html">To View Log Files for the DAS</a></p>
-
+<h4>To Filter Displayed Log Records</h4>
+<a name="BEGIN" id="BEGIN"></a><a id="sthref29" name="sthref29"></a>
+<h5>Before You Begin</h5>
+<p>Ensure that you are viewing log files for the domain administration server (DAS), a clustered GlassFish Server instance, or a standalone instance. For more information, see the following topics:</p>
+<ul>
+<li>
+<p><a href="task-logviewer.html">To View Log Files for the DAS</a></p>
 </li>
-<li><p><a href="../../../cluster/en/help/task-view-logs-clustered-instance.html">To&#160;View Log Files for&#160;a Clustered GlassFish Server Instance</a></p>
-
+<li>
+<p><a href="../../../cluster/en/help/task-view-logs-clustered-instance.html">To&nbsp;View Log Files for&nbsp;a Clustered GlassFish Server Instance</a></p>
 </li>
-<li><p><a href="../../../cluster/en/help/task-view-logs-standalone-instance.html">To&#160;View Log Files for&#160;a Standalone GlassFish Server Instance</a></p>
-
-</li></ul>
+<li>
+<p><a href="../../../cluster/en/help/task-view-logs-standalone-instance.html">To&nbsp;View Log Files for&nbsp;a Standalone GlassFish Server Instance</a></p>
+</li>
+</ul>
 <ol>
-<li><b>In the Search Criteria area, filter the records by content, time period, and
-log level.</b><ol style="list-style-type: lower-alpha">
-<li><b>To display only records that contain specific text, in the Text Search field,
-type the text.</b><p>The search is case sensitive.</p></li>
-<li><b>To select the period of time for which log records are displayed, use
-the Timestamp option.</b><ul>
-<li><b>To view the most recent messages, select Most Recent (default).</b></li>
-<li><b>To view messages only from a certain period of time, select Specific Range
-and type date and time values in the From and To fields
-that appear.</b><p>The Date value must take the following form:</p><pre><i>MM</i>/<i>DD</i>/<i>YY</i></pre><dl><dt><i>MM</i></dt>
-<dd><p>An integer in the range 1&#8211;12 for the month number, for example, 1 for January or 10 for October.</p>
-
-</dd>
-<dt><i>DD</i></dt>
-<dd><p>An integer in the range 1&#8211;31 for the day of the month.</p>
-
-</dd>
-<dt><i>YY</i></dt>
-<dd><p>The last two digits of the year, for example, 11 for the year 2011.</p>
-
-</dd>
-</dl>
-<p>For example, to specify the date February 1st, 2011, type <tt>2/1/11</tt> in the
-Date field.</p><p>The Time value must take the following form:</p><pre><i>hh</i>:<i>mm</i>:<i>ss</i>.<i>SSS</i></pre><dl><dt><i>hh</i></dt>
-<dd><p>An integer in the range 0&#8211;23 to represent the hour. For times in the afternoon, use integers in the range 12&#8211;23, for example, 14 to represent 2 PM.</p>
-
-</dd>
-<dt><i>mm</i></dt>
-<dd><p>An integer in the range 0&#8211;59 for the number of minutes past the hour.</p>
-
-</dd>
-<dt><i>ss</i></dt>
-<dd><p>An integer in the range 0&#8211;59 for the number of seconds.</p>
-
-</dd>
-<dt><i>SSS</i></dt>
-<dd><p>A three-digit integer, with leading zeroes if necessary, in the range 000&#8211;999 for the number of milliseconds. </p>
-
-</dd>
-</dl>
-<p>For example, to specify the time 5.10 PM, type <tt>17:10:00.000</tt> in the Time
-field.</p><p>If the From value is later than the To value, an error
-message appears.</p></li></ul></li>
-<li><b>Filter messages by log level.</b><p>To ensure that the messages that you want to view appear in the
-server log, first <a href="task-eelogginglevels.html">set the appropriate log levels</a> on the Module Log Levels page.</p><p>If you choose to filter log messages by log level, only messages
-that match the specified filter criteria are shown. However, this filtering does not affect
-which messages are logged to the server log.</p><ol style="list-style-type: lower-roman">
-<li><b>From the Log Level drop-down list, select the log level.</b></li>
-<li><b>To display messages at only the selected level, select the Do Not Include
-More Severe Messages option.</b><p>By default, all messages in the server log at the chosen log level
-and more severe levels are displayed.</p></li></ol></li></ol></li>
-<li><b>In the Advanced Search area, filter records by logger namespace and select the
-amount of information that is displayed.</b><ol style="list-style-type: lower-alpha">
-<li><b>Click the Advanced Search link.</b><p>The Advanced Search area is added to the Log Viewer window.</p></li>
-<li><b>To filter by module, from the Logger drop-down list, select one or more
-namespaces.</b><p>Use Shift-click or Control-click to choose multiple namespaces.</p><p>Selecting a namespace at a higher level selects all the namespaces below it.
-For example, selecting <tt>javax.enterprise.system</tt> also selects the loggers for all the modules under
-that namespace, such as <tt>javax.enterprise.system.core</tt>, <tt>javax.enterprise.system.tools.admin</tt>, and so forth.</p></li>
-<li><b>To view messages from loggers for a particular application, in the Custom Logger
-field, type the name of each logger on a separate line.</b><p>If the application has several modules, you can view any module or
-all modules. For example, an application might have the following loggers:</p>
-<ul><li><p><tt>com.example.myapp.module1</tt></p>
-
+<li>
+<p>In the Search Criteria area, filter the records by content, time period, and log level.</p>
+<ol>
+<li>
+<p>To display only records that contain specific text, in the Text Search field, type the text.</p>
+<p>The search is case sensitive.</p>
 </li>
-<li><p><tt>com.example.myapp.module2</tt></p>
-
+<li>
+<p>To select the period of time for which log records are displayed, use the Timestamp option.</p>
+<ul>
+<li>
+<p>To view the most recent messages, select Most Recent (default).</p>
 </li>
-<li><p><tt>com.example.myapp.module3</tt></p>
-
-</li></ul>
-<p>To view messages from all modules in the application, type <tt>com.mycompany.myapp</tt>. To
-view messages from <tt>module2</tt> only, type <tt>com.example.myapp.module2</tt>.</p><p>When you specify one or more custom loggers, messages from GlassFish Server
-modules appear only if you specify them explicitly in the Logger area.</p></li>
-<li><b>From the Display drop-down list, select the number of messages to display.</b><p>The default number of messages displayed is 40. Other choices are 100, 250,
-and 1000.</p></li>
-<li><b>To view stack traces, deselect the Limit Excessively Long Messages option.</b><p>By default, stack traces do not appear in the viewer. To view stack
-traces, click the (details) link for a message.</p></li>
-<li><b>To hide the Advanced Search area, click the Basic Search link.</b></li></ol></li>
-<li><b>To specify the instance and associated log file that you want to view,
-use the Modify Search area.</b><ul>
-<li><b>From the Instance drop-down list, select the instance.</b><p>The default is the instance for which you initially selected to view log
-files. If you selected to view log files for the domain administration server
-(DAS), the default is server, which denotes the DAS.. </p></li>
-<li><b>From the Log File drop-down list, select the log file.</b><p>The default is <tt>server.log</tt>. Other choices depend on the log settings for the selected
-target.</p></li></ul></li>
-<li><b>In the Search Results area, customize the display of log messages.</b><p>The Search Results area displays the 40 most recent entries in the
-server log, with the settings from the Logging Settings page and Log Levels
-page.</p><ul>
-<li><b>To sort the messages differently, click the arrows in the columns.</b></li>
-<li><b>To view a formatted version of a message click the (details) link for
-the message.</b><p>A Log Entry Detail window opens, which contains a formatted version of the
-message.</p></li>
-<li><b>To view earlier or later entries in the log file, click Records Before
-and Records After at the top of the table.</b></li></ul></li></ol><p></b>See Also</b></p>
-<ul><li><p><a href="task-eelogging.html">To Configure General Logging Settings</a></p>
-
+<li>
+<p>To view messages only from a certain period of time, select Specific Range and type date and time values in the From and To fields that appear.</p>
+<p>The Date value must take the following form:</p>
+<pre>
+<i>MM</i>/<i>DD</i>/<i>YY</i>
+</pre>
+<p><code><i>MM</i></code> is an integer in the range 1-12 for the month number, for example, 1 for January or 10 for October. <code><i>DD</i></code> is an integer in the range 1-31 for the day of the month. <code><i>YY</i></code> are the last two digits of the year, for example, 11 for the year 2011.</p>
+<p>For example, to specify the date February 1st, 2011, type <code>2/1/11</code> in the Date field.</p>
+<p>The Time value must take the following form:</p>
+<pre>
+<i>hh</i>:<i>mm</i>:<i>ss</i>.<i>SSS</i>
+</pre>
+<p><code><i>hh</i></code> is an integer in the range 0-23 to represent the hour. For times in the afternoon, use integers in the range 12-23, for example, 14 to represent 2 PM. <code><i>mm</i></code> is an integer in the range 0-59 for the number of minutes past the hour. <code><i>ss</i></code> is an integer in the range 0-59 for the number of seconds. <code><i>SSS</i></code> is a three-digit integer, with leading zeroes if necessary, in the range 000-999 for the number of milliseconds.</p>
+<p>For example, to specify the time 5.10 PM, type <code>17:10:00.000</code> in the Time field.</p>
+<p>If the From value is later than the To value, an error message appears.</p>
 </li>
-<li><p><a href="task-eelogginglevels.html">To Configure Log Levels</a></p>
-
+</ul>
 </li>
-<li><p><a href="task-logviewer.html">To View Log Files for the DAS</a></p>
-
+<li>
+<p>Filter messages by log level.</p>
+<p>To ensure that the messages that you want to view appear in the server log, first set the appropriate log levels on the Module Log Levels page. See <a href="task-eelogginglevels.html">To Configure Log Levels</a> for instructions.</p>
+<p>If you choose to filter log messages by log level, only messages that match the specified filter criteria are shown. However, this filtering does not affect which messages are logged to the server log.</p>
+<ol>
+<li>
+<p>From the Log Level drop-down list, select the log level.</p>
 </li>
-<li><p><a href="../../../cluster/en/help/task-view-logs-clustered-instance.html">To&#160;View Log Files for&#160;a Clustered GlassFish Server Instance</a></p>
-
+<li>
+<p>To display messages at only the selected level, select the Do Not Include More Severe Messages option.</p>
+<p>By default, all messages in the server log at the chosen log level and more severe levels are displayed.</p>
 </li>
-<li><p><a href="../../../cluster/en/help/task-view-logs-standalone-instance.html">To&#160;View Log Files for&#160;a Standalone GlassFish Server Instance</a></p>
+</ol>
+</li>
+</ol>
+</li>
+<li>
+<p>In the Advanced Search area, filter records by logger namespace and select the amount of information that is displayed.</p>
+<ol>
+<li>
+<p>Click the Advanced Search link.</p>
+<p>The Advanced Search area is added to the Log Viewer window.</p>
+</li>
+<li>
+<p>To filter by module, from the Logger drop-down list, select one or more namespaces.</p>
+<p>Use Shift-click or Control-click to choose multiple namespaces.</p>
+<p>Selecting a namespace at a higher level selects all the namespaces below it. For example, selecting <code>javax.enterprise.system</code> also selects the loggers for all the modules under that namespace, such as <code>javax.enterprise.system.core</code>, <code>javax.enterprise.system.tools.admin</code>, and so forth.</p>
+</li>
+<li>
+<p>To view messages from loggers for a particular application, in the Custom Logger field, type the name of each logger on a separate line.</p>
+<p>If the application has several modules, you can view any module or all modules. For example, an application might have the following loggers:</p>
+<pre>
+com.example.myapp.module1
+com.example.myapp.module2
+com.example.myapp.module3
+</pre>
+<p>To view messages from all modules in the application, type <code>com.mycompany.myapp</code>. To view messages from <code>module2</code> only, type <code>com.example.myapp.module2</code>.</p>
+<p>When you specify one or more custom loggers, messages from GlassFish Server modules appear only if you specify them explicitly in the Logger area.</p>
+</li>
+<li>
+<p>From the Display drop-down list, select the number of messages to display.</p>
+<p>The default number of messages displayed is 40. Other choices are 100, 250, and 1000.</p>
+</li>
+<li>
+<p>To view stack traces, deselect the Limit Excessively Long Messages option.</p>
+<p>By default, stack traces do not appear in the viewer. To view stack traces, click the (details) link for a message.</p>
+</li>
+<li>
+<p>To hide the Advanced Search area, click the Basic Search link.</p>
+</li>
+</ol>
+</li>
+<li>
+<p>To specify the instance and associated log file that you want to view, use the Modify Search area.</p>
+<ul>
+<li>
+<p>From the Instance drop-down list, select the instance.</p>
+<p>The default is the instance for which you initially selected to view log files. If you selected to view log files for the domain administration server (DAS), the default is server, which denotes the DAS..</p>
+</li>
+<li>
+<p>From the Log File drop-down list, select the log file.</p>
+<p>The default is <code>server.log</code>. Other choices depend on the log settings for the selected target.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>In the Search Results area, customize the display of log messages.</p>
+<p>The Search Results area displays the 40 most recent entries in the server log, with the settings from the Logging Settings page and Log Levels page.</p>
+<ul>
+<li>
+<p>To sort the messages differently, click the arrows in the columns.</p>
+</li>
+<li>
+<p>To view a formatted version of a message click the (details) link for the message.</p>
+<p>A Log Entry Detail window opens, which contains a formatted version of the message.</p>
+</li>
+<li>
+<p>To view earlier or later entries in the log file, click Records Before and Records After at the top of the table.</p>
+</li>
+</ul>
+</li>
+</ol>
+<a id="sthref30" name="sthref30"></a>
+<h5>See Also</h5>
+<ul>
+<li>
+<p><a href="task-eelogging.html">To Configure General Logging Settings</a></p>
+</li>
+<li>
+<p><a href="task-eelogginglevels.html">To Configure Log Levels</a></p>
+</li>
+<li>
+<p><a href="task-logviewer.html">To View Log Files for the DAS</a></p>
+</li>
+<li>
+<p><a href="../../../cluster/en/help/task-view-logs-clustered-instance.html">To&nbsp;View Log Files for&nbsp;a Clustered GlassFish Server Instance</a></p>
+</li>
+<li>
+<p><a href="../../../cluster/en/help/task-view-logs-standalone-instance.html">To&nbsp;View Log Files for&nbsp;a Standalone GlassFish Server Instance</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

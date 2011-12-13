@@ -1,74 +1,83 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-lifecyclemodules"></a><h4>Lifecycle Modules</h4>
-<a name="indexterm-188"></a><p>Use the Lifecycle Modules page to configure lifecycle modules.</p>
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="ref-group-lifecyclemodules.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="ref-lifecyclemodulenew.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="ref-lifecyclemodules" name="ref-lifecyclemodules"></a><a id="GHCOM00079" name="GHCOM00079"></a></p>
 
-<p>A lifecycle module performs tasks when it is triggered by one or
-more events in the server's lifecycle. Possible trigger server events are: initialization, startup, ready
-to service requests, and shutdown. Lifecycle modules are not part of the Java
-EE specification, but are an enhancement to the GlassFish Server.</p>
-
+<h4><a id="sthref329" name="sthref329"></a>Lifecycle Modules</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the Lifecycle Modules page to configure lifecycle modules.</p>
+<p>A lifecycle module performs tasks when it is triggered by one or more events in the server's lifecycle. Possible trigger server events are: initialization, startup, ready to service requests, and shutdown. Lifecycle modules are not part of the Java EE specification, but are an enhancement to the GlassFish Server.</p>
 <p>For each lifecycle module, the following information is provided.</p>
-
-<dl><dt>Name</dt>
-<dd><p>The name of the lifecycle module.</p>
-
+<dl>
+<dt>Name</dt>
+<dd>
+<p>The name of the lifecycle module.</p>
 </dd>
 <dt>Enabled or Status</dt>
-<dd><p>A check mark if the application is enabled, or an X if the application is disabled, if only the default server instance, <tt>server</tt>, exists.</p>
-
+<dd>
+<p>A check mark if the application is enabled, or an X if the application is disabled, if only the default server instance, <code>server</code>, exists.</p>
 <p>If clusters or other standalone server instances exist, select Enabled on All Targets to view the targets on which the application is deployed.</p>
-
 </dd>
 <dt>Load Order</dt>
-<dd><p>A value specifying the relative order in which the lifecycle module should be loaded.</p>
-
+<dd>
+<p>A value specifying the relative order in which the lifecycle module should be loaded.</p>
 </dd>
 </dl>
 <p>The Lifecycle Modules table also contains the following options.</p>
-
-<dl><dt>New</dt>
-<dd><p>Button to create a new lifecycle module.</p>
-
+<dl>
+<dt>New</dt>
+<dd>
+<p>Button to create a new lifecycle module.</p>
 </dd>
 <dt>Delete</dt>
-<dd><p>Button to delete one or more selected lifecycle modules.</p>
-
+<dd>
+<p>Button to delete one or more selected lifecycle modules.</p>
 </dd>
 <dt>Enable</dt>
-<dd><p>Button to enable one or more selected lifecycle modules. Present if only the default server instance, <tt>server</tt>, exists.</p>
-
+<dd>
+<p>Button to enable one or more selected lifecycle modules. Present if only the default server instance, <code>server</code>, exists.</p>
 </dd>
 <dt>Disable</dt>
-<dd><p>Button to disable one or more selected lifecycle modules. Present if only the default server instance, <tt>server</tt>, exists.</p>
-
+<dd>
+<p>Button to disable one or more selected lifecycle modules. Present if only the default server instance, <code>server</code>, exists.</p>
 </dd>
 </dl>
+<a id="sthref330" name="sthref330"></a>
 <h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-lifecyclemodulenew.html">To Create a Lifecycle Module</a></p>
-
+<ul>
+<li>
+<p><a href="task-lifecyclemodulenew.html">To Create a Lifecycle Module</a></p>
 </li>
-<li><p><a href="task-lifecyclemoduleedit.html">To Edit a Lifecycle Module</a></p>
-
+<li>
+<p><a href="task-lifecyclemoduleedit.html">To Edit a Lifecycle Module</a></p>
 </li>
-<li><p><a href="task-lifecyclemoduledelete.html">To Delete a Lifecycle Module</a></p>
-
-</li></ul>
-<h5>Related <tt>asadmin</tt> Commands</h5>
-
-<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=create-lifecycle-module-1"><tt>create-lifecycle-module</tt>(1)</a></p>
-
+<li>
+<p><a href="task-lifecyclemoduledelete.html">To Delete a Lifecycle Module</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=list-lifecycle-modules-1"><tt>list-lifecycle-modules</tt>(1)</a></p>
-
+</ul>
+<a id="sthref331" name="sthref331"></a>
+<h5>Related asadmin Commands</h5>
+<ul>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00043"><code>create-lifecycle-module</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=delete-lifecycle-module-1"><tt>delete-lifecycle-module</tt>(1)</a></p>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00181"><code>list-lifecycle-modules</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00095"><code>delete-lifecycle-module</code>(1)</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

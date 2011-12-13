@@ -1,66 +1,86 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-filerealmuseredit"></a><h4>Edit File Realm User</h4>
-<a name="indexterm-218"></a><p>Use the Edit File Realm User page to change a user's password
-for the current realm.</p>
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="ref-filerealmusernew.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="ref-group-auditmodules.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="ref-filerealmuseredit" name="ref-filerealmuseredit"></a><a id="GHCOM00109" name="GHCOM00109"></a></p>
+
+<h4><a id="sthref396" name="sthref396"></a>Edit File Realm User</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the Edit File Realm User page to change a user's password for the current realm.</p>
+
+<br />
+<p><b>Note:</b></p>
+<p>If secure administration is enabled, you cannot change the password of an <code>admin-realm</code> user to an empty value.</p>
+
+<br />
 
 <p>The Edit File Realm User page contains the following options.</p>
-
-<dl><dt>Configuration Name</dt>
-<dd><p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
-
+<dl>
+<dt>Configuration Name</dt>
+<dd>
+<p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
 </dd>
 <dt>Realm Name</dt>
-<dd><p>The name of the currently selected realm. This is a read-only field.</p>
-
+<dd>
+<p>The name of the currently selected realm. This is a read-only field.</p>
 </dd>
 <dt>User ID</dt>
-<dd><p>The name of the account that you are editing. This is a read-only field.</p>
-
+<dd>
+<p>The name of the account that you are editing. This is a read-only field.</p>
 </dd>
 <dt>Group List</dt>
-<dd><p>Groups to which this user belongs. Separate group names with commas.</p>
-
-<p>For <tt>admin-realm</tt> users, this is a read-only field, and the group is <tt>asadmin</tt>.</p>
-
+<dd>
+<p>Groups to which this user belongs. Separate group names with commas.</p>
+<p>For <code>admin-realm</code> users, this is a read-only field, and the group is <code>asadmin</code>.</p>
 </dd>
 <dt>New Password</dt>
-<dd><p>New password for this user.</p>
-
+<dd>
+<p>New password for this user.</p>
 </dd>
 <dt>Confirm New Password</dt>
-<dd><p>New password for this user.</p>
-
+<dd>
+<p>New password for this user.</p>
 </dd>
 </dl>
-<a name="gkonh"></a><h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-fileuserscreate.html">To Add a User to the File Realm</a></p>
-
+<a id="sthref397" name="sthref397"></a>
+<h5>Related Tasks</h5>
+<ul>
+<li>
+<p><a href="task-fileuserscreate.html">To Add a User to the File Realm</a></p>
 </li>
-<li><p><a href="task-fileusersedit.html">To Edit File Realm User Information</a></p>
-
+<li>
+<p><a href="task-fileusersedit.html">To Edit File Realm User Information</a></p>
 </li>
-<li><p><a href="task-fileusersdelete.html">To Delete a User from the File Realm</a></p>
-
-</li></ul>
-<a name="gkoop"></a><h5>Related <tt>asadmin</tt> Commands</h5>
-
-<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=list-file-users-1"><tt>list-file-users</tt>(1)</a></p>
-
+<li>
+<p><a href="task-fileusersdelete.html">To Delete a User from the File Realm</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=create-file-user-1"><tt>create-file-user</tt>(1)</a></p>
-
+</ul>
+<a id="sthref398" name="sthref398"></a>
+<h5>Related asadmin Commands</h5>
+<ul>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00165"><code>list-file-users</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=update-file-user-1"><tt>update-file-user</tt>(1)</a></p>
-
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00024"><code>create-file-user</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=delete-file-user-1"><tt>delete-file-user</tt>(1)</a></p>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00254"><code>update-file-user</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00076"><code>delete-file-user</code>(1)</a></p>
+</li>
+</ul>
 
-</li></ul>
 
 
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

@@ -1,74 +1,98 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
+<p><a id="task-protocolfilecacheedit" name="task-protocolfilecacheedit"></a><a id="GHWEB00046" name="GHWEB00046"></a></p>
 
+<h4><a id="sthref62" name="sthref62"></a><a id="sthref63" name="sthref63"></a>To Edit File Cache Settings for a Protocol</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<ol>
+<li>
+<p>In the navigation tree, expand the Configuration node.</p>
+</li>
+<li>
+<p>Under the Configuration node, expand the Network Config node.</p>
+</li>
+<li>
+<p>Under the Network Config node, select the Protocols node.</p>
+<p>The Protocols page opens.</p>
+</li>
+<li>
+<p>On the Protocols page, click the name of the protocol that you are editing.</p>
+<p>The Edit Protocol page opens.</p>
+</li>
+<li>
+<p>On the Edit Protocol page, click the File Cache tab.</p>
+<p>The File Cache page opens.</p>
+</li>
+<li>
+<p>Select the Status Enabled checkbox to enable the file cache.</p>
+<p>This option is selected by default.</p>
+</li>
+<li>
+<p>In the Max Age field, type the maximum age, in seconds, for a valid cache entry.</p>
+<p>This parameter controls how long cached information is used after a file has been cached. An entry older than the maximum age is replaced by a new entry for the same file. If your content changes infrequently, increase this value for improved performance.</p>
+<p>The optimum maximum age depends on whether existing files are modified regularly. For example, if files are modified four times a day at regular intervals, consider setting the maximum age to 21600 seconds (6 hours). Otherwise, consider setting the maximum age to the longest time for which you are willing to serve the previous version of a file after the file has been modified.</p>
+<p>The default value is 30.</p>
+</li>
+<li>
+<p>In the Max Cache Size field, type The maximum total size (in bytes) of the file cache on disk.</p>
+<p>The default value is 10485760.</p>
+</li>
+<li>
+<p>In the Max File Count field, type the maximum number of files that can be stored in the file cache.</p>
+<p>If the value is too big, the server caches little-needed files, which wastes memory. If the value is too small, the benefit of caching is lost. Try different values of this attribute to find the optimal solution for specific applications.</p>
+<p>The default value is 1024.</p>
+</li>
+<li>
+<p>Click Save.</p>
 
-<a name="task-protocolfilecacheedit"></a><h3>To Edit File Cache Settings for a Protocol</h3><a name="indexterm-30"></a><a name="indexterm-31"></a><ol>
-<li><b>In the navigation tree, expand the Configuration node.</b></li>
-<li><b>Under the Configuration node, expand the Network Config node.</b></li>
-<li><b>Under the Network Config node, select the Protocols node.</b><p>The Protocols page opens.</p></li>
-<li><b>On the Protocols page, click the name of the protocol that you are
-editing.</b><p>The Edit Protocol page opens.</p></li>
-<li><b>On the Edit Protocol page, click the File Cache tab.</b><p>The File Cache page opens.</p></li>
-<li><b>Select the Status Enabled checkbox to enable the file cache.</b><p>This option is selected by default.</p></li>
-<li><b>In the Max Age field, type the maximum age, in seconds, for
-a valid cache entry.</b><p>This parameter controls how long cached information is used after a file has
-been cached. An entry older than the maximum age is replaced by a
-new entry for the same file. If your content changes infrequently, increase this
-value for improved performance.</p><p>The optimum maximum age depends on whether existing files are modified regularly. For
-example, if files are modified four times a day at regular intervals, consider
-setting the maximum age to 21600 seconds (6 hours). Otherwise, consider setting the
-maximum age to the longest time for which you are willing to serve
-the previous version of a file after the file has been modified.</p><p>The default value is 30.</p></li>
-<li><b>In the Max Cache Size field, type The maximum total size (in
-bytes) of the file cache on disk.</b><p>The default value is 10485760.</p></li>
-<li><b>In the Max File Count field, type the maximum number of files that
-can be stored in the file cache.</b><p>If the value is too big, the server caches little-needed files, which wastes
-memory. If the value is too small, the benefit of caching is lost.
-Try different values of this attribute to find the optimal solution for specific
-applications.</p><p>The default value is 1024.</p></li>
-<li><b>Click Save.</b>
-<hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
-Save.</p>
+<br />
+<p><b>Tip:</b></p>
+<p>To return to the default settings, click the Load Defaults button, then click Save.</p>
 
-
-<hr>
-</li></ol><p></b>See Also</b></p>
-<ul><li><p><a href="task-networklistenernew.html">To Create a Network Listener</a></p>
+<br />
 
 </li>
-<li><p><a href="task-networklisteneredit.html">To Edit a Network Listener</a></p>
-
+</ol>
+<a id="sthref64" name="sthref64"></a>
+<h5>See Also</h5>
+<ul>
+<li>
+<p><a href="task-networklistenernew.html">To Create a Network Listener</a></p>
 </li>
-<li><p><a href="task-networklistenerdelete.html">To Delete a Network Listener</a></p>
-
+<li>
+<p><a href="task-networklisteneredit.html">To Edit a Network Listener</a></p>
 </li>
-<li><p><a href="task-protocolnew.html">To Create a Protocol</a></p>
-
+<li>
+<p><a href="task-networklistenerdelete.html">To Delete a Network Listener</a></p>
 </li>
-<li><p><a href="task-protocoledit.html">To Edit a Protocol</a></p>
-
+<li>
+<p><a href="task-protocolnew.html">To Create a Protocol</a></p>
 </li>
-<li><p><a href="task-protocolssledit.html">To Edit SSL Settings for a Protocol</a></p>
-
+<li>
+<p><a href="task-protocoledit.html">To Edit a Protocol</a></p>
 </li>
-<li><p><a href="task-protocolhttpedit.html">To Edit HTTP Settings for a Protocol</a></p>
-
+<li>
+<p><a href="task-protocolssledit.html">To Edit SSL Settings for a Protocol</a></p>
 </li>
-<li><p><a href="task-protocoldelete.html">To Delete a Protocol</a></p>
-
+<li>
+<p><a href="task-protocolhttpedit.html">To Edit HTTP Settings for a Protocol</a></p>
 </li>
-<li><p><a href="task-transportnew.html">To Create a Transport</a></p>
-
+<li>
+<p><a href="task-protocoldelete.html">To Delete a Protocol</a></p>
 </li>
-<li><p><a href="task-transportedit.html">To Edit a Transport</a></p>
-
+<li>
+<p><a href="task-transportnew.html">To Create a Transport</a></p>
 </li>
-<li><p><a href="task-transportdelete.html">To Delete a Transport</a></p>
+<li>
+<p><a href="task-transportedit.html">To Edit a Transport</a></p>
+</li>
+<li>
+<p><a href="task-transportdelete.html">To Delete a Transport</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

@@ -1,66 +1,66 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-virtualservers"></a><h4>Virtual Servers</h4>
-<a name="indexterm-59"></a><p>A virtual server, sometimes called a virtual host, is an object that allows
-the same physical server to host multiple Internet domain names. All virtual servers
-hosted on the same physical server share the Internet Protocol (IP) address of
-that physical server. A virtual server associates a domain name for a server
-(such as <tt>www.sun.com</tt>) with the particular server on which the GlassFish Server is
-running.</p>
+<p><a id="ref-virtualservers" name="ref-virtualservers"></a><a id="GHWEB00010" name="GHWEB00010"></a></p>
 
+<h4><a id="sthref119" name="sthref119"></a>Virtual Servers</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>A virtual server, sometimes called a virtual host, is an object that allows the same physical server to host multiple Internet domain names. All virtual servers hosted on the same physical server share the Internet Protocol (IP) address of that physical server. A virtual server associates a domain name for a server (such as <code>www.sun.com</code>) with the particular server on which the GlassFish Server is running.</p>
 <p>Use the Virtual Servers page to configure virtual servers.</p>
-
 <p>For each virtual server, the following information is provided.</p>
-
-<dl><dt>Name</dt>
-<dd><p>The name of the virtual server.</p>
-
+<dl>
+<dt>Name</dt>
+<dd>
+<p>The name of the virtual server.</p>
 </dd>
 <dt>State</dt>
-<dd><p>Either <tt>on</tt>, <tt>off</tt>, or <tt>disabled</tt>.</p>
-
+<dd>
+<p>Either <code>on</code>, <code>off</code>, or <code>disabled</code>.</p>
 </dd>
 <dt>Default Web Module</dt>
-<dd><p>The deployed web module (if any) that is to respond to all requests that cannot be mapped to other web modules deployed to the virtual server.</p>
-
+<dd>
+<p>The deployed web module (if any) that is to respond to all requests that cannot be mapped to other web modules deployed to the virtual server.</p>
 </dd>
 </dl>
 <p>The Virtual Servers table also contains the following options.</p>
-
-<dl><dt>New</dt>
-<dd><p>Button to create a new virtual server.</p>
-
+<dl>
+<dt>New</dt>
+<dd>
+<p>Button to create a new virtual server.</p>
 </dd>
 <dt>Delete</dt>
-<dd><p>Button to delete one or more selected virtual servers.</p>
-
+<dd>
+<p>Button to delete one or more selected virtual servers.</p>
 </dd>
 </dl>
+<a id="sthref120" name="sthref120"></a>
 <h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-virtualservercreate.html">To Create a Virtual Server</a></p>
-
+<ul>
+<li>
+<p><a href="task-virtualservercreate.html">To Create a Virtual Server</a></p>
 </li>
-<li><p><a href="task-virtualserveredit.html">To Edit a Virtual Server</a></p>
-
+<li>
+<p><a href="task-virtualserveredit.html">To Edit a Virtual Server</a></p>
 </li>
-<li><p><a href="task-virtualserverdelete.html">To Delete a Virtual Server</a></p>
-
-</li></ul>
-<h5>Related <tt>asadmin</tt> Commands</h5>
-
-<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=create-virtual-server-1"><tt>create-virtual-server</tt>(1)</a></p>
-
+<li>
+<p><a href="task-virtualserverdelete.html">To Delete a Virtual Server</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=list-virtual-servers-1"><tt>list-virtual-servers</tt>(1)</a></p>
-
+</ul>
+<a id="sthref121" name="sthref121"></a>
+<h5>Related asadmin Commands</h5>
+<ul>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00062"><code>create-virtual-server</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=delete-virtual-server-1"><tt>delete-virtual-server</tt>(1)</a></p>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00207"><code>list-virtual-servers</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00113"><code>delete-virtual-server</code>(1)</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

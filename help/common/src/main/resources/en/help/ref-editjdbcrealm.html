@@ -1,82 +1,105 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-editjdbcrealm"></a><h4>Properties Specific to the <tt>JDBCRealm</tt> Class</h4>
-<a name="indexterm-207"></a><a name="indexterm-208"></a><p>To protect your web pages or web applications, you can set the
-security so that only registered users can access them. This is known as
-the authentication facility. This type of realm involves storing the credentials of your
-users inside a database. The GlassFish Server uses the database information and the enabled
-JDBC realm option inside the configuration file.</p>
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="ref-editcertrealm.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="ref-ldaprealmprop.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="ref-editjdbcrealm" name="ref-editjdbcrealm"></a><a id="GHCOM00102" name="GHCOM00102"></a></p>
 
+<h4><a id="sthref379" name="sthref379"></a><a id="sthref380" name="sthref380"></a>Properties Specific to the <code>JDBCRealm</code> Class</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>To protect your web pages or web applications, you can set the security so that only registered users can access them. This is known as the authentication facility. This type of realm involves storing the credentials of your users inside a database. The GlassFish Server uses the database information and the enabled JDBC realm option inside the configuration file.</p>
 <p>The following properties are required for a JDBC realm.</p>
-
-<dl><dt>JAAS Context</dt>
-<dd><p>The JAAS (Java Authentication and Authorization Service) context (the identifier for the login module to use for this realm). The only valid value is <tt>jdbcRealm</tt>.</p>
-
+<dl>
+<dt>JAAS Context</dt>
+<dd>
+<p>The JAAS (Java Authentication and Authorization Service) context (the identifier for the login module to use for this realm). The only valid value is <code>jdbcRealm</code>.</p>
 </dd>
 <dt>JNDI</dt>
-<dd><p>The JNDI name for this realm. The default value is <tt>jdbc/security</tt>.</p>
-
+<dd>
+<p>The JNDI name for this realm. The default value is <code>jdbc/security</code>.</p>
 </dd>
 <dt>User Table</dt>
-<dd><p>The table that contains a list of authorized users for this realm. The default value is <tt>usertable</tt>.</p>
-
+<dd>
+<p>The table that contains a list of authorized users for this realm. The default value is <code>usertable</code>.</p>
 </dd>
 <dt>User Name Column</dt>
-<dd><p>The name of the column that contains the list of users inside the user table. The default value is <tt>userid</tt>.</p>
-
+<dd>
+<p>The name of the column that contains the list of users inside the user table. The default value is <code>userid</code>.</p>
 </dd>
 <dt>Password Column</dt>
-<dd><p>The name of the column that contains the respective user's password in the user table. The default value is <tt>password</tt>.</p>
-
+<dd>
+<p>The name of the column that contains the respective user's password in the user table. The default value is <code>password</code>.</p>
 </dd>
 <dt>Group Table</dt>
-<dd><p>The name of the group table in the database. The default value is <tt>grouptable</tt>.</p>
-
+<dd>
+<p>The name of the group table in the database. The default value is <code>grouptable</code>.</p>
 </dd>
 <dt>Group Name Column</dt>
-<dd><p>The name of the group name column in the database's group table. The default value is <tt>groupid</tt>.</p>
-
+<dd>
+<p>The name of the group name column in the database's group table. The default value is <code>groupid</code>.</p>
 </dd>
 </dl>
 <p>The following optional properties are available for a JDBC realm.</p>
-
-<dl><dt>Assign Groups</dt>
-<dd><p>A comma-separated list of group names. All clients who present valid certificates are assigned to these groups, for example, <tt>employee,manager</tt>, where these are the names of user groups.</p>
-
+<dl>
+<dt>Assign Groups</dt>
+<dd>
+<p>A comma-separated list of group names. All clients who present valid certificates are assigned to these groups, for example, <code>employee,manager</code>, where these are the names of user groups.</p>
 </dd>
 <dt>Database User</dt>
-<dd><p>Allows you to specify the database user name in the realm instead of the <tt>jdbc-connection-pool</tt>. This prevents other applications from looking up the database, getting a connection, and browsing the user table. By default, the <tt>jdbc-connection-pool</tt> configuration is used.</p>
-
+<dd>
+<p>Allows you to specify the database user name in the realm instead of the <code>jdbc-connection-pool</code>. This prevents other applications from looking up the database, getting a connection, and browsing the user table. By default, the <code>jdbc-connection-pool</code> configuration is used.</p>
 </dd>
 <dt>Database Password</dt>
-<dd><p>Allows you to specify the database password in the realm instead of the <tt>jdbc-connection-pool</tt>. This prevents other applications from looking up the database, getting a connection, and browsing the user table. By default, the <tt>jdbc-connection-pool</tt> configuration is used.</p>
-
+<dd>
+<p>Allows you to specify the database password in the realm instead of the <code>jdbc-connection-pool</code>. This prevents other applications from looking up the database, getting a connection, and browsing the user table. By default, the <code>jdbc-connection-pool</code> configuration is used.</p>
 </dd>
 <dt>Digest Algorithm</dt>
-<dd><p>(Optional) Specifies the digest algorithm. The default is <tt>SHA-256</tt>. You can use any algorithm supported in the JDK, or none.</p>
+<dd>
+<p>(Optional) Specifies the digest algorithm. The default is <code>SHA-256</code>. You can use any algorithm supported in the JDK, or none.</p>
 
+<br />
+<p><b>Note:</b></p>
+<p>In versions of GlassFish Server prior to 3.1.2, the default algorithm was <code>MD5</code>. If you have applications that depend on the <code>MD5</code> algorithm, you can override the default <code>SHA-25</code> algorithm by using the <code>asadmin set</code> subcommand:</p>
+<pre>
+asadmin&gt; <b>set server.security-service.property.default-digest-algorithm=MD5</b>
+</pre>
+<p>You can use the <code>asadmin get</code> subcommand to determine what algorithm is currently being used:</p>
+<pre>
+asadmin&gt; <b>get server.security-service.property.default-digest-algorithm</b>
+</pre>
+<p>Also note that, to maintain backward compatibility, if an upgrade is performed from GlassFish Server v2.<i>x</i> or v3.0.<i>x</i> to GlassFish Server 3.1.2, the default algorithm is automatically set to <code>MD5</code> in cases where the digest algorithm had not been explicitly set in the older GlassFish Server version.</p>
 
-<hr><p><b>Note - </b>In versions of GlassFish Server prior to 3.1, the default algorithm was <tt>MD5</tt>. If you have applications that depend on the <tt>MD5</tt> algorithm, you can override the default <tt>SHA-25</tt> algorithm by using the <tt>asadmin set</tt> subcommand:</p>
+<br />
 
-<pre>asadmin> <tt><b>set server.security-service.property.default-digest-algorithm=MD5</b></tt></pre><p>You can use the <tt>asadmin get</tt> subcommand to determine what algorithm is currently being used:</p>
-
-<pre>asadmin> <tt><b>get server.security-service.property.default-digest-algorithm</b></tt></pre><p>Also note that, to maintain backward compatibility, if an upgrade is performed from GlassFish Server v2.<i>x</i> or v3.0.<i> x</i> to GlassFish Server 3.1, the default algorithm is automatically set to <tt>MD5</tt> in cases where the digest algorithm had not been explicitly set in the older GlassFish Server version.</p>
-
-
-<hr>
+</dd>
+<dt>Password Encryption Alogrithm</dt>
+<dd>
+<p>The encoding. Allowed values are <code>Hex</code> and <code>Base64</code>. If <code>digest-algorithm</code> is specified, the default is <code>Hex</code>. If <code>digest-algorithm</code> is not specified, by default no encoding is specified.</p>
 </dd>
 <dt>Encoding</dt>
-<dd><p>The encoding. Allowed values are <tt>Hex</tt> and <tt>Base64</tt>. If <tt>digest-algorithm</tt> is specified, the default is <tt>Hex</tt>. If <tt>digest-algorithm</tt> is not specified, by default no encoding is specified.</p>
+<dd>
+<p>The algorithm for encrypting passwords stored in the database.</p>
+
+<br />
+<p><b>Note:</b></p>
+<p>It is a security risk not to specify a password encryption algorithm.</p>
+
+<br />
 
 </dd>
 <dt>Charset</dt>
-<dd><p>The charset for the digest algorithm. </p>
-
+<dd>
+<p>The charset for the digest algorithm.</p>
 </dd>
 </dl>
 
 
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

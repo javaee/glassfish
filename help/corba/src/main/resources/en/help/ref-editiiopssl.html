@@ -1,87 +1,93 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-editiiopssl"></a><h4>SSL</h4>
-<a name="indexterm-13"></a><a name="indexterm-14"></a><p>Use the SSL page to modify the SSL settings for an IIOP
-listener.</p>
+<p><a id="ref-editiiopssl" name="ref-editiiopssl"></a><a id="GHCOR00005" name="GHCOR00005"></a></p>
 
+<h4><a id="sthref27" name="sthref27"></a><a id="sthref28" name="sthref28"></a>SSL</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the SSL page to modify the SSL settings for an IIOP listener.</p>
 <p>The SSL page contains the following options.</p>
-
-<dl><dt>Configuration Name</dt>
-<dd><p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
-
+<dl>
+<dt>Configuration Name</dt>
+<dd>
+<p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
 </dd>
 <dt>SSL3</dt>
-<dd><p>If this checkbox is selected, the SSL3 protocol is enabled for the IIOP listener. This option is enabled by default.</p>
-
+<dd>
+<p>If this checkbox is selected, the SSL3 protocol is enabled for the IIOP listener. This option is enabled by default.</p>
 </dd>
 <dt>TLS</dt>
-<dd><p>If this checkbox is selected, the TLS protocol is enabled for the IIOP listener. This option is enabled by default.</p>
-
+<dd>
+<p>If this checkbox is selected, the TLS protocol is enabled for the IIOP listener. This option is enabled by default.</p>
 </dd>
-<dt></dt>
 <dt>Client Authentication</dt>
-<dd><p>If this checkbox is selected, clients must identify themselves to the server on every request. This option is disabled by default.</p>
-
+<dd>
+<p>If this checkbox is selected, clients must identify themselves to the server on every request. This option is disabled by default.</p>
 </dd>
 <dt>Certificate Nickname</dt>
-<dd><p>The nickname of the server certificate in the certificate database or the PKCS#11 token. In the certificate, the name format is <tt><i>tokenname</i>:<i>nickname</i></tt>. Including the <tt><i>tokenname</i>:</tt> part of the name in this attribute is optional.</p>
-
+<dd>
+<p>The nickname of the server certificate in the certificate database or the PKCS#11 token. In the certificate, the name format is <i>tokenname</i><code>:</code><i>nickname</i>. Including the <i>tokenname</i><code>:</code> part of the name in this attribute is optional.</p>
 </dd>
 <dt>Key Store</dt>
-<dd><p>The name of the keystore file (for example, <tt>keystore.jks</tt>).</p>
-
+<dd>
+<p>The name of the keystore file (for example, <code>keystore.jks</code>).</p>
 </dd>
 <dt>Trust Algorithm</dt>
-<dd><p>The name of the trust management algorithm (for example, PKIX) to use for certification path validation.</p>
-
+<dd>
+<p>The name of the trust management algorithm (for example, PKIX) to use for certification path validation.</p>
 </dd>
 <dt>Max Certificate Length</dt>
-<dd><p>The maximum number of non-self-issued intermediate certificates that can exist in a certification path. This field is used only if the Trust Algorithm field is set to PKIX. A value of 0 implies that the path can only contain a single certificate. A value of -1 implies that the path length is unconstrained (there is no maximum). Setting a value less than -1 causes an exception to be thrown.</p>
-
+<dd>
+<p>The maximum number of non-self-issued intermediate certificates that can exist in a certification path. This field is used only if the Trust Algorithm field is set to PKIX. A value of 0 implies that the path can only contain a single certificate. A value of -1 implies that the path length is unconstrained (there is no maximum). Setting a value less than -1 causes an exception to be thrown.</p>
 </dd>
 <dt>Trust Store</dt>
-<dd><p>The name of the truststore file (for example, <tt>cacerts.jks</tt>).</p>
-
+<dd>
+<p>The name of the truststore file (for example, <code>cacerts.jks</code>).</p>
 </dd>
 <dt>Cipher Suites</dt>
-<dd><p>An area where you can add or remove cipher suites. If you do not add any cipher suites, all cipher suites will be used.</p>
-
+<dd>
+<p>An area where you can add or remove cipher suites. If you do not add any cipher suites, all cipher suites will be used.</p>
 </dd>
 </dl>
+<a id="sthref29" name="sthref29"></a>
 <h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-iioplistenernew.html">To Create an IIOP Listener</a></p>
-
+<ul>
+<li>
+<p><a href="task-iioplistenernew.html">To Create an IIOP Listener</a></p>
 </li>
-<li><p><a href="task-iioplisteneredit.html">To Edit an IIOP Listener</a></p>
-
+<li>
+<p><a href="task-iioplisteneredit.html">To Edit an IIOP Listener</a></p>
 </li>
-<li><p><a href="task-editiiopssl.html">To Edit SSL Settings for a Secure IIOP Listener</a></p>
-
+<li>
+<p><a href="task-editiiopssl.html">To Edit SSL Settings for a Secure IIOP Listener</a></p>
 </li>
-<li><p><a href="task-iioplistenerdelete.html">To Delete an IIOP Listener</a></p>
-
-</li></ul>
-<h5>Related <tt>asadmin</tt> Commands</h5>
-
-<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=create-iiop-listener-1"><tt>create-iiop-listener</tt>(1)</a></p>
-
+<li>
+<p><a href="task-iioplistenerdelete.html">To Delete an IIOP Listener</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=list-iiop-listeners-1"><tt>list-iiop-listeners</tt>(1)</a></p>
-
+</ul>
+<a id="sthref30" name="sthref30"></a>
+<h5>Related asadmin Commands</h5>
+<ul>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00032"><code>create-iiop-listener</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=delete-iiop-listener-1"><tt>delete-iiop-listener</tt>(1)</a></p>
-
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00169"><code>list-iiop-listeners</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=create-ssl-1"><tt>create-ssl</tt>(1)</a></p>
-
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00084"><code>delete-iiop-listener</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=delete-ssl-1"><tt>delete-ssl</tt>(1)</a></p>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00058"><code>create-ssl</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00109"><code>delete-ssl</code>(1)</a></p>
+</li>
+</ul>
 
-</li></ul>
 
 
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

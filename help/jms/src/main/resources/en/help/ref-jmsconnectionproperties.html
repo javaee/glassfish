@@ -1,70 +1,63 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-jmsconnectionproperties"></a><h4>Properties Specific to JMS Connection Factories</h4>
-<a name="indexterm-33"></a><a name="indexterm-34"></a><p>The following additional properties are available for a JMS connection factory.</p>
+<p><a id="ref-jmsconnectionproperties" name="ref-jmsconnectionproperties"></a><a id="GHJMS00005" name="GHJMS00005"></a></p>
 
-<dl><dt><tt>ClientId</tt></dt>
-<dd><p>Specifies a client ID for a connection factory that will be used by a durable subscriber.</p>
-
+<h4><a id="sthref57" name="sthref57"></a><a id="sthref58" name="sthref58"></a>Properties Specific to JMS Connection Factories</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>The following additional properties are available for a JMS connection factory.</p>
+<dl>
+<dt><code>ClientId</code></dt>
+<dd>
+<p>Specifies a client ID for a connection factory that will be used by a durable subscriber.</p>
 </dd>
-<dt><tt>AddressList</tt></dt>
-<dd><p>Specifies the names (and, optionally, port numbers) of a message broker instance or instances with which applications will communicate. Each address in the list specifies the host name (and, optionally, host port and connection service) for the connection. For example, the value might be <tt>earth</tt> or <tt>earth:7677</tt>. Specify the port number if the message broker is running on a port other than the default (7676). If the property setting specifies multiple hosts and ports in a clustered environment, the first available host on the list is used unless the <tt>AddressListBehavior</tt> property is set to <tt>RANDOM</tt>.</p>
-
-<p>For details, see the <b>Message Queue Developer&#8217;s Guide for Java Clients</b>.</p>
-
+<dt><code>AddressList</code></dt>
+<dd>
+<p>Specifies the names (and, optionally, port numbers) of a message broker instance or instances with which applications will communicate. Each address in the list specifies the host name (and, optionally, host port and connection service) for the connection. For example, the value might be <code>earth</code> or <code>earth:7677</code>. Specify the port number if the message broker is running on a port other than the default (7676). If the property setting specifies multiple hosts and ports in a clustered environment, the first available host on the list is used unless the <code>AddressListBehavior</code> property is set to <code>RANDOM</code>.</p>
+<p>For details, see the <i>Message Queue Developer's Guide for Java Clients</i>.</p>
 <p>The default value is the local host and default port number (7676). The client will attempt a connection to a broker on port 7676 of the local host.</p>
-
 </dd>
-<dt><tt>UserName</tt></dt>
-<dd><p>The user name for the connection factory.</p>
-
-<p>The default value is <tt>guest</tt>.</p>
-
+<dt><code>UserName</code></dt>
+<dd>
+<p>The user name for the connection factory.</p>
+<p>The default value is <code>guest</code>.</p>
 </dd>
-<dt><tt>Password</tt></dt>
-<dd><p>The password for the connection factory.</p>
-
-<p>The default value is <tt>guest</tt>.</p>
-
+<dt><code>Password</code></dt>
+<dd>
+<p>The password for the connection factory.</p>
+<p>The default value is <code>guest</code>.</p>
 </dd>
-<dt><tt>ReconnectEnabled</tt></dt>
-<dd><p>If set to <tt>true</tt>, specifies that the client runtime attempts to reconnect to a message server (or the list of addresses in the <tt>AddressList</tt>) when a connection is lost.</p>
-
-<p>The default value is <tt>true</tt>.</p>
-
+<dt><code>ReconnectEnabled</code></dt>
+<dd>
+<p>If set to <code>true</code>, specifies that the client runtime attempts to reconnect to a message server (or the list of addresses in the <code>AddressList</code>) when a connection is lost.</p>
+<p>The default value is <code>true</code>.</p>
 </dd>
-<dt><tt>ReconnectAttempts</tt></dt>
-<dd><p>Specifies the number of attempts to connect (or reconnect) for each address in the <tt>AddressList</tt> before the client runtime tries the next address in the list. A value of -1 indicates that the number of reconnect attempts is unlimited (the client runtime attempts to connect to the first address until it succeeds).</p>
-
+<dt><code>ReconnectAttempts</code></dt>
+<dd>
+<p>Specifies the number of attempts to connect (or reconnect) for each address in the <code>AddressList</code> before the client runtime tries the next address in the list. A value of -1 indicates that the number of reconnect attempts is unlimited (the client runtime attempts to connect to the first address until it succeeds).</p>
 <p>The default value is 3.</p>
-
 </dd>
-<dt><tt>ReconnectInterval</tt></dt>
-<dd><p>Specifies the interval in milliseconds between reconnect attempts. This applies for attempts on each address in the <tt>AddressList</tt> and for successive addresses in the list. If the interval is too short, the broker does not have time to recover. If it is too long, the reconnect might represent an unacceptable delay.</p>
-
+<dt><code>ReconnectInterval</code></dt>
+<dd>
+<p>Specifies the interval in milliseconds between reconnect attempts. This applies for attempts on each address in the <code>AddressList</code> and for successive addresses in the list. If the interval is too short, the broker does not have time to recover. If it is too long, the reconnect might represent an unacceptable delay.</p>
 <p>The default value is 30000.</p>
-
 </dd>
-<dt><tt>AddressListBehavior</tt></dt>
-<dd><p>Specifies whether connection attempts are in the order of addresses in the <tt>AddressList</tt> attribute (<tt>PRIORITY</tt>) or in a random order (<tt>RANDOM</tt>).</p>
-
-<p><tt>RANDOM</tt> means that the reconnect chooses a random address from the <tt>AddressList</tt>. If many clients are likely to attempt a connection using the same connection factory, this value prevents them from all being connected to the same address.</p>
-
-<p><tt>PRIORITY</tt> means that the reconnect always tries to connect to the first server address in the <tt>AddressList</tt> and uses another address only if the first broker is not available.</p>
-
-<p>The default value is <tt>RANDOM</tt>.</p>
-
+<dt><code>AddressListBehavior</code></dt>
+<dd>
+<p>Specifies whether connection attempts are in the order of addresses in the <code>AddressList</code> attribute (<code>PRIORITY</code>) or in a random order (<code>RANDOM</code>).</p>
+<p><code>RANDOM</code> means that the reconnect chooses a random address from the <code>AddressList</code>. If many clients are likely to attempt a connection using the same connection factory, this value prevents them from all being connected to the same address.</p>
+<p><code>PRIORITY</code> means that the reconnect always tries to connect to the first server address in the <code>AddressList</code> and uses another address only if the first broker is not available.</p>
+<p>The default value is <code>RANDOM</code>.</p>
 </dd>
-<dt><tt>AddressListIterations</tt></dt>
-<dd><p>Specifies the number of times the client runtime iterates through the <tt>AddressList</tt> in an effort to establish (or reestablish) a connection). A value of -1 indicates that the number of attempts is unlimited.</p>
-
+<dt><code>AddressListIterations</code></dt>
+<dd>
+<p>Specifies the number of times the client runtime iterates through the <code>AddressList</code> in an effort to establish (or reestablish) a connection). A value of -1 indicates that the number of attempts is unlimited.</p>
 <p>The default value is 3.</p>
-
 </dd>
 </dl>
 
 
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

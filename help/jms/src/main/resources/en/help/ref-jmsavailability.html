@@ -1,71 +1,67 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-jmsavailability"></a><h4>JMS Availability</h4>
-<a name="indexterm-41"></a><a name="indexterm-42"></a><p>Use the JMS Availability page to configure availability settings for the Java Message
-Service (JMS).</p>
+<p><a id="ref-jmsavailability" name="ref-jmsavailability"></a><a id="GHJMS00009" name="GHJMS00009"></a></p>
 
+<h4><a id="sthref71" name="sthref71"></a><a id="sthref72" name="sthref72"></a>JMS Availability</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the JMS Availability page to configure availability settings for the Java Message Service (JMS).</p>
 <p>The JMS Availability page contains the following options.</p>
-
-<dl><dt>Load Defaults</dt>
-<dd><p>Button to restore settings that have default values to their default values. Settings that do not have default values are not changed.</p>
-
+<dl>
+<dt>Load Defaults</dt>
+<dd>
+<p>Button to restore settings that have default values to their default values. Settings that do not have default values are not changed.</p>
 </dd>
 <dt>Configuration Name</dt>
-<dd><p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
-
+<dd>
+<p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
 </dd>
 <dt>Availability Service</dt>
-<dd><p>The type of Message Queue cluster used to provide JMS services to a GlassFish cluster. If the Enabled checkbox is selected, an enhanced Message Queue cluster is used. Otherwise, a conventional Message Queue cluster is used.</p>
-
+<dd>
+<p>The type of Message Queue cluster used to provide JMS services to a GlassFish cluster. If the Enabled checkbox is selected, an enhanced Message Queue cluster is used. Otherwise, a conventional Message Queue cluster is used.</p>
 <p>If the Enabled checkbox is selected, the Configuration Store Type and Message Store Type options are ignored.</p>
-
 </dd>
 <dt>Configuration Store Type</dt>
-<dd><p>The type of data store for configuration data in a conventional Message Queue cluster. The value <tt>masterbroker</tt> specifies the use of a master broker to store and manage the configuration data. The value <tt>shareddb</tt> specifies the use of a shared database to store the configuration data.</p>
-
+<dd>
+<p>The type of data store for configuration data in a conventional Message Queue cluster. The value <code>masterbroker</code> specifies the use of a master broker to store and manage the configuration data. The value <code>shareddb</code> specifies the use of a shared database to store the configuration data.</p>
 <p>This option is ignored if Availability Service is enabled.</p>
-
 </dd>
 <dt>Message Store Type</dt>
-<dd><p>The type of data store for message data in brokers in a conventional cluster. The value <tt>file</tt> specifies a file store. The value <tt>jdbc</tt> specifies a JDBC store.</p>
-
+<dd>
+<p>The type of data store for message data in brokers in a conventional cluster. The value <code>file</code> specifies a file store. The value <code>jdbc</code> specifies a JDBC store.</p>
 <p>This option is ignored if Availability Service is enabled.</p>
-
 </dd>
 <dt>Database Vendor</dt>
 <dt>Database User Name</dt>
 <dt>Database Password</dt>
 <dt>Database Access URL</dt>
-<dd><p>The database vendor, user, password, and access url of the JDBC database to use in any of these situations:</p>
-
-
-<ul><li><p>When Availability Service is enabled</p>
-
+<dd>
+<p>The database vendor, user, password, and access url of the JDBC database to use in any of these situations:</p>
+<ul>
+<li>
+<p>When Availability Service is enabled</p>
 </li>
-<li><p>When Configuration Store Type is set to <tt>shareddb</tt></p>
-
+<li>
+<p>When Configuration Store Type is set to <code>shareddb</code></p>
 </li>
-<li><p>When Message Store Type is set to <tt>jdbc</tt></p>
-
-</li></ul>
-<p>For information about supported vendors and the formats of access urls for each vendor, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2438&id=gheaz">JDBC-Based Persistence in <i>Oracle GlassFish Server Message Queue 4.5 Administration Guide</i></a>.</p>
-
+<li>
+<p>When Message Store Type is set to <code>jdbc</code></p>
+</li>
+</ul>
+<p>For information about supported vendors and the formats of access urls for each vendor, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GMADG00244"><i>JDBC-Based Persistence</i> in <i>Oracle GlassFish Server Message Queue Administration Guide</i></a>.</p>
 </dd>
 <dt>Additional Properties</dt>
-<dd><p>Additional properties for JMS availability.</p>
-
+<dd>
+<p>Additional properties for JMS availability.</p>
 <p>GlassFish Server does not predefine any additional JMS availability properties.</p>
-
 </dd>
 </dl>
+<a id="sthref73" name="sthref73"></a>
 <h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-jmsservice.html">To Configure the JMS Service</a></p>
-
-</li></ul>
+<p><a href="task-jmsservice.html">To Configure the JMS Service</a></p>
 
 
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

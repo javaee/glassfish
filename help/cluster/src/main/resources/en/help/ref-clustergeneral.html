@@ -1,85 +1,89 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-clustergeneral"></a><h4>General Information</h4>
-<a name="indexterm-164"></a><a name="indexterm-165"></a><a name="indexterm-166"></a><a name="indexterm-167"></a><p>The General Information page contains the following options.</p>
+<p><a id="ref-clustergeneral" name="ref-clustergeneral"></a><a id="GHCLU00003" name="GHCLU00003"></a></p>
 
-<dl><dt>Start Cluster</dt>
-<dd><p>Button to start the cluster. If all instance in the cluster are running, this button is deactivated.</p>
-
+<h4><a id="sthref251" name="sthref251"></a><a id="sthref252" name="sthref252"></a><a id="sthref253" name="sthref253"></a><a id="sthref254" name="sthref254"></a>General Information</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>The General Information page contains the following options.</p>
+<dl>
+<dt>Start Cluster</dt>
+<dd>
+<p>Button to start the cluster. If all instance in the cluster are running, this button is deactivated.</p>
 </dd>
 <dt>Stop Cluster</dt>
-<dd><p>Button to stop the cluster. If all instances in the cluster are stopped, this button is deactivated.</p>
-
+<dd>
+<p>Button to stop the cluster. If all instances in the cluster are stopped, this button is deactivated.</p>
 </dd>
 <dt>Migrate EJB Timers</dt>
-<dd><p>Button to migrate Enterprise JavaBeans (EJB) technology timers to from a stopped GlassFish Server instance to a running instance in the cluster. Clicking this button opens the <a href="ref-migrateejbtimers.html">Migrate EJB Timers</a> page. If all instances in the cluster are running, this button is deactivated.</p>
-
+<dd>
+<p>Button to migrate Enterprise JavaBeans (EJB) technology timers to from a stopped GlassFish Server instance to a running instance in the cluster. Clicking this button opens the <a href="ref-migrateejbtimers.html">Migrate EJB Timers</a> page. If all instances in the cluster are running, this button is deactivated.</p>
 </dd>
 <dt>Rotate Log</dt>
-<dd><p>Button to rotate the log file for the cluster. When the log file is rotated, the file is renamed with a timestamp name in the format <tt>server.log_</tt><i>date-and-time</i><tt></tt>, and an empty log file is created for new log messages. The changes are applied dynamically. Server restart is not required.</p>
-
+<dd>
+<p>Button to rotate the log file for the cluster. When the log file is rotated, the file is renamed with a timestamp name in the format <code>server.log_</code><i>date-and-time</i>, and an empty log file is created for new log messages. The changes are applied dynamically. Server restart is not required.</p>
 </dd>
 <dt>Cluster Name</dt>
-<dd><p>The name that was assigned to the cluster when the cluster was created. This field is read only.</p>
-
+<dd>
+<p>The name that was assigned to the cluster when the cluster was created. This field is read only.</p>
 </dd>
 <dt>JVM</dt>
-<dd><p>If you click JVM Report, a separate window opens and displays reports on the Java Virtual Machine, including a summary report, memory management and garbage collection report, class loading report, and a current thread dump.</p>
-
+<dd>
+<p>If you click JVM Report, a separate window opens and displays reports on the Java Virtual Machine, including a summary report, memory management and garbage collection report, class loading report, and a current thread dump.</p>
 </dd>
 <dt>Configuration</dt>
-<dd><p>The configuration that was selected for the cluster when the cluster was created. Clicking the configuration opens the <a href="../../../common/en/help/ref-configuration.html">Configurations</a> page for the cluster. This field is read only.</p>
-
+<dd>
+<p>The configuration that was selected for the cluster when the cluster was created. Clicking the configuration opens the <a href="../../../common/en/help/ref-configuration.html">Configurations</a> page for the cluster. This field is read only.</p>
 </dd>
 <dt>GMS</dt>
-<dd><p>If this option is enabled, the Group Management Service (GMS) is started in each GlassFish Server instance in the cluster and in the domain administration server (DAS). The DAS participates in each cluster for which GMS is enabled. GMS provides cluster monitoring, cluster membership, and group communication services. This option is enabled by default.</p>
-
+<dd>
+<p>If this option is enabled, the Group Management Service (GMS) is started in each GlassFish Server instance in the cluster and in the domain administration server (DAS). The DAS participates in each cluster for which GMS is enabled. GMS provides cluster monitoring, cluster membership, and group communication services. This option is enabled by default.</p>
 </dd>
 <dt>Multicast Port</dt>
-<dd><p>The port number of communication port on which GMS listens for group events. This option must specify a valid port number in the range 2048&#8211;32000. The default is an automatically generated value in this range.</p>
-
+<dd>
+<p>The port number of communication port on which GMS listens for group events. This option must specify a valid port number in the range 2048-32000. The default is an automatically generated value in this range.</p>
 </dd>
 <dt>Multicast Address</dt>
-<dd><p>The address on which GMS listens for group events. This option must specify a multicast address in the range 224.0.0.0 through 239.255.255.255. The default is 228.9.<i>XX</i>.<i>YY</i>, where <i>XX</i> and <i>YY</i> are automatically generated independent values between 0 and 255.</p>
-
+<dd>
+<p>The address on which GMS listens for group events. This option must specify a multicast address in the range 224.0.0.0 through 239.255.255.255. The default is 228.9.<i>XX</i>.<i>YY</i>, where <i>XX</i> and <i>YY</i> are automatically generated independent values between 0 and 255.</p>
 </dd>
 <dt>Bind Interface Address</dt>
-<dd><p>The Internet Protocol (IP) address of the network interface to which GMS binds. This option must specify the IP address of a local network interface. The default is all public network interface addresses.</p>
-
+<dd>
+<p>The Internet Protocol (IP) address of the network interface to which GMS binds. This option must specify the IP address of a local network interface. The default is all public network interface addresses.</p>
 <p>On a multihome machine, this option configures the network interface that used for the GMS. A multihome machine possesses two or more network interfaces.</p>
-
 <p>To specify an address that is valid for all GlassFish Server instances in the cluster, use a system property to set the address individually for each instance.</p>
-
-<p>For example, use the <a href="ref-clustersystemproperties.html">Cluster System Properties</a> page to create the system property <tt>GMS-BIND-INTERFACE-ADDRESS-<i>cluster-name</i></tt>. Then set the Bind Address option in this page to <tt>${GMS-BIND-INTERFACE-ADDRESS-<i>cluster-name</i>}</tt> to specify the system property. Finally, for each instance in the cluster, set the <tt>GMS-BIND-INTERFACE-ADDRESS-<i>cluster-name</i></tt> system property to the required network interface address on the instance's machine.</p>
-
+<p>For example, use the <a href="ref-clustersystemproperties.html">Cluster System Properties</a> page to create the system property <code>GMS-BIND-INTERFACE-ADDRESS-</code><i>cluster-name</i>. Then set the Bind Address option in this page to <code>${GMS-BIND-INTERFACE-ADDRESS-</code><i>cluster-name</i><code>}</code> to specify the system property. Finally, for each instance in the cluster, set the <code>GMS-BIND-INTERFACE-ADDRESS-</code><i>cluster-name</i> system property to the required network interface address on the instance's machine.</p>
 </dd>
 <dt>Status</dt>
-<dd><p>An indication of the number of instances in the cluster that are running and are not running. This field is read only.</p>
-
+<dd>
+<p>An indication of the number of instances in the cluster that are running and are not running. This field is read only.</p>
 </dd>
 </dl>
+<a id="sthref255" name="sthref255"></a>
 <h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-gmscluster.html">To Configure Group Management Service Settings for a Cluster</a></p>
-
+<ul>
+<li>
+<p><a href="task-gmscluster.html">To Configure Group Management Service Settings for a Cluster</a></p>
 </li>
-<li><p><a href="task-migrate-ejb-timers.html">To Migrate EJB Timers</a></p>
-
-</li></ul>
-<h5>Equivalent <tt>asadmin</tt> Subcommands</h5>
-
-<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=generate-jvm-report-1"><tt>generate-jvm-report</tt>(1)</a></p>
-
+<li>
+<p><a href="task-migrate-ejb-timers.html">To Migrate EJB Timers</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=migrate-timers-1"><tt>migrate-timers</tt>(1)</a></p>
-
+</ul>
+<a id="sthref256" name="sthref256"></a>
+<h5>Equivalent asadmin Subcommands</h5>
+<ul>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00138"><code>generate-jvm-report</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=rotate-log-1"><tt>rotate-log</tt>(1)</a></p>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00211"><code>migrate-timers</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00224"><code>rotate-log</code>(1)</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

@@ -1,166 +1,199 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
+<p><a id="task-accesslog" name="task-accesslog"></a><a id="GHWEB00035" name="GHWEB00035"></a></p>
 
-
-<a name="task-accesslog"></a><h3>To Configure the HTTP Service</h3><a name="indexterm-16"></a><a name="indexterm-17"></a><ol>
-<li><b>In the navigation tree, expand the Configuration node.</b></li>
-<li><b>Under the Configuration node, select the HTTP Service node.</b><p>The HTTP Service page opens.</p></li>
-<li><b>Select the SSO Enabled checkbox to enable single sign-on by default for all
-web applications on all virtual servers on this server that are configured for
-the same realm.</b><p>You can override this setting for an individual virtual server. This option is
-disabled by default.</p></li>
-<li><b>Select the Access Logging Enabled checkbox to enable access logging for all virtual-server
-sub-elements that do not specify this property. </b><p>If the Access Logging Enabled checkbox is deselected, access logging is disabled for
-all virtual-server sub-elements that do not specify this property.  This option is
-disabled by default.</p></li>
-<li><b>Select the Rotation Enabled checkbox to enable log file rotation.</b><p>This option is enabled by default.</p></li>
-<li><b>From the Rotation Policy drop-down list, select a rotation policy.</b><p>The only available rotation policy is <tt>time</tt>.</p></li>
-<li><b>In the Rotation Interval field, type the number of minutes between rotations of
-the access log. </b><p>This field is valid only if the Rotation Policy is <tt>time</tt>. The default
-value is 1,440 minutes (24 hours).</p></li>
-<li><b>In the Rotation Suffix field, type the string value to be added to
-the end of the log file name after rotation.</b><p>The default value is <tt>yyyy-MM-dd</tt>.</p><p>Ensure that the rotation suffix contains enough values to create a unique suffix
-for every log rotation. For example, if the access log is rotated
-more frequently than once every day, include the time of day in the
-rotation suffix.</p><p>A unique suffix is required to ensure that the access log file
-is rotated every time that the rotation interval has elapsed. If the rotation
-suffix of the new access log file is the same as the rotation
-suffix of the existing access log file, the file is not rotated.</p></li>
-<li><b>In the Max File Count field, type the maximum number of rotated access
-log files that are to be kept.</b><p>A negative value indicates that there is no limit to the file count.
-The default value is &#8211;1.</p></li>
-<li><b>In the Buffer Size field, type the size, in bytes, of the
-access log buffer.</b><p>A value of less than or equal to 0 disables access log buffering.
-The default value is 32768.</p></li>
-<li><b>In the Write Interval field, type the number of seconds before the log
-will be written to the disk.</b><p>The access log is written when the buffer is full or when the
-interval expires. If the value is less than or equal to 0, then
-the buffer is always written even if it is not full. This means
-that each time the server is accessed, the log message is stored directly
-to the file. The default value is 300.</p></li>
-<li><b>In the Format field, type the string value to specify the following properties
-of the access log:</b>
-<ul><li><p>The information that is to be captured in the access log</p>
-
+<h4><a id="sthref21" name="sthref21"></a><a id="sthref22" name="sthref22"></a>To Configure the HTTP Service</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<ol>
+<li>
+<p>In the navigation tree, expand the Configuration node.</p>
 </li>
-<li><p>The order in which the information is captured</p>
-
-</li></ul>
-<p>The default value is as follows:</p><pre>%client.name% %auth-user-name% %datetime% %request% %status% %response.length%</pre><p>The following values are available for inclusion in the format string:</p><dl><dt><tt>%attribute.<i>name</i>%</tt></dt>
-<dd><p>Logs the value (by calling its <tt>toString</tt> method) of the request attribute with the given <i>name</i></p>
-
+<li>
+<p>Under the Configuration node, select the HTTP Service node.</p>
+<p>The HTTP Service page opens.</p>
+</li>
+<li>
+<p>Select the SSO Enabled checkbox to enable single sign-on by default for all web applications on all virtual servers on this server that are configured for the same realm.</p>
+<p>You can override this setting for an individual virtual server. This option is disabled by default.</p>
+</li>
+<li>
+<p>Select the Access Logging Enabled checkbox to enable access logging for all virtual-server sub-elements that do not specify this property.</p>
+<p>If the Access Logging Enabled checkbox is deselected, access logging is disabled for all virtual-server sub-elements that do not specify this property. This option is disabled by default.</p>
+</li>
+<li>
+<p>Select the Rotation Enabled checkbox to enable log file rotation.</p>
+<p>This option is enabled by default.</p>
+</li>
+<li>
+<p>From the Rotation Policy drop-down list, select a rotation policy.</p>
+<p>The only available rotation policy is <code>time</code>.</p>
+</li>
+<li>
+<p>In the Rotation Interval field, type the number of minutes between rotations of the access log.</p>
+<p>This field is valid only if the Rotation Policy is <code>time</code>. The default value is 1,440 minutes (24 hours).</p>
+</li>
+<li>
+<p>In the Rotation Suffix field, type the string value to be added to the end of the log file name after rotation.</p>
+<p>The default value is <code>yyyy-MM-dd</code>.</p>
+<p>Ensure that the rotation suffix contains enough values to create a unique suffix for every log rotation. For example, if the access log is rotated more frequently than once every day, include the time of day in the rotation suffix.</p>
+<p>A unique suffix is required to ensure that the access log file is rotated every time that the rotation interval has elapsed. If the rotation suffix of the new access log file is the same as the rotation suffix of the existing access log file, the file is not rotated.</p>
+</li>
+<li>
+<p>In the Max File Count field, type the maximum number of rotated access log files that are to be kept.</p>
+<p>A negative value indicates that there is no limit to the file count. The default value is -1.</p>
+</li>
+<li>
+<p>In the Buffer Size field, type the size, in bytes, of the access log buffer.</p>
+<p>A value of less than or equal to 0 disables access log buffering. The default value is 32768.</p>
+</li>
+<li>
+<p>In the Write Interval field, type the number of seconds before the log will be written to the disk.</p>
+<p>The access log is written when the buffer is full or when the interval expires. If the value is less than or equal to 0, then the buffer is always written even if it is not full. This means that each time the server is accessed, the log message is stored directly to the file. The default value is 300.</p>
+</li>
+<li>
+<p>In the Format field, type the string value to specify the following properties of the access log:</p>
+<ul>
+<li>
+<p>The information that is to be captured in the access log</p>
+</li>
+<li>
+<p>The order in which the information is captured</p>
+</li>
+</ul>
+<p>The default value is as follows:</p>
+<pre>
+%client.name% %auth-user-name% %datetime% %request% %status% %response.length%
+</pre>
+<p>The following values are available for inclusion in the format string:</p>
+<dl>
+<dt><code>%attribute.</code><i>name</i><code>%</code></dt>
+<dd>
+<p>Logs the value (by calling its <code>toString</code> method) of the request attribute with the given <i>name</i></p>
 </dd>
-<dt><tt>%auth-user-name%</tt></dt>
-<dd><p>Name of authorized user</p>
-
+<dt><code>%auth-user-name%</code></dt>
+<dd>
+<p>Name of authorized user</p>
 </dd>
-<dt><tt>%client.name%</tt></dt>
-<dd><p>Client host name</p>
-
+<dt><code>%client.name%</code></dt>
+<dd>
+<p>Client host name</p>
 </dd>
-<dt><tt>%client.dns%</tt></dt>
-<dd><p>Client DNS</p>
-
+<dt><code>%client.dns%</code></dt>
+<dd>
+<p>Client DNS</p>
 </dd>
-<dt><tt>%cookie.<i>name</i>%</tt></dt>
-<dd><p>The value of the request cookie with the given <i>name</i></p>
-
+<dt><code>%cookie.</code><i>name</i><code>%</code></dt>
+<dd>
+<p>The value of the request cookie with the given <i>name</i></p>
 </dd>
-<dt><tt>%cookie.value%</tt></dt>
-<dd><p>The value of the first cookie found in the request</p>
-
+<dt><code>%cookie.value%</code></dt>
+<dd>
+<p>The value of the first cookie found in the request</p>
 </dd>
-<dt><tt>%datetime%</tt></dt>
-<dd><p>System date</p>
-
+<dt><code>%datetime%</code></dt>
+<dd>
+<p>System date</p>
 </dd>
-<dt><tt>%request%</tt></dt>
-<dd><p>Full HTTP request line</p>
-
+<dt><code>%request%</code></dt>
+<dd>
+<p>Full HTTP request line</p>
 </dd>
-<dt><tt>%status%</tt></dt>
-<dd><p>Status</p>
-
+<dt><code>%status%</code></dt>
+<dd>
+<p>Status</p>
 </dd>
-<dt><tt>%response.length%</tt></dt>
-<dd><p>Response content length</p>
-
+<dt><code>%response.length%</code></dt>
+<dd>
+<p>Response content length</p>
 </dd>
-<dt><tt>%header.referer%</tt></dt>
-<dd><p>Referer header</p>
-
+<dt><code>%header.referer%</code></dt>
+<dd>
+<p>Referer header</p>
 </dd>
-<dt><tt>%header.user-agent%</tt></dt>
-<dd><p>User agent header</p>
-
+<dt><code>%header.user-agent%</code></dt>
+<dd>
+<p>User agent header</p>
 </dd>
-<dt><tt>%http-method%</tt></dt>
-<dd><p>HTTP method</p>
-
+<dt><code>%http-method%</code></dt>
+<dd>
+<p>HTTP method</p>
 </dd>
-<dt><tt>%http-uri%</tt></dt>
-<dd><p>HTTP URI</p>
-
+<dt><code>%http-uri%</code></dt>
+<dd>
+<p>HTTP URI</p>
 </dd>
-<dt><tt>%query-str%</tt></dt>
-<dd><p>HTTP query string</p>
-
+<dt><code>%query-str%</code></dt>
+<dd>
+<p>HTTP query string</p>
 </dd>
-<dt><tt>%http-version%</tt></dt>
-<dd><p>HTTP protocol version</p>
-
+<dt><code>%http-version%</code></dt>
+<dd>
+<p>HTTP protocol version</p>
 </dd>
-<dt><tt>%header.accept%</tt></dt>
-<dd><p>Accept header</p>
-
+<dt><code>%header.accept%</code></dt>
+<dd>
+<p>Accept header</p>
 </dd>
-<dt><tt>%header.date%</tt></dt>
-<dd><p>Date header</p>
-
+<dt><code>%header.date%</code></dt>
+<dd>
+<p>Date header</p>
 </dd>
-<dt><tt>%header.if-mod-since%</tt></dt>
-<dd><p>If-Modified-Since header</p>
-
+<dt><code>%header.if-mod-since%</code></dt>
+<dd>
+<p>If-Modified-Since header</p>
 </dd>
-<dt><tt>%header.auth%</tt></dt>
-<dd><p>Authorization header</p>
-
+<dt><code>%header.auth%</code></dt>
+<dd>
+<p>Authorization header</p>
 </dd>
-<dt><tt>%header.<i>any</i>%</tt></dt>
-<dd><p>Any valid HTTP header value defined in RFC 2616 (<tt>any</tt> is also a valid header value; it is specified as a variable here)</p>
-
+<dt><code>%header.</code><i>any</i><code>%</code></dt>
+<dd>
+<p>Any valid HTTP header value defined in RFC 2616 (<code>any</code> is also a valid header value; it is specified as a variable here)</p>
 </dd>
-<dt><tt>%session.<i>name</i>%</tt></dt>
-<dd><p>The value of the session attribute with the name <i>name</i>, or <tt>NULL-SESSION-ATTRIBUTE-<i>name</i></tt> if the named attribute does not exist in the session, or <tt>NULL-SESSION</tt> if no session exists</p>
-
+<dt><code>%session.</code><i>name</i><code>%</code></dt>
+<dd>
+<p>The value of the session attribute with the name <i>name</i>, or <code>NULL-SESSION-ATTRIBUTE-</code><i>name</i> if the named attribute does not exist in the session, or <code>NULL-SESSION</code> if no session exists</p>
 </dd>
-<dt><tt>%time-taken%</tt></dt>
-<dd><p>Time (in milliseconds) it took to service each request</p>
-
+<dt><code>%time-taken%</code></dt>
+<dd>
+<p>Time (in milliseconds) it took to service each request</p>
 </dd>
-<dt><tt>%vs.id%</tt></dt>
-<dd><p>Virtual server ID</p>
-
+<dt><code>%vs.id%</code></dt>
+<dd>
+<p>Virtual server ID</p>
 </dd>
 </dl>
 </li>
-<li>(Optional) <b>In the Additional Properties section, specify additional properties.</b><p>For a description of available properties, see <a href="ref-httpserviceprops.html">Properties Specific to the HTTP Service</a>.</p><ul>
-<li><b>To add a property, click the Add Property button. In the blank row
-that appears, type the property name in the Name field, and type
-the property value in the Value field.</b></li>
-<li><b>To modify a property, edit that property's Value field.</b></li>
-<li><b>To delete a property, select the checkbox to the left of the
-Name field of the property that you are deleting, then click the Delete
-Properties button.</b></li></ul></li>
-<li><b>Click Save.</b>
-<hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
-Save.</p>
+<li>
+<p>In the Additional Properties section, specify additional properties.</p>
+<p>For a description of available properties, see <a href="ref-httpserviceprops.html">Properties Specific to the HTTP Service</a>.</p>
+<ul>
+<li>
+<p>To add a property, click the Add Property button. In the blank row that appears, type the property name in the Name field, and type the property value in the Value field.</p>
+</li>
+<li>
+<p>To modify a property, edit that property's Value field.</p>
+</li>
+<li>
+<p>To delete a property, select the checkbox to the left of the Name field of the property that you are deleting, then click the Delete Properties button.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Click Save.</p>
+
+<br />
+<p><b>Tip:</b></p>
+<p>To return to the default settings, click the Load Defaults button, then click Save.</p>
+
+<br />
+
+</li>
+</ol>
 
 
-<hr>
-</li></ol>
 
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

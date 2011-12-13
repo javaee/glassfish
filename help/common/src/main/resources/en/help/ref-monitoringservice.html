@@ -1,83 +1,94 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-monitoringservice"></a><h4>Monitoring Service</h4>
-<a name="indexterm-242"></a><p>Use the Monitoring Service page to configure monitoring options for individual server components
-or services.</p>
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="ref-group-monitoringservice.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="ref-group-configurationsystemproperties.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="ref-monitoringservice" name="ref-monitoringservice"></a><a id="GHCOM00129" name="GHCOM00129"></a></p>
 
-<p>You must deploy an application, component, or service before you configure monitoring for
-it.</p>
-
+<h4><a id="sthref449" name="sthref449"></a>Monitoring Service</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the Monitoring Service page to configure monitoring options for individual server components or services.</p>
+<p>You must deploy an application, component, or service before you configure monitoring for it.</p>
 <p>The Monitoring Service page contains the following options.</p>
-
-<dl><dt>Configuration Name</dt>
-<dd><p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
-
+<dl>
+<dt>Configuration Name</dt>
+<dd>
+<p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
 </dd>
 <dt>Monitoring Service</dt>
-<dd><p>If the Monitoring Service Enabled checkbox is selected, monitoring is enabled for the GlassFish Server. This option is enabled by default.</p>
-
+<dd>
+<p>If the Monitoring Service Enabled checkbox is selected, monitoring is enabled for the GlassFish Server. This option is enabled by default.</p>
 </dd>
 <dt>Monitoring MBeans</dt>
-<dd><p>If the Monitoring MBeans Enabled checkbox is selected, all MBeans needed for monitoring are deployed on the GlassFish Server. This option is enabled by default.</p>
-
-<p>If the checkbox is not selected, you cannot view monitoring data in the Administration Console, even if the Monitoring Service checkbox is selected. Instead, you must use the command line to view monitoring data. If you deselect the checkbox, the memory footprint of the GlassFish Server is reduced. </p>
-
+<dd>
+<p>If the Monitoring MBeans Enabled checkbox is selected, all MBeans needed for monitoring are deployed on the GlassFish Server. This option is enabled by default.</p>
+<p>If the checkbox is not selected, you cannot view monitoring data in the Administration Console, even if the Monitoring Service checkbox is selected. Instead, you must use the command line to view monitoring data. If you deselect the checkbox, the memory footprint of the GlassFish Server is reduced.</p>
 </dd>
 <dt>DTrace</dt>
-<dd><p>If the DTrace Enabled checkbox is selected, and if you have Oracle Enterprise Manager DTrace Monitoring, you can use the Solaris DTrace facility. This option is disabled by default.</p>
-
+<dd>
+<p>If the DTrace Enabled checkbox is selected, and if you have Oracle Enterprise Manager DTrace Monitoring, you can use the Solaris DTrace facility. This option is disabled by default.</p>
 </dd>
 </dl>
 <p>For each available component, the following information is provided.</p>
-
-<dl><dt>Component</dt>
-<dd><p>The name of the GlassFish Server component.</p>
-
+<dl>
+<dt>Component</dt>
+<dd>
+<p>The name of the GlassFish Server component.</p>
 </dd>
 <dt>Monitoring Level</dt>
-<dd><p>The level of monitoring set for the component. For each component, available levels are LOW, HIGH, and OFF. The default level is OFF. There is no difference between levels of monitoring offered by the LOW and HIGH options in this release.</p>
-
+<dd>
+<p>The level of monitoring set for the component. For each component, available levels are LOW, HIGH, and OFF. The default level is OFF. There is no difference between levels of monitoring offered by the LOW and HIGH options in this release.</p>
 </dd>
 </dl>
 <p>The Component Level Settings table also contains the following options.</p>
-
-<dl><dt>Change Level</dt>
-<dd><p>Button to change the monitoring level for one or more selected components.</p>
-
+<dl>
+<dt>Change Level</dt>
+<dd>
+<p>Button to change the monitoring level for one or more selected components.</p>
 </dd>
 <dt>Level</dt>
-<dd><p>Drop-down list from which you can select a monitoring level to be applied to all selected components.</p>
-
+<dd>
+<p>Drop-down list from which you can select a monitoring level to be applied to all selected components.</p>
 </dd>
 </dl>
+<a id="sthref450" name="sthref450"></a>
 <h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-confmonitor.html">To Configure the Monitoring Service</a></p>
-
+<ul>
+<li>
+<p><a href="task-confmonitor.html">To Configure the Monitoring Service</a></p>
 </li>
-<li><p><a href="task-appmonitoringdata.html">To View Application Monitoring Data</a></p>
-
+<li>
+<p><a href="task-appmonitoringdata.html">To View Application Monitoring Data</a></p>
 </li>
-<li><p><a href="task-servermonitoringdata.html">To View Server Monitoring Data</a></p>
-
+<li>
+<p><a href="task-servermonitoringdata.html">To View Server Monitoring Data</a></p>
 </li>
-<li><p><a href="task-resourcemonitoringdata.html">To View Resource Monitoring Data</a></p>
-
-</li></ul>
-<h5>Related <tt>asadmin</tt> Commands</h5>
-
-<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=enable-monitoring-1"><tt>enable-monitoring</tt>(1)</a></p>
-
+<li>
+<p><a href="task-resourcemonitoringdata.html">To View Resource Monitoring Data</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=disable-monitoring-1"><tt>disable-monitoring</tt>(1)</a></p>
-
+</ul>
+<a id="sthref451" name="sthref451"></a>
+<h5>Related asadmin Commands</h5>
+<ul>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00128"><code>enable-monitoring</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=monitor-1"><tt>monitor</tt>(1)</a></p>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00120"><code>disable-monitoring</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00212"><code>monitor</code>(1)</a></p>
+</li>
+</ul>
 
-</li></ul>
 
 
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

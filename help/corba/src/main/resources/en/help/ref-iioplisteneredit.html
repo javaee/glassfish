@@ -1,78 +1,83 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-iioplisteneredit"></a><h4>Edit IIOP Listener</h4>
-<a name="indexterm-12"></a><p>Use the Edit IIOP Listener page to modify the settings for an
-IIOP listener.</p>
+<p><a id="ref-iioplisteneredit" name="ref-iioplisteneredit"></a><a id="GHCOR00004" name="GHCOR00004"></a></p>
 
+<h4><a id="sthref24" name="sthref24"></a>Edit IIOP Listener</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the Edit IIOP Listener page to modify the settings for an IIOP listener.</p>
 <p>The Edit IIOP Listener page contains the following options.</p>
-
-<dl><dt>Load Defaults</dt>
-<dd><p>Button to restore settings that have default values to their default values. Settings that do not have default values are not changed.</p>
-
+<dl>
+<dt>Load Defaults</dt>
+<dd>
+<p>Button to restore settings that have default values to their default values. Settings that do not have default values are not changed.</p>
 </dd>
 <dt>Configuration Name</dt>
-<dd><p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
-
+<dd>
+<p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
 </dd>
 <dt>Name</dt>
-<dd><p>A unique name that identifies the IIOP listener. The Name field is a read-only field. You can only specify the name when you create an IIOP listener.</p>
-
+<dd>
+<p>A unique name that identifies the IIOP listener. The Name field is a read-only field. You can only specify the name when you create an IIOP listener.</p>
 </dd>
 <dt>Network Address</dt>
-<dd><p>The network address of the IIOP listener. The network address can be an IP address or a DNS resolvable host name.</p>
-
+<dd>
+<p>The network address of the IIOP listener. The network address can be an IP address or a DNS resolvable host name.</p>
 </dd>
 <dt>Listener Port</dt>
-<dd><p>The port number upon which the IIOP listener is to listen.</p>
-
+<dd>
+<p>The port number upon which the IIOP listener is to listen.</p>
 </dd>
 <dt>Listener</dt>
-<dd><p>The status of the listener. If the Enabled checkbox is selected, ORB IIOP inbound connections to the GlassFish Server are enabled. This option is enabled by default.</p>
-
+<dd>
+<p>The status of the listener. If the Enabled checkbox is selected, ORB IIOP inbound connections to the GlassFish Server are enabled. This option is enabled by default.</p>
 </dd>
 <dt>Security</dt>
-<dd><p>If the Enabled checkbox is selected, SSL is enabled for the IIOP listener. This option is disabled by default.</p>
-
+<dd>
+<p>If the Enabled checkbox is selected, SSL is enabled for the IIOP listener. This option is disabled by default.</p>
 </dd>
 <dt>Additional Properties</dt>
-<dd><p>Additional properties for the IIOP listener. The GlassFish Serverdoes not define any additional properties for IIOP listeners.</p>
-
+<dd>
+<p>Additional properties for the IIOP listener. The GlassFish Serverdoes not define any additional properties for IIOP listeners.</p>
 </dd>
 </dl>
+<a id="sthref25" name="sthref25"></a>
 <h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-iioplistenernew.html">To Create an IIOP Listener</a></p>
-
+<ul>
+<li>
+<p><a href="task-iioplistenernew.html">To Create an IIOP Listener</a></p>
 </li>
-<li><p><a href="task-iioplisteneredit.html">To Edit an IIOP Listener</a></p>
-
+<li>
+<p><a href="task-iioplisteneredit.html">To Edit an IIOP Listener</a></p>
 </li>
-<li><p><a href="task-editiiopssl.html">To Edit SSL Settings for a Secure IIOP Listener</a></p>
-
+<li>
+<p><a href="task-editiiopssl.html">To Edit SSL Settings for a Secure IIOP Listener</a></p>
 </li>
-<li><p><a href="task-iioplistenerdelete.html">To Delete an IIOP Listener</a></p>
-
-</li></ul>
-<h5>Related <tt>asadmin</tt> Commands</h5>
-
-<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=create-iiop-listener-1"><tt>create-iiop-listener</tt>(1)</a></p>
-
+<li>
+<p><a href="task-iioplistenerdelete.html">To Delete an IIOP Listener</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=list-iiop-listeners-1"><tt>list-iiop-listeners</tt>(1)</a></p>
-
+</ul>
+<a id="sthref26" name="sthref26"></a>
+<h5>Related asadmin Commands</h5>
+<ul>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00032"><code>create-iiop-listener</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=delete-iiop-listener-1"><tt>delete-iiop-listener</tt>(1)</a></p>
-
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00169"><code>list-iiop-listeners</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=create-ssl-1"><tt>create-ssl</tt>(1)</a></p>
-
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00084"><code>delete-iiop-listener</code>(1)</a></p>
 </li>
-<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=delete-ssl-1"><tt>delete-ssl</tt>(1)</a></p>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00058"><code>create-ssl</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00109"><code>delete-ssl</code>(1)</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

@@ -1,122 +1,140 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-applications"></a><h4>Applications</h4>
-<a name="indexterm-162"></a><p>The Applications page displays a list of applications that are deployed on the
-GlassFish Server. You can view and manage the applications that are already deployed,
-and you can deploy more applications.</p>
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="ref-group-applications.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="ref-appedit.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="ref-applications" name="ref-applications"></a><a id="GHCOM00068" name="GHCOM00068"></a></p>
 
+<h4><a id="sthref285" name="sthref285"></a>Applications</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>The Applications page displays a list of applications that are deployed on the GlassFish Server. You can view and manage the applications that are already deployed, and you can deploy more applications.</p>
 <p>For each application, the following information is provided.</p>
-
-<dl><dt>Name</dt>
-<dd><p>The application name.</p>
-
-<p>The name can include an optional version identifier, which follows the name and is separated from the name by a colon (<tt>:</tt>). For more information about module and application versions, see the <a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2417&id=gkhhv">Module and Application Versions in <i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p>
-
+<dl>
+<dt>Name</dt>
+<dd>
+<p>The application name.</p>
+<p>The name can include an optional version identifier, which follows the name and is separated from the name by a colon (<code>:</code>). For more information about module and application versions, see the <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSDPG00324"><i>Module and Application Versions</i> in <i>Oracle GlassFish Server Application Deployment Guide</i></a>.</p>
 </dd>
 <dt>Enabled or Status</dt>
-<dd><p>A check mark if the application is enabled, or an X if the application is disabled, if only the default server instance, <tt>server</tt>, exists.</p>
-
+<dd>
+<p>A check mark if the application is enabled, or an X if the application is disabled, if only the default server instance, <code>server</code>, exists.</p>
 <p>If clusters or other standalone server instances exist, select Enabled on Targets to view the targets on which the application is deployed.</p>
-
 </dd>
 <dt>Engines</dt>
-<dd><p>The types of containers used by the application. Container types can be any of the following:</p>
-
-
-<ul><li><p><tt>web</tt></p>
-
+<dd>
+<p>The types of containers used by the application. Container types can be any of the following:</p>
+<ul>
+<li>
+<p><code>web</code></p>
 </li>
-<li><p><tt>webservices</tt></p>
-
+<li>
+<p><code>webservices</code></p>
 </li>
-<li><p><tt>ejb</tt></p>
-
+<li>
+<p><code>ejb</code></p>
 </li>
-<li><p><tt>connector</tt></p>
-
+<li>
+<p><code>connector</code></p>
 </li>
-<li><p><tt>appclient</tt></p>
-
+<li>
+<p><code>appclient</code></p>
 </li>
-<li><p><tt>weld</tt> (the container for Contexts and Dependency Injection for the Java EE Platform applications)</p>
-
-</li></ul>
+<li>
+<p><code>weld</code> (the container for Contexts and Dependency Injection for the Java EE Platform applications)</p>
+</li>
+</ul>
 </dd>
 <dt>Action</dt>
-<dd><p>Links to the actions you can perform on the component after deploying it: Redeploy and Reload for all components, and Launch for web applications.</p>
-
+<dd>
+<p>Links to the actions you can perform on the component after deploying it: Redeploy and Reload for all components, Launch for web applications and application clients, and Download Client Stubs for application clients.</p>
 </dd>
 </dl>
 <p>The Deployed Applications table also contains the following options.</p>
-
-<dl><dt>Deploy</dt>
-<dd><p>Button to deploy an application.</p>
-
+<dl>
+<dt>Deploy</dt>
+<dd>
+<p>Button to deploy an application.</p>
 </dd>
 <dt>Undeploy</dt>
-<dd><p>Button to undeploy one or more selected applications.</p>
-
+<dd>
+<p>Button to undeploy one or more selected applications.</p>
 </dd>
 <dt>Enable</dt>
-<dd><p>Button to enable one or more selected applications, if only the default server instance, <tt>server</tt>, exists.</p>
-
+<dd>
+<p>Button to enable one or more selected applications, if only the default server instance, <code>server</code>, exists.</p>
 </dd>
 <dt>Disable</dt>
-<dd><p>Button to disable one or more selected applications, if only the default server instance, <tt>server</tt>, exists.</p>
-
+<dd>
+<p>Button to disable one or more selected applications, if only the default server instance, <code>server</code>, exists.</p>
 </dd>
 <dt>Filter</dt>
-<dd><p>Drop-down list that filters applications by engine.</p>
-
+<dd>
+<p>Drop-down list that filters applications by engine.</p>
 </dd>
 </dl>
+<a id="sthref286" name="sthref286"></a>
 <h5>Related Tasks</h5>
-
-<ul><li><p><a href="task-applistdeployed.html">To View a List of Deployed Applications</a></p>
-
+<ul>
+<li>
+<p><a href="task-applistdeployed.html">To View a List of Deployed Applications</a></p>
 </li>
-<li><p><a href="task-appdeployweb.html">To Deploy a Web Application</a></p>
-
+<li>
+<p><a href="task-appdeployweb.html">To Deploy a Web Application</a></p>
 </li>
-<li><p><a href="task-deployentapp.html">To Deploy an Enterprise Application</a></p>
-
+<li>
+<p><a href="task-deployentapp.html">To Deploy an Enterprise Application</a></p>
 </li>
-<li><p><a href="task-appdeployclient.html">To Deploy an Application Client</a></p>
-
+<li>
+<p><a href="task-appdeployclient.html">To Deploy an Application Client</a></p>
 </li>
-<li><p><a href="task-appdeployconn.html">To Deploy a Connector Module</a></p>
-
+<li>
+<p><a href="task-appdeployconn.html">To Deploy a Connector Module</a></p>
 </li>
-<li><p><a href="task-appdeployejb.html">To Deploy an EJB Jar</a></p>
-
+<li>
+<p><a href="task-appdeployejb.html">To Deploy an EJB Jar</a></p>
 </li>
-<li><p><a href="task-appedit.html">To Edit a Deployed Application</a></p>
-
+<li>
+<p><a href="task-appedit.html">To Edit a Deployed Application</a></p>
 </li>
-<li><p><a href="task-appviewdesc.html">To View Descriptors of an Application</a></p>
-
+<li>
+<p><a href="task-appviewdesc.html">To View Descriptors of an Application</a></p>
 </li>
-<li><p><a href="task-appviewtargets.html">To View Application Targets</a></p>
-
+<li>
+<p><a href="task-appviewtargets.html">To View Application Targets</a></p>
 </li>
-<li><p><a href="task-endpoint.html">To View Endpoint Information for a Web Service</a></p>
-
+<li>
+<p><a href="task-endpoint.html">To View Endpoint Information for a Web Service</a></p>
 </li>
-<li><p><a href="task-applaunch.html">To Launch an Application</a></p>
-
+<li>
+<p><a href="task-applaunch.html">To Launch an Application</a></p>
 </li>
-<li><p><a href="task-appclientlaunch.html">To Launch an Application Client</a></p>
-
+<li>
+<p><a href="task-appclientlaunch.html">To Launch an Application Client</a></p>
 </li>
-<li><p><a href="task-appredeploy.html">To Redeploy a Deployed Application</a></p>
-
+<li>
+<p><a href="task-appclientstubs.html">To Download Application Client Stubs</a></p>
 </li>
-<li><p><a href="task-apprestart.html">To Reload a Deployed Application</a></p>
+<li>
+<p><a href="task-appredeploy.html">To Redeploy a Deployed Application</a></p>
+</li>
+<li>
+<p><a href="task-apprestart.html">To Reload a Deployed Application</a></p>
+</li>
+<li>
+<p><a href="ref-appscopedresourcesview.html">To View Application Scoped Resources</a></p>
+</li>
+<li>
+<p><a href="ref-appscopedresourcesedit.html">To Modify Application Scoped Resources</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

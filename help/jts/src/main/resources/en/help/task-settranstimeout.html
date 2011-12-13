@@ -1,38 +1,59 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
+<p><a id="task-settranstimeout" name="task-settranstimeout"></a><a id="GHJTS00006" name="GHJTS00006"></a></p>
 
-
-<a name="task-settranstimeout"></a><h3>To Set a Transaction Timeout Value</h3><a name="indexterm-3"></a><p>By default, the server does not time out a transaction. That is, the
-server waits indefinitely for a transaction to complete. If you set a timeout
-value for transactions, if a transaction isn&#8217;t completed within the configured time, the
-GlassFish Server rolls back the transaction.</p>
-
+<h4><a id="sthref6" name="sthref6"></a>To Set a Transaction Timeout Value</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>By default, the server does not time out a transaction. That is, the server waits indefinitely for a transaction to complete. If you set a timeout value for transactions, if a transaction isn't completed within the configured time, the GlassFish Server rolls back the transaction.</p>
 <ol>
-<li><b>In the navigation tree, expand the Configuration node.</b></li>
-<li><b>Select the instance to configure:</b><ul>
-<li><b>To configure a particular instance, select the instance&#8217;s config node. For example, the
-default instance, <tt>server</tt>, select the <tt>server-config</tt> node.</b></li>
-<li><b>To configure the default settings for all instances, select the <tt>default-config</tt> node.</b></li></ul></li>
-<li><b>Select the Transaction Service node.</b><p>The Transaction Service page opens.</p></li>
-<li><b>In the Transaction Timeout field, type the number of seconds before the transaction
-times out.</b><p>The default value is 0. This value disables transaction timeouts.</p></li>
-<li><b>Click Save.</b></li>
-<li><b>Restart the GlassFish Server.</b></li></ol><p></b>See Also</b></p>
-<ul><li><p><a href="task-configtransservice.html">To Configure the Transaction Service</a></p>
-
+<li>
+<p>In the navigation tree, expand the Configuration node.</p>
 </li>
-<li><p><a href="task-configtransrecovery.html">To Configure How the GlassFish Server Recovers Transactions</a></p>
-
+<li>
+<p>Select the instance to configure:</p>
+<ul>
+<li>
+<p>To configure a particular instance, select the instance's config node. For example, the default instance, <code>server</code>, select the <code>server-config</code> node.</p>
 </li>
-<li><p><a href="task-settranslog.html">To Set the Location of the Transaction Logs</a></p>
-
+<li>
+<p>To configure the default settings for all instances, select the <code>default-config</code> node.</p>
 </li>
-<li><p><a href="task-setkeyptinterval.html">To Set the Keypoint Interval</a></p>
+</ul>
+</li>
+<li>
+<p>Select the Transaction Service node.</p>
+<p>The Transaction Service page opens.</p>
+</li>
+<li>
+<p>In the Transaction Timeout field, type the number of seconds before the transaction times out.</p>
+<p>The default value is 0. This value disables transaction timeouts.</p>
+</li>
+<li>
+<p>Click Save.</p>
+</li>
+<li>
+<p>Restart the GlassFish Server.</p>
+</li>
+</ol>
+<a id="sthref7" name="sthref7"></a>
+<h5>See Also</h5>
+<ul>
+<li>
+<p><a href="task-configtransservice.html">To Configure the Transaction Service</a></p>
+</li>
+<li>
+<p><a href="task-configtransrecovery.html">To Configure How the GlassFish Server Recovers Transactions</a></p>
+</li>
+<li>
+<p><a href="task-settranslog.html">To Set the Location of the Transaction Logs</a></p>
+</li>
+<li>
+<p><a href="task-setkeyptinterval.html">To Set the Keypoint Interval</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

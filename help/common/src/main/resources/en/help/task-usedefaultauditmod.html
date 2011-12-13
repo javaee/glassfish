@@ -1,63 +1,84 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="task-setactiveauditmod.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="task-group-jaccproviders.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="task-usedefaultauditmod" name="task-usedefaultauditmod"></a><a id="GHCOM00199" name="GHCOM00199"></a></p>
 
-
-<a name="task-usedefaultauditmod"></a><h3>To Use the Default Audit Module</h3><a name="indexterm-100"></a><p>The <tt>default</tt> audit module logs authentication and authorization requests to the server log
-file. For information on changing the location of the log file, see <a href="task-eelogging.html">To Configure General Logging Settings</a>.</p>
-
+<h4><a id="sthref172" name="sthref172"></a>To Use the Default Audit Module</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>The <code>default</code> audit module logs authentication and authorization requests to the server log file. For information on changing the location of the log file, see <a href="task-eelogging.html">To Configure General Logging Settings</a>.</p>
 <p>Authentication log entries include the following information:</p>
-
-
-<ul><li><p>Names of users who attempted to authenticate</p>
-
+<ul>
+<li>
+<p>Names of users who attempted to authenticate</p>
 </li>
-<li><p>The realm that processed the access request</p>
-
+<li>
+<p>The realm that processed the access request</p>
 </li>
-<li><p>The requested Web module URI or EJB component</p>
-
+<li>
+<p>The requested Web module URI or EJB component</p>
 </li>
-<li><p>Success or failure of the request</p>
-
-</li></ul>
-<p>Regardless of whether audit logging is enabled, the GlassFish Server logs all denied
-authentication events.</p>
-
+<li>
+<p>Success or failure of the request</p>
+</li>
+</ul>
+<p>Regardless of whether audit logging is enabled, the GlassFish Server logs all denied authentication events.</p>
 <p>Authorization log entries include the following information:</p>
-
-
-<ul><li><p>Names of authenticated users, if any</p>
-
+<ul>
+<li>
+<p>Names of authenticated users, if any</p>
 </li>
-<li><p>The requested Web URI or EJB component</p>
-
+<li>
+<p>The requested Web URI or EJB component</p>
 </li>
-<li><p>Success or failure of the requests</p>
-
-</li></ul>
+<li>
+<p>Success or failure of the requests</p>
+</li>
+</ul>
 <ol>
-<li><b>In the navigation tree, expand the Configuration node.</b></li>
-<li><b>Under the Configuration node, select the Security node.</b><p>The Security page opens.</p></li>
-<li><b>From the Audit Modules drop-down list, select the audit module named <tt>default</tt>.</b></li>
-<li><b>Click Save.</b></li></ol><p></b>See Also</b></p>
-<ul><li><p><a href="task-auditmodulenew.html">To Create an Audit Module</a></p>
-
+<li>
+<p>In the navigation tree, expand the Configuration node.</p>
 </li>
-<li><p><a href="task-auditmoduleedit.html">To Edit an Audit Module</a></p>
-
+<li>
+<p>Under the Configuration node, select the Security node.</p>
+<p>The Security page opens.</p>
 </li>
-<li><p><a href="task-auditmoduledelete.html">To Delete an Audit Module</a></p>
-
+<li>
+<p>From the Audit Modules drop-down list, select the audit module named <code>default</code>.</p>
 </li>
-<li><p><a href="task-enabledisableauditmod.html">To Enable or Disable Audit Logging</a></p>
-
+<li>
+<p>Click Save.</p>
 </li>
-<li><p><a href="task-setactiveauditmod.html">To Set the Active Audit Module</a></p>
+</ol>
+<a id="sthref173" name="sthref173"></a>
+<h5>See Also</h5>
+<ul>
+<li>
+<p><a href="task-auditmodulenew.html">To Create an Audit Module</a></p>
+</li>
+<li>
+<p><a href="task-auditmoduleedit.html">To Edit an Audit Module</a></p>
+</li>
+<li>
+<p><a href="task-auditmoduledelete.html">To Delete an Audit Module</a></p>
+</li>
+<li>
+<p><a href="task-enabledisableauditmod.html">To Enable or Disable Audit Logging</a></p>
+</li>
+<li>
+<p><a href="task-setactiveauditmod.html">To Set the Active Audit Module</a></p>
+</li>
+</ul>
 
-</li></ul>
 
 
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

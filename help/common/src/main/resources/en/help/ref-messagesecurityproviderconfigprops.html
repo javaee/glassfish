@@ -1,32 +1,43 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-messagesecurityproviderconfigprops"></a><h4>Properties Specific to Message Security Provider Configurations</h4>
-<a name="indexterm-234"></a><a name="indexterm-235"></a><p>The following properties are available for a message security provider configuration.</p>
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="ref-messagesecurityproviderconfignew.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="ref-messagesecurityproviderconfigedit.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="ref-messagesecurityproviderconfigprops" name="ref-messagesecurityproviderconfigprops"></a><a id="GHCOM00123" name="GHCOM00123"></a></p>
 
-<dl><dt><tt>server.config</tt></dt>
-<dd><p>The directory and file name of an XML file that contains the server configuration information. The default value is <i>domain-dir</i><tt>/config/wss-server-config-1.0.xml</tt>.</p>
-
+<h4><a id="sthref435" name="sthref435"></a><a id="sthref436" name="sthref436"></a>Properties Specific to Message Security Provider Configurations</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>The following properties are available for a message security provider configuration.</p>
+<dl>
+<dt><code>server.config</code></dt>
+<dd>
+<p>The directory and file name of an XML file that contains the server configuration information. The default value is <i>domain-dir</i><code>/config/wss-server-config-1.0.xml</code>.</p>
 </dd>
-<dt><tt>debug</tt></dt>
-<dd><p>If <tt>true</tt>, enables dumping of server provider debug messages to the server log. The default value is <tt>false</tt>.</p>
-
+<dt><code>debug</code></dt>
+<dd>
+<p>If <code>true</code>, enables dumping of server provider debug messages to the server log. The default value is <code>false</code>.</p>
 </dd>
-<dt><tt>dynamic.username.password</tt></dt>
-<dd><p>If <tt>true</tt>, signals the provider runtime to collect the user name and password from the <tt>CallbackHandler</tt> for each request. If false, the user name and password for <tt>wsse:UsernameToken(s)</tt> is collected once, during module initialization. This property is only applicable for a <tt>ClientAuthModule</tt>. The default value is <tt>false</tt>.</p>
-
+<dt><code>dynamic.username.password</code></dt>
+<dd>
+<p>If <code>true</code>, signals the provider runtime to collect the user name and password from the <code>CallbackHandler</code> for each request. If false, the user name and password for <code>wsse:UsernameToken(s)</code> is collected once, during module initialization. This property is only applicable for a <code>ClientAuthModule</code>. The default value is <code>false</code>.</p>
 </dd>
-<dt><tt>encryption.key.alias</tt></dt>
-<dd><p>Specifies the encryption key used by the provider. The key is identified by its <tt>keystore</tt> alias. The default value is <tt>s1as</tt>.</p>
-
+<dt><code>encryption.key.alias</code></dt>
+<dd>
+<p>Specifies the encryption key used by the provider. The key is identified by its <code>keystore</code> alias. The default value is <code>s1as</code>.</p>
 </dd>
-<dt><tt>signature.key.alias</tt></dt>
-<dd><p>Specifies the signature key used by the provider. The key is identified by its <tt>keystore</tt> alias. The default value is <tt>s1as</tt>.</p>
-
+<dt><code>signature.key.alias</code></dt>
+<dd>
+<p>Specifies the signature key used by the provider. The key is identified by its <code>keystore</code> alias. The default value is <code>s1as</code>.</p>
 </dd>
 </dl>
 
 
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

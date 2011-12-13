@@ -1,71 +1,107 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="task-eelogging.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="task-logging-max-logfiles.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="task-eelogginglevels" name="task-eelogginglevels"></a><a id="GHCOM00178" name="GHCOM00178"></a></p>
 
-
-<a name="task-eelogginglevels"></a><h3>To Configure Log Levels</h3><a name="indexterm-68"></a><a name="indexterm-69"></a><ol>
-<li><b>In the navigation tree, expand the Configurations node.</b></li>
-<li><b>Under the Configuration node, click the server instance or cluster configuration for which
-you want to configure Logger Settings.</b><p>The Configuration page opens.</p></li>
-<li><b>On the Configuration page, click Logger Settings.</b><p>The Logger Settings page for the selected configuration target opens.</p></li>
-<li><b>On the Logger Settings page, click the Log Levels tab.</b><p>The Module Log Levels page opens.</p></li>
-<li><b>On the Module Log Levels page, change log levels for one or
-more modules as follows.</b><ul>
-<li><b>To change the log level for an individual module, select a new value
-from the drop-down list opposite the module whose log level you want to
-change.</b></li>
-<li><b>To change the log level for a group of modules:</b><ol style="list-style-type: lower-alpha">
-<li><b>Select the checkboxes next to the names of the modules whose log levels
-you want to change.</b></li>
-<li><b>Select a value from the drop-down list at the top of the
-table.</b></li>
-<li><b>Click the Change Level button.</b></li></ol></li></ul><p>Messages at the selected level or higher appear in the log. Choose
-any of the following values (listed from highest to lowest):</p>
-
-
-<ul><li><p><tt>SEVERE</tt></p>
-
+<h4><a id="sthref122" name="sthref122"></a><a id="sthref123" name="sthref123"></a>To Configure Log Levels</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<ol>
+<li>
+<p>In the navigation tree, expand the Configurations node.</p>
 </li>
-<li><p><tt>WARNING</tt></p>
-
+<li>
+<p>Under the Configuration node, click the server instance or cluster configuration for which you want to configure Logger Settings.</p>
+<p>The Configuration page opens.</p>
 </li>
-<li><p><tt>INFO</tt></p>
-
+<li>
+<p>On the Configuration page, click Logger Settings.</p>
+<p>The Logger Settings page for the selected configuration target opens.</p>
 </li>
-<li><p><tt>CONFIG</tt></p>
-
+<li>
+<p>On the Logger Settings page, click the Log Levels tab.</p>
+<p>The Module Log Levels page opens.</p>
 </li>
-<li><p><tt>FINE</tt></p>
-
+<li>
+<p>On the Module Log Levels page, change log levels for one or more modules as follows.</p>
+<ul>
+<li>
+<p>To change the log level for an individual module, select a new value from the drop-down list opposite the module whose log level you want to change.</p>
 </li>
-<li><p><tt>FINER</tt></p>
-
+<li>
+<p>To change the log level for a group of modules:</p>
+<ol>
+<li>
+<p>Select the checkboxes next to the names of the modules whose log levels you want to change.</p>
 </li>
-<li><p><tt>FINEST</tt></p>
-
+<li>
+<p>Select a value from the drop-down list at the top of the table.</p>
 </li>
-<li><p><tt>OFF</tt></p>
-
-</li></ul>
-<p>For details about the meanings of the log levels, see <a href="ref-eelogginglevels.html">Module Log Levels</a>. The
-default level is <tt>INFO</tt>, so by default the log will contain messages of
-<tt>INFO</tt>, <tt>WARNING</tt>, or <tt>SEVERE</tt> levels.</p></li>
-<li><b>Click Save.</b><p>Changes to the Log Level settings take effect immediately. They are also saved
-for use when the server restarts.</p></li></ol><p></b>See Also</b></p>
-<ul><li><p><a href="task-eelogging.html">To Configure General Logging Settings</a></p>
-
+<li>
+<p>Click the Change Level button.</p>
 </li>
-<li><p><a href="task-logging-max-logfiles.html">To Change the Limit on the Number of Rotated Log Files</a></p>
-
+</ol>
 </li>
-<li><p><a href="task-logviewer.html">To View Log Files for the DAS</a></p>
-
+</ul>
+<p>Messages at the selected level or higher appear in the log. Choose any of the following values (listed from highest to lowest):</p>
+<ul>
+<li>
+<p><code>SEVERE</code></p>
 </li>
-<li><p><a href="task-logging-collectlogfiles.html">To Create a ZIP Archive of All Log Files</a></p>
+<li>
+<p><code>WARNING</code></p>
+</li>
+<li>
+<p><code>INFO</code></p>
+</li>
+<li>
+<p><code>CONFIG</code></p>
+</li>
+<li>
+<p><code>FINE</code></p>
+</li>
+<li>
+<p><code>FINER</code></p>
+</li>
+<li>
+<p><code>FINEST</code></p>
+</li>
+<li>
+<p><code>OFF</code></p>
+</li>
+</ul>
+<p>For details about the meanings of the log levels, see <a href="ref-eelogginglevels.html">Module Log Levels</a>. The default level is <code>INFO</code>, so by default the log will contain messages of <code>INFO</code>, <code>WARNING</code>, or <code>SEVERE</code> levels.</p>
+</li>
+<li>
+<p>Click Save.</p>
+<p>Changes to the Log Level settings take effect immediately. They are also saved for use when the server restarts.</p>
+</li>
+</ol>
+<a id="sthref124" name="sthref124"></a>
+<h5>See Also</h5>
+<ul>
+<li>
+<p><a href="task-eelogging.html">To Configure General Logging Settings</a></p>
+</li>
+<li>
+<p><a href="task-logging-max-logfiles.html">To Change the Limit on the Number of Rotated Log Files</a></p>
+</li>
+<li>
+<p><a href="task-logviewer.html">To View Log Files for the DAS</a></p>
+</li>
+<li>
+<p><a href="task-logging-collectlogfiles.html">To Create a ZIP Archive of All Log Files</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

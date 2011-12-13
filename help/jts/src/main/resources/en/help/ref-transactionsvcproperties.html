@@ -1,48 +1,53 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-transactionsvcproperties"></a><h4>Properties Specific to the Transaction Service</h4>
-<a name="indexterm-9"></a><a name="indexterm-10"></a><p>The following properties are available for configuring the Transaction Service.</p>
+<p><a id="ref-transactionsvcproperties" name="ref-transactionsvcproperties"></a><a id="GHJTS00003" name="GHJTS00003"></a></p>
 
-<dl><dt><tt>oracle-xa-recovery-workaround</tt></dt>
-<dd><p>If set to <tt>true</tt>, the Oracle XA Resource workaround is used in transaction recovery. The default value is <tt>true</tt>.</p>
-
+<h4><a id="sthref16" name="sthref16"></a><a id="sthref17" name="sthref17"></a>Properties Specific to the Transaction Service</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>The following properties are available for configuring the Transaction Service.</p>
+<dl>
+<dt><code>oracle-xa-recovery-workaround</code></dt>
+<dd>
+<p>If set to <code>true</code>, the Oracle XA Resource workaround is used in transaction recovery. The default value is <code>true</code>.</p>
 </dd>
-<dt><tt>disable-distributed-transaction-logging</tt></dt>
-<dd><p>If set to <tt>true</tt>, disables transaction logging, which might improve performance. If the On Restart Enabled checkbox is selected, this property is ignored. The default value is <tt>false</tt>.</p>
-
+<dt><code>disable-distributed-transaction-logging</code></dt>
+<dd>
+<p>If set to <code>true</code>, disables transaction logging, which might improve performance. If the On Restart Enabled checkbox is selected, this property is ignored. The default value is <code>false</code>.</p>
 </dd>
-<dt><tt>xaresource-txn-timeout</tt></dt>
-<dd><p>Changes the <tt>XAResource</tt> timeout. In some cases, the <tt>XAResource</tt> default timeout can cause transactions to be aborted, so it is desirable to change it. The default value is specific to the <tt>XAResource</tt> used.</p>
-
+<dt><code>xaresource-txn-timeout</code></dt>
+<dd>
+<p>Changes the <code>XAResource</code> timeout. In some cases, the <code>XAResource</code> default timeout can cause transactions to be aborted, so it is desirable to change it. The default value is specific to the <code>XAResource</code> used.</p>
 </dd>
-<dt><tt>pending-txn-cleanup-interval</tt></dt>
-<dd><p>Specifies the interval, in seconds, at which an asynchronous thread checks for pending transactions and completes them. If this property is not specified, there is no default. If this property is present but has no value, the default value is 60.</p>
-
+<dt><code>pending-txn-cleanup-interval</code></dt>
+<dd>
+<p>Specifies the interval, in seconds, at which an asynchronous thread checks for pending transactions and completes them. If this property is not specified, there is no default. If this property is present but has no value, the default value is 60.</p>
 </dd>
-<dt><tt>use-last-agent-optimization</tt></dt>
-<dd><p>If set to <tt>true</tt>, enables last agent optimization, which improves the throughput of transactions. If one non-XA resource is used with XA resources in the same transaction, the non-XA resource is the last agent. The default value is <tt>true</tt>.</p>
-
+<dt><code>use-last-agent-optimization</code></dt>
+<dd>
+<p>If set to <code>true</code>, enables last agent optimization, which improves the throughput of transactions. If one non-XA resource is used with XA resources in the same transaction, the non-XA resource is the last agent. The default value is <code>true</code>.</p>
 </dd>
-<dt><tt>delegated-recovery</tt></dt>
-<dd><p>If set to <tt>true</tt>, cluster-wide delegated recovery is enabled. The default value is false.</p>
-
+<dt><code>delegated-recovery</code></dt>
+<dd>
+<p>If set to <code>true</code>, cluster-wide delegated recovery is enabled. The default value is false.</p>
 </dd>
-<dt><tt>wait-time-before-recovery-insec</tt></dt>
-<dd><p>Specifies the wait time, in seconds, after which an instance starts the recovery for a dead instance.</p>
-
+<dt><code>wait-time-before-recovery-insec</code></dt>
+<dd>
+<p>Specifies the wait time, in seconds, after which an instance starts the recovery for a dead instance.</p>
 </dd>
-<dt><tt>db-logging-resource</tt></dt>
-<dd><p>Specifies the JNDI name of the JDBC resource for the database to which transactions are logged. For more information, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2418&id=beanm">Chapter 14, Using the Transaction Service, in <i>Oracle GlassFish Server 3.1 Application Development Guide</i></a>. There is no default value.</p>
-
+<dt><code>db-logging-resource</code></dt>
+<dd>
+<p>Specifies the JNDI name of the JDBC resource for the database to which transactions are logged. For more information, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSDVG00018">Chapter 17, <i>Using the Transaction Service,</i> in <i>Oracle GlassFish Server Application Development Guide</i></a>. There is no default value.</p>
 </dd>
-<dt><tt>xa-servername</tt></dt>
-<dd><p>Specifies the host name that the transaction service uses to identify transactions being managed by the installed GlassFish Server. This can sometimes be useful for recovering transactions from the log file that was created on a different host running the GlassFish Server.</p>
-
+<dt><code>xa-servername</code></dt>
+<dd>
+<p>Specifies the host name that the transaction service uses to identify transactions being managed by the installed GlassFish Server. This can sometimes be useful for recovering transactions from the log file that was created on a different host running the GlassFish Server.</p>
 </dd>
 </dl>
 
 
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+
+
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

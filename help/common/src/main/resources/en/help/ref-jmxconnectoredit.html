@@ -1,61 +1,73 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-jmxconnectoredit"></a><h4>Edit JMX Connector</h4>
-<a name="indexterm-238"></a><p>Use the Edit JMX Connector page to edit the JSR 360&#8211;compliant JMX connector.</p>
+<a href="#BEGIN">Skip Headers</a>
+<col width="86%" />
+<col width="*" />
+<tr valign="bottom">
+<td align="center"><a href="ref-group-adminservice.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
+<span class="icon">Previous</span></a>&nbsp;
+<td align="center"><a href="ref-jmxconnectorssledit.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
+<span class="icon">Next</span></a>
+<p><a id="ref-jmxconnectoredit" name="ref-jmxconnectoredit"></a><a id="GHCOM00127" name="GHCOM00127"></a></p>
 
+<h4><a id="sthref442" name="sthref442"></a>Edit JMX Connector</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the Edit JMX Connector page to edit the JSR 360-compliant JMX connector.</p>
 <p>The Edit JMX Connector page contains the following options.</p>
-
-<dl><dt>Configuration Name</dt>
-<dd><p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
-
+<dl>
+<dt>Configuration Name</dt>
+<dd>
+<p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
 </dd>
 <dt>Name</dt>
-<dd><p>The name of the JMX connector. This is a read-only field.</p>
-
+<dd>
+<p>The name of the JMX connector. This is a read-only field.</p>
 </dd>
 <dt>JMX Protocol</dt>
-<dd><p>The name of the protocol that this JMX connector supports. This is a read-only field.</p>
-
+<dd>
+<p>The name of the protocol that this JMX connector supports. This is a read-only field.</p>
 </dd>
 <dt>JMXServiceURL</dt>
-<dd><p>The JMX Service URL. This is a read-only field.</p>
-
+<dd>
+<p>The JMX Service URL. This is a read-only field.</p>
 </dd>
 <dt>Security</dt>
-<dd><p>If the Enabled checkbox is selected, JMX communication is encrypted. This option is disabled by default.</p>
-
+<dd>
+<p>If the Enabled checkbox is selected, JMX communication is encrypted. This option is disabled by default.</p>
 </dd>
 <dt>Address</dt>
-<dd><p>The IP address of the naming service where the JMX connector server stub is registered. This is not the port of the server socket that does the actual JMX communication. This is the address of the network interface where the RMI registry is started. If your system has multiple network interfaces, modify this value so that only a particular interface is selected. The default value is <tt>0.0.0.0</tt>.</p>
-
+<dd>
+<p>The IP address of the naming service where the JMX connector server stub is registered. This is not the port of the server socket that does the actual JMX communication. This is the address of the network interface where the RMI registry is started. If your system has multiple network interfaces, modify this value so that only a particular interface is selected. The default value is <code>0.0.0.0</code>.</p>
 </dd>
 <dt>Port</dt>
-<dd><p>The port number on which the naming service (RMI registry) listens for RMI client connections. The only use of this naming service is to download the RMI stubs. If the default port is occupied, a free port is used. Legal values are 1 - 65535. On UNIX systems, creating sockets that listen on ports 1 - 1024 requires superuser privileges. The default value is 8686.</p>
-
+<dd>
+<p>The port number on which the naming service (RMI registry) listens for RMI client connections. The only use of this naming service is to download the RMI stubs. If the default port is occupied, a free port is used. Legal values are 1 - 65535. On UNIX systems, creating sockets that listen on ports 1 - 1024 requires superuser privileges. The default value is 8686.</p>
 </dd>
 <dt>Realm Name</dt>
-<dd><p>The name that represents the special administrative realm. All authentication is handled by this realm. The default value is <tt>admin-realm</tt>.</p>
-
+<dd>
+<p>The name that represents the special administrative realm. All authentication is handled by this realm. The default value is <code>admin-realm</code>.</p>
 </dd>
 <dt>Additional Properties</dt>
-<dd><p>Additional properties for the JMX Connector. Several properties are specified by default.</p>
-
+<dd>
+<p>Additional properties for the JMX Connector. Several properties are specified by default.</p>
 </dd>
 </dl>
+<a id="sthref443" name="sthref443"></a>
 <h5>Related Task</h5>
-
-<ul><li><p><a href="task-jmxconnectoredit.html">To Edit the JMX Connector</a></p>
-
+<ul>
+<li>
+<p><a href="task-jmxconnectoredit.html">To Edit the JMX Connector</a></p>
 </li>
-<li><p><a href="task-jmxconnectorssledit.html">To Edit SSL Settings for the JMX Connector</a></p>
-
-</li></ul>
-<h5>Related <tt>asadmin</tt> Commands</h5>
+<li>
+<p><a href="task-jmxconnectorssledit.html">To Edit SSL Settings for the JMX Connector</a></p>
+</li>
+</ul>
+<a id="sthref444" name="sthref444"></a>
+<h5>Related asadmin Commands</h5>
 <p>None.</p>
 
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

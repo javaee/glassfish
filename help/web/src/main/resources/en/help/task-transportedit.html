@@ -1,88 +1,128 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
+<p><a id="task-transportedit" name="task-transportedit"></a><a id="GHWEB00049" name="GHWEB00049"></a></p>
 
+<h4><a id="sthref69" name="sthref69"></a>To Edit a Transport</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<ol>
+<li>
+<p>In the navigation tree, expand the Configuration node.</p>
+</li>
+<li>
+<p>Under the Configuration node, expand the Network Config node.</p>
+</li>
+<li>
+<p>Under the Network Config node, select the Transports node.</p>
+<p>The Transports page opens.</p>
+</li>
+<li>
+<p>On the Transports page, click the name of the transport that you are editing.</p>
+<p>The Edit Transport page opens.</p>
+</li>
+<li>
+<p>In the Classname field, type the class name of the transport implementation.</p>
+<p>The default value is <code>com.sun.grizzly.TCPSelectorHandler</code>.</p>
+</li>
+<li>
+<p>In the Selection Key Handler field, type the class name of the selection key handler.</p>
+<p>The class name of the selection key handler. A selection key handler is an abstract class that manages the lifecycle of selection keys. If you do not specify a value, a default implementation is used.</p>
+</li>
+<li>
+<p>From the Byte Buffer Type drop-down list, select the type of <code>ByteBuffer</code> to be used.</p>
+<p>Available choices are <code>HEAP</code> and <code>DIRECT</code>. The default value is <code>HEAP</code>.</p>
+</li>
+<li>
+<p>In the Acceptor Threads field, type the number of processors in the machine.</p>
+<p>A value of -1 indicates that Grizzly will calculate the number of acceptor threads itself, based on the number of processors in the machine. The default value is 1.</p>
+<p>To set the number of request processing threads, set the Max Thread Pool Size value of the thread pool used by a network listener that uses this transport.</p>
+</li>
+<li>
+<p>In the Max Connections Count field, type the maximum number of pending connections on a network listener that uses this transport.</p>
+<p>The default value is 4096.</p>
+</li>
+<li>
+<p>In the Buffer Size field, type the size, in bytes, of the buffer to be provided for input streams created by a network listener that uses this transport.</p>
+<p>The default value is 8192.</p>
+</li>
+<li>
+<p>In the Idle Key Timeout field, type the number of seconds after which an idle key will be cancelled and the channel closed.</p>
+<p>The default value is 30.</p>
+</li>
+<li>
+<p>In the Read Timeout field, type the number of milliseconds the GlassFish Serverwaits during the header and body parsing phase of a read operation.</p>
+<p>The default value is 30,000.</p>
+</li>
+<li>
+<p>In the Selector Poll Timeout field, type the number of milliseconds a NIO Selector will block waiting for events (users' requests).</p>
+<p>The default value is 1000.</p>
+</li>
+<li>
+<p>In the Write Timeout field, type the number of milliseconds the GlassFish Serverwaits before considering the remote client disconnected when writing the response.</p>
+<p>The default value is 30,000.</p>
+</li>
+<li>
+<p>Select the Display Configuration Enabled checkbox to flush Grizzly's internal configuration to the server logs.</p>
+<p>This option may provide useful information for debugging. This option is disabled by default.</p>
+</li>
+<li>
+<p>Select the Snoop Enabled checkbox to dump the requests/response information to the server log.</p>
+<p>This option may provide useful information for debugging, but will significantly reduce performance. This option is disabled by default.</p>
+</li>
+<li>
+<p>Select the TCP No Delay checkbox to enable TCP_NODELAY (also calledNagle's algorithm).</p>
+<p>This option is enabled by default.</p>
+</li>
+<li>
+<p>Click Save.</p>
 
-<a name="task-transportedit"></a><h3>To Edit a Transport</h3><a name="indexterm-34"></a><ol>
-<li><b>In the navigation tree, expand the Configuration node.</b></li>
-<li><b>Under the Configuration node, expand the Network Config node.</b></li>
-<li><b>Under the Network Config node, select the Transports node.</b><p>The Transports page opens.</p></li>
-<li><b>On the Transports page, click the name of the transport that you are
-editing.</b><p>The Edit Transport page opens.</p></li>
-<li><b>In the Classname field, type the class name of the transport implementation.</b><p>The default value is <tt>com.sun.grizzly.TCPSelectorHandler</tt>.</p></li>
-<li><b>In the Selection Key Handler field, type the class name of the selection
-key handler.</b><p>The class name of the selection key handler. A selection key handler is
-an abstract class that manages the lifecycle of selection keys. If you do
-not specify a value, a default implementation is used.</p></li>
-<li><b>From the Byte Buffer Type drop-down list, select the type of <tt>ByteBuffer</tt>
-to be used.</b><p>Available choices are <tt>HEAP</tt> and <tt>DIRECT</tt>. The default value is <tt>HEAP</tt>.</p></li>
-<li><b>In the Acceptor Threads field, type the number of processors in the machine.</b><p>A value of &#8211;1 indicates that Grizzly will calculate the number of acceptor
-threads itself, based on the number of processors in the machine. The default
-value is 1.</p><p>To set the number of request processing threads, set the Max Thread Pool
-Size value of the thread pool used by a network listener that
-uses this transport.</p></li>
-<li><b>In the Max Connections Count field, type the maximum number of pending connections
-on a network listener that uses this transport.</b><p>The default value is 4096.</p></li>
-<li><b>In the Buffer Size field, type the size, in bytes, of the
-buffer to be provided for input streams created by a network listener that
-uses this transport.</b><p>The default value is 8192.</p></li>
-<li><b>In the Idle Key Timeout field, type the number of seconds after which
-an idle key will be cancelled and the channel closed.</b><p>The default value is 30.</p></li>
-<li><b>In the Read Timeout field, type the number of milliseconds the GlassFish
-Serverwaits during the header and body parsing phase of a read operation.</b><p>The default value is 30,000.</p></li>
-<li><b>In the Selector Poll Timeout field, type the number of milliseconds a NIO
-Selector will block waiting for events (users' requests).</b><p>The default value is 1000.</p></li>
-<li><b>In the Write Timeout field, type the number of milliseconds the GlassFish
-Serverwaits before considering the remote client disconnected when writing the response.</b><p>The default value is 30,000.</p></li>
-<li><b>Select the Display Configuration Enabled checkbox to flush Grizzly's internal configuration to the
-server logs.</b><p>This option may provide useful information for debugging. This option is disabled by
-default.</p></li>
-<li><b>Select the Snoop Enabled checkbox to dump the requests/response information to the server
-log.</b><p>This option may provide useful information for debugging, but will significantly reduce performance.
-This option is disabled by default.</p></li>
-<li><b>Select the TCP No Delay checkbox to enable TCP_NODELAY (also calledNagle's algorithm).</b><p>This option is enabled by default.</p></li>
-<li><b>Click Save.</b>
-<hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
-Save.</p>
+<br />
+<p><b>Tip:</b></p>
+<p>To return to the default settings, click the Load Defaults button, then click Save.</p>
 
-
-<hr>
-</li></ol><p></b>See Also</b></p>
-<ul><li><p><a href="task-networklistenernew.html">To Create a Network Listener</a></p>
+<br />
 
 </li>
-<li><p><a href="task-networklisteneredit.html">To Edit a Network Listener</a></p>
-
+</ol>
+<a id="sthref70" name="sthref70"></a>
+<h5>See Also</h5>
+<ul>
+<li>
+<p><a href="task-networklistenernew.html">To Create a Network Listener</a></p>
 </li>
-<li><p><a href="task-networklistenerdelete.html">To Delete a Network Listener</a></p>
-
+<li>
+<p><a href="task-networklisteneredit.html">To Edit a Network Listener</a></p>
 </li>
-<li><p><a href="task-protocolnew.html">To Create a Protocol</a></p>
-
+<li>
+<p><a href="task-networklistenerdelete.html">To Delete a Network Listener</a></p>
 </li>
-<li><p><a href="task-protocoledit.html">To Edit a Protocol</a></p>
-
+<li>
+<p><a href="task-protocolnew.html">To Create a Protocol</a></p>
 </li>
-<li><p><a href="task-protocolssledit.html">To Edit SSL Settings for a Protocol</a></p>
-
+<li>
+<p><a href="task-protocoledit.html">To Edit a Protocol</a></p>
 </li>
-<li><p><a href="task-protocolhttpedit.html">To Edit HTTP Settings for a Protocol</a></p>
-
+<li>
+<p><a href="task-protocolssledit.html">To Edit SSL Settings for a Protocol</a></p>
 </li>
-<li><p><a href="task-protocolfilecacheedit.html">To Edit File Cache Settings for a Protocol</a></p>
-
+<li>
+<p><a href="task-protocolhttpedit.html">To Edit HTTP Settings for a Protocol</a></p>
 </li>
-<li><p><a href="task-protocoldelete.html">To Delete a Protocol</a></p>
-
+<li>
+<p><a href="task-protocolfilecacheedit.html">To Edit File Cache Settings for a Protocol</a></p>
 </li>
-<li><p><a href="task-transportnew.html">To Create a Transport</a></p>
-
+<li>
+<p><a href="task-protocoldelete.html">To Delete a Protocol</a></p>
 </li>
-<li><p><a href="task-transportdelete.html">To Delete a Transport</a></p>
+<li>
+<p><a href="task-transportnew.html">To Create a Transport</a></p>
+</li>
+<li>
+<p><a href="task-transportdelete.html">To Delete a Transport</a></p>
+</li>
+</ul>
 
-</li></ul>
 
-
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

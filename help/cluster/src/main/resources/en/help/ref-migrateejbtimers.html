@@ -1,37 +1,55 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2011 Oracle and/or its affiliates. All rights reserved.
- 
+Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+
 Use is subject to License Terms  -->
-<a name="ref-migrateejbtimers"></a><h4>Migrate EJB Timers</h4>
-<a name="indexterm-168"></a><a name="indexterm-169"></a><a name="indexterm-170"></a><p>The Migrate EJB Timers page contains the following options.</p>
+<p><a id="ref-migrateejbtimers" name="ref-migrateejbtimers"></a><a id="GHCLU00004" name="GHCLU00004"></a></p>
 
-<dl><dt>Source</dt>
-<dd><p>Drop-down list of stopped GlassFish Server instances in the cluster. EJB timers can be migrated only from instances that are stopped.</p>
-
+<h4><a id="sthref257" name="sthref257"></a><a id="sthref258" name="sthref258"></a><a id="sthref259" name="sthref259"></a>Migrate EJB Timers</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>The Migrate EJB Timers page contains the following options.</p>
+<dl>
+<dt>Source</dt>
+<dd>
+<p>Drop-down list of stopped GlassFish Server instances in the cluster. EJB timers can be migrated only from instances that are stopped.</p>
 </dd>
 <dt>Destination</dt>
-<dd><p>Drop-down list of running GlassFish Server instances in the cluster. EJB timers can be migrated only to instances that are running.</p>
-
+<dd>
+<p>Drop-down list of running GlassFish Server instances in the cluster. EJB timers can be migrated only to instances that are running.</p>
 </dd>
 </dl>
 
-<hr><p><b>Note - </b>If all instances in the cluster are stopped, this page displays only
-a warning that no running instances to which EJB timers can be
-migrated are available.</p>
+<br />
+<p><b>Note:</b></p>
+<p>If all instances in the cluster are stopped, this page displays only a warning that no running instances to which EJB timers can be migrated are available.</p>
 
+<br />
 
-<hr>
+<p>The Migrate EJB Timers page contains a table of EJB timers with the following information.</p>
+<dl>
+<dt>Server Name</dt>
+<dd>
+<p>List of GlassFish Server instances in the cluster.</p>
+</dd>
+<dt>Timer Count</dt>
+<dd>
+<p>Number of persistent timers on each instance.</p>
+</dd>
+</dl>
+<a id="sthref260" name="sthref260"></a>
 <h5>Related Tasks</h5>
+<p><a href="task-migrate-ejb-timers.html">To Migrate EJB Timers</a></p>
+<a id="sthref261" name="sthref261"></a>
+<h5>Equivalent asadmin Subcommands</h5>
+<ul>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00205"><code>list-timers</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00211"><code>migrate-timers</code>(1)</a></p>
+</li>
+</ul>
 
-<ul><li><p><a href="task-migrate-ejb-timers.html">To Migrate EJB Timers</a></p>
-
-</li></ul>
-<h5>Equivalent <tt>asadmin</tt> Subcommands</h5>
-
-<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=migrate-timers-1"><tt>migrate-timers</tt>(1)</a></p>
-
-</li></ul>
 
 
-<small>Copyright &#169; 2005, 2011, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
+<small>Copyright &#169; 2005, 2012, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
