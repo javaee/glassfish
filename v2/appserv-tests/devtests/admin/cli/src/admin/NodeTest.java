@@ -201,6 +201,7 @@ public class NodeTest extends AdminBaseDevTest {
         final String testNamePrefixDelete = "deleteNodeConfig-";
         final String testNamePrefixValidate = "validateNodeConfig-";
         final String testNamePrefixValidateDelete = "validateDeleteNodeConfig-";
+        final String testNamePrefixFreeze = "freeze-";
         final String nodeNamePrefix = "n_config_";
 
         String nodeName = String.format("%s%d", nodeNamePrefix, 0);
@@ -220,6 +221,27 @@ public class NodeTest extends AdminBaseDevTest {
         // Make sure it is gone by trying to get its name
         testName = testNamePrefixValidateDelete + "0";
         report(testName, !asadmin("get", propPrefix + nodeName + "." + "name"));
+
+        // Set "freeze" attribute on nodes list. This should prevent future
+        // node creation.
+        testName = testNamePrefixFreeze + "0";
+        report(testName, asadmin("set", "nodes.freeze=true"));
+
+        // Create a config node. This should not be allowed
+        testName = testNamePrefixFreeze + "1";
+        report(testName, !asadmin("create-node-config", nodeName));
+
+        // Turn off freeze
+        testName = testNamePrefixFreeze + "2";
+        report(testName, asadmin("set", "nodes.freeze=false"));
+
+        // Make sure node creation works.
+        testName = testNamePrefixCreate + "3";
+        report(testName, asadmin("create-node-config", nodeName));
+
+        // And delete it
+        testName = testNamePrefixCreate + "4";
+        report(testName, asadmin("delete-node-config", nodeName));
     }
 
     private void testLocalHostNode() {
@@ -516,6 +538,22 @@ public class NodeTest extends AdminBaseDevTest {
         report("node-delete-instance1", asadmin("delete-instance", INAME1));
         report("node-delete-instance2", asadmin("delete-instance", INAME2));
         report("node-delete-cluster1", asadmin("delete-cluster", CNAME));
+
+        // Now freeze node. create-instance should fail
+        report("node-freeze-set-true", asadmin("set",
+                        "nodes.node." + LOCALHOST + ".freeze=true"));
+        report("node-freeze-create-instance-frozen", !asadmin("create-instance",
+                        "--node", LOCALHOST,
+                        INAME1));
+
+        // Now un-freeze node. create-instance should work
+        report("node-freeze-set-false", asadmin("set",
+                        "nodes.node." + LOCALHOST + ".freeze=false"));
+        report("node-freeze-create-instance-unfrozen", asadmin("create-instance",
+                        "--node", LOCALHOST,
+                        INAME1));
+        report("node-freeze-delete-instance1", asadmin("delete-instance",
+                        INAME1));
     }
 
     /*
