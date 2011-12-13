@@ -84,7 +84,7 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
 
     public static final String DEFAULT_ADMIN_CONSOLE_CONTEXT_ROOT = "/admin";
     public static final String DEFAULT_ADMIN_CONSOLE_APP_NAME     = "__admingui"; //same as folder
-    
+
     private /*almost final*/ File root;
     private /*almost final*/ boolean verbose;
     private /*almost final*/ boolean debug;
@@ -142,8 +142,21 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
             }
         }
 
+        /*
+         * bnevins 12/12/11
+         * The following chunk of code sets things like hostname to be a file under instance root
+         * I.e. it's crazy.  It's 1 hour until SCF so I'll just fix the current problem which is a NPE
+         * if the value is null.
+         * At any rate the weird values that get set into System Properties get un-done at
+         * the line of code in bootstrap (see end of this comment).  It's easy to trace just step out of this method
+         * in a debugger
+         * createGlassFish(gfKernel, habitat, gfProps.getProperties())
+         */
         asenv.getProps().put(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY, root.getAbsolutePath());
         for (Map.Entry<String, String> entry : asenv.getProps().entrySet()) {
+
+            if(entry.getValue() == null) // don't NPE File ctor
+                continue;
 
             File location = new File(entry.getValue());
             if (!location.isAbsolute()) {
@@ -151,7 +164,7 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
             }
             System.setProperty(entry.getKey(), location.getAbsolutePath());
         }
-        
+
         Properties args = startupContext.getArguments();
 
         verbose = Boolean.parseBoolean(args.getProperty("-verbose"));
@@ -311,7 +324,7 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     public Map<String, String> getProps() {
         return Collections.unmodifiableMap(asenv.getProps());
     }
-    
+
     /** Returns the folder where the admin console application's folder (in the
      *  name of admin console application) should be found. Thus by default,
      *  it should be: [install-dir]/lib/install/applications. No attempt is made
@@ -380,7 +393,7 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     public boolean isInstance() {
         return serverType == RuntimeType.INSTANCE;
     }
-    
+
     /**
      * Am I a running GlassFish DAS server?
      * @return true if we are a DAS
