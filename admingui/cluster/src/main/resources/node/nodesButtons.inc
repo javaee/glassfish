@@ -156,8 +156,6 @@
                     mapPut(map="#{pageSession.dMap}", key="#{requestScope.dattr}" value="#{requestScope.dval}");
                 }
             }
-            println("======validate-dcom========== #{pageSession.dMap}");
-
             gf.restRequest( endpoint="#{sessionScope.REST_URL}/nodes/validate-dcom" attrs="#{pageSession.dMap}" method="POST" )
         }
         setAttribute(key="attrsList" value={"id", "nodehost", "nodedir", "installdir", "windowsuser", "windowsdomain", "windowspassword", "install" });
@@ -168,7 +166,6 @@
         gfr.prepareNodeCmd();
         mapPut(map="#{pageSession.attrsMap}"  key="force" value="#{pageSession.valueMap['winForce']}");
     }
-    println("================ #{pageSession.attrsMap}");
     gf.restRequest( endpoint="#{sessionScope.REST_URL}/#{requestScope.endpoint}" attrs="#{pageSession.attrsMap}" method="POST" )
     gf.redirect(page="#{request.contextPath}/cluster/node/nodes.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
  />
