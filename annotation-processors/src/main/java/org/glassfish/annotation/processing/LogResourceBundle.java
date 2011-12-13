@@ -46,7 +46,6 @@ import java.util.HashMap;
 class LogResourceBundle extends HashMap<String, String> {
 
     private static final String COMMENT = ".MSG_COMMENT";
-    private static final String COPYRIGHT = "#\n# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n#\n# Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.\n#...\n\n";
     
     public LogResourceBundle() { }
 
@@ -112,7 +111,6 @@ class LogResourceBundle extends HashMap<String, String> {
         // Noting to store.
         if (isEmpty()) return false;
 
-        //out.write(COPYRIGHT);
         out.write(GPLCopyright.getCopyright());
 
         for (String key : keySet()) {

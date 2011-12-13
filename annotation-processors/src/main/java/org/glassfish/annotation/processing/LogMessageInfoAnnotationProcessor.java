@@ -70,22 +70,19 @@ public class LogMessageInfoAnnotationProcessor extends AbstractProcessor {
 
     public static final String RBFILE = "LogMessages.properties";
     HashMap<String, String> pkgMap = null;
-    protected boolean debugging = true;
+    protected boolean debugging = false;
 
     @Override
     public boolean process (Set<? extends TypeElement> annotations, 
             RoundEnvironment env) {
 
-        info("LogMessageInfoAnnotationProcessor Invoked.");
+        debug("LogMessageInfoAnnotationProcessor Invoked.");
 
         if (!env.processingOver()) {
             Set<? extends Element> elements;
             String elementPackage = null;
             String prevElementPackage = null;
             LogResourceBundle lrb = null;
-
-            // XXX: Should validate that if level is > INFO a cause and action 
-            //      are manditory.
 
             // XXX: The annotation processor should try to detect the
             //      reuse of an existing log message id.
@@ -106,8 +103,8 @@ public class LogMessageInfoAnnotationProcessor extends AbstractProcessor {
                 LogMessageInfo lmi = element.getAnnotation(LogMessageInfo.class);
 
                 if (lmi.pkg() != null && !lmi.pkg().isEmpty()) {
-                    info("LogMessageInfoAnnotationProcessor Invoked.");
-                    info((String)element.getConstantValue() + 
+                    debug("LogMessageInfoAnnotationProcessor Invoked.");
+                    debug((String)element.getConstantValue() + 
                             ": Package overidden by " + lmi.pkg());
                     elementPackage = lmi.pkg();
                 }
@@ -137,7 +134,7 @@ public class LogMessageInfoAnnotationProcessor extends AbstractProcessor {
                             lmi.comment());
                 }
 
-                debug("Processingg: " + (String)element.getConstantValue());
+                debug("Processing: " + (String)element.getConstantValue());
 
                 // We are finsished.   Write the message bundle if needed.
                 if (!it.hasNext()) {
