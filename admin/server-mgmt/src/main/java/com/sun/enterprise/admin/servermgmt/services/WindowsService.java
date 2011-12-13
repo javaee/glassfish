@@ -196,8 +196,8 @@ public class WindowsService extends NonSMFServiceAdapter {
             targetDir.mkdirs(); // just in case...
             if (!targetDir.isDirectory())
                 throw new RuntimeException(Strings.get("noTargetDir", targetDir));
-            targetWin32Exe = new File(targetDir, getServerDirs().getServerName() + "Service.exe");
-            targetXml = new File(targetDir, getServerDirs().getServerName() + "Service.xml");
+            targetWin32Exe = new File(targetDir, info.serviceName + "Service.exe");
+            targetXml = new File(targetDir, info.serviceName + "Service.xml");
         }
         catch (IOException ex) {
             throw new RuntimeException(ex);
@@ -262,9 +262,10 @@ public class WindowsService extends NonSMFServiceAdapter {
         StringBuilder sb = new StringBuilder();
 
         if (user != null) {
-            StringBuilder append = sb.append(" " + begin + "--user" + end);
+            sb.append("  ").append(begin).append("--user").append(end);
             sb.append("  ").append(begin).append(user).append(end);
         }
+
         sb.append("  ").append(begin).append("--passwordfile").append(end);
         sb.append("  ").append(begin).append(info.passwordFile.getPath()).append(end);
         sb.append("  "); // such obsessive attention to detail!!! :-)
@@ -338,9 +339,6 @@ public class WindowsService extends NonSMFServiceAdapter {
         return "  " + STOP_ARG_START + s + STOP_ARG_END + "\n";
     }
 
-    private static boolean ok(String s) {
-        return s != null && s.length() > 0;
-    }
     private static final String SOURCE_WIN32_EXE_FILENAME = "winsw.exe";
     private static final String TARGET_DIR = "bin";
     private static final String TEMPLATE_FILE_NAME = "Domain-service-winsw.xml.template";

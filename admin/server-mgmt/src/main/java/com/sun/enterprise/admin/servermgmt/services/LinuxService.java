@@ -181,7 +181,7 @@ public class LinuxService extends NonSMFServiceAdapter {
         // Yes -- they differ on different platforms!
         // I Know what Sol10, Ubuntu, Debian, SuSE, RH and OEL look like
         // on SuSE the rc?.d dirs are in /init.d/
-        // On RH, OEL they are linked dirs to the real dirs under /etc/rc.d/ 
+        // On RH, OEL they are linked dirs to the real dirs under /etc/rc.d/
         // On Ubuntu they are real dirs in /etc
 
         // try to make this as forgiving as possible.
@@ -294,6 +294,25 @@ public class LinuxService extends NonSMFServiceAdapter {
 
         return deleteLinks();
     }
+
+
+    /*
+     When I tried to remove the service, I got an error message. The exact command and error were:
+
+    [root@wolfrun:~] $ asadmin _delete-service domain1
+    Unable to delete this file: /etc/rc.d/rc0.d/K20GlassFish_domain1.
+     * Please delete it manually, or login with higher privileges, and run the command again.
+    Command _delete-service failed.
+
+Couple of items to note:
+
+    The script (GlassFish_domain1) was not copied in /etc/rc.d/rc0.d. It was copied to /etc/rc.d
+    The script (GlassFish_domain1) was removed despite the error message.
+
+Need some investigation on this issue.
+     */
+
+
 
     private int deleteLinks() {
         trace("Deleting link files...");
