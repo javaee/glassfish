@@ -140,7 +140,7 @@
         }
 
     }
-    function checkSSHPswd(typeId, nodeHostId, psSelectId, ps1Id, setupSshId, setupPswdId, winPsSelectId, winPs1Id, emptyMsg, nodeHostRequiredMsg){
+    function checkSSHPswd(typeId, nodeHostId, psSelectId, ps1Id, setupSshId, setupPswdId, winPsSelectId, winPs1Id){
         if (! guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
 	    return false;
 	}
@@ -149,25 +149,50 @@
             return true;
         }
 
-        var comp = document.getElementById(nodeHostId);
-        if (comp.value=='') {
-            comp.select();
-            comp.focus();
-            return showAlert(nodeHostRequiredMsg);
+        if (!checkRequired(nodeHostId, '#{reqMsg}')){
+            return false;
         }
         if (atype == 'SSH'){
             if ( document.getElementById(psSelectId).value == '2'){
-                return confirmEmptyPswd( ps1Id, emptyMsg);
+                if (!checkRequired(ps1Id, '#{reqMsg}')){
+                    return false;
+                }else{
+                    //ensure don't call setup-ssh'
+                    document.getElementById(setupSshId).checked=false;
+                    return true;
+                }
+            }
+            if ( document.getElementById(psSelectId).value == '3'){
+                //must have pswd alias specified
+                var alcomp = document.getElementById('#{pageSession.pswdAliasId}');
+                if (alcomp.value=='') {
+                    return showAlert('$resource{i18ncs.msg.JS.noPasswordAlias}');
+                }else{
+                    //ensure don't call setup-ssh'
+                    document.getElementById(setupSshId).checked=false;
+                    return true;
+                }
             }
             if ( (document.getElementById(psSelectId).value == '1') &&
                  (document.getElementById(setupSshId).checked ) &&
-                 (document.getElementById(setupPswdId).value == null ) ){
-                return confirmEmptyPswd( setupPswdId, emptyMsg);
-            }
+                 (document.getElementById(setupPswdId).value == '' ) ){
+                    return checkRequired(setupPswdId, '#{reqMsg}');
+                 }
+            return true;
         }
+
         if (atype == 'DCOM'){
             if ( document.getElementById(winPsSelectId).value == '2'){
-                return confirmEmptyPswd( winPs1Id, emptyMsg);
+                //empty password is not allowed.
+                return checkRequired(winPs1Id, '#{reqMsg}');
+            }
+
+            if ( document.getElementById(winPsSelectId).value == '3'){
+                //must have pswd alias specified
+                var aliascomp = document.getElementById('#{pageSession.winPswdAliasId}');
+                if (aliascomp.value=='') {
+                    return showAlert('$resource{i18ncs.msg.JS.noPasswordAlias}');
+                }
             }
         }
         return true;

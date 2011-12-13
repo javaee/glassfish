@@ -44,8 +44,7 @@
     onClick="if (checkSSHPswd('#{pageSession.typeId}','#{pageSession.nodeHostId}',
         '#{pageSession.psSelectId}', '#{pageSession.ps1Id}', 
         '#{pageSession.setupSshId}', '#{pageSession.setupPswdId}',
-        '#{pageSession.winPsSelectId}', '#{pageSession.winPs1Id}', 
-        '$resource{i18ncs.msg.JS.confirmEmptyPswd}' , '$resource{i18ncs.msg.JS.nodeHostRequired}'))
+        '#{pageSession.winPsSelectId}', '#{pageSession.winPs1Id}' ))
     {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;"
 >
     <!command
@@ -104,8 +103,7 @@
     onClick="if (checkSSHPswd('#{pageSession.typeId}', '#{pageSession.nodeHostId}',
         '#{pageSession.psSelectId}', '#{pageSession.ps1Id}',
         '#{pageSession.setupSshId}', '#{pageSession.setupPswdId}',
-        '#{pageSession.winPsSelectId}', '#{pageSession.winPs1Id}',
-        '$resource{i18ncs.msg.JS.confirmEmptyPswd}', '$resource{i18ncs.msg.JS.nodeHostRequired}'))
+        '#{pageSession.winPsSelectId}', '#{pageSession.winPs1Id}'))
     {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;"
 >
 <!command
@@ -158,6 +156,8 @@
                     mapPut(map="#{pageSession.dMap}", key="#{requestScope.dattr}" value="#{requestScope.dval}");
                 }
             }
+            println("======validate-dcom========== #{pageSession.dMap}");
+
             gf.restRequest( endpoint="#{sessionScope.REST_URL}/nodes/validate-dcom" attrs="#{pageSession.dMap}" method="POST" )
         }
         setAttribute(key="attrsList" value={"id", "nodehost", "nodedir", "installdir", "windowsuser", "windowsdomain", "windowspassword", "install" });
@@ -168,6 +168,7 @@
         gfr.prepareNodeCmd();
         mapPut(map="#{pageSession.attrsMap}"  key="force" value="#{pageSession.valueMap['winForce']}");
     }
+    println("================ #{pageSession.attrsMap}");
     gf.restRequest( endpoint="#{sessionScope.REST_URL}/#{requestScope.endpoint}" attrs="#{pageSession.attrsMap}" method="POST" )
     gf.redirect(page="#{request.contextPath}/cluster/node/nodes.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
  />

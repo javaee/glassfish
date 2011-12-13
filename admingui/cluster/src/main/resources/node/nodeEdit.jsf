@@ -48,8 +48,8 @@
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.node.EditPageTitle}"
     guiOnLoad="showSection('#{pageSession.valueMap['type']}', '#{pageSession.sshConnectorSectionId}', '#{pageSession.dcomSectionId}', '#{pageSession.installdirSshId}', '#{pageSession.installdirConfigId}',
                             '#{pageSession.installProp}', '#{pageSession.archProp}');
-               showSshPswdSection('#{pageSession.psSelected}', '#{pageSession.ps1PropId}',  '#{pageSession.pswdAliasId}');
-               showPswdSection('#{pageSession.winPsSelected}', '#{pageSession.winPs1PropId}',  '#{pageSession.winPswdAliasId}'); " >
+               showSshPswdSection('#{pageSession.psSelected}', '#{pageSession.ps1PropId}',  '#{pageSession.pswdAliasPropId}');
+               showPswdSection('#{pageSession.winPsSelected}', '#{pageSession.winPs1PropId}',  '#{pageSession.winPswdAliasPropId}'); " >
 <!define name="content">
 <event>
     <!beforeCreate
