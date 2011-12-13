@@ -38,7 +38,9 @@
  * holder.
  */
 
-package org.glassfish.AnnotationProcessor;
+package org.glassfish.annotation.processing;
+
+import org.glassfish.logging.LogMessageInfo;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -62,7 +64,7 @@ import javax.tools.Diagnostic.Kind.*;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
-@SupportedAnnotationTypes("org.glassfish.AnnotationProcessor.LogMessageInfo")
+@SupportedAnnotationTypes("org.glassfish.logging.LogMessageInfo")
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class LogMessageInfoAnnotationProcessor extends AbstractProcessor {
 
@@ -135,7 +137,7 @@ public class LogMessageInfoAnnotationProcessor extends AbstractProcessor {
                             lmi.comment());
                 }
 
-                debug("Processing: " + (String)element.getConstantValue());
+                debug("Processingg: " + (String)element.getConstantValue());
 
                 // We are finsished.   Write the message bundle if needed.
                 if (!it.hasNext()) {

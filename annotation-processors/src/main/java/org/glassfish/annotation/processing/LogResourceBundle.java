@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.AnnotationProcessor;
+package org.glassfish.annotation.processing;
 
 import java.io.*;
 import java.util.HashMap;
@@ -112,7 +112,8 @@ class LogResourceBundle extends HashMap<String, String> {
         // Noting to store.
         if (isEmpty()) return false;
 
-        out.write(COPYRIGHT);
+        //out.write(COPYRIGHT);
+        out.write(GPLCopyright.getCopyright());
 
         for (String key : keySet()) {
             // Skip comments until needed after writing prop. 

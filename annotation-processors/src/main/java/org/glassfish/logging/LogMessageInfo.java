@@ -38,12 +38,41 @@
  * holder.
  */
 
-package org.glassfish.AnnotationProcessor;
+package org.glassfish.logging;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+/*
+ * LogMessageInfo annotation definition.
+ *
+ * message: The message to log.
+ * comment: A comment which appears above the message in the
+ *          LogMessages.properties file.  Useful for localization.
+ * level:   The log level.  (default: INFO)
+ * cause:   Describes what caused this message to be generated.
+ * action:  Describes what the user/admin can do to resolve the problem.
+ * pkg:     A java package name where the annotation processor will
+ *          store the LogMessages.properties file.  By default the
+ *          package the annotation is used in is used.
+ * publish: Boolean value indicates whether this log message should be
+ *          published in the Error Reference guide. (default: true)
+ *
+ *  Example:
+ *
+ *     @LogMessageInfo(
+ *              message = "This is the log message to be localized.",
+ *              commetn = "This is a comment about the above message.",
+ *              level = "WARNING",
+ *              cause = "This describes the cause of the problem...",
+ *              action = "This describes the action to fix the problem...",
+ *              publish = false)
+ *     private static final String EJB005 = "AS-EJB-00005";
+ *
+ */
+
 
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.SOURCE)
