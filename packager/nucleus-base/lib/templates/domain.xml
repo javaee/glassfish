@@ -231,7 +231,7 @@
             <http default-virtual-server="server" max-connections="250">
               <file-cache enabled="false"></file-cache>
             </http>
-            <ssl classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" ssl3-enabled="false" cert-nickname="s1as"></ssl>
+            <ssl classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" cert-nickname="s1as"></ssl>
           </protocol>
           <protocol name="admin-listener">
             <http default-virtual-server="__asadmin" max-connections="250" encoded-slash-enabled="true" >
@@ -410,7 +410,7 @@
                      <http default-virtual-server="server">
                          <file-cache />
                      </http>
-                     <ssl classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" ssl3-enabled="false" cert-nickname="s1as" />
+                     <ssl classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" cert-nickname="s1as" />
                  </protocol>
                  <protocol name="admin-listener">
                      <http default-virtual-server="__asadmin" max-connections="250">
@@ -421,7 +421,7 @@
                    <http default-virtual-server="__asadmin" encoded-slash-enabled="true">
                      <file-cache></file-cache>
                    </http>
-                   <ssl client-auth="want" ssl3-enabled="false" classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" cert-nickname="glassfish-instance"></ssl>
+                   <ssl client-auth="want" classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" cert-nickname="glassfish-instance"></ssl>
                  </protocol>
                  <protocol name="admin-http-redirect">
                    <http-redirect secure="true"></http-redirect>

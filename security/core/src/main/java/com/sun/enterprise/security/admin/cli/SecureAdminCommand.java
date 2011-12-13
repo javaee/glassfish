@@ -383,7 +383,6 @@ public abstract class SecureAdminCommand implements AdminCommand {
         private static final String ASADMIN_VIRTUAL_SERVER_NAME = "__asadmin";
 
         private static final String CLIENT_AUTH_VALUE = "want";
-        private static final String SSL3_ENABLED_VALUE = "false";
         private static final String CLASSNAME_VALUE = "com.sun.enterprise.security.ssl.GlassfishSSLImpl";
         private static final String AUTH_LAYER_NAME = "HttpServlet";
         private static final String PROVIDER_ID_VALUE = "GFConsoleAuthModule";
@@ -426,7 +425,6 @@ public abstract class SecureAdminCommand implements AdminCommand {
                 ssl_w = t.enroll(ssl);
             }
             ssl_w.setClientAuth(CLIENT_AUTH_VALUE);
-            ssl_w.setSsl3Enabled(SSL3_ENABLED_VALUE);
             ssl_w.setClassname(CLASSNAME_VALUE);
             ssl_w.setCertNickname(certNickname);
             return ssl_w;
