@@ -3147,6 +3147,9 @@ public class Request
         } else {
             contentType = contentType.trim();
         }
+        if ("multipart/form-data".equals(contentType)) {
+            getMultipart();
+        }
         if (!("application/x-www-form-urlencoded".equals(contentType))) {
             return;
         }
@@ -4051,7 +4054,7 @@ public class Request
 
     private Multipart getMultipart() {
         if (multipart == null) {
-            multipart = new Multipart(this,
+            multipart = new Multipart(this, coyoteRequest.getParameters(),
                     wrapper.getMultipartLocation(),
                     wrapper.getMultipartMaxFileSize(),
                     wrapper.getMultipartMaxRequestSize(),

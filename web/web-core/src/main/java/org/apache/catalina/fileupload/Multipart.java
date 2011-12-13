@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,9 +58,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import com.sun.grizzly.util.http.Parameters;
+
+
 public class Multipart {
 
     private final String location;
+    private final Parameters parameters;
     private final long maxFileSize;
     private final long maxRequestSize;
     private final int fileSizeThreshold;
@@ -71,9 +75,11 @@ public class Multipart {
     private ArrayList<Part> parts;
     private List<Part> unmodifiableParts;
 
-    public Multipart(HttpServletRequest request, String location,
-                long maxFileSize, long maxRequestSize, int fileSizeThreshold) {
+    public Multipart(HttpServletRequest request, Parameters parameters,
+                String location, long maxFileSize, long maxRequestSize,
+                int fileSizeThreshold) {
         this.request = request;
+        this.parameters = parameters;
         this.location = location;
         this.maxFileSize = maxFileSize;
         this.maxRequestSize = maxRequestSize;
@@ -142,6 +148,12 @@ public class Multipart {
                                          requestItem.getName());
                 Streams.copy(requestItem.openStream(),
                              partItem.getOutputStream(), true);
+                String fileName = partItem.getFileName();
+                if (fileName == null || fileName.length() == 0) {
+                    // Add part name and value as a parameter
+                    parameters.addParameter(partItem.getName(),
+                                            partItem.getString());
+                }
                 parts.add((Part)partItem);
             }
         } catch (SizeException ex) {
