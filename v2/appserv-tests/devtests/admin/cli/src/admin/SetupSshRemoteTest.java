@@ -62,6 +62,7 @@ public class SetupSshRemoteTest extends SshBaseDevTest {
 
     private static final String SSH_KEY = "resources/ssh/id_dsa";
     private static final String SSH_KEY_PASSPHRASE = "Hello World!";
+    private static final String SSH_ALIAS_PASS = "ssh-pass";
 
     private static enum PasswordValue { EMPTY, RIGHT, WRONG };
 
@@ -163,6 +164,7 @@ public class SetupSshRemoteTest extends SshBaseDevTest {
 
         if(!failed) {
             testOptions();
+            testPasswordAlias();
             testKeyGeneration();
             testEncryptedKey();
 
@@ -214,6 +216,22 @@ public class SetupSshRemoteTest extends SshBaseDevTest {
         //invalid public key file
         report("_setup-ssh-invalid-public-keyfile-1", !asadmin("_setup-ssh", "--sshpublickeyfile", "/tmp/foo", "--generatekey", remoteHost));
 
+    }
+
+    private void testPasswordAlias() {
+        addPassword(sshPass, PasswordType.ALIAS_PASS);
+        asadmin("create-password-alias", SSH_ALIAS_PASS);
+        removePasswords("ALIAS");
+
+        addPassword("${ALIAS=foo}", PasswordType.SSH_PASS);
+        report("_setup-ssh-invalid-alias", !asadmin("_setup-ssh", "--generatekey", remoteHost));
+
+        addPassword("${ALIAS=" + SSH_ALIAS_PASS + "}", PasswordType.SSH_PASS);
+        report("_setup-ssh-with-alias", asadmin("_setup-ssh", "--generatekey", remoteHost));
+        deleteDirectory(new File(SSH_DIRECTORY));
+        removePasswords("SSH");
+
+        asadmin("delete-password-alias", SSH_ALIAS_PASS);
     }
 
     private void testKeyGeneration() {
