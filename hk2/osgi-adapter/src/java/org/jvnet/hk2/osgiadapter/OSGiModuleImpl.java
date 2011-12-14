@@ -386,6 +386,17 @@ public class OSGiModuleImpl implements Module {
             parser.parse(d.createScanner(),holder);
     }
 
+    /**
+     * This method is used as the parent loader of the class loader that we return in {@link #getClassLoader}
+     */
+    private ClassLoader getParentLoader() {
+        return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+            public ClassLoader run() {
+                return Bundle.class.getClassLoader();
+            }
+        });
+    }
+
     public ClassLoader getClassLoader() {
         /*
          * This is a delegating class loader.
@@ -398,7 +409,7 @@ public class OSGiModuleImpl implements Module {
          * is enforced even for classes and resources available in the system/boot
          * class loader.
          */
-        return new ClassLoader(Bundle.class.getClassLoader()) {
+        return new ClassLoader(getParentLoader()) {
 
             @Override
             protected synchronized Class<?> loadClass(final String name, boolean resolve) throws ClassNotFoundException {
