@@ -181,7 +181,7 @@ public class LinuxService extends NonSMFServiceAdapter {
         // Yes -- they differ on different platforms!
         // I Know what Sol10, Ubuntu, Debian, SuSE, RH and OEL look like
         // on SuSE the rc?.d dirs are in /init.d/
-        // On RH, OEL they are linked dirs to the real dirs under /etc/rc.d/
+        // On RH, OEL they are linked dirs to the real dirs under /etc/rc.d/ 
         // On Ubuntu they are real dirs in /etc
 
         // try to make this as forgiving as possible.
@@ -295,25 +295,6 @@ public class LinuxService extends NonSMFServiceAdapter {
         return deleteLinks();
     }
 
-
-    /*
-     When I tried to remove the service, I got an error message. The exact command and error were:
-
-    [root@wolfrun:~] $ asadmin _delete-service domain1
-    Unable to delete this file: /etc/rc.d/rc0.d/K20GlassFish_domain1.
-     * Please delete it manually, or login with higher privileges, and run the command again.
-    Command _delete-service failed.
-
-Couple of items to note:
-
-    The script (GlassFish_domain1) was not copied in /etc/rc.d/rc0.d. It was copied to /etc/rc.d
-    The script (GlassFish_domain1) was removed despite the error message.
-
-Need some investigation on this issue.
-     */
-
-
-
     private int deleteLinks() {
         trace("Deleting link files...");
         List<File> deathRow = new LinkedList<File>();
@@ -338,14 +319,6 @@ Need some investigation on this issue.
             }
         }
 
-        // YES -- Error handling properly is ~~ 95% of the code in here!
-        for (File f : deathRow) {
-            if (!f.canWrite()) {
-                throw new RuntimeException(Strings.get("cant_delete", f));
-            }
-        }
-
-        // OK we shook out all the errors possible.  Now we do the irreversible stuff
         for (File f : deathRow) {
             if (info.dryRun) {
                 dryRun("Would have deleted: " + f);
@@ -372,8 +345,6 @@ Need some investigation on this issue.
 
     // This is what happens when you hate copy&paste code duplication.  Lots of methods!!
     private void createLinks(String[] cmds, String linkname, List<File> dirs) {
-        String path = target.getAbsolutePath();
-
         for (File dir : dirs) {
             File link = new File(dir, linkname);
             cmds[3] = link.getAbsolutePath();
@@ -404,15 +375,15 @@ Need some investigation on this issue.
 
     private void tooManyLinks(File[] matches) {
         // this is complicated enough to turn it into a method
-        String theMatches = "";
+        StringBuffer theMatches = new StringBuffer();
         boolean first = true;
         for (File f : matches) {
             if (first)
                 first = false;
             else
-                theMatches += "\n";
+                theMatches.append("\n");
 
-            theMatches += f.getAbsolutePath();
+            theMatches.append(f.getAbsolutePath());
         }
         throw new RuntimeException(Strings.get("too_many_links", theMatches));
     }
