@@ -96,6 +96,14 @@ public class Multipart {
         }
     }
 
+    public void init() {
+        try {
+            initParts();
+        } catch (Exception ex) {
+            throw new RuntimeException("Error in multipart initialization", ex);
+        }
+    }
+
     public String getLocation() {
         return location;
     }

@@ -3148,7 +3148,7 @@ public class Request
             contentType = contentType.trim();
         }
         if ("multipart/form-data".equals(contentType)) {
-            getMultipart();
+            getMultipart().init();
         }
         if (!("application/x-www-form-urlencoded".equals(contentType))) {
             return;
