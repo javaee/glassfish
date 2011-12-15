@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,12 +42,13 @@ package com.sun.enterprise.admin.util;
 
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 
+import com.sun.enterprise.config.serverbeans.Config;
 import java.io.File;
 
 import com.sun.logging.LogDomains;
+import java.util.logging.Level;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
 import org.glassfish.internal.api.Target;
@@ -131,6 +132,20 @@ public class ClusterOperationUtil {
                     // Do not replicate commands to instances that have never been started.
                     continue;
                 }
+                Config scfg = svr.getConfig();
+                if (!Boolean.valueOf(scfg.getDynamicReconfigurationEnabled())) {
+                    // Do not replicate to servers for which dynamic configuration is disabled
+                    ActionReport aReport = context.getActionReport().addSubActionsReport();
+                    aReport.setActionExitCode(ActionReport.ExitCode.WARNING);
+                    aReport.setMessage(strings.getLocalString("clusterutil.dynrecfgdisabled",
+                            "WARNING: The command {0} was not replicated to instance {1} because the " +
+                                    "dynamic-reconfiguration-enabled flag is set to false for config {2}", 
+                            new Object[] {commandName, svr.getName(), scfg.getName()}));                  
+                    instanceState.setState(svr.getName(), InstanceState.StateType.RESTART_REQUIRED, false);
+                    instanceState.addFailedCommandToInstance(svr.getName(), commandName, parameters);
+                    returnValue = ActionReport.ExitCode.WARNING;
+                    continue;
+                }
                 String host = svr.getAdminHost();
                 int port = rich.getAdminPort(svr);
                 ActionReport aReport = context.getActionReport().addSubActionsReport();
@@ -160,9 +175,11 @@ public class ClusterOperationUtil {
             ActionReport.ExitCode finalResult = FailurePolicy.applyFailurePolicy(failPolicy,
                     ActionReport.ExitCode.FAILURE);
             aReport.setActionExitCode(finalResult);
-            aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.replicationfailed",
-                    "Error during command replication : {0}", ex.getMessage()));
-            context.getLogger().severe("Error during command replication; Reason : " +  ex.getLocalizedMessage());
+            aReport.setMessage(strings.getLocalString("clusterutil.replicationfailed",
+                    "Error during command replication: {0}", ex.getLocalizedMessage()));
+            context.getLogger().log(Level.SEVERE, strings.getLocalString("clusterutil.replicationfailed",
+                    "Error during command replication: {0}", 
+                    ex.getLocalizedMessage()));
             if(returnValue ==ActionReport.ExitCode.SUCCESS)
                 returnValue = finalResult;
         }
@@ -264,26 +281,8 @@ public class ClusterOperationUtil {
             if(CommandTarget.DAS.isValid(habitat, t) ||
                     CommandTarget.DOMAIN.isValid(habitat, t))
                 continue;
-            //If the target is a cluster and dynamic reconfig enabled is false, no replication
-            if(targetService.isCluster(t)) {
-                String dynRecfg = targetService.getClusterConfig(t).getDynamicReconfigurationEnabled();
-                if(Boolean.FALSE.equals(Boolean.valueOf(dynRecfg))) {
-                    ActionReport aReport = context.getActionReport().addSubActionsReport();
-                    aReport.setActionExitCode(ActionReport.ExitCode.WARNING);
-                    aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.dynrecfgdisabled",
-                            "WARNING : The command was not replicated to all cluster instances because the" +
-                                    " dynamic-reconfig-enabled flag is set to false for cluster {0}", t));
-                    InstanceStateService instanceState = habitat.getComponent(InstanceStateService.class);
-                    for(Server s : targetService.getInstances(t)) {
-                        instanceState.setState(s.getName(), InstanceState.StateType.RESTART_REQUIRED, false);
-                        instanceState.addFailedCommandToInstance(s.getName(), commandName, parameters);
-                    }
-                    result = ActionReport.ExitCode.WARNING;
-                    continue;
-                }
-            }
             parameters.set("target", t);
-            ActionReport.ExitCode returnValue = ClusterOperationUtil.replicateCommand(commandName,
+            ActionReport.ExitCode returnValue = replicateCommand(commandName,
                     failPolicy, offlinePolicy, targetService.getInstances(t), context, parameters, habitat,
                     intermediateDownloadDir);
             if(!returnValue.equals(ActionReport.ExitCode.SUCCESS)) {
