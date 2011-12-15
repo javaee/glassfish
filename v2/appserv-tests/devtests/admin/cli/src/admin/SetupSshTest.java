@@ -223,7 +223,6 @@ public class SetupSshTest extends SshBaseDevTest {
         addPassword(sshPass, PasswordType.ALIAS_PASS);
         asadmin("create-password-alias", SSH_ALIAS_PASS);
         removePasswords("ALIAS");
-        asadmin("stop-domain");
 
         addPassword("${ALIAS=foo}", PasswordType.SSH_PASS);
         report("setup-ssh-invalid-alias", !asadmin("setup-ssh", "--generatekey", remoteHost));
@@ -234,6 +233,7 @@ public class SetupSshTest extends SshBaseDevTest {
         removePasswords("SSH");
 
         asadmin("delete-password-alias", SSH_ALIAS_PASS);
+        asadmin("stop-domain");
     }
 
     private void testKeyGeneration() {
