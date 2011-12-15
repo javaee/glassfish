@@ -62,6 +62,9 @@ public class ServletTest extends HttpServlet {
         PrintWriter out = response.getWriter();
         response.setContentType("text/html");
 
+        // Do getParameter first, to test if it works if getParts not called.
+        out.write("getParameter(\"xyz\"): " + request.getParameter("xyz"));
+        out.write("\n\n");
         for (Part p: request.getParts()) {
 
             out.write("Part name: " + p.getName()+ "\n");

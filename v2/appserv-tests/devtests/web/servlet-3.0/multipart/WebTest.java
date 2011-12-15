@@ -101,6 +101,13 @@ public class WebTest {
         while ((c = is.read()) != -1) {
             ba.write(c);
         }
+        ba.write("\r\n--AaB03x\r\n".getBytes());
+
+        // Write header for the third part, this is has no file name
+        ba.write("Content-Disposition: form-data; name=\"xyz\"\r\n".getBytes());
+        ba.write("Content-Type: text/plain\r\n\r\n".getBytes());
+        ba.write("1234567abcdefg".getBytes());
+
         // Write boundary end
         ba.write("\r\n--AaB03x--\r\n".getBytes());
         byte[] data = ba.toByteArray();
@@ -110,7 +117,7 @@ public class WebTest {
         header.append("POST " + contextPath + " HTTP/1.1\r\n");
         header.append("Host: localhost\r\n");
         header.append("Connection: close\r\n");
-        header.append("Content-Type: multipart/form-data, boundary=AaB03x\r\n");
+        header.append("Content-Type: multipart/form-data; boundary=AaB03x\r\n");
         header.append("Content-Length: " + data.length + "\r\n\r\n");
 
         // Now the actual request
@@ -135,7 +142,11 @@ public class WebTest {
             String line = null;
             while ((line = bis.readLine()) != null) {
                 System.out.println(i++ + ": " + line);
-                if (line.startsWith("Part name:")) {
+                if (line.startsWith("getParameter")) {
+                    partCount++;
+                    expectedCount++;
+                    failCount += check(partCount, 0, line);
+                } else if (line.startsWith("Part name:")) {
                     partCount++;
                     expectedCount++;
                     failCount += check(partCount, 0, line);
@@ -150,8 +161,8 @@ public class WebTest {
                     failCount += check(partCount, 3, line);
                 }
             }
-            if (expectedCount != 8 || failCount > 0) {
-                throw new Exception("Wrong expected count");
+            if (expectedCount != 13 || failCount > 0) {
+                throw new Exception("Wrong expected count or Contains invalid values");
             }
         } finally {
             try {
@@ -186,9 +197,12 @@ public class WebTest {
    }
 
    static String[][] expected = {
+       {"1234567abcdefg"},
        {"myFile", "36", "text/plain", "content-disposition content-type" },
        {"myFile2", "4134", "application/x-java-archive", 
-            "content-disposition content-type" }};
+            "content-disposition content-type" },
+       {"xyz", "14", "text/plain", "content-disposition content-type"}
+   };
 
    private static int check(int x, int y, String line) {
        if (line.contains(expected[x][y]))
