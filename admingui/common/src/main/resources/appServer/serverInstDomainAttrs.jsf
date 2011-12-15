@@ -77,13 +77,8 @@
                     onClick="submitAndDisable(this, '$resource{i18n.button.Processing}'); return false;" >
                 <!command
                     gf.restRequest(endpoint="#{pageSession.selfUrl}" attrs="#{pageSession.valueMap}" method="POST");
-
-                    if(!#{pageSession.loadConsoleOnStartup}){
-                        //will be null if checkbox is unchecked.
-                        setPageSessionAttribute(key="loadConsoleOnStartup" value="");
-                    }
                     setAttribute(key="found" value="false");
-//                    if('! #{pageSession.loadConsoleOnStartup}=#{pageSession.origLoadConsoleOnStartup}'){
+                    if("!(#{pageSession.loadConsoleOnStartup}=#{pageSession.origLoadConsoleOnStartup})"){
                         foreach (var="oneProp" list="#{pageSession.loadConsolePropList}") {
                             if (#{requestScope.oneProp.name}=adminConsoleStartup){
                                 setAttribute(key="found" value="true");
@@ -98,7 +93,7 @@
                         }
                         javaToJSON(obj="#{pageSession.loadConsolePropList}" json="#{requestScope.tmpJSON}");
                         gf.restRequest(endpoint="#{pageSession.loadConsolePropertyEndpoint}", method="POST", data="#{requestScope.tmpJSON}");
-//                    }
+                    }
                     prepareSuccessfulMsg();
                     gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
 
@@ -113,10 +108,10 @@
         
         <sun:property id="loadConsoleOnStartupProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.loadOnStartup}" helpText="$resource{i18nc.domain.loadOnStartupHelp}">
             <sun:dropDown id="loadConsoleOnStartup" selected="#{pageSession.loadConsoleOnStartup}"
-                      values={"","DEFAULT","OFF","LOW","HIGH"} labels={"", "$resource{i18nc.domain.loadOnStartupDefault}", "$resource{i18nc.domain.loadOnStartupOff}", "$resource{i18nc.domain.loadOnStartupLow}", "$resource{i18nc.domain.loadOnStartupHigh}"}  >
+                      values={"DEFAULT","OFF","LOW","HIGH"} labels={"$resource{i18nc.domain.loadOnStartupDefault}", "$resource{i18nc.domain.loadOnStartupOff}", "$resource{i18nc.domain.loadOnStartupLow}", "$resource{i18nc.domain.loadOnStartupHigh}"}  >
                 <!beforeCreate
-                    setPageSessionAttribute(key="loadConsoleOnStartup" value="");
-                    setPageSessionAttribute(key="origLoadConsoleOnStartup" value="");
+                    setPageSessionAttribute(key="loadConsoleOnStartup" value="DEFAULT");
+                    setPageSessionAttribute(key="origLoadConsoleOnStartup" value="DEFAULT");
                     foreach (var="oneProp" list="#{pageSession.loadConsolePropList}") {
                         if (#{requestScope.oneProp.name}=adminConsoleStartup){
                             setPageSessionAttribute(key="loadConsoleOnStartup" value="#{requestScope.oneProp.value}");
