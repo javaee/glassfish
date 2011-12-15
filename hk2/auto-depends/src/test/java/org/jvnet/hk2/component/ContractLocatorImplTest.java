@@ -87,11 +87,13 @@ public class ContractLocatorImplTest {
         Simple simple = EasyMock.createMock(Simple.class);
         Inhabitant<Simple> provider = EasyMock.createMock(Inhabitant.class);
         EasyMock.expect(provider.get()).andReturn(simple).atLeastOnce();
+        EasyMock.expect(provider.getByType(Simple.class)).andReturn(simple).atLeastOnce();
         EasyMock.expect(provider.metadata()).andReturn(new MultiMap<String, String>()).atLeastOnce();
         EasyMock.expect(mock.<Simple>getProvider(Simple.class, null)).andReturn(provider).atLeastOnce();
         OneSimple oneSimple = new OneSimple();
         Inhabitant<Simple> oneProvider = EasyMock.createMock(Inhabitant.class);
         EasyMock.expect(oneProvider.get()).andReturn(oneSimple).atLeastOnce();
+        EasyMock.expect(oneProvider.getByType(Simple.class)).andReturn(oneSimple).atLeastOnce();
 
         EasyMock.expect(mock.<Simple>getProvider(Simple.class, "one")).andReturn(oneProvider).atLeastOnce();
         EasyMock.replay(mock, provider, oneProvider);
@@ -119,6 +121,7 @@ public class ContractLocatorImplTest {
         Inhabitant<Simple> provider = EasyMock.createMock(Inhabitant.class);
         EasyMock.expect(provider.metadata()).andReturn(new MultiMap<String, String>()).atLeastOnce();
         EasyMock.expect(provider.get()).andReturn(simple).times(1);
+        EasyMock.expect(provider.getByType(Simple.class)).andReturn(simple).times(1);
         EasyMock.expect(mock.<Simple>getProvider(Simple.class, null)).andReturn(provider).times(1);
         EasyMock.replay(mock, provider);
 
@@ -138,6 +141,42 @@ public class ContractLocatorImplTest {
 //        logHandler.assertMessage(0, Level.WARNING, "name and scope are currently only appropriate for byContract usage");
 
         EasyMock.verify(mock);
+    }
+
+    @Test
+    public void getByType() {
+        SimpleServiceLocator mock = EasyMock.createNiceMock(SimpleServiceLocator.class);
+        Simple simple = EasyMock.createMock(Simple.class);
+        Inhabitant<Simple> provider = EasyMock.createMock(Inhabitant.class);
+        EasyMock.expect(provider.metadata()).andReturn(new MultiMap<String, String>()).atLeastOnce();
+        EasyMock.expect(provider.getByType(Simple.class)).andReturn(simple).times(1);
+        EasyMock.expect(mock.<Simple>getProvider(Simple.class, null)).andReturn(provider).times(1);
+        EasyMock.replay(mock, provider);
+
+        ContractLocatorImpl<Simple> locator = new ContractLocatorImpl<Simple>(mock, Simple.class, false);
+
+        assertSame(simple, locator.getByType(Simple.class));
+
+        EasyMock.verify(mock);
+        EasyMock.verify(provider);
+    }
+
+    @Test
+    public void getByNullType() {
+        SimpleServiceLocator mock = EasyMock.createNiceMock(SimpleServiceLocator.class);
+        Simple simple = EasyMock.createMock(Simple.class);
+        Inhabitant<Simple> provider = EasyMock.createMock(Inhabitant.class);
+        EasyMock.expect(provider.metadata()).andReturn(new MultiMap<String, String>()).atLeastOnce();
+        EasyMock.expect(provider.get()).andReturn(simple).times(1);
+        EasyMock.expect(mock.<Simple>getProvider(Simple.class, null)).andReturn(provider).times(1);
+        EasyMock.replay(mock, provider);
+
+        ContractLocatorImpl<Simple> locator = new ContractLocatorImpl<Simple>(mock, Simple.class, false);
+
+        assertSame(simple, locator.getByType(null));
+
+        EasyMock.verify(mock);
+        EasyMock.verify(provider);
     }
 
     @Test

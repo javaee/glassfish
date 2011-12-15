@@ -131,10 +131,17 @@ public class ContractLocatorImpl<T> implements ContractLocator<T> {
     @Override
     public T get() {
         Provider<T> provider = getProvider();
-        if (provider!=null) {
-            return provider.get();
-        }
-        return null;
+
+        return provider == null ? null : provider.get();
+    }
+
+    @Override
+    public <U> U getByType(Class<U> type) {
+        Provider<T> provider = getProvider();
+
+        return provider == null ? null :
+                (U) (type == null ? provider.get() :
+                        provider.getByType(org.jvnet.tiger_types.Types.erasure(type)));
     }
 
     @Override

@@ -39,7 +39,6 @@
  */
 package org.jvnet.hk2.test.runlevel;
 
-import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
 
@@ -47,6 +46,7 @@ import org.jvnet.hk2.annotations.Service;
  * some service directly annotated with @RunLevel annotation.
  * @author Jerome Dochez
  */
-@Contract
-public interface SomeServerService {
+@RunLevel(10)
+@Service
+public class SomeServerServiceImpl implements SomeServerService{
 }

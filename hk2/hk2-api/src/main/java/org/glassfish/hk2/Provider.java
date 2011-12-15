@@ -77,6 +77,23 @@ public interface Provider<T> {
     T get() throws ComponentException;
 
     /**
+     * Obtain a reference to the associated component/service.
+     * The given type may be used by the provider to obtain
+     * and return a proxy rather than the actual component.
+     *
+     * @param type  the required type of the returned object
+     *
+     * @return the component or a suitable proxy of the given type
+     *
+     * @throws ClassCastException if the component is not an instance of
+     *         the given type
+     *
+     * @throws ComponentException if this provider failed to get or
+     *         create an instance of the component
+     */
+    <U> U getByType(Class<U> type);
+
+    /**
      * The class type of the implementation. it is responsible also
      * for determining how (i.e., which loader) to use.
      * 

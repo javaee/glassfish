@@ -56,7 +56,7 @@ public class NonRunLevelWithRunLevelDepService implements Simple {
 
   @Override
   public String get() {
-    return null;
+    return ss.toString();
   }
   
 }

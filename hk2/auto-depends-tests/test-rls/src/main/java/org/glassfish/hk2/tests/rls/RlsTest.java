@@ -49,6 +49,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.glassfish.hk2.tests.rls.model.ServiceOtherToYImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
@@ -129,7 +130,7 @@ public class RlsTest implements ModuleStartup {
         2, ServiceBaseX.postConstructCount);
     assertNotNull(ServiceBaseX.y);
     assertNotNull(ServiceBaseX.other);
-    assertSame(ServiceBaseX.y, ServiceBaseX.other.y);
+    assertSame(ServiceBaseX.y, ServiceBaseX.other.getY());
   }
 
   private static void verifyServiceDerivedX() {
@@ -142,16 +143,16 @@ public class RlsTest implements ModuleStartup {
 
   private static void verifyServiceY() {
     assertEquals("ctor count", 
-        1, ServiceOtherToY.ctorCount);
+        1, ServiceOtherToYImpl.ctorCount);
     assertEquals("postConstruct count", 
-        1, ServiceOtherToY.postConstructCount);
-    assertNotNull("other.y", ServiceOtherToY.y);
-    assertNotNull("other.allY", ServiceOtherToY.allY);
-    assertEquals("other.allY count", 3, ServiceOtherToY.allY.length);
+        1, ServiceOtherToYImpl.postConstructCount);
+    assertNotNull("other.y", ServiceOtherToYImpl.y);
+    assertNotNull("other.allY", ServiceOtherToYImpl.allY);
+    assertEquals("other.allY count", 3, ServiceOtherToYImpl.allY.length);
     Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(ContractY.class.getName());
     assertEquals("ContractY service count: " + coll, 3, coll.size());
     mustBeActive(coll, true);
-    assertNotNull("other.zHolder", ServiceOtherToY.zHolder);
+    assertNotNull("other.zHolder", ServiceOtherToYImpl.zHolder);
   }
 
   private static void verifyServiceZ() {
@@ -168,7 +169,7 @@ public class RlsTest implements ModuleStartup {
     assertEquals("postConstruct count", 
         1, ServiceZ.postConstructCount);
 
-    assertSame("other.zHolder", zHolder.get(), ServiceOtherToY.zHolder.get());
+    assertSame("other.zHolder", zHolder.get(), ServiceOtherToYImpl.zHolder.get());
   }
   
   private static void mustBeActive(Collection<Inhabitant<?>> coll, boolean expectActive) {

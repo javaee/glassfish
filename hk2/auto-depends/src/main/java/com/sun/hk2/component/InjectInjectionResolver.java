@@ -116,7 +116,7 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
                                         Class<?> clazz = classLoader.loadClass(parameterizedType);
                                         ContractLocatorImpl<V> contractLocator = new ContractLocatorImpl<V>(habitat, clazz, habitat.isContract(clazz));
                                         populateContractLocator(contractLocator, target, inject);
-                                        result = contractLocator.get();
+                                        result = (V) contractLocator.getByType(org.jvnet.tiger_types.Types.erasure(genericType));
                                     } catch(ClassNotFoundException e) {
                                         Logger.getAnonymousLogger().warning("Cannot load class " + parameterizedType);
                                         return null;
@@ -126,7 +126,7 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
                         } else {
                             ContractLocatorImpl<V> contractLocator = new ContractLocatorImpl<V>(habitat, genericType, habitat.isContractExt(genericType));
                             populateContractLocator(contractLocator, target, inject);
-                            result = contractLocator.get();
+                            result = (V) contractLocator.getByType(org.jvnet.tiger_types.Types.erasure(genericType));
                         }
                     }
                 }

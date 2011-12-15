@@ -41,6 +41,7 @@ package com.sun.hk2.component;
 
 import static org.junit.Assert.*;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Inject;
@@ -81,6 +82,27 @@ public class RunLevelInhabitantTest {
     assertEquals(i.metadata(), rli.metadata());
   }
 
+    @Ignore
+    @Test
+    public void testSufficientLevelByType() {
+      RunLevelState state = new TestRunLevelState(5, 10);
+
+      LazyInhabitant<?> i = new LazyInhabitant(h, clh, getClass().getName(), md);
+      assertFalse(i.isActive());
+      RunLevelInhabitant rli = new RunLevelInhabitant(i, 5, state);
+      assertEquals(getClass().getName(), rli.typeName());
+      assertFalse(rli.isActive());
+      assertNotNull(rli.get());
+      assertSame(rli.getByType(getClass()), rli.getByType(getClass()));
+      assertTrue(rli.isActive());
+      assertTrue(i.isActive());
+      assertEquals(getClass(), rli.type());
+      rli.release();
+      assertFalse(rli.isActive());
+      assertFalse(i.isActive());
+      assertEquals(i.metadata(), rli.metadata());
+    }
+
   @Test
   public void testInsufficientLevel() {
     RunLevelState state = new TestRunLevelState(null, 10);
@@ -106,4 +128,26 @@ public class RunLevelInhabitantTest {
     assertEquals(i.metadata(), rli.metadata());
   }
   
+    @Ignore
+    @Test
+    public void testInsufficientLevelByType() {
+      RunLevelState state = new TestRunLevelState(null, 10);
+
+      LazyInhabitant<?> i = new LazyInhabitant(h, clh, getClass().getName(), md);
+      assertFalse(i.isActive());
+      RunLevelInhabitant rli = new RunLevelInhabitant(i, 15, state);
+      assertEquals(getClass().getName(), rli.typeName());
+
+      assertFalse(rli.isActive());
+      assertNull(rli.getByType(getClass()));
+      assertFalse(rli.isActive());
+      assertFalse(i.isActive());
+      assertSame(i.type(), rli.type());
+      assertFalse(i.isActive());
+      // should have no affect
+      rli.release();
+      assertFalse(rli.isActive());
+      assertFalse(i.isActive());
+      assertEquals(i.metadata(), rli.metadata());
+    }
 }

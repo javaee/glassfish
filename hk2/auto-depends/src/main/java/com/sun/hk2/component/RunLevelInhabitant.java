@@ -46,6 +46,10 @@ import org.jvnet.hk2.component.InhabitantListener;
 import org.jvnet.hk2.component.RunLevelException;
 import org.jvnet.hk2.component.RunLevelState;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 /**
  * An inhabitant that prevents activation unless the sufficient RunLevelState
  * has been scheduled.
@@ -79,7 +83,7 @@ public class RunLevelInhabitant<T, V> extends EventPublishingInhabitant<T> {
     this.state = state;
   }
 
-  /**
+  /*
    * FOR INTERNAL USE ONLY
    */
   public static void enable(boolean enable) {
@@ -106,35 +110,128 @@ public class RunLevelInhabitant<T, V> extends EventPublishingInhabitant<T> {
     return super.get(onBehalfOf);
   }
 
-  /**
-   * Verifies that the state of the RunLevelService is appropriate
-   * for this instance activation.
-   * 
-   * @throws ComponentException if not in an appropriate state
-   */
-  protected void verifyState() throws ComponentException {
-    if (!enabled) {
-      return;
-    }
-    
-    if (!isActive()) {
-      Integer planned = state.getPlannedRunLevel();
-      planned = (null == planned) ? RunLevel.KERNEL_RUNLEVEL : planned;
-      Integer current = state.getCurrentRunLevel();
-      current = (null == current) ? RunLevel.KERNEL_RUNLEVEL : current;
-      if (null == planned || runLevel > planned || runLevel > current + 1) {
-          // only toss exception for strict mode
-          RunLevel rl = type().getAnnotation(RunLevel.class);
-          if (null == rl || rl.strict()) {
-              throw new RunLevelException("unable to activate " + this + "; minimum expected RunLevel is: " + runLevel +
-                "; planned is: " + planned + "; current is: " + current);
-          }
-      }
-    }
-  }
+    @Override
+    public <U> U getByType(Class<U> type) {
+        if (isStrict()) {
+            if (type.isInterface()) {
+                // try to activate to ensure a predictable activation order between dependant services
+                attemptToActivate();
 
-  public RunLevelState<?> getState() {
-    return state;
-  }
-  
+                return (U) Proxy.newProxyInstance(type.getClassLoader(), new Class[]{type},
+                        new InvocationHandler() {
+                            @Override
+                            public Object invoke(Object proxy, Method method, Object[] objects)
+                                    throws Throwable {
+
+                                if (isActive()) {
+                                    Object o = get();
+                                    return o == null ? null : method.invoke(o, objects);
+                                }
+                                throw new RunLevelException(getFailedActivationMessage(
+                                        getPlannedRunLevel(), getCurrentRunLevel()));
+                            }
+                        });
+            }
+
+            throw new RunLevelException("can't create proxy of type "
+                    + type + " for " + this );
+        }
+        return super.getByType(type);
+    }
+
+    /**
+     * Verifies that the state of the RunLevelService is appropriate for this
+     * instance activation.
+     *
+     * @throws ComponentException if not in an appropriate state for activation
+     */
+    protected void verifyState() throws ComponentException {
+        if (enabled && !isActive()){
+            Integer planned = getPlannedRunLevel();
+            Integer current = getCurrentRunLevel();
+
+            if (!isValidActiveState(planned, current)) {
+                throw new RunLevelException(getFailedActivationMessage(planned, current));
+            }
+        }
+    }
+
+    /**
+     * Attempt to activate this instance.  First check that the state of
+     * the RunLevelService is appropriate for this instance activation.
+     */
+    private void attemptToActivate() {
+        if (isValidActiveState(getPlannedRunLevel(), getCurrentRunLevel())) {
+            get();
+        }
+    }
+
+    /**
+     * Determine whether or not the state of the RunLevelService is appropriate
+     * for this instance activation with the given planned/current run levels.
+     *
+     * @param planned  the planned run level
+     * @param current  the current run level
+     *
+     * @return true if the state of the RunLevelService is appropriate for
+     *         this instance activation
+     */
+    private boolean isValidActiveState(Integer planned, Integer current) {
+        return !isStrict() ||
+                ((runLevel <= planned) && (runLevel <= (current + 1)));
+    }
+
+    /**
+     * Get the text for a failed activation of the run level service.
+     *
+     * @param planned  the planned run level
+     * @param current  the current run level
+     *
+     * @return  the message
+     */
+    private String getFailedActivationMessage(Integer planned, Integer current) {
+        return "unable to activate " + this +
+                "; minimum expected RunLevel is: " + runLevel +
+                "; planned is: " + planned +
+                "; current is: " + current;
+    }
+
+    /**
+     * Check whether the strict constraint rules should be followed.
+     *
+     * @return true if strict constraint rules should be followed
+     */
+    private boolean isStrict() {
+        RunLevel rl = type().getAnnotation(RunLevel.class);
+        return rl == null || rl.strict();
+    }
+
+    /**
+     * Get the planned run level from the associated run level state.
+     *
+     * @return the planned run level
+     */
+    private Integer getPlannedRunLevel() {
+        Integer planned = state.getPlannedRunLevel();
+        return planned == null ? RunLevel.KERNEL_RUNLEVEL : planned;
+    }
+
+    /**
+     * Get the current run level of the associated run level state.
+     *
+     * @return the current run level
+     */
+    private Integer getCurrentRunLevel() {
+        Integer current = state.getCurrentRunLevel();
+        return current == null ? RunLevel.KERNEL_RUNLEVEL : current;
+    }
+
+    /**
+     * Get the run level state that is associated with this inhabitant.
+     *
+     * @return  the run level state.
+     */
+    public RunLevelState<?> getState() {
+        return state;
+    }
 }
