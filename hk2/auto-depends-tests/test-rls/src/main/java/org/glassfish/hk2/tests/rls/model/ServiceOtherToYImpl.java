@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,16 +37,42 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.test.runlevel;
+package org.glassfish.hk2.tests.rls.model;
 
-import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.hk2.PostConstruct;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
 
-/**
- * some service directly annotated with @RunLevel annotation.
- * @author Jerome Dochez
- */
-@Contract
-public interface SomeServerService {
+import com.sun.hk2.component.Holder;
+
+@RunLevel(RunLevel.KERNEL_RUNLEVEL)
+@Service(name = "other")
+public class ServiceOtherToYImpl implements ServiceOtherToY, PostConstruct {
+
+    public static int ctorCount = 0;
+    public static int postConstructCount = 0;
+
+    @Inject
+    public static ContractY y;
+
+    @Inject
+    public static ContractY[] allY;
+
+    @Inject
+    public static Holder<ServiceZ> zHolder;
+
+
+    public ServiceOtherToYImpl() {
+        ctorCount++;
+    }
+
+    @Override
+    public void postConstruct() {
+        postConstructCount++;
+    }
+
+    public ContractY getY() {
+        return y;
+    }
 }

@@ -494,47 +494,89 @@ public class RunLevelServiceTest {
 
     assertListenerState(true, false, false);
   }
- 
-  /**
-   * Dependencies from from a non-RLS-annotated service to a RLS service is a violation.
-   */
-  @Test
-  public void dependenciesFromNonRunLevelToRunLevelService() {
-    rls.proceedTo(10);
-  
-    Inhabitant<NonRunLevelWithRunLevelDepService> i = 
-      h.getInhabitantByType(NonRunLevelWithRunLevelDepService.class);
-    assertNotNull(i);
-    assertFalse(i.isActive());
-    
-    try {
-      fail("Expected get() to fail, bad dependency to a RunLevel service: " + i.get());
-    } catch (Exception e) {
-      // expected
+
+    /**
+     * Dependencies from from a non-RLS-annotated service to a RLS service is a violation.
+     */
+    @Test
+    public void dependenciesFromNonRunLevelToRunLevelService() {
+        Inhabitant<NonRunLevelWithRunLevelDepService> i =
+                h.getInhabitantByType(NonRunLevelWithRunLevelDepService.class);
+        assertNotNull(i);
+        assertFalse(i.isActive());
+
+        NonRunLevelWithRunLevelDepService service = i.get();
+
+        assertTrue(i.isActive());
+
+        try {
+            fail("Expected get() to fail, bad dependency to a RunLevel service: " + service.get());
+        } catch (Exception e) {
+            // expected
+        }
+
+        rls.proceedTo(10);
+
+        service.get();
+
+        rls.proceedTo(0);
+
+        try {
+            fail("Expected get() to fail, bad dependency to a RunLevel service: " + service.get());
+        } catch (Exception e) {
+            // expected
+        }
     }
 
-    assertFalse(i.isActive());
-  }
-  
-  @Test
-  public void dependenciesFromNonRunLevelToRunLevelServiceAsync() {
-    installTestRunLevelService(true);
-    
-    defRLS.proceedTo(10);
-  
-    Inhabitant<NonRunLevelWithRunLevelDepService> i = 
-      h.getInhabitantByType(NonRunLevelWithRunLevelDepService.class);
-    assertNotNull(i);
-    assertFalse(i.isActive());
-    
-    try {
-      fail("Expected get() to fail, bad dependency to a RunLevel service: " + i.get());
-    } catch (Exception e) {
-      // expected
-    }
+    @Test
+    public void dependenciesFromNonRunLevelToRunLevelServiceAsync() throws Exception{
+        installTestRunLevelService(true);
 
-    assertFalse(i.isActive());
-  }
+        Inhabitant<NonRunLevelWithRunLevelDepService> i =
+                h.getInhabitantByType(NonRunLevelWithRunLevelDepService.class);
+        assertNotNull(i);
+        assertFalse(i.isActive());
+
+        NonRunLevelWithRunLevelDepService service = i.get();
+
+        assertTrue(i.isActive());
+
+        try {
+            fail("Expected get() to fail, bad dependency to a RunLevel service: " + service.get());
+        } catch (Exception e) {
+            // expected
+        }
+
+        defRLS.proceedTo(10);
+
+        synchronized (rls) {
+          rls.wait(1000);
+        }
+        if (10 != defRLS.getCurrentRunLevel()) {
+          synchronized (rls) {
+            rls.wait(100);
+          }
+        }
+
+        service.get();
+
+        defRLS.proceedTo(0);
+
+        synchronized (rls) {
+          rls.wait(1000);
+        }
+        if (0 != defRLS.getCurrentRunLevel()) {
+          synchronized (rls) {
+            rls.wait(100);
+          }
+        }
+
+        try {
+            fail("Expected get() to fail, bad dependency to a RunLevel service: " + service.get());
+        } catch (Exception e) {
+            // expected
+        }
+    }
   
   /**
    * Verifies the behavior of an OnProgress recipient, calling proceedTo()
@@ -1114,6 +1156,7 @@ public class RunLevelServiceTest {
    * becomes an invalid test for the sync case.
    */
   @SuppressWarnings({ "unchecked", "static-access" })
+  @Ignore
   @Test
   public void multiThreadedSoftInterrupt3Async() throws Exception {
     recorders = new LinkedHashMap<Integer, Recorder>();

@@ -147,6 +147,11 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T>, Bindin
     }
 
     @Override
+    public <U> U getByType(Class<U> type) {
+        return (U) get();
+    }
+
+    @Override
     public <T> T getSerializedMetadata(final Class<T> type, String key) {
         String v = metadata().getOne(key);
         if (v==null) {

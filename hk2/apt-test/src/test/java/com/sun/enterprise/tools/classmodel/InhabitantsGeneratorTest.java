@@ -592,7 +592,7 @@ public class InhabitantsGeneratorTest {
 
     if (fromClassModel) {
       sb.append("class=com.sun.enterprise.tools.classmodel.test.local.LocalServiceInTestDir,index=java.io.Closeable\n");
-      sb.append("class=org.glassfish.hk2.tests.rls.model.ServiceOtherToY,index=org.jvnet.hk2.annotations.RunLevel,runLevelScope=org.glassfish.hk2.RunLevelDefaultScope,runLevel=-1\n");
+      sb.append("class=org.glassfish.hk2.tests.rls.model.ServiceOtherToYImpl,index=org.glassfish.hk2.tests.rls.model.ServiceOtherToY:other,index=org.jvnet.hk2.annotations.RunLevel,runLevelScope=org.glassfish.hk2.RunLevelDefaultScope,runLevel=-1\n");
       sb.append("class=org.glassfish.hk2.tests.rls.model.ServiceDerivedX,index=org.glassfish.hk2.tests.rls.model.ContractX:derived,index=org.jvnet.hk2.annotations.RunLevel,runLevelScope=org.glassfish.hk2.RunLevelDefaultScope,runLevel=-1\n");
       sb.append("class=org.glassfish.hk2.tests.rls.model.ServiceYSpecial,index=org.glassfish.hk2.tests.rls.model.ContractY\n");
       sb.append("class=org.glassfish.hk2.tests.rls.infra.RLSTestMultiThreadedInhabitantActivator,index=org.jvnet.hk2.component.InhabitantActivator\n");

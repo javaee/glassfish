@@ -167,21 +167,15 @@ public class Inhabitants {
       return new ArrayList<String>(i.metadata().get(indexName));
   }
 
-  /**
-   * Performs basic validation of the injection.
-   * 
-   * @param target
-   * @param injectedVal
-   */
-  static void validate(Object target, Object injectedVal) {
-      if (null != injectedVal) {
-          RunLevel targetRL = AbstractInhabitantImpl.getAnnotation(target.getClass(), RunLevel.class, false);
-          RunLevel injectedValRL = AbstractInhabitantImpl.getAnnotation(injectedVal.getClass(), RunLevel.class, false);
-          if (null == targetRL && null != injectedValRL && injectedValRL.strict()) {
-              throw new ComponentException("invalid dependency from a non-RunLevel instance " +
-                  target + " to a RunLevel instance " + injectedVal);
-        }
+    /**
+     * Performs basic validation of the injection.
+     *
+     * @param target       the target of the injection
+     * @param injectedVal  the value being injected
+     *
+     * @throws ComponentException if the injection does not pass validation
+     */
+    static void validate(Object target, Object injectedVal) throws ComponentException {
+        // not currently used
     }
-  }
-
 }

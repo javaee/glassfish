@@ -54,6 +54,6 @@ public class RunLevelFiveInvalidService2 implements RunLevelContract {
 
   // this is at RunLevel 10
   @Inject
-  SomeServerService ss;
+  SomeServerServiceImpl ss;
   
 }
