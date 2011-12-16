@@ -112,11 +112,8 @@
 		        />
     			<!beforeCreate
 				    /* Get the server list */
-				    gf.restRequest(
-					endpoint="#{sessionScope.REST_URL}/servers/server.json"
-					method="GET"
-					result="#{requestScope.servers}");
-				    gf.getMapKeys(Map="#{requestScope.servers.data.extraProperties.childResources}" Keys="#{requestScope.servers}");
+                                    gf.listInstances(optionKeys={"standaloneonly"} optionValues={"true"}, instances="#{requestScope.servers}" );
+                                    listAdd(list="#{requestScope.servers}", value="server" index="0");
 				    if ($attribute{targetType}=#{null}) {
 						setAttribute(key="targetType" value="instance");
 						setAttribute(key="targetName" value="#{requestScope.servers.get(0)}");

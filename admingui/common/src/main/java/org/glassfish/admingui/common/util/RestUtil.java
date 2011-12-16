@@ -701,6 +701,17 @@ public class RestUtil {
         parseResponse(rr, null, endpoint, attrs, quiet, throwException);
 
     }
+
+    public static void getRestRequestFromServlet(HttpServletRequest request, String endpoint, Map<String, Object> attrs, boolean quiet, boolean throwException) {
+        String token = (String) request.getSession().getAttribute(AdminConsoleAuthModule.REST_TOKEN);
+        WebResource webResource = JERSEY_CLIENT.resource(endpoint).queryParams(buildMultivalueMap(attrs));
+        ClientResponse cr = webResource
+                .cookie(new Cookie(REST_TOKEN_COOKIE, token))
+                .accept(RESPONSE_TYPE).get(ClientResponse.class);
+        RestResponse rr = RestResponse.getRestResponse(cr);
+        parseResponse(rr, null, endpoint, attrs, quiet, throwException);
+
+    }
     //******************************************************************************************************************
     // Jersey client methods
     //******************************************************************************************************************
