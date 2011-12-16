@@ -221,6 +221,10 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                 }
             }
         }
+        
+        if (restToken == null) {
+            restToken = req.getHeader("X-Auth-Token");
+        }
 
         if (restToken != null) {
             authenticated = sessionManager.authenticate(restToken, req);
