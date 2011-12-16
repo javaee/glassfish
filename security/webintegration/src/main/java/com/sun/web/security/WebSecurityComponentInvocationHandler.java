@@ -124,7 +124,6 @@ public class WebSecurityComponentInvocationHandler implements RegisteredComponen
      public void resetPolicyContext() {
         if (System.getSecurityManager() == null) {
             ((PolicyContextHandlerImpl)PolicyContextHandlerImpl.getInstance()).reset();
-            PolicyContext.setContextID(null);
             return;
         }
         

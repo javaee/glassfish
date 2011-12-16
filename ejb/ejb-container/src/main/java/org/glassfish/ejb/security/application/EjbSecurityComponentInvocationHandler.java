@@ -125,7 +125,6 @@ public class EjbSecurityComponentInvocationHandler implements  RegisteredCompone
      public void resetPolicyContext() {
         if (System.getSecurityManager() == null) {
             ((PolicyContextHandlerImpl)PolicyContextHandlerImpl.getInstance()).reset();
-            PolicyContext.setContextID(null);
             return;
         }
         
