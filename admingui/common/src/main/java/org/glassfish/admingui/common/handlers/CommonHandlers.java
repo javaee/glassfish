@@ -49,6 +49,7 @@
 
 package org.glassfish.admingui.common.handlers;
 
+import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
@@ -70,12 +71,15 @@ import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
+import javax.management.ObjectName;
 import javax.servlet.http.HttpServletResponse;
+import org.glassfish.admingui.common.tree.FilterTreeEvent;
 
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.MiscUtil;
@@ -798,6 +802,26 @@ public class CommonHandlers {
         }
 
         handlerCtx.setOutputValue("value", defaultValue);
+    }
+
+    /**
+     *  <p> This handler filters out not required protocols from the list of protocols available
+     */
+    @Handler( id="filterProtocols")
+    public static List filterProtocols(HandlerContext context) {
+        FilterTreeEvent event = (FilterTreeEvent) context.getEventObject();
+        List protocols = event.getChildObjects();
+        ArrayList result = new ArrayList();
+
+        if(protocols != null && protocols.size() > 0){
+            for (int i=0; i < protocols.size(); i++){
+                String protocol = (String) protocols.get(i);
+                if (!(protocol.equals(ServerTags.PORT_UNIF_PROTOCOL_NAME) || protocol.equals(ServerTags.REDIRECT_PROTOCOL_NAME))) {
+                    result.add(protocol);
+                }
+            }
+        }
+        return result;
     }
 
 
