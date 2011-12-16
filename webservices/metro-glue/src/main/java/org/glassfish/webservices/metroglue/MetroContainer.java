@@ -52,6 +52,7 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.WebContainerAvailability;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.transaction.api.RecoveryResourceRegistry;
@@ -132,7 +133,9 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
             final String clusterName = gmsAdapterService.getGMSAdapter().getClusterName();
             final String instanceName = gmsAdapterService.getGMSAdapter().getModule().getInstanceName();
 
-            HighAvailabilityProvider.INSTANCE.initHaEnvironment(clusterName, instanceName);
+            WebContainerAvailability wca = availabilityService.getWebContainerAvailability();
+            boolean disabledJreplica = wca != null ? Boolean.valueOf(wca.getDisableJreplica()) : false;
+            HighAvailabilityProvider.INSTANCE.initHaEnvironment(clusterName, instanceName, disabledJreplica);
             logger.info("metro.ha.environemt.initialized");
         }
 
