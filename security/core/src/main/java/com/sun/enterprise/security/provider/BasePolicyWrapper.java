@@ -51,6 +51,8 @@
 package com.sun.enterprise.security.provider;
 
 //import sun.security.provider.PolicyFile;
+import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
+import com.sun.enterprise.security.common.AppservAccessController;
 import sun.security.util.PropertyExpander;
 import java.security.*;
 import javax.security.jacc.*;
@@ -299,6 +301,10 @@ public class BasePolicyWrapper extends java.security.Policy {
             }
         } catch (PolicyContextException pe) {
             throw new IllegalStateException(pe.toString());
+        }
+        finally {
+             resetPolicyContext();
+            
         }
         
     }
@@ -646,5 +652,31 @@ public class BasePolicyWrapper extends java.security.Policy {
     // obtains PolicyConfigurationFactory 
     private PolicyConfigurationFactoryImpl getPolicyFactory() {
        return PolicyConfigurationFactoryImpl.getInstance();
+    }
+    
+     public void resetPolicyContext() {
+        if (System.getSecurityManager() == null) {
+            ((PolicyContextHandlerImpl)PolicyContextHandlerImpl.getInstance()).reset();
+            PolicyContext.setContextID(null);
+            return;
+        }
+        
+        try {
+                AppservAccessController.doPrivileged(new PrivilegedExceptionAction() {
+                    public java.lang.Object run() throws Exception {
+                         ((PolicyContextHandlerImpl)PolicyContextHandlerImpl.getInstance()).
+                                 reset();
+                        return null;
+                    }
+                });
+            } catch (java.security.PrivilegedActionException pae) {
+                Throwable cause = pae.getCause();
+                if (cause instanceof java.security.AccessControlException) {
+                    logger.log(Level.SEVERE, "jacc_policy_context_security_exception", cause);
+                } else {
+                    logger.log(Level.SEVERE, "jacc_policy_context_exception", cause);
+                }
+                throw new RuntimeException(cause);
+            }
     }
 }

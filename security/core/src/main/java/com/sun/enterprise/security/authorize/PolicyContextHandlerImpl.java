@@ -62,7 +62,7 @@ public class PolicyContextHandlerImpl implements PolicyContextHandler {
 
     private static PolicyContextHandlerImpl pchimpl = null;
 
-    private ThreadLocal thisHandlerData = new ThreadLocal();
+    private static ThreadLocal thisHandlerData = new ThreadLocal();
 
     private PolicyContextHandlerImpl() {
     }
