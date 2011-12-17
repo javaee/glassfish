@@ -92,12 +92,12 @@ public class AdminConsoleStartupService implements  PostConstruct, PostStartup {
 
         // FIXME : Use ServerTags, when this is finalized.
         Property initProp = adminService.getProperty("adminConsoleStartup");
-        String initPropVal = null;
+        String initPropVal = "DEFAULT";
         if (initProp != null) {
             initPropVal = initProp.getValue();
-        }
-        if (initPropVal == null) {
-            initPropVal = "DEFAULT";
+            if ( !(initPropVal.equals("ALWAYS") || initPropVal.equals("NEVER") || initPropVal.equals("DEFAULT"))){
+                initPropVal="DEFAULT";
+            }
         }
 
         if (logger.isLoggable(Level.FINE)) {
@@ -106,9 +106,7 @@ public class AdminConsoleStartupService implements  PostConstruct, PostStartup {
 
         if (initPropVal.equalsIgnoreCase("DEFAULT")) {
             handleDefault();
-        } else if (initPropVal.equalsIgnoreCase("LOW")) {
-            handleLow();
-        } else if (initPropVal.equalsIgnoreCase("HIGH")) {
+        } else if (initPropVal.equalsIgnoreCase("ALWAYS")) {
             handleHigh();
         }
     }
