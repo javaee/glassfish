@@ -61,8 +61,8 @@
 </define>
 <!define name="content">
     "<div style="height:100%; background-color:#B6C6D6; #{pageSession.contentCSS}">
-      <sun:form id="form"> 
-        <sun:commonTasksSection id="commonTasksSection" title="$resource{i18n.commonTasks.title}" columns="$int{2}" style="visibility: #{commonTaskVisibility}">
+      <sun:form id="form">
+        <sun:commonTasksSection id="commonTasksSection" helpText="$resource{i18n.commonTasks.help}"  title="$resource{i18n.commonTasks.title}" columns="$int{2}" style="visibility: #{commonTaskVisibility}">
           <sun:commonTasksGroup  title="$resource{i18n.commonTasks.task.regAndSupport}">
             <sun:commonTask
                 rendered="#{pageSession.isRegistrationEnabled}"
