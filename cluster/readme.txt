@@ -373,3 +373,10 @@ Later -- it apparently needed a reboot.  It would have an old stale Path until t
 
 
 
+$objUser = New-Object System.Security.Principal.NTAccount("kenmyer")
+$strSID = $objUser.Translate([System.Security.Principal.SecurityIdentifier])
+$strSID.Value
+
+
+
+Set-ExecutionPolicy RemoteSigned
