@@ -55,7 +55,7 @@ public class ChangeableClass {
         -->
         <war destfile="${all.war}" webxml="web.xml" manifest="META-INF/MANIFEST.MF">
             <webinf dir="." includes="glassfish-web.xml, sun-web.xml"/>
-            <classes dir="${build}"/>
+            <classes dir="${build}" excludes="**-portable.war, **-deployplan.jar"/>
         </war>
     </target>
 
