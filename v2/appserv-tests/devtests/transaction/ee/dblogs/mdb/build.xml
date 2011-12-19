@@ -74,20 +74,22 @@
       <antcall target="setup-test"/>
       <antcall target="setup-embedded"/>
       <antcall target="test-autorecovery"/>
+      <antcall target="save-logs"/>
+      <copy file="${module}-logs.zip" tofile="${module}-embedded1-logs.zip"/>
+      <antcall target="restart-cluster"/>
+      <antcall target="test-autorecovery"/>
       <antcall target="unsetup-test"/>
-      <copy file="${module}-logs.zip" tofile="${module}-embedded-logs.zip"/>
+      <copy file="${module}-logs.zip" tofile="${module}-embedded2-logs.zip"/>
     </target>
 
     <target name="test-local" depends="init-common">
       <antcall target="setup-test"/>
       <antcall target="setup-local"/>
       <antcall target="test-autorecovery"/>
-<!--
       <antcall target="save-logs"/>
       <copy file="${module}-logs.zip" tofile="${module}-local-auto-logs.zip"/>
       <antcall target="restart-cluster"/>
       <antcall target="test-delegated"/>
--->
       <antcall target="unsetup-test"/>
     </target>
 
