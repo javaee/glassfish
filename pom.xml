@@ -139,8 +139,8 @@
         <stax-api.version>1.0-2</stax-api.version>
         <jsftemplating.version>2.1.0</jsftemplating.version>
         <glassfish-corba.version>3.1.0-b032</glassfish-corba.version>
-        <uc-pkg-client.version>1.122-55.2842</uc-pkg-client.version>
-        <uc-pkg-bootstrap.version>1.122-55.2842</uc-pkg-bootstrap.version>
+        <uc-pkg-client.version>1.122-56.2852</uc-pkg-client.version>
+        <uc-pkg-bootstrap.version>1.122-56.2852</uc-pkg-bootstrap.version>
 
         <webservices.version>2.2-b12</webservices.version>
         <woodstox.version>4.1.2</woodstox.version>
