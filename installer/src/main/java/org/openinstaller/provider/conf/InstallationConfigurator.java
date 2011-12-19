@@ -174,11 +174,11 @@ public final class InstallationConfigurator implements Configurator, Notificatio
         String installDir = productRef.getInstallLocation();
         if (!OSUtils.isWindows()) {
             LOGGER.log(Level.INFO, Msg.get("SETTING_EXECUTE_PERMISSIONS_FOR_GLASSFISH", null));
-            org.glassfish.installer.util.FileUtils.setExecutable(installDir + "/glassfish/bin/asadmin");
-            org.glassfish.installer.util.FileUtils.setExecutable(installDir + "/glassfish/bin/stopserv");
-            org.glassfish.installer.util.FileUtils.setExecutable(installDir + "/glassfish/bin/startserv");
-            org.glassfish.installer.util.FileUtils.setExecutable(installDir + "/glassfish/bin/jspc");
-            org.glassfish.installer.util.FileUtils.setExecutable(installDir + "/bin/asadmin");
+            org.glassfish.installer.util.FileUtils.setAllFilesExecutable(installDir + "/glassfish/bin");          
+            org.glassfish.installer.util.FileUtils.setAllFilesExecutable(installDir + "/bin");
+            if (org.glassfish.installer.util.FileUtils.isFileExist(installDir + "/mq/bin")) {
+                org.glassfish.installer.util.FileUtils.setAllFilesExecutable(installDir + "/mq/bin");
+            }
         }
 
 
