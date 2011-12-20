@@ -74,22 +74,30 @@ public class MyBean {
         return result;
     }
 
-    public boolean testtwo(int id) throws Exception {
+    public boolean testtwo(int id, boolean sendMessage) throws Exception {
         InitialContext initCtx = new InitialContext();
         DataSource ds2 = (DataSource) initCtx.lookup(XA_RESOURCE);
 
-        return test(id, ds2, true);
+        return test(id, ds2, true, sendMessage);
     }
 
     private boolean test(int id, DataSource ds, boolean useFailureInducer) throws Exception {
+        return test(id, ds, useFailureInducer, true);
+    }
+
+    private boolean test(int id, DataSource ds, boolean useFailureInducer, boolean sendMessage) throws Exception {
         String insertStatement = "insert into student values ( ? , ? )";
         java.sql.Connection c = ds.getConnection();
         PreparedStatement ps = c.prepareStatement(insertStatement);
 
-        QueueConnection qConn = fInject.createQueueConnection();
-        QueueSession qSession = qConn.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
-        QueueSender qSender = qSession.createSender(qInject);
-        TextMessage tMessage = null;
+        QueueConnection qConn = null;
+        QueueSession qSession = null;
+        QueueSender qSender = null;
+        if (sendMessage) {
+            qConn = fInject.createQueueConnection();
+            qSession = qConn.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
+            qSender = qSession.createSender(qInject);
+        }
 
         if (useFailureInducer) {
             com.sun.jts.utils.RecoveryHooks.FailureInducer.activateFailureInducer();
@@ -102,8 +110,10 @@ public class MyBean {
             ps.setString(2, "BBB" + id + i);
             ps.executeUpdate();
 
-            tMessage = qSession.createTextMessage("MAA" + id + i);
-            qSender.send(tMessage);
+            if (sendMessage) {
+                TextMessage tMessage = qSession.createTextMessage("MAA" + id + i);
+                qSender.send(tMessage);
+            }
 
             if (!useFailureInducer) {
                 try {
@@ -116,8 +126,10 @@ public class MyBean {
 
         ps.close();
         c.close();
-        qSession.close();
-        qConn.close();
+        if (sendMessage) {
+            qSession.close();
+            qConn.close();
+        }
         System.err.println("Insert successfully");
 
         return true;

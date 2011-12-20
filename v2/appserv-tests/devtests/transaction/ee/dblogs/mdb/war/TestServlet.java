@@ -30,8 +30,7 @@ public class TestServlet extends HttpServlet {
             out.println("</head>");
             out.println("<body>");
         try {
-	    //out.println("" + ((type == null)? bean.testone(req.getLocalPort()) : bean.testtwo(req.getLocalPort())));
-	    out.println("" + bean.testtwo(req.getLocalPort()));
+	     out.println("" + ((type == null)? bean.testtwo(req.getLocalPort(), false) : bean.testtwo(req.getLocalPort(), true)));
         }catch(Throwable e){
             out.println("got exception");
             out.println(e);

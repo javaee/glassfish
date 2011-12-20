@@ -68,7 +68,7 @@ public class Client extends AdminBaseDevTest {
         } else if ("undeploy".equals(args[0])) {
             (new Client()).undeploy(args[1]);
         } else if ("insert_xa_data".equals(args[0])) {
-            (new Client()).insert_xa_data(args[1], args[2]);
+            (new Client()).insert_xa_data(args[1], args[2], args[3]);
         } else if ("verify_xa".equals(args[0])) {
             (new Client()).verify_xa(args[1], args[2], args[3]);
         } else {
@@ -121,8 +121,11 @@ public class Client extends AdminBaseDevTest {
         }
     }
 
-    public void insert_xa_data(String appname, String port) {
-        execute(appname, port, "TestServlet?2", "true");
+    public void insert_xa_data(String appname, String port, String sendMsg) {
+        if (Boolean.valueOf(sendMsg))
+            execute(appname, port, "TestServlet?2", "true");
+        else
+            execute(appname, port, "TestServlet", "true");
     }
 
     public void verify_xa(String appname, String port, String operation) {
