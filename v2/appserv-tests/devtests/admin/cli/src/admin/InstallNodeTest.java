@@ -207,6 +207,13 @@ public class InstallNodeTest extends SshBaseDevTest {
 
         //installing at different location on same host should work
         report("install-at-different-location-remote", asadmin("install-node", "--sshuser", sshUser, INSTALL_DIR, "gf-test-2", remoteHost));
+
+        //authentication will fail if remote user is different from the user running this test
+        String user = System.getProperty("user.name");
+        if (user.equals(sshUser)) {
+            //installing at same location but localhost should work
+            report("install-at-same-location-different-host", asadmin("install-node", "--sshuser", sshUser, INSTALL_DIR, "gf-test-2", "localhost"));
+        }
     }
 
     private void testUnInstallRemoteNode() {
@@ -218,6 +225,12 @@ public class InstallNodeTest extends SshBaseDevTest {
 
         //delete node with --uninstall
         report("delete-node-with-uninstall-remote", asadmin("delete-node-ssh", UNINSTALL, "n2"));
+
+        //simple uninstall
+        String user = System.getProperty("user.name");
+        if (user.equals(sshUser)) {
+            report("uninstall-node-local", asadmin("uninstall-node", "--sshuser", sshUser, INSTALL_DIR, "gf-test-2", "localhost"));
+        }
     }
 
     private void testPasswordAlias() {
