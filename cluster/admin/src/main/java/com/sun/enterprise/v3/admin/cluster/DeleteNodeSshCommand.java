@@ -83,4 +83,20 @@ public class DeleteNodeSshCommand extends DeleteNodeRemoteCommand {
     protected String getUninstallCommandName() {
         return "uninstall-node-ssh";
     }
+
+    @Override
+    final protected void setTypeSpecificOperands(List<String> command, ParameterMap map) {
+        command.add("--sshport");
+        command.add(map.getOne(NodeUtils.PARAM_REMOTEPORT));
+
+        command.add("--sshuser");
+        command.add(map.getOne(NodeUtils.PARAM_REMOTEUSER));
+
+        String key = map.getOne(NodeUtils.PARAM_SSHKEYFILE);
+
+        if (key != null) {
+            command.add("--sshkeyfile");
+            command.add(key);
+        }
+    }
 }

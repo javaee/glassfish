@@ -39,6 +39,8 @@
  */
 package com.sun.enterprise.v3.admin.cluster.dcom;
 
+import com.sun.enterprise.v3.admin.cluster.NodeUtils;
+import java.util.ArrayList;
 import org.glassfish.cluster.ssh.util.DcomUtils;
 import com.sun.enterprise.v3.admin.cluster.DeleteNodeRemoteCommand;
 import java.util.List;
@@ -69,5 +71,13 @@ public class DeleteNodeDcom extends DeleteNodeRemoteCommand {
     @Override
     protected String getUninstallCommandName() {
         return "uninstall-node-dcom";
+    }
+
+    @Override
+    final protected void setTypeSpecificOperands(List<String> command, ParameterMap map) {
+        command.add("--windowsuser");
+        command.add(map.getOne(NodeUtils.PARAM_REMOTEUSER));
+        command.add("--windowsdomain");
+        command.add(map.getOne(NodeUtils.PARAM_WINDOWS_DOMAIN));
     }
 }

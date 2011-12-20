@@ -380,3 +380,31 @@ $strSID.Value
 
 
 Set-ExecutionPolicy RemoteSigned
+
+
+
+I believe you'll have to enable the SeBackupPrivilege first before you can set the owner of a file to be someone other than yourself. With an elevated shell:
+ 
+PS C:\Windows\system32> ipmo pscx
+PS C:\Windows\system32> $p = get-privilege
+PS C:\Windows\system32> $p.Enable("sebackupprivilege")
+PS C:\Windows\system32> Set-Privilege $p
+PS C:\Windows\system32> get-privilege
+Name                                     Status
+----                                     ------
+SeIncreaseQuotaPrivilege                 Disabled
+SeMachineAccountPrivilege                Disabled
+SeSecurityPrivilege                      Disabled
+SeTakeOwnershipPrivilege                 Disabled
+SeLoadDriverPrivilege                    Disabled
+SeSystemProfilePrivilege                 Disabled
+SeSystemtimePrivilege                    Disabled
+SeProfileSingleProcessPrivilege          Disabled
+SeIncreaseBasePriorityPrivilege          Disabled
+SeCreatePagefilePrivilege                Disabled
+SeBackupPrivilege                        Enabled  <<<<<<
+SeRestorePrivilege                       Disabled
+
+This should give you the neccessary rights to set the owner. The reason you need backup rights is because you are subverting the auditing; normally you can only give someone the right to _take_ ownership back.
+ 
+-Oisin

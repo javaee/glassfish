@@ -1,4 +1,4 @@
-@echo off
+rem @echo off
 call setfiles.bat
 
 copy %br%\%a% %tr%\%a%
