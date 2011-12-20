@@ -45,7 +45,7 @@
 
 package org.glassfish.admingui.common.util;
 
-import javax.servlet.ServletRequest;
+import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -172,8 +172,9 @@ public class RestUtil {
 
         Logger logger = GuiUtil.getLogger();
         if (logger.isLoggable(Level.FINEST)) {
+            Map maskedAttr = maskOffPassword(attrs);
             logger.log(Level.FINEST,
-                    GuiUtil.getCommonMessage("LOG_REST_REQUEST_INFO", new Object[]{endpoint, (useData && "post".equals(method))? data: attrs, method}));
+                    GuiUtil.getCommonMessage("LOG_REST_REQUEST_INFO", new Object[]{endpoint, (useData && "post".equals(method))? data: maskedAttr, method}));
         }
 
         // Execute the request...
@@ -215,6 +216,19 @@ public class RestUtil {
         }
 
         return parseResponse(restResponse, handlerCtx, endpoint, (useData && "post".equals(method))? data: attrs, quiet, throwException);
+    }
+
+    private static Map maskOffPassword(Map<String, Object> attrs){
+        Map masked = new HashMap();
+
+        for(String key : attrs.keySet()){
+            if (pswdAttrList.contains(key.toLowerCase())){
+                masked.put(key, "*******");
+            }else{
+                masked.put(key, attrs.get(key));
+            }
+        }
+        return masked;
     }
 
     public static Map<String, String> buildDefaultValueMap(String endpoint) throws ParserConfigurationException, SAXException, IOException {
@@ -293,6 +307,7 @@ public class RestUtil {
         // Parse the response
         String message = "";
         ExitCode exitCode = ExitCode.FAILURE;
+        Map maskedAttr = maskOffPassword((Map<String, Object>)attrs);
         if (response != null) {
             try {
                 int status = response.getResponseCode();
@@ -342,7 +357,7 @@ public class RestUtil {
                             if (handlerCtx != null) {
                                 GuiUtil.handleError(handlerCtx, message);
                                 if (!quiet) {
-                                    GuiUtil.getLogger().severe(GuiUtil.getCommonMessage("LOG_REQUEST_RESULT", new Object[]{exitCode, endpoint, attrs}));
+                                    GuiUtil.getLogger().severe(GuiUtil.getCommonMessage("LOG_REQUEST_RESULT", new Object[]{exitCode, endpoint, maskedAttr}));
                                     GuiUtil.getLogger().finest("response.getResponseBody(): " + response.getResponseBody());
                                 }
                                 return new HashMap();
@@ -352,7 +367,7 @@ public class RestUtil {
                             }
                         } else { // Issue Number :13312 handling the case when throwException is false.
                             if (!quiet) {
-                                GuiUtil.getLogger().severe(GuiUtil.getCommonMessage("LOG_REQUEST_RESULT", new Object[]{exitCode, endpoint, attrs}));
+                                GuiUtil.getLogger().severe(GuiUtil.getCommonMessage("LOG_REQUEST_RESULT", new Object[]{exitCode, endpoint, maskedAttr}));
                                 GuiUtil.getLogger().finest("response.getResponseBody(): " + response.getResponseBody());
                             }
                             return responseMap;
@@ -360,7 +375,7 @@ public class RestUtil {
                     }
                     case WARNING: {
                         GuiUtil.prepareAlert("warning", GuiUtil.getCommonMessage("msg.command.warning"), message);
-                        GuiUtil.getLogger().warning(GuiUtil.getCommonMessage("LOG_REQUEST_RESULT", new Object[]{exitCode, endpoint, attrs}));
+                        GuiUtil.getLogger().warning(GuiUtil.getCommonMessage("LOG_REQUEST_RESULT", new Object[]{exitCode, endpoint, maskedAttr}));
                         return responseMap;
                     }
                     case SUCCESS: {
@@ -369,7 +384,7 @@ public class RestUtil {
                 }
             } catch (Exception ex) {
                 if (!quiet) {
-                    GuiUtil.getLogger().severe(GuiUtil.getCommonMessage("LOG_REQUEST_RESULT", new Object[]{exitCode, endpoint, attrs}));
+                    GuiUtil.getLogger().severe(GuiUtil.getCommonMessage("LOG_REQUEST_RESULT", new Object[]{exitCode, endpoint, maskedAttr}));
                     GuiUtil.getLogger().finest("response.getResponseBody(): " + response.getResponseBody());
                 }
                 if (handlerCtx != null) {
@@ -831,4 +846,21 @@ public class RestUtil {
             return (result) ? true :  host.equals(sslSession.getPeerHost());
         }
     }
+
+    /* This is a list of attribute name of password for different command.
+     * We need to mask its value during logging.
+     */
+    private static final List<String> pswdAttrList =
+        Arrays.asList(
+            "sshpassword",            /* create-node-ssh , setup-ssh , update-node, update-node-ssh */
+            "windowspassword",        /* create-node-dcom, validate-dcom, update-node-dcom,  */
+            "dbpassword",             /* jms-availability-service */
+            "jmsdbpassword",          /* configure-jms-cluster */
+            "password",                 /* change-admin-password */
+            "newpassword" ,             /* change-admin-password */
+            "jmsdbpassword",             /* configure-jms-cluster */
+            "mappedpassword",            /* create-connector-security-map, update-connector-security-map */
+            "userpassword",             /* create-file-user , update-file-user */
+            "aliaspassword"        /* create-password-alias , update-password-alias */
+        );
 }
