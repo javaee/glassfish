@@ -111,6 +111,7 @@ public class MyBean {
             ps.executeUpdate();
 
             if (sendMessage) {
+                System.err.println("Message # " + (i + 1));
                 TextMessage tMessage = qSession.createTextMessage("MAA" + id + i);
                 qSender.send(tMessage);
             }
