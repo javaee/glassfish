@@ -167,8 +167,6 @@ public abstract class DeleteNodeRemoteCommand implements AdminCommand {
         ArrayList<String> command = new ArrayList<String>();
 
         command.add(getUninstallCommandName());
-        setTypeSpecificOperands(command, map);
-
         String type = node.getType();
 
         command.add("--installdir");
