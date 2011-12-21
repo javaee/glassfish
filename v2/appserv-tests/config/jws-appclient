@@ -117,4 +117,4 @@ chooseJava
 # Java Web Start.  The program then returns a javaws command which launches the
 # app client.
 #
-eval `"${ACCJava}" -classpath "${APS_HOME}/lib/javaws-util.jar" util.LaunchJavaWS "$@"
+eval `"${ACCJava}" -classpath "${APS_HOME}/lib/javaws-util.jar" util.LaunchJavaWS "$@"`
