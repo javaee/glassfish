@@ -116,7 +116,6 @@
                         }
                     }
 
-                    println("**************** requestScope.jmsAttrs = #{requestScope.jmsAttrs}");
                     gf.restRequest(endpoint="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.name}/configure-jms-cluster",
                         attrs="#{requestScope.jmsAttrs}",
                         method="post",
