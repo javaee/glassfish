@@ -40,7 +40,9 @@
 package org.glassfish.admingui.devtests;
 
 import com.thoughtworks.selenium.Selenium;
+import java.io.IOException;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;
@@ -81,15 +83,9 @@ public class SeleniumHelper {
             String browser = getParameter("browser", "firefox");
 
             if ("firefox".equals(browser)) {
-                ProfilesIni allProfiles = new ProfilesIni();
-                FirefoxProfile profile = allProfiles.getProfile("default");
-                profile.setPreference("dom.disable_window_move_resize", false);
-                final FirefoxDriver firefoxDriver = new FirefoxDriver(profile);
+                final FirefoxDriver firefoxDriver = new FirefoxDriver();
+                firefoxDriver.executeScript("window.resizeTo(screen.availWidth, screen.availHeight);", new Object[]{});
                 driver = firefoxDriver;
-                Object o = firefoxDriver.executeScript("window.resizeTo(screen.availWidth, screen.availHeight);", new Object[]{});
-                if (o != null) {
-                    System.out.println(o.toString());
-                }
             } else if ("chrome".equals(browser)) {
                 driver = new ChromeDriver();
             } else if ("ie".contains(browser)) {
@@ -98,14 +94,19 @@ public class SeleniumHelper {
             elementFinder = new ElementFinder(driver);
 
             selenium = new WebDriverBackedSelenium(driver, getBaseUrl());
+            selenium.setBrowserLogLevel("warn");
+            try {
+                LogManager.getLogManager().readConfiguration(SeleniumHelper.class.getResourceAsStream("/logging.properties"));
+            } catch (Exception ex) {
+                Logger.getLogger(SeleniumHelper.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
             (new BaseSeleniumTestClass()).openAndWait("/", BaseSeleniumTestClass.TRIGGER_COMMON_TASKS, 480); // Make sure the server has started and the user logged in
         }
 
         selenium.windowFocus();
         selenium.windowMaximize();
         selenium.setTimeout("90000");
-//            String eval = selenium.getEval("window.moveTo(0,0); window.resizeTo(screen.availWidth, screen.availHeight); ");
-//            System.out.println(eval);
         return selenium;
     }
 

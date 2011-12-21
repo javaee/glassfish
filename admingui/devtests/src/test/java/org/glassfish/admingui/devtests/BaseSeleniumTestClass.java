@@ -120,17 +120,6 @@ public class BaseSeleniumTestClass {
     public static void setUp() throws Exception {
         if (!DEBUG) {
             RestUtil.post(helper.getBaseUrl() + "/management/domain/rotate-log", new HashMap<String, Object>());
-            /*
-             * URL rotateLogUrl = new URL(helper.getBaseUrl() +
-             * "/management/domain/rotate-log"); URLConnection conn =
-             * rotateLogUrl.openConnection(); conn.setDoOutput(true);
-             * OutputStreamWriter wr = new
-             * OutputStreamWriter(conn.getOutputStream()); wr.write("");
-             * wr.flush(); BufferedReader rd = new BufferedReader(new
-             * InputStreamReader(conn.getInputStream())); String line =
-             * rd.readLine(); while (line != null) { line = rd.readLine(); }
-             * wr.close(); rd.close();
-             */
         }
     }
 
@@ -194,6 +183,7 @@ public class BaseSeleniumTestClass {
      * @param text
      */
     public void setFieldValue(String elem, String text) {
+        selenium.focus(elem);
         selenium.type(elem, text);
     }
 
@@ -231,9 +221,15 @@ public class BaseSeleniumTestClass {
         selenium.uncheck(cb);
     }
 
-    public void pressButton(String button) {
+    public void pressButton(final String button) {
         waitForElement(button);
-        selenium.click(button);
+        new ExceptionSwallowingLoop<Void>() {
+            @Override
+            public Void operation() {
+                selenium.click(button);
+                return null;
+            }
+        }.get();
     }
 
     /**
@@ -587,9 +583,15 @@ public class BaseSeleniumTestClass {
      * @param value
      * @return
      */
-    protected String getLinkIdByLinkText(String baseId, String value) {
-        WebElement link = elementFinder.findElement(By.linkText(value), TIMEOUT);
-        return (link == null) ? null : (String) link.getAttribute("id");
+    protected String getLinkIdByLinkText(final String baseId, final String value) {
+        final ExceptionSwallowingLoop<String> loop = new ExceptionSwallowingLoop<String>() {
+            @Override
+            public String operation() {
+                WebElement link = elementFinder.findElement(By.linkText(value), TIMEOUT);
+                return (link == null) ? null : (String) link.getAttribute("id");
+            }
+        };
+        return loop.get();
     }
 
     protected boolean isTextPresent(String text) {
@@ -1095,8 +1097,12 @@ public class BaseSeleniumTestClass {
 
         @Override
         public boolean executeTest() {
-            int count = getTableRowCount(tableId);
-            return count > initialCount;
+            try {
+                int count = getTableRowCount(tableId);
+                return count > initialCount;
+            } catch (Exception e) {
+                return false;
+            }
         }
     };
 
@@ -1122,5 +1128,26 @@ public class BaseSeleniumTestClass {
                 return true;// ???
             }
         }
+    }
+
+    abstract class ExceptionSwallowingLoop<T> {
+        public T get() {
+            T value = null;
+            boolean success = false;
+            int count = 0;
+            while (!success && (count < TIMEOUT /2 )) {
+                try {
+                    value = operation();
+                    success = true;
+                } catch (Exception e) {
+                    logger.log(Level.INFO, "Exception caught. Sleeping...");
+                    count++;
+                }
+            }
+
+            return value;
+        }
+
+        public abstract T operation();
     }
 }

@@ -38,19 +38,23 @@
     only if the new code is made subject to such option by the copyright
     holder.
 -->
+<!initPage
+    setResourceBundle(key="i18njms" bundle="org.glassfish.jms.admingui.Strings");
+    setResourceBundle(key="helpjms" bundle="org.glassfish.jms.admingui.Helplinks")
+    setPageSessionAttribute(key="jmsConfigType" value="Basic");
+/>
 <sun:property id="jmsConfigTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" 
-        label="$resource{i18ncs.cluster.jms.ConfigType}" 
-        helpText="$resource{i18ncs.cluster.jms.ConfigTypeHelp}">
-    <sun:dropDown id="configType" selected="#{pageSession.jmsConfigType}" labels={"Basic" "Custom"}
-        onChange="javascript: toggleSheet(this.value, '#{jmsPropertySheetId}');">
-    <!afterCreate
-        getClientId(component="$this{component}" clientId=>$page{jmsPropertyDropDownId});
-    />
-    </sun:dropDown>
-"    <script type="text/javascript">
-"        function toggleSheet(value, sheet) {
-"            document.getElementById(sheet).style.display = (value == 'Basic') ? 'none' : 'block';
-"        }
-"        toggleSheet(document.getElementById('#{jmsPropertyDropDownId}').value, '#{jmsPropertySheetId}');
-"    </script>
+        label="$resource{i18ncs.cluster.jms.ConfigType}">
+    <sun:radioButton id="optBasic"  name="jmsConfigOptionGrp" label="$resource{i18ncs.cluster.jms.ConfigTypeBasic}"
+        selected="#{pageSession.jmsConfigType}" selectedValue="Basic" onChange="updateUI();"/>
+    "<br />
+    <sun:radioButton id="optCustom"  name="jmsConfigOptionGrp" label="$resource{i18ncs.cluster.jms.ConfigTypeCustom}"
+        selected="#{pageSession.jmsConfigType}" selectedValue="Custom" onChange="updateUI();"/>
+    "<br />
+<f:verbatim>
+    <script type="text/javascript">
+#include "/jms/configureJmsCluster.js"
+        updateUI();
+    </script>
+</f:verbatim>
 </sun:property>
