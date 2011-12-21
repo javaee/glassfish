@@ -89,7 +89,7 @@ seekJavaOnPath() {
 }
 
 
-_AS_INSTALL=`dirname "$0"`/..
+_AS_INSTALL=$S1AS_HOME
 export _AS_INSTALL
 case "`uname`" in
   CYGWIN*) _AS_INSTALL=`cygpath --windows $_AS_INSTALL`
