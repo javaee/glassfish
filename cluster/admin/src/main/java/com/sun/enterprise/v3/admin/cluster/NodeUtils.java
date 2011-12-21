@@ -510,11 +510,12 @@ public class NodeUtils {
             if (e2 != null) {
                 m2 = e2.getMessage();
             }
-            if (e instanceof FileNotFoundException) {
-                logger.warning(StringUtils.cat(": ", m1, m2, sshL.toString()));
-                if (!installFlag)
+            if (e instanceof FileNotFoundException) {             
+                if (!installFlag) {
+                    logger.warning(StringUtils.cat(": ", m1, m2, sshL.toString()));
                     throw new CommandValidationException(StringUtils.cat(NL,
                             m1, m2));
+                }
             }
             else {
                 String msg = Strings.get("ssh.bad.connect", nodehost, "SSH");
