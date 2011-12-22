@@ -72,7 +72,10 @@ benchmark_commands() {
   grep 'time to parse domain.xml' $GFHOME/glassfish/domains/$DOMAIN/logs/server.log | 
     sed -e 's/^.*Total //' -e 's/|#]//' | tail -1
   echo 'size of domain.xml: ' `ls -l $GFHOME/glassfish/domains/$DOMAIN/config/domain.xml | awk '{ print $5 }'`
-  daspid=`cat $TESTHOME/glassfish3/glassfish/domains/domain1/config/pid`
+  PIDFILE=$TESTHOME/glassfish3/glassfish/domains/domain1/config/pid
+  # wait for pid file to be there, as restart-domain returns before it is actually there
+  while [ ! -f $PIDFILE ]; do sleep 1; done
+  daspid=`cat $PIDFILE`
   echo 'size of DAS process: ' `ps -o vsz= -p $daspid` ' KB'
 }
 
