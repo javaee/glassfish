@@ -144,7 +144,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.ejb</groupId>
             <artifactId>javax.ejb</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
