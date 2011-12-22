@@ -46,6 +46,7 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.api.JAXRPCCodeGenFacade;
 import org.glassfish.loader.util.ASClassLoaderUtil;
 import com.sun.enterprise.deployment.Application;
@@ -196,7 +197,7 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
      */
     public boolean prepare(DeploymentContext dc) {
         try {
-            prepareScratchDirs(dc);
+            ((ExtendedDeploymentContext)dc).prepareScratchDirs();
 
 
              //In jaxrpc it was required to run
@@ -261,13 +262,6 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
                    undeploymentVisitor.accept(app);
             }
         }
-    }
-
-    protected void prepareScratchDirs(DeploymentContext context)
-        throws IOException {
-        context.getScratchDir("ejb").mkdirs();
-        context.getScratchDir("xml").mkdirs();
-        context.getScratchDir("jsp").mkdirs();
     }
 
     // get the object type from the application manifest file if
