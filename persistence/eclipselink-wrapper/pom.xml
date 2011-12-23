@@ -102,20 +102,6 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.sdo</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <!-- Ideally following should be declared as a dependency in org.eclipse.persistence.sdo. 
-		     Remove following dependency entry once it is done
-		-->	 
-		<dependency>
-            <groupId>commonj.sdo</groupId>
-            <artifactId>commonj.sdo</artifactId>
-			<version>2.1.1.v201112051852</version>
-            <scope>compile</scope>
-		</dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.oracle</artifactId>
             <scope>compile</scope>
         </dependency>
