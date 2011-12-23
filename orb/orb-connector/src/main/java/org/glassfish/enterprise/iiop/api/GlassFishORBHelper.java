@@ -113,7 +113,7 @@ public class GlassFishORBHelper implements PostConstruct, ORBLocator {
             EventListener glassfishEventListener = new org.glassfish.api.event.EventListener() {
 
                 public void event(org.glassfish.api.event.EventListener.Event event) {
-                if (event.is(EventTypes.PREPARE_SHUTDOWN)) {
+                if (event.is(EventTypes.SERVER_SHUTDOWN)) {
                         onShutdown();
                     }
                 }
