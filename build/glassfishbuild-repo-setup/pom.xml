@@ -134,7 +134,7 @@
        </dependency>
 -->
        <dependency>
-      	    <groupId>org.glassfish.l10n</groupId>
+            <groupId>org.glassfish.l10n.packager</groupId>
             <artifactId>l10n-distribution</artifactId>
             <version>${l10n.version}</version>
             <type>zip</type>    
