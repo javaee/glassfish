@@ -153,7 +153,7 @@
 -->
 	
 	<echo message="Copying l10n packages" />
-	<resolveArtifact artifactId="l10n-distribution" groupId="org.glassfish.l10n" type="zip"  property="l10nrepo.zip"/>
+	<resolveArtifact artifactId="l10n-distribution" groupId="org.glassfish.l10n.packager" type="zip"  property="l10nrepo.zip"/>
    
 
         <unzip src="${l10nrepo.zip}" dest="target/source/l10n">   
