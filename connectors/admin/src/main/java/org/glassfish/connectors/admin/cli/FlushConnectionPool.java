@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -136,7 +136,7 @@ public class FlushConnectionPool implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } catch (ConnectorRuntimeException e) {
             report.setMessage(localStrings.getLocalString("flush.connection.pool.fail",
-                    "Failed to flush connection pool {0} due to {1}.", poolName, e.getMessage()));
+                    "Flush connection pool for {0} failed", poolName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
