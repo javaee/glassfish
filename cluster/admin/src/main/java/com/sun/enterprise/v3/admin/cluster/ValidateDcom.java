@@ -89,6 +89,7 @@ public class ValidateDcom implements AdminCommand {
     private String testdir;
     @Param(optional = true, shortName = "v", defaultValue = "false")
     private boolean verbose;
+    private boolean debug;
     private TokenResolver resolver = new TokenResolver();
     private ActionReport report;
     private Logger logger;
@@ -102,7 +103,7 @@ public class ValidateDcom implements AdminCommand {
 
     @Override
     public final void execute(AdminCommandContext context) {
-
+        debug = Boolean.parseBoolean(System.getenv("AS_DEBUG")) && verbose;
         try {
             // try/finally is least messy way of making sure partial success news
             // is delivered back to caller
@@ -131,7 +132,8 @@ public class ValidateDcom implements AdminCommand {
                 return;
         }
         finally {
-            report.setMessage(out.toString());
+            if(report.getActionExitCode() != ActionReport.ExitCode.SUCCESS || verbose)
+                report.setMessage(out.toString());
         }
     }
 
@@ -228,7 +230,7 @@ public class ValidateDcom implements AdminCommand {
         try {
             WindowsWmi ww = new WindowsWmi(creds);
             count = ww.getCount();
-            if (verbose) {
+            if (debug) {
                 String[] info = ww.getInfo();
                 out.append(Strings.get("dcom.wmi.procinfolegend"));
                 for (String s : info) {
@@ -270,7 +272,7 @@ public class ValidateDcom implements AdminCommand {
     private void setError(Exception e, String msg) {
         //report.setFailureCause(e);
         setError(msg + " : " + e.getMessage());
-        if (verbose) {
+        if (debug) {
             Throwable t = e;
             do {
                 dumpStack(t);
