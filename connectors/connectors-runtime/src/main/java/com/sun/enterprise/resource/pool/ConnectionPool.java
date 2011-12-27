@@ -1329,8 +1329,10 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                     ". Please see server.log for more details.");
         }
         
-        try {        
-            killExtraResources(ds.getResourcesSize());
+        try {
+            cancelResizerTask();
+            ds.removeAll();
+            scheduleResizerTask();
             increaseSteadyPoolSize(steadyPoolSize);
         } catch(PoolingException ex) {
             _logger.log(Level.WARNING, "pool.flush_pool_failure", 
