@@ -86,9 +86,7 @@ public class SimpleBMPBean implements EntityBean {
 
 
     /**
-     * Acquire connection dont release it, call flush, close connection. 
-     * Get connection once more. Same connection object should be got.
-     * If so test Passes.
+     * Get connection and do not close it
      */
     public boolean test2() {
         Connection firstConnection = null;
@@ -97,32 +95,12 @@ public class SimpleBMPBean implements EntityBean {
 
         ds = this.ds;
 
-        boolean passed = false;
+        boolean passed = true;
 	Connection con = null;
 	try {
             con = ds.getConnection();
-	    firstConnection = ds.getConnection(con);
-	    System.out.println("******* first : " + firstConnection);
-
-	    //Do a flush
-            if(flushConnectionPool()) {
-
-   	        con.close();
-	    
-	        //Now get another connection
-	        con = ds.getConnection();
-	        lastConnection = ds.getConnection(con);
-	        System.out.println("******* last : " + lastConnection);
-	        passed = firstConnection == lastConnection;
-	    }
 	} catch(Exception ex) {
 	    passed = false;
-	} finally {
-	    if(con != null) {
-		try {
-		    con.close();
-		} catch(Exception ex) {}
-	    }
 	}
         return passed;
     }

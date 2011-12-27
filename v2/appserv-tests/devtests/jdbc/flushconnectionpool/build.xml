@@ -53,6 +53,12 @@
             <param name="sql.file" value="sql/create_pointbase.sql"/>
         </antcall>
         <antcall target="runclient-common"/>
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="flush-connection-pool"/>
+            <param name="operand.props"
+                   value="jdbc-flushconnectionpool-pool"/>
+        </antcall>
+	<antcall target="runclient-common"/>
     </target>
 
     <target name="undeploy" depends="init-common">
