@@ -183,6 +183,12 @@
 	<exec dir="target/source/l10n" executable="python" failonerror="true">
 		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-jca-l10n" />
 	</exec>
+        <exec dir="target/source/l10n" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-jpa-l10n" />
+	</exec>
+        <exec dir="target/source/l10n" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-jta-l10n" />
+	</exec>
 	<exec dir="target/source/l10n" executable="python" failonerror="true">
 		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-gui-l10n" />
 	</exec>
@@ -203,6 +209,17 @@
 	</exec>
 	<exec dir="target/source/l10n" executable="python" failonerror="true">
 		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-cluster-l10n" />
+	</exec>
+        <exec dir="target/source/l10n" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-appclient-l10n" />
+	</exec>
+<!--
+        <exec dir="target/source/l10n" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} metro-l10n" />
+	</exec>
+-->
+        <exec dir="target/source/l10n" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} shoal-l10n" />
 	</exec>
 	<exec dir="target/source/l10n" executable="python" failonerror="true">
 		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-verifier-l10n" />
