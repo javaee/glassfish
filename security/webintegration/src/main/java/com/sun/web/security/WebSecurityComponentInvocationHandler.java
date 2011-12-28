@@ -41,6 +41,7 @@
 package com.sun.web.security;
 
 
+import com.sun.enterprise.security.SecurityComponentInvocationHandler;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
 import com.sun.enterprise.security.common.AppservAccessController;
 import com.sun.logging.LogDomains;
@@ -63,7 +64,7 @@ import javax.security.jacc.PolicyContext;
 
 @Service(name="webSecurityCIH")
 @Scoped(Singleton.class)
-public class WebSecurityComponentInvocationHandler implements RegisteredComponentInvocationHandler {
+public class WebSecurityComponentInvocationHandler extends SecurityComponentInvocationHandler {
 
     private static Logger _logger = null;
     
@@ -121,28 +122,5 @@ public class WebSecurityComponentInvocationHandler implements RegisteredComponen
         invManager.registerComponentInvocationHandler(ComponentInvocationType.SERVLET_INVOCATION, this);
     }
     
-     public void resetPolicyContext() {
-        if (System.getSecurityManager() == null) {
-            ((PolicyContextHandlerImpl)PolicyContextHandlerImpl.getInstance()).reset();
-            return;
-        }
-        
-        try {
-                AppservAccessController.doPrivileged(new PrivilegedExceptionAction() {
-                    public java.lang.Object run() throws Exception {
-                         ((PolicyContextHandlerImpl)PolicyContextHandlerImpl.getInstance()).
-                                 reset();
-                        return null;
-                    }
-                });
-            } catch (java.security.PrivilegedActionException pae) {
-                Throwable cause = pae.getCause();
-                if (cause instanceof java.security.AccessControlException) {
-                    _logger.log(Level.SEVERE, "jacc_policy_context_security_exception", cause);
-                } else {
-                    _logger.log(Level.SEVERE, "jacc_policy_context_exception", cause);
-                }
-                throw new RuntimeException(cause);
-            }
-    }
+    
 }

@@ -654,7 +654,7 @@ public class BasePolicyWrapper extends java.security.Policy {
        return PolicyConfigurationFactoryImpl.getInstance();
     }
     
-     public void resetPolicyContext() {
+    private void resetPolicyContext() {
         if (System.getSecurityManager() == null) {
             ((PolicyContextHandlerImpl)PolicyContextHandlerImpl.getInstance()).reset();
             return;
