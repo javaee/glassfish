@@ -61,6 +61,7 @@
     </target>
 
     <target name="create.distribution" depends="get.distribution.type">
+	<antcall target="addDummyJavaDoc"/>
         <antcall target="makeJarDir"/>
         <antcall target="removeJarsNotNeeded"/>
 	<antcall target="addDtds"/>
@@ -68,6 +69,7 @@
 	<antcall target="addEjbTimer"/>
         <antcall target="rejar"/>
         <attachArtifact file="${finaljar}"/>
+        <attachArtifact file="${rootdir}/${artifactId}-javadoc.jar" classifier="javadoc" type="jar"/>
      </target>
 
      <target name="makeJarDir">
@@ -171,5 +173,15 @@
 -->
    </target>
 
+   <!-- create a dummy javadoc artifact to deploy to maven.java.net -->
+   <target name="addDummyJavaDoc">
+        <echo message="rootdir=${rootdir}"/>
+        <jar jarfile="${rootdir}/${artifactId}-javadoc.jar" basedir="${basedir}" >
+          <patternset>
+		  <exclude name="**/target/**"/>
+	  </patternset>
+        </jar>
+   </target>
 
 </project>
+
