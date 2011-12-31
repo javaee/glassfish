@@ -113,6 +113,7 @@
             label="$resource{i18ncs.cluster.jms.dbUserPasswordAlias}" helpText="$resource{i18ncs.cluster.jms.dbUserPasswordAliasHelp}">
             <sun:dropDown id="pswdAlias" labels="#{pageSession.listOfAliases}" selected="#{pageSession.pswdAlias}" >
                 <!beforeCreate
+                    setAttribute(key="doEscape" value="true");
                     gfr.getPswdAliases();
                 />
             </sun:dropDown>
