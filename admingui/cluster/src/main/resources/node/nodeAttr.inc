@@ -231,6 +231,7 @@
                     />
                 <sun:dropDown id="pswdAlias" labels="#{pageSession.listOfAliases}" selected="#{pageSession.pswdAlias}" >
                     <!beforeCreate
+                        setAttribute(key="doEscape" value="true");
                         gfr.getPswdAliases();
                     />
                     <!afterCreate
@@ -352,6 +353,7 @@
                 />
                 <sun:dropDown id="pswdAlias" labels="#{pageSession.listOfAliases}" selected="#{pageSession.winPswdAlias}" >
                     <!beforeCreate
+                        setAttribute(key="doEscape" value="true");
                         gfr.getPswdAliases();
                     />
                     <!afterCreate
