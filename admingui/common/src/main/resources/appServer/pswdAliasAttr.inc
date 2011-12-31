@@ -44,7 +44,7 @@
         
         <sun:propertySheetSection id="propertSectionTextField">
             <sun:property id="aliasName"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.pswdAlias.aliasName}" >
-                <sun:staticText id="aliasName" text="#{pageSession.valueMap['aliasname']}"/>
+                <sun:staticText id="aliasName" text="#{pageSession.name}"/>
             </sun:property> 
 
             <sun:property id="aliasNameNew"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.pswdAlias.aliasName}"  helpText="$resource{i18nc.pswdAlias.aliasNameHelp}">
