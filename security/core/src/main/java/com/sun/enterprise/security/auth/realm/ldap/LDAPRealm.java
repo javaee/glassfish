@@ -607,6 +607,17 @@ public final class LDAPRealm extends IASRealm
         p.put(Context.SECURITY_PRINCIPAL, bindDN);
         p.put(Context.SECURITY_CREDENTIALS, new String(password));
         
+        //-------------Workaround for 13392901---------
+        // disable connection pooling for this since this is the place where
+        // the connection is getting associated with an LDAP Users credentials
+        // This will cause problems if the users password is changed subsequently
+
+        p.put("com.sun.jndi.ldap.connect.pool", "false");
+
+        //-------------END  Workaround-------------------------
+
+
+        
         DirContext ctx = null;
         try {
             ctx = new InitialDirContext(p);
