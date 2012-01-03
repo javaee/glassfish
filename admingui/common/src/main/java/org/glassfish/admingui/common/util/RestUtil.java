@@ -220,6 +220,9 @@ public class RestUtil {
 
     private static Map maskOffPassword(Map<String, Object> attrs){
         Map masked = new HashMap();
+        if (attrs == null){
+            return masked;
+        }
 
         for(String key : attrs.keySet()){
             if (pswdAttrList.contains(key.toLowerCase())){
@@ -307,7 +310,10 @@ public class RestUtil {
         // Parse the response
         String message = "";
         ExitCode exitCode = ExitCode.FAILURE;
-        Map maskedAttr = maskOffPassword((Map<String, Object>)attrs);
+        Object maskedAttr = attrs;
+        if ((attrs != null) && (attrs instanceof Map)) {
+            maskedAttr = maskOffPassword((Map<String, Object>)attrs);
+        }
         if (response != null) {
             try {
                 int status = response.getResponseCode();
