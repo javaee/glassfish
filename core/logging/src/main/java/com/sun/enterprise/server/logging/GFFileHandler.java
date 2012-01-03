@@ -613,8 +613,6 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                                     new FieldPosition(0));
                             File rotatedFile = new File(renamedFileName.toString());
                             boolean renameSuccess = oldFile.renameTo(rotatedFile);
-                            FileOutputStream oldFileFO = new FileOutputStream(oldFile);
-                            oldFileFO.close();
                             if (!renameSuccess) {
                                 // If we don't succeed with file rename which
                                 // most likely can happen on Windows because
@@ -630,6 +628,8 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                                         new FileOutputStream(freshServerLogFile);
                                 fo.close();
                             }
+                            FileOutputStream oldFileFO = new FileOutputStream(oldFile);
+                            oldFileFO.close();
                             openFile(getLogFileName());
                             absoluteFile = getLogFileName();
                             // This will ensure that the log rotation timer
@@ -643,8 +643,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
 
                             cleanUpHistoryLogFiles();
                         } catch (IOException ix) {
-                            publish(new LogRecord(Level.SEVERE,
-                                    "Error, could not rotate log : " + ix.getMessage()));
+                            System.out.println("Error, could not find log file : " + ix.getMessage());
                         }
                         return null;
                     }
