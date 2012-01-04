@@ -49,7 +49,7 @@
 such support out of the box. However, extensions hooks are provided to save configuration 
 to other means that an xml file as the configuration structure definition is agnostic of
 the underlying persistence model. For that particular reasons, it was not practical to 
-define our configuration mappings using a technology like JAXB due to its attachement
+define our configuration mappings using a technology like JAXB due to its reliance
 to the xml format. 
 
 	However, the description of such mappings ressembles the JAXB interfaces definition.
@@ -57,7 +57,7 @@ to the xml format.
 Mapping
 
 	The mapping from Java to a persisted configuration is using a tree of plain old Java
-interfaces definitions that reprensent the document structure. Each tree node can have
+interfaces definitions that represent the document structure. Each tree node can have
 attributes which can only be a String or a type that maps directly to a String 
 (with a toString() method and a String parameter based constructor), and can have sub-elements
 which are tree nodes themselves. Such elements can have various cardinality, 
@@ -224,7 +224,7 @@ ConfigSupport.apply(new SingleCodeCode<HttpListener>() {
 listeners have the ability to raise a PropertyVetoException that will force the pending transaction to
 be rolled back (all changes to all beans will then be discarded).
 
-	Note the code below will be simplified soon : 
+	Note the code below should be simplified :
 
 +-------------------------------+
         ((ConfigBean) ConfigSupport.getImpl(target)).getOptionalFeature(ConstrainedBeanListener.class).addVetoableChangeListener(this);
@@ -233,4 +233,47 @@ be rolled back (all changes to all beans will then be discarded).
 ** Changes notification
 
     Any code that wishes to receive notification of changes of configuration bean can implement
-the ConfigListener interface. 
+the ConfigListener interface.
+
++-------------------------------+
+        public class Foo implements ConfigListener {
+
+            @Inject
+            SomeConfigObject firstConfig;
+
+            @Inject
+            SomeOtherConfigObject secondConfig;
+
+            // This instance is automatically registered for all the configuration
+            // objects that were injected (in this example, firstConfig and secondConfig)
+            public UnprocessedChangeEvents changed(PropertyChangeEvent[] changes) {
+
+            }
+        }
++-------------------------------+
+
+*** Manual Registration
+
+    Sometimes, it is necessary to manually register a listener to a particular configuration instance that was not injected
+or it is not interesting to be listening for changes on all the objects that were injected. In this case, the configuration
+proxy must be unwrapped to access the underlying ConfigBean instance and register the listener using the register/unregister methods.
+
++-------------------------------+
+    ((ConfigBean) ConfigSupport.getImpl(target).registerListener(new ConfigListener() {
+
+            // will be notified when target is changing.
+            public UnprocessedChangeEvents changed(PropertyChangeEvent[] changes) {
+
+            }
+    });
++-------------------------------+
+
+
+** Extensibility
+
+    Like anything in HK2, configuration can be extended. There are however a few limitations (that could be overcome with
+some imaginative, reflective code). The current limitations are :
+
+    * Each configuration object can only have one extension point
+    * Each extension point defines the super interface for all possible extensions.
+    * Each extension point must be defined with @Element("*")
