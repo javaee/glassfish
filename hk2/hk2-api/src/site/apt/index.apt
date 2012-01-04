@@ -1,0 +1,173 @@
+    ------
+    Introduction to Hk2-APIs
+    ------
+    Jerome Dochez
+    ------
+    ------
+
+        HK2 is primarily a declarative framework for services using annotations like
+    {{{./apidocs/org/jvnet/hk2/annotations/Contract.html}Contract}} and
+    {{{./apidocs/org/jvnet/hk2/annotations/Service.html}Service}}. However, it is possible to
+    use programmatic APIs to precisely control the services and bindings available within
+    the Services registry.
+
+        Find information about testing hk2 components {{{./testing.html}here}}.
+
+
+Modules
+
+    In HK2, there are different types of modules, the lower level modules that are often
+    implemented as OSGi modules, are basic jar files with a set of appropriate decorations.
+    Documentation on how to achieve modularity through jar files and OSGi can be found {{{./modularity.html}here}}.
+    However, there is a module notion for hk2 services that defines boundaries
+    with other services that are registered in other modules.
+
+    Such {{{./apidocs/org/glassfish/hk2/Module.html}Module}} provides a modular approach
+    to services bindings and access with precise control over the services visibility between
+    modules.
+
+    {{{./apidocs/org/glassfish/hk2/Module.html}Module}} implementations are the basic
+    entry point for applications to register their services and finally start the desired
+    top level services.
+
+    Here is a simple example of a binding module from the auto-depends tests :
+
++-----------------------+
+public class MyModule implements Module {
+
+    @Override
+    public void configure(BinderFactory binderFactory) {
+        binderFactory.bind(RandomContract.class).to(RandomService.class);
+        binderFactory.bind().to(MyStartupCode.class);
+
+        binderFactory.bind(SomeContract.class.getName()).to(PerThreadService.class.getName());
+    }
+}
++-----------------------+
+
+    The fist bind() call to {{{./apidocs/org/glassfish/hk2/BinderFactory.html#bind(java.lang.Class,%20java.lang.Class...)}bind(Class)}}
+    registers a service implementation type for a contract type.
+
+Hk2 Binding EDSL
+
+    Much like {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Binder.html}Guice}},
+    HK2 uses an embedded domain specific language to create bindings.
+
+* Simple Bindings
+
+    All the examples below assume having access to an implicit BinderFactory instance.
+
++-----------------------+
+    bind(ServiceImpl.class)
++-----------------------+
+
+    This statement does nothing as all classes are implicitly services.
+
++-----------------------+
+    ServiceImpl instance = new MyServiceImpl(); // or another factory/builder pattern
+    bind(instance)
++-----------------------+
+
+    This statement will register the "instance" as the provider for the ServiceImpl service type.
+
++-----------------------+
+    bind(MyContract.class).to(MyServiceImpl.class)
++-----------------------+
+
+    This statement will register MyServiceImpl type as the service type for the MyContract interface. This is
+    semantically equivalent to using the @Contract annotation on MyContract class and @Service annotation on
+    MyServiceImpl class.
+
++-----------------------+
+    ServiceImpl instance = new MyServiceImpl(); // or another factory/builder pattern
+    bind(MyContract.class).to(instance)
++-----------------------+
+
+    This statement will bind the "instance" as the provider for the MyContract interface.
+
+* Naming
+
+    Services registered thought the BinderFactory can also carry an optional name to disambiguate multiple providers.
+    A Service can only have one name.
+
++-----------------------+
+    bind(MyContract.class).named("foo").to(MyServiceImpl.class)
++-----------------------+
+
+    This statement is sematically equivalent as annotating MyServiceImpl class with @Service(name="foo). To depend
+    on this service, code will need to either use @Inject(name="foo") MyContract declaration or user the
+    {{{./apidocs/org/glassfish/hk2/Locator.html}Locator}} APIs.
+
+* Qualifiers
+
+    Services can be further qualified by using specific annotations when registering or looking up.
+
++-----------------------+
+    bind(MyContract.class).annotatedWith(Red.class).to(MyRedServiceImpl.class)
++-----------------------+
+
+    Such service can be once again looked up using the {{{./apidocs/org/glassfish/hk2/Locator.html}Locator}} APIs or
+    more simply, can use the same annotation on the injection point :
+
++-----------------------+
+    @Inject
+    @Red
+    MyContract mc; // should be injected with an instance of MyRedServiceImpl type
++-----------------------+
+
+* Factory Bindings
+
+    Sometimes, the instantiation of services requires specific domain behavior, which can be resolved by registering
+    a {{{./apidocs/org/glassfish/hk2/Factory.html}Factory}} for the service. The Factory is a contract to deliver an instance
+    of the service when called.
+
++-----------------------+
+    bind(MyContract.class).named("foo").toFactory(MyServiceFactory.class)
++-----------------------+
+
+* Parameterized Bindings
+
+    You can bind a parameterized type by forcing users to create a subclass of
+    {{{./apidocs/org/glassfish/hk2/TypeLiteral.html}TypeLiteral}} which will allow HK2 to retrieve the parameterized
+    type at runtime.
+
++-----------------------+
+    // simple parameterized contract
+    public interface RouteBuilder<T extends Pattern> {
+    }
+
+    binderFactory.bind(new TypeLiteral<RouteBuilder<PathPattern>>() {}).to(PathPatternRouteBuilder.class);
++-----------------------+
+
+* Dynamic Bindings
+
+    Although the simplest way of adding bindings into a {{{./apidocs/org/glassfish/hk2/Services.html}Services}} instance
+    at {{{./apidocs/org/glassfish/hk2/Module.html}Modulel}} configuration, it is also possible to add bindings after
+    the modules initialization phase using a {{{./apidocs/org/glassfish/hk2/DynamicBinderFactory.html}DynamicBinderFactory}}
+
+    An instance of {{{./apidocs/org/glassfish/hk2/DynamicBinderFactory.html}DynamicBinderFactory}} can be obtained from
+    {{{./apidocs/org/glassfish/hk2/Services.html#bindDynamically()}bindDynamically}} method on the Services instance.
+
+    One to many bindings can be added using the dynamic binder until the
+    {{{./apidocs/org/glassfish/hk2/DynamicBinderFactory.html#commit()}commit}} method is called which closes the late
+    binding phase.
+
+    Example :
+
++-----------------------+
+@Service
+public class SomeUserService {
+
+    @Inject
+    Services services;
+
+    public void someMethod {
+        DynamicBinderFactory binder = services.bindDynamically();
+        binder.bind().to(SomeClass.class);
+        binder.bind().to(someInstance);
+        binder.bind(SomeContract.class).toFactory(SomeFactory.class);
+        binder.bind(SomeContract.class).to(someInstance);
+        binder.commit();
+    }
+}
++-----------------------+

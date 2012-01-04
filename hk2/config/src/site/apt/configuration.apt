@@ -84,6 +84,9 @@ public interface HttpServer extends ConfigBeanProxy {
 </...>
 +-------------------------------+
 
+* ConfigBeanProxy
+
+    For performance reasons (faster lookup), all configuration related interfaces (
 ** Attributes
 	
 	Attributes are represented in the configuration definition with the 
@@ -150,6 +153,36 @@ public interface HttpServer extends ConfigBeanProxy {
 		<http-listener name="..." port="8090" .../>
 	</http-server-name>
 </...>	
++-------------------------------+
+
+* Validation
+
+    XML validation cannot be performed using normal XML validation tools like a DTD or a schema, mainly because of
+the extensible nature of server configuration. Since we use a stax parser implementation, it would be possible to
+add a functionality to hk2 in order to provide XML validation but the feature is not implemented at this point.
+
+    To help validation of xml element values, it is possible to use the {{{http://docs.oracle.com/javaee/6/api/javax/validation/package-summary.html}Validation}}
+APIs to decorate the @Configured annotated interfaces. The entire extend of the validation specification is available,
+from validating attributes to adding {{{http://docs.oracle.com/javaee/6/api/javax/validation/Validator.html}Validators}
+for types.
+
+   Here is an example of field validation, where we ensure the field is not null and follows particular regex pattern :
+
++-------------------------------+
+   @Configured
+   public interface ClusterRef extends ConfigBeanProxy, Injectable, Ref  {
+
+       /**
+        * Gets the value of the ref property.
+        *
+        * @return possible object is
+        *         {@link String }
+        */
+       @Override
+       @Attribute(key=true)
+       @NotNull
+       @Pattern(regexp=NAME_SERVER_REGEX)
+       public String getRef();
 +-------------------------------+
 
 * Transaction
@@ -271,9 +304,72 @@ proxy must be unwrapped to access the underlying ConfigBean instance and registe
 
 ** Extensibility
 
-    Like anything in HK2, configuration can be extended. There are however a few limitations (that could be overcome with
+    Like anything in HK2, configuration can be extended.
+
+    To extend configuration, you can use normal Java mechanisms like sub-classing. The idea, is to use a super interface
+definition for the extension point and as a parent type for all the configuration extensions. Let's take an example,
+suppose you want to add an extension point for all the containers related configuration. The first thing to do is to
+define the super interface, let's call it Container :
+
++-------------------------------+
+@Configured
+public interface Container extends ConfigBeanProxy {
+
+    // this can be an empty interface, or it can contain some
+}
++-------------------------------+
+
+    Once the super interface is defined, you can add the extension point in the container type, which in my example is
+a type called Containers :
+
++-------------------------------+
+@Configured
+public interface Containers extends ConfigBeanProxy {
+
+    @Element("*")
+    List<Container> getContainers();
+}
++-------------------------------+
+
+    A few things to understand, the presence of "*" as the element is necessary as the extension point does not know all the
+possible XML element names that can be used under Containers. So the configuration parsing code will use the XML element
+name with all defined Container sub types to match which type handles the XML element name.
+
+    Finally, the extensions themselves can be defined as subclasses of Container :
+
++-------------------------------+
+@Configured
+public interface WebContainer extends Container {
+
+    @Attribute("http-port")
+    String getHttpPort();
+    void setHttpPort(String port);
+}
+
+@Configured
+public interface EjbContainer extends Container {
+
+    @Attribute("stateless-default-number")
+    String getStatelessDefaultNumber();
+    void setStatelessDefaultNumber(String port);
+}
+
++-------------------------------+
+
+    The resulting XML snippet will be  :
+
+    <containers>
+        <web-container http-port="8080"/>
+        <ejb-container stateless-default-number="10"/>
+   </containers>
+
+    There are however a few limitations (that could be overcome with
 some imaginative, reflective code). The current limitations are :
 
     * Each configuration object can only have one extension point
     * Each extension point defines the super interface for all possible extensions.
     * Each extension point must be defined with @Element("*")
+
+* Implementation details
+
+    Implementation details of the configuration backend can be found {{{./implementation.html}here}.
