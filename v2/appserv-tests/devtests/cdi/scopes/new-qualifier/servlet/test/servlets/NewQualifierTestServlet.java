@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010-2012 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.enterprise.inject.New;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -60,6 +61,14 @@ public class NewQualifierTestServlet extends HttpServlet {
     @Inject
     @New
     TestRequestScopedBean newRequestScopedBean;
+
+    @Inject
+    @New
+    Instance<TestRequestScopedBean> newRequestScopedBeanProgrammaticLookup;
+    
+    @Inject
+    @New(TestRequestScopedBean.class)
+    Instance<TestRequestScopedBean> newRequestScopedBeanProgrammaticLookup2;
 
     public void service(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
@@ -84,6 +93,12 @@ public class NewQualifierTestServlet extends HttpServlet {
 
         if (!testIsClientProxy(trsb, TestRequestScopedBean.class))
             msg += "Request scoped beans must be injected as a client proxy";
+        
+        if(newRequestScopedBeanProgrammaticLookup.get() == null) 
+            msg += "A new instance of Request Scoped Bean obtained through programmatic lookup failed";
+        
+        if(newRequestScopedBeanProgrammaticLookup2.get() == null) 
+            msg += "A new(complex type specification scenario) instance of Request Scoped Bean obtained through programmatic lookup failed";
 
         writer.write(msg + "\n");
     }
