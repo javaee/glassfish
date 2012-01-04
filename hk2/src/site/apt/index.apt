@@ -20,6 +20,8 @@ or injection of dependencies as well as automatic resolution of dependencies.
 
    Link to HK2 APIs {{{./hk2-api/index.html}Programmatic APIs}}
 
+   Link to information on how to build a modular application using HK2 {{{./hk2-api/modularity.html}here}}
+
 * Class Model
 
 	In order to generate enough metadata to satisfy all injection points with a suitable injection target, HK2 has developped a simple class model which mimics a java class reflective API without the cost of loading the class files with a class loader. The class-model sub project can be used indenpendently of HK2, it is using ASM to load the byte code and provide a user friendly reflective APIs on the parsed classes.
@@ -36,4 +38,4 @@ or injection of dependencies as well as automatic resolution of dependencies.
 
 	An integration with JUnit is provided so users can develop their tests with dependency injection available. For more sophisticated tests, a harness is also provided to start modules and habitat during test execution
 
-    Link to {{{.\/auto-depends/tests.html}Testing}}
+    Link to {{{.\/hk2-api/testing.html}Testing}}
