@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,6 +39,7 @@
  */
 package com.sun.enterprise.admin.cli.cluster;
 
+import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.io.InstanceDirs;
@@ -471,6 +472,20 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             return installRoot.getParent();
         }
         return productRootPath;
+    }
+    
+    protected String getNodeInstallDir() throws CommandException {
+        String installDir = null;
+        try {
+            RemoteCommand rc = new RemoteCommand("get", this.programOpts, this.env);
+            String s = rc.executeAndReturnOutput("get", "nodes.node." + node + ".install-dir");
+            if (s != null) {
+                installDir = s.substring(s.indexOf("=") + 1);
+            }
+        } catch (CommandException ce) {
+            // ignore
+        }
+        return installDir;
     }
 
 // -----------------------------------------------------------------------
