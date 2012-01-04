@@ -516,8 +516,12 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
 
                             loadDBProperties(ENHANCED_CLUSTER_DB_PREFIX, as.getJmsAvailability());
                     }
-                    else
+                    else  {
+                        if ("jdbc".equals(as.getJmsAvailability().getMessageStoreType()))
+                            loadDBProperties(ENHANCED_CLUSTER_DB_PREFIX, as.getJmsAvailability());
+
                         loadDBProperties(CONVENTIONAL_CLUSTER_DB_PREFIX, as.getJmsAvailability());
+                    }
 
 
 
@@ -634,8 +638,8 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
     dbProps.setProperty("imq.persist.store", jmsAvailability.getMessageStoreType());
 	if(Boolean.valueOf(jmsAvailability.getAvailabilityEnabled()) == false)
 		dbProps.setProperty("imq.cluster.nomasterbroker", "true");
-	else{
-		dbProps.setProperty("imq.brokerid", getBrokerInstanceName(getJmsService()));
+    if (Boolean.valueOf(jmsAvailability.getAvailabilityEnabled()) || "jdbc".equals(jmsAvailability.getMessageStoreType())){
+		dbProps.setProperty("imq.brokerid", getBrokerInstanceName(getJmsService()) );
 	}
         String dbVendor = jmsAvailability.getDbVendor();
         String dbuser = jmsAvailability.getDbUsername();
