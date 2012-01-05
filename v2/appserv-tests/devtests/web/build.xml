@@ -281,6 +281,7 @@
         <ant dir="servlet-3.0/xmlOverrideAnnotation" target="all"/>
         <ant dir="servlet-3.0/xmlOverrideAnnotationWithWebFragment" target="all"/>
         <ant dir="servlet-3.0/xmlOverrideUrlPatternWithWebFragment" target="all"/>
+        <ant dir="servlet-3.0/filterWithEmptyUrl" target="all"/>
         <ant dir="servletAnnotationPreDestroy" target="all"/>
         <ant dir="servletChainedException" target="all"/>
         <ant dir="servletContextAttributeEventAttributeRemoved" target="all"/>

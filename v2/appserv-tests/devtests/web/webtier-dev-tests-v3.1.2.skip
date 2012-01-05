@@ -6,3 +6,4 @@ wrongTransport # Grizzly 2.1
 wrongTransportTarget # Grizzly 2.1
 virtualServerAlternateDocrootRestart # Grizzly 2.1
 programmaticLogin # different class in the trunk
+servlet-3.0/filterWithEmptyUrl # need Grizzly integration (IT 18132)
