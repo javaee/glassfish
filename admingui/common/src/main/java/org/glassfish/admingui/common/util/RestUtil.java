@@ -218,7 +218,7 @@ public class RestUtil {
         return parseResponse(restResponse, handlerCtx, endpoint, (useData && "post".equals(method))? data: attrs, quiet, throwException);
     }
 
-    private static Map maskOffPassword(Map<String, Object> attrs){
+    public static Map maskOffPassword(Map<String, Object> attrs){
         Map masked = new HashMap();
         if (attrs == null){
             return masked;

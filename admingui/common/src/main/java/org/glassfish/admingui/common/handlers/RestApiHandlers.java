@@ -40,6 +40,7 @@
 
 package org.glassfish.admingui.common.handlers;
 
+import java.util.logging.Logger;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
@@ -218,7 +219,23 @@ public class RestApiHandlers {
         if (GuiUtil.isEmpty(endpoint)){
             handlerCtx.setOutputValue("result", new HashMap());
         }else{
-            handlerCtx.setOutputValue("result",  RestUtil.restRequest(endpoint, attrs, method, handlerCtx, quiet, throwException));
+            try{
+                Map result = RestUtil.restRequest(endpoint, attrs, method, handlerCtx, quiet, throwException);
+                handlerCtx.setOutputValue("result", result );
+            }catch(Exception ex){
+                Logger logger = GuiUtil.getLogger();
+                if (logger.isLoggable(Level.FINE)) {
+                    ex.printStackTrace();
+                }
+                Map maskedAttr = RestUtil.maskOffPassword(attrs);
+                GuiUtil.getLogger().log(
+                    Level.SEVERE,
+                    ex.getMessage() + ";\n" +
+                    ex.getCause() + ";\n" + 
+                    GuiUtil.getCommonMessage("LOG_REST_REQUEST_INFO", new Object[]{endpoint, maskedAttr, method}));
+                GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
+                return;
+            }
         }
     }
 
