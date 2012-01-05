@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -64,16 +64,11 @@ public class AsmSerializableBeanGenerator
     private byte[] classData = null;
 
     private Class loadedClass = null;
-            ;
     private ClassLoader loader;
-
 
     private Class baseClass;
 
     private String subclassName;
-
-
-    private static final boolean _debug = Boolean.valueOf(System.getProperty("emit.ejb.optional.interface"));
 
     public AsmSerializableBeanGenerator(ClassLoader loader, Class baseClass, String serializableSubclassName) {
         this.loader = loader;
@@ -120,9 +115,11 @@ public class AsmSerializableBeanGenerator
 	Constructor[] ctors = baseClass.getConstructors();
 	Constructor ctorWithParams = null;
 	for(Constructor ctor : ctors) {
-	    if( ctor.getParameterTypes().length > 0 ) {
+	    if(ctor.getParameterTypes().length == 0) {
+                ctorWithParams = null;    //exists the no-arg ctor, use it
+                break;
+            } else if(ctorWithParams == null) {
 		ctorWithParams = ctor;
-		break;
 	    }
 	}
 
