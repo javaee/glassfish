@@ -65,14 +65,14 @@
 <a class="jxr_linenumber" name="55" href="#55">55</a>  
 <a class="jxr_linenumber" name="56" href="#56">56</a>      @Override
 <a class="jxr_linenumber" name="57" href="#57">57</a>      <strong class="jxr_keyword">public</strong> Collection&lt;ClassModel&gt; implementations() {
-<a class="jxr_linenumber" name="58" href="#58">58</a>          <strong class="jxr_keyword">return</strong> sink.getImplementations();
+<a class="jxr_linenumber" name="58" href="#58">58</a>          <strong class="jxr_keyword">return</strong> getProxy().getImplementations();
 <a class="jxr_linenumber" name="59" href="#59">59</a>      }
 <a class="jxr_linenumber" name="60" href="#60">60</a>  
 <a class="jxr_linenumber" name="61" href="#61">61</a>      @Override
 <a class="jxr_linenumber" name="62" href="#62">62</a>      <strong class="jxr_keyword">public</strong> Collection&lt;ClassModel&gt; allImplementations() {
 <a class="jxr_linenumber" name="63" href="#63">63</a>          Collection&lt;ClassModel&gt; result = <strong class="jxr_keyword">new</strong> HashSet&lt;ClassModel&gt;();
-<a class="jxr_linenumber" name="64" href="#64">64</a>          result.addAll(sink.getImplementations());
-<a class="jxr_linenumber" name="65" href="#65">65</a>          <strong class="jxr_keyword">for</strong> (ClassModel cm : sink.getImplementations()) {
+<a class="jxr_linenumber" name="64" href="#64">64</a>          result.addAll(getProxy().getImplementations());
+<a class="jxr_linenumber" name="65" href="#65">65</a>          <strong class="jxr_keyword">for</strong> (ClassModel cm : getProxy().getImplementations()) {
 <a class="jxr_linenumber" name="66" href="#66">66</a>              result.addAll(cm.allSubTypes());
 <a class="jxr_linenumber" name="67" href="#67">67</a>          }
 <a class="jxr_linenumber" name="68" href="#68">68</a>          <strong class="jxr_keyword">return</strong> Collections.unmodifiableCollection(result);
@@ -82,7 +82,7 @@
 <a class="jxr_linenumber" name="72" href="#72">72</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> print(StringBuffer sb) {
 <a class="jxr_linenumber" name="73" href="#73">73</a>          <strong class="jxr_keyword">super</strong>.print(sb);
 <a class="jxr_linenumber" name="74" href="#74">74</a>          sb.append(<span class="jxr_string">", implementors=["</span>);
-<a class="jxr_linenumber" name="75" href="#75">75</a>          <strong class="jxr_keyword">for</strong> (ClassModel cm : sink.getImplementations()) {
+<a class="jxr_linenumber" name="75" href="#75">75</a>          <strong class="jxr_keyword">for</strong> (ClassModel cm : getProxy().getImplementations()) {
 <a class="jxr_linenumber" name="76" href="#76">76</a>              sb.append(<span class="jxr_string">" "</span>).append(cm.getName());
 <a class="jxr_linenumber" name="77" href="#77">77</a>          }
 <a class="jxr_linenumber" name="78" href="#78">78</a>          sb.append(<span class="jxr_string">"]"</span>);

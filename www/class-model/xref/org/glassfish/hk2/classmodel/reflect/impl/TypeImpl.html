@@ -64,9 +64,9 @@
 <a class="jxr_linenumber" name="54" href="#54">54</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="55" href="#55">55</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../org/glassfish/hk2/classmodel/reflect/impl/TypeImpl.html">TypeImpl</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../../org/glassfish/hk2/classmodel/reflect/impl/AnnotatedElementImpl.html">AnnotatedElementImpl</a> <strong class="jxr_keyword">implements</strong> <a href="../../../../../../org/glassfish/hk2/classmodel/reflect/Type.html">Type</a> {
 <a class="jxr_linenumber" name="56" href="#56">56</a>  
-<a class="jxr_linenumber" name="57" href="#57">57</a>      <strong class="jxr_keyword">final</strong> TypeProxy&lt;Type&gt; sink;
-<a class="jxr_linenumber" name="58" href="#58">58</a>      <strong class="jxr_keyword">final</strong> List&lt;MethodModel&gt; methods = <strong class="jxr_keyword">new</strong> ArrayList&lt;MethodModel&gt;();
-<a class="jxr_linenumber" name="59" href="#59">59</a>      <strong class="jxr_keyword">final</strong> Set&lt;URI&gt; definingURIs= <strong class="jxr_keyword">new</strong> HashSet&lt;URI&gt;();
+<a class="jxr_linenumber" name="57" href="#57">57</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> TypeProxy&lt;Type&gt; sink;
+<a class="jxr_linenumber" name="58" href="#58">58</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> List&lt;MethodModel&gt; methods = <strong class="jxr_keyword">new</strong> ArrayList&lt;MethodModel&gt;();
+<a class="jxr_linenumber" name="59" href="#59">59</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Set&lt;URI&gt; definingURIs= <strong class="jxr_keyword">new</strong> HashSet&lt;URI&gt;();
 <a class="jxr_linenumber" name="60" href="#60">60</a>  
 <a class="jxr_linenumber" name="61" href="#61">61</a>  
 <a class="jxr_linenumber" name="62" href="#62">62</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../../../org/glassfish/hk2/classmodel/reflect/impl/TypeImpl.html">TypeImpl</a>(String name, TypeProxy&lt;Type&gt; sink) {
@@ -110,7 +110,7 @@
 <a class="jxr_linenumber" name="100" href="#100">100</a>         <strong class="jxr_keyword">return</strong> Collections.unmodifiableList(methods);
 <a class="jxr_linenumber" name="101" href="#101">101</a>     }
 <a class="jxr_linenumber" name="102" href="#102">102</a> 
-<a class="jxr_linenumber" name="103" href="#103">103</a>     <a href="../../../../../../org/glassfish/hk2/classmodel/reflect/impl/TypeProxy.html">TypeProxy</a> getProxy() {
+<a class="jxr_linenumber" name="103" href="#103">103</a>     TypeProxy&lt;Type&gt; getProxy() {
 <a class="jxr_linenumber" name="104" href="#104">104</a>         <strong class="jxr_keyword">return</strong> sink;
 <a class="jxr_linenumber" name="105" href="#105">105</a>     }
 <a class="jxr_linenumber" name="106" href="#106">106</a> 

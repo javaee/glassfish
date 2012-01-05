@@ -108,7 +108,7 @@
 <a class="jxr_linenumber" name="98" href="#98">98</a>      @Override
 <a class="jxr_linenumber" name="99" href="#99">99</a>      <strong class="jxr_keyword">public</strong> Collection&lt;T&gt; subTypes() {
 <a class="jxr_linenumber" name="100" href="#100">100</a>         List&lt;T&gt; subTypes = <strong class="jxr_keyword">new</strong> ArrayList&lt;T&gt;();
-<a class="jxr_linenumber" name="101" href="#101">101</a>         <strong class="jxr_keyword">for</strong> (Type t : sink.getSubTypeRefs()) {
+<a class="jxr_linenumber" name="101" href="#101">101</a>         <strong class="jxr_keyword">for</strong> (Type t : getProxy().getSubTypeRefs()) {
 <a class="jxr_linenumber" name="102" href="#102">102</a>             subTypes.add((T) t);
 <a class="jxr_linenumber" name="103" href="#103">103</a>         }
 <a class="jxr_linenumber" name="104" href="#104">104</a>         <strong class="jxr_keyword">return</strong> subTypes;

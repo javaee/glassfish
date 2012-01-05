@@ -114,7 +114,7 @@
 <a class="jxr_linenumber" name="104" href="#104">104</a> 
 <a class="jxr_linenumber" name="105" href="#105">105</a>         <em class="jxr_comment">// Populate registry with pre-installed bundles</em>
 <a class="jxr_linenumber" name="106" href="#106">106</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> Bundle b : bctx.getBundles()) {
-<a class="jxr_linenumber" name="107" href="#107">107</a>             <strong class="jxr_keyword">if</strong> (b.getLocation().equals (Constants.SYSTEM_BUNDLE_LOCATION)) {
+<a class="jxr_linenumber" name="107" href="#107">107</a>             <strong class="jxr_keyword">if</strong> (b.getLocation().equals (org.osgi.framework.Constants.SYSTEM_BUNDLE_LOCATION)) {
 <a class="jxr_linenumber" name="108" href="#108">108</a>                 <strong class="jxr_keyword">continue</strong>;
 <a class="jxr_linenumber" name="109" href="#109">109</a>             }
 <a class="jxr_linenumber" name="110" href="#110">110</a>             <strong class="jxr_keyword">try</strong> {
@@ -571,30 +571,19 @@
 <a class="jxr_linenumber" name="561" href="#561">561</a>         }
 <a class="jxr_linenumber" name="562" href="#562">562</a>     }
 <a class="jxr_linenumber" name="563" href="#563">563</a> 
-<a class="jxr_linenumber" name="564" href="#564">564</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="565" href="#565">565</a> <em class="jxr_javadoccomment">     * This method is needed because {@link super#getModules()} always goes thru'</em>
-<a class="jxr_linenumber" name="566" href="#566">566</a> <em class="jxr_javadoccomment">     * all the repositories and installs new modules. When such a side effect is not</em>
-<a class="jxr_linenumber" name="567" href="#567">567</a> <em class="jxr_javadoccomment">     * necessary, this method can be called. The returned collection does not include</em>
-<a class="jxr_linenumber" name="568" href="#568">568</a> <em class="jxr_javadoccomment">     * modules known to ancestors of this registry.</em>
-<a class="jxr_linenumber" name="569" href="#569">569</a> <em class="jxr_javadoccomment">     * @return a readonly map of moduleId to modules.</em>
-<a class="jxr_linenumber" name="570" href="#570">570</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="571" href="#571">571</a>     <em class="jxr_comment">/*<em class="jxr_comment">package*/</em>Map&lt;ModuleId, Module&gt; getExistingModules() {</em>
-<a class="jxr_linenumber" name="572" href="#572">572</a>         <strong class="jxr_keyword">return</strong> Collections.unmodifiableMap(modules);
-<a class="jxr_linenumber" name="573" href="#573">573</a>     }
-<a class="jxr_linenumber" name="574" href="#574">574</a> 
-<a class="jxr_linenumber" name="575" href="#575">575</a>     <em class="jxr_comment">/*<em class="jxr_comment">package*/</em> Module getModule(Bundle bundle) {</em>
-<a class="jxr_linenumber" name="576" href="#576">576</a>         <strong class="jxr_keyword">return</strong> modules.get(<strong class="jxr_keyword">new</strong> <a href="../../../../org/jvnet/hk2/osgiadapter/OSGiModuleId.html">OSGiModuleId</a>(bundle));
-<a class="jxr_linenumber" name="577" href="#577">577</a>     }
-<a class="jxr_linenumber" name="578" href="#578">578</a> 
-<a class="jxr_linenumber" name="579" href="#579">579</a>     <strong class="jxr_keyword">private</strong> String getProperty(String property) {
-<a class="jxr_linenumber" name="580" href="#580">580</a>         String value = bctx.getProperty(property);
-<a class="jxr_linenumber" name="581" href="#581">581</a>         <em class="jxr_comment">// Check System properties to work around Equinox Bug:</em>
-<a class="jxr_linenumber" name="582" href="#582">582</a>         <em class="jxr_comment">// https://bugs.eclipse.org/bugs/show_bug.cgi?id=320459</em>
-<a class="jxr_linenumber" name="583" href="#583">583</a>         <strong class="jxr_keyword">if</strong> (value == <strong class="jxr_keyword">null</strong>) value = System.getProperty(property);
-<a class="jxr_linenumber" name="584" href="#584">584</a>         <strong class="jxr_keyword">return</strong> value;
-<a class="jxr_linenumber" name="585" href="#585">585</a>     }
-<a class="jxr_linenumber" name="586" href="#586">586</a> 
-<a class="jxr_linenumber" name="587" href="#587">587</a> }
+<a class="jxr_linenumber" name="564" href="#564">564</a>     <em class="jxr_comment">/*<em class="jxr_comment">package*/</em> Module getModule(Bundle bundle) {</em>
+<a class="jxr_linenumber" name="565" href="#565">565</a>         <strong class="jxr_keyword">return</strong> modules.get(<strong class="jxr_keyword">new</strong> <a href="../../../../org/jvnet/hk2/osgiadapter/OSGiModuleId.html">OSGiModuleId</a>(bundle));
+<a class="jxr_linenumber" name="566" href="#566">566</a>     }
+<a class="jxr_linenumber" name="567" href="#567">567</a> 
+<a class="jxr_linenumber" name="568" href="#568">568</a>     <strong class="jxr_keyword">private</strong> String getProperty(String property) {
+<a class="jxr_linenumber" name="569" href="#569">569</a>         String value = bctx.getProperty(property);
+<a class="jxr_linenumber" name="570" href="#570">570</a>         <em class="jxr_comment">// Check System properties to work around Equinox Bug:</em>
+<a class="jxr_linenumber" name="571" href="#571">571</a>         <em class="jxr_comment">// https://bugs.eclipse.org/bugs/show_bug.cgi?id=320459</em>
+<a class="jxr_linenumber" name="572" href="#572">572</a>         <strong class="jxr_keyword">if</strong> (value == <strong class="jxr_keyword">null</strong>) value = System.getProperty(property);
+<a class="jxr_linenumber" name="573" href="#573">573</a>         <strong class="jxr_keyword">return</strong> value;
+<a class="jxr_linenumber" name="574" href="#574">574</a>     }
+<a class="jxr_linenumber" name="575" href="#575">575</a> 
+<a class="jxr_linenumber" name="576" href="#576">576</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

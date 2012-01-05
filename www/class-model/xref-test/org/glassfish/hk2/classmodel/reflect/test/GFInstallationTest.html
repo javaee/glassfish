@@ -153,7 +153,7 @@
 <a class="jxr_linenumber" name="143" href="#143">143</a>         System.out.println(<span class="jxr_string">"Found "</span> + files.size() + <span class="jxr_string">" files in "</span> + (System.currentTimeMillis() - start));
 <a class="jxr_linenumber" name="144" href="#144">144</a>         <strong class="jxr_keyword">for</strong> (Type t : context.getTypes().getAllTypes()) {
 <a class="jxr_linenumber" name="145" href="#145">145</a>             <strong class="jxr_keyword">if</strong> (t instanceof AnnotationTypeImpl) {
-<a class="jxr_linenumber" name="146" href="#146">146</a>                 System.out.println(<span class="jxr_string">"Found annotation : "</span> + ((AnnotationTypeImpl) t).name + <span class="jxr_string">" in "</span> + t.getDefiningURIs());
+<a class="jxr_linenumber" name="146" href="#146">146</a>                 System.out.println(<span class="jxr_string">"Found annotation : "</span> + ((AnnotationTypeImpl) t).getName() + <span class="jxr_string">" in "</span> + t.getDefiningURIs());
 <a class="jxr_linenumber" name="147" href="#147">147</a>             }
 <a class="jxr_linenumber" name="148" href="#148">148</a>         }
 <a class="jxr_linenumber" name="149" href="#149">149</a>         System.out.println(<span class="jxr_string">"parsed "</span> + files.size() + <span class="jxr_string">" in "</span> + (System.currentTimeMillis() - startTime) + <span class="jxr_string">" ms"</span>);
