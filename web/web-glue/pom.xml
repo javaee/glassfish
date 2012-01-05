@@ -274,5 +274,16 @@
             <artifactId>web-embed-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!-- adding javaxx.servlet.jsp.jstl-api.jar and javax.faces.jar to
+             workaround an upgrade issue due to jar renaming, see IT 18095-->
+        <dependency>
+            <groupId>javax.servlet.jsp.jstl</groupId>
+            <artifactId>javax.servlet.jsp.jstl-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.faces</artifactId>
+        </dependency>
     </dependencies>
 </project>
