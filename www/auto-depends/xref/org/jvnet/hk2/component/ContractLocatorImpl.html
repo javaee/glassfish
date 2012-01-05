@@ -141,131 +141,138 @@
 <a class="jxr_linenumber" name="131" href="#131">131</a>     @Override
 <a class="jxr_linenumber" name="132" href="#132">132</a>     <strong class="jxr_keyword">public</strong> T get() {
 <a class="jxr_linenumber" name="133" href="#133">133</a>         Provider&lt;T&gt; provider = getProvider();
-<a class="jxr_linenumber" name="134" href="#134">134</a>         <strong class="jxr_keyword">if</strong> (provider!=<strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="135" href="#135">135</a>             <strong class="jxr_keyword">return</strong> provider.get();
-<a class="jxr_linenumber" name="136" href="#136">136</a>         }
-<a class="jxr_linenumber" name="137" href="#137">137</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="138" href="#138">138</a>     }
-<a class="jxr_linenumber" name="139" href="#139">139</a> 
-<a class="jxr_linenumber" name="140" href="#140">140</a>     @Override
-<a class="jxr_linenumber" name="141" href="#141">141</a>     <strong class="jxr_keyword">public</strong> Provider&lt;T&gt; getProvider() {
-<a class="jxr_linenumber" name="142" href="#142">142</a>         Collection&lt;Provider&lt;T&gt;&gt; providers = all(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="143" href="#143">143</a>         <strong class="jxr_keyword">return</strong> (providers.isEmpty()?<strong class="jxr_keyword">null</strong>:providers.iterator().next());
-<a class="jxr_linenumber" name="144" href="#144">144</a>     }
-<a class="jxr_linenumber" name="145" href="#145">145</a> 
-<a class="jxr_linenumber" name="146" href="#146">146</a>     @Override
-<a class="jxr_linenumber" name="147" href="#147">147</a>     <strong class="jxr_keyword">public</strong> Collection&lt;Provider&lt;T&gt;&gt; all() {
-<a class="jxr_linenumber" name="148" href="#148">148</a>         <strong class="jxr_keyword">return</strong> all(false);
-<a class="jxr_linenumber" name="149" href="#149">149</a>     }
-<a class="jxr_linenumber" name="150" href="#150">150</a> 
-<a class="jxr_linenumber" name="151" href="#151">151</a>     <strong class="jxr_keyword">public</strong> Collection&lt;Provider&lt;T&gt;&gt; all(<strong class="jxr_keyword">boolean</strong> stopAtFirstMatch) {
+<a class="jxr_linenumber" name="134" href="#134">134</a> 
+<a class="jxr_linenumber" name="135" href="#135">135</a>         <strong class="jxr_keyword">return</strong> provider == <strong class="jxr_keyword">null</strong> ? <strong class="jxr_keyword">null</strong> : provider.get();
+<a class="jxr_linenumber" name="136" href="#136">136</a>     }
+<a class="jxr_linenumber" name="137" href="#137">137</a> 
+<a class="jxr_linenumber" name="138" href="#138">138</a>     @Override
+<a class="jxr_linenumber" name="139" href="#139">139</a>     <strong class="jxr_keyword">public</strong> &lt;U&gt; U getByType(Class&lt;U&gt; type) {
+<a class="jxr_linenumber" name="140" href="#140">140</a>         Provider&lt;T&gt; provider = getProvider();
+<a class="jxr_linenumber" name="141" href="#141">141</a> 
+<a class="jxr_linenumber" name="142" href="#142">142</a>         <strong class="jxr_keyword">return</strong> provider == <strong class="jxr_keyword">null</strong> ? <strong class="jxr_keyword">null</strong> :
+<a class="jxr_linenumber" name="143" href="#143">143</a>                 (U) (type == <strong class="jxr_keyword">null</strong> ? provider.get() :
+<a class="jxr_linenumber" name="144" href="#144">144</a>                         provider.getByType(org.jvnet.tiger_types.Types.erasure(type)));
+<a class="jxr_linenumber" name="145" href="#145">145</a>     }
+<a class="jxr_linenumber" name="146" href="#146">146</a> 
+<a class="jxr_linenumber" name="147" href="#147">147</a>     @Override
+<a class="jxr_linenumber" name="148" href="#148">148</a>     <strong class="jxr_keyword">public</strong> Provider&lt;T&gt; getProvider() {
+<a class="jxr_linenumber" name="149" href="#149">149</a>         Collection&lt;Provider&lt;T&gt;&gt; providers = all(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="150" href="#150">150</a>         <strong class="jxr_keyword">return</strong> (providers.isEmpty()?<strong class="jxr_keyword">null</strong>:providers.iterator().next());
+<a class="jxr_linenumber" name="151" href="#151">151</a>     }
 <a class="jxr_linenumber" name="152" href="#152">152</a> 
-<a class="jxr_linenumber" name="153" href="#153">153</a>         List&lt;Provider&lt;T&gt;&gt; providers = <strong class="jxr_keyword">new</strong> ArrayList&lt;Provider&lt;T&gt;&gt;();
-<a class="jxr_linenumber" name="154" href="#154">154</a> 
-<a class="jxr_linenumber" name="155" href="#155">155</a>         <strong class="jxr_keyword">if</strong> (qualifiers.isEmpty()) {
-<a class="jxr_linenumber" name="156" href="#156">156</a>             <strong class="jxr_keyword">return</strong> getNonQualifiedInhabitants(stopAtFirstMatch);
-<a class="jxr_linenumber" name="157" href="#157">157</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="158" href="#158">158</a>             List&lt;String&gt; tmpQualifiers = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;();
-<a class="jxr_linenumber" name="159" href="#159">159</a>             <strong class="jxr_keyword">for</strong> (Class&lt;? <strong class="jxr_keyword">extends</strong> Annotation&gt; annotation : qualifiers) {
-<a class="jxr_linenumber" name="160" href="#160">160</a>                 tmpQualifiers.add(annotation.getName());
-<a class="jxr_linenumber" name="161" href="#161">161</a>             }
-<a class="jxr_linenumber" name="162" href="#162">162</a>             <strong class="jxr_keyword">for</strong> (Inhabitant&lt;T&gt; inh : inhabitants()) {
-<a class="jxr_linenumber" name="163" href="#163">163</a>                 List&lt;String&gt; declaredQualifiers = inh.metadata().get(InhabitantsFile.QUALIFIER_KEY);
-<a class="jxr_linenumber" name="164" href="#164">164</a>                 <strong class="jxr_keyword">for</strong> (String declaredQualifier : declaredQualifiers) {
-<a class="jxr_linenumber" name="165" href="#165">165</a>                     <em class="jxr_comment">// todo : we need to look at the instances of the Annotations</em>
-<a class="jxr_linenumber" name="166" href="#166">166</a>                     <em class="jxr_comment">// rather than the type on both the injection target and the</em>
-<a class="jxr_linenumber" name="167" href="#167">167</a>                     <em class="jxr_comment">// candidate so we can ensure that annotation attribute matching is performed</em>
-<a class="jxr_linenumber" name="168" href="#168">168</a>                     tmpQualifiers.remove(declaredQualifier);
-<a class="jxr_linenumber" name="169" href="#169">169</a>                 }
-<a class="jxr_linenumber" name="170" href="#170">170</a> 
-<a class="jxr_linenumber" name="171" href="#171">171</a>                 <em class="jxr_comment">// if the injection point qualifiers are all satisfied, stop the query</em>
-<a class="jxr_linenumber" name="172" href="#172">172</a>                 <strong class="jxr_keyword">if</strong> (tmpQualifiers.isEmpty()) {
-<a class="jxr_linenumber" name="173" href="#173">173</a>                     <em class="jxr_comment">// check if the scope is fine.</em>
-<a class="jxr_linenumber" name="174" href="#174">174</a>                     <strong class="jxr_keyword">if</strong> (scope==<strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="175" href="#175">175</a>                         providers.add(inh);
-<a class="jxr_linenumber" name="176" href="#176">176</a>                     } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="177" href="#177">177</a>                         <strong class="jxr_keyword">if</strong> ((inh instanceof ScopedInhabitant) &amp;&amp; ((ScopedInhabitant) inh).getScope().equals(scope)) {
-<a class="jxr_linenumber" name="178" href="#178">178</a>                             providers.add(inh);
-<a class="jxr_linenumber" name="179" href="#179">179</a>                         }
-<a class="jxr_linenumber" name="180" href="#180">180</a>                     }
-<a class="jxr_linenumber" name="181" href="#181">181</a>                     <strong class="jxr_keyword">if</strong> (!providers.isEmpty() &amp;&amp; stopAtFirstMatch) <strong class="jxr_keyword">return</strong> providers;
-<a class="jxr_linenumber" name="182" href="#182">182</a>                 }
-<a class="jxr_linenumber" name="183" href="#183">183</a>             }
-<a class="jxr_linenumber" name="184" href="#184">184</a>         }
-<a class="jxr_linenumber" name="185" href="#185">185</a>         <strong class="jxr_keyword">return</strong> providers;
-<a class="jxr_linenumber" name="186" href="#186">186</a>     }
-<a class="jxr_linenumber" name="187" href="#187">187</a> 
-<a class="jxr_linenumber" name="188" href="#188">188</a>     <strong class="jxr_keyword">private</strong> Inhabitant&lt;T&gt; getNonQualifiedInhabitant() {
-<a class="jxr_linenumber" name="189" href="#189">189</a>         <strong class="jxr_keyword">if</strong> (name!=<strong class="jxr_keyword">null</strong> &amp;&amp; !name.isEmpty()) {
-<a class="jxr_linenumber" name="190" href="#190">190</a>             <strong class="jxr_keyword">return</strong> provider();
+<a class="jxr_linenumber" name="153" href="#153">153</a>     @Override
+<a class="jxr_linenumber" name="154" href="#154">154</a>     <strong class="jxr_keyword">public</strong> Collection&lt;Provider&lt;T&gt;&gt; all() {
+<a class="jxr_linenumber" name="155" href="#155">155</a>         <strong class="jxr_keyword">return</strong> all(false);
+<a class="jxr_linenumber" name="156" href="#156">156</a>     }
+<a class="jxr_linenumber" name="157" href="#157">157</a> 
+<a class="jxr_linenumber" name="158" href="#158">158</a>     <strong class="jxr_keyword">public</strong> Collection&lt;Provider&lt;T&gt;&gt; all(<strong class="jxr_keyword">boolean</strong> stopAtFirstMatch) {
+<a class="jxr_linenumber" name="159" href="#159">159</a> 
+<a class="jxr_linenumber" name="160" href="#160">160</a>         List&lt;Provider&lt;T&gt;&gt; providers = <strong class="jxr_keyword">new</strong> ArrayList&lt;Provider&lt;T&gt;&gt;();
+<a class="jxr_linenumber" name="161" href="#161">161</a> 
+<a class="jxr_linenumber" name="162" href="#162">162</a>         <strong class="jxr_keyword">if</strong> (qualifiers.isEmpty()) {
+<a class="jxr_linenumber" name="163" href="#163">163</a>             <strong class="jxr_keyword">return</strong> getNonQualifiedInhabitants(stopAtFirstMatch);
+<a class="jxr_linenumber" name="164" href="#164">164</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="165" href="#165">165</a>             List&lt;String&gt; tmpQualifiers = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;();
+<a class="jxr_linenumber" name="166" href="#166">166</a>             <strong class="jxr_keyword">for</strong> (Class&lt;? <strong class="jxr_keyword">extends</strong> Annotation&gt; annotation : qualifiers) {
+<a class="jxr_linenumber" name="167" href="#167">167</a>                 tmpQualifiers.add(annotation.getName());
+<a class="jxr_linenumber" name="168" href="#168">168</a>             }
+<a class="jxr_linenumber" name="169" href="#169">169</a>             <strong class="jxr_keyword">for</strong> (Inhabitant&lt;T&gt; inh : inhabitants()) {
+<a class="jxr_linenumber" name="170" href="#170">170</a>                 List&lt;String&gt; declaredQualifiers = inh.metadata().get(InhabitantsFile.QUALIFIER_KEY);
+<a class="jxr_linenumber" name="171" href="#171">171</a>                 <strong class="jxr_keyword">for</strong> (String declaredQualifier : declaredQualifiers) {
+<a class="jxr_linenumber" name="172" href="#172">172</a>                     <em class="jxr_comment">// todo : we need to look at the instances of the Annotations</em>
+<a class="jxr_linenumber" name="173" href="#173">173</a>                     <em class="jxr_comment">// rather than the type on both the injection target and the</em>
+<a class="jxr_linenumber" name="174" href="#174">174</a>                     <em class="jxr_comment">// candidate so we can ensure that annotation attribute matching is performed</em>
+<a class="jxr_linenumber" name="175" href="#175">175</a>                     tmpQualifiers.remove(declaredQualifier);
+<a class="jxr_linenumber" name="176" href="#176">176</a>                 }
+<a class="jxr_linenumber" name="177" href="#177">177</a> 
+<a class="jxr_linenumber" name="178" href="#178">178</a>                 <em class="jxr_comment">// if the injection point qualifiers are all satisfied, stop the query</em>
+<a class="jxr_linenumber" name="179" href="#179">179</a>                 <strong class="jxr_keyword">if</strong> (tmpQualifiers.isEmpty()) {
+<a class="jxr_linenumber" name="180" href="#180">180</a>                     <em class="jxr_comment">// check if the scope is fine.</em>
+<a class="jxr_linenumber" name="181" href="#181">181</a>                     <strong class="jxr_keyword">if</strong> (scope==<strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="182" href="#182">182</a>                         providers.add(inh);
+<a class="jxr_linenumber" name="183" href="#183">183</a>                     } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="184" href="#184">184</a>                         <strong class="jxr_keyword">if</strong> ((inh instanceof ScopedInhabitant) &amp;&amp; ((ScopedInhabitant) inh).getScope().equals(scope)) {
+<a class="jxr_linenumber" name="185" href="#185">185</a>                             providers.add(inh);
+<a class="jxr_linenumber" name="186" href="#186">186</a>                         }
+<a class="jxr_linenumber" name="187" href="#187">187</a>                     }
+<a class="jxr_linenumber" name="188" href="#188">188</a>                     <strong class="jxr_keyword">if</strong> (!providers.isEmpty() &amp;&amp; stopAtFirstMatch) <strong class="jxr_keyword">return</strong> providers;
+<a class="jxr_linenumber" name="189" href="#189">189</a>                 }
+<a class="jxr_linenumber" name="190" href="#190">190</a>             }
 <a class="jxr_linenumber" name="191" href="#191">191</a>         }
-<a class="jxr_linenumber" name="192" href="#192">192</a>         Inhabitant&lt;T&gt; inh = provider();
-<a class="jxr_linenumber" name="193" href="#193">193</a>         <strong class="jxr_keyword">if</strong> (inh==<strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="194" href="#194">194</a>         <strong class="jxr_keyword">if</strong> (inh.metadata().get(InhabitantsFile.QUALIFIER_KEY).isEmpty()) {
-<a class="jxr_linenumber" name="195" href="#195">195</a>             <strong class="jxr_keyword">return</strong> inh;
-<a class="jxr_linenumber" name="196" href="#196">196</a>         }
-<a class="jxr_linenumber" name="197" href="#197">197</a>         <em class="jxr_comment">// we should find the inhabitant with no qualifier.</em>
-<a class="jxr_linenumber" name="198" href="#198">198</a>         <strong class="jxr_keyword">for</strong> (Inhabitant&lt;T&gt; inhabitant : inhabitants()) {
-<a class="jxr_linenumber" name="199" href="#199">199</a>             <strong class="jxr_keyword">if</strong> (inhabitant.metadata().get(InhabitantsFile.QUALIFIER_KEY).isEmpty()) {
-<a class="jxr_linenumber" name="200" href="#200">200</a>                 <strong class="jxr_keyword">return</strong> inhabitant;
-<a class="jxr_linenumber" name="201" href="#201">201</a>             }
-<a class="jxr_linenumber" name="202" href="#202">202</a>         }
-<a class="jxr_linenumber" name="203" href="#203">203</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="204" href="#204">204</a>     }
-<a class="jxr_linenumber" name="205" href="#205">205</a> 
-<a class="jxr_linenumber" name="206" href="#206">206</a>     <strong class="jxr_keyword">private</strong> Collection&lt;Provider&lt;T&gt;&gt; getNonQualifiedInhabitants(<strong class="jxr_keyword">boolean</strong> stopOnFirst) {
-<a class="jxr_linenumber" name="207" href="#207">207</a>         List&lt;Provider&lt;T&gt;&gt; inhabitants = <strong class="jxr_keyword">new</strong> ArrayList&lt;Provider&lt;T&gt;&gt;();
-<a class="jxr_linenumber" name="208" href="#208">208</a>         <strong class="jxr_keyword">if</strong> (name!=<strong class="jxr_keyword">null</strong> &amp;&amp; !name.isEmpty()) {
-<a class="jxr_linenumber" name="209" href="#209">209</a>             Inhabitant&lt;T&gt; provider = provider();
-<a class="jxr_linenumber" name="210" href="#210">210</a>             <strong class="jxr_keyword">if</strong> (provider!=<strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="211" href="#211">211</a>                 inhabitants.add(provider);
-<a class="jxr_linenumber" name="212" href="#212">212</a>                 <strong class="jxr_keyword">if</strong> (stopOnFirst) <strong class="jxr_keyword">return</strong> inhabitants;
-<a class="jxr_linenumber" name="213" href="#213">213</a>             }
-<a class="jxr_linenumber" name="214" href="#214">214</a>         }
-<a class="jxr_linenumber" name="215" href="#215">215</a>         Inhabitant&lt;T&gt; inh = provider();
-<a class="jxr_linenumber" name="216" href="#216">216</a>         <strong class="jxr_keyword">if</strong> (inh==<strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">return</strong> inhabitants;
-<a class="jxr_linenumber" name="217" href="#217">217</a>         <strong class="jxr_keyword">if</strong> (inh.metadata().get(InhabitantsFile.QUALIFIER_KEY).isEmpty()) {
-<a class="jxr_linenumber" name="218" href="#218">218</a>             inhabitants.add(inh);
-<a class="jxr_linenumber" name="219" href="#219">219</a>             <strong class="jxr_keyword">if</strong> (stopOnFirst) <strong class="jxr_keyword">return</strong> inhabitants;
-<a class="jxr_linenumber" name="220" href="#220">220</a>         }
-<a class="jxr_linenumber" name="221" href="#221">221</a>         <em class="jxr_comment">// we should find the inhabitant with no qualifier.</em>
-<a class="jxr_linenumber" name="222" href="#222">222</a>         <strong class="jxr_keyword">for</strong> (Inhabitant&lt;T&gt; inhabitant : inhabitants()) {
-<a class="jxr_linenumber" name="223" href="#223">223</a>             <strong class="jxr_keyword">if</strong> (inhabitant.metadata().get(InhabitantsFile.QUALIFIER_KEY).isEmpty()) {
-<a class="jxr_linenumber" name="224" href="#224">224</a>                 <strong class="jxr_keyword">if</strong> (inhabitant.getDescriptor().getNames().isEmpty()) {
-<a class="jxr_linenumber" name="225" href="#225">225</a>                     inhabitants.add(inhabitant);
-<a class="jxr_linenumber" name="226" href="#226">226</a>                     <strong class="jxr_keyword">if</strong> (stopOnFirst) <strong class="jxr_keyword">return</strong> inhabitants;
-<a class="jxr_linenumber" name="227" href="#227">227</a>                 }
-<a class="jxr_linenumber" name="228" href="#228">228</a>             }
-<a class="jxr_linenumber" name="229" href="#229">229</a>         }
-<a class="jxr_linenumber" name="230" href="#230">230</a>         <strong class="jxr_keyword">return</strong> inhabitants;
-<a class="jxr_linenumber" name="231" href="#231">231</a>     }
-<a class="jxr_linenumber" name="232" href="#232">232</a> 
-<a class="jxr_linenumber" name="233" href="#233">233</a>     <strong class="jxr_keyword">private</strong> Inhabitant&lt;T&gt; provider() {
-<a class="jxr_linenumber" name="234" href="#234">234</a>         <strong class="jxr_keyword">if</strong> (type!=<strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="235" href="#235">235</a>             <strong class="jxr_keyword">return</strong> habitat.getProvider(type, name);
-<a class="jxr_linenumber" name="236" href="#236">236</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="237" href="#237">237</a>             <strong class="jxr_keyword">return</strong> habitat.getProvider(typeName, name);
-<a class="jxr_linenumber" name="238" href="#238">238</a>         }
-<a class="jxr_linenumber" name="239" href="#239">239</a>     }
-<a class="jxr_linenumber" name="240" href="#240">240</a> 
-<a class="jxr_linenumber" name="241" href="#241">241</a>     <strong class="jxr_keyword">private</strong> Collection&lt;Inhabitant&lt;T&gt;&gt; inhabitants() {
-<a class="jxr_linenumber" name="242" href="#242">242</a>         <strong class="jxr_keyword">if</strong> (type!=<strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="243" href="#243">243</a>             <strong class="jxr_keyword">if</strong> (byContract) {
-<a class="jxr_linenumber" name="244" href="#244">244</a>                 <strong class="jxr_keyword">return</strong> habitat.getInhabitantsByContract(type);
-<a class="jxr_linenumber" name="245" href="#245">245</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="246" href="#246">246</a>                 Class&lt;T&gt; classType = org.jvnet.tiger_types.Types.erasure(type);
-<a class="jxr_linenumber" name="247" href="#247">247</a>                 <strong class="jxr_keyword">return</strong> habitat.getInhabitantsByType(classType);
-<a class="jxr_linenumber" name="248" href="#248">248</a>             }
-<a class="jxr_linenumber" name="249" href="#249">249</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="192" href="#192">192</a>         <strong class="jxr_keyword">return</strong> providers;
+<a class="jxr_linenumber" name="193" href="#193">193</a>     }
+<a class="jxr_linenumber" name="194" href="#194">194</a> 
+<a class="jxr_linenumber" name="195" href="#195">195</a>     <strong class="jxr_keyword">private</strong> Inhabitant&lt;T&gt; getNonQualifiedInhabitant() {
+<a class="jxr_linenumber" name="196" href="#196">196</a>         <strong class="jxr_keyword">if</strong> (name!=<strong class="jxr_keyword">null</strong> &amp;&amp; !name.isEmpty()) {
+<a class="jxr_linenumber" name="197" href="#197">197</a>             <strong class="jxr_keyword">return</strong> provider();
+<a class="jxr_linenumber" name="198" href="#198">198</a>         }
+<a class="jxr_linenumber" name="199" href="#199">199</a>         Inhabitant&lt;T&gt; inh = provider();
+<a class="jxr_linenumber" name="200" href="#200">200</a>         <strong class="jxr_keyword">if</strong> (inh==<strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="201" href="#201">201</a>         <strong class="jxr_keyword">if</strong> (inh.metadata().get(InhabitantsFile.QUALIFIER_KEY).isEmpty()) {
+<a class="jxr_linenumber" name="202" href="#202">202</a>             <strong class="jxr_keyword">return</strong> inh;
+<a class="jxr_linenumber" name="203" href="#203">203</a>         }
+<a class="jxr_linenumber" name="204" href="#204">204</a>         <em class="jxr_comment">// we should find the inhabitant with no qualifier.</em>
+<a class="jxr_linenumber" name="205" href="#205">205</a>         <strong class="jxr_keyword">for</strong> (Inhabitant&lt;T&gt; inhabitant : inhabitants()) {
+<a class="jxr_linenumber" name="206" href="#206">206</a>             <strong class="jxr_keyword">if</strong> (inhabitant.metadata().get(InhabitantsFile.QUALIFIER_KEY).isEmpty()) {
+<a class="jxr_linenumber" name="207" href="#207">207</a>                 <strong class="jxr_keyword">return</strong> inhabitant;
+<a class="jxr_linenumber" name="208" href="#208">208</a>             }
+<a class="jxr_linenumber" name="209" href="#209">209</a>         }
+<a class="jxr_linenumber" name="210" href="#210">210</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="211" href="#211">211</a>     }
+<a class="jxr_linenumber" name="212" href="#212">212</a> 
+<a class="jxr_linenumber" name="213" href="#213">213</a>     <strong class="jxr_keyword">private</strong> Collection&lt;Provider&lt;T&gt;&gt; getNonQualifiedInhabitants(<strong class="jxr_keyword">boolean</strong> stopOnFirst) {
+<a class="jxr_linenumber" name="214" href="#214">214</a>         List&lt;Provider&lt;T&gt;&gt; inhabitants = <strong class="jxr_keyword">new</strong> ArrayList&lt;Provider&lt;T&gt;&gt;();
+<a class="jxr_linenumber" name="215" href="#215">215</a>         <strong class="jxr_keyword">if</strong> (name!=<strong class="jxr_keyword">null</strong> &amp;&amp; !name.isEmpty()) {
+<a class="jxr_linenumber" name="216" href="#216">216</a>             Inhabitant&lt;T&gt; provider = provider();
+<a class="jxr_linenumber" name="217" href="#217">217</a>             <strong class="jxr_keyword">if</strong> (provider!=<strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="218" href="#218">218</a>                 inhabitants.add(provider);
+<a class="jxr_linenumber" name="219" href="#219">219</a>                 <strong class="jxr_keyword">if</strong> (stopOnFirst) <strong class="jxr_keyword">return</strong> inhabitants;
+<a class="jxr_linenumber" name="220" href="#220">220</a>             }
+<a class="jxr_linenumber" name="221" href="#221">221</a>         }
+<a class="jxr_linenumber" name="222" href="#222">222</a>         Inhabitant&lt;T&gt; inh = provider();
+<a class="jxr_linenumber" name="223" href="#223">223</a>         <strong class="jxr_keyword">if</strong> (inh==<strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">return</strong> inhabitants;
+<a class="jxr_linenumber" name="224" href="#224">224</a>         <strong class="jxr_keyword">if</strong> (inh.metadata().get(InhabitantsFile.QUALIFIER_KEY).isEmpty()) {
+<a class="jxr_linenumber" name="225" href="#225">225</a>             inhabitants.add(inh);
+<a class="jxr_linenumber" name="226" href="#226">226</a>             <strong class="jxr_keyword">if</strong> (stopOnFirst) <strong class="jxr_keyword">return</strong> inhabitants;
+<a class="jxr_linenumber" name="227" href="#227">227</a>         }
+<a class="jxr_linenumber" name="228" href="#228">228</a>         <em class="jxr_comment">// we should find the inhabitant with no qualifier.</em>
+<a class="jxr_linenumber" name="229" href="#229">229</a>         <strong class="jxr_keyword">for</strong> (Inhabitant&lt;T&gt; inhabitant : inhabitants()) {
+<a class="jxr_linenumber" name="230" href="#230">230</a>             <strong class="jxr_keyword">if</strong> (inhabitant.metadata().get(InhabitantsFile.QUALIFIER_KEY).isEmpty()) {
+<a class="jxr_linenumber" name="231" href="#231">231</a>                 <strong class="jxr_keyword">if</strong> (inhabitant.getDescriptor().getNames().isEmpty()) {
+<a class="jxr_linenumber" name="232" href="#232">232</a>                     inhabitants.add(inhabitant);
+<a class="jxr_linenumber" name="233" href="#233">233</a>                     <strong class="jxr_keyword">if</strong> (stopOnFirst) <strong class="jxr_keyword">return</strong> inhabitants;
+<a class="jxr_linenumber" name="234" href="#234">234</a>                 }
+<a class="jxr_linenumber" name="235" href="#235">235</a>             }
+<a class="jxr_linenumber" name="236" href="#236">236</a>         }
+<a class="jxr_linenumber" name="237" href="#237">237</a>         <strong class="jxr_keyword">return</strong> inhabitants;
+<a class="jxr_linenumber" name="238" href="#238">238</a>     }
+<a class="jxr_linenumber" name="239" href="#239">239</a> 
+<a class="jxr_linenumber" name="240" href="#240">240</a>     <strong class="jxr_keyword">private</strong> Inhabitant&lt;T&gt; provider() {
+<a class="jxr_linenumber" name="241" href="#241">241</a>         <strong class="jxr_keyword">if</strong> (type!=<strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="242" href="#242">242</a>             <strong class="jxr_keyword">return</strong> habitat.getProvider(type, name);
+<a class="jxr_linenumber" name="243" href="#243">243</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="244" href="#244">244</a>             <strong class="jxr_keyword">return</strong> habitat.getProvider(typeName, name);
+<a class="jxr_linenumber" name="245" href="#245">245</a>         }
+<a class="jxr_linenumber" name="246" href="#246">246</a>     }
+<a class="jxr_linenumber" name="247" href="#247">247</a> 
+<a class="jxr_linenumber" name="248" href="#248">248</a>     <strong class="jxr_keyword">private</strong> Collection&lt;Inhabitant&lt;T&gt;&gt; inhabitants() {
+<a class="jxr_linenumber" name="249" href="#249">249</a>         <strong class="jxr_keyword">if</strong> (type!=<strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="250" href="#250">250</a>             <strong class="jxr_keyword">if</strong> (byContract) {
-<a class="jxr_linenumber" name="251" href="#251">251</a>                 <strong class="jxr_keyword">return</strong> habitat.getInhabitantsByContract(typeName);
+<a class="jxr_linenumber" name="251" href="#251">251</a>                 <strong class="jxr_keyword">return</strong> habitat.getInhabitantsByContract(type);
 <a class="jxr_linenumber" name="252" href="#252">252</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="253" href="#253">253</a>                 <strong class="jxr_keyword">return</strong> habitat.getInhabitantsByType(typeName);
-<a class="jxr_linenumber" name="254" href="#254">254</a>             }
-<a class="jxr_linenumber" name="255" href="#255">255</a>         }
-<a class="jxr_linenumber" name="256" href="#256">256</a>     }
-<a class="jxr_linenumber" name="257" href="#257">257</a> 
-<a class="jxr_linenumber" name="258" href="#258">258</a> }
+<a class="jxr_linenumber" name="253" href="#253">253</a>                 Class&lt;T&gt; classType = org.jvnet.tiger_types.Types.erasure(type);
+<a class="jxr_linenumber" name="254" href="#254">254</a>                 <strong class="jxr_keyword">return</strong> habitat.getInhabitantsByType(classType);
+<a class="jxr_linenumber" name="255" href="#255">255</a>             }
+<a class="jxr_linenumber" name="256" href="#256">256</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="257" href="#257">257</a>             <strong class="jxr_keyword">if</strong> (byContract) {
+<a class="jxr_linenumber" name="258" href="#258">258</a>                 <strong class="jxr_keyword">return</strong> habitat.getInhabitantsByContract(typeName);
+<a class="jxr_linenumber" name="259" href="#259">259</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="260" href="#260">260</a>                 <strong class="jxr_keyword">return</strong> habitat.getInhabitantsByType(typeName);
+<a class="jxr_linenumber" name="261" href="#261">261</a>             }
+<a class="jxr_linenumber" name="262" href="#262">262</a>         }
+<a class="jxr_linenumber" name="263" href="#263">263</a>     }
+<a class="jxr_linenumber" name="264" href="#264">264</a> 
+<a class="jxr_linenumber" name="265" href="#265">265</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
