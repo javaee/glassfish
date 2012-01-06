@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,10 +40,15 @@
 package org.glassfish.admingui.devtests;
 
 import com.thoughtworks.selenium.Selenium;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -51,6 +56,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.firefox.internal.ProfilesIni;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.remote.Augmenter;
+import org.openqa.selenium.remote.CapabilityType;
 
 /**
  *
@@ -83,9 +90,7 @@ public class SeleniumHelper {
             String browser = getParameter("browser", "firefox");
 
             if ("firefox".equals(browser)) {
-                final FirefoxDriver firefoxDriver = new FirefoxDriver();
-                firefoxDriver.executeScript("window.resizeTo(screen.availWidth, screen.availHeight);", new Object[]{});
-                driver = firefoxDriver;
+                driver = new FirefoxDriver();
             } else if ("chrome".equals(browser)) {
                 driver = new ChromeDriver();
             } else if ("ie".contains(browser)) {
@@ -136,5 +141,22 @@ public class SeleniumHelper {
         String value = System.getProperty(paramName);
 
         return value != null ? value : defaultValue;
+    }
+
+    public static String captureScreenshot() {
+        return captureScreenshot("" + (Math.abs(new Random().nextInt()) + 1));
+    }
+    
+    public static String captureScreenshot(String fileName) {
+        try {
+            new File("target/surefire-reports/").mkdirs(); // Insure directory is there
+            FileOutputStream out = new FileOutputStream("target/surefire-reports/screenshot-" + fileName + ".png");
+            out.write(((TakesScreenshot)getInstance().getDriver()).getScreenshotAs(OutputType.BYTES));
+            out.close();
+        } catch (Exception e) {
+            // No need to crash the tests if the screenshot fails
+        }
+        
+        return fileName;
     }
 }

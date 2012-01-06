@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,11 +52,7 @@ import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.management.Attribute;
@@ -394,6 +390,27 @@ public class JmsHandlers {
             GuiUtil.prepareAlert("success", GuiUtil.getMessage("msg.PingSucceed"), null);
         } catch (Exception ex) {
             GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), ex.getMessage());
+        }
+    }
+    
+    @Handler(id="gf.determineJmsAuthType",
+        input={
+            @HandlerInput(name="text", type=String.class)
+        },
+        output={
+            @HandlerOutput(name="password", type=String.class),
+            @HandlerOutput(name="alias", type=String.class),
+            @HandlerOutput(name="type", type=String.class)
+        }
+    )
+    public static void determineJmsAuthType(HandlerContext handlerCtx) {
+        String text = (String) handlerCtx.getInputValue("text");
+        if ((text == null) || (!text.contains("${ALIAS"))) {
+            handlerCtx.setOutputValue("password", text);
+            handlerCtx.setOutputValue("type", "password");
+        } else {
+            handlerCtx.setOutputValue("alias", text.substring(8, text.length()-1));
+            handlerCtx.setOutputValue("type", "alias");
         }
     }
 

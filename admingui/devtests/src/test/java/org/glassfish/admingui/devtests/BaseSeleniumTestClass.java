@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,7 +54,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.admingui.common.util.RestUtil;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -253,6 +252,10 @@ public class BaseSeleniumTestClass {
         return selenium.isElementPresent(elem);
     }
 
+    protected String captureScreenshot() {
+        return SeleniumHelper.captureScreenshot();
+    }
+    
     /**
      * Select the option requested in the given select element
      *
@@ -264,11 +267,15 @@ public class BaseSeleniumTestClass {
             label = resolveTriggerText(label);
             selenium.select(id, "label=" + label);
         } catch (SeleniumException se) {
-            logger.log(Level.INFO, "An invalid option was requested.  Here are the valid options:");
-            for (String option : selenium.getSelectOptions(id)) {
-                logger.log(Level.INFO, "\t{0}", option);
+            try {
+                selenium.select(id, "value=" + label);
+            } catch (SeleniumException se1) {
+                logger.log(Level.INFO, "An invalid option was requested.  Here are the valid options:");
+                for (String option : selenium.getSelectOptions(id)) {
+                    logger.log(Level.INFO, "\t{0}", option);
+                }
+                throw se1;
             }
-            throw se;
         }
     }
 
@@ -501,7 +508,7 @@ public class BaseSeleniumTestClass {
     protected void waitForLoginPageLoad(int timeoutInSeconds) {
         for (int seconds = 0;; seconds++) {
             if (seconds >= (30)) {
-                Assert.fail("The operation timed out waiting for the login page to load.");
+                Assert.fail("The operation timed out waiting for the page to load");
             }
 
             boolean loginFormIsDisplayed = false;
@@ -653,7 +660,7 @@ public class BaseSeleniumTestClass {
         }
 
         if (iterations >= 50) {
-            throw new RuntimeException("Timed out wait for row in " + rowId + " to be selected.");
+            Assert.fail("Timed out wait for row in " + rowId + " to be selected");
         }
     }
 
@@ -1028,7 +1035,8 @@ public class BaseSeleniumTestClass {
                 }
                 if (!textShouldBeMissing) {
                     boolean visible = false;
-                    final List<WebElement> elements = driver.findElements(By.xpath("//*[contains(text(), '" + triggerText + "')]"));
+                    final List<WebElement> elements = driver.findElements(By.xpath("//*[contains(text(), \"" + 
+                            triggerText.replace("\"", "\\\"") + "\")]"));
                     if (!elements.isEmpty()) {
                         for (WebElement e : elements) {
                             if (e.isDisplayed()) {
@@ -1048,13 +1056,13 @@ public class BaseSeleniumTestClass {
 
                 } else {
                     if (isTextPresent("RuntimeException")) {
-                        throw new RuntimeException("Exception detected on page. Please check the logs for details");
+                        Assert.fail("Exception detected on page. Please check the logs for details");
                     }
                 }
             } catch (SeleniumException se) {
                 String message = se.getMessage();
-                if (!"ERROR: Couldn't access document.body.  Is this HTML page fully loaded?".equals(se.getMessage())) {
-                    throw new RuntimeException(se);
+                if (!"ERROR: Couldn't access document.body.  Is this HTML page fully loaded?".equals(message)) {
+                    Assert.fail(message);
                 }
             }
 

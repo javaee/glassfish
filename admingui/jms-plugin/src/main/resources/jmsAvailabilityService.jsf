@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2009-2012 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -51,67 +51,88 @@
     <event>
     <!beforeCreate
         setSessionAttribute(key="availabilityTabs" value="jmsAvailabilityTab");
+
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        getRequestValue(key="configName" value=>$page{config} default="server-config");
+            
         setPageSessionAttribute(key="childType" value="jms-availability");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/availability-service");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
-        setPageSessionAttribute(key="rest-api" value="true");
+        
         gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}/property" exists="#{pageSession.edit}");
         if(!#{edit}) {
             gf.restRequest(endpoint="#{pageSession.selfUrl}" method="POST");
         }
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
-        gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="GET" result="#{requestScope.propTable}");
+        
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+        gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/jms-service", valueMap="#{pageSession.serviceMap}");
+        gf.restRequest(endpoint="#{pageSession.selfUrl}/property" method="GET" result="#{requestScope.propTable}", throwException="#{false}", quiet="#{true}");
+        
         setPageSessionAttribute(key="tableList" value="#{requestScope.propTable.data.extraProperties.properties}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/jmsAvailabilityService.jsf?configName=#{pageSession.configName}");
         setPageSessionAttribute(key="convertToFalseList" value={"availabilityEnabled"});
-        //set the following for including buttons.inc
-        setPageSessionAttribute(key="edit" value="#{true}" );
-        setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
-        setPageSessionAttribute(key="showCancelButton" value="#{false}" );
-        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
-        setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+        
+        setPageSessionAttribute(key="jmsTypeOptionGrp" value="#{pageSession.serviceMap['type']}");
+        setPageSessionAttribute(key="jmsType" value="#{jmsTypeOptionGrp}");
+        setPageSessionAttribute(key="deleteClusterOnFailure" value="#{false}");
+        
+        setPageSessionAttribute(key="clusterType" value="#{pageSession.valueMap.availabilityEnabled ? 'enhanced' : 'conventional'}");
+        setPageSessionAttribute(key="clusterTypeOptionGrp" value="#{pageSession.valueMap.availabilityEnabled ? 'enhanced' : 'conventional'}");
+        setAttribute(key="jmsTypeOptionGrp" value="#{pageSession.serviceMap.type}");
+        setPageSessionAttribute(key="configStoreType" value="#{pageSession.valueMap.configStoreType}");
+        setPageSessionAttribute(key="messageStoreType" value="#{pageSession.valueMap.messageStoreType}");
+        setPageSessionAttribute(key="dbUser" value="#{pageSession.valueMap.dbUsername}");
+        setPageSessionAttribute(key="dbVendor" value="#{pageSession.valueMap.dbVendor}");
+        setPageSessionAttribute(key="dbUrl" value="#{pageSession.valueMap.dbUrl}");
+        
+        gf.determineJmsAuthType(text="#{pageSession.valueMap.dbPassword}", password="#{pageSession.pswdText}",
+            alias="#{pageSession.pswdAlias}",type="#{pageSession.authType}");
+        setPageSessionAttribute(key="needPropField" value="#{false}");
+        
+        gf.listInstances(optionKeys={"id"} optionValues={"$pageSession{configName}"}, statusMap="#{requestScope.statusMap}");
+        gf.getClusterStatusSummary(statusMap ="#{requestScope.statusMap}" ,
+            numRunning="#{pageSession.numRunning}");
+        setPageSessionAttribute(key="instancesRunning" value="#{!empty pageSession.numRunning}");
     />
     </event>
     <sun:form id="propertyForm">
 #include "/cluster/availability/availabilityTabs.inc"
 #include "/common/shared/alertMsg.inc"
-    <sun:title id="propertyContentPage" title="$resource{i18njms.availability.jmsAvailability}" helpText="$resource{i18njms.availability.jmsAvailabilityInfo}">
-#include "/common/shared/editPageButtons.inc"
-    </sun:title>
-        <sun:propertySheet id="propertySheet">
-#include "/common/shared/configNameSection.inc"
-            <sun:propertySheetSection id="propertSectionTextField">
-                <sun:property id="AvailabilityEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.availability.availabilityService}" helpText="$resource{i18njms.availability.jmsAvailabilityInfoHelp}">
-                    <sun:checkbox id="avail" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['availabilityEnabled']}" selectedValue="true" />
-                </sun:property>
-                <sun:property id="ConfigStoreTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.availability.configStoreType}" helpText="$resource{i18njms.availability.configStoreTypeHelp}">
-                    <sun:dropDown id="ConfigStoreType" selected="#{pageSession.valueMap['configStoreType']}" labels={"masterbroker" , "shareddb"} />
-                </sun:property>
-                <sun:property id="MessageStoreTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.availability.messageStoreType}" helpText="$resource{i18njms.availability.messageStoreTypeHelp}">
-                    <sun:dropDown id="MessageStoreType" selected="#{pageSession.valueMap['messageStoreType']}" labels={"file" , "jdbc"} />
-                </sun:property>
-                <sun:property id="DbVendorProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.availability.dbVendor}" helpText="$resource{i18njms.availability.dbVendorHelp}">
-                    <sun:textField id="DbVendor" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.availabilty.dbVendor']}" text="#{pageSession.valueMap['dbVendor']}" />
-                </sun:property>
-                <sun:property id="DbUserNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.availability.dbUserName}" helpText="$resource{i18njms.availability.dbUserNameHelp}">
-                    <sun:textField id="DbUserName" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.availabilty.dbUserName']}" text="#{pageSession.valueMap['dbUsername']}" />
-                </sun:property>
-                <sun:property id="DbPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.availability.dbPassword}" helpText="$resource{i18njms.availability.dbPasswordHelp}">
-                    <sun:textField id="DbPassword" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.availabilty.dbPassword']}" text="#{pageSession.valueMap['dbPassword']}" />
-                </sun:property>
-                <sun:property id="DbUrlProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.availability.dbUrl}" helpText="$resource{i18njms.availability.dbUrlHelp}">
-                    <sun:textField id="DbUrl" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.availabilty.dbUrl']}" text="#{pageSession.valueMap['dbUrl']}" />
-                </sun:property>
-                "<br /><br />
-            </sun:propertySheetSection>
-        </sun:propertySheet>
+        <sun:alert id="error" type="error" summary="$resource{i18njms.availability.instancesRunning}" rendered="#{pageSession.instancesRunning}"/>
+        <sun:title id="propertyContentPage" title="$resource{i18njms.availability.jmsAvailability} " 
+            helpText="$resource{i18njms.availability.jmsAvailabilityInfo}  $resource{i18njms.availability.jmsAvailabilityInfoHelp}">
+#include "/jms/jmsHandlers.inc"
+            <!facet pageButtonsTop>
+                <sun:panelGroup id="topButtons">
+#include "jmsAvailbilityButtons.inc"
+                </sun:panelGroup>
+            </facet>
+        </sun:title>
+#include "configureJmsClusterSheet.inc"
 #include "/common/shared/propertyDescTable.inc"
-    <sun:title id="propertyContentPage2">
-#include "/common/shared/editPageButtons_2.inc"
-    </sun:title>
+        <sun:title id="propertyContentPage2">
+            <!facet pageButtonsTop>
+                <sun:panelGroup id="topButtons">
+#include "jmsAvailbilityButtons.inc"
+                </sun:panelGroup>
+            </facet>
+        </sun:title>
         <sun:hidden id="helpKey" value="$resource{helpjms.jmsAvailabilityService}" />
     </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
+<f:verbatim>
+    <script type="text/javascript">
+#include "configureJmsCluster.js"
+        updateUI();
+
+        if (#{pageSession.instancesRunning}) {
+            var form = document.getElementById('propertyForm');
+            var len= form.elements.length;
+            for(var x=0; x < len; x++) {
+                form.elements[x].disabled=true;
+            }
+        }
+    </script>
+</f:verbatim>
 </define>
 </composition>

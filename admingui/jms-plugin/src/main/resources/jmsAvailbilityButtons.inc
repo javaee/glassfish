@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -37,23 +37,19 @@
     and therefore, elected the GPL Version 2 license, then the option applies
     only if the new code is made subject to such option by the copyright
     holder.
+
 -->
-<!initPage
-    setResourceBundle(key="i18njms" bundle="org.glassfish.jms.admingui.Strings");
-    setResourceBundle(key="helpjms" bundle="org.glassfish.jms.admingui.Helplinks")
-    setPageSessionAttribute(key="jmsConfigType" value="Basic");
-/>
-<sun:property id="jmsConfigTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" 
-        label="$resource{i18ncs.cluster.jms.ConfigType}">
-    <sun:radioButton id="optBasic"  name="jmsConfigOptionGrp" label="$resource{i18ncs.cluster.jms.ConfigTypeBasic}"
-        selected="#{pageSession.jmsConfigType}" selectedValue="Basic" onChange="updateUI();"/>
-    "<br />
-    <sun:radioButton id="optCustom"  name="jmsConfigOptionGrp" label="$resource{i18ncs.cluster.jms.ConfigTypeCustom}"
-        selected="#{pageSession.jmsConfigType}" selectedValue="Custom" onChange="updateUI();"/>
-    "<br />
-<f:verbatim>
-    <script type="text/javascript">
-#include "/jms/configureJmsCluster.js"
-    </script>
-</f:verbatim>
-</sun:property>
+<sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}" 
+        onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
+    <!command
+        removeEmptyProps(props="#{pageSession.tableList}" modifiedProps="#{pageSession.tableList}");
+        javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
+        gf.restRequest(endpoint="#{pageSession.selfUrl}/property", method="POST", data="#{requestScope.tmpJSON}", result="#{requestScope.restResponse}");
+
+        gf.getClusterForConfig(configName="#{pageSession.configName}", cluster="#{pageSession.name}");
+        gf.configureJmsCluster();
+
+        prepareSuccessfulMsg();
+        gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+    />
+</sun:button>

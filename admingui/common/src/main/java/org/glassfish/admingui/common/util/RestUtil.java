@@ -306,7 +306,8 @@ public class RestUtil {
         return (message==null)? "" : message;
     }
 
-    public static Map<String, Object> parseResponse(RestResponse response, HandlerContext handlerCtx, String endpoint, Object attrs, boolean quiet, boolean throwException) {
+    public static Map<String, Object> parseResponse(RestResponse response, HandlerContext handlerCtx, String endpoint, 
+            Object attrs, boolean quiet, boolean throwException) {
         // Parse the response
         String message = "";
         ExitCode exitCode = ExitCode.FAILURE;

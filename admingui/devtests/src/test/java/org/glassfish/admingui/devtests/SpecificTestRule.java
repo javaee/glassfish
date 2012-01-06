@@ -56,7 +56,9 @@ import org.junit.runners.model.Statement;
  * @author jasonlee
  */
 public class SpecificTestRule implements MethodRule {
+
     protected static boolean debug;
+
     public SpecificTestRule() {
         debug = Boolean.parseBoolean(SeleniumHelper.getParameter("debug", "false"));
     }
@@ -64,6 +66,7 @@ public class SpecificTestRule implements MethodRule {
     @Override
     public Statement apply(final Statement statement, final FrameworkMethod frameworkMethod, final Object o) {
         return new Statement() {
+
             @Override
             public void evaluate() throws Throwable {
                 boolean runMethod = false;
@@ -95,8 +98,12 @@ public class SpecificTestRule implements MethodRule {
                     }
                     try {
                         statement.evaluate();
-                    } catch (Exception e) {
-                        statement.evaluate(); // try again. Ugly hack, but if it works...
+                    } catch (Throwable t) {
+                        SeleniumHelper.captureScreenshot(frameworkMethod.getName());
+                        throw t; // rethrow
+                        // No explanation as to why this was done, so we'll disable
+                        // it and see what happens
+                        //statement.evaluate(); // try again. Ugly hack, but if it works...
                     }
                 } else {
                     logger.log(Level.INFO, "\tSkipping.");
