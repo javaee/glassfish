@@ -94,22 +94,42 @@ package org.glassfish.hk2;
 public interface ScopeInstance {
 
     /**
-     * Retrieves a stored inhabitant if present in the storage bag.
+     * Retrieves a stored inhabitant if present in the scope instance. Otherwise
+     * returns {@code null}. Note that {@code null} returned value may be a valid
+     * inhabitant value stored in the scope instance. To check if this is the case
+     * {@link #contains(org.glassfish.hk2.Provider)} method can be used.
      *
-     * @param provider the {@link Provider} we request the instance for.
-     * @param <T> the requested instance type
-     * @return the instance of T for that provider or null if it was
-     * never added to the bug.
+     * @param <T> the requested inhabitant instance type.
+     * @param provider the {@link Provider} instance we request the inhabitant for.
+     * @return the instance of T for that provider. Method may return {@code null}
+     *     in case the {@code null} inhabitant value has been stored in the scope
+     *     or in case the inhabitant instance has never been stored in the scope.
+     * @see #contains(org.glassfish.hk2.Provider)
+     *
      */
     public <T> T get(Provider<T> provider);
 
     /**
+     * Returns {@code true} if this scope instance contains a stored inhabitant
+     * for a given provider, returns {@code false} otherwise. Note that this method
+     * will return {@code true} even if the previously stored inhabitant value is
+     * {@code null}.
+     *
+     * @param <T> the requested inhabitant instance type.
+     * @param provider the {@link Provider} instance we request the inhabitant for.
+     * @return {@code true} if this scope instance contains an inhabitant value
+     *     for the specified {@link Provider} instance.
+     * @see #get(org.glassfish.hk2.Provider)
+     */
+    public <T> boolean contains(Provider<T> provider);
+
+    /**
      * Stores a inhabitant component instance.
      *
-     * @param provider component description as an {@link Provider}
-     * @param value component instance
-     * @param <T> type of the component
-     * @return the previous value associated with this provider if any,
+     * @param <T> type of the component.
+     * @param provider component description as an {@link Provider}.
+     * @param value inhabitant component instance. May be {@code null}.
+     * @return the previous value associated with this provider (if any).
      */
     public <T> T put(Provider<T> provider, T value);
 
