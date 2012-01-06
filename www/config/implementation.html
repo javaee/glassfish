@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+<html>
+  <head>
+    <title>Configuration Implementation Details</title>
+    <style type="text/css" media="all">
+      @import url("./css/maven-base.css");
+      @import url("./css/maven-theme.css");
+      @import url("./css/site.css");
+    </style>
+    <link rel="stylesheet" href="./css/print.css" type="text/css" media="print" />
+          <meta name="author" content="Jerome Dochez" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      </head>
+  <body class="composite">
+    <!-- TODO: move this into JavaScript to patch the skin
+      <div class="xright">  </div>
+    -->
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <p>This page contains some information on the implementation of the configuration backend, it is not targeted to users of the technology but for individuals who want to understand the implementation.</p><div class="section"><h2>XML I/O<a name="XML_IO"></a></h2><p>The first question at hand is how do we process the reading and writing of the XML when all the users has to do is to write a set of @Configured annotated interfaces to describe the document model. Let's divide the question in two parts, the reading first and then the writing.</p><div class="section"><h3>Reading<a name="Reading"></a></h3><p>The process of reading XML files from the set of annotated interfaces can be roughly divided in 3 steps : * Build time generation (APT plugin). * Runtime model construction * XML parsing and binding</p><div class="section"><h4>Build time generation<a name="Build_time_generation"></a></h4><p>In order to limit the processing time at startup, a fair amount of metadata is generated during build time to be able to generate an in memory model of the XML document in a minimum amount of time. That metadata resides in the usual META-INF/inhabitant file, but it is not directly generated there.</p><div class="section"><h5>Configuration metadata format.<a name="Configuration_metadata_format."></a></h5><p>metadata: target [attribute | element]+ target: target-type attribute: @name element: <i>name</i>=element-metadata ] element-metadata: (collection:)? + target-type name: [a..z-_]+ target-type: Class#getName() name of a type</p></div></div></div></div>
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2012
+    
+          Oracle Corporation
+          
+  
+
+  
+  
+  &nbsp;| Last Published: 01/05/2012
+  &nbsp;| Version: 1.6.28-SNAPSHOT
+</div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>
