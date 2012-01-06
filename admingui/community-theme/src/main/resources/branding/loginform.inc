@@ -52,7 +52,7 @@
         </sun:image>
 <f:verbatim>
         <form method="POST" class="form" name="loginform" action="j_security_check">
-        <table>
+        <table role="presentation">
         <tr>
             <td><label for="Login.username" style="font-weight: bold;">$resource{i18n.common.username}</label></td>
             <td><input type="text" name="j_username" id="Login.username" tabindex="1" value="#{byPassLogin ? pageSession.loginUser : ''}"></td>
