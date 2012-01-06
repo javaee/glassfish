@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -55,6 +55,7 @@ import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.server.BoundEndpoint;
 import com.sun.xml.ws.api.server.WSEndpoint;
+import java.lang.ref.WeakReference;
 import javax.xml.ws.WebServiceException;
 import java.util.List;
 import java.util.ArrayList;
@@ -75,8 +76,8 @@ import java.net.URISyntaxException;
 public class JAXWSServletModule extends ServletModule {
     
     //Map of context-roots to JAXWSServletModules
-    private final static Hashtable<String, JAXWSServletModule> modules = 
-            new Hashtable<String, JAXWSServletModule>();  
+    private final static Hashtable<String, WeakReference<JAXWSServletModule>> modules =
+            new Hashtable<String, WeakReference<JAXWSServletModule>>();
     
     //Map of uri->BoundEndpoint used to implement getBoundEndpoint.  Map is rather
     //than Set, so that when a new endpoint is redeployed at a given uri, the old
@@ -91,12 +92,12 @@ public class JAXWSServletModule extends ServletModule {
          
     public static synchronized JAXWSServletModule getServletModule(String contextPath) {
         
-        JAXWSServletModule ret = modules.get(contextPath);
+        WeakReference<JAXWSServletModule> ret = modules.get(contextPath);
         if (ret == null) {
-            ret = new JAXWSServletModule(contextPath);
+            ret = new WeakReference<JAXWSServletModule>(new JAXWSServletModule(contextPath));
             modules.put(contextPath, ret);
         }
-        return ret;
+        return ret.get();
     } 
     
     private JAXWSServletModule(String contextPath) {
