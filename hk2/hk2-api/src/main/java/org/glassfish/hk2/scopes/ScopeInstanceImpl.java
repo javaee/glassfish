@@ -53,16 +53,16 @@ import java.util.logging.Logger;
  * <p>
  * For example, for the "request scope", an instance
  * of {@link ScopeInstanceImpl} is created for each request.
- * 
+ *
  * @author Kohsuke Kawaguchi
  * @see org.glassfish.hk2.Scope#current()
  */
 @SuppressWarnings("unchecked")
 final class ScopeInstanceImpl implements ScopeInstance, PreDestroy {
     private static final Logger logger = Logger.getLogger(ScopeInstanceImpl.class.getName());
-    
+
     /**
-     * Human readable scope instance name for debug assistance. 
+     * Human readable scope instance name for debug assistance.
      */
     public final String name;
 
@@ -77,9 +77,14 @@ final class ScopeInstanceImpl implements ScopeInstance, PreDestroy {
         this.name = super.toString();
         this.backend = backend;
     }
-    
+
+    @Override
     public String toString() {
         return name;
+    }
+
+    public <T> boolean contains(Provider<T> provider) {
+        return backend.containsKey(provider);
     }
 
     public <T> T get(Provider<T> inhabitant) {

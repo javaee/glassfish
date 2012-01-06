@@ -62,6 +62,11 @@ public class ThreadScope implements Scope {
             }
 
             @Override
+            public <T> boolean contains(Provider<T> provider) {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
             public <T> T put(Provider<T> inhabitant, T value) {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }

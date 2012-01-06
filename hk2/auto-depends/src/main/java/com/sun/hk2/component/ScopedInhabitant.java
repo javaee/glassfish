@@ -47,13 +47,16 @@ import org.jvnet.hk2.tracing.TracingThreadLocal;
 import org.jvnet.hk2.tracing.TracingUtilities;
 
 /**
+ * Scoped inhabitant.
+ *
+ * @param <T> scoped inhabitant type.
  * @author Kohsuke Kawaguchi
  */
 public class ScopedInhabitant<T> extends AbstractCreatorInhabitantImpl<T> {
     private final Scope scope;
 
     public ScopedInhabitant(Creator<T> creator, Scope scope) {
-        super(DescriptorImpl.createMerged(getDescriptorFor(creator), 
+        super(DescriptorImpl.createMerged(getDescriptorFor(creator),
                 new DescriptorImpl(null, null, null, scope)),
              creator);
         this.scope = scope;
@@ -63,6 +66,7 @@ public class ScopedInhabitant<T> extends AbstractCreatorInhabitantImpl<T> {
         return scope;
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
     public T get(Inhabitant onBehalfOf) {
         try {
@@ -73,31 +77,33 @@ public class ScopedInhabitant<T> extends AbstractCreatorInhabitantImpl<T> {
             // scope is extension point, so beware for the broken implementation
             assert store!=null : scope+" returned null";
 
-            T o = store.get(this);
-            if(o==null) {
+            if(store.contains(this)) {
+                return store.get(this);
+            } else {
                 synchronized(this) {
                     // to avoid creating multiple objects into the same scope, lock this object
                     // verify no one else created one in the mean time
-                    o = store.get(this);
-                    if(o==null) {
-                        o = creator.get(onBehalfOf);
+                    if(store.contains(this)) {
+                    return store.get(this);
+                    } else {
+                        T o = creator.get(onBehalfOf);
                         store.put(this,o);
+                        return o;
                     }
                 }
             }
-
-            assert o!=null;
-            return o;
         } finally {
             if (TracingUtilities.isEnabled())
-                TracingThreadLocal.get().pop();            
+                TracingThreadLocal.get().pop();
         }
     }
 
+    @Override
     public boolean isActive() {
         return scope.current().get(this)!=null;
     }
 
+    @Override
     public void release() {
         // noop
     }
