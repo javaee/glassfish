@@ -45,7 +45,9 @@
     setResourceBundle(key="helpjms" bundle="org.glassfish.jms.admingui.Helplinks")
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.availability.jmsAvailability}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.availability.jmsAvailability}"
+    guiOnLoad="admingui.nav.selectTreeNodeWithURL('#{request.contextPath}/cluster/availability/availabilityService.jsf?configName=#{configName}');"
+>
 
 <!define name="content">
     <event>
@@ -99,7 +101,7 @@
 #include "/cluster/availability/availabilityTabs.inc"
 #include "/common/shared/alertMsg.inc"
         <sun:alert id="error" type="error" summary="$resource{i18njms.availability.instancesRunning}" rendered="#{pageSession.instancesRunning}"/>
-        <sun:title id="propertyContentPage" title="$resource{i18njms.availability.jmsAvailability} " 
+        <sun:title id="propertyContentPage" title="$resource{i18njms.availability.jmsAvailability} "
             helpText="$resource{i18njms.availability.jmsAvailabilityInfo}  $resource{i18njms.availability.jmsAvailabilityInfoHelp}">
 #include "/jms/jmsHandlers.inc"
             <!facet pageButtonsTop>

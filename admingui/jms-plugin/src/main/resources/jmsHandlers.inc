@@ -57,24 +57,24 @@
     mapPut(map="#{requestScope.jmsSvcAttrs}" key="type" value="#{empty pageSession.jmsType ? pageSession.jmsTypeOptionGrp : pageSession.jmsType}");
     gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.config}/jms-service",
         method="POST", attrs="#{requestScope.jmsSvcAttrs}", result="#{pageSession.resultMap}");
-    println("\n\n\n\n\n**************1needsDB = #{needsDB}\n\n\n\n\n\n\n\n\n");
+    //println("\n\n\n\n\n**************1needsDB = #{needsDB}\n\n\n\n\n\n\n\n\n");
         
     setAttribute(key="needsDB", value="#{false}");
     
-    println("\n\n\n\n\n**************2needsDB = #{needsDB}\n\n\n\n\n\n\n\n\n");
+    //println("\n\n\n\n\n**************2needsDB = #{needsDB}\n\n\n\n\n\n\n\n\n");
 
     if ('($pageSession{clusterType}=enhanced)') {
         setAttribute(key="needsDB" value="#{true}");
     }
-    println("\n\n\n\n\n**************3needsDB = #{needsDB}\n\n\n\n\n\n\n\n\n");
+    //println("\n\n\n\n\n**************3needsDB = #{needsDB}\n\n\n\n\n\n\n\n\n");
     if ('($pageSession{messageStoreType}=jdbc)') {
         setAttribute(key="needsDB" value="#{true}");
     }
-    println("\n\n\n\n\n**************4needsDB = #{needsDB}\n\n\n\n\n\n\n\n\n");
+    //println("\n\n\n\n\n**************4needsDB = #{needsDB}\n\n\n\n\n\n\n\n\n");
     if ('($pageSession{configStoreType}=shareddb)') {
         setAttribute(key="needsDB" value="#{true}");
     }
-    println("\n\n\n\n\n**************5needsDB = #{needsDB}\n\n\n\n\n\n\n\n\n");
+    //println("\n\n\n\n\n**************5needsDB = #{needsDB}\n\n\n\n\n\n\n\n\n");
     if ('(#{needsDB})') {
         if (#{dbVendor}) {
             mapPut(map="#{requestScope.jmsAttrs}" key="dbVendor" value="$pageSession{dbVendor}");
