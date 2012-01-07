@@ -177,6 +177,29 @@ public class BasicInjectionTest {
     }
 
     @Test
+    public void testNonEmptyConstructorFactoryBasedInjection() {
+        final ContractB b = new ContractB() {
+
+            @Override
+            public ClassX getX() {
+                return null;
+            }
+        };
+        Injector injector = HK2.get().create(null, new Module() {
+
+            @Override
+            public void configure(BinderFactory binderFactory) {
+                binderFactory.bind(ContractB.class).toInstance(b);
+                binderFactory.bind(ContractA.class).toFactory(NonEmptyConstructorContractAFactory.class);
+            }
+        }).forContract(Injector.class).get();
+
+        ContractA a = injector.inject(ContractA.class);
+        assertNotNull(a);
+        assertSame(b, a.getB());
+    }
+
+    @Test
     public void testOptionalNullFactoryValueInjection() {
         Injector injector = HK2.get().create(null, new Module() {
 

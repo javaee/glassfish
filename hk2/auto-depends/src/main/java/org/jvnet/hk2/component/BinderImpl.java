@@ -177,7 +177,7 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
                         Inhabitant<? extends org.glassfish.hk2.Factory<? extends T>> factoryInhabitant =
                                 habitat.getInhabitantByType(factoryType);
                         if (factoryInhabitant == null) {
-                            factoryInhabitant = new ConstructorCreator<Factory<? extends T>>(factoryType, habitat, null);
+                            factoryInhabitant = Creators.create(factoryType, habitat, null);
                         }
                         Factory<? extends T> f = factoryInhabitant.get();
                         T t = f.get();
