@@ -39,6 +39,7 @@
     holder.
 
 -->
+
 <handler id="gf.configureJmsCluster">
     createMap(result="#{requestScope.jmsAttrs}");
     println("***** #{pageSession}\n\n\n\n\n\n");

@@ -39,6 +39,7 @@
     holder.
 
 -->
+
 <!initPage
     setResourceBundle(key="i18njms" bundle="org.glassfish.jms.admingui.Strings");
     setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
