@@ -51,12 +51,13 @@ DESCRIPTION
 
      This subcommand is supported in remote mode only.
 
+OPTIONS
+     --help , -?
+
 Java EE 6            Last change: 9 Sep 2010                    1
 
 asadmin Utility Subcommands   create-connector-connection-pool(1)
 
-OPTIONS
-     --help , -?
           Displays the help text for the subcommand.
 
      --associatewiththread
@@ -107,11 +108,12 @@ OPTIONS
           the pool. After this amount of time, the pool can close
           this connection. Default value is 300.
 
+     --isconnectvalidatereq
+
 Java EE 6            Last change: 9 Sep 2010                    2
 
 asadmin Utility Subcommands   create-connector-connection-pool(1)
 
-     --isconnectvalidatereq
           If the value is set to true, the  connections  will  be
           checked  to  see  if  they  are usable, before they are
           given out to the application. Default value is false.
@@ -160,13 +162,12 @@ asadmin Utility Subcommands   create-connector-connection-pool(1)
           If connection leak tracing is enabled, you can use  the
           Administration Console to enable monitoring of the JDBC
           connection pool to get statistics on the number of con-
-          nection  leaks.  Default  value  is  0,  which disables
+          nection  leaks. Default value is 0, which disables con-
+          nection leak tracing.
 
 Java EE 6            Last change: 9 Sep 2010                    3
 
 asadmin Utility Subcommands   create-connector-connection-pool(1)
-
-          connection leak tracing.
 
      --matchconnections
           Specifies whether a connection that  is  selected  from
@@ -216,16 +217,16 @@ asadmin Utility Subcommands   create-connector-connection-pool(1)
           the  number of connections. Scale up: When the pool has
           no free connections, pool will scale up by  this  quan-
           tity.  Scale down: All the invalid and idle connections
-          are   removed,   sometimes   resulting   in    removing
+          are removed, sometimes resulting  in  removing  connec-
+          tions  of  quantity greater than this value. The number
+          of connections that is  specified  by  --steadypoolsize
 
 Java EE 6            Last change: 9 Sep 2010                    4
 
 asadmin Utility Subcommands   create-connector-connection-pool(1)
 
-          connections  of  quantity  greater than this value. The
-          number  of  connections  that  is   specified   by   --
-          steadypoolsize  will  be  ensured.  Possible values are
-          from 0 to MAX_INTEGER. Default value is 2.
+          will   be  ensured.  Possible  values  are  from  0  to
+          MAX_INTEGER. Default value is 2.
 
      --property
           Optional attribute name/value pairs for configuring the
@@ -272,14 +273,14 @@ asadmin Utility Subcommands   create-connector-connection-pool(1)
           highest, and NoTransaction the lowest.
 
      --validateatmostonceperiod
-          Specifies  the  time  interval   in   seconds   between
+          Specifies the time interval in seconds between  succes-
+          sive  requests  to  validate a connection at most once.
+          Setting  this  attribute  to   an   appropriate   value
 
 Java EE 6            Last change: 9 Sep 2010                    5
 
 asadmin Utility Subcommands   create-connector-connection-pool(1)
 
-          successive  requests  to  validate a connection at most
-          once. Setting this attribute to  an  appropriate  value
           minimizes  the  number of validation requests by a con-
           nection. Default value  is  0,  which  means  that  the
           attribute is not enabled.
@@ -294,7 +295,6 @@ EXAMPLES
      This example creates a new connector connection  pool  named
      jms/qConnPool.
      asadmin> create-connector-connection-pool --raname jmsra
-
      --connectiondefinition javax.jms.QueueConnectionFactory --steadypoolsize 20
      --maxpoolsize 100 --poolresize 2 --maxwait 60000 jms/qConnPool
      Command create-connector-connection-pool executed successfully

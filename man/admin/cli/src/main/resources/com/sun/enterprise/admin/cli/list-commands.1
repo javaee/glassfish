@@ -7,7 +7,6 @@ NAME
 SYNOPSIS
      list-commands [--help]
      [--localonly={false|true}] [--remoteonly={false|true}]
-
      pattern-list
 
 DESCRIPTION
@@ -51,14 +50,14 @@ EXAMPLES
 
      This example lists only the local subcommands.
      asadmin> list-commands --localonly=true
+     ********** Local Commands **********
+     change-admin-password
+     change-master-password
 
 Java EE 6           Last change: 20 Dec 2010                    1
 
 asadmin Utility Subcommands                      list-commands(1)
 
-     ********** Local Commands **********
-     change-admin-password
-     change-master-password
      create-domain
      create-service
      delete-domain
@@ -78,41 +77,30 @@ asadmin Utility Subcommands                      list-commands(1)
      verify-domain-xml
      version
      Command list-commands executed successfully.
-
      Example 2 Filtering the Subcommands That Are Listed
 
      This example lists only the subcomands whose  names  contain
      the text configure or set.
      asadmin> list-commands configure set
-
      ********** Local Commands **********
      setup-ssh
      unset
-
      ********** Remote Commands **********
      configure-jms-cluster                   set-log-levels
      configure-lb-weight                     set-web-context-param
      configure-ldap-for-admin                set-web-env-entry
      set                                     unset-web-context-param
      set-log-attributes                      unset-web-env-entry
-
      Command list-commands executed successfully.
-
      Example 3 Listing All Subcommands
 
      This example first displays a list of the local subcommands,
      followed by a partial list of the remote subcommands.
      asadmin> list-commands
-
      ********** Local Commands **********
      change-admin-password
      change-master-password
      create-domain
-
-Java EE 6           Last change: 20 Dec 2010                    2
-
-asadmin Utility Subcommands                      list-commands(1)
-
      create-service
      delete-domain
      export
@@ -122,6 +110,11 @@ asadmin Utility Subcommands                      list-commands(1)
      login
      monitor
      multimode
+
+Java EE 6           Last change: 20 Dec 2010                    2
+
+asadmin Utility Subcommands                      list-commands(1)
+
      restart-domain
      start-database
      start-domain
@@ -165,11 +158,6 @@ asadmin Utility Subcommands                      list-commands(1)
      create-ssl                              list-jmsdest
      create-system-properties                list-jndi-entries
      create-threadpool                       list-jndi-resources
-
-Java EE 6           Last change: 20 Dec 2010                    3
-
-asadmin Utility Subcommands                      list-commands(1)
-
      create-transport                        list-jvm-options
      create-virtual-server                   list-lifecycle-modules
      delete-admin-object                     list-logger-levels
@@ -178,6 +166,10 @@ asadmin Utility Subcommands                      list-commands(1)
 
 EXIT STATUS
      0    subcommand executed successfully
+
+Java EE 6           Last change: 20 Dec 2010                    3
+
+asadmin Utility Subcommands                      list-commands(1)
 
      1    error in executing the subcommand
 

@@ -22,7 +22,6 @@ DESCRIPTION
 
      1.  Create a valid admin user.
          asadmin> create-file-user --authrealmname admin-realm --groups
-
          asadmin newAdminUsername
 
      2.  Create a password alias for the just-created password.
@@ -31,7 +30,6 @@ DESCRIPTION
      3.  Use  that  user  name  and  password  for  inter-process
          authentication and admin authorization.
          asadmin> enable-secure-admin-internal-user
-
          --passwordalias passwordAliasName
          newAdminUsername
 
@@ -46,14 +44,14 @@ DESCRIPTION
      admin messages, regardless of how they authenticate to  each
      other.
 
-Java EE 6           Last change: 25 Jun 2011                    1
-
-asadmin Utility Subcommands  enable-secure-admin-internal-user(1)
-
      Most users who use this subcommand will need to set up  only
      one  secure  admin internal user. As a general practice, you
      should not use the same user  name  and  password  pair  for
      internal admin communication and for admin user login.
+
+Java EE 6           Last change: 25 Jun 2011                    1
+
+asadmin Utility Subcommands  enable-secure-admin-internal-user(1)
 
      If you set up more than one secure admin internal user,  you
      should  not  make  any assumptions about which user name and
@@ -83,7 +81,6 @@ EXAMPLES
      and  password  alias  for  authentication  and authorization
      between the DAS and instances, instead of certificates.
      asadmin> enable-secure-admin-internal-user
-
      --passwordalias passwordAliasName
      newAdminUsername
 

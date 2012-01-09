@@ -52,11 +52,11 @@ OPTIONS
 
           Possible values are as follows:
 
+          true The node is validated.
+
 Java EE 6            Last change: 8 Dec 2011                    1
 
 asadmin Utility Subcommands                      ping-node-ssh(1)
-
-          true The node is validated.
 
           false
                The node is not validated (default).
@@ -72,15 +72,12 @@ EXAMPLES
      This example tests if  the  SSH-enabled  node  sj03-node  is
      usable.
      asadmin> ping-node-ssh sj03-node
-
      Successfully made SSH connection to node sj03-node (sj03.example.com)
      Command ping-node-ssh executed successfully.
-
      Example 2 Validating an SSH-Enabled Node
 
      This example validates the SSH-enabled node adc-node.
      asadmin> ping-node-ssh --validate=true adc-node
-
      Successfully made SSH connection to node adcnode (adc.example.com)
      GlassFish version found at /export/glassfish3:
      Using locally retrieved version string from version class.

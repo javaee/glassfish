@@ -51,12 +51,12 @@ OPTIONS
           instance.
 
      --loadorder
+          This option represents an integer  value  that  can  be
 
 Java EE 6           Last change: 18 Nov 2010                    1
 
 asadmin Utility Subcommands            create-lifecycle-module(1)
 
-          This option represents an integer  value  that  can  be
           used  to  force  the  order in which deployed lifecycle
           modules are loaded at server startup. Smaller  numbered
           modules  are loaded sooner. Order is unspecified if two
@@ -93,12 +93,10 @@ EXAMPLES
      The following example creates a lifecycle module named  cus-
      tomSetup.
      asadmin> create-lifecycle-module --classname "com.acme.CustomSetup"
-
      --classpath "/export/customSetup" --loadorder 1 --failurefatal=true
      --description "this is a sample customSetup"
      --property rmi="Server\=acme1\:7070":timeout=30 customSetup
      Command create-lifecycle-module executed successfully
-
      The escape character \ is used in  the  property  option  to
      specify  that  the  equal sign (=) and colon (:) are part of
      the rmi property value.
@@ -108,16 +106,16 @@ EXIT STATUS
 
      1    error in executing the command
 
+SEE ALSO
+     delete-lifecycle-module(1), list-lifecycle-modules(1)
+
 Java EE 6           Last change: 18 Nov 2010                    2
 
 asadmin Utility Subcommands            create-lifecycle-module(1)
 
-SEE ALSO
-     delete-lifecycle-module(1), list-lifecycle-modules(1)
-
      asadmin(1M)
 
-     Developing Lifecycle Listeners in  Oracle  GlassFish  Server
+     "Developing Lifecycle Listeners" in Oracle GlassFish  Server
      Application Development Guide
 
 Java EE 6           Last change: 18 Nov 2010                    3

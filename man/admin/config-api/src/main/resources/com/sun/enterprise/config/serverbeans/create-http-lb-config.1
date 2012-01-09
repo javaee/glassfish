@@ -52,11 +52,12 @@ OPTIONS
           HTTP  requests  to  the server instance. The default is
           false.
 
+     --reloadinterval
+
 Java EE 6           Last change: 25 Aug 2010                    1
 
 asadmin Utility Subcommands              create-http-lb-config(1)
 
-     --reloadinterval
           The interval between checks for  changes  to  the  load
           balancer  configuration file loadbalancer.xml. When the
           check  detects  changes,  the  configuration  file   is
@@ -105,12 +106,11 @@ EXAMPLES
      get  named  mycluster  and load balancer configuration named
      mylbconfigname.
      asadmin> create-http-lb-config --target mycluster mylbconfigname
+     Command create-http-lb-config executed successfully.
 
 Java EE 6           Last change: 25 Aug 2010                    2
 
 asadmin Utility Subcommands              create-http-lb-config(1)
-
-     Command create-http-lb-config executed successfully.
 
 EXIT STATUS
      0    subcommand executed successfully

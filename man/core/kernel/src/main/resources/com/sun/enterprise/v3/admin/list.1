@@ -46,14 +46,13 @@ DESCRIPTION
 
      o Any list subcommand that has a  dotted  name  preceded  or
        followed  by  a  wildcard  (*) of the form *dotted name or
+       dottedname* lists all nodes and  their  child  nodes  that
+       match  the  regular  expression  created  by  the provided
+       matching pattern.
 
 Java EE 6           Last change: 14 Sep 2009                    1
 
 asadmin Utility Subcommands                               list(1)
-
-       dottedname* lists all nodes and  their  child  nodes  that
-       match  the  regular  expression  created  by  the provided
-       matching pattern.
 
      For  detailed  information  about  dotted  names,  see   the
      dotted-names(5ASC) help page.
@@ -76,7 +75,6 @@ EXAMPLES
 
      This example lists the elements that can be configured.
      asadmin> list *
-
      applications
      configs
      configs.config.server-config
@@ -103,16 +101,16 @@ EXAMPLES
      configs.config.server-config.jms-service
      configs.config.server-config.jms-service.jms-host.default_JMS_host
      ...
-
-Java EE 6           Last change: 14 Sep 2009                    2
-
-asadmin Utility Subcommands                               list(1)
-
      property.administrative.domain.name
      resources
      resources.jdbc-connection-pool.DerbyPool
      resources.jdbc-connection-pool.DerbyPool.property.DatabaseName
      resources.jdbc-connection-pool.DerbyPool.property.Password
+
+Java EE 6           Last change: 14 Sep 2009                    2
+
+asadmin Utility Subcommands                               list(1)
+
      resources.jdbc-connection-pool.DerbyPool.property.PortNumber
      resources.jdbc-connection-pool.DerbyPool.property.User
      resources.jdbc-connection-pool.DerbyPool.property.connectionAttributes
@@ -128,22 +126,18 @@ asadmin Utility Subcommands                               list(1)
      servers.server.server.resource-ref.jdbc/__default
      system-applications
      Command list executed successfully.
-
      Example 2 Listing Attributes of a Configurable Element
 
      This example lists the attributes of the web container.
      asadmin> list configs.config.server-config.web-container
-
      configs.config.server-config.web-container
      configs.config.server-config.web-container.session-config
      Command list executed successfully.
-
      Example 3 Listing Dotted Names of Monitorable Objects
 
      This example lists the names of the monitorable objects that
      are enabled for monitoring.
      asadmin> list --monitor *
-
      server.jvm
      server.jvm.class-loading-system
      server.jvm.compilation-system
@@ -160,11 +154,6 @@ asadmin Utility Subcommands                               list(1)
      server.network.admin-listener.keep-alive
      server.network.admin-listener.thread-pool
      server.network.http-listener-1
-
-Java EE 6           Last change: 14 Sep 2009                    3
-
-asadmin Utility Subcommands                               list(1)
-
      server.network.http-listener-1.connections
      server.network.http-listener-1.file-cache
      server.network.http-listener-1.keep-alive
@@ -174,6 +163,10 @@ asadmin Utility Subcommands                               list(1)
 
 EXIT STATUS
      0    subcommand executed successfully
+
+Java EE 6           Last change: 14 Sep 2009                    3
+
+asadmin Utility Subcommands                               list(1)
 
      1    error in executing the subcommand
 

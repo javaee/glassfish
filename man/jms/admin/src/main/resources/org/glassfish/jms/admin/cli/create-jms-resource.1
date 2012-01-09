@@ -52,12 +52,12 @@ OPTIONS
                Creates the JMS resource for the domain.
 
           cluster-name
+               Creates the JMS resource for every server instance
 
 Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands                create-jms-resource(1)
 
-               Creates the JMS resource for every server instance
                in the specified cluster.
 
           instance-name
@@ -108,12 +108,12 @@ asadmin Utility Subcommands                create-jms-resource(1)
                default value is guest.
 
           ReconnectEnabled
+               A value of true indicates that the client  runtime
 
 Java EE 6           Last change: 11 Feb 2011                    2
 
 asadmin Utility Subcommands                create-jms-resource(1)
 
-               A value of true indicates that the client  runtime
                attempts  to reconnect to a message server (or the
                list of addresses in the AddressList) when a  con-
                nection is lost. The default value is false.
@@ -164,12 +164,12 @@ asadmin Utility Subcommands                create-jms-resource(1)
                resource  will  refer. The physical destination is
                created automatically when you run an  application
                that  uses  the destination resource. You can also
+               create a physical  destination  with  the  create-
 
 Java EE 6           Last change: 11 Feb 2011                    3
 
 asadmin Utility Subcommands                create-jms-resource(1)
 
-               create a physical  destination  with  the  create-
                jmsdest  subcommand.  If  you  do not specify this
                property, the JMS service creates a physical  des-
                tination  with  the  same  name as the destination
@@ -194,19 +194,16 @@ EXAMPLES
      for durable subscriptions. The JNDI name for a JMS  resource
      customarily includes the jms/ naming subcontext.
      asadmin> create-jms-resource --restype javax.jms.ConnectionFactory
-
      --description "connection factory for durable subscriptions"
      --property ClientId=MyID jms/DurableConnectionFactory
      Connector resource jms/DurableConnectionFactory created.
      Command create-jms-resource executed successfully.
-
      Example 2 Creating a JMS destination resource
 
      The following  subcommand  creates  a  destination  resource
      whose  JNDI name is jms/MyQueue. The Name property specifies
      the physical destination to which the resource refers.
      asadmin> create-jms-resource --restype javax.jms.Queue
-
      --property Name=PhysicalQueue jms/MyQueue
      Administered object jms/MyQueue created.
      Command create-jms-resource executed successfully.
@@ -219,11 +216,7 @@ EXIT STATUS
 SEE ALSO
      delete-jms-resource(1), list-jms-resources(1)
 
-Java EE 6           Last change: 11 Feb 2011                    4
-
-asadmin Utility Subcommands                create-jms-resource(1)
-
      asadmin(1M)
 
-Java EE 6           Last change: 11 Feb 2011                    5
+Java EE 6           Last change: 11 Feb 2011                    4
 

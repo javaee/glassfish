@@ -2,17 +2,17 @@
 asadmin Utility Subcommands                     remove-library(1)
 
 NAME
-     remove-library - removes one or more library  archive  files
-     from GlassFish Server
+     remove-library - removes one or more library JAR files  from
+     GlassFish Server
 
 SYNOPSIS
      remove-library [--help] [--type={common|ext|app}]
      [--target target]
-     library-file-path [library-file-path ... ]
+     library-name [library-name ... ]
 
 DESCRIPTION
      The remove-library subcommand removes one  or  more  library
-     archive files from GlassFish Server.
+     JAR files from GlassFish Server.
 
      The --type option specifies the library type and the GlassF-
      ish Server directory from which the library is removed.
@@ -24,15 +24,20 @@ DESCRIPTION
      entire domain. If this option specifies  any  other  target,
      the libraries are removed from that target only.
 
-     The library-file-path operand is the path to  the  JAR  file
-     that contains the library to be removed. To specify multiple
-     libraries, specify multiple paths separated by spaces.
+     The library-name operand is the name of the  JAR  file  that
+     contains  the  library  to  be  removed. To specify multiple
+     libraries, specify multiple names separated by spaces.
 
      Note
 
-     The library archive file is removed from the DAS. To  remove
-     the  libraries from other server instances, synchronize them
-     with the DAS by restarting them.
+     The library archive file is removed from the DAS. For common
+     and  extension  libraries,  you  must restart the DAS so the
+     library removals are picked up by  the  server  runtime.  To
+     remove  the libraries from other server instances, synchron-
+     ize the instances with the DAS by restarting them.
+
+     This command is not supported on the Windows operating  sys-
+     tem.
 
      This Note will no longer be valid when the  --target  option
      is implemented.
@@ -48,14 +53,14 @@ OPTIONS
           directory  from  which  the  library  is removed. Valid
           values are as follows:
 
+Java EE 6           Last change: 16 Nov 2011                    1
+
+asadmin Utility Subcommands                     remove-library(1)
+
           common
                Removes the library files from  the  Common  class
                loader  directory,  domain-dir/lib.  This  is  the
                default.
-
-Java EE 6           Last change: 16 Nov 2011                    1
-
-asadmin Utility Subcommands                     remove-library(1)
 
           ext  Removes the library files from the  Java  optional
                package directory, domain-dir/lib/ext.
@@ -64,9 +69,9 @@ asadmin Utility Subcommands                     remove-library(1)
                specific    class    loader   directory,   domain-
                dir/lib/applibs.
 
-     For  more  information  about  these  directories,  seeClass
-     Loaders  in  Oracle GlassFish Server Application Development
-     Guide .
+     For more information about  these  directories,  see  "Class
+     Loaders"  in Oracle GlassFish Server Application Development
+     Guide.
 
      --target
           Specifies the target from which you  are  removing  the
@@ -88,36 +93,22 @@ asadmin Utility Subcommands                     remove-library(1)
                Server instance.
 
 OPERANDS
-     library-file-path
-          The  paths  to  the  archive  files  that  contain  the
-          libraries  that  are  to be removed. You can specify an
-          absolute path, only the file name, or a relative path.
-
-          o If you specify an absolute path, the archive file can
-            be anywhere.
-
-          o If you specify only the file name, the  archive  file
-            must  reside in the directory indicated by the --type
-            option.
-
-          o If you specify a relative path, the archive file must
-            be  relative  to  the  path  indicated  by the --type
-            option.
+     library-name
+          The names of the JAR files that contain  the  libraries
+          that are to be removed.
 
 EXAMPLES
      Example 1 Removing Libraries
 
-Java EE 6           Last change: 16 Nov 2011                    2
-
-asadmin Utility Subcommands                     remove-library(1)
-
      This  example  removes  the  library  in  the  archive  file
      mylib.jar  from the application-specific class loader direc-
      tory on the default server instance.
-     asadmin> add-library --type app /tmp/mylib.jar
+     asadmin> remove-library --type app mylib.jar
+     Command remove-library executed successfully.
 
-     Archive mylib.jar added to lib/applibs on server.
-     Command add-library executed successfully.
+Java EE 6           Last change: 16 Nov 2011                    2
+
+asadmin Utility Subcommands                     remove-library(1)
 
 EXIT STATUS
      0    subcommand executed successfully
@@ -129,7 +120,7 @@ SEE ALSO
 
      asadmin(1M)
 
-     Class  Loaders  in  Oracle  GlassFish   Server   Application
+     "Class  Loaders"  in  Oracle  GlassFish  Server  Application
      Development Guide
 
 Java EE 6           Last change: 16 Nov 2011                    3

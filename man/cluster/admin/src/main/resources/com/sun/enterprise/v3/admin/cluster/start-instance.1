@@ -39,7 +39,7 @@ OPTIONS
           Displays the help text for the subcommand.
 
      --debug
-          Specifies whether the instance  is  started  with  Java
+          Specifies whether  the  instance  is  started  withJava
           Platform       Debugger       Architecture       (JPDA)
           (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
           debugging enabled.
@@ -51,13 +51,12 @@ OPTIONS
                displayed.
 
           false
-               The  instance  is  started  with  JPDA   debugging
+               The instance is started with JPDA  debugging  dis-
+               abled (default).
 
 Java EE 6            Last change: 8 Dec 2011                    1
 
 asadmin Utility Subcommands                     start-instance(1)
-
-               disabled (default).
 
      --sync
           The type of synchronization between  the  DAS  and  the
@@ -105,16 +104,15 @@ OPERANDS
      instance-name
           The name of the GlassFish Server instance to start.
 
+EXAMPLES
+     Example 1 Starting a GlassFish Server Instance
+
 Java EE 6            Last change: 8 Dec 2011                    2
 
 asadmin Utility Subcommands                     start-instance(1)
 
-EXAMPLES
-     Example 1 Starting a GlassFish Server Instance
-
      This example starts the GlassFish Server instance pmdsa1.
      asadmin> start-instance pmdsa1
-
      Waiting for the server to start ..............................
      Successfully started the instance: pmdsa1
      instance Location: /export/glassfish3/glassfish/nodes/localhost/pmdsa1
@@ -122,16 +120,13 @@ EXAMPLES
      Admin Port: 24848
      Command start-local-instance executed successfully.
      The instance, pmdsa1, was started on host localhost
-
      Command start-instance executed successfully.
-
      Example 2 Starting a GlassFish  Server  Instance  With  JPDA
      Debugging Enabled
 
      This example starts the  GlassFish  Server  instance  ymlsa1
      with JPDA debugging enabled.
      asadmin> start-instance --debug=true ymlsa1
-
      Waiting for the server to start ...............................
      Successfully started the instance: ymlsa1
      instance Location: /export/glassfish3/glassfish/nodes/localhost/ymlsa1
@@ -140,7 +135,6 @@ EXAMPLES
      Debugging is enabled. The debugging port is: 29010
      Command start-local-instance executed successfully.
      The instance, ymlsa1, was started on host localhost
-
      Command start-instance executed successfully.
 
 EXIT STATUS

@@ -343,7 +343,6 @@ EXAMPLES
      This  example  creates  the  standalone   GlassFish   Server
      instance pmdsainst in the domain domain1 on the local host.
      asadmin> create-instance --node localhost-domain1 pmdsainst
-
      Port Assignments for server instance pmdsainst:
      JMX_SYSTEM_CONNECTOR_PORT=28688
      JMS_PROVIDER_PORT=27678
@@ -353,9 +352,7 @@ EXAMPLES
      IIOP_SSL_LISTENER_PORT=23822
      HTTP_SSL_LISTENER_PORT=28183
      IIOP_SSL_MUTUALAUTH_PORT=23922
-
      Command create-instance executed successfully.
-
      Example 2 Creating a Standalone  GlassFish  Server  Instance
      With Custom Port Assignments
 
@@ -375,7 +372,6 @@ EXAMPLES
 
      o JMX connector port
        asadmin> create-instance --node localhost-domain1
-
        --systemproperties HTTP_LISTENER_PORT=58294:
        HTTP_SSL_LISTENER_PORT=58297:
        IIOP_LISTENER_PORT=58300:
@@ -385,20 +381,18 @@ EXAMPLES
        Port Assignments for server instance pmdcpinst:
        JMS_PROVIDER_PORT=27679
        ASADMIN_LISTENER_PORT=24851
+       Command create-instance executed successfully.
+       Example 3 Creating a Shared GlassFish Server Instance
+
+     This example creates the shared  GlassFish  Server  instance
+     pmdsharedinst1  in the domain domain1 on the local host. The
 
 Java EE 6           Last change: 08 Dec 2011                    7
 
 asadmin Utility Subcommands                    create-instance(1)
 
-       Command create-instance executed successfully.
-
-       Example 3 Creating a Shared GlassFish Server Instance
-
-     This example creates the shared  GlassFish  Server  instance
-     pmdsharedinst1  in the domain domain1 on the local host. The
      shared configuration of this instance is pmdsharedconfig.
      asadmin create-instance --node localhost-domain1 --config pmdsharedconfig
-
      pmdsharedinst1
      Port Assignments for server instance pmdsharedinst1:
      JMX_SYSTEM_CONNECTOR_PORT=28687
@@ -409,16 +403,13 @@ asadmin Utility Subcommands                    create-instance(1)
      IIOP_SSL_LISTENER_PORT=23821
      HTTP_SSL_LISTENER_PORT=28182
      IIOP_SSL_MUTUALAUTH_PORT=23921
-
      Command create-instance executed successfully.
-
      Example 4 Creating a Clustered GlassFish Server Instance
 
      This example creates the clustered GlassFish Server instance
      pmdinst1  in  the  domain  domain1  on  the  local host. The
      instance is a member of the cluster pmdclust1.
      asadmin> create-instance --node localhost-domain1 --cluster pmdclust pmdinst1
-
      Port Assignments for server instance pmdinst1:
      JMX_SYSTEM_CONNECTOR_PORT=28686
      JMS_PROVIDER_PORT=27676
@@ -428,7 +419,6 @@ asadmin Utility Subcommands                    create-instance(1)
      IIOP_LISTENER_PORT=23700
      HTTP_SSL_LISTENER_PORT=28181
      IIOP_SSL_MUTUALAUTH_PORT=23920
-
      Command create-instance executed successfully.
 
 EXIT STATUS
@@ -441,14 +431,9 @@ SEE ALSO
      node-dcom(1),       create-node-ssh(1),       create-system-
      properties(1),      delete-instance(1),       delete-system-
      property(1),    list-instances(1),    setup-ssh(1),   start-
-
-Java EE 6           Last change: 08 Dec 2011                    8
-
-asadmin Utility Subcommands                    create-instance(1)
-
      instance(1), stop-instance(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 08 Dec 2011                    9
+Java EE 6           Last change: 08 Dec 2011                    8
 

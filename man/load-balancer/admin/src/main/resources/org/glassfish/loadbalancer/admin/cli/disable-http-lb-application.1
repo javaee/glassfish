@@ -51,12 +51,13 @@ OPTIONS
      --name
           The name of the application to be disabled.
 
+OPERANDS
+     target
+
 Java EE 6           Last change: 26 Aug 2010                    1
 
 asadmin Utility Subcommands        disable-http-lb-application(1)
 
-OPERANDS
-     target
           This operand specifies the server instance  or  cluster
           on which to disable the application. Valid values are:
 
@@ -69,7 +70,6 @@ EXAMPLES
 
      This example, disables an application for load balancing
      asadmin> disable-http-lb-application --name webapps-simple mycluster
-
      Command disable-http-lb-application executed successfully.
 
 EXIT STATUS

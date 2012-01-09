@@ -51,12 +51,13 @@ EXTENDED DESCRIPTION
      ticipants (clients, DAS, or instances) encrypts network mes-
      sages.
 
+  RUNNING GLASSFISH SERVER WITH secure admin
+     When running GlassFish Server with secure admin enabled, the
+
 Java EE 6           Last change: 25 Jun 2011                    1
 
 asadmin Utility Subcommands                enable-secure-admin(1)
 
-  RUNNING GLASSFISH SERVER WITH secure admin
-     When running GlassFish Server with secure admin enabled, the
      DAS and one or more remote instances are installed, initial-
      ized, and running, and  admin  clients  are  installed.  The
      administrator  specifies two aliases corresponding to certi-
@@ -146,12 +147,10 @@ asadmin Utility Subcommands                enable-secure-admin(1)
      are created or updated by the enable-secure-admin subcommand
      in the domain.xml file take the following form:
      <domain>
-
        <secure-admin/>
          <secure-admin-principal type="[admin|instance]" alias="alias"/>
        </secure-admin>
      ...
-
      In most cases, with  secure  admin  enabled,  there  is  one
      secure-admin-principal  subelement  for the admin type (DAS)
      and one for the instance type. This configuration exists  on
@@ -162,11 +161,11 @@ asadmin Utility Subcommands                enable-secure-admin(1)
      the  <secure-admin-principal  type="admin"> element to check
      incoming requests with certificate authentication.
 
+     Note
+
 Java EE 6           Last change: 25 Jun 2011                    3
 
 asadmin Utility Subcommands                enable-secure-admin(1)
-
-     Note
 
      It is possible to configure multiple  aliases  for  a  given
      secure-admin-principal,  however such a configuration is not
@@ -197,10 +196,8 @@ EXAMPLES
      domain  using  an  admin  alias adtest and an instance alias
      intest
      asadmin> enable-secure-admin --adminalias adtest --instancealias intest
-
      server-config
      default-config
-
      Command enable-secure-admin executed successfully.
 
 EXIT STATUS
@@ -218,8 +215,4 @@ SEE ALSO
      asadmin(1M)
 
 Java EE 6           Last change: 25 Jun 2011                    4
-
-asadmin Utility Subcommands                enable-secure-admin(1)
-
-Java EE 6           Last change: 25 Jun 2011                    5
 

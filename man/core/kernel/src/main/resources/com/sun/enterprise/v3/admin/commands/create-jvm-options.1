@@ -51,12 +51,13 @@ DESCRIPTION
 
      Note
 
+     Ensure that any option that you create is valid. The subcom-
+     mand  might  allow you to create an invalid option, but such
+
 Java EE 6           Last change: 29 Nov 2010                    1
 
 asadmin Utility Subcommands                 create-jvm-options(1)
 
-     Ensure that any option that you create is valid. The subcom-
-     mand  might  allow you to create an invalid option, but such
      an invalid option can cause startup to fail.
 
      An option can be verified by examining the server log  after
@@ -107,11 +108,12 @@ OPTIONS
 
           Valid values are as follows:
 
+          server
+
 Java EE 6           Last change: 29 Nov 2010                    2
 
 asadmin Utility Subcommands                 create-jvm-options(1)
 
-          server
                Specifies the DAS (default).
 
           instance-name
@@ -155,43 +157,36 @@ OPERANDS
      If an option name or option  value  contains  a  colon,  the
      backslash  (\)  must be used to escape the colon in the name
      or value. Other characters  might  also  require  an  escape
-
-Java EE 6           Last change: 29 Nov 2010                    3
-
-asadmin Utility Subcommands                 create-jvm-options(1)
-
      character.  For  more information about escape characters in
      subcommand options, see the asadmin(1M) man page.
 
 EXAMPLES
      Example 1 Setting Java System Properties
 
+Java EE 6           Last change: 29 Nov 2010                    3
+
+asadmin Utility Subcommands                 create-jvm-options(1)
+
      This example sets multiple Java system properties.
      asadmin> create-jvm-options -Dunixlocation=/root/example:
-
      -Dvariable=\$HOME:-Dwindowslocation=d\:\\sun\\appserver:-Doption1=-value1
      created 4 option(s)
      Command create-jvm-options executed successfully.
-
      Example 2 Setting a Startup Parameter for the Java  Applica-
      tion Launcher
 
      This example sets the maximum available heap size to 1024.
      asadmin> create-jvm-options -Xmx1024m
-
      created 1 option(s)
      Command create-jvm-options executed successfully.
-
      Example 3 Setting Multiple Startup Parameters for  the  Java
      Application Launcher
 
      This example sets the maximum available heap  size  to  1024
      and requests details about garbage collection.
      asadmin> create-jvm-options "-Xmx1024m:-XX\:+PrintGCDetails"
-
      created 1 option(s)
      Command create-jvm-options executed successfully.
-
      In this case, one of the two parameters already  exists,  so
      the subcommand reports that only one option was set.
 
@@ -199,7 +194,6 @@ EXAMPLES
 
      This example sets a JVM startup parameter for the profiler.
      asadmin> create-jvm-options --profiler=true -XX\:MaxPermSize=192m
-
      created 1 option(s)
      Command create-jvm-options executed successfully.
 
@@ -211,10 +205,6 @@ EXIT STATUS
 SEE ALSO
      delete-jvm-options(1),     list-jvm-options(1),      create-
      profiler(1), restart-domain(1)
-
-Java EE 6           Last change: 29 Nov 2010                    4
-
-asadmin Utility Subcommands                 create-jvm-options(1)
 
      asadmin(1M)
 
@@ -228,6 +218,10 @@ asadmin Utility Subcommands                 create-jvm-options(1)
 
      o Windows:   java   -   the   Java   application    launcher
        (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
+
+Java EE 6           Last change: 29 Nov 2010                    4
+
+asadmin Utility Subcommands                 create-jvm-options(1)
 
 Java EE 6           Last change: 29 Nov 2010                    5
 

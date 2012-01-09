@@ -52,12 +52,11 @@ OPTIONS
      --contextroot
           Valid only if the  archive  is  a  web  module.  It  is
           ignored  for  other archive types; defaults to filename
+          without extension.
 
 Java EE 6           Last change: 23 Dec 2010                    1
 
 asadmin Utility Subcommands                           redeploy(1)
-
-          without extension.
 
      --precompilejsp
           By default this option does not allow  the  JSP  to  be
@@ -79,9 +78,9 @@ asadmin Utility Subcommands                           redeploy(1)
           a letter or number. It can contain alphanumeric charac-
           ters plus underscore (_),  dash  (-),  and  period  (.)
           characters.  For  more  information  about  module  and
-          application versions,  see  theModule  and  Application
-          Versions in Oracle GlassFish Server Application Deploy-
-          ment Guide .
+          application versions, see "Module and Application  Ver-
+          sions"  in  Oracle GlassFish Server Application Deploy-
+          ment Guide.
 
      --upload
           Specifies whether the subcommand uploads  the  file  to
@@ -108,12 +107,12 @@ asadmin Utility Subcommands                           redeploy(1)
      The default value depends on whether the DAS is on the  host
      where the subcommand is run or is on a remote host.
 
+          o If the DAS is on the host  where  the  subcommand  is
+            run, the default is false.
+
 Java EE 6           Last change: 23 Dec 2010                    2
 
 asadmin Utility Subcommands                           redeploy(1)
-
-          o If the DAS is on the host  where  the  subcommand  is
-            run, the default is false.
 
           o If the DAS is on a remote host, the default is true.
 
@@ -163,13 +162,12 @@ asadmin Utility Subcommands                           redeploy(1)
           Guarantees unique table names for  all  the  beans  and
           results  in  a hash code added to the table names. This
           is  useful  if  you  have  an  application  with  case-
+          sensitive  bean  names.  Applies  to  applications with
+          unmapped CMP beans.
 
 Java EE 6           Last change: 23 Dec 2010                    3
 
 asadmin Utility Subcommands                           redeploy(1)
-
-          sensitive  bean  names.  Applies  to  applications with
-          unmapped CMP beans.
 
      --deploymentplan
           Deploys the deployment plan, which is a JAR  file  that
@@ -220,14 +218,13 @@ asadmin Utility Subcommands                           redeploy(1)
           is available for load balancing. The default is true.
 
      --keepstate
+          This  option  controls  whether  web   sessions,   SFSB
+          instances,  and  persistently  created  EJB  timers are
+          retained between redeployments.
 
 Java EE 6           Last change: 23 Dec 2010                    4
 
 asadmin Utility Subcommands                           redeploy(1)
-
-          This  option  controls  whether  web   sessions,   SFSB
-          instances,  and  persistently  created  EJB  timers are
-          retained between redeployments.
 
           The default is false. This option is supported only  on
           the  default  server  instance, named server. It is not
@@ -277,16 +274,16 @@ asadmin Utility Subcommands                           redeploy(1)
                Deploys the component to the domain. If domain  is
                the target for an initial deployment, the applica-
                tion is deployed to  the  domain,  but  no  server
+               instances  or  clusters reference the application.
+               If domain is the target for  a  redeployment,  and
+               dynamic  reconfiguration  is enabled for the clus-
+               ters  or  server  instances  that  reference   the
 
 Java EE 6           Last change: 23 Dec 2010                    5
 
 asadmin Utility Subcommands                           redeploy(1)
 
-               instances  or  clusters reference the application.
-               If domain is the target for  a  redeployment,  and
-               dynamic  reconfiguration  is enabled for the clus-
-               ters or server instances that reference the appli-
-               cation,   the   referencing   clusters  or  server
+               application,  the  referencing  clusters or server
                instances automatically get the new version of the
                application.  If  redeploying,  and dynamic confi-
                guration is disabled, the referencing clusters  or
@@ -331,24 +328,24 @@ asadmin Utility Subcommands                           redeploy(1)
                that   requires  elevated  permissions  unless  it
                resides in a JAR file signed  with  a  certificate
                that  the  user's system trusts. For your conveni-
-               ence,  GlassFish  Server  signs   the   JAR   file
+               ence, GlassFish Server signs the JAR file automat-
+               ically  using the certificate with this alias from
+               the domain's keystore. Java Web  Start  then  asks
+               the  user  whether  to trust the code and displays
+               the GlassFish Server certificate  information.  To
 
 Java EE 6           Last change: 23 Dec 2010                    6
 
 asadmin Utility Subcommands                           redeploy(1)
 
-               automatically  using  the  certificate  with  this
-               alias from the domain's keystore. Java  Web  Start
-               then  asks  the user whether to trust the code and
-               displays the GlassFish Server certificate informa-
-               tion.  To sign this JAR file with a different cer-
-               tificate, add the certificate to the  domain  key-
-               store,  then  use  this property. For example, you
-               can use a certificate from  a  trusted  authority,
-               which  avoids  the  Java Web Start prompt, or from
-               your own company, which users know they can trust.
-               Default  is  s1as,  the  alias for the self-signed
-               certificate created for every domain.
+               sign  this  JAR file with a different certificate,
+               add the certificate to the domain  keystore,  then
+               use this property. For example, you can use a cer-
+               tificate from a trusted  authority,  which  avoids
+               the  Java  Web Start prompt, or from your own com-
+               pany, which users know they can trust. Default  is
+               s1as,  the  alias  for the self-signed certificate
+               created for every domain.
 
           java-web-start-enabled
                Specifies whether Java Web Start access is permit-
@@ -389,15 +386,17 @@ asadmin Utility Subcommands                           redeploy(1)
                true Active  sessions  of  the   application   are
                     preserved and restored.
 
+                    If any  active  session  of  the  application
+                    fails  to  be  preserved or restored, none of
+                    the sessions will be available when the rede-
+                    ployment    is    complete.    However,   the
+
 Java EE 6           Last change: 23 Dec 2010                    7
 
 asadmin Utility Subcommands                           redeploy(1)
 
-                    If any  active  session  of  the  application
-                    fails  to  be  preserved or restored, none of
-                    the sessions will be available when the rede-
-                    ployment  is complete. However, the redeploy-
-                    ment continues and a warning is logged.
+                    redeployment  continues  and  a  warning   is
+                    logged.
 
                     To preserve active sessions, GlassFish Server
                     serializes  the  sessions  and  saves them in
@@ -442,13 +441,12 @@ OPERANDS
      tion was originally deployed:
 
           o If the application was  originally  deployed  from  a
+            file,  the  archive-path  operand  is  required.  The
+            operand must specify an archive file.
 
 Java EE 6           Last change: 23 Dec 2010                    8
 
 asadmin Utility Subcommands                           redeploy(1)
-
-            file,  the  archive-path  operand  is  required.  The
-            operand must specify an archive file.
 
           o If the application was  originally  deployed  from  a
             directory, the archive-path operand is optional.
@@ -465,16 +463,13 @@ EXAMPLES
      of  the  application  are  to be preserved and then restored
      when the redeployment is complete.
      asadmin> redeploy --name hello --properties keepSessions=true hello.war
-
      Application deployed successfully with name hello.
      Command redeploy executed successfully
-
      Example 2 Redeploying a Web Application From a Directory
 
      This example redeploys the  web  application  hellodir.  The
      application was originally deployed from a directory.
      asadmin> redeploy --name hellodir
-
      Application deployed successfully with name hellodir.
      Command redeploy executed successfully
 

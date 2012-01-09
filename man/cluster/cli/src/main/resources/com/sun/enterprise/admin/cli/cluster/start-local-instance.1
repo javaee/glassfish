@@ -52,12 +52,13 @@ OPTIONS
           --nodedir  option  specifies  contains  only  one  node
           directory. Otherwise, this option is required.
 
+     --debug
+
 Java EE 6            Last change: 8 Dec 2011                    1
 
 asadmin Utility Subcommands               start-local-instance(1)
 
-     --debug
-          Specifies whether the instance  is  started  with  Java
+          Specifies whether  the  instance  is  started  withJava
           Platform       Debugger       Architecture       (JPDA)
           (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
           debugging enabled.
@@ -179,7 +180,6 @@ EXAMPLES
      This example starts the  instance  yml-i-sj01  on  the  host
      where the subcommand is run.
      asadmin> start-local-instance --node sj01 yml-i-sj01
-
      Waiting for the server to start .................................
      Successfully started the instance: yml-i-sj01
      instance Location: /export/glassfish3/glassfish/nodes/sj01/yml-i-sj01

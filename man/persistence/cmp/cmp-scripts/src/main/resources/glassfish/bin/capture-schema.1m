@@ -22,9 +22,6 @@ DESCRIPTION
      should  grant  the  database user running the capture-schema
      command the ANALYZE ANY TABLE privilege.
 
-     You can also use the Sun Java System Studio IDE  to  capture
-     the database schema.
-
 OPTIONS
      -username
           user name for authenticating access to a database.
@@ -52,14 +49,14 @@ OPTIONS
 
           The specified schema name must be uppercase.
 
-Java EE 6            Last change: 1 Dec 2011                    1
-
-Utility Commands                               capture-schema(1m)
-
      -table
           name of a table; multiple table names can be specified.
           If  no  table is specified, all the tables in the data-
           base or named schema are captured.
+
+Java EE 6            Last change: 1 Dec 2011                    1
+
+Utility Commands                               capture-schema(1m)
 
           The specified table name or names are  case  sensitive.
           Be  sure  to  match  the case of the previously created
@@ -72,11 +69,9 @@ Utility Commands                               capture-schema(1m)
 EXAMPLES
      Example 1 Using the capture-schema command
      capture-schema -username cantiflas -password enigma
-
      -dburl jdbc:oracle:thin:@sadbuttrue:1521:ora817
      -driver oracle.jdbc.driver.OracleDriver
      -schemaname CANTIFLAS -out cantiflas.dbschema
-
      Where: sun-acc.xml is the name of the  client  configuration
      XML  file,  myclientapp.jar  is  the client application .jar
      file, and scott and sample are  arguments  to  pass  to  the

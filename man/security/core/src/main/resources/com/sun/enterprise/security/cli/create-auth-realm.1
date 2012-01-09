@@ -51,12 +51,11 @@ OPTIONS
           Optional attribute name-value pairs for configuring the
           authentication  realm.  Authentication  realms  require
           provider-specific  properties,  which  vary  based   on
+          implementation.
 
 Java EE 6           Last change: 20 Sep 2010                    1
 
 asadmin Utility Subcommands                  create-auth-realm(1)
-
-          implementation.
 
           The following properties are common to all of the  sup-
           ported   realms,   which  include  FileRealm,  Certifi-
@@ -95,9 +94,9 @@ asadmin Utility Subcommands                  create-auth-realm(1)
                  tation                   of                  the
                  javax.security.auth.spi.LoginModule   interface,
                  and  then  plug  the module into a jaas-context.
-                 For  more  information,  see   Extend   Certifi-
-                 cateRealm            with            LoginModule
-                 (http://blogs.sun.com/nasradu8/entry/extend_certificaterealm_with_loginmodule_glassfish).
+                 For more information, see "Custom Authentication
+                 of  Client Certificate in SSL Mutual Authentica-
+                 tion" in Oracle GlassFish Server Security Guide.
 
           o You  can  specify  the   following   properties   for
             JDBCRealm:
@@ -106,11 +105,12 @@ asadmin Utility Subcommands                  create-auth-realm(1)
                  Specifies the jndi-name of the jdbc-resource for
                  the database.
 
+            user-table
+
 Java EE 6           Last change: 20 Sep 2010                    2
 
 asadmin Utility Subcommands                  create-auth-realm(1)
 
-            user-table
                  Specifies the name of  the  user  table  in  the
                  database.
 
@@ -267,17 +267,15 @@ EXAMPLES
 
      This example creates a new file realm.
      asadmin> create-auth-realm
-
      --classname com.sun.enterprise.security.auth.realm.file.FileRealm
      --property file=${com.sun.aas.instanceRoot}/config/
      admin-keyfile:jaas-context=fileRealm file
      Command create-auth-realm executed successfully
+     Where file is the authentication realm created.
 
 Java EE 6           Last change: 20 Sep 2010                    5
 
 asadmin Utility Subcommands                  create-auth-realm(1)
-
-     Where file is the authentication realm created.
 
 EXIT STATUS
      0    subcommand executed successfully

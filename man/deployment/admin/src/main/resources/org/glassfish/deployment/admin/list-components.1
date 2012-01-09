@@ -27,8 +27,8 @@ DESCRIPTION
      deployed,  this subcommand lists all versions. To list which
      version is enabled, set the --long option to true. For  more
      information  about  module  and  application  versions,  see
-     theModule  and  Application  Versions  in  Oracle  GlassFish
-     Server Application Deployment Guide .
+     "Module and Application Versions" in Oracle GlassFish Server
+     Application Deployment Guide.
 
      This subcommand is supported in remote mode only.
 
@@ -52,12 +52,11 @@ OPTIONS
           ple, for a Java EE application (EAR file), modules  are
           listed.  For  a web application, servlets and JSP pages
           are listed. For an EJB module,  EJB  subcomponents  are
+          listed.
 
 Java EE 6           Last change: 29 Nov 2010                    1
 
 asadmin Utility Subcommands                    list-components(1)
-
-          listed.
 
      --type
           Specifies the type of the components  that  are  to  be
@@ -102,18 +101,17 @@ EXAMPLES
      This example lists the connector  components.  (cciblackbox-
      tx.rar was deployed.)
      asadmin> list-components --type connector
-
      cciblackbox-tx <connector>
      Command list-components executed successfully
-
-Java EE 6           Last change: 29 Nov 2010                    2
-
-asadmin Utility Subcommands                    list-components(1)
 
 EXIT STATUS
      0    subcommand executed successfully
 
      1    error in executing the subcommand
+
+Java EE 6           Last change: 29 Nov 2010                    2
+
+asadmin Utility Subcommands                    list-components(1)
 
 SEE ALSO
      list-applications(1), show-component-status(1)

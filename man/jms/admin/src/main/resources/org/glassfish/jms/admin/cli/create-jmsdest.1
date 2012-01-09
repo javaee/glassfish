@@ -52,12 +52,11 @@ OPTIONS
                cannot  react  quickly  enough to stop the flow of
                incoming messages. In such cases, the value speci-
                fied  for  maxNumMsgs  serves as merely a hint for
+               the broker rather than a strictly enforced limit.
 
 Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands                     create-jmsdest(1)
-
-               the broker rather than a strictly enforced limit.
 
           maxBytesPerMsg
                The maximum size, in bytes, of any single message.
@@ -107,12 +106,13 @@ asadmin Utility Subcommands                     create-jmsdest(1)
                     according to age, with no notification to the
                     producing client.
 
+          If the value is  REMOVE_OLDEST  or  REMOVE_LOW_PRIORITY
+          and the useDMQ property is set to true, excess messages
+
 Java EE 6           Last change: 11 Feb 2011                    2
 
 asadmin Utility Subcommands                     create-jmsdest(1)
 
-          If the value is  REMOVE_OLDEST  or  REMOVE_LOW_PRIORITY
-          and the useDMQ property is set to true, excess messages
           are moved to the dead message queue. For the dead  mes-
           sage  queue  itself,  the  default  limit  behavior  is
           REMOVE_OLDEST,  and  the  value  cannot   be   set   to
@@ -163,13 +163,12 @@ asadmin Utility Subcommands                     create-jmsdest(1)
                discarded. The default value is true.
 
           validateXMLSchemaEnabled
+               If set to true, XML schema validation  is  enabled
+               for the destination. The default value is false.
 
 Java EE 6           Last change: 11 Feb 2011                    3
 
 asadmin Utility Subcommands                     create-jmsdest(1)
-
-               If set to true, XML schema validation  is  enabled
-               for the destination. The default value is false.
 
                When XML validation is enabled, the Message  Queue
                client  runtime  will  attempt  to validate an XML
@@ -215,17 +214,17 @@ asadmin Utility Subcommands                     create-jmsdest(1)
                false.
 
      To modify the value of these properties,  you  can  use  the
-     as-install/mq/bin/imqcmd  command.  SeePhysical  Destination
+     as-install/mq/bin/imqcmd  command. See "Physical Destination
+     Property Reference" in Oracle GlassFish Server Message Queue
+     Administration Guide for more information.
+
+     --target
+          Creates the physical destination only for the specified
 
 Java EE 6           Last change: 11 Feb 2011                    4
 
 asadmin Utility Subcommands                     create-jmsdest(1)
 
-     Property Reference in Oracle GlassFish Server Message  Queue
-     Administration Guide for more information.
-
-     --target
-          Creates the physical destination only for the specified
           target.   Although  the  create-jmsdest  subcommand  is
           related to resources, a physical destination is created
           using  the  JMS  Service (JMS Broker), which is part of
@@ -260,7 +259,6 @@ EXAMPLES
      The following subcommand creates a JMS physical queue  named
      PhysicalQueue with non-default property values.
      asadmin> create-jmsdest --desttype queue
-
      --property maxNumMsgs=1000:maxBytesPerMsg=5k PhysicalQueue
      Command create-jmsdest executed successfully.
 
@@ -271,14 +269,9 @@ EXIT STATUS
 
 SEE ALSO
      create-jms-resource(1), delete-jmsdest(1),  list-jmsdest(1),
-
-Java EE 6           Last change: 11 Feb 2011                    5
-
-asadmin Utility Subcommands                     create-jmsdest(1)
-
      flush-jmsdest(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 11 Feb 2011                    6
+Java EE 6           Last change: 11 Feb 2011                    5
 

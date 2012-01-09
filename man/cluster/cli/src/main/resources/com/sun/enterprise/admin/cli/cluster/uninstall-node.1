@@ -37,6 +37,9 @@ DESCRIPTION
      the entire content of the parent of  the  base  installation
      directory.
 
+     If a file under the parent of the base  installation  direc-
+     tory is open, the subcommand files.
+
      If multiple hosts are specified, the  configuration  of  the
      following items must be the same on all hosts:
 
@@ -49,12 +52,12 @@ DESCRIPTION
 
      o SSH key file
 
-     The subcommand does not  modify  the  configuration  of  the
-     domain administration server (DAS).
-
-Java EE 6            Last change: 8 Dec 2011                    1
+Java EE 6            Last change: 5 Jan 2012                    1
 
 asadmin Utility Subcommands                     uninstall-node(1)
+
+     The subcommand does not  modify  the  configuration  of  the
+     domain administration server (DAS).
 
      This subcommand is supported in local mode only.
 
@@ -105,13 +108,14 @@ OPTIONS
 
           The default is a key file in the user's .ssh directory.
           If  multiple  key  files are found, the subcommand uses
+
+Java EE 6            Last change: 5 Jan 2012                    2
+
+asadmin Utility Subcommands                     uninstall-node(1)
+
           the following order of preference:
 
           1.  id_rsa
-
-Java EE 6            Last change: 8 Dec 2011                    2
-
-asadmin Utility Subcommands                     uninstall-node(1)
 
           2.  id_dsa
 
@@ -156,17 +160,16 @@ EXAMPLES
      hosts sj03.example.com and sj04.example.com from the default
      location.
      asadmin> uninstall-node sj03 sj04
-
      Successfully connected to gfuser@sj03.example.com using keyfile /home/gfuser
      /.ssh/id_rsa
      Successfully connected to gfuser@sj04.example.com using keyfile /home/gfuser
-     /.ssh/id_rsa
-     Command uninstall-node executed successfully.
 
-Java EE 6            Last change: 8 Dec 2011                    3
+Java EE 6            Last change: 5 Jan 2012                    3
 
 asadmin Utility Subcommands                     uninstall-node(1)
 
+     /.ssh/id_rsa
+     Command uninstall-node executed successfully.
      Example 2 Forcibly Uninstalling GlassFish Server Software
 
      This example uninstalls GlassFish  Server  software  on  the
@@ -179,7 +182,6 @@ asadmin Utility Subcommands                     uninstall-node(1)
      Some lines of output are omitted from this example for  rea-
      dability.
      asadmin> uninstall-node --force --installdir /export/glassfish3 sj02.example.com
-
      Successfully connected to gfuser@sj02.example.com using keyfile /home/gfuser
      /.ssh/id_rsa
      Force removing file /export/glassfish3/mq/lib/help/en/add_overrides.htm
@@ -201,5 +203,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 8 Dec 2011                    4
+Java EE 6            Last change: 5 Jan 2012                    4
 

@@ -35,7 +35,7 @@ OPTIONS
           Displays the help text for the subcommand.
 
      --debug
-          Specifies whether the domain  is  restarted  with  Java
+          Specifies whether  the  domain  is  restarted  withJava
           Platform       Debugger       Architecture       (JPDA)
           (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
           debugging enabled.
@@ -51,12 +51,11 @@ OPTIONS
                abled (default).
 
      The default is the current setting of this  option  for  the
+     domain that is being restarted.
 
 Java EE 6           Last change: 20 Dec 2010                    1
 
 asadmin Utility Subcommands                     restart-domain(1)
-
-     domain that is being restarted.
 
      --domaindir
           The domain root directory, which contains the directory
@@ -106,14 +105,13 @@ EXAMPLES
 
      This example  restarts  mydomain4  in  the  default  domains
      directory.
+     asadmin> restart-domain mydomain4
+     Successfully restarted the domain
 
 Java EE 6           Last change: 20 Dec 2010                    2
 
 asadmin Utility Subcommands                     restart-domain(1)
 
-     asadmin> restart-domain mydomain4
-
-     Successfully restarted the domain
      Command restart-domain executed successfully.
 
 EXIT STATUS

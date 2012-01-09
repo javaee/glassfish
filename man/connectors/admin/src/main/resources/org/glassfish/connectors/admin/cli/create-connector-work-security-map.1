@@ -52,13 +52,13 @@ OPTIONS
           both.
 
      --raname
+          Indicates the connector module name, which is the  name
 
 Java EE 6           Last change: 10 Feb 2011                    1
 
 asadmin Utility Subcommands
                             create-connector-work-security-map(1)
 
-          Indicates the connector module name, which is the  name
           of the resource adapter.
 
 OPERANDS
@@ -72,19 +72,16 @@ EXAMPLES
      tyMap1  that maps the backend EIS principal to the GlassFish
      Server principal.
      asadmin create-connector-work-security-map --raname my-resource-adapter
-
      --principalsmap eis-principal-1=server-principal-1,eis-principal-2
      =server-principal-2,eis-principal-3=server-principal-1
      workSecurityMap1
      Command create-connector-work-security-map executed successfully.
-
      Example 2 Creating a Connector Work Security Map (Group)
 
      This example creates connector work security map workSecuri-
      tyMap2 that maps the backend EIS user group to the GlassFish
      Server user group.
      asadmin create-connector-work-security-map --raname my-resource-adapter
-
      --groupsmap eis-group-1=server-group-1,eis-group-2=server-group-2,
      eis-group-3=server-group-1 workSecurityMap2
      Command create-connector-work-security-map executed successfully.

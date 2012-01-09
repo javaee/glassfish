@@ -52,12 +52,11 @@ OPTIONS
 
           instance_name
                Creates  the  resource  reference  for  the  named
+               unclustered server instance.
 
 Java EE 6           Last change: 20 Jun 2011                    1
 
 asadmin Utility Subcommands                create-resource-ref(1)
-
-               unclustered server instance.
 
      --enabled
           Indicates whether the resource should be enabled.  This
@@ -74,7 +73,6 @@ EXAMPLES
      This example creates a  reference  to  the  JMS  destination
      resource jms/Topic on the cluster Cluster1.
      asadmin> create-resource-ref --target Cluster1 jms/Topic
-
      resource-ref jms/Topic created successfully.
      Command create-resource-ref executed successfully.
 

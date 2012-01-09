@@ -23,8 +23,8 @@ DESCRIPTION
      deployed,  this subcommand lists all versions. To list which
      version is enabled, set the --long option to true. For  more
      information  about  module  and  application  versions,  see
-     theModule  and  Application  Versions  in  Oracle  GlassFish
-     Server Application Deployment Guide .
+     "Module and Application Versions" in Oracle GlassFish Server
+     Application Deployment Guide.
 
      This subcommand is supported in remote mode only.
 
@@ -52,12 +52,11 @@ OPTIONS
 
      --type
           Specifies the type of the applications that are  to  be
+          listed. The options are as follows:
 
 Java EE 6           Last change: 29 Nov 2010                    1
 
 asadmin Utility Subcommands                  list-applications(1)
-
-          listed. The options are as follows:
 
           o application
 
@@ -95,7 +94,6 @@ OPERANDS
 EXAMPLES
      Example 1 Listing the Web Applications
      asadmin> list-applications --type web
-
      hellojsp <web>
      Command list-applications executed successfully
 
@@ -106,14 +104,13 @@ EXIT STATUS
 
 SEE ALSO
      list-components(1), list-sub-components(1),  show-component-
+     status(1)
+
+     asadmin(1M)
 
 Java EE 6           Last change: 29 Nov 2010                    2
 
 asadmin Utility Subcommands                  list-applications(1)
-
-     status(1)
-
-     asadmin(1M)
 
      Oracle GlassFish Server Application Deployment Guide
 

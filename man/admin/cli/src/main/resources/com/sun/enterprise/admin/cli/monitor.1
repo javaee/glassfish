@@ -219,30 +219,24 @@ EXAMPLES
      This example displays monitoring data for  the  JVM  machine
      every 2000 seconds.
      asadmin> monitor --type=jvm --interval 2000 server
-
                                     JVM Monitoring
      UpTime(ms)                          Heap and NonHeap Memory(bytes)
      current                   min        max        low        high       count
      957843                    29523968   188284928  0          0          60370944
-
      q
      Command monitor executed successfully.
-
      Example 2 Filtering the Monitoring Data
 
      This example uses the filter option to show  http-listener-1
      statistics.
      asadmin> monitor --type httplistener --filter http-listener-1 server
-
                         HTTP Listener Monitoring: http-listener-1
      br   bs   c200 c2xx c302 c304 c3xx c400 c401 c403 c404 c4xx c503 c5xx coc  co
      ctc  ctb  ec   moc  mst  mt   mtm  mst  pt   rc
      0    0    0    0    0    3    3    0    0    0    0    0    0    0    0    0
      2    0    0    1    20   20   2    2    6    3
-
      To see the legend for the table headings, type h.
      ******************************************************************************************
-
      * br   = Cumulative value of the Bytes received by each of the Request Processors        *
      * bs   = Cumulative value of the Bytes sent by each of the Request Processors            *
      * c200 = Number of responses with a status code equal to 200                             *
@@ -261,11 +255,6 @@ EXAMPLES
      * co   = Number of responses with a status code outside the 2xx, 3xx, 4xx, and 5xx range *
      * ctc  = Number of request processing threads currently in the listener thread pool      *
      * ctb  = Number of request processing threads currently in use in the listener thread    *
-
-Java EE 6            Last change: 2 Nov 2009                    5
-
-asadmin Utility Subcommands                            monitor(1)
-
      *        pool serving requests                                                           *
      * ec   = Number of responses with a status code equal to 400                             *
      * moc  = Maximum number of open connections                                              *
@@ -273,6 +262,11 @@ asadmin Utility Subcommands                            monitor(1)
      *        startup time and maintained as spare threads above the current thread count     *
      * mt   = Maximum number of request processing threads that are created by the listener   *
      * mtm  = Provides the longest response time for a request - not a cumulative value, but  *
+
+Java EE 6            Last change: 2 Nov 2009                    5
+
+asadmin Utility Subcommands                            monitor(1)
+
      *        the largest response time from among the response times                         *
      * pt   = Cumulative value of the times taken to process each request. The processing     *
      *        time is the average of request processing times over the request count          *
@@ -291,7 +285,7 @@ SEE ALSO
 
      asadmin(1M)
 
-     Administering the Monitoring  Service  in  Oracle  GlassFish
+     "Administering the Monitoring Service" in  Oracle  GlassFish
      Server Administration Guide
 
 Java EE 6            Last change: 2 Nov 2009                    6

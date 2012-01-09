@@ -50,13 +50,13 @@ OPTIONS
           name.
 
      --mailuser
-          The  name  of  the  mail  account  user  provided  when
+          The name of the mail account user  provided  when  con-
+          necting  to  a  mail server. The connect methods of the
 
 Java EE 6           Last change: 22 Dec 2010                    1
 
 asadmin Utility Subcommands           create-javamail-resource(1)
 
-          connecting to a mail server. The connect methods of the
           Store  and  Transport  objects  use  this  value  if  a
           protocol-specific username property is not supplied.
 
@@ -108,12 +108,11 @@ asadmin Utility Subcommands           create-javamail-resource(1)
           JavaMail  resource. The GlassFish Server-specific mail-
           prefix is converted to the standard  mail  prefix.  The
           JavaMail  API  documentation  lists  the properties you
+          might want to set.
 
 Java EE 6           Last change: 22 Dec 2010                    2
 
 asadmin Utility Subcommands           create-javamail-resource(1)
-
-          might want to set.
 
 OPERANDS
      jndi-name
@@ -128,7 +127,6 @@ EXAMPLES
      mail/MyMailSession.  The  JNDI  name  for a JavaMail session
      resource customarily includes the mail/ naming subcontext.
      asadmin> create-javamail-resource --mailhost localhost
-
      --mailuser sample --fromaddress sample@sun.com mail/MyMailSession
      Command create-javamail-resource executed successfully.
 

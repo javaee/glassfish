@@ -52,12 +52,12 @@ OPTIONS
           is recommended.
 
      --default-virtual-server , --defaultvs
+          The ID attribute of the default virtual server for this
 
 Java EE 6           Last change: 08 Oct 2010                    1
 
 asadmin Utility Subcommands               create-http-listener(1)
 
-          The ID attribute of the default virtual server for this
           listener. The --defaultvs option is deprecated.
 
      --servername
@@ -109,12 +109,11 @@ asadmin Utility Subcommands               create-http-listener(1)
 
      --enabled
           If set to true, the listener is enabled at runtime. The
+          default value is true.
 
 Java EE 6           Last change: 08 Oct 2010                    2
 
 asadmin Utility Subcommands               create-http-listener(1)
-
-          default value is true.
 
      --target
           Creates the HTTP listener only on the specified target.
@@ -147,7 +146,6 @@ EXAMPLES
      sampleListener  that  uses  a  nondefault number of acceptor
      threads and is not enabled at runtime:
      asadmin> create-http-listener --listeneraddress 0.0.0.0 --listenerport 7272
-
      --defaultvs server --servername host1.sun.com --acceptorthreads 100
      --securityenabled=false --enabled=false sampleListener
      Command create-http-listener executed successfully.

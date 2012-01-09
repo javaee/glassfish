@@ -23,19 +23,15 @@ DESCRIPTION
      subcommand  to set the persistence-type attribute. For exam-
      ple:
      asadmin> set c1-config.availability-service.web-container-availability.persistence-type=file
-
      To set the persistence type for SFSB instances without avai-
      lability  enabled,  use  the set subcommand to set the sfsb-
      persistence-type attribute. For example:
      asadmin> set c1-config.availability-service.ejb-container-availability.sfsb-persistence-type=file
-
      To set the persistence type for SFSB instances with  availa-
      bility  enabled,  use the set subcommand to set the sfsb-ha-
      persistence-type attribute. For example:
      asadmin> set
-
      c1-config.availability-service.ejb-container-availability.sfsb-ha-persistence-type=replicated
-
      This subcommand is supported in remote mode only.
 
 OPTIONS
@@ -50,20 +46,19 @@ OPTIONS
 
           o ejb - Lists persistence types for SFSB instances.
 
-Java EE 6           Last change: 15 Dec 2010                    1
-
-asadmin Utility Subcommands             list-persistence-types(1)
-
 EXAMPLES
      Example 1 Listing Persistence Types for HTTP Sessions
 
      This example lists persistence types for HTTP sessions.
      asadmin> list-persistence-types --type=web
-
      memory
+
+Java EE 6           Last change: 15 Dec 2010                    1
+
+asadmin Utility Subcommands             list-persistence-types(1)
+
      file
      replicated
-
      Command list-persistence-types executed successfully.
 
 EXIT STATUS

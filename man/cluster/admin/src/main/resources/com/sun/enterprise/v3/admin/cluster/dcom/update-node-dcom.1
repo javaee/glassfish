@@ -52,12 +52,11 @@ OPTIONS
 
      --nodehost
           The name of the host that  the  node  is  to  represent
+          after the node is updated.
 
 Java EE 6           Last change: 29 Nov 2011                    1
 
 asadmin Utility Subcommands                   update-node-dcom(1)
-
-          after the node is updated.
 
      --installdir
           The full path to the parent of  the  base  installation
@@ -108,11 +107,12 @@ asadmin Utility Subcommands                   update-node-dcom(1)
           node's  host  through DCOM. Possible values are as fol-
           lows:
 
+          false
+
 Java EE 6           Last change: 29 Nov 2011                    2
 
 asadmin Utility Subcommands                   update-node-dcom(1)
 
-          false
                The node is  not  updated  if  validation  of  the
                node's parameters fails (default).
 
@@ -130,15 +130,12 @@ EXAMPLES
      This  example  updates  the  host  that  the   node   wpmdl1
      represents to wj01.
      asadmin> update-node-dcom --nodehost wj01 wpmdl1
-
      Command update-node-dcom executed successfully.
-
      Example 2 Forcing the Update of a Node
 
      This example forces the update of the node  xkyd  to  enable
      the node to communicate over DCOM.
      asadmin> update-node-dcom --force xkyd
-
      Warning: some parameters appear to be invalid.
      Could not find a remote Glassfish installation on host: xkyd.example.com at
      C:\glassfish3\glassfish

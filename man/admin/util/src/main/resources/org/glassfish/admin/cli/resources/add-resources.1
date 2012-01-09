@@ -52,12 +52,12 @@ OPTIONS
                the cluster.
 
           instance-name
+               Creates the resources for a  particular  GlassFish
 
 Java EE 6           Last change: 23 Dec 2010                    1
 
 asadmin Utility Subcommands                      add-resources(1)
 
-               Creates the resources for a  particular  GlassFish
                Server instance.
 
      --upload
@@ -113,7 +113,6 @@ asadmin Utility Subcommands                      add-resources(1)
 
      An example XML file follows.
      <?xml version="1.0" encoding="UTF-8"?>
-
      <!DOCTYPE resources PUBLIC
         "-//GlassFish.org//DTD GlassFish Application Server 3.1 Resource Definitions //EN"
         "http://glassfish.org/dtds/glassfish-resources_1_5.dtd">
@@ -143,7 +142,6 @@ EXAMPLES
      This example creates resources using the contents of the XML
      file resource.xml.
      asadmin> add-resources resource.xml
-
      Command : Connector connection pool jms/testQFactoryPool created.
      Command : Administered object jms/testQ created.
      Command : Connector resource jms/testQFactory created.
@@ -160,15 +158,14 @@ EXIT STATUS
 SEE ALSO
      create-jdbc-connection-pool(1),create-jdbc-resource(1),
      create-jms-resource(1),   create-jndi-resource(1),   create-
-
-Java EE 6           Last change: 23 Dec 2010                    3
-
-asadmin Utility Subcommands                      add-resources(1)
-
      javamail-resource(1),   create-custom-resource(1),   create-
      connector-resource(1),       create-connector-work-security-
      map(1),   create-admin-object(1),   create-resource-adapter-
      config(1)
+
+Java EE 6           Last change: 23 Dec 2010                    3
+
+asadmin Utility Subcommands                      add-resources(1)
 
      asadmin(1M)
 

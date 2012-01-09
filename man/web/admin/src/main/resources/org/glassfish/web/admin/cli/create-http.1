@@ -52,12 +52,12 @@ OPTIONS
           associated network listeners.
 
      --request-timeout-seconds
+          The time in seconds at which the request times out.  If
 
 Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands                        create-http(1)
 
-          The time in seconds at which the request times out.  If
           you do not set this option, the request times out in 30
           seconds.
 
@@ -108,11 +108,12 @@ asadmin Utility Subcommands                        create-http(1)
                Creates the set of HTTP parameters on  the  speci-
                fied standalone server instance.
 
+     --redirectport
+
 Java EE 6           Last change: 11 Feb 2011                    2
 
 asadmin Utility Subcommands                        create-http(1)
 
-     --redirectport
           Do not specify this option. This option is retained for
           compatibility  with  earlier  releases.  If you specify
           this option, a syntax error does  not  occur.  Instead,
@@ -164,11 +165,12 @@ asadmin Utility Subcommands                        create-http(1)
 
           o force - Forces data compression in all cases.
 
+          o positive integer - Specifies the  minimum  amount  of
+
 Java EE 6           Last change: 11 Feb 2011                    3
 
 asadmin Utility Subcommands                        create-http(1)
 
-          o positive integer - Specifies the  minimum  amount  of
             data required before the output is compressed.
 
      If the content-length is not known, the output is compressed
@@ -219,12 +221,12 @@ asadmin Utility Subcommands                        create-http(1)
      --forcedresponsetype
           The request type used if no MIME mapping  is  available
           that  matches  the  file  extension.  The  format  is a
+          semicolon-delimited string consisting of  the  content-
 
 Java EE 6           Last change: 11 Feb 2011                    4
 
 asadmin Utility Subcommands                        create-http(1)
 
-          semicolon-delimited string consisting of  the  content-
           type,  encoding,  language, and charset. The default is
           text/html; charset=iso-8859-1.
 
@@ -266,7 +268,6 @@ EXAMPLES
      The following command creates an HTTP parameter set for  the
      protocol named http-1:
      asadmin> create-http --timeout-seconds 60 --default-virtual-server server http-1
-
      Command create-http executed successfully.
 
 EXIT STATUS
@@ -274,13 +275,13 @@ EXIT STATUS
 
      1    error in executing the command
 
-Java EE 6           Last change: 11 Feb 2011                    5
-
-asadmin Utility Subcommands                        create-http(1)
-
 SEE ALSO
      delete-http(1),     create-network-listener(1),      create-
      protocol(1), create-virtual-server(1)
+
+Java EE 6           Last change: 11 Feb 2011                    5
+
+asadmin Utility Subcommands                        create-http(1)
 
      asadmin(1M)
 

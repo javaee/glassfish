@@ -267,8 +267,8 @@ asadmin Utility Subcommands                      create-domain(1)
 
           java.debugger.port
                This property specifies the  port  number  of  the
-               port  that  is  used  for  connections to the Java
-               Platform     Debugger     Architecture      (JPDA)
+               port that is used for connections to theJava Plat-
+               form      Debugger       Architecture       (JPDA)
                (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
                debugger.  Valid  values  are  1-65535.  On  UNIX,
                creating  sockets  that  listen  on  ports  1-1024
@@ -308,7 +308,7 @@ asadmin Utility Subcommands                      create-domain(1)
 
           osgi.shell.telnet.port
                This property specifies the  port  number  of  the
-               port  that  is  used for connections to the Apache
+               port  that  is  used  for connections to theApache
                Felix                 Remote                 Shell
                (http://felix.apache.org/site/apache-felix-
                remote-shell.html).  This  shell  uses  the  Felix
@@ -412,13 +412,11 @@ asadmin Utility Subcommands                      create-domain(1)
      Domain domain4 admin port is 4848.
      Domain domain4 allows admin login as user "admin" with no password.
      Command create-domain executed successfully.
-
      Example 2 Creating a Domain in an Alternate Directory
 
      This example creates a  domain  named  sampleDomain  in  the
      /home/someuser/domains directory.
      asadmin> create-domain --domaindir /home/someuser/domains --adminport 7070
-
      --instanceport 7071 sampleDomain
      Enter admin user name [Enter to accept default "admin" / no password]>
      Using port 7070 for Admin.
@@ -437,25 +435,23 @@ asadmin Utility Subcommands                      create-domain(1)
      Domain sampleDomain admin port is 7070.
      Domain sampleDomain allows admin login as user "admin" with no password.
      Command create-domain executed successfully.
-
      Example 3 Creating a Domain and  Saving  the  Administration
      User Name and Password
 
      This example creates a domain named myDomain and  saves  the
      administration username and password.
      asadmin> create-domain --adminport 8282 --savelogin=true myDomain
-
      Enter the admin password [Enter to accept default of no password]>
      Enter the master password [Enter to accept default password "changeit"]>
+     Using port 8282 for Admin.
+     Using default port 8080 for HTTP Instance.
+     Using default port 7676 for JMS.
+     Using default port 3700 for IIOP.
 
 Java EE 6           Last change: 14 Jun 2011                    8
 
 asadmin Utility Subcommands                      create-domain(1)
 
-     Using port 8282 for Admin.
-     Using default port 8080 for HTTP Instance.
-     Using default port 7676 for JMS.
-     Using default port 3700 for IIOP.
      Using default port 8181 for HTTP_SSL.
      Using default port 3820 for IIOP_SSL.
      Using default port 3920 for IIOP_MUTUALAUTH.
@@ -474,7 +470,6 @@ asadmin Utility Subcommands                      create-domain(1)
      Information stored in this file will be used by
      asadmin commands to manage this domain.
      Command create-domain executed successfully.
-
      Example 4 Creating a Domain and Designating the  Certificate
      Host
 
@@ -482,7 +477,6 @@ asadmin Utility Subcommands                      create-domain(1)
      of  the host that is to be used for the self-signed certifi-
      cate is trio.
      asadmin> create-domain --adminport 9898 --keytooloptions CN=trio domain5
-
      Enter the admin password [Enter to accept default of no password]>
      Enter the master password [Enter to accept default password "changeit"]>
      Using port 9898 for Admin.
@@ -502,10 +496,6 @@ asadmin Utility Subcommands                      create-domain(1)
      Domain domain5 allows admin login as user "admin" with no password.
      Command create-domain executed successfully.
 
-Java EE 6           Last change: 14 Jun 2011                    9
-
-asadmin Utility Subcommands                      create-domain(1)
-
 EXIT STATUS
      0    subcommand executed successfully
 
@@ -514,6 +504,10 @@ EXIT STATUS
 SEE ALSO
      login(1), delete-domain(1), start-domain(1), stop-domain(1),
      list-domains(1)
+
+Java EE 6           Last change: 14 Jun 2011                    9
+
+asadmin Utility Subcommands                      create-domain(1)
 
      asadmin(1M)
 

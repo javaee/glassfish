@@ -40,28 +40,23 @@ OPTIONS
 EXAMPLES
      Example 1 Obtaining Version Information From a Running DAS
      asadmin> version
-
      Version = Oracle GlassFish Server 3.1 (build 34)
      Command version executed successfully.
-
      Example 2 Obtaining Version Information When the DAS  Cannot
      be Reached
      asadmin> version
-
      Version string could not be obtained from Server [localhost:4848] for some reason.
      (Turn debugging on e.g. by setting AS_DEBUG=true in your environment, to see the
       details).
      Using locally retrieved version string from version class.
+     Version = Oracle GlassFish Server 3.1 (build 34)
+     Command version executed successfully.
+     Example 3 Obtaining Version Information Locally
+     asadmin> version --local
 
 Java EE 6           Last change: 20 Dec 2010                    1
 
 asadmin Utility Subcommands                            version(1)
-
-     Version = Oracle GlassFish Server 3.1 (build 34)
-     Command version executed successfully.
-
-     Example 3 Obtaining Version Information Locally
-     asadmin> version --local
 
      Using locally retrieved version string from version class.
      Version = Oracle GlassFish Server 3.1 (build 34)

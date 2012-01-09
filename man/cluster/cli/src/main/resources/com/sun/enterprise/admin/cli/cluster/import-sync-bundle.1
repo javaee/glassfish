@@ -51,12 +51,13 @@ DESCRIPTION
      tains  the  command to run to register the instance with the
      DAS.
 
+     The import-sync-bundle subcommand does not contact  the  DAS
+     to  determine the node on which the instance resides. If the
+
 Java EE 6            Last change: 7 Dec 2010                    1
 
 asadmin Utility Subcommands                 import-sync-bundle(1)
 
-     The import-sync-bundle subcommand does not contact  the  DAS
-     to  determine the node on which the instance resides. If the
      node is not specified as an option of  the  subcommand,  the
      subcommand determines the node from the DAS configuration in
      the archive file.
@@ -102,18 +103,17 @@ EXAMPLES
      the  node  sj02  represents.  The DAS is running on the host
      sr04 and uses the default HTTP port for administration.
      sj02# asadmin --host sr04 import-sync-bundle --node sj02 --instance ymli2
-
      /export/glassfish3/glassfish/domains/domain1/sync/ymlcluster-sync-bundle.zip
      Command import-sync-bundle executed successfully.
-
-Java EE 6            Last change: 7 Dec 2010                    2
-
-asadmin Utility Subcommands                 import-sync-bundle(1)
 
 EXIT STATUS
      0    command executed successfully
 
      1    error in executing the command
+
+Java EE 6            Last change: 7 Dec 2010                    2
+
+asadmin Utility Subcommands                 import-sync-bundle(1)
 
 SEE ALSO
      export-sync-bundle(1)

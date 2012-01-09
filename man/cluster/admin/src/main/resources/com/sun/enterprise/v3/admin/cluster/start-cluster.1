@@ -52,11 +52,12 @@ OPTIONS
                cluster  and  whether  the  attempt  to start each
                instance succeeded.
 
+          false
+
 Java EE 6            Last change: 8 Dec 2011                    1
 
 asadmin Utility Subcommands                      start-cluster(1)
 
-          false
                Displays   no   additional   status    information
                (default).
 
@@ -70,13 +71,10 @@ EXAMPLES
      This  example  starts  the  cluster  ymlcluster.  Additional
      status information is displayed when the cluster is started.
      asadmin> start-cluster --verbose ymlcluster
-
      start-instance yml-i-sr1-usca-02
      start-instance yml-i-sr1-usca-01
-
      The command start-instance executed successfully for:
      yml-i-sr1-usca-02 yml-i-sr1-usca-01
-
      Command start-cluster executed successfully.
 
 EXIT STATUS

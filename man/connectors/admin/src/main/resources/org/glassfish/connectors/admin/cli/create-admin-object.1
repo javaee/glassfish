@@ -51,13 +51,13 @@ OPTIONS
      The resource is always created for the domain  as  a  whole,
      but  the  resource-ref  for the resource is only created for
      the  specified  --target.  This  means  that  although   the
+     resource  is  defined  at  the  domain  level,  it  is  only
 
 Java EE 6           Last change: 10 Feb 2011                    1
 
 asadmin Utility Subcommands                create-admin-object(1)
 
-     resource  is  defined at the domain level, it is only avail-
-     able  at  the  specified  target  level.  Use  the   create-
+     available at the specified target  level.  Use  the  create-
      resource-ref subcommand to refer to the resource in multiple
      targets if needed.
 
@@ -99,7 +99,6 @@ EXAMPLES
      admin     object     interfaces,     javax.jms.Queue     and
      javax.jms.Topic.
      asadmin> create-admin-object --restype javax.jms.Queue
-
      --raname jmsra--description "sample administered object"
      --property Name=sample_jmsqueue jms/samplequeue
      Command create-admin-object executed successfully
@@ -107,11 +106,11 @@ EXAMPLES
 EXIT STATUS
      0    subcommand executed successfully
 
+     1    error in executing the subcommand
+
 Java EE 6           Last change: 10 Feb 2011                    2
 
 asadmin Utility Subcommands                create-admin-object(1)
-
-     1    error in executing the subcommand
 
 SEE ALSO
      delete-admin-object(1),    list-admin-objects(1),    create-

@@ -31,7 +31,13 @@ DESCRIPTION
 
        o Windows Shares port 445
 
-     o The Server Windows Service is enabled remote host.
+     o The Server Windows Service is enabled on the remote host.
+
+     This  subcommand  verifies  whether  the  prerequisites  for
+     creating a DCOM node or creating a GlassFish Server instance
+     on a DCOM node  are  met.  If  this  subcommand  fails,  any
+     attempt  to  create  a  DCOM node or create an instance on a
+     DCOM node will also fail.
 
      You may run this command from any machine that  can  contact
      the DAS.
@@ -46,15 +52,20 @@ DESCRIPTION
 
      o Connecting to Windows Shares through port 445
 
+Java EE 6            Last change: 5 Jan 2012                    1
+
+asadmin Utility Subcommands                      validate-dcom(1)
+
      o Copying a script that is named delete_me.bat in the folder
        that is specified by the --remotetestdir option
 
      o Running the script to obtain a listing of  the  folder  in
        which the delete_me.bat was written
 
-Java EE 6           Last change: 06 Dec 2011                    1
-
-asadmin Utility Subcommands                      validate-dcom(1)
+     By default, the subcommand displays no information about the
+     operations  that are performed to test the connection to the
+     remote host. To display information about these  operations,
+     set the --verbose option to true.
 
      This subcommand is supported in remote mode only.
 
@@ -80,17 +91,30 @@ OPTIONS
           default is C:\
 
      --verbose , -v
-          Specifies whether the subcommand displays  the  command
-          line  for  each  process  that is running on the remote
-          host.
+          Specifies whether the subcommand  displays  information
+          about  the  operations  that  are performed to test the
+          connection to the remote host.
 
           Possible values are as follows:
 
-          true The command line for each process that is  running
-               on the remote host is displayed.
-
           false
-               No command lines are displayed (default).
+               No information about the operations that are  per-
+               formed   to   test  the  connection  is  displayed
+               (default).
+
+          true The  subcommand  displays  information  about  the
+               operations  that are performed to test the connec-
+               tion.
+
+               If the --verbose option is true and  the  AS_DEBUG
+               environment  variable  is set, the subcommand also
+
+Java EE 6            Last change: 5 Jan 2012                    2
+
+asadmin Utility Subcommands                      validate-dcom(1)
+
+               displays the command line for each process that is
+               running on the remote host.
 
 OPERANDS
      host-name
@@ -102,15 +126,17 @@ EXAMPLES
 
      This example tests the connection  over  DCOM  to  the  host
      wpmdl2.
-     asadmin> validate-dcom wpmdl2
+     asadmin> validate-dcom --wpmdl2
+     Command validate-dcom executed successfully.
+     Example 2 Verbosely Testing the Connection Over  DCOM  to  a
+     Remote Host
 
+     This example tests the connection  over  DCOM  to  the  host
+     wpmdl2  and  displays  information about the operations that
+     are performed to test the connection to the remote host.
+     asadmin> validate-dcom --verbose wpmdl2
      Successfully resolved host name to: wpmdl2/192.168.122.106
      Successfully connected to DCOM Port at port 135 on host wpmdl2.
-
-Java EE 6           Last change: 06 Dec 2011                    2
-
-asadmin Utility Subcommands                      validate-dcom(1)
-
      Successfully connected to NetBIOS Session Service at port 139 on host wpmdl2.
      Successfully connected to Windows Shares at port 445 on host wpmdl2.
      Successfully accessed C: on wpmdl2 using DCOM.
@@ -120,18 +146,14 @@ asadmin Utility Subcommands                      validate-dcom(1)
      Successfully ran the test script on wpmdl2 using DCOM.
      The script simply ran the DIR command. Here are the first few lines from the
      output of the dir command on the remote machine:
-
      C:\Windows\system32>dir C:\
       Volume in drive C has no label.
       Volume Serial Number is XXXX-XXX
-
       Directory of C:\
-
      12/05/2011  10:21 AM                63 .asadminpass
      02/15/2011  01:08 PM    <DIR>          aroot
      12/05/2011  04:43 PM                 8 delete_me.bat
      03/03/2011  10:36 AM    <DIR>          export
-
      Command validate-dcom executed successfully.
 
 EXIT STATUS
@@ -143,7 +165,11 @@ SEE ALSO
      create-node-dcom(1),   delete-node-dcom(1),   list-nodes(1),
      ping-node-dcom(1), update-node-dcom(1)
 
+Java EE 6            Last change: 5 Jan 2012                    3
+
+asadmin Utility Subcommands                      validate-dcom(1)
+
      asadmin(1M)
 
-Java EE 6           Last change: 06 Dec 2011                    3
+Java EE 6            Last change: 5 Jan 2012                    4
 

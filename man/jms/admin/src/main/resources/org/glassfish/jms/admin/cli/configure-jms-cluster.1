@@ -22,8 +22,8 @@ DESCRIPTION
 
      This subcommand should be used before the  GlassFish  Server
      cluster is started for the first time. Otherwise, follow the
-     instructions inAdministering the Java Message Service  (JMS)
-     in Oracle GlassFish Server Administration Guide .
+     instructions in  "Administering  the  Java  Message  Service
+     (JMS)" in Oracle GlassFish Server Administration Guide.
 
      This subcommand is supported in  remote  mode  only.  Remote
      asadmin  subcommands require a running domain administration
@@ -38,9 +38,9 @@ OPTIONS
           value  conventional  specifies  a conventional cluster,
           and the value enhanced  specifies  an  enhanced,  high-
           availability cluster. For information about these clus-
-          ter types of Message Queue clusters, seeBroker Clusters
-          in  Oracle  GlassFish  Server  Message  Queue Technical
-          Overview .
+          ter types of Message Queue clusters, see "Broker  Clus-
+          ters"  in Oracle GlassFish Server Message Queue Techni-
+          cal Overview.
 
           The default value is conventional.
 
@@ -52,12 +52,11 @@ OPTIONS
           ventional cluster. The value masterbroker specifies the
           use of a master broker to store and manage  the  confi-
           guration  data. The value shareddb specifies the use of
+          a shared database to store the configuration data.
 
 Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands              configure-jms-cluster(1)
-
-          a shared database to store the configuration data.
 
           The default value is masterbroker.
 
@@ -85,8 +84,8 @@ asadmin Utility Subcommands              configure-jms-cluster(1)
           o When messagestoretype is set to jdbc
 
      For information about supported vendors and the  formats  of
-     access  urls  for  each vendor, seeJDBC-Based Persistence in
-     Oracle GlassFish Server Message Queue Administration Guide .
+     access urls for each vendor, see "JDBC-Based Persistence" in
+     Oracle GlassFish Server Message Queue Administration Guide.
 
      Note
 
@@ -105,13 +104,12 @@ asadmin Utility Subcommands              configure-jms-cluster(1)
 
 OPERANDS
      cluster-name
+          The name of the GlassFish Server cluster for which  the
+          Message Queue cluster is to provide JMS services.
 
 Java EE 6           Last change: 11 Feb 2011                    2
 
 asadmin Utility Subcommands              configure-jms-cluster(1)
-
-          The name of the GlassFish Server cluster for which  the
-          Message Queue cluster is to provide JMS services.
 
 EXIT STATUS
      0    subcommand executed successfully

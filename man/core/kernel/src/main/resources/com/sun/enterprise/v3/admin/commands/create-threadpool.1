@@ -51,11 +51,12 @@ OPTIONS
           Specifies the maximum number of threads  the  pool  can
           contain. Default is 5.
 
+     --minthreadpoolsize
+
 Java EE 6           Last change: 29 Nov 2010                    1
 
 asadmin Utility Subcommands                  create-threadpool(1)
 
-     --minthreadpoolsize
           Specifies the minimum number of threads  in  the  pool.
           These are created when the thread pool is instantiated.
           Default is 2.
@@ -89,7 +90,6 @@ EXAMPLES
 
      This command creates a new thread pool called threadpool-l.
      asadmin> create-threadpool --maxthreadpoolsize 100
-
      --minthreadpoolsize 20 --idletimeout 2 threadpool-1
      Command create-threadpool executed successfully
 

@@ -51,19 +51,18 @@ DESCRIPTION
      level administrator user.
 
      The  subcommand  creates  the  following  Windows   Services
-     Wrapper   files   for  the  service  in  the  domain-dir\bin
+     Wrapper  files  for the service in the domain-dir\bin direc-
+     tory or the instance-dir\bin directory:
 
 Java EE 6            Last change: 8 Dec 2011                    1
 
 asadmin Utility Subcommands                     create-service(1)
 
-     directory or the instance-dir\bin directory:
-
      o Configuration file: service-nameService.xml
 
      o Executable file: service-nameService.exe
 
-     On Windows systems, this subcommand requires  the  Microsoft
+     On Windows systems, this  subcommand  requires  theMicrosoft
      .NET  Framework  (http://www.microsoft.com/net/). Otherwise,
      the subcommand fails.
 
@@ -88,11 +87,11 @@ asadmin Utility Subcommands                     create-service(1)
      following documentation for  the  Oracle  Solaris  operating
      system:
 
-     o Managing  Services  (Overview)  in  System  Administration
+     o "Managing Services (Overview)"  in  System  Administration
        Guide: Basic Administration
 
-     o Managing Services (Tasks) in System Administration  Guide:
-       Basic Administration
+     o "Managing  Services  (Tasks)"  in  System   Administration
+       Guide: Basic Administration
 
      On Oracle Solaris systems, this subcommand must  be  run  as
      the  OS-level user with superuser privileges. The configura-
@@ -105,18 +104,17 @@ asadmin Utility Subcommands                     create-service(1)
      On Oracle Solaris systems, the manifest file is  created  in
      the following directory by default:
      /var/svc/manifest/application/GlassFish/domain-or-instance-name_domain-or-instance-root-dir
-
      To run this subcommand, you must have solaris.smf.* authori-
      zation. For information about how to grant authorizations to
+     users, see theuseradd(1M) andusermod(1M) man pages.
+
+     To run these commands as non-root user, the system  adminis-
+     trator must be contacted so that the relevant authorizations
 
 Java EE 6            Last change: 8 Dec 2011                    2
 
 asadmin Utility Subcommands                     create-service(1)
 
-     users, see theuseradd(1M) andusermod(1M) man pages.
-
-     To run these commands as non-root user, the system  adminis-
-     trator must be contacted so that the relevant authorizations
      are granted. You must also ensure that the following  condi-
      tions are met:
 
@@ -165,14 +163,13 @@ OPTIONS
 
      --dry-run , -n
           Previews your attempt to create  a  service.  Indicates
+          issues  and  the outcome that will occur if you run the
+          command without using the --dry-run option. Nothing  is
+          actually configured. Default is false.
 
 Java EE 6            Last change: 8 Dec 2011                    3
 
 asadmin Utility Subcommands                     create-service(1)
-
-          issues  and  the outcome that will occur if you run the
-          command without using the --dry-run option. Nothing  is
-          actually configured. Default is false.
 
      --force
           Specifies whether the service is created even if  vali-
@@ -221,15 +218,15 @@ OPERANDS
 EXAMPLES
      Example 1 Creating a Service on a Windows System
 
+     This example creates a service for the default domain  on  a
+     system that is running Windows.
+     asadmin> create-service
+     Found the Windows Service and successfully uninstalled it.
+
 Java EE 6            Last change: 8 Dec 2011                    4
 
 asadmin Utility Subcommands                     create-service(1)
 
-     This example creates a service for the default domain  on  a
-     system that is running Windows.
-     asadmin> create-service
-
-     Found the Windows Service and successfully uninstalled it.
      The Windows Service was created successfully.  It is ready to be started.  Here are
      the details:
      ID of the service: domain1
@@ -245,17 +242,14 @@ asadmin Utility Subcommands                     create-service(1)
      uninstall
      Install Command:  C:\glassfish3\glassfish\domains\domain1\bin\domain1Service.exe
      install
-
      This message is also available in a file named PlatformServices.log in the domain's
      root directory
      Command create-service executed successfully.
-
      Example 2 Creating a Service on a Linux System
 
      This example creates a service for the default domain  on  a
      system that is running Linux.
      asadmin> create-service
-
      Found the Linux Service and successfully uninstalled it.
      The Service was created successfully. Here are the details:
      Name of the service:domain1
@@ -264,26 +258,17 @@ asadmin Utility Subcommands                     create-service(1)
      User account that will run the service: root
      You have created the service but you need to start it yourself.
      Here are the most typical Linux commands of interest:
-
      * /etc/init.d/GlassFish_domain1 start
      * /etc/init.d/GlassFish_domain1 stop
      * /etc/init.d/GlassFish_domain1 restart
-
      For your convenience this message has also been saved to this file:
      /export/glassfish3/glassfish/domains/domain1/PlatformServices.log
      Command create-service executed successfully.
-
      Example 3 Creating a Service on an Oracle Solaris System
 
      This example creates a service for the default domain  on  a
      system that is running Oracle Solaris.
-
-Java EE 6            Last change: 8 Dec 2011                    5
-
-asadmin Utility Subcommands                     create-service(1)
-
      asadmin> create-service
-
      The Service was created successfully. Here are the details:
      Name of the service:application/GlassFish/domain1
      Type of the service:Domain
@@ -294,6 +279,11 @@ asadmin Utility Subcommands                     create-service(1)
      _glassfish_domains/Domain-service-smf.xml.
      You have created the service but you need to start it yourself.
      Here are the most typical Solaris commands of interest:
+
+Java EE 6            Last change: 8 Dec 2011                    5
+
+asadmin Utility Subcommands                     create-service(1)
+
      * /usr/bin/svcs -a | grep domain1 // status
      * /usr/sbin/svcadm enable domain1 // start
      * /usr/sbin/svcadm disable domain1 // stop
@@ -312,9 +302,9 @@ SEE ALSO
 
      svccfg(1M),useradd(1M),usermod(1M)
 
-     Managing Services (Overview) in System Administration Guide:
-     Basic  Administration  ,Managing  Services (Tasks) in System
-     Administration Guide: Basic Administration
+     "Managing  Services  (Overview)"  in  System  Administration
+     Guide:  Basic Administration, "Managing Services (Tasks)" in
+     System Administration Guide: Basic Administration
 
      Microsoft .NET Framework (http://www.microsoft.com/net/)
 

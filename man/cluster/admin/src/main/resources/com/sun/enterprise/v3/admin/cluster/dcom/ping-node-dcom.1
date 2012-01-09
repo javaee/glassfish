@@ -52,11 +52,11 @@ OPTIONS
      --validate
           Specifies whether the subcommand validates the node.
 
+          Possible values are as follows:
+
 Java EE 6           Last change: 05 Dec 2011                    1
 
 asadmin Utility Subcommands                     ping-node-dcom(1)
-
-          Possible values are as follows:
 
           true The node is validated.
 
@@ -74,15 +74,12 @@ EXAMPLES
 
      This example tests if the DCOM-enabled node wpmd2 is usable.
      asadmin> ping-node-dcom wpmdl2
-
      Successfully made DCOM connection to node wpmdl2 (wpmdl2.example.com)
      Command ping-node-dcom executed successfully.
-
      Example 2 Validating a DCOM-Enabled Node
 
      This example validates the DCOM-enabled node adc-node.
      asadmin> ping-node-dcom --validate=true adc-node
-
      Successfully made DCOM connection to node adc-node (adc-node.example.com)
      GlassFish version found at C:\glassfish3:
      Using locally retrieved version string from version class.

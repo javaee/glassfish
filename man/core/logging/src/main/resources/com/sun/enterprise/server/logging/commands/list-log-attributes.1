@@ -41,7 +41,6 @@ EXAMPLES
      This example lists all loggers attributes  for  the  default
      domain.
      asadmin> list-log-attributes
-
      com.sun.enterprise.server.logging.GFFileHandler.alarms <false>
      com.sun.enterprise.server.logging.GFFileHandler.file \
      <${com.sun.aas.instanceRoot}/logs/server.log>
@@ -51,13 +50,13 @@ EXAMPLES
      com.sun.enterprise.server.logging.GFFileHandler.logtoConsole <false>
      com.sun.enterprise.server.logging.GFFileHandler.maxHistoryFiles <0>
      com.sun.enterprise.server.logging.GFFileHandler.retainErrorsStasticsForHours <0>
+     com.sun.enterprise.server.logging.GFFileHandler.rotationLimitInBytes <2000000>
+     com.sun.enterprise.server.logging.GFFileHandler.rotationTimelimitInMinutes <0>
 
 Java EE 6           Last change: 21 Jun 2011                    1
 
 asadmin Utility Subcommands                list-log-attributes(1)
 
-     com.sun.enterprise.server.logging.GFFileHandler.rotationLimitInBytes <2000000>
-     com.sun.enterprise.server.logging.GFFileHandler.rotationTimelimitInMinutes <0>
      com.sun.enterprise.server.logging.SyslogHandler.useSystemLogging <false>
      handlers <java.util.logging.ConsoleHandler>
      java.util.logging.ConsoleHandler.formatter \
@@ -67,7 +66,6 @@ asadmin Utility Subcommands                list-log-attributes(1)
      java.util.logging.FileHandler.limit <50000>
      java.util.logging.FileHandler.pattern <%h/java%u.log>
      log4j.logger.org.hibernate.validator.util.Version <warn>
-
      Command list-log-attributes executed successfully.
 
 EXIT STATUS
@@ -81,8 +79,8 @@ SEE ALSO
 
      asadmin(1M)
 
-     Administering the Logging Service in Oracle GlassFish Server
-     Administration Guide
+     "Administering the  Logging  Service"  in  Oracle  GlassFish
+     Server Administration Guide
 
 Java EE 6           Last change: 21 Jun 2011                    2
 

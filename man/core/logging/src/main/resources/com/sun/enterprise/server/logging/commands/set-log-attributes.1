@@ -48,15 +48,14 @@ OPERANDS
           The value to apply to the specified attribute.
 
           The attribute values that can be specified include  the
-          following.  Refer  to  the online help andAdministering
-          the Logging Service in Oracle GlassFish Server Adminis-
-          tration  Guide  for  complete  explanations  of each of
+          following.  Refer to the online help and "Administering
+          the  Logging  Service"  in  Oracle   GlassFish   Server
+          Administration  Guide for complete explanations of each
+          of these values.
 
 Java EE 6           Last change: 12 Feb 2011                    1
 
 asadmin Utility Subcommands                 set-log-attributes(1)
-
-          these values.
 
           com.sun.enterprise.server.logging.GFFileHandler.alarms
                Default is false.
@@ -109,11 +108,12 @@ asadmin Utility Subcommands                 set-log-attributes(1)
           java.util.logging.FileHandler.pattern
                Default is %h/java%u.log.
 
+          log4j.logger.org.hibernate.validator.util.Version
+
 Java EE 6           Last change: 12 Feb 2011                    2
 
 asadmin Utility Subcommands                 set-log-attributes(1)
 
-          log4j.logger.org.hibernate.validator.util.Version
                Default is warn.
 
 EXAMPLES
@@ -123,7 +123,6 @@ EXAMPLES
      This example sets to 8 the maximum  number  of  log  history
      files for the server as a whole.
      asadmin> set-log-attributes --target=server \
-
      com.sun.enterprise.server.logging.GFFileHandler.maxHistoryFiles=8
      com.sun.enterprise.server.logging.GFFileHandler.maxHistoryFiles logging
      attribute set with value 8.
@@ -141,8 +140,8 @@ SEE ALSO
 
      asadmin(1M)
 
-     Administering the Logging Service in Oracle GlassFish Server
-     Administration Guide
+     "Administering the  Logging  Service"  in  Oracle  GlassFish
+     Server Administration Guide
 
 Java EE 6           Last change: 12 Feb 2011                    3
 

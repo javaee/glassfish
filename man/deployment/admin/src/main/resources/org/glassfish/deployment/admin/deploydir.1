@@ -52,11 +52,11 @@ DESCRIPTION
 
      o The value of the $HOSTNAME environment variable
 
+     o The IP address of the machine
+
 Java EE 6           Last change: 19 Nov 2010                    1
 
 asadmin Utility Subcommands                          deploydir(1)
-
-     o The IP address of the machine
 
      If   the   --uniquetablenames,   --createtables,   and    --
      dropandcreatetables  options  are not specified, the entries
@@ -108,15 +108,15 @@ OPTIONS
           by a colon (:). The version identifier must begin  with
           a letter or number. It can contain alphanumeric charac-
           ters plus underscore (_),  dash  (-),  and  period  (.)
+          characters.  For  more  information  about  module  and
+          application  versions,  see  "Module  and   Application
 
 Java EE 6           Last change: 19 Nov 2010                    2
 
 asadmin Utility Subcommands                          deploydir(1)
 
-          characters.  For  more  information  about  module  and
-          application versions,  see  theModule  and  Application
-          Versions in Oracle GlassFish Server Application Deploy-
-          ment Guide .
+          Versions"   in   Oracle  GlassFish  Server  Application
+          Deployment Guide.
 
      --retrieve
           Retrieves the client stub  JAR  file  from  the  server
@@ -165,13 +165,12 @@ asadmin Utility Subcommands                          deploydir(1)
           Guarantees unique table names for  all  the  beans  and
           results  in  a hash code added to the table names. This
           is  useful  if  you  have  an  application  with  case-
+          sensitive  bean  names.  Applies  to  applications with
+          unmapped CMP beans.
 
 Java EE 6           Last change: 19 Nov 2010                    3
 
 asadmin Utility Subcommands                          deploydir(1)
-
-          sensitive  bean  names.  Applies  to  applications with
-          unmapped CMP beans.
 
      --deploymentplan
           Deploys the deployment plan, which is a JAR  file  that
@@ -222,14 +221,13 @@ asadmin Utility Subcommands                          deploydir(1)
           is available for load balancing. The default is true.
 
      --keepstate
+          This  option  controls  whether  web   sessions,   SFSB
+          instances,  and  persistently  created  EJB  timers are
+          retained between redeployments.
 
 Java EE 6           Last change: 19 Nov 2010                    4
 
 asadmin Utility Subcommands                          deploydir(1)
-
-          This  option  controls  whether  web   sessions,   SFSB
-          instances,  and  persistently  created  EJB  timers are
-          retained between redeployments.
 
           The default is false. This option is supported only  on
           the  default  server  instance, named server. It is not
@@ -279,15 +277,15 @@ asadmin Utility Subcommands                          deploydir(1)
                Deploys the component to the domain. If domain  is
                the target for an initial deployment, the applica-
                tion is deployed to  the  domain,  but  no  server
+               instances  or  clusters reference the application.
+               If domain is the target for  a  redeployment  (the
+               --force option is set to true), and dynamic recon-
+               figuration is enabled for the clusters  or  server
 
 Java EE 6           Last change: 19 Nov 2010                    5
 
 asadmin Utility Subcommands                          deploydir(1)
 
-               instances  or  clusters reference the application.
-               If domain is the target for  a  redeployment  (the
-               --force option is set to true), and dynamic recon-
-               figuration is enabled for the clusters  or  server
                instances  that  reference  the  application,  the
                referencing clusters or server instances automati-
                cally  get  the new version of the application. If
@@ -333,25 +331,25 @@ asadmin Utility Subcommands                          deploydir(1)
                file is signed. Java Web Start will not  run  code
                that   requires  elevated  permissions  unless  it
                resides in a JAR file signed  with  a  certificate
-               that   the   user's   system   trusts.   For  your
+               that  the  user's system trusts. For your conveni-
+               ence, GlassFish Server signs the JAR file automat-
+               ically  using the certificate with this alias from
+               the domain's keystore. Java Web  Start  then  asks
+               the  user  whether  to trust the code and displays
 
 Java EE 6           Last change: 19 Nov 2010                    6
 
 asadmin Utility Subcommands                          deploydir(1)
 
-               convenience, GlassFish Server signs the  JAR  file
-               automatically  using  the  certificate  with  this
-               alias from the domain's keystore. Java  Web  Start
-               then  asks  the user whether to trust the code and
-               displays the GlassFish Server certificate informa-
-               tion.  To sign this JAR file with a different cer-
-               tificate, add the certificate to the  domain  key-
-               store,  then  use  this property. For example, you
-               can use a certificate from  a  trusted  authority,
-               which  avoids  the  Java Web Start prompt, or from
-               your own company, which users know they can trust.
-               Default  is  s1as,  the  alias for the self-signed
-               certificate created for every domain.
+               the GlassFish Server certificate  information.  To
+               sign  this  JAR file with a different certificate,
+               add the certificate to the domain  keystore,  then
+               use this property. For example, you can use a cer-
+               tificate from a trusted  authority,  which  avoids
+               the  Java  Web Start prompt, or from your own com-
+               pany, which users know they can trust. Default  is
+               s1as,  the  alias  for the self-signed certificate
+               created for every domain.
 
           java-web-start-enabled
                Specifies whether Java Web Start access is permit-
@@ -391,15 +389,15 @@ asadmin Utility Subcommands                          deploydir(1)
                     preserved and restored (default).
 
                true Active  sessions  of  the   application   are
+                    preserved and restored.
+
+                    If any  active  session  of  the  application
+                    fails  to  be  preserved or restored, none of
 
 Java EE 6           Last change: 19 Nov 2010                    7
 
 asadmin Utility Subcommands                          deploydir(1)
 
-                    preserved and restored.
-
-                    If any  active  session  of  the  application
-                    fails  to  be  preserved or restored, none of
                     the sessions will be available when the rede-
                     ployment  is complete. However, the redeploy-
                     ment continues and a warning is logged.
@@ -433,7 +431,6 @@ EXAMPLES
      option is set to  true,  if  an  application  of  that  name
      already exists, the application is redeployed.
      asadmin> deploydir --force=true --precompilejsp=true /home/temp/sampleApp
-
      Application deployed successfully with name sampleApp.
      WARNING : deploydir command deprecated. Please use deploy command instead.
      Command deploydir executed successfully
@@ -446,13 +443,9 @@ EXIT STATUS
 SEE ALSO
      deploy(1), , redeploy(1), undeploy(1)
 
-Java EE 6           Last change: 19 Nov 2010                    8
-
-asadmin Utility Subcommands                          deploydir(1)
-
      asadmin(1M)
 
      Oracle GlassFish Server Application Deployment Guide
 
-Java EE 6           Last change: 19 Nov 2010                    9
+Java EE 6           Last change: 19 Nov 2010                    8
 

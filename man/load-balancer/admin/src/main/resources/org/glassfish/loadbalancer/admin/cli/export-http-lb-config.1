@@ -52,11 +52,12 @@ OPTIONS
           If set to true,  retrieves  the  loadbalancer.xml  file
           from the remote machine. The default is false.
 
+     --target
+
 Java EE 6           Last change: 26 Aug 2010                    1
 
 asadmin Utility Subcommands;             export-http-lb-config(1)
 
-     --target
           Specifies the target to which the load balancer  confi-
           guration  will  be  exported. If a target is not speci-
           fied, the load balancer configuration  is  exported  to
@@ -105,21 +106,18 @@ EXAMPLES
      named    mycluster-http-lb-config    to    a    file   named
      loadbalancer.xml in the /Sun/AppServer directory .
      asadmin> export-http-lb-config --config mycluster-http-lb-config /Sun/AppServer/loadbalancer.xml
+     Command export-http-lb-config executed successfully.
+     Example 2 Exporting a Load Balancer Configuration on Windows
 
 Java EE 6           Last change: 26 Aug 2010                    2
 
 asadmin Utility Subcommands;             export-http-lb-config(1)
-
-     Command export-http-lb-config executed successfully.
-
-     Example 2 Exporting a Load Balancer Configuration on Windows
 
      The following example exports a load balancing configuration
      named    mycluster-http-lb-config    to    a    file   named
      loadbalancer.xml in  the  C:\Sun\AppServer  directory  on  a
      Microsoft Windows system.
      asadmin> export-http-lb-config --config mycluster-http-lb-config "C:\Sun\AppServer\loadbalancer.xml"
-
      Command export-http-lb-config executed successfully.
 
 EXIT STATUS

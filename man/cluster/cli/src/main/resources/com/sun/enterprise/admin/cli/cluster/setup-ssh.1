@@ -52,11 +52,12 @@ DESCRIPTION
      o Thessh(1) client is installed  on  the  DAS  host  and  is
        accessible through the DAS user's path.
 
+     o Thesshd(1M) daemon is installed and running on  all  hosts
+
 Java EE 6           Last change: 14 Dec 2010                    1
 
 asadmin Utility Subcommands                          setup-ssh(1)
 
-     o Thesshd(1M) daemon is installed and running on  all  hosts
        where an SSH key is to be set up.
 
      o The user that the --sshuser option specifies  has  an  SSH
@@ -66,8 +67,8 @@ asadmin Utility Subcommands                          setup-ssh(1)
        either  at  the  default location or in a location that is
        defined in the DAS user's path.
 
-     o On  Windows  systems,   the   SSH   package   for   Cygwin
-       (http://www.cygwin.com/)     or     an     MKS    Software
+     o On   Windows   systems,   the   SSH   package    forCygwin
+       (http://www.cygwin.com/)       or      anMKS      Software
        (http://www.mkssoftware.com/) toolkit that provides SSH is
        installed.
 
@@ -108,12 +109,11 @@ asadmin Utility Subcommands                          setup-ssh(1)
 
        o If a passphrase is required, ensure that the  file  that
          --passwordfile  option  of the asadmin utility specifies
+         also contains an entry for AS_ADMIN_SSHKEYPASSPHRASE.
 
 Java EE 6           Last change: 14 Dec 2010                    2
 
 asadmin Utility Subcommands                          setup-ssh(1)
-
-         also contains an entry for AS_ADMIN_SSHKEYPASSPHRASE.
 
      If public key authentication is already set up  on  a  host,
      the  subcommand informs the user that public key authentica-
@@ -163,13 +163,13 @@ OPTIONS
           being set up. If the .ssh/authorized_keys file does not
           exist on a host, the subcommand creates the file.
 
-Java EE 6           Last change: 14 Dec 2010                    3
-
-asadmin Utility Subcommands                          setup-ssh(1)
-
           The user that is running this subcommand must  be  able
           to  reach  the  path  to  the key file and read the key
           file.
+
+Java EE 6           Last change: 14 Dec 2010                    3
+
+asadmin Utility Subcommands                          setup-ssh(1)
 
           The default is a key file in the user's .ssh  directory
           on  the  host  where the subcommand is run. If multiple
@@ -215,32 +215,29 @@ OPERANDS
           A space-separated list of the names of the hosts  where
           an SSH key is to be set up.
 
+EXAMPLES
+     Example 1 Setting Up an SSH Key
+
 Java EE 6           Last change: 14 Dec 2010                    4
 
 asadmin Utility Subcommands                          setup-ssh(1)
-
-EXAMPLES
-     Example 1 Setting Up an SSH Key
 
      This example sets up an SSH key for the user gfuser  on  the
      hosts  sj03  and  sj04. The key file is not generated but is
      copied from the user's .ssh directory on the host where  the
      subcommand is running.
      asadmin> setup-ssh sj03 sj04
-
      Enter SSH password for gfuser@sj03>
      Copied keyfile /home/gfuser/.ssh/id_rsa.pub to gfuser@sj03
      Successfully connected to gfuser@sj03 using keyfile /home/gfuser/.ssh/id_rsa
      Copied keyfile /home/gfuser/.ssh/id_rsa.pub to gfuser@sj04
      Successfully connected to gfuser@sj04 using keyfile /home/gfuser/.ssh/id_rsa
      Command setup-ssh executed successfully.
-
      Example 2 Generating and Setting Up an SSH Key
 
      This example generates and sets up an SSH key for  the  user
      gfuser on the hosts sua01 and sua02.
      asadmin> setup-ssh --generatekey=true sua01 sua02
-
      Enter SSH password for gfuser@sua01>
      Created directory /home/gfuser/.ssh
      /usr/bin/ssh-keygen successfully generated the identification /home/gfuser/.ssh/id_rsa

@@ -52,11 +52,12 @@ OPTIONS
      --help , -?
           Displays the help text for the subcommand.
 
+     --nodehost
+
 Java EE 6            Last change: 8 Dec 2011                    1
 
 asadmin Utility Subcommands                    update-node-ssh(1)
 
-     --nodehost
           The name of the host that  the  node  is  to  represent
           after the node is updated.
 
@@ -106,12 +107,12 @@ asadmin Utility Subcommands                    update-node-ssh(1)
      --sshkeyfile
           The absolute path to the SSH private key file for  user
           that  the --sshuser option specifies. This file is used
+          for authentication to the sshd  daemon  on  the  node's
 
 Java EE 6            Last change: 8 Dec 2011                    2
 
 asadmin Utility Subcommands                    update-node-ssh(1)
 
-          for authentication to the sshd  daemon  on  the  node's
           host.
 
           Note
@@ -175,15 +176,12 @@ EXAMPLES
      This example updates the host that the node lssh  represents
      to sj04.
      asadmin> update-node-ssh --nodehost sj04 lssh
-
      Command update-node-ssh executed successfully.
-
      Example 2 Forcing the Update of a Node
 
      This example forces the update of the node  sj01  to  enable
      the node to communicate over SSH.
      asadmin> update-node-ssh --force sj01
-
      Warning: some parameters appear to be invalid.
      Could not connect to host sj01 using SSH.
      Could not authenticate. Tried authenticating with specified key at

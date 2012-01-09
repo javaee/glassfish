@@ -80,7 +80,6 @@ OPERANDS
           For example, the application.xml  file  for  the  myApp
           application might specify the following web module:
           <module>
-
               <web>
                   <web-uri>myWebModule.war</web-uri>
               </web>
@@ -98,21 +97,19 @@ EXAMPLES
      the  Hello Port environment entry was set, null is displayed
      instead of a description for this entry.
      asadmin> list-web-env-entry hello
-
      Hello User (java.lang.String) = techscribe ignoreDescriptorItem=false
       //User authentication for Hello appplication
      Hello Port (java.lang.Integer) = null ignoreDescriptorItem=true //null
-
      Command list-web-env-entry executed successfully.
-
-Java EE 6           Last change: 30 Oct 2009                    2
-
-asadmin Utility Subcommands                 list-web-env-entry(1)
 
 EXIT STATUS
      0    command executed successfully
 
      1    error in executing the command
+
+Java EE 6           Last change: 30 Oct 2009                    2
+
+asadmin Utility Subcommands                 list-web-env-entry(1)
 
 SEE ALSO
      list-applications(1),  set-web-env-entry(1),  unset-web-env-

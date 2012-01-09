@@ -51,13 +51,13 @@ OPTIONS
           Displays the help text for the subcommand.
 
      --name
-          The  name   of   the   servlet   context-initialization
+          The name of the servlet context-initialization  parame-
+          ter  that  is  to  be  unset.  This parameter must have
 
 Java EE 6           Last change: 30 Oct 2009                    1
 
 asadmin Utility Subcommands            unset-web-context-param(1)
 
-          parameter that is to be unset. This parameter must have
           previously been set by using the  set-web-context-param
           subcommand. Otherwise, an error occurs.
 
@@ -84,7 +84,6 @@ OPERANDS
           For example, the application.xml  file  for  the  myApp
           application might specify the following web module:
           <module>
-
               <web>
                   <web-uri>myWebModule.war</web-uri>
               </web>
@@ -103,19 +102,17 @@ EXAMPLES
      any,   that  is  defined  in  the  application's  deployment
      descriptor.
      asadmin> unset-web-context-param
-
      --name=javax.faces.STATE_SAVING_METHOD basic-ezcomp
-
      Command unset-web-context-param executed successfully.
-
-Java EE 6           Last change: 30 Oct 2009                    2
-
-asadmin Utility Subcommands            unset-web-context-param(1)
 
 EXIT STATUS
      0    command executed successfully
 
      1    error in executing the command
+
+Java EE 6           Last change: 30 Oct 2009                    2
+
+asadmin Utility Subcommands            unset-web-context-param(1)
 
 SEE ALSO
      list-applications(1),  list-web-context-param(1),   set-web-

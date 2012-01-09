@@ -51,13 +51,12 @@ OPTIONS
      --config
           Specifies which load balancer configuration to which to
           add  clusters  and  server  instances. Specify either a
-          load  balancer  configuration  or  a   load   balancer.
+          load balancer configuration or a load balancer.  Speci-
+          fying both results in an error.
 
 Java EE 6           Last change: 25 Aug 2010                    1
 
 asadmin Utility Subcommands                 create-http-lb-ref(1)
-
-          Specifying both results in an error.
 
      --lbname
           Specifies the load balancer to which  to  add  clusters
@@ -109,14 +108,15 @@ asadmin Utility Subcommands                 create-http-lb-ref(1)
           or  instance  for  load balancing. The default value is
           true.
 
+     --lbweight
+          The name  of  the  instance  and  the  weight  you  are
+
 Java EE 6           Last change: 25 Aug 2010                    2
 
 asadmin Utility Subcommands                 create-http-lb-ref(1)
 
-     --lbweight
-          The name of the instance and the weight you are assign-
-          ing  it.  The  weight  must be an integer. The pairs of
-          instances and weights  are  separated  by  colons.  For
+          assigning  it. The weight must be an integer. The pairs
+          of instances and weights are separated by  colons.  For
           example  instance1=1:instance2=4  means  that for every
           five requests, one goes to instance1  and  four  go  to
           instance2. A weight of 1 is the default.
@@ -140,17 +140,13 @@ EXAMPLES
      This example adds a reference to a cluster named cluster2 to
      a load balancer configuration named mylbconfig.
      asadmin> create-http-lb-ref --config mylbconfig cluster2
-
      Command create-http-lb-ref executed successfully.
-
      Example 2 Adding a Cluster Reference to a Load Balancer
 
      This example adds a reference to a cluster named cluster2 to
      a load balancer named mylb.
      asadmin> create-http-lb-ref --lbname mylb cluster2
-
      Command create-http-lb-ref executed successfully.
-
      Example 3 Configuring a Health  Checker  and  Load  Balancer
      Policy
 
@@ -158,27 +154,22 @@ EXAMPLES
      policy,  and  enables  the  load  balancer for instances and
      applications.
      asadmin> create-http-lb-ref --config mylbconfig --lbpolicy weighted-round-robin
-
      --healthcheckerinterval 40 --healthcheckertimeout 20
      --lbenableallinstances=true --lbenableallapplications=true cluster2
-
-Java EE 6           Last change: 25 Aug 2010                    3
-
-asadmin Utility Subcommands                 create-http-lb-ref(1)
-
      Command create-http-lb-ref executed successfully.
-
      Example 4 Setting a User-Defined Load Balancing Policy
 
      This example sets a user-defined load balancing policy.
      asadmin> create-http-lb-ref --lbpolicy user-defined --lbpolicymodule /user/modules/module.so
-
      --config mylbconfig cluster2
-
      Command create-http-lb-ref executed successfully.
 
 EXIT STATUS
      0    subcommand executed successfully
+
+Java EE 6           Last change: 25 Aug 2010                    3
+
+asadmin Utility Subcommands                 create-http-lb-ref(1)
 
      1    error in executing the subcommand
 

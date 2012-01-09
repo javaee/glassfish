@@ -105,14 +105,12 @@ EXAMPLES
 
      This example starts Java DB on the host host1 and port 5001.
      asadmin> start-database --dbhost host1 --dbport 5001 --terse=true
-
      Starting database in the background.  Log redirected to
+     /opt/SUNWappserver/databases/derby.log.
 
 Java EE 6            Last change: 8 Dec 2011                    2
 
 asadmin Utility Subcommands                     start-database(1)
-
-     /opt/SUNWappserver/databases/derby.log.
 
      Example 2 Starting Java DB With Options for the Java  Appli-
      cation Launcher
@@ -121,7 +119,6 @@ asadmin Utility Subcommands                     start-database(1)
      minimum  heap  memory  size to 128 megabytes and the maximum
      heap memory size to 512 megabytes.
      asadmin> start-database --jvmoptions="-Xms128m -Xmx512m" --terse=true
-
      Starting database in the background.
      Log redirected to /export/glassfish3/glassfish/databases/derby.log.
 
@@ -142,7 +139,7 @@ SEE ALSO
 
      asadmin(1M)
 
-     Administering  Database  Connectivity  in  Oracle  GlassFish
+     "Administering Database Connectivity"  in  Oracle  GlassFish
      Server Administration Guide
 
      For more information about the  Java  application  launcher,

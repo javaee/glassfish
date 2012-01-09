@@ -52,12 +52,11 @@ OPTIONS
           Specifies a list of backend EIS principals.  More  than
           one  principal can be specified using a comma-separated
           list.  Use  either  the  --principals  or  --usergroups
+          options, but not both in the same command.
 
 Java EE 6           Last change: 22 Dec 2010                    1
 
 asadmin Utility Subcommands      create-connector-security-map(1)
-
-          options, but not both in the same command.
 
      --usergroups
           Specifies a list of backend EIS user group.  More  than
@@ -85,7 +84,6 @@ EXAMPLES
      This example creates securityMap1 for the  existing  connec-
      tion pool named connector-pool1.
      asadmin> create-connector-security-map --poolname connector-pool1
-
      --principals principal1,principal2 --mappedusername backend-username securityMap1
      Command create-connector-security-map executed successfully
 

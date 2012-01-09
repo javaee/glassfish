@@ -19,8 +19,8 @@ DESCRIPTION
      deployed,  this subcommand lists all versions. To list which
      version is enabled, set the --long option to true. For  more
      information  about  module  and  application  versions,  see
-     theModule  and  Application  Versions  in  Oracle  GlassFish
-     Server Application Deployment Guide .
+     "Module and Application Versions" in Oracle GlassFish Server
+     Application Deployment Guide.
 
      The target instance or instances making up the cluster  need
      not be running or available for this subcommand to succeed.
@@ -50,17 +50,16 @@ OPERANDS
           o instance_name- Specifies a certain server instance as
             the target.
 
+EXAMPLES
+     Example 1 Listing Application References
+
 Java EE 6           Last change: 22 Sep 2010                    1
 
 asadmin Utility Subcommands;             list-application-refs(1)
 
-EXAMPLES
-     Example 1 Listing Application References
-
      The following example lists the application  references  for
      the unclustered server instance NewServer.
      asadmin> list-application-refs NewServer
-
      ClientSessionMDBApp
      MEjbApp
      __ejb_container_timer_app

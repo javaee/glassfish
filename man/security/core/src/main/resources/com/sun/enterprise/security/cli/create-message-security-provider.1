@@ -52,12 +52,11 @@ OPTIONS
 
           instance_name
                Creates  the  provider  for  a  particular   sever
+               instance.
 
 Java EE 6           Last change: 22 Dec 2010                    1
 
 asadmin Utility Subcommands   create-message-security-provider(1)
-
-               instance.
 
      --classname
           Defines the Java implementation class of the  provider.
@@ -108,14 +107,14 @@ asadmin Utility Subcommands   create-message-security-provider(1)
 
      --responseauthrecipient
           The auth-recipient attribute defines a requirement  for
+          message-layer  authentication  of  the  receiver of the
+          response message to its sender  (e.g.  by  XML  encryp-
+          tion).  Possible  values  are  before-content or after-
 
 Java EE 6           Last change: 22 Dec 2010                    2
 
 asadmin Utility Subcommands   create-message-security-provider(1)
 
-          message-layer  authentication  of  the  receiver of the
-          response message to its sender  (e.g.  by  XML  encryp-
-          tion).  Possible  values  are  before-content or after-
           content. The default value is after-content.
 
      --isdefaultprovider
@@ -181,7 +180,6 @@ EXAMPLES
      The following example shows how to create a message security
      provider for a client.
      asadmin> create-message-security-provider
-
      --classname com.sun.enterprise.security.jauth.ClientAuthModule
      --providertype client mySecurityProvider
 

@@ -52,12 +52,12 @@ OPTIONS
           deployment descriptor. When a parameter is ignored, the
           application  behaves as if the parameter had never been
           set in the  application's  deployment  descriptor.  The
+          behavior of an application in this situation depends on
 
 Java EE 6           Last change: 15 Jun 2011                    1
 
 asadmin Utility Subcommands              set-web-context-param(1)
 
-          behavior of an application in this situation depends on
           the application.
 
           The possible values are as follows:
@@ -105,16 +105,14 @@ OPERANDS
           For example, the application.xml  file  for  the  myApp
           application might specify the following web module:
           <module>
-
               <web>
                   <web-uri>myWebModule.war</web-uri>
+              </web>
+          </module>
 
 Java EE 6           Last change: 15 Jun 2011                    2
 
 asadmin Utility Subcommands              set-web-context-param(1)
-
-              </web>
-          </module>
 
           The module would be specified as the  operand  of  this
           command as myApp/myWebModule.war.
@@ -129,12 +127,9 @@ EXAMPLES
      the  application's  state  is preserved is provided for this
      parameter.
      asadmin> set-web-context-param --name=javax.faces.STATE_SAVING_METHOD
-
      --description="The location where the application's state is preserved"
      --value=client basic-ezcomp
-
      Command set-web-context-param executed successfully.
-
      Example 2 Ignoring a Servlet Context-Initialization  Parame-
      ter That Is Defined in a Deployment Descriptor
 
@@ -142,10 +137,8 @@ EXAMPLES
      parameter  javax.faces.PROJECT_STAGE  of the web application
      basic-ezcomp.
      asadmin> set-web-context-param --name=javax.faces.PROJECT_STAGE
-
      --ignoredescriptoritem=true
      basic-ezcomp
-
      Command set-web-context-param executed successfully.
 
 EXIT STATUS

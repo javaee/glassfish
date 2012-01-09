@@ -36,6 +36,9 @@ DESCRIPTION
      the entire content of the parent of  the  base  installation
      directory.
 
+     If a file under the parent of the base  installation  direc-
+     tory is open, the subcommand files.
+
      If multiple hosts are specified, the  configuration  of  the
      following items must be the same on all hosts:
 
@@ -49,11 +52,11 @@ DESCRIPTION
      The subcommand does not  modify  the  configuration  of  the
      domain administration server (DAS).
 
-     This subcommand is supported in local mode only.
-
-Java EE 6           Last change: 06 Dec 2011                    1
+Java EE 6            Last change: 5 Jan 2012                    1
 
 asadmin Utility Subcommands                uninstall-node-dcom(1)
+
+     This subcommand is supported in local mode only.
 
 OPTIONS
      --help , -?
@@ -105,11 +108,12 @@ OPTIONS
 
           true The subcommand  uninstalls  the  GlassFish  Server
                software from the host even if a user-defined node
-               resides on the host.
 
-Java EE 6           Last change: 06 Dec 2011                    2
+Java EE 6            Last change: 5 Jan 2012                    2
 
 asadmin Utility Subcommands                uninstall-node-dcom(1)
+
+               resides on the host.
 
                If the --force  option  is  true,  the  subcommand
                removes  the  entire  content of the parent of the
@@ -129,9 +133,7 @@ EXAMPLES
      hosts  wpmdl1.example.com  and  wpmdl2.example.com  from the
      default location.
      asadmin> uninstall-node-dcom wpmdl1 wpmdl2
-
      Command uninstall-node-dcom executed successfully.
-
      Example 2 Forcibly Uninstalling GlassFish Server Software
 
      This example uninstalls GlassFish  Server  software  on  the
@@ -141,7 +143,6 @@ EXAMPLES
      resides on the host. The entire content of the C:\glassfish3
      directory is removed.
      asadmin> uninstall-node-dcom --force --installdir C:\glassfish3 xkyd.example.com
-
      Command uninstall-node-dcom executed successfully.
 
 EXIT STATUS
@@ -154,5 +155,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 06 Dec 2011                    3
+Java EE 6            Last change: 5 Jan 2012                    3
 

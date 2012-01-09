@@ -52,12 +52,11 @@ OPTIONS
           Valid values are as follows:
 
           server
+               Specifies the DAS (default).
 
 Java EE 6           Last change: 29 Nov 2010                    1
 
 asadmin Utility Subcommands                generate-jvm-report(1)
-
-               Specifies the DAS (default).
 
           instance-name
                Specifies a GlassFish Server instance.
@@ -103,18 +102,17 @@ EXAMPLES
      generated  if no type is specified. This same report is gen-
      erated if the summary type is specified.
      asadmin> generate-jvm-report
-
      Operating System Information:
      Name of the Operating System: SunOS
      Binary Architecture name of the Operating System: sparc, Version: 5.10
+     Number of processors available on the Operating System: 32
+     System load on the available processors for the last minute: 7.921875.
+     (Sum of running and queued runnable entities per minute)
 
 Java EE 6           Last change: 29 Nov 2010                    2
 
 asadmin Utility Subcommands                generate-jvm-report(1)
 
-     Number of processors available on the Operating System: 32
-     System load on the available processors for the last minute: 7.921875.
-     (Sum of running and queued runnable entities per minute)
      General Java Runtime Environment Information for the VM: 64097@sr1-usca-22
      ...
      sun.desktop = gnome
@@ -129,14 +127,12 @@ asadmin Utility Subcommands                generate-jvm-report(1)
      user.name = thisuser
      user.timezone = US/Pacific
      Command generate-jvm-report executed successfully
-
      Example 2 Obtaining Information for a Particular JVM Machine
      Type
 
      This example generates a report that  shows  information  on
      the class loader.
      asadmin> generate-jvm-report --type=class
-
      Class loading and unloading in the Java Virtual Machine:
      Number of classes currently loaded in the Java Virtual Machine: 3,781
      Number of classes loaded in the Java Virtual Machine since the startup: 3,868

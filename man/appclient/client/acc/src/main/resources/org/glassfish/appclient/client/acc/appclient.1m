@@ -13,7 +13,6 @@ SYNOPSIS
      [-targetserverhost[:port][,host[:port]...]]
      [-userusername] [-passwordfilepassword_file]
      [application-options]
-
      appclient [jvm-options]
      [-mainclassmain_class_name | -namedisplay_name]
      [-xmlclient_config_xml_file] [-textauth]
@@ -160,13 +159,12 @@ Utility Commands                                    appclient(1m)
                application  client  JAR  file  is  specified  and
                created during deployment by  the  asadmin  deploy
                command.  If  specified, the -classpath setting is
+               ignored in deference to the Class-Path setting  in
+               the client JAR file's manifest.
 
 Java EE 6           Last change: 16 Dec 2010                    3
 
 Utility Commands                                    appclient(1m)
-
-               ignored in deference to the Class-Path setting  in
-               the client JAR file's manifest.
 
           class-name
                the  fully  qualified  name  of  the   application
@@ -191,7 +189,6 @@ Utility Commands                                    appclient(1m)
 EXAMPLES
      Example 1 Using the appclient command
      appclient -xml sun-acc.xml -jar myclientapp.jar scott sample
-
      Where: sun-acc.xml is the name of the  client  configuration
      XML  file,  myclientapp.jar  is  the client application .jar
      file, and scott and sample are  arguments  to  pass  to  the
@@ -212,11 +209,7 @@ ATTRIBUTES
 SEE ALSO
      get-client-stubs(1)
 
-Java EE 6           Last change: 16 Dec 2010                    4
-
-Utility Commands                                    appclient(1m)
-
      asadmin(1M), package-appclient(1M)
 
-Java EE 6           Last change: 16 Dec 2010                    5
+Java EE 6           Last change: 16 Dec 2010                    4
 

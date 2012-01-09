@@ -51,12 +51,13 @@ DESCRIPTION
 
      o SSH key file
 
+     If the SSH key file does not  exist  on  a  host  where  the
+     GlassFish Server software is to be installed, the subcommand
+
 Java EE 6            Last change: 8 Dec 2011                    1
 
 asadmin Utility Subcommands                       install-node(1)
 
-     If the SSH key file does not  exist  on  a  host  where  the
-     GlassFish Server software is to be installed, the subcommand
      runs interactively and prompts for a password. To enable the
      subcommand to run noninteractively, the following conditions
      must be met:
@@ -106,12 +107,13 @@ OPTIONS
           Specifies whether  the  archive  file  from  which  the
           software is installed is saved after installation.
 
+          false
+               The archive file  is  not  saved.  The  subcommand
+
 Java EE 6            Last change: 8 Dec 2011                    2
 
 asadmin Utility Subcommands                       install-node(1)
 
-          false
-               The archive file  is  not  saved.  The  subcommand
                deletes  the  file  after  installing the software
                (default).
 
@@ -161,12 +163,11 @@ asadmin Utility Subcommands                       install-node(1)
 
           The default is a key file in the user's .ssh directory.
           If  multiple  key  files are found, the subcommand uses
+          the following order of preference:
 
 Java EE 6            Last change: 8 Dec 2011                    3
 
 asadmin Utility Subcommands                       install-node(1)
-
-          the following order of preference:
 
           1.  id_rsa
 
@@ -199,7 +200,6 @@ EXAMPLES
      sj03.example.com  and  sj04.example.com at the default loca-
      tion.
      asadmin> install-node sj03.example.com sj04.example.com
-
      Created installation zip /home/gfuser/glassfish2339538623689073993.zip
      Successfully connected to gfuser@sj03.example.com using keyfile /home/gfuser
      /.ssh/id_rsa
@@ -217,12 +217,12 @@ EXAMPLES
      Fixing file permissions of all files under sj04.example.com:/export/glassfish3/bin
      Command install-node executed successfully
 
+EXIT STATUS
+     0    command executed successfully
+
 Java EE 6            Last change: 8 Dec 2011                    4
 
 asadmin Utility Subcommands                       install-node(1)
-
-EXIT STATUS
-     0    command executed successfully
 
      1    error in executing the command
 

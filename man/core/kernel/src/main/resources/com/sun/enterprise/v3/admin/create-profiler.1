@@ -51,12 +51,12 @@ OPTIONS
           This path is automatically constructed to be a concate-
           nation  of  the  GlassFish Server installation relative
           path for its  native  shared  libraries,  standard  JRE
+          native  library  path,  the  shell  environment setting
 
 Java EE 6           Last change: 22 Dec 2010                    1
 
 asadmin Utility Subcommands                    create-profiler(1)
 
-          native  library  path,  the  shell  environment setting
           (LD_LIBRARY_PATH on UNIX) and  any  path  that  may  be
           specified in the profile element.
 
@@ -75,7 +75,6 @@ EXAMPLES
 
      This example creates a profiler named sample_profiler.
      asadmin> create-profiler --classpath /home/appserver/
-
      --nativelibpath /u/home/lib --enabled=false
      --property defaultuser=admin:password=adminadmin sample_profiler
      Created Profiler with id = sample_profiler

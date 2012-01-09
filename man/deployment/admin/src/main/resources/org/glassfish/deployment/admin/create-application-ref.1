@@ -50,15 +50,15 @@ OPTIONS
      --virtualservers
           Specifies a comma-separated list of virtual server  IDs
           on  which  to  deploy.  This option applies only to Web
-          modules  (either   standalone   or   in   a   Java   EE
+          modules (either standalone or in  a  Java  EE  applica-
+          tion). If this option is not specified, the application
 
 Java EE 6           Last change: 17 Nov 2010                    1
 
 asadmin Utility Subcommands             create-application-ref(1)
 
-          application).  If  this  option  is  not specified, the
-          application is deployed to all virtual  servers  except
-          the administrative server, __asadmin.
+          is deployed to all virtual servers except the  adminis-
+          trative server, __asadmin.
 
      --enabled
           Indicates whether the  application  should  be  enabled
@@ -85,8 +85,8 @@ OPERANDS
           you can create references to multiple disabled versions
           by  using  an asterisk (*) as a wildcard character. For
           more information about module and application versions,
-          see   theModule  and  Application  Versions  in  Oracle
-          GlassFish Server Application Deployment Guide .
+          see "Module and Application Versions" in Oracle GlassF-
+          ish Server Application Deployment Guide.
 
 EXAMPLES
      Example 1 Creating an Application Reference
@@ -94,7 +94,6 @@ EXAMPLES
      The following example creates a reference to the Web  module
      MyWebApp on the unclustered server instance NewServer.
      asadmin> create-application-ref --target NewServer MyWebApp
-
      Command create-application-ref executed successfully.
 
 EXIT STATUS
@@ -107,11 +106,7 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 17 Nov 2010                    2
-
-asadmin Utility Subcommands             create-application-ref(1)
-
      Oracle GlassFish Server Application Deployment Guide
 
-Java EE 6           Last change: 17 Nov 2010                    3
+Java EE 6           Last change: 17 Nov 2010                    2
 

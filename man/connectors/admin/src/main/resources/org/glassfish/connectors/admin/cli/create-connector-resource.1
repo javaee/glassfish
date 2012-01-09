@@ -51,12 +51,11 @@ OPTIONS
           user A user resource.
 
      --description
+          Text providing details about the connector resource.
 
 Java EE 6           Last change: 10 Feb 2011                    1
 
 asadmin Utility Subcommands          create-connector-resource(1)
-
-          Text providing details about the connector resource.
 
      --property
           Optional attribute name value pairs for configuring the
@@ -101,21 +100,18 @@ EXAMPLES
      This   example   creates   a   connector   resource    named
      jms/qConnFactory.
      asadmin> create-connector-resource --poolname jms/qConnPool
-
      --description "sample connector resource" jms/qConnFactory
      Command create-connector-resource executed successfully
-
      Example 2 Using the create-connector-resource subcommand
+
+     This example shows the usage of this subcommand.
+     asadmin> create-connector-resource --target server --poolname jms/qConnPool
+     --description "sample connector resource" jms/qConnFactory
+     Command create-connector-resource executed successfully
 
 Java EE 6           Last change: 10 Feb 2011                    2
 
 asadmin Utility Subcommands          create-connector-resource(1)
-
-     This example shows the usage of this subcommand.
-     asadmin> create-connector-resource --target server --poolname jms/qConnPool
-
-     --description "sample connector resource" jms/qConnFactory
-     Command create-connector-resource executed successfully
 
      Where jms/qConnFactory is the sample connector resource that
      is created.

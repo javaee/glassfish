@@ -49,12 +49,13 @@ OPTIONS
 
           Possible values are as follows:
 
+          server
+               The log  files  will  be  collected  for  the  DAS
+
 Java EE 6           Last change: 16 June 2011                   1
 
 asadmin Utility Subcommands                  collect-log-files(1)
 
-          server
-               The log  files  will  be  collected  for  the  DAS
                (default).
 
           instance-name
@@ -78,24 +79,20 @@ EXAMPLES
      This example generates a ZIP archive from the log files  for
      the default server.
      asadmin> collect-log-files
-
      Created Zip file under /space/gfv3/v3setup/glassfish3/glassfish/domains/domain1/\
      collected-logs/log_2010-12-15_15-46-23.zip.
      Command collect-log-files executed successfully.
-
      Example 2 Collecting Log Files for a Cluster
 
      This example generates a ZIP archive from the log files  for
      a  cluster  named cluster1 and the two server instances run-
      ning in the cluster.
      asadmin> collect-log-files --target cluster1
-
      Log files are downloaded for instance1.
      Log files are downloaded for instance2.
      Created Zip file under /space/gfv3/v3setup/glassfish3/glassfish/domains/domain1/\
      collected-logs/log_2010-12-15_15-54-06.zip.
      Command collect-log-files executed successfully.
-
      Example 3 Collecting Log Files in a Directory Other Than the
      Default for a Cluster
 
@@ -103,11 +100,6 @@ EXAMPLES
      a  cluster  named cluster1 and its two server instances, and
      saves the archive in a directory named /space/output.
      asadmin> collect-log-files --target cluster1 --retrieve true /space/output
-
-Java EE 6           Last change: 16 June 2011                   2
-
-asadmin Utility Subcommands                  collect-log-files(1)
-
      Log files are downloaded for instance1.
      Log files are downloaded for instance2.
      Created Zip file under /space/output/log_2010-12-15_15-55-54.zip.
@@ -115,6 +107,10 @@ asadmin Utility Subcommands                  collect-log-files(1)
 
 EXIT STATUS
      0    subcommand executed successfully
+
+Java EE 6           Last change: 16 June 2011                   2
+
+asadmin Utility Subcommands                  collect-log-files(1)
 
      1    error in executing the subcommand
 
@@ -124,8 +120,8 @@ SEE ALSO
 
      asadmin(1M)
 
-     Administering the Logging Service in Oracle GlassFish Server
-     Administration Guide
+     "Administering the  Logging  Service"  in  Oracle  GlassFish
+     Server Administration Guide
 
 Java EE 6           Last change: 16 June 2011                   3
 

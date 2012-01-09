@@ -50,37 +50,30 @@ OPERANDS
 EXAMPLES
      Example 1 Listing All Clusters in a Domain
 
+     This example lists all clusters in the current domain.
+     asadmin> list-clusters
+
 Java EE 6            Last change: 9 Sep 2010                    1
 
 asadmin Utility Subcommands                      list-clusters(1)
 
-     This example lists all clusters in the current domain.
-     asadmin> list-clusters
-
      pmdclust not running
      ymlclust not running
-
      Command list-clusters executed successfully.
-
      Example 2 Displaying the Status of a Cluster
 
      This example displays status of the cluster ymlclust,  which
      is not running.
      asadmin> list-clusters ymlclust
-
      ymlclust not running
-
      Command list-clusters executed successfully.
-
      Example 3 Listing All Clusters That Are  Associated  With  a
      Node
 
      This example lists the clusters  that  contain  an  instance
      that resides on the node sj02.
      asadmin> list-clusters sj02
-
      ymlclust not running
-
      Command list-clusters executed successfully.
 
 EXIT STATUS

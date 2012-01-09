@@ -49,11 +49,11 @@ DESCRIPTION
 
        o lib
 
+     This subcommand is supported in remote mode only.
+
 Java EE 6            Last change: 7 Dec 2010                    1
 
 asadmin Utility Subcommands                 export-sync-bundle(1)
-
-     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help , -?
@@ -104,11 +104,12 @@ OPERANDS
      path  is  appended  depends on the setting of the --retrieve
      option:
 
+          o If --retrieve is false, the path is appended  to  the
+
 Java EE 6            Last change: 7 Dec 2010                    2
 
 asadmin Utility Subcommands                 export-sync-bundle(1)
 
-          o If --retrieve is false, the path is appended  to  the
             config subdirectory of the current domain directory.
 
           o If --retrieve is true, the path is  appended  to  the
@@ -125,10 +126,8 @@ EXAMPLES
      This example exports the configuration data of  the  cluster
      pmdcluster.
      asadmin> export-sync-bundle --target=pmdcluster
-
      Sync bundle: /export/glassfish3/glassfish/domains/domain1/sync/
      pmdcluster-sync-bundle.zip
-
      Command export-sync-bundle executed successfully.
 
 EXIT STATUS

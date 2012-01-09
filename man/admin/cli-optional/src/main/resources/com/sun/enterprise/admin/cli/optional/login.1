@@ -51,31 +51,28 @@ OPTIONS
 EXAMPLES
      Example 1 Logging Into a Domain on a Remote Machine
 
+     This example logs into a domain located on another  machine.
+     Options are specified before the login subcommand.
+
 Java EE 6            Last change: 9 Oct 2009                    1
 
 asadmin Utility Subcommands                              login(1)
 
-     This example logs into a domain located on another  machine.
-     Options are specified before the login subcommand.
      asadmin --host foo --port 8282 login
-
      Please enter the admin user name>admin
      Please enter the admin password>
-
      Trying to authenticate for administration of server at host [foo]
      and port [8282] ...
      Login information relevant to admin user name [admin] for host [foo]
      and admin port [8282] stored at [/.asadminpass] successfully.
      Make sure that this file remains protected. Information stored in this
      file will be used by asadmin commands to manage associated domain.
-
      Example 2 Logging Into a  Domain  on  the  Default  Port  of
      Localhost
 
      This example logs into a domain on mylhost  on  the  default
      port. Options are specified before the login subcommand.
      asadmin --host myhost login
-
      Please enter the admin user name>admin
      Please enter the admin password>
      Trying to authenticate for administration of server

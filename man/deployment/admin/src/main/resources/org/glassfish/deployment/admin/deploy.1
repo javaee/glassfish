@@ -51,11 +51,11 @@ DESCRIPTION
      create tables fails, the deployment does not fail; a warning
      message is provided in the log file.
 
+     This subcommand is supported in remote mode only.
+
 Java EE 6           Last change: 23 Dec 2010                    1
 
 asadmin Utility Subcommands                             deploy(1)
-
-     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help , -?
@@ -95,9 +95,9 @@ OPTIONS
           a letter or number. It can contain alphanumeric charac-
           ters plus underscore (_),  dash  (-),  and  period  (.)
           characters.  For  more  information  about  module  and
-          application versions,  see  theModule  and  Application
-          Versions in Oracle GlassFish Server Application Deploy-
-          ment Guide .
+          application versions, see "Module and Application  Ver-
+          sions"  in  Oracle GlassFish Server Application Deploy-
+          ment Guide.
 
      --upload
           Specifies whether the subcommand uploads  the  file  to
@@ -107,13 +107,13 @@ OPTIONS
           Valid values are as follows:
 
           false
+               The  subcommand  does  not  upload  the  file  and
+               attempts  to access the file through the specified
 
 Java EE 6           Last change: 23 Dec 2010                    2
 
 asadmin Utility Subcommands                             deploy(1)
 
-               The  subcommand  does  not  upload  the  file  and
-               attempts  to access the file through the specified
                file name. If the DAS cannot access the file,  the
                subcommand fails.
 
@@ -162,12 +162,11 @@ asadmin Utility Subcommands                             deploy(1)
           value  of the create-tables-at-deploy entry in the cmp-
           resource  element  of  the  glassfish-ejb-jar.xml  file
           determines whether or not tables are created. No unique
+          constraints are created for the tables.
 
 Java EE 6           Last change: 23 Dec 2010                    3
 
 asadmin Utility Subcommands                             deploy(1)
-
-          constraints are created for the tables.
 
      --dropandcreatetables
           If specified as true when the component is  redeployed,
@@ -219,13 +218,13 @@ asadmin Utility Subcommands                             deploy(1)
           set  to false (default) all web session saving and SFSB
           checkpointing is disabled for  the  specified  applica-
           tion,  web  application, or EJB module. If set to true,
+          the specified application  or  module  is  enabled  for
+          high-availability. Set this option to true only if high
 
 Java EE 6           Last change: 23 Dec 2010                    4
 
 asadmin Utility Subcommands                             deploy(1)
 
-          the specified application  or  module  is  enabled  for
-          high-availability. Set this option to true only if high
           availability is configured and enabled at  higher  lev-
           els, such as the server and container levels.
 
@@ -276,13 +275,12 @@ asadmin Utility Subcommands                             deploy(1)
 
           To preserve active state data, GlassFish Server serial-
           izes  the  data  and saves it in memory. To restore the
+          data, the class loader of the newly redeployed applica-
+          tion deserializes the data that was previously saved.
 
 Java EE 6           Last change: 23 Dec 2010                    5
 
 asadmin Utility Subcommands                             deploy(1)
-
-          data, the class loader of the newly redeployed applica-
-          tion deserializes the data that was previously saved.
 
      --libraries
           A comma-separated list of library  JAR  files.  Specify
@@ -331,12 +329,12 @@ asadmin Utility Subcommands                             deploy(1)
           osgi The component is packaged as an OSGi Alliance bun-
                dle.
 
+     The --type option is optional. If the component is  packaged
+     as a regular archive, omit this option.
+
 Java EE 6           Last change: 23 Dec 2010                    6
 
 asadmin Utility Subcommands                             deploy(1)
-
-     The --type option is optional. If the component is  packaged
-     as a regular archive, omit this option.
 
      --properties or --property
           Optional keyword-value pairs  that  specify  additional
@@ -387,14 +385,14 @@ asadmin Utility Subcommands                             deploy(1)
                requirements than Java EE 5 did on which JAR files
                can be visible to various modules  within  an  EAR
                file.  In particular, application clients must not
+               have access to EJB JAR files or other JAR files in
+               the  EAR  file  unless references use the standard
+               Java SE mechanisms (extensions,  for  example)  or
 
 Java EE 6           Last change: 23 Dec 2010                    7
 
 asadmin Utility Subcommands                             deploy(1)
 
-               have access to EJB JAR files or other JAR files in
-               the  EAR  file  unless references use the standard
-               Java SE mechanisms (extensions,  for  example)  or
                the  Java  EE library-directory mechanism. Setting
                this property to v2 removes these Java EE  6  res-
                trictions.
@@ -443,11 +441,11 @@ OPERANDS
           that  is  being  deployed.  This path can be a relative
           path or an absolute path.
 
+          The archive can be in either of the following formats:
+
 Java EE 6           Last change: 23 Dec 2010                    8
 
 asadmin Utility Subcommands                             deploy(1)
-
-          The archive can be in either of the following formats:
 
           o An       archive       file,       for       example,
             /export/JEE_apps/hello.war.
@@ -472,10 +470,8 @@ EXAMPLES
      can use the --target option to deploy to a different  server
      instance or to a cluster.
      asadmin> deploy Cart.ear
-
      Application deployed successfully with name Cart.
      Command deploy executed successfully
-
      Example 2 Deploying a Web Application With the Default  Con-
      text Root
 
@@ -484,10 +480,8 @@ EXAMPLES
      --target option to deploy to a different server instance  or
      to a cluster.
      asadmin> deploy hello.war
-
      Application deployed successfully with name hello.
      Command deploy executed successfully
-
      Example 3  Forcibly  Deploying  a  Web  Application  With  a
      Specific Context Root
 
@@ -496,28 +490,23 @@ EXAMPLES
      cation is greetings. If the  application  has  already  been
      deployed, it is redeployed.
      asadmin> deploy --force=true --contextroot greetings hello.war
-
      Application deployed successfully with name hello.
-
-Java EE 6           Last change: 23 Dec 2010                    9
-
-asadmin Utility Subcommands                             deploy(1)
-
      Command deploy executed successfully
-
      Example 4 Deploying an Enterprise Bean
 
      This example deploys a component based on the EJB specifica-
      tion  (enterprise  bean)  with  CMP and creates the database
      tables used by the bean.
 
+Java EE 6           Last change: 23 Dec 2010                    9
+
+asadmin Utility Subcommands                             deploy(1)
+
      This example uses the --target option. The  target  in  this
      example is an existing cluster, cluster1.
      asadmin> deploy --createtables=true --target cluster1 EmployeeEJB.jar
-
      Application deployed successfully with name EmployeeEJB.
      Command deploy executed successfully
-
      Example 5 Deploying a Connector Module
 
      This example deploys a connector module that is packaged  in
@@ -527,7 +516,6 @@ asadmin Utility Subcommands                             deploy(1)
      example  is an existing standalone server instance that does
      not belong to a cluster.
      asadmin> deploy --target myinstance jdbcra.rar
-
      Application deployed successfully with name jdbcra.
      Command deploy executed successfully
 

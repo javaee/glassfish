@@ -67,28 +67,23 @@ EXAMPLES
      GlassFish Server nodes that do not support remote communica-
      tion in the domain domain1.
      asadmin> list-nodes-config
-
      localhost-domain1  CONFIG  localhost
      devnode  CONFIG  localhost
      Command list-nodes-config executed successfully.
-
      Example 2 Listing Only the Names of GlassFish Server Nodes
 
      This example uses the --terse option of the asadmin  utility
      to list only the names of the GlassFish Server nodes that do
      not support remote communication in the domain domain1.
      asadmin> list-nodes-config --terse=true
-
      localhost-domain1
      devnode
-
      Example 3 Listing GlassFish Server Nodes in Long Format
 
      This example lists the GlassFish Server nodes  that  do  not
      support  remote  communication  in the domain domain1in long
      format.
      asadmin> list-nodes-config --long=true
-
      NODE NAME           TYPE     NODE HOST   INSTALL DIRECTORY    REFERENCED BY
      localhost-domain1   CONFIG   localhost   /export/glassfish3
      devnode             CONFIG   localhost   /export/glassfish3   pmdsa1
@@ -108,8 +103,4 @@ SEE ALSO
      asadmin(1M)
 
 Java EE 6            Last change: 8 Dec 2011                    2
-
-asadmin Utility Subcommands                  list-nodes-config(1)
-
-Java EE 6            Last change: 8 Dec 2011                    3
 

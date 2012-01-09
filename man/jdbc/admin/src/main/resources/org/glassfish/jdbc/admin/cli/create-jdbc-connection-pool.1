@@ -622,14 +622,12 @@ EXAMPLES
      This  example  creates  a   JDBC   connection   pool   named
      sample_derby_pool.
      asadmin> create-jdbc-connection-pool
-
      --datasourceclassname org.apache.derby.jdbc.ClientDataSource
      --restype javax.sql.XADataSource
      --property portNumber=1527:password=APP:user=APP:serverName=
      localhost:databaseName=sun-appserv-samples:connectionAttributes=\;
      create\\=true sample_derby_pool
      Command create-jdbc-connection-pool executed successfully
-
      The escape character backslash (\) is used in the --property
      option  to  distinguish  the  semicolon (;). Two backslashes
      (\\) are used to distinguish the equal sign (=).

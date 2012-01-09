@@ -52,11 +52,11 @@ OPTIONS
 
           Possible values are as follows:
 
+          true The nodes are listed in long format.
+
 Java EE 6            Last change: 8 Dec 2011                    1
 
 asadmin Utility Subcommands                     list-nodes-ssh(1)
-
-          true The nodes are listed in long format.
 
           false
                The nodes are listed in short format (default).
@@ -68,27 +68,22 @@ EXAMPLES
      GlassFish  Server  nodes that support communication over SSH
      in a domain.
      asadmin> list-nodes-ssh
-
      sj02  SSH  sj02.example.com
      sj01  SSH  sj01.example.com
      Command list-nodes-ssh executed successfully.
-
      Example 2 Listing Only the Names of GlassFish Server Nodes
 
      This example uses the --terse option of the asadmin  utility
      to  list  only  the names of the GlassFish Server nodes that
      support communication over SSH in a domain.
      asadmin> list-nodes-ssh --terse=true
-
      sj02
      sj01
-
      Example 3 Listing GlassFish Server Nodes in Long Format
 
      This example lists the GlassFish Server nodes  that  support
      communication over SSH in a domain in long format.
      asadmin> list-nodes-ssh --long=true
-
      NODE NAME   TYPE   NODE HOST          INSTALL DIRECTORY    REFERENCED BY
      sj02        SSH    sj02.example.com   /export/glassfish3   pmd-i-sj02, yml-i-sj02
      sj01        SSH    sj01.example.com   /export/glassfish3   pmd-i-sj01, yml-i-sj01
@@ -105,11 +100,7 @@ SEE ALSO
      node-ssh(1),  list-nodes(1),   list-nodes-config(1),   list-
      nodes-dcom(1)
 
-Java EE 6            Last change: 8 Dec 2011                    2
-
-asadmin Utility Subcommands                     list-nodes-ssh(1)
-
      asadmin(1M)
 
-Java EE 6            Last change: 8 Dec 2011                    3
+Java EE 6            Last change: 8 Dec 2011                    2
 

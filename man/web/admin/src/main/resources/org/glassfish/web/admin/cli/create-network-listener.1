@@ -52,12 +52,11 @@ OPTIONS
      --threadpool
           The name of the thread pool for this listener. Specify-
           ing  a  thread  pool  is optional. The default is http-
+          thread-pool.
 
 Java EE 6           Last change: 08 Oct 2010                    1
 
 asadmin Utility Subcommands            create-network-listener(1)
-
-          thread-pool.
 
      --protocol
           The name of the protocol for this listener.
@@ -104,16 +103,15 @@ EXAMPLES
      The following command creates a network listener named  sam-
      pleListener that is not enabled at runtime:
      asadmin> create-network-listener --listenerport 7272 protocol http-1
-
      --enabled=false sampleListener
      Command create-network-listener executed successfully.
+
+EXIT STATUS
+     0    command executed successfully
 
 Java EE 6           Last change: 08 Oct 2010                    2
 
 asadmin Utility Subcommands            create-network-listener(1)
-
-EXIT STATUS
-     0    command executed successfully
 
      1    error in executing the command
 

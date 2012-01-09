@@ -52,14 +52,14 @@ OPTIONS
           HTTP_SSL_LISTENER_PORT
                This property specifies the  port  number  of  the
                port  that  is  used to listen for HTTPS requests.
+               Valid  values  are  1-65535.  On  UNIX,   creating
 
 Java EE 6           Last change: 14 Jun 2011                    1
 
 asadmin Utility Subcommands                        copy-config(1)
 
-               Valid values are 1-65535. On UNIX, creating  sock-
-               ets that listen on ports 1-1024 requires superuser
-               privileges.
+               sockets  that  listen  on  ports  1-1024  requires
+               superuser privileges.
 
           IIOP_LISTENER_PORT
                This property specifies the  port  number  of  the
@@ -109,12 +109,12 @@ asadmin Utility Subcommands                        copy-config(1)
                Felix                 Remote                 Shell
                (http://felix.apache.org/site/apache-felix-
                remote-shell.html).  This  shell  uses  the  Felix
+               shell  service  to  interact  with the OSGi module
 
 Java EE 6           Last change: 14 Jun 2011                    2
 
 asadmin Utility Subcommands                        copy-config(1)
 
-               shell  service  to  interact  with the OSGi module
                management subsystem. Valid values are 1-65535. On
                UNIX, creating sockets that listen on ports 1-1024
                requires superuser privileges.
@@ -170,10 +170,8 @@ asadmin Utility Subcommands                        copy-config(1)
 
      o HTTPS listener port
        asadmin> copy-config
-
        --systemproperties HTTP_LISTENER_PORT=2000:HTTP_SSL_LISTENER_PORT=3000
        default-config pmdsaconfig
-
        Command copy-config executed successfully.
 
 EXIT STATUS

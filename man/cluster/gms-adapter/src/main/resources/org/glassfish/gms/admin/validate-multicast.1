@@ -52,12 +52,12 @@ OPTIONS
           32000. The default is 2048.
 
      --multicastaddress
+          The address for the multicast socket on which  the  GMS
 
 Java EE 6           Last change: 10 Feb 2011                    1
 
 asadmin Utility Subcommands                 validate-multicast(1)
 
-          The address for the multicast socket on which  the  GMS
           listens for group events. Specify a class D IP address.
           Class D IP addresses are  in  the  range  224.0.0.0  to
           239.255.255.255,  inclusive.  The  address 224.0.0.0 is
@@ -101,32 +101,27 @@ EXAMPLES
 
      Run from host machine1:
      asadmin> validate-multicast
-
      Will use port 2,048
      Will use address 228.9.3.1
      Will use bind address null
      Will use wait period 2,000 (in milliseconds)
-
      Listening for data...
      Sending message with content "machine1" every 2,000 milliseconds
+     Received data from machine1 (loopback)
+     Received data from machine2
+     Exiting after 20 seconds. To change this timeout, use the --timeout command line option.
 
 Java EE 6           Last change: 10 Feb 2011                    2
 
 asadmin Utility Subcommands                 validate-multicast(1)
 
-     Received data from machine1 (loopback)
-     Received data from machine2
-     Exiting after 20 seconds. To change this timeout, use the --timeout command line option.
      Command validate-multicast executed successfully
-
      Run from host machine2:
      asadmin> validate-multicast
-
      Will use port 2,048
      Will use address 228.9.3.1
      Will use bind address null
      Will use wait period 2,000 (in milliseconds)
-
      Listening for data...
      Sending message with content "machine2" every 2,000 milliseconds
      Received data from machine2 (loopback)

@@ -52,12 +52,12 @@ OPTIONS
           com.sun.grizzly.TCPSelectorHandler.
 
      --displayconfiguration
+          If true, flushes the internal network configuration  to
 
 Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands                   create-transport(1)
 
-          If true, flushes the internal network configuration  to
           the  server log. Useful for debugging, but reduces per-
           formance. The default is false.
 
@@ -132,7 +132,6 @@ EXAMPLES
      The following command creates a transport named  http1-trans
      that uses a non-default number of acceptor threads:
      asadmin> create-transport --acceptorthreads 100 http1-trans
-
      Command create-transport executed successfully.
 
 EXIT STATUS

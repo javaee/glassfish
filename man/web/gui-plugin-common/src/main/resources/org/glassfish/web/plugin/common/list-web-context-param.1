@@ -79,7 +79,6 @@ OPERANDS
           For example, the application.xml  file  for  the  myApp
           application might specify the following web module:
           <module>
-
               <web>
                   <web-uri>myWebModule.war</web-uri>
               </web>
@@ -99,21 +98,19 @@ EXAMPLES
      parameter was set, null is displayed instead of  a  descrip-
      tion for this parameter.
      asadmin> list-web-context-param basic-ezcomp
-
      javax.faces.STATE_SAVING_METHOD = client ignoreDescriptorItem=false
      //The location where the application's state is preserved
      javax.faces.PROJECT_STAGE = null ignoreDescriptorItem=true //null
-
      Command list-web-context-param executed successfully.
-
-Java EE 6           Last change: 30 Oct 2009                    2
-
-asadmin Utility Subcommands             list-web-context-param(1)
 
 EXIT STATUS
      0    command executed successfully
 
      1    error in executing the command
+
+Java EE 6           Last change: 30 Oct 2009                    2
+
+asadmin Utility Subcommands             list-web-context-param(1)
 
 SEE ALSO
      list-applications(1),  set-web-context-param(1),  unset-web-

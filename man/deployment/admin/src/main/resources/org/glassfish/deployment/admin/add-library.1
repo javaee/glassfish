@@ -2,8 +2,8 @@
 asadmin Utility Subcommands                        add-library(1)
 
 NAME
-     add-library - adds one or  more  library  archive  files  to
-     GlassFish Server
+     add-library - adds one or more library JAR files to  GlassF-
+     ish Server
 
 SYNOPSIS
      add-library [--help] [--type={common|ext|app}] [--upload={false|true}]
@@ -31,9 +31,11 @@ DESCRIPTION
 
      Note
 
-     The library archive file is added to the  DAS.  To  add  the
-     libraries  to  other server instances, synchronize them with
-     the DAS by restarting them.
+     The library archive file is added to the DAS. For common and
+     extension  libraries,  you  must  restart  the  DAS  so  the
+     libraries are picked up by the server runtime.  To  add  the
+     libraries   to   other  server  instances,  synchronize  the
+     instances with the DAS by restarting them.
 
      This Note will no longer be valid when the  --target  option
      is implemented.
@@ -51,11 +53,12 @@ OPTIONS
 
           common
                Adds the library files to the Common class  loader
-               directory, domain-dir/lib. This is the default.
 
 Java EE 6           Last change: 16 Nov 2011                    1
 
 asadmin Utility Subcommands                        add-library(1)
+
+               directory, domain-dir/lib. This is the default.
 
           ext  Adds the library files to the Java optional  pack-
                age directory, domain-dir/lib/ext.
@@ -63,9 +66,9 @@ asadmin Utility Subcommands                        add-library(1)
           app  Adds the library files to the application-specific
                class loader directory, domain-dir/lib/applibs.
 
-     For  more  information  about  these  directories,  seeClass
-     Loaders  in  Oracle GlassFish Server Application Development
-     Guide .
+     For more information about  these  directories,  see  "Class
+     Loaders"  in Oracle GlassFish Server Application Development
+     Guide.
 
      --upload
           Specifies whether the subcommand uploads  the  file  to
@@ -104,13 +107,12 @@ asadmin Utility Subcommands                        add-library(1)
           Specifies the  target  to  which  you  are  adding  the
           libraries. Valid values are as follows:
 
-          server
-               Adds the libraries to the default server  instance
-
 Java EE 6           Last change: 16 Nov 2011                    2
 
 asadmin Utility Subcommands                        add-library(1)
 
+          server
+               Adds the libraries to the default server  instance
                server. This is the default.
 
           domain
@@ -128,19 +130,12 @@ OPERANDS
      library-file-path
           The  paths  to  the  archive  files  that  contain  the
           libraries  that  are  to  be  added. You can specify an
-          absolute path, only the file name, or a relative path.
+          absolute path or a relative path.
 
-          o If you specify an absolute path, the archive file can
-            be anywhere.
-
-          o If you specify only the file name, the  archive  file
-            must reside in the domain-dir/config directory on the
-            DAS host. This requirement must be met  even  if  you
-            run the subcommand from another host.
-
-          o If you specify a relative path, the archive file must
-            be  relative  to  the  path  indicated  by the --type
-            option.
+          If the --upload option is set to true, this is the path
+          to  the  file  on  the  local client machine. If the --
+          upload option is set to false, this is the path to  the
+          file on the server machine.
 
 EXAMPLES
      Example 1 Adding Libraries
@@ -149,8 +144,6 @@ EXAMPLES
      to  the  application-specific  class loader directory on the
      default server instance.
      asadmin> add-library --type app /tmp/mylib.jar
-
-     Archive mylib.jar added to lib/applibs on server.
      Command add-library executed successfully.
 
 EXIT STATUS
@@ -161,14 +154,10 @@ EXIT STATUS
 SEE ALSO
      remove-library(1), list-libraries(1)
 
-Java EE 6           Last change: 16 Nov 2011                    3
-
-asadmin Utility Subcommands                        add-library(1)
-
      asadmin(1M)
 
-     Class  Loaders  in  Oracle  GlassFish   Server   Application
+     "Class  Loaders"  in  Oracle  GlassFish  Server  Application
      Development Guide
 
-Java EE 6           Last change: 16 Nov 2011                    4
+Java EE 6           Last change: 16 Nov 2011                    3
 

@@ -52,11 +52,12 @@ OPTIONS
           domain
                Undeploys the component from the domain.
 
+          cluster_name
+
 Java EE 6           Last change: 17 Nov 2010                    1
 
 asadmin Utility Subcommands                           undeploy(1)
 
-          cluster_name
                Undeploys the component from every server instance
                in the cluster.
 
@@ -74,9 +75,9 @@ OPERANDS
           ters plus underscore (_),  dash  (-),  and  period  (.)
           characters. To delete multiple versions, you can use an
           asterisk (*) as a wildcard character. For more informa-
-          tion  about module and application versions, see theMo-
-          dule  and  Application  Versions  in  Oracle  GlassFish
-          Server Application Deployment Guide .
+          tion about module and application versions, see "Module
+          and Application Versions" in  Oracle  GlassFish  Server
+          Application Deployment Guide.
 
 EXAMPLES
      Example 1 Undeploying an Enterprise Application
@@ -84,30 +85,21 @@ EXAMPLES
      This  example  undeploys  an  enterprise  application  named
      Cart.ear.
      asadmin> undeploy Cart
-
      Command undeploy executed successfully.
-
      Example 2 Undeploying an  Enterprise  Bean  With  Container-
      Managed Persistence (CMP)
 
      This example undeploys a CMP bean named myejb and drops  the
      corresponding database tables.
      asadmin> undeploy --droptables=true myejb
-
      Command undeploy executed successfully.
-
      Example 3 Undeploying a Connector (Resource Adapter)
 
      This example undeploys the connector module named jdbcra and
      performs   a  cascading  delete  to  remove  the  associated
      resources and connection pools.
      asadmin> undeploy --cascade=true jdbcra
-
      Command undeploy executed successfully.
-
-Java EE 6           Last change: 17 Nov 2010                    2
-
-asadmin Utility Subcommands                           undeploy(1)
 
 EXIT STATUS
      0    subcommand executed successfully
@@ -116,6 +108,10 @@ EXIT STATUS
 
 SEE ALSO
      deploy(1), redeploy(1), list-components(1)
+
+Java EE 6           Last change: 17 Nov 2010                    2
+
+asadmin Utility Subcommands                           undeploy(1)
 
      asadmin(1M)
 

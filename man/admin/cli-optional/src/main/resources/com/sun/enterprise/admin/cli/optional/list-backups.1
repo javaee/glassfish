@@ -52,11 +52,12 @@ OPERANDS
      domain-name
           Specifies the domain for which backups are listed.
 
+          This operand is optional if only one domain  exists  in
+
 Java EE 6           Last change: 22 Dec 2010                    1
 
 asadmin Utility Subcommands                       list-backups(1)
 
-          This operand is optional if only one domain  exists  in
           the GlassFish Server installation.
 
 EXAMPLES
@@ -65,7 +66,6 @@ EXAMPLES
      This example provides detailed information about backups  in
      the default domain.
      asadmin> list-backups --long
-
      Description               : domain1 backup created on 2010_12_01 by user adminuser
      GlassFish Version         : Oracle GlassFish Server 3.1
      Backup User               : adminuser
@@ -75,7 +75,6 @@ EXAMPLES
      Backup Config Name        :
      Backup Filename (origin)  : /glassfish3/glassfish/domains/domain1/backups/domain1_2010_12_01_v00001.zip
      Domain Directory          : /glassfish3/glassfish/domains/domain1
-
      Description               : domain1 backup created on 2010_12_16 by user adminuser
      GlassFish Version         : Oracle GlassFish Server 3.1
      Backup User               : adminuser
@@ -85,7 +84,6 @@ EXAMPLES
      Backup Config Name        :
      Backup Filename (origin)  : /glassfish3/glassfish/domains/domain1/backups/domain1_2010_12_16_v00001.zip
      Domain Directory          : /glassfish3/glassfish/domains/domain1
-
      Command list-backups executed successfully.
 
 EXIT STATUS

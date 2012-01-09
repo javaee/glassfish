@@ -51,12 +51,13 @@ DESCRIPTION
        undeployed,  full  synchronization  is  not  necessary  to
        update the instance with the change.
 
+     If  different  synchronization  behavior  is  required,  the
+     instance  must  be  stopped and restarted by using following
+
 Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands             restart-local-instance(1)
 
-     If  different  synchronization  behavior  is  required,  the
-     instance  must  be  stopped and restarted by using following
      sequence of subcommands:
 
      1.  stop-local-instance(1)
@@ -84,7 +85,7 @@ OPTIONS
           directory. Otherwise, this option is required.
 
      --debug
-          Specifies whether the instance is restarted  with  Java
+          Specifies whether the instance  is  restarted  withJava
           Platform       Debugger       Architecture       (JPDA)
           (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
           debugging enabled.
@@ -106,11 +107,11 @@ OPTIONS
           Specifies whether  the  instance  is  forcibly  stopped
           immediately before it is restarted.
 
+          Possible values are as follows:
+
 Java EE 6           Last change: 11 Feb 2011                    2
 
 asadmin Utility Subcommands             restart-local-instance(1)
-
-          Possible values are as follows:
 
           true The  instance  is  forcibly  stopped   immediately
                (default).
@@ -148,7 +149,6 @@ EXAMPLES
      This example restarts the  instance  ymlsa1  in  the  domain
      domain1 on the host where the subcommand is run.
      asadmin> restart-local-instance --node localhost-domain1 ymlsa1
-
      Command restart-local-instance executed successfully.
 
 EXIT STATUS
@@ -159,13 +159,12 @@ EXIT STATUS
 SEE ALSO
      create-instance(1),    create-local-instance(1),     delete-
      instance(1),  delete-local-instance(1), restart-instance(1),
+     start-instance(1),      start-local-instance(1),       stop-
+     instance(1), stop-local-instance(1)
 
 Java EE 6           Last change: 11 Feb 2011                    3
 
 asadmin Utility Subcommands             restart-local-instance(1)
-
-     start-instance(1),      start-local-instance(1),       stop-
-     instance(1), stop-local-instance(1)
 
      asadmin(1M)
 

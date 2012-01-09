@@ -52,11 +52,12 @@ OPERANDS
                Creates the properties for all server instances in
                the default domain.
 
+          configuration_name
+
 Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands           create-system-properties(1)
 
-          configuration_name
                Creates the properties in the specified configura-
                tion.
 
@@ -83,7 +84,6 @@ EXAMPLES
      This example creates a system property  associated  with  an
      HTTP listener on a server instance named myserver.
      asadmin> create-system-properties --target myserver http-listener-port=1088
-
      Command create-system-properties executed successfully.
 
 EXIT STATUS

@@ -52,11 +52,11 @@ OPTIONS
 
           o java.lang.Byte
 
+          o java.lang.Character
+
 Java EE 6           Last change: 15 Jun 2011                    1
 
 asadmin Utility Subcommands                  set-web-env-entry(1)
-
-          o java.lang.Character
 
           o java.lang.Double
 
@@ -106,12 +106,13 @@ asadmin Utility Subcommands                  set-web-env-entry(1)
      set-web-env-entry subcommand. Instead,  use  the  unset-web-
      env-entry(1) subcommand for this purpose.
 
+     --description
+          An optional  textual  description  of  the  environment
+
 Java EE 6           Last change: 15 Jun 2011                    2
 
 asadmin Utility Subcommands                  set-web-env-entry(1)
 
-     --description
-          An optional  textual  description  of  the  environment
           entry that is being set.
 
 OPERANDS
@@ -137,7 +138,6 @@ OPERANDS
           For example, the application.xml  file  for  the  myApp
           application might specify the following web module:
           <module>
-
               <web>
                   <web-uri>myWebModule.war</web-uri>
               </web>
@@ -153,27 +153,21 @@ EXAMPLES
      application hello to techscribe. The Java type of this entry
      is java.lang.String.
      asadmin> set-web-env-entry --name="Hello User"
-
      --type=java.lang.String --value=techscribe
      --description="User authentication for Hello appplication" hello
-
      Command set-web-env-entry executed successfully.
-
      Example 2 Ignoring an Environment Entry That Is Defined in a
-
-Java EE 6           Last change: 15 Jun 2011                    3
-
-asadmin Utility Subcommands                  set-web-env-entry(1)
-
      Deployment Descriptor
 
      This example ignores the environment entry Hello Port of the
      web application hello.
      asadmin> set-web-env-entry --name="Hello Port"
-
      --type=java.lang.Integer --ignoredescriptoritem=true hello
-
      Command set-web-env-entry executed successfully.
+
+Java EE 6           Last change: 15 Jun 2011                    3
+
+asadmin Utility Subcommands                  set-web-env-entry(1)
 
 EXIT STATUS
      0    command executed successfully
