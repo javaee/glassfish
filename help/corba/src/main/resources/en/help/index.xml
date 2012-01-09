@@ -1,22 +1,24 @@
 <index version="2.0">
-
- <indexitem text="IIOP listeners">
-    <indexitem target="ref-iioplistenernew" text="creating (reference)"></indexitem>
-    <indexitem target="task-iioplistenernew" text="creating (task)"></indexitem>
-    <indexitem target="task-iioplistenerdelete" text="deleting"></indexitem>
-    <indexitem target="ref-iioplisteneredit" text="editing (reference)"></indexitem>
-    <indexitem target="task-iioplisteneredit" text="editing (task)"></indexitem>
-    <indexitem target="ref-editiiopssl" text="editing SSL settings (reference)"></indexitem>
-    <indexitem target="task-editiiopssl" text="editing SSL settings (task)"></indexitem>
-    <indexitem target="ref-iioplisteners" text="viewing and configuring"></indexitem></indexitem>
- <indexitem text="Object Request Broker (ORB)">
-    <indexitem target="ref-orb" text="configuring (reference)"></indexitem>
-    <indexitem target="task-orb" text="configuring (task)"></indexitem></indexitem>
- <indexitem text="ORB">
-    <indexitem target="ref-orb" text="configuring (reference)"></indexitem>
-    <indexitem target="task-orb" text="configuring (task)"></indexitem></indexitem>
- <indexitem text="SSL settings">
-    <indexitem target="ref-editiiopssl" text="IIOP listeners (reference)"></indexitem>
-    <indexitem target="task-editiiopssl" text="IIOP listeners (task)"></indexitem>
-</indexitem>
+  <indexitem text="IIOP listeners">
+    <indexitem text="creating (reference)" target="ref-iioplistenernew"></indexitem>
+    <indexitem text="creating (task)" target="task-iioplistenernew"></indexitem>
+    <indexitem text="deleting" target="task-iioplistenerdelete"></indexitem>
+    <indexitem text="editing (reference)" target="ref-iioplisteneredit"></indexitem>
+    <indexitem text="editing (task)" target="task-iioplisteneredit"></indexitem>
+    <indexitem text="editing SSL settings (reference)" target="ref-editiiopssl"></indexitem>
+    <indexitem text="editing SSL settings (task)" target="task-editiiopssl"></indexitem>
+    <indexitem text="viewing and configuring" target="ref-iioplisteners"></indexitem>
+  </indexitem>
+  <indexitem text="Object Request Broker (ORB)">
+    <indexitem text="configuring (reference)" target="ref-orb"></indexitem>
+    <indexitem text="configuring (task)" target="task-orb"></indexitem>
+  </indexitem>
+  <indexitem text="ORB">
+    <indexitem text="configuring (reference)" target="ref-orb"></indexitem>
+    <indexitem text="configuring (task)" target="task-orb"></indexitem>
+  </indexitem>
+  <indexitem text="SSL settings">
+    <indexitem text="IIOP listeners (reference)" target="ref-editiiopssl"></indexitem>
+    <indexitem text="IIOP listeners (task)" target="task-editiiopssl"></indexitem>
+  </indexitem>
 </index>

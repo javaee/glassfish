@@ -1,33 +1,36 @@
 <index version="2.0">
-
- <indexitem text="connection pools">
-    <indexitem text="See connector connection pools"></indexitem>
-    <indexitem text="See JDBC connection pools"></indexitem></indexitem>
- <indexitem target="task-setdbaccess" text="databases, setting up access"></indexitem>
- <indexitem text="Java Database Connectivity technology, See JDBC"></indexitem>
- <indexitem text="JDBC connection pools">
-    <indexitem target="task-jdbcconnectionpoolnew" text="creating (task)"></indexitem>
-    <indexitem target="ref-jdbcconnectionpoolnew1" text="creating step 1 (reference)"></indexitem>
-    <indexitem target="ref-jdbcconnectionpoolnew2" text="creating step 2 (reference)"></indexitem>
-    <indexitem target="task-jdbcconnectionpooldelete" text="deleting"></indexitem>
-    <indexitem target="ref-jdbcconnpooladvanceattrtab" text="editing advanced attributes (reference)"></indexitem>
-    <indexitem target="task-jdbcconnectionpooladvance" text="editing advanced attributes (task)"></indexitem>
-    <indexitem target="ref-jdbcconnectionpooledittab" text="editing general settings (reference)"></indexitem>
-    <indexitem target="task-jdbcconnectionpooledit" text="editing general settings (task)"></indexitem>
-    <indexitem target="ref-jdbcconnpoolproptab" text="editing properties (reference)"></indexitem>
-    <indexitem target="task-jdbcconnectionpoolproperty" text="editing properties (task)"></indexitem>
-    <indexitem target="task-verifyconnpoolsettings" text="pinging"></indexitem>
-    <indexitem target="ref-jdbc-properties" text="properties"></indexitem>
-    <indexitem target="task-verifyconnpoolsettings" text="verifying settings"></indexitem>
-    <indexitem target="ref-jdbcconnectionpools" text="viewing and configuring"></indexitem></indexitem>
- <indexitem target="task-integratejdbcdriver" text="JDBC drivers, integrating"></indexitem>
- <indexitem text="JDBC resources">
-    <indexitem target="ref-jdbcresourcenew" text="creating (reference)"></indexitem>
-    <indexitem target="task-jdbcresourcenew" text="creating (task)"></indexitem>
-    <indexitem target="task-jdbcresourcesdelete" text="deleting"></indexitem>
-    <indexitem target="ref-jdbcresourceedit" text="editing (reference)"></indexitem>
-    <indexitem target="task-jdbcresourcesedit" text="editing (task)"></indexitem>
-    <indexitem target="ref-jdbcresources" text="viewing and configuring"></indexitem></indexitem>
- <indexitem target="ref-jdbc" text="JDBC technology"></indexitem>
- <indexitem target="ref-jdbc-properties" text="properties, JDBC connection pools"></indexitem>
+  <indexitem text="databases">
+    <indexitem text="setting up access" target="task-setdbaccess"></indexitem>
+  </indexitem>
+  <indexitem text="JDBC connection pools">
+    <indexitem text="creating (task)" target="task-jdbcconnectionpoolnew"></indexitem>
+    <indexitem text="creating step 1 (reference)" target="ref-jdbcconnectionpoolnew1"></indexitem>
+    <indexitem text="creating step 2 (reference)" target="ref-jdbcconnectionpoolnew2"></indexitem>
+    <indexitem text="deleting" target="task-jdbcconnectionpooldelete"></indexitem>
+    <indexitem text="editing advanced attributes (reference)" target="ref-jdbcconnpooladvanceattrtab"></indexitem>
+    <indexitem text="editing advanced attributes (task)" target="task-jdbcconnectionpooladvance"></indexitem>
+    <indexitem text="editing general settings (reference)" target="ref-jdbcconnectionpooledittab"></indexitem>
+    <indexitem text="editing general settings (task)" target="task-jdbcconnectionpooledit"></indexitem>
+    <indexitem text="editing properties (reference)" target="ref-jdbcconnpoolproptab"></indexitem>
+    <indexitem text="editing properties (task)" target="task-jdbcconnectionpoolproperty"></indexitem>
+    <indexitem text="pinging" target="task-verifyconnpoolsettings"></indexitem>
+    <indexitem text="properties" target="ref-jdbc-properties"></indexitem>
+    <indexitem text="verifying settings" target="task-verifyconnpoolsettings"></indexitem>
+    <indexitem text="viewing and configuring" target="ref-jdbcconnectionpools"></indexitem>
+  </indexitem>
+  <indexitem text="JDBC drivers">
+    <indexitem text="integrating" target="task-integratejdbcdriver"></indexitem>
+  </indexitem>
+  <indexitem text="JDBC resources">
+    <indexitem text="creating (reference)" target="ref-jdbcresourcenew"></indexitem>
+    <indexitem text="creating (task)" target="task-jdbcresourcenew"></indexitem>
+    <indexitem text="deleting" target="task-jdbcresourcesdelete"></indexitem>
+    <indexitem text="editing (reference)" target="ref-jdbcresourceedit"></indexitem>
+    <indexitem text="editing (task)" target="task-jdbcresourcesedit"></indexitem>
+    <indexitem text="viewing and configuring" target="ref-jdbcresources"></indexitem>
+  </indexitem>
+  <indexitem text="JDBC technology" target="ref-jdbc"></indexitem>
+  <indexitem text="properties">
+    <indexitem text="JDBC connection pools" target="ref-jdbc-properties"></indexitem>
+  </indexitem>
 </index>

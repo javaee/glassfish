@@ -7,50 +7,84 @@ Use is subject to License Terms  -->
 
 <h4><a id="sthref71" name="sthref71"></a><a id="sthref72" name="sthref72"></a>JMS Availability</h4>
 <a name="BEGIN" id="BEGIN"></a>
-<p>Use the JMS Availability page to configure availability settings for the Java Message Service (JMS).</p>
+<p>Use the JMS Availability page to configure the Message Queue broker cluster to service the GlassFish Server cluster.</p>
+
+<hr>
+<p><b>Caution:</b></p>
+<p>Before using the JMS Availability page to reconfigure an existing cluster, you must follow the special procedures to migrate to another type of broker cluster, as described in <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSHAG00158">To Migrate Between Types of Embedded or Local Conventional Broker Clusters</a> in<i>Oracle GlassFish Server High Availability Administration Guide</i>. Failing to perform these special procedures could lead to data loss or corruption and even render your setup unusable, depending on the JMS operations performed on the existing cluster.</p>
+
+<hr>
+
 <p>The JMS Availability page contains the following options.</p>
+
+<hr>
+<p><b>Note:</b></p>
+<p>If any instances that use the configuration are running, the JMS Availability page displays a warning, sets all options to read-only, and disables the Save button.</p>
+
+<hr>
+
 <dl>
-<dt>Load Defaults</dt>
+<dt>JMS Service Type</dt>
 <dd>
-<p>Button to restore settings that have default values to their default values. Settings that do not have default values are not changed.</p>
+<p>The type of brokers (called JMS hosts in GlassFish Server) to use in the broker cluster. The type chosen determines what types of broker clusters are available. The broker types are as follows.</p>
+<dl>
+<dt>Embedded</dt>
+<dd>
+<p>Broker configuration and lifecycle are managed by GlassFish Server. Each GlassFish clustered instance is serviced by a broker running in the same JVM as the instance.</p>
+<p>If the JMS Service Type option is set to Embedded, only conventional Message Queue broker clusters are supported. Options to configure the conventional cluster are displayed.</p>
 </dd>
-<dt>Configuration Name</dt>
+<dt>Local</dt>
 <dd>
-<p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
+<p>Broker configuration and lifecycle are managed by GlassFish Server. Each GlassFish clustered instance is serviced by a broker running in a separate JVM on the same host as the instance.</p>
+<p>If the JMS Service Type option is set to Local, both conventional and enhanced (highly available) Message Queue broker clusters are supported. Options to select the cluster type and to configure the cluster are displayed.</p>
 </dd>
-<dt>Availability Service</dt>
+<dt>Remote</dt>
 <dd>
-<p>The type of Message Queue cluster used to provide JMS services to a GlassFish cluster. If the Enabled checkbox is selected, an enhanced Message Queue cluster is used. Otherwise, a conventional Message Queue cluster is used.</p>
-<p>If the Enabled checkbox is selected, the Configuration Store Type and Message Store Type options are ignored.</p>
+<p>Broker and broker cluster configuration and lifecycle are managed using Message Queue administrative tools.</p>
+<p>If the JMS Service Type option is set to Remote, no other options are displayed.</p>
 </dd>
-<dt>Configuration Store Type</dt>
-<dd>
-<p>The type of data store for configuration data in a conventional Message Queue cluster. The value <code>masterbroker</code> specifies the use of a master broker to store and manage the configuration data. The value <code>shareddb</code> specifies the use of a shared database to store the configuration data.</p>
-<p>This option is ignored if Availability Service is enabled.</p>
+</dl>
 </dd>
-<dt>Message Store Type</dt>
+<dt>JMS Cluster Type</dt>
 <dd>
-<p>The type of data store for message data in brokers in a conventional cluster. The value <code>file</code> specifies a file store. The value <code>jdbc</code> specifies a JDBC store.</p>
-<p>This option is ignored if Availability Service is enabled.</p>
+<p>The type of Message Queue broker cluster to use for the GlassFish Server cluster.</p>
+<p>If the JMS Cluster Type option is set to Conventional, the following options are displayed.</p>
+<dl>
+<dt>JMS Configuration Store Type</dt>
+<dd>
+<p>The type of data store to use for the conventional cluster's configuration data. If this option is set to Master Broker, one broker in the cluster is designated as the master broker and the configuration data is stored by it. If this option is set to Shared DB, the configuration data is stored in a JDBC data store accessible to all the brokers. In this case, the database-related options are displayed.</p>
+</dd>
+<dt>JMS Message Store Type</dt>
+<dd>
+<p>The type of data store each broker is to use to store its message data. If this option is set to File, each broker stores its message data in a file-based data store. If this option is set to JDBC, each broker stores its message data in a JDBC data store.</p>
+</dd>
+</dl>
+<p>If the JMS Cluster Type option is set to Enhanced (HA), the database-related options are displayed.</p>
 </dd>
 <dt>Database Vendor</dt>
-<dt>Database User Name</dt>
-<dt>Database Password</dt>
-<dt>Database Access URL</dt>
+<dt>Database URL</dt>
+<dt>Database User</dt>
 <dd>
-<p>The database vendor, user, password, and access url of the JDBC database to use in any of these situations:</p>
+<p>The database vendor, access url, and user of the JDBC database to use in any of these situations:</p>
 <ul>
 <li>
-<p>When Availability Service is enabled</p>
+<p>When the configuration store type of a conventional cluster is set to Shared DB</p>
 </li>
 <li>
-<p>When Configuration Store Type is set to <code>shareddb</code></p>
+<p>When the message store type of a conventional cluster is set to JDBC</p>
 </li>
 <li>
-<p>When Message Store Type is set to <code>jdbc</code></p>
+<p>When the cluster type is set to Enhanced (HA)</p>
 </li>
 </ul>
-<p>For information about supported vendors and the formats of access urls for each vendor, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GMADG00244"><i>JDBC-Based Persistence</i> in <i>Oracle GlassFish Server Message Queue Administration Guide</i></a>.</p>
+<p>For information about supported vendors and the formats of access urls for each vendor, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GMADG00244">JDBC-Based Persistence</a> in <i>Oracle GlassFish Server Message Queue Administration Guide</i>.</p>
+</dd>
+<dt>Database Authentication</dt>
+<dt>Database Password</dt>
+<dt>Password Alias</dt>
+<dd>
+<p>The password information for the JDBC database user specified in Database User.</p>
+<p>If Database Authentication is set to Password, the Database Password option is displayed. If Database Authentication is set to Password Alias, the Password Alias option is displayed.</p>
 </dd>
 <dt>Additional Properties</dt>
 <dd>

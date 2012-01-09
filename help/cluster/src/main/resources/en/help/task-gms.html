@@ -13,7 +13,7 @@ Use is subject to License Terms  -->
 <p>Notifies registered modules in a GlassFish Server instance when one or more member instances are added to or removed from a cluster, or are suspected or confirmed to have failed.</p>
 </li>
 <li>
-<p>Provides the ability to send and receive messages between a group of processes.</p>
+<p>Provides the ability to send and receive messages between cluster members.</p>
 </li>
 </ul>
 <ol>
@@ -28,19 +28,19 @@ Use is subject to License Terms  -->
 <p>The Group Management Service page opens.</p>
 </li>
 <li>
-<p>In the Maximum Missed Heartbeats field, enter the maximum number of monitoring attempts before the GMS confirms that a failure is suspected.</p>
+<p>In the Maximum Missed Heartbeats field, type the maximum number of missed heartbeats from a member before the GMS confirms that a failure is suspected.</p>
 <p>The default is 3.</p>
 </li>
 <li>
-<p>In the Heartbeat Frequency field, enter the period of time between monitoring attempts.</p>
+<p>In the Heartbeat Frequency field, type the period of time between successive broadcasts of a group member's heartbeat.</p>
 <p>The default is 2000 milliseconds.</p>
 </li>
 <li>
-<p>In the Group Discovery Timeout field, enter the amount of time that the GMS waits for discovery of other cluster members.</p>
+<p>In the Group Discovery Timeout field, type the amount of time that the GMS waits for discovery of other cluster members.</p>
 <p>The default is 5000 milliseconds.</p>
 </li>
 <li>
-<p>In the Failure Verification Wait Time field, enter the amount of time after which a suspected failure is marked as verified.</p>
+<p>In the Failure Verification Wait Time field, type the amount of time to wait before verifying that a member that is suspected to have failed should be reported as failed.</p>
 <p>The default is 1500 milliseconds.</p>
 </li>
 <li>

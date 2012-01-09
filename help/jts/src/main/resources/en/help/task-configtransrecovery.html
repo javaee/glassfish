@@ -7,8 +7,8 @@ Use is subject to License Terms  -->
 
 <h4><a id="sthref4" name="sthref4"></a>To Configure How the GlassFish Server Recovers Transactions</h4>
 <a name="BEGIN" id="BEGIN"></a>
-<p>Transactions might be incomplete either because the server crashed or because a resource manager crashed. It is essential to complete these stranded transactions and recover from the failures. GlassFish Server is designed to recover from these failures and complete the transactions upon server startup.</p>
-<p>While performing the recovery, if some of the resources are unreachable, the server restart may be delayed as it tries to recover the transactions.</p>
+<p>Transactions might be incomplete either because the server crashed or because a resource manager crashed between phases of a 2-phase commit. It is essential to complete these stranded transactions and recover from the failures. GlassFish Server is designed to recover from these failures and complete the transactions upon server startup.</p>
+<p>Before performing the recovery, make sure all the resources involved are up and running.</p>
 <p>When the transaction spans across servers, the server that started the transaction can contact the other servers to get the outcome of the transactions. If the other servers are unreachable, the transaction uses the Heuristic Decision field to determine the outcome.</p>
 <ol>
 <li>

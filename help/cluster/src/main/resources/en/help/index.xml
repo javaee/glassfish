@@ -1,270 +1,331 @@
 <index version="2.0">
-
- <indexitem text="applications">
+  <indexitem text="applications">
     <indexitem text="clusters">
-        <indexitem target="task-cluster-app-deploy" text="deploying (task)"></indexitem>
-        <indexitem target="task-cluster-app-enable-disable" text="disabling (task)"></indexitem>
-        <indexitem target="task-cluster-app-lb-enable-disable" text="disabling load balancing (task)"></indexitem>
-        <indexitem target="task-cluster-app-edit" text="editing (task)"></indexitem>
-        <indexitem target="task-cluster-app-enable-disable" text="enabling (task)"></indexitem>
-        <indexitem target="task-cluster-app-lb-enable-disable" text="enabling load balancing (task)"></indexitem>
-        <indexitem target="task-cluster-app-list" text="listing (task)"></indexitem>
-        <indexitem target="task-cluster-app-remove" text="removing (task)"></indexitem>
-        <indexitem target="task-cluster-app-undeploy" text="undeploying (task)"></indexitem></indexitem>
+    <indexitem text="deploying (task)" target="task-cluster-app-deploy"></indexitem>
+    <indexitem text="disabling (task)" target="task-cluster-app-enable-disable"></indexitem>
+    <indexitem text="disabling load balancing (task)" target="task-cluster-app-lb-enable-disable"></indexitem>
+    <indexitem text="editing (task)" target="task-cluster-app-edit"></indexitem>
+    <indexitem text="enabling (task)" target="task-cluster-app-enable-disable"></indexitem>
+    <indexitem text="enabling load balancing (task)" target="task-cluster-app-lb-enable-disable"></indexitem>
+    <indexitem text="listing (task)" target="task-cluster-app-list"></indexitem>
+    <indexitem text="removing (task)" target="task-cluster-app-remove"></indexitem>
+    <indexitem text="undeploying (task)" target="task-cluster-app-undeploy"></indexitem>
+    </indexitem>
     <indexitem text="standalone instances">
-        <indexitem target="task-standalone-instance-app-deploy" text="deploying (task)"></indexitem>
-        <indexitem target="task-standalone-instance-app-enable-disable" text="disabling (task)"></indexitem>
-        <indexitem target="task-standalone-instance-app-lb-enable-disable" text="disabling load balancing (task)"></indexitem>
-        <indexitem target="task-standalone-instance-app-edit" text="editing (task)"></indexitem>
-        <indexitem target="task-standalone-instance-app-enable-disable" text="enabling (task)"></indexitem>
-        <indexitem target="task-standalone-instance-app-lb-enable-disable" text="enabling load balancing (task)"></indexitem>
-        <indexitem target="task-standalone-instance-app-list" text="listing (task)"></indexitem>
-        <indexitem target="task-standalone-instance-app-remove" text="removing (task)"></indexitem>
-        <indexitem target="task-standalone-instance-app-undeploy" text="undeploying (task)"></indexitem></indexitem>
+    <indexitem text="deploying (task)" target="task-standalone-instance-app-deploy"></indexitem>
+    <indexitem text="disabling (task)" target="task-standalone-instance-app-enable-disable"></indexitem>
+    <indexitem text="disabling load balancing (task)" target="task-standalone-instance-app-lb-enable-disable"></indexitem>
+    <indexitem text="editing (task)" target="task-standalone-instance-app-edit"></indexitem>
+    <indexitem text="enabling (task)" target="task-standalone-instance-app-enable-disable"></indexitem>
+    <indexitem text="enabling load balancing (task)" target="task-standalone-instance-app-lb-enable-disable"></indexitem>
+    <indexitem text="listing (task)" target="task-standalone-instance-app-list"></indexitem>
+    <indexitem text="removing (task)" target="task-standalone-instance-app-remove"></indexitem>
+    <indexitem text="undeploying (task)" target="task-standalone-instance-app-undeploy"></indexitem>
+    </indexitem>
     <indexitem text="viewing deployed">
-        <indexitem target="ref-clusterapplications" text="to clusters (reference)"></indexitem>
-        <indexitem target="ref-standaloneinstanceapplications" text="to standalone instances (reference)"></indexitem></indexitem>
+    <indexitem text="to clusters (reference)" target="ref-clusterapplications"></indexitem>
+    <indexitem text="to standalone instances (reference)" target="ref-standaloneinstanceapplications"></indexitem>
+    </indexitem>
     <indexitem text="viewing monitoring data">
-        <indexitem target="task-mon-app-clustered-instance" text="clustered instances (task)"></indexitem>
-        <indexitem target="task-mon-app-standalone-instance" text="standalone instances (task)"></indexitem></indexitem></indexitem>
- <indexitem target="task-availabilityservice" text="availability, clusters (task)"></indexitem>
- <indexitem target="ref-availabilityservice" text="availability service, editing (reference)"></indexitem>
- <indexitem target="task-availabilityservice" text="cluster, disabling availability (task)"></indexitem>
- <indexitem text="clustered instances">
-    <indexitem target="task-mon-app-clustered-instance" text="application monitoring (task)"></indexitem>
-    <indexitem target="ref-clusterinstancenew" text="creating (reference)"></indexitem>
-    <indexitem target="task-create-clustered-instance" text="creating (task)"></indexitem>
-    <indexitem target="task-delete-clustered-instances" text="deleting (task)"></indexitem>
-    <indexitem target="ref-clusterinstances" text="listing (reference)"></indexitem>
-    <indexitem target="ref-clusterinstanceedit" text="managing (reference)"></indexitem>
-    <indexitem target="ref-clusterinstanceproperties" text="properties (reference)"></indexitem>
-    <indexitem target="task-set-props-clustered-instance" text="properties (task)"></indexitem>
-    <indexitem target="task-recovertransactions" text="recovering transactions (task)"></indexitem>
-    <indexitem target="task-mon-resource-clustered-instance" text="resource monitoring (task)"></indexitem>
-    <indexitem target="ref-clusterresources" text="resources (reference)"></indexitem>
-    <indexitem target="task-start-clustered-instances" text="starting (task)"></indexitem>
-    <indexitem target="task-stop-clustered-instances" text="stopping (task)"></indexitem>
-    <indexitem target="ref-clusterinstanceconfigproperties" text="system properties (reference)"></indexitem>
-    <indexitem target="task-change-clustered-instance-ports" text="system properties (task)"></indexitem>
-    <indexitem target="task-view-logs-clustered-instance" text="viewing log files (task)"></indexitem>
-    <indexitem target="task-mon-server-clustered-instance" text="virtual server monitoring (task)"></indexitem></indexitem>
- <indexitem text="clusters">
+    <indexitem text="clustered instances (task)" target="task-mon-app-clustered-instance"></indexitem>
+    <indexitem text="standalone instances (task)" target="task-mon-app-standalone-instance"></indexitem>
+    </indexitem>
+  </indexitem>
+  <indexitem text="availability">
+    <indexitem text="clusters (task)" target="task-availabilityservice"></indexitem>
+  </indexitem>
+  <indexitem text="availability service">
+    <indexitem text="editing (reference)" target="ref-availabilityservice"></indexitem>
+  </indexitem>
+  <indexitem text="cluster">
+    <indexitem text="disabling availability (task)" target="task-availabilityservice"></indexitem>
+  </indexitem>
+  <indexitem text="clustered instances">
+    <indexitem text="application monitoring (task)" target="task-mon-app-clustered-instance"></indexitem>
+    <indexitem text="creating (reference)" target="ref-clusterinstancenew"></indexitem>
+    <indexitem text="creating (task)" target="task-create-clustered-instance"></indexitem>
+    <indexitem text="deleting (task)" target="task-delete-clustered-instances"></indexitem>
+    <indexitem text="listing (reference)" target="ref-clusterinstances"></indexitem>
+    <indexitem text="managing (reference)" target="ref-clusterinstanceedit"></indexitem>
+    <indexitem text="properties (reference)" target="ref-clusterinstanceproperties"></indexitem>
+    <indexitem text="properties (task)" target="task-set-props-clustered-instance"></indexitem>
+    <indexitem text="recovering transactions (task)" target="task-recovertransactions"></indexitem>
+    <indexitem text="resource monitoring (task)" target="task-mon-resource-clustered-instance"></indexitem>
+    <indexitem text="resources (reference)" target="ref-clusterresources"></indexitem>
+    <indexitem text="starting (task)" target="task-start-clustered-instances"></indexitem>
+    <indexitem text="stopping (task)" target="task-stop-clustered-instances"></indexitem>
+    <indexitem text="system properties (reference)" target="ref-clusterinstanceconfigproperties"></indexitem>
+    <indexitem text="system properties (task)" target="task-change-clustered-instance-ports"></indexitem>
+    <indexitem text="viewing log files (task)" target="task-view-logs-clustered-instance"></indexitem>
+    <indexitem text="virtual server monitoring (task)" target="task-mon-server-clustered-instance"></indexitem>
+  </indexitem>
+  <indexitem text="clusters">
     <indexitem text="applications">
-        <indexitem target="task-cluster-app-deploy" text="deploying (task)"></indexitem>
-        <indexitem target="task-cluster-app-enable-disable" text="disabling (task)"></indexitem>
-        <indexitem target="task-cluster-app-lb-enable-disable" text="disabling load balancing (task)"></indexitem>
-        <indexitem target="task-cluster-app-edit" text="editing (task)"></indexitem>
-        <indexitem target="task-cluster-app-enable-disable" text="enabling (task)"></indexitem>
-        <indexitem target="task-cluster-app-lb-enable-disable" text="enabling load balancing (task)"></indexitem>
-        <indexitem target="task-cluster-app-list" text="listing (task)"></indexitem>
-        <indexitem target="task-cluster-app-remove" text="removing (task)"></indexitem>
-        <indexitem target="task-cluster-app-undeploy" text="undeploying (task)"></indexitem></indexitem>
-    <indexitem target="ref-clusterapplications" text="applications (reference)"></indexitem>
+    <indexitem text="deploying (task)" target="task-cluster-app-deploy"></indexitem>
+    <indexitem text="disabling (task)" target="task-cluster-app-enable-disable"></indexitem>
+    <indexitem text="disabling load balancing (task)" target="task-cluster-app-lb-enable-disable"></indexitem>
+    <indexitem text="editing (task)" target="task-cluster-app-edit"></indexitem>
+    <indexitem text="enabling (task)" target="task-cluster-app-enable-disable"></indexitem>
+    <indexitem text="enabling load balancing (task)" target="task-cluster-app-lb-enable-disable"></indexitem>
+    <indexitem text="listing (task)" target="task-cluster-app-list"></indexitem>
+    <indexitem text="removing (task)" target="task-cluster-app-remove"></indexitem>
+    <indexitem text="undeploying (task)" target="task-cluster-app-undeploy"></indexitem>
+    <indexitem text="applications (reference)" target="ref-clusterapplications"></indexitem>
+    </indexitem>
     <indexitem text="configurations">
-        <indexitem target="task-modify-cluster-config" text="modifying (task)"></indexitem></indexitem>
-    <indexitem target="task-availabilityservice" text="configuring availability settings (task)"></indexitem>
-    <indexitem target="ref-clusternew" text="creating (reference)"></indexitem>
-    <indexitem target="task-create-cluster" text="creating (task)"></indexitem>
-    <indexitem target="task-delete-cluster" text="deleting (task)"></indexitem>
-    <indexitem target="task-availabilityservice" text="enabling availability (task)"></indexitem>
-    <indexitem target="ref-clustergeneral" text="general information (reference)"></indexitem>
-    <indexitem target="ref-clusters" text="listing (reference)"></indexitem>
-    <indexitem target="ref-clusterproperties" text="properties (reference)"></indexitem>
+    <indexitem text="modifying (task)" target="task-modify-cluster-config"></indexitem>
+    <indexitem text="configuring availability settings (task)" target="task-availabilityservice"></indexitem>
+    <indexitem text="creating (reference)" target="ref-clusternew"></indexitem>
+    <indexitem text="creating (task)" target="task-create-cluster"></indexitem>
+    <indexitem text="deleting (task)" target="task-delete-cluster"></indexitem>
+    <indexitem text="enabling availability (task)" target="task-availabilityservice"></indexitem>
+    <indexitem text="general information (reference)" target="ref-clustergeneral"></indexitem>
+    <indexitem text="listing (reference)" target="ref-clusters"></indexitem>
+    <indexitem text="properties (reference)" target="ref-clusterproperties"></indexitem>
+    </indexitem>
     <indexitem text="resources">
-        <indexitem target="task-cluster-resource-create" text="creating (task)"></indexitem>
-        <indexitem target="task-cluster-resource-enable-disable" text="disabling (task)"></indexitem>
-        <indexitem target="task-cluster-resource-edit" text="editing (task)"></indexitem>
-        <indexitem target="task-cluster-resource-enable-disable" text="enabling (task)"></indexitem>
-        <indexitem target="task-cluster-resource-display" text="listing (task)"></indexitem></indexitem>
-    <indexitem target="ref-clustergeneral" text="starting (reference)"></indexitem>
-    <indexitem target="task-start-cluster" text="starting (task)"></indexitem>
-    <indexitem target="ref-clustergeneral" text="stopping (reference)"></indexitem>
-    <indexitem target="task-stop-cluster" text="stopping (task)"></indexitem>
-    <indexitem target="ref-clustersystemproperties" text="system properties (reference)"></indexitem></indexitem>
- <indexitem text="configurations">
+    <indexitem text="creating (task)" target="task-cluster-resource-create"></indexitem>
+    <indexitem text="disabling (task)" target="task-cluster-resource-enable-disable"></indexitem>
+    <indexitem text="editing (task)" target="task-cluster-resource-edit"></indexitem>
+    <indexitem text="enabling (task)" target="task-cluster-resource-enable-disable"></indexitem>
+    <indexitem text="listing (task)" target="task-cluster-resource-display"></indexitem>
+    <indexitem text="starting (reference)" target="ref-clustergeneral"></indexitem>
+    <indexitem text="starting (task)" target="task-start-cluster"></indexitem>
+    <indexitem text="stopping (reference)" target="ref-clustergeneral"></indexitem>
+    <indexitem text="stopping (task)" target="task-stop-cluster"></indexitem>
+    <indexitem text="system properties (reference)" target="ref-clustersystemproperties"></indexitem>
+    </indexitem>
+  </indexitem>
+  <indexitem text="configurations">
     <indexitem text="clusters">
-        <indexitem target="task-modify-cluster-config" text="modifying (task)"></indexitem></indexitem></indexitem>
- <indexitem text="creating">
-    <indexitem target="ref-clusterinstancenew" text="clustered instances (reference)"></indexitem>
-    <indexitem target="task-create-clustered-instance" text="clustered instances (tasks)"></indexitem>
-    <indexitem target="ref-standaloneinstancenew" text="standalone instances (reference)"></indexitem>
-    <indexitem target="task-create-standalone-instance" text="standalone instances (tasks)"></indexitem></indexitem>
- <indexitem text="deleting">
-    <indexitem target="task-delete-clustered-instances" text="clustered instances (task)"></indexitem>
-    <indexitem target="task-delete-standalone-instances" text="standalone instances (task)"></indexitem></indexitem>
- <indexitem target="task-upgrade-components" text="deployment, rolling upgrade"></indexitem>
- <indexitem text="EJB timers">
-    <indexitem target="ref-migrateejbtimers" text="migrating (reference)"></indexitem>
-    <indexitem target="task-migrate-ejb-timers" text="migrating (task)"></indexitem></indexitem>
- <indexitem text="GlassFish Server">
-    <indexitem target="task-mon-app-clustered-instance" text="viewing monitoring data for applications (task)"></indexitem><indexitem target="task-mon-app-standalone-instance" text="viewing monitoring data for applications (task)"></indexitem></indexitem>
- <indexitem text="group management service">
-    <indexitem target="ref-clustergeneral" text="configuring for a cluster (reference)"></indexitem>
-    <indexitem target="task-gmscluster" text="configuring for a cluster (task)"></indexitem>
-    <indexitem target="task-gms" text="configuring settings (task)"></indexitem>
-    <indexitem target="task-gmsenable" text="disabling (task)"></indexitem>
-    <indexitem target="ref-gms" text="editing (reference)"></indexitem>
-    <indexitem target="task-gmsenable" text="enabling (task)"></indexitem></indexitem>
- <indexitem text="instances">
-    <indexitem target="ref-clusternew" text="adding to cluster during creation (reference)"></indexitem>
-    <indexitem target="task-create-cluster" text="adding to cluster during creation (task)"></indexitem>
+    <indexitem text="modifying (task)" target="task-modify-cluster-config"></indexitem>
+    </indexitem>
+  </indexitem>
+  <indexitem text="creating">
+    <indexitem text="clustered instances (reference)" target="ref-clusterinstancenew"></indexitem>
+    <indexitem text="clustered instances (tasks)" target="task-create-clustered-instance"></indexitem>
+    <indexitem text="standalone instances (reference)" target="ref-standaloneinstancenew"></indexitem>
+    <indexitem text="standalone instances (tasks)" target="task-create-standalone-instance"></indexitem>
+  </indexitem>
+  <indexitem text="deleting">
+    <indexitem text="clustered instances (task)" target="task-delete-clustered-instances"></indexitem>
+    <indexitem text="standalone instances (task)" target="task-delete-standalone-instances"></indexitem>
+  </indexitem>
+  <indexitem text="deployment">
+    <indexitem text="rolling upgrade" target="task-upgrade-components"></indexitem>
+  </indexitem>
+  <indexitem text="EJB timers">
+    <indexitem text="migrating (reference)" target="ref-migrateejbtimers"></indexitem>
+    <indexitem text="migrating (task)" target="task-migrate-ejb-timers"></indexitem>
+  </indexitem>
+  <indexitem text="GlassFish Server">
+    <indexitem text="viewing monitoring data for applications (task)" target="task-mon-app-clustered-instance"></indexitem>
+    <indexitem text="viewing monitoring data for applications (task)" target="task-mon-app-standalone-instance"></indexitem>
+  </indexitem>
+  <indexitem text="group management service">
+    <indexitem text="configuring for a cluster (reference)" target="ref-clustergeneral"></indexitem>
+    <indexitem text="configuring for a cluster (task)" target="task-gmscluster"></indexitem>
+    <indexitem text="configuring settings (task)" target="task-gms"></indexitem>
+    <indexitem text="disabling (task)" target="task-gmsenable"></indexitem>
+    <indexitem text="editing (reference)" target="ref-gms"></indexitem>
+    <indexitem text="enabling (task)" target="task-gmsenable"></indexitem>
+  </indexitem>
+  <indexitem text="instances">
+    <indexitem text="adding to cluster during creation (reference)" target="ref-clusternew"></indexitem>
+    <indexitem text="adding to cluster during creation (task)" target="task-create-cluster"></indexitem>
     <indexitem text="clustered">
-        <indexitem target="task-mon-app-clustered-instance" text="application monitoring (task)"></indexitem>
-        <indexitem target="ref-clusterinstancenew" text="creating (reference)"></indexitem>
-        <indexitem target="task-create-clustered-instance" text="creating (task)"></indexitem>
-        <indexitem target="task-delete-clustered-instances" text="deleting (task)"></indexitem>
-        <indexitem target="ref-clusterinstances" text="listing (reference)"></indexitem>
-        <indexitem target="ref-clusterinstanceedit" text="managing (reference)"></indexitem>
-        <indexitem target="ref-clusterinstanceproperties" text="properties (reference)"></indexitem>
-        <indexitem target="task-set-props-clustered-instance" text="properties (task)"></indexitem>
-        <indexitem target="task-mon-resource-clustered-instance" text="resource monitoring (task)"></indexitem>
-        <indexitem target="ref-clusterresources" text="resources (reference)"></indexitem>
-        <indexitem target="task-start-clustered-instances" text="starting (task)"></indexitem>
-        <indexitem target="task-stop-clustered-instances" text="stopping (task)"></indexitem>
-        <indexitem target="ref-clusterinstanceconfigproperties" text="system properties (reference)"></indexitem>
-        <indexitem target="task-change-clustered-instance-ports" text="system properties (task)"></indexitem>
-        <indexitem target="task-view-logs-clustered-instance" text="viewing log files (task)"></indexitem>
-        <indexitem target="task-mon-server-clustered-instance" text="virtual server monitoring (task)"></indexitem></indexitem>
+    <indexitem text="application monitoring (task)" target="task-mon-app-clustered-instance"></indexitem>
+    <indexitem text="creating (reference)" target="ref-clusterinstancenew"></indexitem>
+    <indexitem text="creating (task)" target="task-create-clustered-instance"></indexitem>
+    <indexitem text="deleting (task)" target="task-delete-clustered-instances"></indexitem>
+    <indexitem text="listing (reference)" target="ref-clusterinstances"></indexitem>
+    <indexitem text="managing (reference)" target="ref-clusterinstanceedit"></indexitem>
+    <indexitem text="properties (reference)" target="ref-clusterinstanceproperties"></indexitem>
+    <indexitem text="properties (task)" target="task-set-props-clustered-instance"></indexitem>
+    <indexitem text="resource monitoring (task)" target="task-mon-resource-clustered-instance"></indexitem>
+    <indexitem text="resources (reference)" target="ref-clusterresources"></indexitem>
+    <indexitem text="starting (task)" target="task-start-clustered-instances"></indexitem>
+    <indexitem text="stopping (task)" target="task-stop-clustered-instances"></indexitem>
+    <indexitem text="system properties (reference)" target="ref-clusterinstanceconfigproperties"></indexitem>
+    <indexitem text="system properties (task)" target="task-change-clustered-instance-ports"></indexitem>
+    <indexitem text="viewing log files (task)" target="task-view-logs-clustered-instance"></indexitem>
+    <indexitem text="virtual server monitoring (task)" target="task-mon-server-clustered-instance"></indexitem>
+    </indexitem>
     <indexitem text="standalone">
-        <indexitem target="task-mon-app-standalone-instance" text="application monitoring (task)"></indexitem>
-        <indexitem target="ref-standaloneinstancenew" text="creating (reference)"></indexitem>
-        <indexitem target="task-create-standalone-instance" text="creating (task)"></indexitem>
-        <indexitem target="task-delete-standalone-instances" text="deleting (task)"></indexitem>
-        <indexitem target="ref-standaloneinstances" text="listing (reference)"></indexitem>
-        <indexitem target="ref-standaloneinstancegeneral" text="managing (reference)"></indexitem>
-        <indexitem target="ref-standaloneinstanceproperties" text="properties (reference)"></indexitem>
-        <indexitem target="task-set-props-standalone-instance" text="properties (task)"></indexitem>
-        <indexitem target="task-mon-resource-standalone-instance" text="resource monitoring (task)"></indexitem>
-        <indexitem target="ref-standaloneinstanceresources" text="resources (reference)"></indexitem>
-        <indexitem target="task-start-standalone-instances" text="starting (task)"></indexitem>
-        <indexitem target="task-stop-standalone-instances" text="stopping (task)"></indexitem>
-        <indexitem target="ref-standaloneinstanceconfigproperties" text="system properties (reference)"></indexitem>
-        <indexitem target="task-change-standalone-instance-ports" text="system properties (task)"></indexitem>
-        <indexitem target="task-view-logs-standalone-instance" text="viewing log files (task)"></indexitem>
-        <indexitem target="task-mon-server-standalone-instance" text="virtual server monitoring (task)"></indexitem></indexitem></indexitem>
- <indexitem target="ref-standaloneinstances" text="listing, standalone instances (reference)"></indexitem>
- <indexitem text="load balancing">
-    <indexitem target="task-cluster-app-lb-enable-disable" text="clusters"></indexitem>
-    <indexitem target="task-standalone-instance-app-lb-enable-disable" text="standalone instances"></indexitem></indexitem>
- <indexitem text="logging">
-    <indexitem target="task-view-logs-clustered-instance" text="clustered instances (task)"></indexitem>
+    <indexitem text="application monitoring (task)" target="task-mon-app-standalone-instance"></indexitem>
+    <indexitem text="creating (reference)" target="ref-standaloneinstancenew"></indexitem>
+    <indexitem text="creating (task)" target="task-create-standalone-instance"></indexitem>
+    <indexitem text="deleting (task)" target="task-delete-standalone-instances"></indexitem>
+    <indexitem text="listing (reference)" target="ref-standaloneinstances"></indexitem>
+    <indexitem text="managing (reference)" target="ref-standaloneinstancegeneral"></indexitem>
+    <indexitem text="properties (reference)" target="ref-standaloneinstanceproperties"></indexitem>
+    <indexitem text="properties (task)" target="task-set-props-standalone-instance"></indexitem>
+    <indexitem text="resource monitoring (task)" target="task-mon-resource-standalone-instance"></indexitem>
+    <indexitem text="resources (reference)" target="ref-standaloneinstanceresources"></indexitem>
+    <indexitem text="starting (task)" target="task-start-standalone-instances"></indexitem>
+    <indexitem text="stopping (task)" target="task-stop-standalone-instances"></indexitem>
+    <indexitem text="system properties (reference)" target="ref-standaloneinstanceconfigproperties"></indexitem>
+    <indexitem text="system properties (task)" target="task-change-standalone-instance-ports"></indexitem>
+    <indexitem text="viewing log files (task)" target="task-view-logs-standalone-instance"></indexitem>
+    <indexitem text="virtual server monitoring (task)" target="task-mon-server-standalone-instance"></indexitem>
+    </indexitem>
+  </indexitem>
+  <indexitem text="listing">
+    <indexitem text="standalone instances (reference)" target="ref-standaloneinstances"></indexitem>
+  </indexitem>
+  <indexitem text="load balancing">
+    <indexitem text="clusters" target="task-cluster-app-lb-enable-disable"></indexitem>
+    <indexitem text="standalone instances" target="task-standalone-instance-app-lb-enable-disable"></indexitem>
+  </indexitem>
+  <indexitem text="logging">
+    <indexitem text="clustered instances (task)" target="task-view-logs-clustered-instance"></indexitem>
     <indexitem text="instances">
-        <indexitem target="task-view-logs-clustered-instance" text="clustered (task)"></indexitem>
-        <indexitem target="task-view-logs-standalone-instance" text="standalone (task)"></indexitem></indexitem>
-    <indexitem target="task-view-logs-standalone-instance" text="standalone instances (task)"></indexitem></indexitem>
- <indexitem text="managing">
-    <indexitem target="ref-clusterinstanceedit" text="clustered instances (reference)"></indexitem>
-    <indexitem target="ref-standaloneinstancegeneral" text="standalone instances (reference)"></indexitem></indexitem>
- <indexitem text="migrating">
-    <indexitem target="ref-migrateejbtimers" text="EJB timers (reference)"></indexitem>
-    <indexitem target="task-migrate-ejb-timers" text="EJB timers (task)"></indexitem></indexitem>
- <indexitem text="monitoring data">
+    <indexitem text="clustered (task)" target="task-view-logs-clustered-instance"></indexitem>
+    <indexitem text="standalone (task)" target="task-view-logs-standalone-instance"></indexitem>
+    <indexitem text="standalone instances (task)" target="task-view-logs-standalone-instance"></indexitem>
+    </indexitem>
+  </indexitem>
+  <indexitem text="managing">
+    <indexitem text="clustered instances (reference)" target="ref-clusterinstanceedit"></indexitem>
+    <indexitem text="standalone instances (reference)" target="ref-standaloneinstancegeneral"></indexitem>
+  </indexitem>
+  <indexitem text="migrating">
+    <indexitem text="EJB timers (reference)" target="ref-migrateejbtimers"></indexitem>
+    <indexitem text="EJB timers (task)" target="task-migrate-ejb-timers"></indexitem>
+  </indexitem>
+  <indexitem text="monitoring data">
     <indexitem text="viewing for applications">
-        <indexitem target="task-mon-app-clustered-instance" text="clustered instances (task)"></indexitem>
-        <indexitem target="task-mon-app-standalone-instance" text="standalone instances (task)"></indexitem></indexitem>
+    <indexitem text="clustered instances (task)" target="task-mon-app-clustered-instance"></indexitem>
+    <indexitem text="standalone instances (task)" target="task-mon-app-standalone-instance"></indexitem>
+    </indexitem>
     <indexitem text="viewing for resources">
-        <indexitem target="task-mon-resource-clustered-instance" text="clustered instances (task)"></indexitem>
-        <indexitem target="task-mon-resource-standalone-instance" text="standalone instances (task)"></indexitem></indexitem>
+    <indexitem text="clustered instances (task)" target="task-mon-resource-clustered-instance"></indexitem>
+    <indexitem text="standalone instances (task)" target="task-mon-resource-standalone-instance"></indexitem>
+    </indexitem>
     <indexitem text="viewing for virtual servers">
-        <indexitem target="task-mon-server-clustered-instance" text="clustered instances (task)"></indexitem>
-        <indexitem target="task-mon-server-standalone-instance" text="standalone instances (task)"></indexitem></indexitem></indexitem>
- <indexitem text="nodes">
-    <indexitem target="ref-nodenew" text="creating (reference)"></indexitem>
-    <indexitem target="task-createnode" text="creating (task)"></indexitem>
-    <indexitem target="task-deletenode" text="deleting (reference)"></indexitem><indexitem target="ref-nodes" text="deleting (reference)"></indexitem>
-    <indexitem target="ref-nodeedit" text="editing (reference)"></indexitem>
-    <indexitem target="task-editnode" text="editing (task)"></indexitem>
-    <indexitem target="ref-nodes" text="listing (reference)"></indexitem>
-    <indexitem target="task-listnodes" text="listing (task)"></indexitem></indexitem>
- <indexitem text="properties">
-    <indexitem target="ref-clusterinstanceproperties" text="clustered instances (reference)"></indexitem>
-    <indexitem target="task-set-props-clustered-instance" text="clustered instances (task)"></indexitem>
-    <indexitem target="ref-clusterproperties" text="clusters (reference)"></indexitem>
-    <indexitem target="ref-standaloneinstanceproperties" text="standalone instances (reference)"></indexitem>
-    <indexitem target="task-set-props-standalone-instance" text="standalone instances (task)"></indexitem></indexitem>
- <indexitem text="recovering transactions">
-    <indexitem target="task-recovertransactions" text="clustered instances (task)"></indexitem>
-    <indexitem target="task-recovertransactions-standalone-instance" text="standalone instances (task)"></indexitem></indexitem>
- <indexitem target="task-upgrade-components" text="redeployment, rolling upgrade"></indexitem>
- <indexitem text="resources">
-    <indexitem target="ref-clusterresources" text="clustered instances (reference)"></indexitem>
+    <indexitem text="clustered instances (task)" target="task-mon-server-clustered-instance"></indexitem>
+    <indexitem text="standalone instances (task)" target="task-mon-server-standalone-instance"></indexitem>
+    </indexitem>
+  </indexitem>
+  <indexitem text="nodes">
+    <indexitem text="creating (reference)" target="ref-nodenew"></indexitem>
+    <indexitem text="creating (task)" target="task-createnode"></indexitem>
+    <indexitem text="deleting (reference)" target="task-deletenode"></indexitem>
+    <indexitem text="deleting (reference)" target="ref-nodes"></indexitem>
+    <indexitem text="editing (reference)" target="ref-nodeedit"></indexitem>
+    <indexitem text="editing (task)" target="task-editnode"></indexitem>
+    <indexitem text="listing (reference)" target="ref-nodes"></indexitem>
+    <indexitem text="listing (task)" target="task-listnodes"></indexitem>
+    <indexitem text="testing (task)" target="task-pingnode"></indexitem>
+  </indexitem>
+  <indexitem text="properties">
+    <indexitem text="clustered instances (reference)" target="ref-clusterinstanceproperties"></indexitem>
+    <indexitem text="clustered instances (task)" target="task-set-props-clustered-instance"></indexitem>
+    <indexitem text="clusters (reference)" target="ref-clusterproperties"></indexitem>
+    <indexitem text="standalone instances (reference)" target="ref-standaloneinstanceproperties"></indexitem>
+    <indexitem text="standalone instances (task)" target="task-set-props-standalone-instance"></indexitem>
+  </indexitem>
+  <indexitem text="recovering transactions">
+    <indexitem text="clustered instances (task)" target="task-recovertransactions"></indexitem>
+    <indexitem text="standalone instances (task)" target="task-recovertransactions-standalone-instance"></indexitem>
+  </indexitem>
+  <indexitem text="redeployment">
+    <indexitem text="rolling upgrade" target="task-upgrade-components"></indexitem>
+  </indexitem>
+  <indexitem text="resources">
+    <indexitem text="clustered instances (reference)" target="ref-clusterresources"></indexitem>
     <indexitem text="clusters">
-        <indexitem target="task-cluster-resource-create" text="creating (task)"></indexitem>
-        <indexitem target="task-cluster-resource-enable-disable" text="disabling (task)"></indexitem>
-        <indexitem target="task-cluster-resource-edit" text="editing (task)"></indexitem>
-        <indexitem target="task-cluster-resource-enable-disable" text="enabling (task)"></indexitem>
-        <indexitem target="task-cluster-resource-display" text="listing (task)"></indexitem></indexitem>
+    <indexitem text="creating (task)" target="task-cluster-resource-create"></indexitem>
+    <indexitem text="disabling (task)" target="task-cluster-resource-enable-disable"></indexitem>
+    <indexitem text="editing (task)" target="task-cluster-resource-edit"></indexitem>
+    <indexitem text="enabling (task)" target="task-cluster-resource-enable-disable"></indexitem>
+    <indexitem text="listing (task)" target="task-cluster-resource-display"></indexitem>
+    </indexitem>
     <indexitem text="standalone instances">
-        <indexitem target="task-standalone-instance-resource-create" text="creating (task)"></indexitem>
-        <indexitem target="task-standalone-instance-resource-enable-disable" text="disabling (task)"></indexitem>
-        <indexitem target="task-standalone-instance-resource-edit" text="editing (task)"></indexitem>
-        <indexitem target="task-standalone-instance-resource-enable-disable" text="enabling (task)"></indexitem>
-        <indexitem target="task-standalone-instance-resource-display" text="listing (task)"></indexitem></indexitem>
-    <indexitem target="ref-standaloneinstanceresources" text="standalone instances (reference)"></indexitem>
+    <indexitem text="creating (task)" target="task-standalone-instance-resource-create"></indexitem>
+    <indexitem text="disabling (task)" target="task-standalone-instance-resource-enable-disable"></indexitem>
+    <indexitem text="editing (task)" target="task-standalone-instance-resource-edit"></indexitem>
+    <indexitem text="enabling (task)" target="task-standalone-instance-resource-enable-disable"></indexitem>
+    <indexitem text="listing (task)" target="task-standalone-instance-resource-display"></indexitem>
+    <indexitem text="standalone instances (reference)" target="ref-standaloneinstanceresources"></indexitem>
+    </indexitem>
     <indexitem text="viewing monitoring data">
-        <indexitem target="task-mon-resource-clustered-instance" text="clustered instances (task)"></indexitem>
-        <indexitem target="task-mon-resource-standalone-instance" text="standalone instances (task)"></indexitem></indexitem></indexitem>
- <indexitem target="task-upgrade-components" text="rolling upgrade"></indexitem>
- <indexitem text="standalone instances">
-    <indexitem target="task-mon-app-standalone-instance" text="application monitoring (task)"></indexitem>
+    <indexitem text="clustered instances (task)" target="task-mon-resource-clustered-instance"></indexitem>
+    <indexitem text="standalone instances (task)" target="task-mon-resource-standalone-instance"></indexitem>
+    </indexitem>
+  </indexitem>
+  <indexitem text="rolling upgrade" target="task-upgrade-components"></indexitem>
+  <indexitem text="standalone instances">
+    <indexitem text="application monitoring (task)" target="task-mon-app-standalone-instance"></indexitem>
     <indexitem text="applications">
-        <indexitem target="task-standalone-instance-app-deploy" text="deploying (task)"></indexitem>
-        <indexitem target="task-standalone-instance-app-enable-disable" text="disabling (task)"></indexitem>
-        <indexitem target="task-standalone-instance-app-lb-enable-disable" text="disabling load balancing (task)"></indexitem>
-        <indexitem target="task-standalone-instance-app-edit" text="editing (task)"></indexitem>
-        <indexitem target="task-standalone-instance-app-enable-disable" text="enabling (task)"></indexitem>
-        <indexitem target="task-standalone-instance-app-lb-enable-disable" text="enabling load balancing (task)"></indexitem>
-        <indexitem target="task-standalone-instance-app-list" text="listing (task)"></indexitem>
-        <indexitem target="task-standalone-instance-app-remove" text="removing (task)"></indexitem>
-        <indexitem target="task-standalone-instance-app-undeploy" text="undeploying (task)"></indexitem></indexitem>
-    <indexitem target="ref-standaloneinstanceapplications" text="applications (reference)"></indexitem>
-    <indexitem target="ref-standaloneinstancenew" text="creating (reference)"></indexitem>
-    <indexitem target="task-create-standalone-instance" text="creating (task)"></indexitem>
-    <indexitem target="task-delete-standalone-instances" text="deleting (task)"></indexitem>
-    <indexitem target="ref-standaloneinstances" text="listing (reference)"></indexitem>
-    <indexitem target="ref-standaloneinstancegeneral" text="managing (reference)"></indexitem>
-    <indexitem target="ref-standaloneinstanceproperties" text="properties (reference)"></indexitem>
-    <indexitem target="task-set-props-standalone-instance" text="properties (task)"></indexitem>
-    <indexitem target="task-recovertransactions-standalone-instance" text="recovering transactions (task)"></indexitem>
-    <indexitem target="task-mon-resource-standalone-instance" text="resource monitoring (task)"></indexitem>
+    <indexitem text="deploying (task)" target="task-standalone-instance-app-deploy"></indexitem>
+    <indexitem text="disabling (task)" target="task-standalone-instance-app-enable-disable"></indexitem>
+    <indexitem text="disabling load balancing (task)" target="task-standalone-instance-app-lb-enable-disable"></indexitem>
+    <indexitem text="editing (task)" target="task-standalone-instance-app-edit"></indexitem>
+    <indexitem text="enabling (task)" target="task-standalone-instance-app-enable-disable"></indexitem>
+    <indexitem text="enabling load balancing (task)" target="task-standalone-instance-app-lb-enable-disable"></indexitem>
+    <indexitem text="listing (task)" target="task-standalone-instance-app-list"></indexitem>
+    <indexitem text="removing (task)" target="task-standalone-instance-app-remove"></indexitem>
+    <indexitem text="undeploying (task)" target="task-standalone-instance-app-undeploy"></indexitem>
+    <indexitem text="applications (reference)" target="ref-standaloneinstanceapplications"></indexitem>
+    <indexitem text="creating (reference)" target="ref-standaloneinstancenew"></indexitem>
+    <indexitem text="creating (task)" target="task-create-standalone-instance"></indexitem>
+    <indexitem text="deleting (task)" target="task-delete-standalone-instances"></indexitem>
+    <indexitem text="listing (reference)" target="ref-standaloneinstances"></indexitem>
+    <indexitem text="managing (reference)" target="ref-standaloneinstancegeneral"></indexitem>
+    <indexitem text="properties (reference)" target="ref-standaloneinstanceproperties"></indexitem>
+    <indexitem text="properties (task)" target="task-set-props-standalone-instance"></indexitem>
+    <indexitem text="recovering transactions (task)" target="task-recovertransactions-standalone-instance"></indexitem>
+    <indexitem text="resource monitoring (task)" target="task-mon-resource-standalone-instance"></indexitem>
+    </indexitem>
     <indexitem text="resources">
-        <indexitem target="task-standalone-instance-resource-create" text="creating (task)"></indexitem>
-        <indexitem target="task-standalone-instance-resource-enable-disable" text="disabling (task)"></indexitem>
-        <indexitem target="task-standalone-instance-resource-edit" text="editing (task)"></indexitem>
-        <indexitem target="task-standalone-instance-resource-enable-disable" text="enabling (task)"></indexitem>
-        <indexitem target="task-standalone-instance-resource-display" text="listing (task)"></indexitem></indexitem>
-    <indexitem target="ref-standaloneinstanceresources" text="resources (reference)"></indexitem>
-    <indexitem target="task-start-standalone-instances" text="starting (task)"></indexitem>
-    <indexitem target="task-stop-standalone-instances" text="stopping (task)"></indexitem>
-    <indexitem target="ref-standaloneinstanceconfigproperties" text="system properties (reference)"></indexitem>
-    <indexitem target="task-change-standalone-instance-ports" text="system properties (task)"></indexitem>
-    <indexitem target="task-view-logs-standalone-instance" text="viewing log files (task)"></indexitem>
-    <indexitem target="task-mon-server-standalone-instance" text="virtual server monitoring (task)"></indexitem></indexitem>
- <indexitem text="starting">
-    <indexitem target="task-start-clustered-instances" text="clustered instances (tasks)"></indexitem>
-    <indexitem target="task-start-standalone-instances" text="standalone instances (tasks)"></indexitem></indexitem>
- <indexitem text="stopping">
-    <indexitem target="task-stop-clustered-instances" text="clustered instances (tasks)"></indexitem>
-    <indexitem target="task-stop-standalone-instances" text="standalone instances (tasks)"></indexitem></indexitem>
- <indexitem text="system properties">
-    <indexitem target="ref-clusterinstanceconfigproperties" text="clustered instances (reference)"></indexitem>
-    <indexitem target="task-change-clustered-instance-ports" text="clustered instances (task)"></indexitem>
-    <indexitem target="ref-clustersystemproperties" text="clusters (reference)"></indexitem>
-    <indexitem target="ref-standaloneinstanceconfigproperties" text="standalone instances (reference)"></indexitem>
-    <indexitem target="task-change-standalone-instance-ports" text="standalone instances (task)"></indexitem></indexitem>
- <indexitem text="timers">
+    <indexitem text="creating (task)" target="task-standalone-instance-resource-create"></indexitem>
+    <indexitem text="disabling (task)" target="task-standalone-instance-resource-enable-disable"></indexitem>
+    <indexitem text="editing (task)" target="task-standalone-instance-resource-edit"></indexitem>
+    <indexitem text="enabling (task)" target="task-standalone-instance-resource-enable-disable"></indexitem>
+    <indexitem text="listing (task)" target="task-standalone-instance-resource-display"></indexitem>
+    <indexitem text="resources (reference)" target="ref-standaloneinstanceresources"></indexitem>
+    <indexitem text="starting (task)" target="task-start-standalone-instances"></indexitem>
+    <indexitem text="stopping (task)" target="task-stop-standalone-instances"></indexitem>
+    <indexitem text="system properties (reference)" target="ref-standaloneinstanceconfigproperties"></indexitem>
+    <indexitem text="system properties (task)" target="task-change-standalone-instance-ports"></indexitem>
+    <indexitem text="viewing log files (task)" target="task-view-logs-standalone-instance"></indexitem>
+    <indexitem text="virtual server monitoring (task)" target="task-mon-server-standalone-instance"></indexitem>
+    </indexitem>
+  </indexitem>
+  <indexitem text="starting">
+    <indexitem text="clustered instances (tasks)" target="task-start-clustered-instances"></indexitem>
+    <indexitem text="standalone instances (tasks)" target="task-start-standalone-instances"></indexitem>
+  </indexitem>
+  <indexitem text="stopping">
+    <indexitem text="clustered instances (tasks)" target="task-stop-clustered-instances"></indexitem>
+    <indexitem text="standalone instances (tasks)" target="task-stop-standalone-instances"></indexitem>
+  </indexitem>
+  <indexitem text="system properties">
+    <indexitem text="clustered instances (reference)" target="ref-clusterinstanceconfigproperties"></indexitem>
+    <indexitem text="clustered instances (task)" target="task-change-clustered-instance-ports"></indexitem>
+    <indexitem text="clusters (reference)" target="ref-clustersystemproperties"></indexitem>
+    <indexitem text="standalone instances (reference)" target="ref-standaloneinstanceconfigproperties"></indexitem>
+    <indexitem text="standalone instances (task)" target="task-change-standalone-instance-ports"></indexitem>
+  </indexitem>
+  <indexitem text="timers">
     <indexitem text="EJB">
-        <indexitem target="ref-migrateejbtimers" text="migrating (reference)"></indexitem>
-        <indexitem target="task-migrate-ejb-timers" text="migrating (task)"></indexitem></indexitem></indexitem>
- <indexitem text="transactions">
-    <indexitem target="task-recovertransactions" text="clustered instances (task)"></indexitem>
-    <indexitem target="ref-recovertransactions" text="recovering (reference)"></indexitem>
-    <indexitem target="task-recovertransactions-standalone-instance" text="standalone instances (task)"></indexitem></indexitem>
- <indexitem target="task-upgrade-components" text="upgrade, rolling"></indexitem>
- <indexitem text="virtual servers">
+    <indexitem text="migrating (reference)" target="ref-migrateejbtimers"></indexitem>
+    <indexitem text="migrating (task)" target="task-migrate-ejb-timers"></indexitem>
+    </indexitem>
+  </indexitem>
+  <indexitem text="transactions">
+    <indexitem text="clustered instances (task)" target="task-recovertransactions"></indexitem>
+    <indexitem text="recovering (reference)" target="ref-recovertransactions"></indexitem>
+    <indexitem text="standalone instances (task)" target="task-recovertransactions-standalone-instance"></indexitem>
+  </indexitem>
+  <indexitem text="upgrade">
+    <indexitem text="rolling" target="task-upgrade-components"></indexitem>
+  </indexitem>
+  <indexitem text="virtual servers">
     <indexitem text="viewing monitoring data">
-        <indexitem target="task-mon-server-clustered-instance" text="clustered instances (task)"></indexitem>
-        <indexitem target="task-mon-server-standalone-instance" text="standalone instances (task)"></indexitem>
-</indexitem>
-</indexitem>
+    <indexitem text="clustered instances (task)" target="task-mon-server-clustered-instance"></indexitem>
+    <indexitem text="standalone instances (task)" target="task-mon-server-standalone-instance"></indexitem>
+    </indexitem>
+  </indexitem>
 </index>

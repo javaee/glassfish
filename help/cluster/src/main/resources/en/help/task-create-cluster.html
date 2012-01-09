@@ -8,7 +8,7 @@ Use is subject to License Terms  -->
 <h4><a id="sthref2" name="sthref2"></a>To Create a Cluster</h4>
 <a name="BEGIN" id="BEGIN"></a>
 <p>A cluster is a named collection of GlassFish Server instances that share the same applications, resources, and configuration information.</p>
-<p>A cluster to provides high availability through scalability, load balancing, and failure protection. When an instance or a host in a cluster fails, GlassFish Server detects the failure, redirects requests from the failed instance to other instances in the cluster, and recovers the user session state. Because the same applications and resources are on all instances in the cluster, an instance can fail over to any other instance in the cluster.</p>
+<p>A cluster provides high availability through scalability, load balancing, and failure protection. When an instance or a host in a cluster fails, GlassFish Server detects the failure, redirects requests from the failed instance to other instances in the cluster, and recovers the user session state. Because the same applications and resources are on all instances in the cluster, an instance can fail over to any other instance in the cluster.</p>
 <p>GlassFish Server enables you to administer all the instances in a cluster as a single unit from a single host, regardless of whether the instances reside on the same host or different hosts.</p>
 <a id="sthref3" name="sthref3"></a>
 <h5>Before You Begin</h5>
@@ -66,11 +66,11 @@ Use is subject to License Terms  -->
 <li>
 <p>From the Configuration drop-down list, select the named configuration that the cluster will use.</p>
 
-<br />
+<hr>
 <p><b>Note:</b></p>
 <p>If you select <code>default-config</code>, you must specify in the next step that the configuration is <i>not</i> shared. The <code>default-config</code> configuration cannot be shared.</p>
 
-<br />
+<hr>
 
 </li>
 <li>
@@ -89,15 +89,15 @@ Use is subject to License Terms  -->
 <li>
 <p><a id="sthref4" name="sthref4"></a>Add GlassFish Server instances to the cluster.</p>
 
-<br />
+<hr>
 <p><b>Note:</b></p>
 <p>To create an instance on a node of type CONFIG that represents a remote host, you must use the <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00044"><code>create-local-instance</code>(1)</a> subcommand. You cannot use the Administration Console for this purpose.</p>
 
-<br />
+<hr>
 
 <p>You can also add instances after the cluster is created, as described in <a href="task-create-clustered-instance.html">To Add a GlassFish Server Instance to a Cluster</a>.</p>
 <p>Add each instance as follows:</p>
-<ol>
+<ol type="a">
 <li>
 <p>In the Server Instances To Be Created area, click Add.</p>
 <p>A row is added to the table of instances in the cluster.</p>

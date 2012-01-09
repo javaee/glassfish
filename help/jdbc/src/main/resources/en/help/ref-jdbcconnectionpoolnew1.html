@@ -24,7 +24,8 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Introspect</dt>
 <dd>
-<p>If this option is enabled, the database driver is introspected based on data source or driver implementation class names.</p>
+<p>If this option is enabled, the database driver is introspected based on the Resource Type and Database Driver Vendor, and any discovered datasource or driver class names are displayed on the <a href="ref-jdbcconnectionpoolnew2.html">New JDBC Connection Pool (Step 2 of 2)</a> page when you click the Next button.</p>
+<p>For introspection to work, the JDBC driver must be available to GlassFish Server. See <a href="task-integratejdbcdriver.html">To Integrate a JDBC Driver</a>.</p>
 </dd>
 </dl>
 <a id="sthref42" name="sthref42"></a>
@@ -66,6 +67,9 @@ Use is subject to License Terms  -->
 </li>
 <li>
 <p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00088"><code>delete-jdbc-connection-pool</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00135"><code>flush-connection-pool</code>(1)</a></p>
 </li>
 <li>
 <p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00173"><code>list-jdbc-connection-pools</code>(1)</a></p>

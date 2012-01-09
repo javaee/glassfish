@@ -3,17 +3,9 @@
 Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
 
 Use is subject to License Terms  -->
-<a href="#BEGIN">Skip Headers</a>
-<col width="86%" />
-<col width="*" />
-<tr valign="bottom">
-<td align="center"><a href="ref-editcertrealm.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
-<span class="icon">Previous</span></a>&nbsp;
-<td align="center"><a href="ref-ldaprealmprop.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
-<span class="icon">Next</span></a>
 <p><a id="ref-editjdbcrealm" name="ref-editjdbcrealm"></a><a id="GHCOM00102" name="GHCOM00102"></a></p>
 
-<h4><a id="sthref379" name="sthref379"></a><a id="sthref380" name="sthref380"></a>Properties Specific to the <code>JDBCRealm</code> Class</h4>
+<h4><a id="sthref374" name="sthref374"></a><a id="sthref375" name="sthref375"></a>Properties Specific to the <code>JDBCRealm</code> Class</h4>
 <a name="BEGIN" id="BEGIN"></a>
 <p>To protect your web pages or web applications, you can set the security so that only registered users can access them. This is known as the authentication facility. This type of realm involves storing the credentials of your users inside a database. The GlassFish Server uses the database information and the enabled JDBC realm option inside the configuration file.</p>
 <p>The following properties are required for a JDBC realm.</p>
@@ -65,7 +57,7 @@ Use is subject to License Terms  -->
 <dd>
 <p>(Optional) Specifies the digest algorithm. The default is <code>SHA-256</code>. You can use any algorithm supported in the JDK, or none.</p>
 
-<br />
+<hr>
 <p><b>Note:</b></p>
 <p>In versions of GlassFish Server prior to 3.1.2, the default algorithm was <code>MD5</code>. If you have applications that depend on the <code>MD5</code> algorithm, you can override the default <code>SHA-25</code> algorithm by using the <code>asadmin set</code> subcommand:</p>
 <pre>
@@ -77,23 +69,23 @@ asadmin&gt; <b>get server.security-service.property.default-digest-algorithm</b>
 </pre>
 <p>Also note that, to maintain backward compatibility, if an upgrade is performed from GlassFish Server v2.<i>x</i> or v3.0.<i>x</i> to GlassFish Server 3.1.2, the default algorithm is automatically set to <code>MD5</code> in cases where the digest algorithm had not been explicitly set in the older GlassFish Server version.</p>
 
-<br />
+<hr>
 
 </dd>
-<dt>Password Encryption Alogrithm</dt>
-<dd>
-<p>The encoding. Allowed values are <code>Hex</code> and <code>Base64</code>. If <code>digest-algorithm</code> is specified, the default is <code>Hex</code>. If <code>digest-algorithm</code> is not specified, by default no encoding is specified.</p>
-</dd>
-<dt>Encoding</dt>
+<dt>Password Encryption Algorithm</dt>
 <dd>
 <p>The algorithm for encrypting passwords stored in the database.</p>
 
-<br />
+<hr>
 <p><b>Note:</b></p>
 <p>It is a security risk not to specify a password encryption algorithm.</p>
 
-<br />
+<hr>
 
+</dd>
+<dt>Encoding</dt>
+<dd>
+<p>The encoding. Allowed values are <code>Hex</code> and <code>Base64</code>. If <code>digest-algorithm</code> is specified, the default is <code>Hex</code>. If <code>digest-algorithm</code> is not specified, by default no encoding is specified.</p>
 </dd>
 <dt>Charset</dt>
 <dd>

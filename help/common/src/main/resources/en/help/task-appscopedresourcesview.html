@@ -3,22 +3,52 @@
 Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
 
 Use is subject to License Terms  -->
-<p><a id="task-applistdeployed" name="task-applistdeployed"></a><a id="GHCOM00155" name="GHCOM00155"></a></p>
+<p><a id="task-appscopedresourcesview" name="task-appscopedresourcesview"></a></p>
 
-<h4><a id="sthref53" name="sthref53"></a>To View a List of Deployed Applications</h4>
+<h4>To View Application Scoped Resources</h4>
 <a name="BEGIN" id="BEGIN"></a>
 <ol>
 <li>
 <p>In the navigation tree, select the Applications node.</p>
-<p>The Applications page opens. The table lists deployed applications.</p>
+<p>The Applications page opens.</p>
 </li>
 <li>
-<p>Select a module type from the Filter drop-down list to filter the application list by module type.</p>
+<p>Select an application for which you want to view the application-scoped resources.</p>
+<p>The application name can include an optional version identifier, which follows the name and is separated from the name by a colon (<code>:</code>). For more information about module and application versions, see the <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSDPG00324"><i>Module and Application Versions</i> in <i>Oracle GlassFish Server Application Deployment Guide</i></a>.</p>
+<p>The page for the application opens.</p>
+</li>
+<li>
+<p>Select the Resources tab.</p>
+<p>The Application Scoped Resources page opens, and the resources currently specified for the application appear in a table with the following columns:</p>
+<dl>
+<dt>Application Name</dt>
+<dd>
+<p>The name of the application.</p>
+</dd>
+<dt>Module Name</dt>
+<dd>
+<p>The name of the module within the application.</p>
+</dd>
+<dt>Resource Name</dt>
+<dd>
+<p>The name of the application-scoped resource for the application or module.</p>
+</dd>
+<dt>Resource Type</dt>
+<dd>
+<p>The resource type, for example JDBC Connection Pools or Connector Resources.</p>
+</dd>
+</dl>
 </li>
 </ol>
-<a id="sthref54" name="sthref54"></a>
+<a id="sthref103" name="sthref103"></a>
 <h5>See Also</h5>
 <ul>
+<li>
+<p><a href="task-appscopedresourcesedit.html">To Modify Application Scoped Resources</a></p>
+</li>
+<li>
+<p><a href="task-applistdeployed.html">To View a List of Deployed Applications</a></p>
+</li>
 <li>
 <p><a href="task-appdeployweb.html">To Deploy a Web Application</a></p>
 </li>
@@ -41,9 +71,6 @@ Use is subject to License Terms  -->
 <p><a href="task-appviewdesc.html">To View Descriptors of an Application</a></p>
 </li>
 <li>
-<p><a href="task-appviewtargets.html">To View Application Targets</a></p>
-</li>
-<li>
 <p><a href="task-endpoint.html">To View Endpoint Information for a Web Service</a></p>
 </li>
 <li>
@@ -60,12 +87,6 @@ Use is subject to License Terms  -->
 </li>
 <li>
 <p><a href="task-apprestart.html">To Reload a Deployed Application</a></p>
-</li>
-<li>
-<p><a href="task-appscopedresourcesview.html">To View Application Scoped Resources</a></p>
-</li>
-<li>
-<p><a href="task-appscopedresourcesedit.html">To Modify Application Scoped Resources</a></p>
 </li>
 </ul>
 

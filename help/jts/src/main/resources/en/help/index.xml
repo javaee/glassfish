@@ -1,16 +1,22 @@
 <index version="2.0">
-
- <indexitem target="task-setkeyptinterval" text="keypoint interval, setting"></indexitem>
- <indexitem target="task-settranslog" text="logging, transactions"></indexitem>
- <indexitem target="ref-transactionsvcproperties" text="properties, transaction service"></indexitem>
- <indexitem text="transaction service">
-    <indexitem target="ref-transactionservice" text="configuring (reference)"></indexitem>
-    <indexitem target="task-configtransservice" text="configuring (task)"></indexitem>
-    <indexitem target="ref-transactionsvcproperties" text="properties"></indexitem></indexitem>
- <indexitem text="transactions">
-    <indexitem target="task-configtransrecovery" text="configuring recovery"></indexitem>
-    <indexitem target="task-setkeyptinterval" text="setting log file compression interval"></indexitem>
-    <indexitem target="task-settranslog" text="setting log location"></indexitem>
-    <indexitem target="task-settranstimeout" text="setting timeouts"></indexitem>
-</indexitem>
+  <indexitem text="keypoint interval">
+    <indexitem text="setting" target="task-setkeyptinterval"></indexitem>
+  </indexitem>
+  <indexitem text="logging">
+    <indexitem text="transactions" target="task-settranslog"></indexitem>
+  </indexitem>
+  <indexitem text="properties">
+    <indexitem text="transaction service" target="ref-transactionsvcproperties"></indexitem>
+  </indexitem>
+  <indexitem text="transaction service">
+    <indexitem text="configuring (reference)" target="ref-transactionservice"></indexitem>
+    <indexitem text="configuring (task)" target="task-configtransservice"></indexitem>
+    <indexitem text="properties" target="ref-transactionsvcproperties"></indexitem>
+  </indexitem>
+  <indexitem text="transactions">
+    <indexitem text="configuring recovery" target="task-configtransrecovery"></indexitem>
+    <indexitem text="setting log file compression interval" target="task-setkeyptinterval"></indexitem>
+    <indexitem text="setting log location" target="task-settranslog"></indexitem>
+    <indexitem text="setting timeouts" target="task-settranstimeout"></indexitem>
+  </indexitem>
 </index>

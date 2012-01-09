@@ -5,11 +5,11 @@ Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 <p><a id="ref-jmsservice" name="ref-jmsservice"></a><a id="GHJMS00010" name="GHJMS00010"></a></p>
 
-<h4><a id="sthref74" name="sthref74"></a>JMS Service</h4>
+<h4><a id="sthref74" name="sthref74"></a>Java Message Service</h4>
 <a name="BEGIN" id="BEGIN"></a>
-<p>Use the JMS Service page to configure settings to be used by all JMS connections.</p>
+<p>Use the Java Message Service page to configure settings to be used by the default JMS provider, GlassFish Server Message Queue.</p>
 <p>For more information about configuring the JMS service, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSDVG00020">Chapter 19, <i>Using the Java Message Service,</i> in <i>Oracle GlassFish Server Application Development Guide</i></a>.</p>
-<p>The JMS Service page contains the following options.</p>
+<p>The Java Message Service page contains the following options.</p>
 <dl>
 <dt>Load Defaults</dt>
 <dd>
@@ -49,7 +49,7 @@ Use is subject to License Terms  -->
 <dd>
 <p>Arguments to customize the JMS service startup. Use any arguments available through the <i>as-install-parent</i><code>/mq/bin/imqbrokerd</code> command.</p>
 </dd>
-<dt>Reconnect Enabled</dt>
+<dt>Reconnect</dt>
 <dd>
 <p>If the Reconnect Enabled checkbox is selected, the JMS service attempts to reconnect to a message server (or the list of addresses in the AddressList) when a connection is lost. This option is enabled by default.</p>
 </dd>
@@ -64,6 +64,11 @@ Use is subject to License Terms  -->
 <dt>Default JMS Host</dt>
 <dd>
 <p>The name of the default JMS host. The default value is <code>default_JMS_host</code>.</p>
+</dd>
+<dt>Master Broker</dt>
+<dd>
+<p>The name of the GlassFish Server clustered instance whose associated Message Queue broker is to be used as the master broker in the Message Queue broker cluster. Leave this field blank to enable GlassFish Server to designate a master broker automatically.</p>
+<p>If you change this value, you must restart the GlassFish Server cluster that uses the configuration.</p>
 </dd>
 <dt>Address List Behavior</dt>
 <dd>

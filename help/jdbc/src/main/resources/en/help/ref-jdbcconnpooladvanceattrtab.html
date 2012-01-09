@@ -104,11 +104,11 @@ Use is subject to License Terms  -->
 <dd>
 <p>The GlassFish Server validates a connection by calling the <code>con.getAutoCommit</code> or <code>con.getMetaData</code> method.</p>
 
-<br />
+<hr>
 <p><b>Note:</b></p>
 <p>Many JDBC drivers cache the results of these calls. As a result, using these calls might not always provide reliable validations. Check with the driver vendor to determine whether these calls are cached or not.</p>
 
-<br />
+<hr>
 
 </dd>
 <dt><code>custom-validation</code></dt>
@@ -177,6 +177,9 @@ Use is subject to License Terms  -->
 </li>
 <li>
 <p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00088"><code>delete-jdbc-connection-pool</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00135"><code>flush-connection-pool</code>(1)</a></p>
 </li>
 <li>
 <p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00173"><code>list-jdbc-connection-pools</code>(1)</a></p>

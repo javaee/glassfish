@@ -1,30 +1,32 @@
 <index version="2.0">
-
- <indexitem text="availability">
-    <indexitem target="ref-ejbcontaineravailability" text="EJB container (reference)"></indexitem>
-    <indexitem target="task-ejbcontaineravailability" text="EJB container (task)"></indexitem></indexitem>
- <indexitem text="containers, See EJB container"></indexitem>
- <indexitem text="EJB container">
-    <indexitem target="ref-ejbcontaineravailability" text="configuring availability settings (reference)"></indexitem>
-    <indexitem target="task-ejbcontaineravailability" text="configuring availability settings (task)"></indexitem>
-    <indexitem target="ref-ejbtimerservice" text="configuring EJB timer service (reference)"></indexitem>
-    <indexitem target="task-ejbtimerservice" text="configuring EJB timer service (task)"></indexitem>
-    <indexitem target="ref-ejbmdbpoolsettings" text="configuring MDB pool settings (reference)"></indexitem>
-    <indexitem target="task-ejbmdbpoolsettings" text="configuring MDB pool settings (task)"></indexitem>
-    <indexitem target="task-ejbcontaineravailability" text="disabling availability (task)"></indexitem>
-    <indexitem target="task-ejbcontaineravailability" text="enabling availability (task)"></indexitem></indexitem>
- <indexitem text="EJB timer service">
-    <indexitem target="ref-ejbtimerservice" text="configuring (reference)"></indexitem>
-    <indexitem target="task-ejbtimerservice" text="configuring (task)"></indexitem></indexitem>
- <indexitem text="Enterprise JavaBeans (EJB) components, See EJB"></indexitem>
- <indexitem text="JMS">
-    <indexitem target="ref-ejbmdbpoolsettings" text="configuring MDB pool settings (reference)"></indexitem>
-    <indexitem target="task-ejbmdbpoolsettings" text="configuring MDB pool settings (task)"></indexitem></indexitem>
- <indexitem text="MDB pool settings">
-    <indexitem target="ref-ejbmdbpoolsettings" text="configuring (reference)"></indexitem>
-    <indexitem target="task-ejbmdbpoolsettings" text="configuring (task)"></indexitem></indexitem>
- <indexitem text="timer service">
-    <indexitem target="ref-ejbtimerservice" text="configuring (reference)"></indexitem>
-    <indexitem target="task-ejbtimerservice" text="configuring (task)"></indexitem>
-</indexitem>
+  <indexitem text="availability">
+    <indexitem text="EJB container (reference)" target="ref-ejbcontaineravailability"></indexitem>
+    <indexitem text="EJB container (task)" target="task-ejbcontaineravailability"></indexitem>
+  </indexitem>
+  <indexitem text="EJB container">
+    <indexitem text="configuring availability settings (reference)" target="ref-ejbcontaineravailability"></indexitem>
+    <indexitem text="configuring availability settings (task)" target="task-ejbcontaineravailability"></indexitem>
+    <indexitem text="configuring EJB timer service (reference)" target="ref-ejbtimerservice"></indexitem>
+    <indexitem text="configuring EJB timer service (task)" target="task-ejbtimerservice"></indexitem>
+    <indexitem text="configuring MDB pool settings (reference)" target="ref-ejbmdbpoolsettings"></indexitem>
+    <indexitem text="configuring MDB pool settings (task)" target="task-ejbmdbpoolsettings"></indexitem>
+    <indexitem text="disabling availability (task)" target="task-ejbcontaineravailability"></indexitem>
+    <indexitem text="enabling availability (task)" target="task-ejbcontaineravailability"></indexitem>
+  </indexitem>
+  <indexitem text="EJB timer service">
+    <indexitem text="configuring (reference)" target="ref-ejbtimerservice"></indexitem>
+    <indexitem text="configuring (task)" target="task-ejbtimerservice"></indexitem>
+  </indexitem>
+  <indexitem text="JMS">
+    <indexitem text="configuring MDB pool settings (reference)" target="ref-ejbmdbpoolsettings"></indexitem>
+    <indexitem text="configuring MDB pool settings (task)" target="task-ejbmdbpoolsettings"></indexitem>
+  </indexitem>
+  <indexitem text="MDB pool settings">
+    <indexitem text="configuring (reference)" target="ref-ejbmdbpoolsettings"></indexitem>
+    <indexitem text="configuring (task)" target="task-ejbmdbpoolsettings"></indexitem>
+  </indexitem>
+  <indexitem text="timer service">
+    <indexitem text="configuring (reference)" target="ref-ejbtimerservice"></indexitem>
+    <indexitem text="configuring (task)" target="task-ejbtimerservice"></indexitem>
+  </indexitem>
 </index>

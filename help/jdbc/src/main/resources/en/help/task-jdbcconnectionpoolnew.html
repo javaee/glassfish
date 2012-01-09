@@ -35,11 +35,11 @@ Use is subject to License Terms  -->
 <p>On the Common Tasks page, click the Create New JDBC Connection Pool button.</p>
 <p>The New JDBC Connection Pool (Step 1 of 2) page opens.</p>
 
-<br />
+<hr>
 <p><b>Note:</b></p>
 <p>You can also access the New JDBC Connection Pool page by expanding the Resources node and the JDBC node, and selecting the Connection Pools node. Then from the Connection Pools page, click New to create a new connection pool.</p>
 
-<br />
+<hr>
 
 </li>
 <li>
@@ -52,7 +52,7 @@ Use is subject to License Terms  -->
 </li>
 <li>
 <p>Specify a database vendor:</p>
-<ol>
+<ol type="a">
 <li>
 <p>From the Database Driver Vendor drop-down list, select a database vendor.</p>
 </li>
@@ -62,7 +62,8 @@ Use is subject to License Terms  -->
 </ol>
 </li>
 <li>
-<p>Select the Introspect Enabled check box to introspect the database driver based on data source or driver implementation class names.</p>
+<p>Select the Introspect Enabled check box to introspect the database driver based on the Resource Type and Database Driver Vendor.</p>
+<p>For introspection to work, the JDBC driver must be available to GlassFish Server. See <a href="task-integratejdbcdriver.html">To Integrate a JDBC Driver</a>.</p>
 </li>
 <li>
 <p>Click Next.</p>
@@ -70,11 +71,11 @@ Use is subject to License Terms  -->
 </li>
 <li>
 <p>In the Datasource Classname field, type the name of the vendor-specific class that implements the <code>DataSource</code>, <code>ConnectionPoolDataSource</code>, or <code>XADataSource</code> API.</p>
-<p>If you selected one of the datasource resource types, this field is usually filled in automatically with the class name associated with the resource type and database vendor you chose. If you selected the <code>java.sql.Driver</code> resource type, this field is disabled.</p>
+<p>If you selected Introspect Enabled and one of the datasource resource types, this field is filled in automatically with the class name associated with the resource type and database vendor you chose. If you selected the <code>java.sql.Driver</code> resource type, this field is disabled.</p>
 </li>
 <li>
 <p>In the Driver Classname field, type the name of the vendor-specific class that implements the <code>java.sql.Driver</code> API.</p>
-<p>If you selected the <code>java.sql.Driver</code> resource type, this field is usually filled in automatically with the class name associated with the driver and database vendor you chose. If you selected one of the datasource resource types, this field is disabled.</p>
+<p>If you selected Introspect Enabled or the <code>java.sql.Driver</code> resource type, this field is filled in automatically with the class name associated with the driver and database vendor you chose. If you selected one of the datasource resource types, this field is disabled.</p>
 </li>
 <li>
 <p>Select the Ping Enabled checkbox to automatically ping the pool during pool creation or reconfiguration to identify and warn of any erroneous attribute values.</p>

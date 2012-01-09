@@ -42,7 +42,7 @@
         <tocitem target="ref-jmsavailability" text="JMS Availability" expand="false"></tocitem>
       </tocitem>
       <tocitem target="ref-group-jmsservice" text="Java Message Service" expand="false">
-        <tocitem target="ref-jmsservice" text="JMS Service" expand="false"></tocitem>
+        <tocitem target="ref-jmsservice" text="Java Message Service" expand="false"></tocitem>
         <tocitem target="ref-mqschemeservice" text="MQ Scheme and MQ Service Address Syntax" expand="false"></tocitem>
         <tocitem target="ref-jmsservice-additional-props" text="Properties Specific to the JMS Service" expand="false"></tocitem>
         <tocitem target="ref-group-jmshosts" text="JMS Hosts" expand="false">

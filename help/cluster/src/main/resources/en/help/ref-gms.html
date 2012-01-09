@@ -14,7 +14,7 @@ Use is subject to License Terms  -->
 <p>Notifies registered modules in a GlassFish Server instance when one or more member instances are added to or removed from a cluster, or are suspected or confirmed to have failed.</p>
 </li>
 <li>
-<p>Provides the ability to send and receive messages between a group of processes.</p>
+<p>Provides the ability to send and receive messages between cluster members.</p>
 </li>
 </ul>
 <p>The Group Management Service page contains the following options.</p>
@@ -29,11 +29,11 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Maximum Missed Heartbeats</dt>
 <dd>
-<p>The number of monitoring attempts after which a server instance failure is suspected. The default is 3.</p>
+<p>The number of missed heartbeats from a member after which a server instance failure is suspected. The default is 3.</p>
 </dd>
 <dt>Heartbeat Frequency</dt>
 <dd>
-<p>The period of time between monitoring attempts. The default is 2000 milliseconds.</p>
+<p>The period of time between missed heartbeats from a member. The default is 2000 milliseconds.</p>
 </dd>
 <dt>Group Discovery Timeout</dt>
 <dd>
@@ -41,7 +41,7 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Failure Verification Wait Time</dt>
 <dd>
-<p>The amount of time after which a suspected failure is marked as verified. The default is 1500 milliseconds.</p>
+<p>The amount of time to wait before verifying that a member that is suspected to have failed should be reported as failed. The default is 1500 milliseconds.</p>
 </dd>
 <dt>Additional Properties</dt>
 <dd>

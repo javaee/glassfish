@@ -37,12 +37,41 @@ Use is subject to License Terms  -->
 </dl>
 <p>GlassFish Server defines the following cluster properties:</p>
 <dl>
+<dt><code>GMS_DISCOVERY_URI_LIST</code></dt>
+<dd>
+<p>The locations of GlassFish Server instances in the cluster to use for discovering the cluster. This property is required only if the Group Management Service (GMS) is not using multicast for broadcasting messages.</p>
+<p>Valid values for this property are as follows:</p>
+<ul>
+<li>
+<p>A comma-separated list of uniform resource identifiers (URIs). Each URI must locate a GlassFish Server instance or the DAS. This format is required if multiple GlassFish Server instances are running on the same host.</p>
+<p>The format of each URI in the list is as follows:</p>
+<p><i>scheme</i><code>://</code><i>host-name-or -IP-address</i><code>:</code><i>port</i></p>
+<ul>
+<li>
+<p><i>scheme</i> is the URI scheme, which is <code>tcp</code>.</p>
+</li>
+<li>
+<p><i>host-name-or -IP-address</i> is the host name or IP address of the host on which the instance is running.</p>
+</li>
+<li>
+<p><i>port</i> is the port number of the port on which the instance listens for messages from GMS. The system property <code>GMS_LISTENER_PORT-</code><i>clustername</i> must be set for the instance. For information about how to set this system property for an instance, see "<a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSHAG00373">Discovering a Cluster When Multicast Transport Is Unavailable</a>" in <i>Oracle GlassFish Server High Availability Administration Guide</i>.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>A comma-separated list of IP addresses or host names on which the DAS or the instances are running. The list can contain a mixture of IP addresses and host names. This format can be used only if one clustered instance is running on each host. The value of the <code>GMS_LISTENER_PORT</code> property must be unique for each cluster in a domain.</p>
+</li>
+<li>
+<p>The keyword <code>generate</code>. This format can be used only if one instance in a cluster is running on each host and the DAS is running on a separate host. Multiple instances on the same host cannot be members of the same cluster. The value of the <code>GMS_LISTENER_PORT</code> property must be unique for each cluster in a domain.</p>
+</li>
+</ul>
+</dd>
 <dt><code>GMS_LISTENER_PORT</code></dt>
 <dd>
-<p>The port number of the port on which the cluster listens for messages from the Group Management Service (GMS).</p>
-<p>The default value is <code>${GMS_LISTENER_PORT-</code><i>cluster-name</i><code>}</code>. In most situations, this default value should suffice.</p>
+<p>The port number of the port on which the cluster listens for messages from GMS.</p>
+<p>The default value is a reference to the <code>GMS_LISTENER_PORT-</code><i>cluster-name</i> system property. By default, this system property is not set. In this situation, GMS selects a free port from the range that is defined by the properties <code>GMS_TCPSTARTPORT</code> and <code>GMS_TCPENDPORT</code>. By default, this range is 9090-9200. In most situations, the default behavior should suffice.</p>
 <p>However, if GMS is <b>not</b> using multicast for broadcasting messages, this property must specify a port number that is valid for all GlassFish Server instances in the cluster. To use the default value to meet this requirement, use a system property to set the port number individually for each instance.</p>
-<p>For example, use the <a href="ref-clustersystemproperties.html">Cluster System Properties</a> page to create the system property <code>GMS_LISTENER_PORT-</code><i>cluster-name</i>. Then, for each instance in the cluster, set the <code>GMS_LISTENER_PORT-</code><i>cluster-name</i> system property to the port number on which the instance listens for messages from GMS. The default value of the <code>GMS_LISTENER_PORT</code> property for the cluster references this system property.</p>
+<p>For example, use the <a href="ref-clustersystemproperties.html">Cluster System Properties</a> page to create the system property <code>GMS_LISTENER_PORT-</code><i>cluster-name</i> for the DAS. Then, for each instance in the cluster, set the <code>GMS_LISTENER_PORT-</code><i>cluster-name</i> system property to the port number on which the instance listens for messages from GMS. The default value of the <code>GMS_LISTENER_PORT</code> property for the cluster references this system property.</p>
 </dd>
 <dt><code>GMS_LOOPBACK</code></dt>
 <dd>
@@ -78,34 +107,13 @@ Use is subject to License Terms  -->
 <p>A value of 1 might prevent the broadcast of messages between hosts on same subnet that are connected by a switch or a router.</p>
 <p>The default is 4, which ensures that messages are successfully broadcast to all cluster members in networks where hosts are connected by switches or routers.</p>
 </dd>
-<dt><code>GMS_DISCOVERY_URI_LIST</code></dt>
+<dt><code>GMS_TCPENDPORT</code></dt>
 <dd>
-<p>The locations of the GlassFish Server instances to which GMS is to send group events. This property is required only if GMS is not using multicast for broadcasting messages.</p>
-<p>Valid values for this property are as follows:</p>
-<ul>
-<li>
-<p>A comma-separated list of uniform resource identifiers (URIs). Each URI must locate a GlassFish Server instance. This format is required if multiple GlassFish Server instances are running on the same host.</p>
-<p>The format of each URI in the list is as follows:</p>
-<p><i>scheme</i><code>://</code><i>host-name-or -IP-address</i><code>:</code><i>port</i></p>
-<ul>
-<li>
-<p><i>scheme</i> is the URI scheme, which is <code>tcp</code>.</p>
-</li>
-<li>
-<p><i>host-name-or -IP-address</i> is the host name or IP address of the host on which the instance is running.</p>
-</li>
-<li>
-<p><i>port</i> is the port number of the port on which the instance listens for messages from GMS. The system property <code>GMS_LISTENER_PORT-</code><i>clustername</i> must be set for the instance. For information about how to set this system property for an instance, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSHAG00373"><i>Locating GlassFish Server Instances When Multicast Is Disabled,</i> in <i>Oracle GlassFish Server High Availability Administration Guide</i></a>.</p>
-</li>
-</ul>
-</li>
-<li>
-<p>A comma-separated list of IP addresses or host names. The list can contain a mixture of IP addresses and host names. This format can be used only if one clustered instance is running on each host. The value of the <code>GMS_LISTENER_PORT</code> property must be unique for each cluster in a domain.</p>
-</li>
-<li>
-<p>The keyword <code>generate</code>. This format can be used only if one instance in a cluster is running on each host. Multiple instances on the same host cannot be members of the same cluster. The value of the <code>GMS_LISTENER_PORT</code> property must be unique for each cluster in a domain.</p>
-</li>
-</ul>
+<p>The highest port number in the range from which GMS selects a free port if the <code>GMS_LISTENER_PORT-</code><i>cluster-name</i> system property is not set. The default is 9200.</p>
+</dd>
+<dt><code>GMS_TCPSTARTPORT</code></dt>
+<dd>
+<p>The lowest port number in the range from which GMS selects a free port if the <code>GMS_LISTENER_PORT-</code><i>cluster-name</i> system property is not set. The default is 9090.</p>
 </dd>
 </dl>
 <a id="sthref302" name="sthref302"></a>

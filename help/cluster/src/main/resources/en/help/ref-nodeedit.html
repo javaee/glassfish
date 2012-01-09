@@ -131,13 +131,13 @@ Use is subject to License Terms  -->
 <dd>
 <p>The Windows user is authenticated through a password that is stored in the DAS configuration.</p>
 
-<br />
+<hr>
 <p><b>Caution:</b></p>
-<p>This password is stored in clear text in the DAS configuration. For enhanced security, use a key file or a password alias.</p>
+<p>This password is stored in clear text in the DAS configuration. For enhanced security, use a password alias.</p>
 
-<br />
+<hr>
 
-<p>If you select this option, the Windows User Password field and the Confirm Password field are activated to enable you to provide the password.</p>
+<p>If you select this option, the Windows User Password field is activated to enable you to provide the password.</p>
 </dd>
 <dt>Password Alias</dt>
 <dd>
@@ -148,10 +148,6 @@ Use is subject to License Terms  -->
 <dt>Windows User Password</dt>
 <dd>
 <p>The password that the Windows user will use when logging in to this node's host.</p>
-</dd>
-<dt>Confirm Password</dt>
-<dd>
-<p>Confirmation of the password that the Windows user will use when logging in to this node's host. The content of this field must match exactly the content of the Windows User Password field.</p>
 </dd>
 <dt>Password Alias</dt>
 <dd>
@@ -190,13 +186,13 @@ Use is subject to License Terms  -->
 <dd>
 <p>The SSH user is authenticated through a password that is stored in the DAS configuration.</p>
 
-<br />
+<hr>
 <p><b>Caution:</b></p>
 <p>This password is stored in clear text in the DAS configuration. For enhanced security, use a key file or a password alias.</p>
 
-<br />
+<hr>
 
-<p>If you select this option, the SSH User Password field and the Confirm Password field are activated to enable you to provide the password.</p>
+<p>If you select this option, the SSH User Password field is activated to enable you to provide the password.</p>
 </dd>
 <dt>Password Alias</dt>
 <dd>
@@ -210,15 +206,18 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Generate Key</dt>
 <dd>
-<p>If the Enabled option is selected, GlassFish Server generates the SSH key files before copying the files to the node host.</p>
+<p>If the Enabled option is selected, GlassFish Server generates the SSH key files before copying the files to the node host if the files do not exist. If the SSH key files exist, GlassFish Server does not generate the files, even if the Enabled option is selected.</p>
+
+<hr>
+<p><b>Note:</b></p>
+<p>If the SSH key files do not exist, the Enabled option must be selected. Otherwise, an error occurs when you attempt to save your changes.</p>
+
+<hr>
+
 </dd>
 <dt>SSH User Password</dt>
 <dd>
 <p>The password that the SSH user will use when logging in to this node's host.</p>
-</dd>
-<dt>Confirm Password</dt>
-<dd>
-<p>Confirmation of the password that the SSH user will use when logging in to this node's host. The content of this field must match exactly the content of the SSH User Password field.</p>
 </dd>
 <dt>Password Alias</dt>
 <dd>
@@ -227,29 +226,16 @@ Use is subject to License Terms  -->
 <dt>Public Key File</dt>
 <dd>
 <p>The absolute path to the SSH public key file for user that the SSH User Name option specifies. The content of the public key file is appended to the user's <code>.ssh/authorized_keys</code> file on the node host. If the <code>.ssh/authorized_keys</code> file does not exist on the host, GlassFish Server creates the file.</p>
-<p>The path to the key file must be reachable by the DAS and the key file must be readable by the DAS.</p>
-<p>The default is a key file in the user's <code>.ssh</code> directory. If multiple key files are found, GlassFish Server uses the following order of preference:</p>
-<ol>
-<li>
-<p><code>id_rsa</code></p>
-</li>
-<li>
-<p><code>id_dsa</code></p>
-</li>
-<li>
-<p><code>identity</code></p>
-</li>
-</ol>
 </dd>
 <dt>Key File</dt>
 <dd>
 <p>The absolute path to the SSH private key file for user that the User Name option specifies. This file is used for authentication to the <code>sshd</code> daemon on the node's host.</p>
 
-<br />
+<hr>
 <p><b>Note:</b></p>
 <p>GlassFish Server also supports password authentication through the <code>AS_ADMIN_SSHPASSWORD</code> entry in the password file. The password file is specified in the <code>--paswordfile</code> option of the <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00263"><code>asadmin</code>(1)</a> utility.</p>
 
-<br />
+<hr>
 
 <p>If the SSH private key file is protected by a passphrase, the password file must contain the <code>AS_ADMIN_SSHKEYPASSPHRASE</code> entry.</p>
 <p>The path to the key file must be reachable by the DAS and the key file must be readable by the DAS.</p>

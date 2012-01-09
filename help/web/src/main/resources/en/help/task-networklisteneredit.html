@@ -23,12 +23,15 @@ Use is subject to License Terms  -->
 <p>The Edit Network Listener page opens.</p>
 </li>
 <li>
+<p>Select the Protocol used by the network listener to change its settings. For example, you can enable security. You cannot choose a different protocol.</p>
+</li>
+<li>
 <p>Select or deselect the Status Enabled checkbox to change the status of the network listener.</p>
 <p>The listener can be enabled or disabled. This option is enabled by default. If the listener is disabled, any attempts to connect to the listener result in a socket exception (<code>java.net.ConnectException</code>).</p>
 </li>
 <li>
-<p>Select the Security Enabled checkbox to enable security for the protocol used by the network listener.</p>
-<p>This option is disabled by default.</p>
+<p>The read-only Security Enabled checkbox indicates whether security is enabled for the protocol used by the network listener.</p>
+<p>If you are configuring the <code>admin-listener</code> for the domain administration server (DAS), which uses the <code>server-config</code> configuration, this option is read-only. To enable security for this listener, you must enable secure administration. See <a href="../../../common/en/help/ref-securityadmin.html">Secure Administration</a>.</p>
 </li>
 <li>
 <p>Select the JK Listener Enabled checkbox to specify that the listener supports Apache's <code>mod-jk</code> protocol.</p>
@@ -48,17 +51,17 @@ Use is subject to License Terms  -->
 <li>
 <p>Click Save.</p>
 
-<br />
+<hr>
 <p><b>Tip:</b></p>
 <p>To return to the default settings, click the Load Defaults button, then click Save.</p>
 
-<br />
+<hr>
 
 </li>
 </ol>
 <a id="sthref46" name="sthref46"></a>
 <h5>Next Steps</h5>
-<p>You can use the SSL, HTTP, and File Cache tabs to edit the settings for the protocol associated with the network listener. The SSL tab is meaningful only if you enabled security for the network listener.</p>
+<p>You can use the SSL, HTTP, and File Cache tabs to edit the settings for the protocol associated with the network listener. The SSL tab is meaningful only if you enabled security for the protocol.</p>
 <a id="sthref47" name="sthref47"></a>
 <h5>See Also</h5>
 <ul>

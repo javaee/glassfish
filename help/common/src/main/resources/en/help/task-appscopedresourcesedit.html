@@ -3,12 +3,23 @@
 Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
 
 Use is subject to License Terms  -->
-<p><a id="ref-appscopedresources" name="ref-appscopedresources"></a></p>
+<p><a id="task-appscopedresourcesedit" name="task-appscopedresourcesedit"></a></p>
 
-<h4><a id="sthref322" name="sthref322"></a>Application Scoped Resources</h4>
+<h4>To Modify Application Scoped Resources</h4>
 <a name="BEGIN" id="BEGIN"></a>
-<p>Use the Application Scoped Resources page to view resources that are available only to a particular application.</p>
-<p>The Application Scoped Resources page contains a table with the following information.</p>
+<ol>
+<li>
+<p>In the navigation tree, select the Applications node.</p>
+<p>The Applications page opens.</p>
+</li>
+<li>
+<p>Select an application for which you want to view the application-scoped resources.</p>
+<p>The application name can include an optional version identifier, which follows the name and is separated from the name by a colon (<code>:</code>). For more information about module and application versions, see the <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSDPG00324"><i>Module and Application Versions</i> in <i>Oracle GlassFish Server Application Deployment Guide</i></a>.</p>
+<p>The page for the application opens.</p>
+</li>
+<li>
+<p>Select the Resources tab.</p>
+<p>The Application Scoped Resources page opens, and the resources currently specified for the application appear in a table with the following columns:</p>
 <dl>
 <dt>Application Name</dt>
 <dd>
@@ -20,24 +31,24 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Resource Name</dt>
 <dd>
-<p>The name of the application-scoped resource for the application or module. Click on the name to modify resource settings.</p>
+<p>The name of the application-scoped resource for the application or module.</p>
 </dd>
 <dt>Resource Type</dt>
 <dd>
 <p>The resource type, for example JDBC Connection Pools or Connector Resources.</p>
 </dd>
 </dl>
-<a id="sthref323" name="sthref323"></a>
-<h5>Related Tasks</h5>
+</li>
+<li>
+<p>Click on the name of the resource you want to modify.</p>
+<p>The page that opens depends on the resource type. For example, if the resource is a JDBC connection pool, the Edit JDBC Connection Pool page opens.</p>
+</li>
+</ol>
+<a id="sthref104" name="sthref104"></a>
+<h5>See Also</h5>
 <ul>
 <li>
 <p><a href="task-appscopedresourcesview.html">To View Application Scoped Resources</a></p>
-</li>
-<li>
-<p><a href="task-appscopedresourcesedit.html">To Modify Application Scoped Resources</a></p>
-</li>
-<li>
-<p><a href="task-appviewdesc.html">To View Descriptors of an Application</a></p>
 </li>
 <li>
 <p><a href="task-applistdeployed.html">To View a List of Deployed Applications</a></p>
@@ -61,7 +72,7 @@ Use is subject to License Terms  -->
 <p><a href="task-appedit.html">To Edit a Deployed Application</a></p>
 </li>
 <li>
-<p><a href="task-appviewtargets.html">To View Application Targets</a></p>
+<p><a href="task-appviewdesc.html">To View Descriptors of an Application</a></p>
 </li>
 <li>
 <p><a href="task-endpoint.html">To View Endpoint Information for a Web Service</a></p>

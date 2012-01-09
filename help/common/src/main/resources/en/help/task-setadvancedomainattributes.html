@@ -3,17 +3,9 @@
 Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
 
 Use is subject to License Terms  -->
-<a href="#BEGIN">Skip Headers</a>
-<col width="86%" />
-<col width="*" />
-<tr valign="bottom">
-<td align="center"><a href="task-group-domain.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
-<span class="icon">Previous</span></a>&nbsp;
-<td align="center"><a href="task-setadvanceappconfig.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
-<span class="icon">Next</span></a>
 <p><a id="task-setadvancedomainattributes" name="task-setadvancedomainattributes"></a><a id="GHCOM00143" name="GHCOM00143"></a></p>
 
-<h4><a id="sthref4" name="sthref4"></a>To Set the Domain Attributes</h4>
+<h4><a id="sthref5" name="sthref5"></a>To Set the Domain Attributes</h4>
 <a name="BEGIN" id="BEGIN"></a>
 <ol>
 <li>
@@ -21,7 +13,24 @@ Use is subject to License Terms  -->
 <p>The Domain Attributes page opens.</p>
 </li>
 <li>
-<p>In the Application Root field , type the full path of the directory where deployed applications reside.</p>
+<p>In the Load Console After DAS Startup field, select one of the following options from the drop-down list:</p>
+<dl>
+<dt>Usage Based</dt>
+<dd>
+<p>Loads the Administration Console after the Domain Administration Server (DAS) if the console has been used in the last 24 hours or if other server instances exist aside from the DAS. This is the default.</p>
+</dd>
+<dt>Always</dt>
+<dd>
+<p>Always loads the Administration Console after the DAS. The console is loaded after the main GlassFish Server startup sequence has completed.</p>
+</dd>
+<dt>Never</dt>
+<dd>
+<p>Never loads the Administration Console after the DAS. The console is loaded when access to it is requested.</p>
+</dd>
+</dl>
+</li>
+<li>
+<p>In the Application Root field, type the full path of the directory where deployed applications reside.</p>
 <p>The default value is <i>domain-dir</i><code>/applications</code>.</p>
 </li>
 <li>
@@ -39,7 +48,7 @@ Use is subject to License Terms  -->
 <p>Restart the server.</p>
 </li>
 </ol>
-<a id="sthref5" name="sthref5"></a>
+<a id="sthref6" name="sthref6"></a>
 <h5>See Also</h5>
 <ul>
 <li>

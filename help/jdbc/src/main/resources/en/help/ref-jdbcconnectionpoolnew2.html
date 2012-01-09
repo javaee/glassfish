@@ -12,11 +12,11 @@ Use is subject to License Terms  -->
 <dl>
 <dt>Datasource Classname</dt>
 <dd>
-<p>The vendor-specific class name that implements the <code>DataSource</code>, <code>ConnectionPoolDataSource</code>, or <code>XADataSource</code> API. If you selected one of the datasource resource types, this field is usually filled in automatically with the class name associated with the resource type and database vendor you chose. If you selected the <code>java.sql.Driver</code> resource type, this field is disabled.</p>
+<p>The vendor-specific class name that implements the <code>DataSource</code>, <code>ConnectionPoolDataSource</code>, or <code>XADataSource</code> API. If you selected Introspect Enabled and one of the datasource resource types, this field is filled in automatically with the class name associated with the resource type and database vendor you chose. If you selected the <code>java.sql.Driver</code> resource type, this field is disabled.</p>
 </dd>
 <dt>Driver Classname</dt>
 <dd>
-<p>The vendor-supplied JDBC driver class name. If you selected the <code>java.sql.Driver</code> resource type, this field is usually filled in automatically with the class name associated with the driver and database vendor you chose. If you selected one of the datasource resource types, this field is disabled.</p>
+<p>The vendor-supplied JDBC driver class name. If you selected Introspect Enabled and the <code>java.sql.Driver</code> resource type, this field is filled in automatically with the class name associated with the driver and database vendor you chose. If you selected one of the datasource resource types, this field is disabled.</p>
 </dd>
 <dt>Ping</dt>
 <dd>
@@ -107,6 +107,9 @@ Use is subject to License Terms  -->
 </li>
 <li>
 <p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00088"><code>delete-jdbc-connection-pool</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00135"><code>flush-connection-pool</code>(1)</a></p>
 </li>
 <li>
 <p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00173"><code>list-jdbc-connection-pools</code>(1)</a></p>

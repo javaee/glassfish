@@ -3,17 +3,9 @@
 Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
 
 Use is subject to License Terms  -->
-<a href="#BEGIN">Skip Headers</a>
-<col width="86%" />
-<col width="*" />
-<tr valign="bottom">
-<td align="center"><a href="task-group-realms.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
-<span class="icon">Previous</span></a>&nbsp;
-<td align="center"><a href="task-realmedit.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
-<span class="icon">Next</span></a>
 <p><a id="task-realmnew" name="task-realmnew"></a><a id="GHCOM00184" name="GHCOM00184"></a></p>
 
-<h4><a id="sthref141" name="sthref141"></a>To Create a Realm</h4>
+<h4><a id="sthref137" name="sthref137"></a>To Create a Realm</h4>
 <a name="BEGIN" id="BEGIN"></a>
 <p>The GlassFish Server comes preconfigured with three realms: <code>file</code>, <code>certificate</code>, and <code>admin-realm</code>. It is also possible to create <code>ldap</code>, <code>JDBC</code>, <code>solaris</code>, <code>PAM</code>, and custom realms. Generally, you will have one realm of each type on a server, but on the GlassFish Server there are two file realms: <code>file</code> and <code>admin-realm</code>. These are two realms of the same type used for two different purposes. It is also possible to have a different certificate database for each virtual server on your system.</p>
 <ol>
@@ -46,62 +38,62 @@ Use is subject to License Terms  -->
 <col width="*" />
 <thead>
 <tr align="left" valign="top">
-<th align="left" valign="bottom" id="r1c1-t7">Realm Name</th>
-<th align="left" valign="bottom" id="r1c2-t7">Class Name</th>
+<th align="left" valign="bottom" id="r1c1-t8">Realm Name</th>
+<th align="left" valign="bottom" id="r1c2-t8">Class Name</th>
 </tr>
 </thead>
 <tbody>
 <tr align="left" valign="top">
-<td align="left" id="r2c1-t7" headers="r1c1-t7">
+<td align="left" id="r2c1-t8" headers="r1c1-t8">
 <p><code>file</code></p>
 </td>
-<td align="left" headers="r2c1-t7 r1c2-t7">
+<td align="left" headers="r2c1-t8 r1c2-t8">
 <p><code>com.sun.enterprise.security.auth.realm.file.FileRealm</code></p>
 </td>
 </tr>
 <tr align="left" valign="top">
-<td align="left" id="r3c1-t7" headers="r1c1-t7">
+<td align="left" id="r3c1-t8" headers="r1c1-t8">
 <p><code>certificate</code></p>
 </td>
-<td align="left" headers="r3c1-t7 r1c2-t7">
+<td align="left" headers="r3c1-t8 r1c2-t8">
 <p><code>com.sun.enterprise.security.auth.realm.certificate.CertificateRealm</code></p>
 </td>
 </tr>
 <tr align="left" valign="top">
-<td align="left" id="r4c1-t7" headers="r1c1-t7">
+<td align="left" id="r4c1-t8" headers="r1c1-t8">
 <p><code>ldap</code></p>
 </td>
-<td align="left" headers="r4c1-t7 r1c2-t7">
+<td align="left" headers="r4c1-t8 r1c2-t8">
 <p><code>com.sun.enterprise.security.auth.realm.ldap.LDAPRealm</code></p>
 </td>
 </tr>
 <tr align="left" valign="top">
-<td align="left" id="r5c1-t7" headers="r1c1-t7">
+<td align="left" id="r5c1-t8" headers="r1c1-t8">
 <p><code>JDBC</code></p>
 </td>
-<td align="left" headers="r5c1-t7 r1c2-t7">
+<td align="left" headers="r5c1-t8 r1c2-t8">
 <p><code>com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm</code></p>
 </td>
 </tr>
 <tr align="left" valign="top">
-<td align="left" id="r6c1-t7" headers="r1c1-t7">
+<td align="left" id="r6c1-t8" headers="r1c1-t8">
 <p><code>solaris</code></p>
 </td>
-<td align="left" headers="r6c1-t7 r1c2-t7">
+<td align="left" headers="r6c1-t8 r1c2-t8">
 <p><code>com.sun.enterprise.security.auth.realm.solaris.SolarisRealm</code></p>
 </td>
 </tr>
 <tr align="left" valign="top">
-<td align="left" id="r7c1-t7" headers="r1c1-t7">
+<td align="left" id="r7c1-t8" headers="r1c1-t8">
 <p><code>PAM</code></p>
 </td>
-<td align="left" headers="r7c1-t7 r1c2-t7">
+<td align="left" headers="r7c1-t8 r1c2-t8">
 <p><code>com.sun.enterprise.security.auth.realm.solaris.PamRealm</code></p>
 </td>
 </tr>
 </tbody>
 </table>
-<br />
+<hr>
 </li>
 <li>
 <p>Select the lower radio button and type the class name for the custom realm being created.</p>
@@ -137,7 +129,7 @@ Use is subject to License Terms  -->
 <p>Click OK.</p>
 </li>
 </ol>
-<a id="sthref142" name="sthref142"></a>
+<a id="sthref138" name="sthref138"></a>
 <h5>See Also</h5>
 <ul>
 <li>

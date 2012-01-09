@@ -3,17 +3,9 @@
 Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
 
 Use is subject to License Terms  -->
-<a href="#BEGIN">Skip Headers</a>
-<col width="86%" />
-<col width="*" />
-<tr valign="bottom">
-<td align="center"><a href="task-messagesecurityproviderconfigdelete.html"><img src="../../../dcommon/gifs/leftnav.gif" alt="Previous" /><br />
-<span class="icon">Previous</span></a>&nbsp;
-<td align="center"><a href="task-group-adminservice.html"><img src="../../../dcommon/gifs/rightnav.gif" alt="Next" /><br />
-<span class="icon">Next</span></a>
 <p><a id="task-enablemesec4appclients" name="task-enablemesec4appclients"></a><a id="GHCOM00210" name="GHCOM00210"></a></p>
 
-<h4><a id="sthref197" name="sthref197"></a>To Enable Message Security for Application Clients</h4>
+<h4><a id="sthref193" name="sthref193"></a>To Enable Message Security for Application Clients</h4>
 <a name="BEGIN" id="BEGIN"></a>
 <p>Client providers must have the same message protection policies as the server-side providers with which they interact. This is already the case for the providers configured (but not enabled) when GlassFish Server is installed.</p>
 <p>To enable message security for application clients, modify the GlassFish Server specific configuration for the application client container.</p>
@@ -25,7 +17,7 @@ Use is subject to License Terms  -->
 <p>In a text editor, open the Sun application client container descriptor, located in <i>domain-dir</i><code>/config/sun-acc.xml.</code></p>
 </li>
 <li>
-<p>To enable the default client provider in the application client, add the <code>default-client-provider</code> attribute to the element to the <code>message-security-config</code> element .</p>
+<p>To enable the default client provider in the application client, add the <code>default-client-provider</code> attribute to the element to the <code>message-security-config</code> element.</p>
 <p>The surrounding code is shown for context and may differ slightly in your installation. Do not change it.</p>
 <pre>
 &lt;client-container&gt;
@@ -52,7 +44,7 @@ Use is subject to License Terms  -->
 -Djavax.net.ssl.trustStore
 </pre></li>
 </ol>
-<a id="sthref198" name="sthref198"></a>
+<a id="sthref194" name="sthref194"></a>
 <h5>See Also</h5>
 <ul>
 <li>

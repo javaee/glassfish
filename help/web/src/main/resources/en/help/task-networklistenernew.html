@@ -36,11 +36,11 @@ Use is subject to License Terms  -->
 <p>The default name of the protocol is the name of the network listener with <code>-protocol</code> appended, but you can edit this value.</p>
 </li>
 <li>
-<p>Select Use an Existing Protocol, then select a protocol from the drop-down list.</p>
+<p>Select Use an Existing Protocol, then select a protocol from the drop-down list. To enable security for the network listener, choose a protocol with security enabled.</p>
 <p>If you select this option, you would typically have created the protocol for this listener beforehand.</p>
 </li>
 </ul>
-<p>You can specify the protocol only when you create the network listener. You cannot change the associated protocol later.</p>
+<p>You can specify the protocol only when you create the network listener. You cannot change the associated protocol later. The protocol determines whether security is enabled for the network listener.</p>
 </li>
 <li>
 <p>Select the Status Enabled checkbox to enable the network listener.</p>
@@ -48,8 +48,8 @@ Use is subject to License Terms  -->
 <p>In GlassFish Server versions prior to 9.1, a listener whose enabled attribute was set to false returned a 404 response code for any requests sent to it. To achieve this behavior in the current GlassFish Server version, set the listener's status to enabled, and set every associated virtual server's state to OFF. A virtual server lists its associated listeners in its Network Listeners drop-down list.</p>
 </li>
 <li>
-<p>Select the Security Enabled checkbox to enable security for the protocol used by the network listener.</p>
-<p>This option is disabled by default.</p>
+<p>The read-only Security Enabled checkbox indicates whether security is enabled for the protocol used by the network listener.</p>
+<p>If you are configuring the <code>admin-listener</code> for the domain administration server (DAS), which uses the <code>server-config</code> configuration, this option is read-only. To enable security for this listener, you must enable secure administration. See <a href="../../../common/en/help/ref-securityadmin.html">Secure Administration</a>.</p>
 </li>
 <li>
 <p>Select the JK Listener Enabled checkbox to specify that the listener supports Apache's <code>mod-jk</code> protocol.</p>
@@ -77,7 +77,7 @@ Use is subject to License Terms  -->
 </ol>
 <a id="sthref43" name="sthref43"></a>
 <h5>Next Steps</h5>
-<p>If you enabled security for the network listener, you can use the SSL tab to edit the SSL settings of the protocol used by the network listener.</p>
+<p>If you enabled security for the protocol used by the network listener, you can use the SSL tab to edit the SSL settings of the protocol.</p>
 <a id="sthref44" name="sthref44"></a>
 <h5>See Also</h5>
 <ul>

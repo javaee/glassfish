@@ -14,6 +14,17 @@ Use is subject to License Terms  -->
 <p>In the navigation tree, expand the Configuration node.</p>
 </li>
 <li>
+<p>Select the instance to configure:</p>
+<ul>
+<li>
+<p>To configure a particular instance, select the instance's config node. For example, for the default instance, <code>server</code>, select the <code>server-config</code> node.</p>
+</li>
+<li>
+<p>To configure the default settings for future instances that use a copy of <code>default-config</code>, select the <code>default-config</code> node.</p>
+</li>
+</ul>
+</li>
+<li>
 <p>Under the Configuration node, select the Java Message Service node.</p>
 <p>The JMS Service page opens.</p>
 </li>
@@ -29,7 +40,7 @@ Use is subject to License Terms  -->
 <p>The JMS service is started along with the GlassFish Server.</p>
 </li>
 <li>
-<p>Select REMOTE to access the JMS service on another system.</p>
+<p>Select REMOTE to access the JMS service on another system or on a cluster.</p>
 <p>If you choose REMOTE, the JMS service is not started by the GlassFish Server the next time the server starts. Instead, the JMS service is started and managed by Message Queue, so you must start the Message Queue broker separately. For information about starting the broker, see the <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GMADG00227"><i>Starting Brokers</i> in <i>Oracle GlassFish Server Message Queue Administration Guide</i></a>. If you choose this value and are using a remote host, follow the instructions in <a href="task-jmshostedit.html">To Edit a JMS Host</a> to specify the name of the remote host.</p>
 </li>
 </ul>
@@ -100,11 +111,11 @@ Use is subject to License Terms  -->
 <li>
 <p>Click Save.</p>
 
-<br />
+<hr>
 <p><b>Tip:</b></p>
 <p>To return to the default settings, click the Load Defaults button, then click Save.</p>
 
-<br />
+<hr>
 
 </li>
 </ol>

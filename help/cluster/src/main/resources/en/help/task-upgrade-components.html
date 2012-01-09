@@ -30,11 +30,11 @@ Use is subject to License Terms  -->
 <p>Applications must be compatible across the upgrade. They must work correctly during the transition when some instances are running the old version and other instances are running the new version. The old version and the new version must have the same shape of serializable classes that form object graphs that are stored in sessions (for example, nontransient instance variables). If the shape of these classes must change, the application developer must ensure that correct serialization behavior occurs. If the application is not compatible across the upgrade, the cluster must be stopped for a full redeployment.</p>
 <p>This approach is not possible if the application upgrade involves a change to the application database schema.</p>
 
-<br />
+<hr>
 <p><b>Caution:</b></p>
 <p>To prevent the risk of version mismatch when a session fails over, upgrade all instances in a cluster at the same time. Otherwise a session might fail over to an instance where different versions of components are running.</p>
 
-<br />
+<hr>
 
 <p>Perform this task on each cluster separately. A cluster acts as a safe boundary for session failover for instances in the cluster. Sessions in one cluster can never fail over to sessions in another cluster. Therefore, the risk of version mismatch is avoided.</p>
 <ol>

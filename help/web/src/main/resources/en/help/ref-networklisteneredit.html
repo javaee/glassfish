@@ -26,15 +26,17 @@ Use is subject to License Terms  -->
 <dt>Protocol</dt>
 <dd>
 <p>The protocol associated with the network listener. The Protocol field is a read-only field. You can create or specify a protocol only when you create a new network listener.</p>
+<p>Select the Protocol used by the network listener to change its settings. For example, you can enable security.</p>
 </dd>
 <dt>Status</dt>
 <dd>
 <p>The status of the network listener. The listener can be enabled or disabled. This option is enabled by default. If the listener is disabled, any attempts to connect to the listener result in a socket exception (<code>java.net.ConnectException</code>).</p>
-<p>In GlassFish Server versions prior to 9.1, a listener whose enabled attribute was set to false returned a 404 response code for any requests sent to it. To achieve this behavior in the current GlassFish Server version, set the listener's status to enabled, and set every associated virtual server's state to OFF. A virtual server lists its associated listeners in its Network Listeners drop-down list.</p>
+<p>In GlassFish Server versions prior to Application Server&nbsp;9.1, a listener whose enabled attribute was set to false returned a 404 response code for any requests sent to it. To achieve this behavior in the current GlassFish Server version, set the listener's status to enabled, and set every associated virtual server's state to OFF. A virtual server lists its associated listeners in its Network Listeners drop-down list.</p>
 </dd>
 <dt>Security</dt>
 <dd>
-<p>If this option is selected, is enabled for the protocol used by the network listener. This option is disabled by default.</p>
+<p>If this option is selected, security is enabled for the protocol used by the network listener. The Security field is a read-only field.</p>
+<p>If you are configuring the <code>admin-listener</code> for the domain administration server (DAS), which uses the <code>server-config</code> configuration, this option is read-only. To enable security for this listener, you must enable secure administration. See <a href="../../../common/en/help/ref-securityadmin.html">Secure Administration</a>.</p>
 </dd>
 <dt>JK Listener</dt>
 <dd>

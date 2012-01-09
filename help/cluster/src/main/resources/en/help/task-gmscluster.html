@@ -13,7 +13,7 @@ Use is subject to License Terms  -->
 <p>Notifies registered modules in a GlassFish Server instance when one or more member instances are added to or removed from a cluster, or are suspected or confirmed to have failed.</p>
 </li>
 <li>
-<p>Provides the ability to send and receive messages between a group of processes.</p>
+<p>Provides the ability to send and receive messages between cluster members.</p>
 </li>
 </ul>
 <ol>
@@ -30,15 +30,15 @@ Use is subject to License Terms  -->
 <p>If enabled, the Group Management Service is started in each server instance in the cluster and in the Domain Administration Server (DAS). The DAS participates in each cluster that has GMS enabled.</p>
 </li>
 <li>
-<p>In the Multicast Port field, enter the port the Group Management Service uses to listen for group events.</p>
-<p>Specify a standard UDP port number in the range 2048-32000. The default is an automatically generated value in this range.</p>
+<p>In the Multicast Port field, type the port the Group Management Service uses to listen for group events.</p>
+<p>Specify a standard UDP port number in the range 2048-49151. The default is an automatically generated value in this range.</p>
 </li>
 <li>
-<p>In the Multicast Address field, enter the address the Group Management Service uses to listen for group events.</p>
+<p>In the Multicast Address field, type the address the Group Management Service uses to listen for group events.</p>
 <p>Specify a class D IP multicast address. Class D IP addresses are in the range <code>224.0.0.0</code> to <code>239.255.255.255</code>, inclusive. The address <code>224.0.0.0</code> is reserved and should not be used. The default is 228.9.<i>XX</i>.<i>YY</i>, where <i>XX</i> and <i>YY</i> are automatically generated independent values between 0 and 255.</p>
 </li>
 <li>
-<p>In the Bind Interface Address field, enter the network interface address for the Group Management Service if there is more than one network interface.</p>
+<p>In the Bind Interface Address field, type the network interface address for the Group Management Service if there is more than one network interface.</p>
 <p>This setting enables you to configure which network interface is used for the GMS if there is more than one on any of the machines hosting the server instances in the cluster. This value must be a local network interface IP address. By default all public network interface addresses are used.</p>
 <p>To specify an address that is valid for all GlassFish Server instances in the cluster, use a system property to set the address individually for each instance.</p>
 <p>For example, create the system property <code>GMS-BIND-INTERFACE-ADDRESS-</code><i>cluster-name</i> on the DAS. Then set this Bind Interface Address option to <code>${GMS-BIND-INTERFACE-ADDRESS-</code><i>cluster-name</i><code>}</code> to specify the system property. Finally, for each instance in the cluster, set the <code>GMS-BIND-INTERFACE-ADDRESS-</code><i>cluster-name</i> system property to the required network interface address on the instance's machine.</p>

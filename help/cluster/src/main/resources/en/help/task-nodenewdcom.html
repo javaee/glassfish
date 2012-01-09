@@ -17,7 +17,7 @@ Use is subject to License Terms  -->
 </li>
 <li>
 <p>If you require GlassFish Server to test the connection over DCOM to the node host before creating the node, perform these steps:</p>
-<ol>
+<ol type="a">
 <li>
 <p>Enable the Validate DCOM option.</p>
 </li>
@@ -35,21 +35,21 @@ Use is subject to License Terms  -->
 <li>
 <p>Specify how the Windows user will be authenticated when logging in to this node's host.</p>
 
-<br />
+<hr>
 <p><b>Note:</b></p>
 <p>GlassFish Server also supports password authentication through the <code>AS_ADMIN_WINDOWSPASSWORD</code> entry in the password file. The password file is specified in the <code>--paswordfile</code> option of the <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00263"><code>asadmin</code>(1)</a> utility.</p>
 
-<br />
+<hr>
 
-<ol>
+<ol type="a">
 <li>
 <p>To specify authentication through a password that is stored in the DAS configuration, perform these steps:</p>
 
-<br />
+<hr>
 <p><b>Caution:</b></p>
 <p>This password is stored in clear text in the DAS configuration. For enhanced security, use a password alias</p>
 
-<br />
+<hr>
 
 <ol>
 <li>
@@ -57,9 +57,6 @@ Use is subject to License Terms  -->
 </li>
 <li>
 <p>In the Windows User Password field, type the password that the SSH user will use when logging in to this node's host.</p>
-</li>
-<li>
-<p>In the Confirm Password field, type the password again.</p>
 </li>
 </ol>
 </li>
