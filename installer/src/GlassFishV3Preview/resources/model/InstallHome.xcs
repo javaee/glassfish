@@ -353,6 +353,7 @@
 	      // Add all the defaults.
               List theActiveModesList = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
               theActiveModesList.add("DO_NOT_SHOW_UPGRADE");
+              theActiveModesList.add("CREATE_DOMAIN");
    		BusRequest modeReq = new BusRequest("ConfigRequest",
 		new EngineConfigCommand(EngineConfigCommand.COMMAND.GET_CONFIG, EngineConfigItem.DISPLAY_MODE));
 		BusResponse modeResp = bus.publishRequest(modeReq, "svc://general/EngineConfig");
@@ -360,7 +361,6 @@
 		if ("SILENT".equals(mode))  {
               		theActiveModesList.add("BASIC_USER");
               		theActiveModesList.add("INSTALL_AND_CONFIG");
-              		theActiveModesList.add("CREATE_DOMAIN");
 	      	}
               ConfigHelper.setValue("PageFlow.Mode.ACTIVE_MODES_LIST", theActiveModesList);
 

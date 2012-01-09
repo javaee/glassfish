@@ -67,7 +67,7 @@
 	<when><![CDATA[ !INSTALL_ONLY && ADVANCED_USER ]]></when>
     </page>
     <page name="Domain">
-	<when><![CDATA[ (!INSTALL_ONLY && ADVANCED_USER && CREATE_DOMAIN)  ]]></when>
+	<when><![CDATA[ (!INSTALL_ONLY && CREATE_DOMAIN)  ]]></when>
     </page>
     <page name="StandaloneInstance">
 	<when><![CDATA[ (!INSTALL_ONLY && ADVANCED_USER && CREATE_STANDALONEINSTANCE)  ]]></when>
