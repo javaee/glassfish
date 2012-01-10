@@ -116,6 +116,33 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>run-with-shell-jar</id>
+            <activation>
+                <property>
+                    <name>build</name>
+                    <value>static-shell</value>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                    <version>4.3.1</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.main.extras</groupId>
+                    <artifactId>glassfish-embedded-static-shell</artifactId>
+                    <version>${project.version}</version>
+                    <scope>system</scope>
+                    <systemPath>${env.S1AS_HOME}/lib/embedded/glassfish-embedded-static-shell.jar
+                    </systemPath>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
 
     <licenses>
         <license>
