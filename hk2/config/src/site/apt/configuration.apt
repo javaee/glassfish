@@ -163,7 +163,7 @@ add a functionality to hk2 in order to provide XML validation but the feature is
 
     To help validation of xml element values, it is possible to use the {{{http://docs.oracle.com/javaee/6/api/javax/validation/package-summary.html}Validation}}
 APIs to decorate the @Configured annotated interfaces. The entire extend of the validation specification is available,
-from validating attributes to adding {{{http://docs.oracle.com/javaee/6/api/javax/validation/Validator.html}Validators}
+from validating attributes to adding {{{http://docs.oracle.com/javaee/6/api/javax/validation/Validator.html}Validators}}
 for types.
 
    Here is an example of field validation, where we ensure the field is not null and follows particular regex pattern :
@@ -372,4 +372,4 @@ some imaginative, reflective code). The current limitations are :
 
 * Implementation details
 
-    Implementation details of the configuration backend can be found {{{./implementation.html}here}.
+    Implementation details of the configuration backend can be found {{{./implementation.html}here}}.
