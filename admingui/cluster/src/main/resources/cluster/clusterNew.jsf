@@ -60,7 +60,7 @@
     </event>
     <sun:form id="propertyForm">
 #include "/cluster/shared/handlers.inc"
-#include "/jms/jmsHandlers.inc"
+#include "/cluster/shared/jmsHandlers.inc"
 #include "/common/shared/alertMsg.inc"
     <sun:title id="propertyContentPage" title="$resource{i18ncs.clusterNew.PageTitle}" helpText="$resource{i18ncs.clusterNew.PageTitleHelp}">
         <!facet pageButtonsTop>
