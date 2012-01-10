@@ -104,7 +104,7 @@
         <sun:alert id="error" type="error" summary="$resource{i18njms.availability.instancesRunning}" rendered="#{pageSession.instancesRunning}"/>
         <sun:title id="propertyContentPage" title="$resource{i18njms.availability.jmsAvailability} "
             helpText="$resource{i18njms.availability.jmsAvailabilityInfo}  $resource{i18njms.availability.jmsAvailabilityInfoHelp}">
-#include "/jms/jmsHandlers.inc"
+#include "/cluster/shared/jmsHandlers.inc"
             <!facet pageButtonsTop>
                 <sun:panelGroup id="topButtons">
 #include "jmsAvailbilityButtons.inc"
