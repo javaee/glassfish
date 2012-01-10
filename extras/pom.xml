@@ -57,7 +57,7 @@
     <modules>
         <module>grizzly-container</module>
         <module>osgi-container</module>
-        <!--module>embedded-shell</module-->
+        <module>embedded</module-->
         <module>upgrade</module>
         <module>javaee</module>
         <module>appserv-rt</module>

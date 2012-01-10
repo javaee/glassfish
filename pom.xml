@@ -400,9 +400,7 @@
                 <module>verifier/verifier-impl</module>
                 <module>verifier/verifier-scripts</module>
                 <module>verifier/verifier-jdk-extension-bundle</module>
-                <module>extras/embedded/all</module>
-                <module>extras/embedded/web</module>
-                <module>extras/embedded/nucleus</module>
+                <module>extras/embedded</module>
 		<module>ant-tasks</module>
             </modules>
        </profile>
@@ -454,9 +452,7 @@
                 <module>verifier/verifier-impl</module>
                 <module>verifier/verifier-scripts</module>
                 <module>verifier/verifier-jdk-extension-bundle</module>
-                <module>extras/embedded/all</module>
-                <module>extras/embedded/web</module>
-                <module>extras/embedded/nucleus</module>
+                <module>extras/embedded</module>
                 <module>ant-tasks</module>
                 <module>build/glassfishbuild-repo-setup</module>
                 <module>sun-glassfish/build/oracle-glassfish-repo-setup</module>
@@ -507,9 +503,7 @@
                 <module>verifier/verifier-jdk-extension-bundle</module>
 <!--
 comment out since it's causing OutOfMemory error in AIX
-                <module>extras/embedded/all</module>
-                <module>extras/embedded/web</module>
-                <module>extras/embedded/nucleus</module>
+                <module>extras/embedded</module>
 -->
 		<module>ant-tasks</module>
             </modules>
