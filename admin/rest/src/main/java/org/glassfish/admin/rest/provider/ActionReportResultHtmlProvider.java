@@ -41,12 +41,16 @@
 package org.glassfish.admin.rest.provider;
 
 import com.sun.enterprise.v3.common.ActionReporter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
@@ -312,20 +316,24 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
         StringBuilder result = new StringBuilder("<h3>Children</h3><ul>");
 
         for (ActionReport.MessagePart part : parts) {
-            result.append("<li><table border=\"1\" style=\"border-collapse: collapse\">")
-                    .append("<tr><td>Message</td>")
-                    .append("<td>")
-                    .append(part.getMessage())
-                    .append("</td></tr><td>Properties</td><td>")
-                    .append(processMap(part.getProps()))
-                    .append("</td></tr>");
-            List<ActionReport.MessagePart> children = part.getChildren();
-            if (children.size() > 0) {
-                result.append("<tr><td>Children</td><td>")
-                        .append(processChildren(part.getChildren()))
+            try {
+                result.append("<li><table border=\"1\" style=\"border-collapse: collapse\">")
+                        .append("<tr><td>Message</td>")
+                        .append("<td>")
+                        .append(URLEncoder.encode(part.getMessage(), "UTF-8"))
+                        .append("</td></tr><td>Properties</td><td>")
+                        .append(processMap(part.getProps()))
                         .append("</td></tr>");
+                List<ActionReport.MessagePart> children = part.getChildren();
+                if (children.size() > 0) {
+                    result.append("<tr><td>Children</td><td>")
+                            .append(processChildren(part.getChildren()))
+                            .append("</td></tr>");
+                }
+                result.append("</table></li>");
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(ActionReportResultHtmlProvider.class.getName()).log(Level.SEVERE, null, ex);
             }
-            result.append("</table></li>");
         }
 
         return result.append("</ul>").toString();
@@ -354,7 +362,11 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
                 result = processMap((Map) object);
             }
         } else {
-            result = object.toString();
+            try {
+                result = URLEncoder.encode(object.toString(), "UTF-8");
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(ActionReportResultHtmlProvider.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
         return result;

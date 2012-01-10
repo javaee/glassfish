@@ -58,7 +58,11 @@ function ajaxSubmit(elem) {
     // Get the response inside the body tags and replace the document body
     var start = xmlhttp.responseText.indexOf("<body");
     var end = xmlhttp.responseText.indexOf("</body");
-    document.body.innerHTML = xmlhttp.responseText.substring(start+6, end);
+    if ((xmlhttp.status == 200) || (start > -1)) {
+        document.body.innerHTML = xmlhttp.responseText.substring(start+6, end);
+    } else {
+        alert(xmlhttp.response);
+    }
 }
 
 function getForm(elem) {
