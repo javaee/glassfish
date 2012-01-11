@@ -69,6 +69,7 @@ public class UpgradeConstants {
     public static final String VERSION_3_0_1 = "3.0.1";		// GF 3.0.1
     public static final String VERSION_3_1 = "3.1";		// GF 3.1
     public static final String VERSION_3_1_1 = "3.1.1";
+    public static final String VERSION_3_1_2 = "3.1.2";
     public static final String VERSION_2_1 = "2.1";         // as91_ur2 ( Sun GlassFish Enterprise Server v2.1)
     
     public static final String DEVELOPER_PROFILE = "developer";
