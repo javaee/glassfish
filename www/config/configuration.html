@@ -140,8 +140,10 @@ public interface EjbContainer extends Container {
     @Attribute(&quot;stateless-default-number&quot;)
     String getStatelessDefaultNumber();
     void setStatelessDefaultNumber(String port);
-}
-</pre></div><p>The resulting XML snippet will be :</p><p><i>containers</i> <i>web-container http-port=&quot;8080&quot;/</i> <i>ejb-container stateless-default-number=&quot;10&quot;/</i> <i>/containers</i></p><p>There are however a few limitations (that could be overcome with some imaginative, reflective code). The current limitations are :</p><ul><li>Each configuration object can only have one extension point * Each extension point defines the super interface for all possible extensions. * Each extension point must be defined with @Element(&quot;*&quot;)</li></ul></div></div><div class="section"><h3>Implementation details<a name="Implementation_details"></a></h3><p>Implementation details of the configuration backend can be found <a href="./implementation.html">here</a>.</p></div></div>
+}</pre></div><p>The resulting XML snippet will be :</p><div class="source"><pre>    &lt;containers&gt;
+        &lt;web-container http-port=&quot;8080&quot;/&gt;
+        &lt;ejb-container stateless-default-number=&quot;10&quot;/&gt;
+   &lt;/containers&gt;</pre></div><p>There are however a few limitations (that could be overcome with some imaginative, reflective code). The current limitations are :</p><ul><li>Each configuration object can only have one extension point * Each extension point defines the super interface for all possible extensions. * Each extension point must be defined with @Element(&quot;*&quot;)</li></ul></div></div><div class="section"><h3>Implementation details<a name="Implementation_details"></a></h3><p>Implementation details of the configuration backend can be found <a href="./implementation.html">here</a>.</p></div></div>
       </div>
     </div>
     <div class="clear">
@@ -157,8 +159,8 @@ public interface EjbContainer extends Container {
 
   
   
-  &nbsp;| Last Published: 01/05/2012
-  &nbsp;| Version: 1.6.28-SNAPSHOT
+  &nbsp;| Last Published: 01/11/2012
+  &nbsp;| Version: 1.6.30-SNAPSHOT
 </div>
       <div class="clear">
         <hr/>
