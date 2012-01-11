@@ -461,6 +461,7 @@
         <ant dir="formLoginAccessSessionOnResumedRequest" target="all"/>
         <ant dir="formLoginJSecurityCheckDirectAccess" target="all"/>
         <ant dir="formLoginTransportGuaranteeConfidential" target="all"/>
+        <ant dir="testFormAuthenticator" target="all"/>
         <ant dir="installationPathDisclosure" target="all"/>
         <ant dir="jspForwardNormalizePath" target="all"/>
         <ant dir="programmaticLogin" target="all"/>
