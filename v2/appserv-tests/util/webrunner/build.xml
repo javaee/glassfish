@@ -11,6 +11,7 @@
      <property name="proxy.src" value="proxy"/>
      <property environment="myenv" />
      <property name="webtest.src" value="webtest"/>
+     <property name="tomcattest.src" value="tomcattest"/>
      <property name="build.dest" value="build"/>
      <property name="java.classpath" value="${JAVA_HOME}/lib/dt.jar:${JAVA_HOME}/lib/tools.jar:${build.dest}:${myenv.APS_HOME}/lib/reporter.jar"/>
      <property name="server.host" value="dsingh"/>
@@ -46,6 +47,18 @@
     />
   </target>
   
+  <target name="compile-tomcattest" depends="init-common">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <echo message="Compiling Tomcat test util source files ..."/>
+    <mkdir dir="${build.dest}"/>
+    <javac
+		srcdir="${tomcattest.src}"
+		destdir="${build.dest}"
+		classpath="${java.classpath}"
+                debug="on"
+		
+    />
+  </target>
   <target name="run-webtest" depends="compile-webtest">
     <!-- Compile the java code from ${src} into ${build} -->
     <echo message="Running Web Test"/>
@@ -75,7 +88,7 @@
     <delete dir="${build.dest}"/>
   </target>
 
-<target name="jar" depends="compile-proxy,compile-webtest">
+<target name="jar" depends="compile-proxy,compile-webtest,compile-tomcattest">
   <jar destfile="${myenv.APS_HOME}/lib/webtest.jar">
 	<fileset dir="${build.dest}"/>
   </jar>
