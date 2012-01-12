@@ -1855,9 +1855,7 @@ function checkForSelectedValue(fieldId) {
 
 function reloadHeaderFrame() {
     var mastheadForm = document.getElementById('af');
-    admingui.ajax.postAjaxRequest(mastheadForm, {
-        render: 'af'
-    }, 'af');
+    admingui.ajax.postAjaxRequest(mastheadForm, { render: 'af' }, 'af', false);
 }
 
 admingui.deploy = {
@@ -2243,8 +2241,10 @@ admingui.ajax = {
         admingui.nav.selectTreeNodeWithURL(o.argument.url);
     },
 
-    postAjaxRequest : function (component, args, respTarget) {
-        admingui.ajax.ajaxStart();
+    postAjaxRequest : function (component, args, respTarget, displayLoading) {
+        if (displayLoading !== false) {
+            admingui.ajax.ajaxStart();
+        }
         if ((respTarget === null) || (typeof(respTarget) === 'undefined')) {
             respTarget = 'content';
         }
