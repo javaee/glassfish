@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -124,12 +124,10 @@ public interface Provider<T> {
      */
     Collection<Annotation> getAnnotations();
 
-    // This is in ManagedComponentProvider
-//    /**
-//     * Returns true if the component has been instantiated.
-//     *
-//     * @return true if the component is active.
-//     */
-//    boolean isActive();
-
+    /**
+     * Returns true if the component has been instantiated.
+     *
+     * @return true if the component is active.
+     */
+    boolean isActive();
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,7 +48,7 @@ package org.glassfish.hk2;
  * has cached (or injected) a {@link Provider} from the committed
  * Bindings group.  Upon {{@link #release()} these services become
  * orphaned as they are no longer registered in {@link Services}.
- * 
+ *
  * @author Jeff Trent, Tom Beerbower
  * 
  * @see Services#bindDynamically()
@@ -56,5 +56,10 @@ package org.glassfish.hk2;
  */
 // TODO: consider in the future extending this to support iteration over the actual Binding objects
 public interface Bindings extends Releasable {
-
+    /**
+     * Indicates whether or not this Bindings instance is active.
+     *
+     * @return true if this instance is currently active
+     */
+    boolean isActive();
 }
