@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,20 +40,13 @@
 package org.glassfish.hk2;
 
 /**
- * Represents something that can be active or inactive, and released.
+ * Represents something that can be released.
  *
  * @author Jeff Trent, Tom Beerbower
  */
 public interface Releasable {
-    
-    /**
-     * @return true if the component/service is currently active 
-     */
-    boolean isActive();
-
     /**
      * Release the component/service if active.
      */
     void release();
-
 }
