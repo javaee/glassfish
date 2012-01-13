@@ -263,6 +263,11 @@ public class AppSpecificConnectorClassLoaderUtil {
                         (com.sun.enterprise.config.serverbeans.Application) itr.next();
                         String appName = application.getName();
                         ApplicationInfo appInfo = appRegistry.get(appName);
+                        //appInfo is null if application is not enabled or 
+                        //not referred in this instance.
+                        if(appInfo == null) {
+                            continue;
+                        } 
                         Application dolApp = appInfo.getMetaData(Application.class);
                         Collection<ConnectorDescriptor> rarDescriptors = dolApp.getRarDescriptors();
                         for (ConnectorDescriptor desc : rarDescriptors) {
