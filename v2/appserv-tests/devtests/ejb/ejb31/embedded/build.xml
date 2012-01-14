@@ -13,6 +13,12 @@
     &commonBuild;
     &reporting;
 
+    <target name="all-report">
+        <antcall target="clean-result"/>
+        <antcall target="all"/>
+        <antcall target="dev-report"/>
+    </target>
+
     <target name="all">
         <!-- disallow individual tests from starting and stopping database -->
         <property name="skip.start.database" value="true"/>

@@ -36,3 +36,12 @@
 <target name="stop-derby" unless="uber.mode">
     <antcall target="stopDerby"/>
 </target>
+
+<target name="clean-result">
+    <delete>
+       <fileset dir="${env.APS_HOME}" includes="test_results*"/>
+    </delete>
+    <delete>
+       <fileset dir="." includes="*.output"/>
+    </delete>
+</target>
