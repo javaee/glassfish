@@ -151,12 +151,19 @@
     <dependencies>
         <!-- Artifacts to be included in the distribution -->
 
+        <!-- All the dependencies are intentionally markes as optional so that one can
+             express dependency on a particular dependency and adding such a dependency
+             won't bring the transitive closure. A distribution is supposed to be
+             self sufficient. See GLASSFISH-17170 for more details.
+        --> 
+
         <!-- nucleus distribution -->
         <dependency>
             <groupId>org.glassfish.main.distributions</groupId>
             <artifactId>nucleus</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
 
         <!-- additional grizzly modules package -->
@@ -165,6 +172,7 @@
             <artifactId>glassfish-grizzly-full</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>   
 
 	<!-- all previous web-nb distribution packages -->
@@ -173,120 +181,140 @@
             <artifactId>glassfish-common</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>shoal</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-cluster</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-ha</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-javahelp</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-upgrade</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-registration</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>jersey</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-management</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-jca</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-jpa</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-jta</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
       </dependency>
       <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-jts</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
        </dependency>
        <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-corba-base</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
        </dependency>
        <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-ejb-lite</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>    
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-jsf</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>     
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-web</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>    
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-osgi-http</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-jcdi</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>     
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-jdbc</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency> 
 
 
@@ -296,6 +324,7 @@
             <artifactId>glassfish-gui</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>     
 
         <!-- javadb package -->
@@ -304,6 +333,7 @@
             <artifactId>javadb</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>   
 
 	<!-- additional servicetag registry dependency -->
@@ -312,6 +342,7 @@
             <artifactId>servicetag-registry</artifactId>
             <version>${project.version}</version>
             <type>distribution-fragment</type>
+            <optional>true</optional>
         </dependency>
         <!-- additional legal content dependency -->
         <dependency>
@@ -319,6 +350,7 @@
             <artifactId>legal-fragment</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>

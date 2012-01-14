@@ -153,6 +153,12 @@
     <dependencies>
         <!-- Artifacts to be included in the distribution -->
 
+        <!-- All the dependencies are intentionally markes as optional so that one can
+             express dependency on a particular dependency and adding such a dependency
+             won't bring the transitive closure. A distribution is supposed to be
+             self sufficient. See GLASSFISH-17170 for more details.
+        -->
+
         <!-- nucleus packages -->
 
         <dependency>
@@ -160,24 +166,28 @@
             <artifactId>felix</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-hk2</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-grizzly</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-nucleus</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
 
         <!-- additional dependencies required to create default domain -->
@@ -201,6 +211,7 @@
             <artifactId>servicetag-registry</artifactId>
             <version>${project.version}</version>
             <type>distribution-fragment</type>
+            <optional>true</optional>
         </dependency>
         <!-- additional legal content dependency -->
         <dependency>
@@ -208,6 +219,7 @@
             <artifactId>legal-fragment</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+            <optional>true</optional>
         </dependency>
 
     </dependencies>
