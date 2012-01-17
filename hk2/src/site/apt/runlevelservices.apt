@@ -206,13 +206,15 @@ public MyService4 implements MyContract {
 }
 +--------------+
 
-    If someone attempt to obtain (or be injected with) a StandardService, it is ambiguous whether or not the operation can be successful since it depends on the state of the default run level service. If the current run level is 0 then the StandardService cannot be instantiated because it needs a MyService4 instance that is not permitted to be
-created until run level value 2 is reached.  Furthermore, assume that the run level is current at 3, and HK2 permitted the acquisition of StandardService injected with
-an instance of MyService4. Now, if partial shutdown occurs (i.e., proceedTo(1)) then the StandardService#myService4 instance becomes an orphan from the Habitat and may cause an error.
+    If someone attempts to obtain (or be injected with) a StandardService, it is ambiguous whether or not the operation can be successful since it depends on the state of the default run level service.  HK2 avoids this ambiguity through the use of  proxies for run level service injection.  By using a proxy during injection rather than the
+actual run level service, injection can be done at any point into any component.  Instead of limiting the conditions under which a run level service can be injected, HK2 can instead inject a proxy and allow it to check the constraints at invocation time.
+
+    For example, a non-run level service could inject any run level service without issue.  The run level is activated and deactivated based on its run level value and the current run level.  An attempt to invoke on the proxy while the underlying run level service is active results in the proxy simply delegating the call to the service.
+An attempt to invoke on the proxy while the underlying run level service is inactive results in a RunLevelException.
 
     These issues are avoided by three semantical constraints placed on the use of RunLevel annotated services.  These rules include:
 
-    * A standard, non-RunLevel annotated service can not be injected with a RunLevel annotated service.
+    * A RunLevel annotated service can only be directly injected if the service class implements an interface.  This is required for proxy creation.
 
     * A RunLevel annotated service with run level value N can not be injected with a RunLevel annotated service with value M when M > N.
 
