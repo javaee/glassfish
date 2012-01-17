@@ -352,6 +352,21 @@
             <type>zip</type>
             <optional>true</optional>
         </dependency>
+        <!-- additional dependencies required to create default domain -->
+        <dependency>
+            <groupId>org.glassfish.main.admin</groupId>
+            <artifactId>cli-optional</artifactId>
+            <version>${project.version}</version>
+            <type>jar</type>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.main.admin</groupId>
+            <artifactId>server-mgmt</artifactId>
+            <version>${project.version}</version>
+            <type>jar</type>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 </project>
 
