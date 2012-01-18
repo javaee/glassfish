@@ -104,10 +104,10 @@ public class EmbeddedAddHttpsListenerTest {
         sslConfig.setKeyPassword(password.toCharArray());
         String trustPassword = "changeit";
         sslConfig.setTrustPassword(trustPassword.toCharArray());
-        listener.setSslConfig(sslConfig);
         if (certname != null) {
             sslConfig.setCertNickname(certname);
         }
+        listener.setSslConfig(sslConfig);
 
         embedded.addWebListener(listener);
     }
