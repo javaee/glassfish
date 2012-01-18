@@ -53,6 +53,9 @@ public class SslConfig {
     private String keyStore;
     private String trustStore;
     private char[] keyPassword;
+    private char[] trustPassword;
+    private String certNickname;
+
     private int timeoutMilliSeconds;
     private Set<SslType> algorithms;
 
@@ -92,6 +95,15 @@ public class SslConfig {
      */
     public void setKeyPassword(char[] keyPassword) {
         this.keyPassword = keyPassword;
+    }
+
+    /**
+     * Sets the password of the truststore file
+     *
+     * @param trustPassword The password of the truststore file
+     */
+    public void setTrustPassword(char[] trustPassword) {
+        this.trustPassword = trustPassword;
     }
 
     /**
@@ -140,6 +152,15 @@ public class SslConfig {
     }
 
     /**
+     * Gets the password of the truststore file
+     *
+     * @return the password of the truststore file
+     */
+    public char[] getTrustPassword() {
+        return this.trustPassword;
+    }
+
+    /**
      * Gets the timeout within which there must be activity from the client
      *
      * @return the timeout in milliseconds
@@ -156,4 +177,22 @@ public class SslConfig {
     public Set<SslType> getAlgorithms() {
         return this.algorithms;
     }
+
+    /**
+     * Gets the nickname of the server certificate in the certificate database
+     *
+     * @return the certNickname 
+     */
+    public String getCertNickname() {
+       return this.certNickname;
+    }
+
+    /**
+     * Sets the certNickname
+     *
+     */
+    public void setCertNickname(String value) {
+        this.certNickname = value;
+    }
+
 }

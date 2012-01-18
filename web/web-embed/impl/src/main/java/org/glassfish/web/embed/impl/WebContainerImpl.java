@@ -297,7 +297,6 @@ public class WebContainerImpl implements WebContainer {
         if (webListener instanceof HttpsListener) {
 
             HttpsListener listener = (HttpsListener) webListener;
-            newSsl.setCertNickname("s1as");
             SslConfig sslConfig = listener.getSslConfig();
             if (sslConfig == null) {
                 return;
@@ -311,6 +310,9 @@ public class WebContainerImpl implements WebContainer {
             }
             if (sslConfig.getTrustStore() != null) {
                 newSsl.setTrustStore(sslConfig.getTrustStore());
+            }
+            if (sslConfig.getTrustPassword() != null) {
+                newSsl.setTrustStorePassword(new String(sslConfig.getTrustPassword()));
             }
 
             if (sslConfig.getAlgorithms() != null) {
@@ -329,9 +331,9 @@ public class WebContainerImpl implements WebContainer {
             if (sslConfig.getHandshakeTimeout() > 0) {
                 newSsl.setSSLInactivityTimeout(sslConfig.getHandshakeTimeout());
             }
-
-            newSsl.setCertNickname("s1as");
-            newSsl.setClassname("com.sun.enterprise.security.ssl.GlassfishSSLImpl");
+            if (sslConfig.getCertNickname() != null) {
+                newSsl.setCertNickname(sslConfig.getCertNickname());
+            }
 
         } else {
             log.severe("HttpsListener required for https protocol");
