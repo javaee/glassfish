@@ -405,6 +405,16 @@ public class Util {
                 httpConnectorAddress.setAuthenticationInfo(authenticationInfo);
             }
             HttpURLConnection httpURLConnection = (HttpURLConnection) httpConnectorAddress.openConnection(url); // The URL constructed for REST will always be Http(s) so, it is ok to cast here.
+            //TODO following code is copied from ServerRemoteAdminCommand.addAdditionalHeaders. When the clean up happens on trunk. this code needs to be accounted for.
+            // Here are comments copied from javadoc of the method
+            //* Adds the admin indicator header to the request so. Do this whether
+            //* secure admin is enabled or not, because the indicator is unique among
+            //* domains to help make sure only processes in the same domain talk to
+            //* each other.
+            final String indicatorValue = SecureAdmin.Util.configuredAdminIndicator(secureAdmin);
+            if(indicatorValue != null) {
+                httpURLConnection.setRequestProperty(SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME, indicatorValue);
+            }
             //Hack - httpConnectorAddress calls httpURLConnection.setRequestProperty("Content-type", "application/octet-stream"); before returning connection above
             //Our resources are only capable of accepting xml, json and form. Override here to apploication/json (randomly picked one of the three). This should not be required after HttpConnectorAddress refactoring in trunk.
             httpURLConnection.setRequestProperty("Content-type", "application/json");
