@@ -189,6 +189,7 @@ public abstract class GFLauncher {
         GFLauncherLogger.addLogFileHandler(logFilename, info);
         setJavaExecutable();
         setClasspath();
+        setJvmOptions();
         setCommandLine();
         logCommandLine();
         // if no <network-config> element, we need to upgrade this domain
@@ -559,6 +560,19 @@ public abstract class GFLauncher {
         }
     }
 
+    void setJvmOptions() throws GFLauncherException {
+        List<String> jvmOpts = getJvmOptions();
+        jvmOpts.clear();
+
+        if (jvmOptions != null)
+            addIgnoreNull(jvmOpts, jvmOptions.toStringArray());
+
+    }
+
+    public final List<String> getJvmOptions() {
+        return jvmOptionsList;
+    }
+
     private void addIgnoreNull(List<String> list, String s) {
         if (GFLauncherUtils.ok(s))
             list.add(s);
@@ -841,7 +855,7 @@ public abstract class GFLauncher {
 
     void logCommandLine() {
         StringBuilder sb = new StringBuilder();
-        for (String s : commandLine) {
+        for (String s : jvmOptionsList) {
             // newline before the first line...
             sb.append(NEWLINE);
             sb.append(s);
@@ -928,6 +942,7 @@ public abstract class GFLauncher {
         }
     }
     private List<String> commandLine = new ArrayList<String>();
+    private List<String> jvmOptionsList = new ArrayList<String>();
     private GFLauncherInfo info;
     private Map<String, String> asenvProps;
     private JavaConfig javaConfig;
