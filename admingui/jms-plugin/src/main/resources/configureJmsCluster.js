@@ -64,14 +64,14 @@ function updateUI() {
 }
     
 function updateJmsPropertySheet(customConfig) {
+    var jmsTypeSheet = 'propertyForm:jmsTypePropertySheet';
+    var jmsPropsheet = 'propertyForm:jmsPropertySheet';
     if (!customConfig) {
         setDisplay(jmsTypeSheet, 'none');
         setDisplay(jmsPropsheet, 'none');
         return;
     }
     
-    var jmsTypeSheet = 'propertyForm:jmsTypePropertySheet';
-    var jmsPropsheet = 'propertyForm:jmsPropertySheet';
     var baseId = jmsPropsheet + ':configureJmsClusterSection';
     var configStoreType = document.getElementById(baseId+':ConfigStoreTypeProp:configStoreType').value;
     var messageStoreType = document.getElementById(baseId+':MessageStoreTypeProp:messageStoreType').value;
