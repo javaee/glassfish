@@ -62,7 +62,7 @@
                 <version>2.0.2</version>
                 <executions>
                     <execution>
-                        <phase>install</phase>
+                        <phase>package</phase>
                         <configuration>
                             <archive>
                                 <manifestEntries>
@@ -79,7 +79,7 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
-				<phase>install</phase>
+				<phase>package</phase>
                         <configuration>
                             <tasks>
                                 <unzip src="target/admingui.war" dest="target/temp"/>
