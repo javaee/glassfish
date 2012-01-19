@@ -55,37 +55,11 @@
         <project.version>3.1.2-SNAPSHOT</project.version>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.main.extras</groupId>
-            <artifactId>glassfish-embedded-web</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.6</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
     <build>
         <testSourceDirectory>src/test/java</testSourceDirectory>
         <testOutputDirectory>target/classes/WEB-INF/classes</testOutputDirectory>
         <finalName>embedded-webapi-tests</finalName>
         <plugins>
-            <plugin>
-                <artifactId>maven-war-plugin</artifactId>
-                <configuration>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -118,6 +92,24 @@
     </build>
     <profiles>
         <profile>
+            <id>run-with-web-jar</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.glassfish.main.extras</groupId>
+                    <artifactId>glassfish-embedded-web</artifactId>
+                    <version>3.1.2-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                    <version>4.3.1</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>run-with-shell-jar</id>
             <activation>
                 <property>
@@ -142,14 +134,5 @@
             </dependencies>
         </profile>
     </profiles>
-
-
-    <licenses>
-        <license>
-            <distribution>repo</distribution>
-            <name>CDDL and GPLv2 w/ classpath execption dual license</name>
-            <url>https://glassfish.dev.java.net/public/CDDL+GPL.html</url>
-        </license>
-    </licenses>
 
 </project>
