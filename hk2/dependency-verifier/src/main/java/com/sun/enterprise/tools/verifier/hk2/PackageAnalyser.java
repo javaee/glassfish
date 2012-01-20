@@ -121,6 +121,30 @@ public class PackageAnalyser {
             this(Version.emptyVersion, true, null, false);
         }
 
+        @Override
+        public int hashCode() {
+            return toString().hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            boolean b = obj instanceof VersionRange;
+            if (b) {
+                VersionRange other = (VersionRange) obj;
+                b = this.lowerVersion.equals(other.lowerVersion) && // lowerVersions are never null, so we can safely call equals
+                        this.lowerVersionInclussive == other.lowerVersionInclussive;
+                if (b) {
+                    b = this.upperVersionInclussive == other.upperVersionInclussive;
+                    if(b) {
+                        b = (this.upperVersion != null && this.upperVersion.equals(other.upperVersion)) ||
+                                other.upperVersion==null;
+                    }
+                }
+                return b;
+            }
+            return b;
+        }
+
         public static VersionRange valueOf(String s) {
             if (s == null) s = "";
             // The string can be any of the following:
@@ -152,6 +176,8 @@ public class PackageAnalyser {
                 Version lv = new Version(s.trim());
                 return new VersionRange(lv);
             }
+
+
         }
 
         /**
@@ -227,16 +253,31 @@ public class PackageAnalyser {
             return i;
 
         }
+
+        @Override
+        public int hashCode() {
+            return name.hashCode() + version.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof PackageCapability) {
+                final PackageCapability other = PackageCapability.class.cast(obj);
+                return name.equals(other.name) && version.equals(other.version);
+            }
+            return false;
+        }
     }
 
     // Represents an imported pkg.
-    private class PackageRequirement implements Comparable<PackageRequirement> {
+    private static class PackageRequirement implements Comparable<PackageRequirement> {
         private String name;
         private VersionRange versionRange;
 
         private PackageRequirement(String name, VersionRange versionRange) {
             this.name = name;
             this.versionRange = versionRange;
+            assert(versionRange != null);
         }
 
         public String getName() {
@@ -259,6 +300,21 @@ public class PackageAnalyser {
         @Override
         public String toString() {
             return name + "; version=" + versionRange;
+        }
+
+        @Override
+        public int hashCode() {
+            return toString().hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            boolean b = obj instanceof PackageRequirement;
+            if (b) {
+                PackageRequirement other = (PackageRequirement) obj;
+                b = this.name.equals(other.name) && this.versionRange.equals(other.versionRange);
+            }
+            return b;
         }
     }
 
@@ -339,6 +395,17 @@ public class PackageAnalyser {
             return exportedPkgNames.contains(pkg);
         }
 
+        public PackageCapability provides(PackageRequirement pr) {
+            if (provides(pr.getName())) {
+                for (PackageCapability pc : getExportedPkgs()) {
+                    if (pc.getName().equals(pr.getName()) && pr.getVersionRange().isInRange(pc.getVersion())) {
+                        return pc;
+                    }
+                }
+            }
+            return null;
+        }
+
         public boolean requires(PackageCapability p) {
             return getRequiredPkgs().contains(p.getName());
         }
@@ -374,11 +441,16 @@ public class PackageAnalyser {
         /**
          * Package that is being wired
          */
-        String pkg;
+        PackageCapability pc;
         /**
          * The bundle that exports this package
          */
         Bundle exporter;
+
+        /**
+         * Requirement that's being wired.
+         */
+        PackageRequirement pr;
 
         /**
          * The bundle that imports this package
@@ -386,14 +458,28 @@ public class PackageAnalyser {
         Bundle importer;
 
         public Wire(String pkg, Bundle importer, Bundle exporter) {
+            this(new PackageCapability(pkg), new PackageRequirement(pkg, VersionRange.DEFAULT_VERSION_RANGE), importer, exporter);
+        }
+
+        public Wire(PackageCapability pc, PackageRequirement pr, Bundle importer, Bundle exporter) {
             this.exporter = exporter;
             this.importer = importer;
-            this.pkg = pkg;
+            this.pc = pc;
+            this.pr = pr;
+            assert(pc.getName().equals(pr.getName()));
         }
 
 
+        public PackageCapability getPc() {
+            return pc;
+        }
+
+        public PackageRequirement getPr() {
+            return pr;
+        }
+
         public String getPkg() {
-            return pkg;
+            return pc.getName();
         }
 
         public Bundle getExporter() {
@@ -406,7 +492,7 @@ public class PackageAnalyser {
 
         @Override
         public int hashCode() {
-            return pkg.hashCode();
+            return getPkg().hashCode();
         }
 
         @Override
@@ -414,7 +500,7 @@ public class PackageAnalyser {
             boolean b = false;
             if (obj instanceof Wire) {
                 Wire other = Wire.class.cast(obj);
-                b = pkg.equals(other.pkg);
+                b = pc.equals(other.pc) && pr.equals(other.pr);
                 if (b) {
                     if (exporter != null) {
                         b = exporter.equals(other.exporter);
@@ -435,8 +521,9 @@ public class PackageAnalyser {
 
         @Override
         public String toString() {
-            return "Wire [Package = " + pkg + ", Importer = " + importer.getMd().getName() + ", Exporter = " + exporter.getMd().getName() + "]";
+            return "Wire [Package = " + pc + ", Importer = " + importer.getMd().getName() + ", Exporter = " + exporter.getMd().getName() + "]";
         }
+
     }
 
     /**
@@ -763,6 +850,11 @@ public class PackageAnalyser {
         return requiredBundles;
     }
 
+    /**
+     * Analyse package wiring between bundles. This method ignores
+     * @return
+     * @throws IOException
+     */
     public Collection<Wire> analyseWirings() throws IOException {
         List<ModuleDefinition> moduleDefs =
                 moduleDefs = moduleRepository.findAll();
@@ -774,7 +866,22 @@ public class PackageAnalyser {
         }
         Set<Wire> wires = new HashSet<Wire>();
         for (Bundle importer : bundles) {
+            Set<String> importedPkgNames = new HashSet<String>();
+            for (PackageRequirement pr : importer.getImportedPkgs()) {
+                importedPkgNames.add(pr.getName());
+                PackageCapability pc;
+                for (Bundle exporter : bundles) {
+                    if ((pc = exporter.provides(pr)) != null) {
+                        Wire w = new Wire(pc, pr, importer, exporter);
+                        wires.add(w);
+                    }
+                }
+            }
+
             for (String pkg : importer.getRequiredPkgs()) {
+                if (importedPkgNames.contains(pkg)) {
+                    continue; // already seen this via Import-Package wiring
+                }
                 for (Bundle exporter : bundles) {
                     if (exporter.provides(pkg)) {
                         Wire w = new Wire(pkg, importer, exporter);
@@ -788,7 +895,7 @@ public class PackageAnalyser {
             Collator collator = Collator.getInstance();
 
             public int compare(Wire o1, Wire o2) {
-                return collator.compare(o1.pkg, o2.pkg);
+                return collator.compare(o1.pc.getName(), o2.pc.getName());
             }
         });
         return sorted;
@@ -894,29 +1001,29 @@ public class PackageAnalyser {
     }
 
 
-    public void generateWiringReport(Collection<String> exportedPkgs, Collection<PackageAnalyser.Wire> wires, PrintStream out) {
+    public void generateWiringReport(Collection<PackageCapability> exportedPkgs, Collection<PackageAnalyser.Wire> wires, PrintStream out) {
         out.println("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
         out.println("<?xml-stylesheet type=\"text/xsl\" href=\"wires.xsl\"?>");
         out.println("<Wires>");
-        for (String p : exportedPkgs) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("\t<Package name = \"" + p + "\">\n");
-            sb.append("\t\t<Exporters>\n");
+        for (PackageCapability p : exportedPkgs) {
             Set<String> exporters = new HashSet<String>();
+            Set<String> importers = new HashSet<String>();
             for (PackageAnalyser.Wire w : wires) {
-                if (w.getPkg().equals(p)) {
+                if (w.getPc().equals(p)) {
                     exporters.add(w.getExporter().getName());
+                    importers.add(w.getImporter().getName());
                 }
             }
+            StringBuilder sb = new StringBuilder();
+            sb.append("\t<Package name = \"" + p.getName() + "\" version = \"" + p.getVersion() + "\">\n");
+            sb.append("\t\t<Exporters>\n");
             for (String e : exporters) {
                 sb.append(e + " ");
             }
             sb.append("\n\t\t</Exporters>\n");
             sb.append("\t\t<Importers>\n");
-            for (PackageAnalyser.Wire w : wires) {
-                if (w.getPkg().equals(p)) {
-                    sb.append(w.getImporter().getName() + " ");
-                }
+            for (String e : importers) {
+                sb.append(e + " ");
             }
             sb.append("\n\t\t</Importers>\n");
             sb.append("\t</Package>");
@@ -1027,7 +1134,7 @@ public class PackageAnalyser {
 
         PackageAnalyser analyser = new PackageAnalyser(moduleRepository);
         Collection<Wire> wires = analyser.analyseWirings();
-        Collection<String> exportedPkgs = analyser.findAllExportedPackageNames();
+        Collection<PackageCapability> exportedPkgs = analyser.findAllExportedPackages();
         analyser.generateBundleReport(bundleOut);
         analyser.generateWiringReport(exportedPkgs, wires, wireOut);
         Collection<SplitPackage> splitPkgs = analyser.findDuplicatePackages();

@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -45,27 +45,13 @@
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <xsl:template match="/">
-  <html>
-  <body>
-    <h2>Package wiring details</h2>
-    <table border="1">
-    <tr bgcolor="#9acd32">
-      <th align="left">Package</th>
-      <th align="left">Version</th>
-      <th align="left">Exporter(s)</th>
-      <th align="left">Importer(s)</th>
-    </tr>
+    Exported Package List with versions are given below:
+
     <xsl:for-each select="Wires/Package">
-    <tr>
-      <td><xsl:value-of select="@name"/></td>
-      <td><xsl:value-of select="@version"/></td>
-      <td><xsl:value-of select="Exporters"/></td>
-      <td><xsl:value-of select="Importers"/></td>
-    </tr>
+     <xsl:text>
+     </xsl:text>
+     <xsl:value-of select="@name"/><xsl:text>; version=</xsl:text><xsl:value-of select="@version"/>
     </xsl:for-each>
-    </table>
-  </body>
-  </html>
 </xsl:template>
 
 </xsl:stylesheet>
