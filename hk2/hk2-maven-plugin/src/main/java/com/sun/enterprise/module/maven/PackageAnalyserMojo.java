@@ -140,7 +140,7 @@ public class PackageAnalyserMojo extends AbstractMojo {
             sb.append("******** GROSS STATISTICS *********\n");
             sb.append("Total number of bundles in this repository: " + analyser.findAllBundles().size()+"\n");
             sb.append("Total number of wires = " + wires.size() + "\n");
-            Collection<String> exportedPkgs = analyser.findAllExportedPackageNames();
+            Collection<PackageAnalyser.PackageCapability> exportedPkgs = analyser.findAllExportedPackages();
             sb.append("Total number of exported packages = " + exportedPkgs.size() + "\n");
             sb.append("Total number of split-packages = " + splitPkgs.size()+"\n");
             sb.append("Total number of unused-packages = " + totalUnusedPkgs +"\n");
