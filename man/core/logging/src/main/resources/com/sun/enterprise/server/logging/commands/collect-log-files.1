@@ -13,7 +13,9 @@ DESCRIPTION
      The collect-log-files subcommand collects all available  log
      files for the domain administration server (DAS), the speci-
      fied cluster, or the specified GlassFish Server instance and
-     creates a single ZIP archive of the log files.
+     creates a single ZIP archive of the log files.  If a cluster
+     is specified, the ZIP archive also contains the log file for
+     the DAS.
 
      This subcommand is supported in remote mode only.
 
@@ -52,7 +54,7 @@ OPTIONS
           server
                The log  files  will  be  collected  for  the  DAS
 
-Java EE 6           Last change: 16 June 2011                   1
+Java EE 6           Last change: 22 Jan 2012                    1
 
 asadmin Utility Subcommands                  collect-log-files(1)
 
@@ -64,7 +66,7 @@ asadmin Utility Subcommands                  collect-log-files(1)
 
           cluster-name
                The log files will be collected for the  specified
-               cluster.
+               cluster and the DAS.
 
 OPERANDS
      retrievefilepath
@@ -108,7 +110,7 @@ EXAMPLES
 EXIT STATUS
      0    subcommand executed successfully
 
-Java EE 6           Last change: 16 June 2011                   2
+Java EE 6           Last change: 22 Jan 2012                    2
 
 asadmin Utility Subcommands                  collect-log-files(1)
 
@@ -123,5 +125,6 @@ SEE ALSO
      "Administering the  Logging  Service"  in  Oracle  GlassFish
      Server Administration Guide
 
-Java EE 6           Last change: 16 June 2011                   3
+Java EE 6           Last change: 22 Jan 2012                    3
 
+1
