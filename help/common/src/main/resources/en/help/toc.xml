@@ -14,7 +14,6 @@
     <tocitem target="task-group-appservsettings" text="Configuring and Managing the DAS" expand="false">
       <tocitem target="task-generaltab" text="To View General Information for the DAS" expand="false"></tocitem>
       <tocitem target="task-logviewer" text="To View Log Files for the DAS" expand="false"></tocitem>
-      <tocitem target="task-rawlogviewer" text="To View Raw Log Files for the DAS" expand="false"></tocitem>
       <tocitem target="task-filter-logs" text="To Filter Displayed Log Records" expand="false"></tocitem>
       <tocitem target="task-enable-secure-admin" text="To Enable Secure Administration" expand="false"></tocitem>
       <tocitem target="task-disable-secure-admin" text="To Disable Secure Administration" expand="false"></tocitem>
@@ -139,7 +138,6 @@
     <tocitem target="ref-group-appservsettings" text="server (Admin Server)" expand="false">
       <tocitem target="ref-generaltab" text="General Information" expand="false"></tocitem>
       <tocitem target="ref-logviewer" text="Log Viewer" expand="false"></tocitem>
-      <tocitem target="ref-rawlogviewer" text="Raw Log Viewer" expand="false"></tocitem>
       <tocitem target="ref-recovertransactions" text="Recover Transactions" expand="false"></tocitem>
       <tocitem target="ref-securityadmin" text="Secure Administration" expand="false"></tocitem>
       <tocitem target="ref-serverinstresources" text="Resources" expand="false"></tocitem>

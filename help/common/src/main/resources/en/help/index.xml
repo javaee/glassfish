@@ -159,8 +159,6 @@
     <indexitem text="viewing monitoring data for resources (task)" target="task-resourcemonitoringdata"></indexitem>
     <indexitem text="viewing monitoring data for virtual servers (reference)" target="ref-servermonitoringdata"></indexitem>
     <indexitem text="viewing monitoring data for virtual servers (task)" target="task-servermonitoringdata"></indexitem>
-    <indexitem text="viewing the raw server log (reference)" target="ref-rawlogviewer"></indexitem>
-    <indexitem text="viewing the raw server log (task)" target="task-rawlogviewer"></indexitem>
     <indexitem text="viewing the server log (reference)" target="ref-logviewer"></indexitem>
     <indexitem text="viewing the server log (task)" target="task-logviewer"></indexitem>
   </indexitem>
@@ -233,8 +231,6 @@
     <indexitem text="configuring levels (reference)" target="ref-eelogginglevels"></indexitem>
     <indexitem text="configuring levels (task)" target="task-eelogginglevels"></indexitem>
     <indexitem text="configuring maximum number of log files (task)" target="task-logging-max-logfiles"></indexitem>
-    <indexitem text="viewing the raw server log (reference)" target="ref-rawlogviewer"></indexitem>
-    <indexitem text="viewing the raw server log (task)" target="task-rawlogviewer"></indexitem>
     <indexitem text="viewing the server log (reference)" target="ref-logviewer"></indexitem>
     <indexitem text="viewing the server log (task)" target="task-logviewer"></indexitem>
   </indexitem>
@@ -348,8 +344,6 @@
   <indexitem text="server log">
     <indexitem text="viewing (reference)" target="ref-logviewer"></indexitem>
     <indexitem text="viewing (task)" target="task-logviewer"></indexitem>
-    <indexitem text="viewing raw (reference)" target="ref-rawlogviewer"></indexitem>
-    <indexitem text="viewing raw (task)" target="task-rawlogviewer"></indexitem>
   </indexitem>
   <indexitem text="Solaris realm">
     <indexitem text="properties" target="ref-solarisrealmprop"></indexitem>
