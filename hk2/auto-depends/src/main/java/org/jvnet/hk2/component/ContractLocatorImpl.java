@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,7 +43,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -157,7 +159,7 @@ public class ContractLocatorImpl<T> implements ContractLocator<T> {
 
     public Collection<Provider<T>> all(boolean stopAtFirstMatch) {
 
-        List<Provider<T>> providers = new ArrayList<Provider<T>>();
+        Set<Provider<T>> providers = new HashSet<Provider<T>>();
 
         if (qualifiers.isEmpty()) {
             return getNonQualifiedInhabitants(stopAtFirstMatch);
@@ -211,7 +213,7 @@ public class ContractLocatorImpl<T> implements ContractLocator<T> {
     }
 
     private Collection<Provider<T>> getNonQualifiedInhabitants(boolean stopOnFirst) {
-        List<Provider<T>> inhabitants = new ArrayList<Provider<T>>();
+        Set<Provider<T>> inhabitants = new HashSet<Provider<T>>();
         if (name!=null && !name.isEmpty()) {
             Inhabitant<T> provider = provider();
             if (provider!=null) {
