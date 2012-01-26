@@ -40,9 +40,9 @@
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ COMMON STUFF ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-PRODUCT_NAME=GlassFish Server \u5F00\u6E90\u7248\u672C
+PRODUCT_NAME=GlassFish Server \u5F00\u6E90\u7248
 
-app_title=GlassFish Server \u5F00\u6E90\u7248\u672C
+app_title=GlassFish Server \u5F00\u6E90\u7248
 
 # Text for Buttons
 btnCancel_text=\u53D6\u6D88

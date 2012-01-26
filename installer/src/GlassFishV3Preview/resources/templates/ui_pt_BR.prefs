@@ -95,7 +95,7 @@ btnpanel_bgcolor=e8e9ed
 button_font=Sans-Serif-BOLD-14
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~W E L C O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Bem-vindo \u00E0 instala\u00E7\u00E3o do ${PRODUCT_NAME}.&lt;BR&gt;Esta \u00E9 a ferramenta para a instala\u00E7\u00E3o do ${PRODUCT_NAME}. &lt;BR&gt;&lt;BR&gt;O GlassFish Server \u00E9 um servidor de aplica\u00E7\u00F5es compat\u00EDvel com o Java EE 6, pronto para produ\u00E7\u00E3o, &lt;BR&gt;desenvolvido sob uma licen\u00E7a de c\u00F3digo-fonte aberto. As vantagens s\u00E3o um runtime modular que minimiza o consumo de recursos, uma &lt;BR&gt;console de administra\u00E7\u00E3o f\u00E1cil de usar, uma ferramenta de linha de comandos rica em recursos, &lt;BR&gt;administra\u00E7\u00E3o centralizada e clusteriza\u00E7\u00E3o de alta disponibilidade. O GlassFish Server tamb\u00E9m \u00E9 o &lt;BR&gt;servidor de aplica\u00E7\u00F5es de c\u00F3digo-fonte aberto mais r\u00E1pido dispon\u00EDvel no mercado.&lt;BR&gt;&lt;BR&gt;Visite a p\u00E1gina do Projeto GlassFish &lt;a href=https://glassfish.dev.java.net&gt; &lt;/a&gt; para obter mais informa\u00E7\u00F5es. &lt;BR&gt;&lt;BR&gt;Clique em Pr\u00F3ximo para continuar. &lt;BR&gt;&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Bem-vindo \u00E0 instala\u00E7\u00E3o do ${PRODUCT_NAME}.&lt;BR&gt;Esta \u00E9 uma ferramenta para a instala\u00E7\u00E3o do ${PRODUCT_NAME}. &lt;BR&gt;&lt;BR&gt;O GlassFish Server \u00E9 um servidor de aplica\u00E7\u00F5es compat\u00EDvel com o Java EE 6, pronto para produ\u00E7\u00E3o, &lt;BR&gt;desenvolvido sob uma licen\u00E7a de c\u00F3digo-fonte aberto. As vantagens incluem um &lt;BR&gt;runtime modular que minimiza o consumo de recursos, uma &lt;BR&gt;console de administra\u00E7\u00E3o f\u00E1cil de usar, uma ferramenta de linha de comandos rica em recursos, &lt;BR&gt;administra\u00E7\u00E3o centralizada e clusteriza\u00E7\u00E3o de alta disponibilidade. O GlassFish Server tamb\u00E9m \u00E9 o &lt;BR&gt;servidor de aplica\u00E7\u00F5es de c\u00F3digo-fonte aberto mais r\u00E1pido dispon\u00EDvel no mercado.&lt;BR&gt;&lt;BR&gt;Visite a p\u00E1gina do Projeto GlassFish&lt;a href=https://glassfish.dev.java.net&gt; &lt;/a&gt; para obter mais informa\u00E7\u00F5es. &lt;BR&gt;&lt;BR&gt;Clique em Pr\u00F3ximo para continuar. &lt;BR&gt;&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
 
 
 
@@ -148,7 +148,7 @@ ADMIN_PASSWORD_TOOL_TIP=Digite a Senha do Administrador
 ADMIN_SERVICE_CHOICE_TOOL_TIP=Selecione esta op\u00E7\u00E3o para criar um servi\u00E7o do Sistema Operacional para o dom\u00EDnio
 ADMIN_SERVICE_CHOICE_TEXT=Criar servi\u00E7o do Sistema Operacional para o dom\u00EDnio
 INSTANCE_SERVICE_CHOICE_TEXT=Criar servi\u00E7o do SO para esta inst\u00E2ncia 
-INSTANCE_SERVICE_CHOICE_TOOL_TIP=Selecione esta op\u00E7\u00E3o para criar um servi\u00E7o do Sistema Operacional para a inst\u00E2ncia
+INSTANCE_SERVICE_CHOICE_TOOL_TIP=Selecione esta op\u00E7\u00E3o para criar um servi\u00E7o do Sistema Operacional para esta inst\u00E2ncia
 ADMIN_SERVICE_NAME_TEXT=Nome do Servi\u00E7o
 ADMIN_SERVICE_NAME_TOOL_TIP=O nome do servi\u00E7o a ser criado; o default \u00E9 domain1Service
 START_SERVER_CHOICE_TEXT=Iniciar o dom\u00EDnio ap\u00F3s a cria\u00E7\u00E3o
@@ -175,7 +175,7 @@ CONFIGURE_SELECTED_COMPONENTS_MSG=Configura os componentes de software seleciona
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~A D M I N   P A S S W O R D   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ADMIN_USER_TEXT=Nome de usu\u00E1rio
 ADMIN_PASSWORD_TEXT=Senha
-ADMIN_REENTERPASSWORD_TEXT=Insira a Senha Novamente
+ADMIN_REENTERPASSWORD_TEXT=Informe a Senha Novamente
 ADMIN_PORT_TEXT=Porta Admin
 DOMAIN_NAME_TEXT=Nome do Dom\u00EDnio
 HTTP_PORT_TEXT=Porta http
@@ -227,7 +227,7 @@ CONFIG_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Sele
 
 DOMAIN_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Selecione esta op\u00E7\u00E3o para criar um Servidor de Administra\u00E7\u00E3o de Dom\u00EDnios.&lt;BODY&gt;&lt;HTML&gt; 
 
-STANDALONEINSTANCE_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Selecione esta op\u00E7\u00E3o para criar uma inst\u00E2ncia standalone local que seja gerenciada&It;BR&gt;por um Servidor de Administra\u00E7\u00E3o de Dom\u00EDnios. O Servidor de Administra\u00E7\u00E3o de Dom\u00EDnios &lt;BR&gt;dever\u00E1 estar em execu\u00E7\u00E3o para que esta op\u00E7\u00E3o seja conclu\u00EDda com sucesso. &lt;BODY&gt;&lt;HTML&gt;
+STANDALONEINSTANCE_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Selecione esta op\u00E7\u00E3o para criar uma inst\u00E2ncia standalone local que seja gerenciada&It;BR&gt;por um Servidor de Administra\u00E7\u00E3o de Dom\u00EDnios. O Servidor de Administra\u00E7\u00E3o de Dom\u00EDnios &lt;BR&gt;dever\u00E1 estar em execu\u00E7\u00E3o para que esta op\u00E7\u00E3o seja conclu\u00EDda com sucesso. &lt;BODY&gt;&lt;HTML&gt; 
 
 CLUSTEREDINSTANCE_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Selecione esta op\u00E7\u00E3o para criar uma inst\u00E2ncia clusterizada que seja gerenciada por um &lt;BR&gt;Servidor de Administra\u00E7\u00E3o de Dom\u00EDnios. O Servidor de Administra\u00E7\u00E3o de Dom\u00EDnios dever\u00E1&It;BR&gt;estar em execu\u00E7\u00E3o para que esta op\u00E7\u00E3o seja conclu\u00EDda com sucesso.&lt;BODY&gt;&lt;HTML&gt; 
 
@@ -250,11 +250,11 @@ DAS_PARTITION_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font size='5' face='Sans-Serif'&g
 INSTANCE_NAME_TEXT=Nome da Inst\u00E2ncia
 INSTANCE_NAME_TOOL_TIP=Forne\u00E7a o nome da inst\u00E2ncia a ser criada. O default \u00E9 instance1
 
-SERVER_ADMIN_PORT_TEXT=Porta de Administra\u00E7\u00E3o
-SERVER_ADMIN_PORT_TOOL_TIP=Forne\u00E7a a Porta de Administra\u00E7\u00E3o do Dom\u00EDnio
+SERVER_ADMIN_PORT_TEXT=Porta de Administra\u00E7\u00E3o 
+SERVER_ADMIN_PORT_TOOL_TIP=Especifique a Porta de Administra\u00E7\u00E3o do Dom\u00EDnio
 
-SERVER_HOST_NAME_TEXT=Nome do Host
-SERVER_HOST_NAME_TOOL_TIP=Forne\u00E7a o Nome do Host onde o Dom\u00EDnio est\u00E1 localizado
+SERVER_HOST_NAME_TEXT=Nome do Host 
+SERVER_HOST_NAME_TOOL_TIP=Especifique o Nome do Host em que se localiza o Dom\u00EDnio
 
 CREATE_CLUSTER_INFO_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Forne\u00E7a o nome do cluster ao qual esta inst\u00E2ncia pertence. Um cluster poder\u00E1&lt;BR&gt;ser criado caso ainda n\u00E3o exista. &lt;BODY&gt;&lt;HTML&gt;
 
@@ -262,7 +262,7 @@ CREATE_CLUSTER_CHOICE_TEXT=Criar Cluster
 
 PART_OF_CLUSTER_CHOICE_TOOL_TIP=
 
-CLUSTER_NAME_TEXT=Nome do Cluster
+CLUSTER_NAME_TEXT=Nome do Cluster 
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~REGISTRATION OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
