@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2010,2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -96,11 +96,13 @@ public class ConnectorClassLoaderServiceImpl implements ConnectorClassLoaderServ
        if(globalConnectorCL == null){
            synchronized (ConnectorClassLoaderServiceImpl.class){
                if(globalConnectorCL == null){
+                   //[parent is assumed to be common classloader in ConnectorClassLoaderUtil.createRARClassLoader() also]
                    ClassLoader parent = getCommonClassLoader();
-                    globalConnectorCL =  new DelegatingClassLoader(parent);
+                    DelegatingClassLoader dcl =  new DelegatingClassLoader(parent);
                     for(DelegatingClassLoader.ClassFinder cf : appsSpecificCCLUtil.getSystemRARClassLoaders()){
-                        globalConnectorCL.addDelegate(cf);
+                        dcl.addDelegate(cf);
                     }
+                    globalConnectorCL =  dcl;
                }
            }
         }
