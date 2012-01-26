@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 import org.omg.CORBA.ORB;
 
 @ManagedBean("FooManagedBean")
-@Interceptors(InterceptorA.class)
+//@Interceptors(InterceptorA.class)
 public class FooManagedBean {
 
     public boolean interceptorWasHere;
