@@ -69,7 +69,6 @@
     </target>   
 
     <target name="unsetup" depends="init-common">
-        <antcall target="undeploy-jms-common"/>
         <antcall target="delete-jms-resource-common">
              <param name="dest.name"
                  value="clientQueue"/>
@@ -77,6 +76,12 @@
                  value="queue"/>
              <param name="jms.resource.name"
                  value="jms/clientQueue"/>
+        </antcall>
+        <antcall target="undeploy-jms-common">
+            <param name="jms.factory.name"
+                 value="jms/CFactory"/>
+            <param name="jms.factory.type"
+                 value="javax.jms.ConnectionFactory"/>
         </antcall>
     </target>
 
