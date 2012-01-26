@@ -18,8 +18,10 @@ public class InterceptorA {
     @AroundInvoke
     private Object roundInvoke(InvocationContext c) throws Exception {
 	System.err.println("===> In InterceptorA::aroundInvoke() ");
-        StatelessBean sb = (StatelessBean)c.getTarget();
-        sb.interceptorCalled(0);
+        if ((c.getTarget() instanceof StatelessBean) && c.getMethod().getName().equals("hello")) {
+            StatelessBean sb = (StatelessBean)c.getTarget();
+            sb.interceptorCalled(0);
+        }
 	return c.proceed();
     }
 

@@ -13,8 +13,10 @@ public class AnotherInterceptor {
     @AroundInvoke
     public Object process(InvocationContext ctx) throws Exception {
         System.err.println("====> AnotherInterceptor::AroundInvoke");
-        StatelessBean sb = (StatelessBean)ctx.getTarget();
-        sb.interceptorCalled(1);
+        if ((ctx.getTarget() instanceof StatelessBean) && ctx.getMethod().getName().equals("hello")) {
+            StatelessBean sb = (StatelessBean)ctx.getTarget();
+            sb.interceptorCalled(1);
+        }
         return ctx.proceed();
     }
 
