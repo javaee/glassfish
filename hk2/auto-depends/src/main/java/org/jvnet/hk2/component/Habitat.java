@@ -91,6 +91,7 @@ import com.sun.hk2.component.InjectInjectionResolver;
 import com.sun.hk2.component.InjectionResolver;
 import com.sun.hk2.component.RunLevelInhabitantProvider;
 import com.sun.hk2.component.ScopeInstanceImpl;
+import com.sun.hk2.jsr330.spi.internal.Jsr330InjectionResolver;
 
 /**
  * A set of templates that constitute a world of objects.
@@ -209,9 +210,15 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
 
         // add the set of injection resolvers
         InjectInjectionResolver injectresolver = new InjectInjectionResolver(this);
+        
         addIndex(new ExistingSingletonInhabitant<InjectionResolver>(
                     InjectionResolver.class, injectresolver),
                 InjectionResolver.class.getName(), "Inject");
+
+        Jsr330InjectionResolver atInjectResolver = new Jsr330InjectionResolver(this);
+        addIndex(new ExistingSingletonInhabitant<InjectionResolver>(
+                InjectionResolver.class, atInjectResolver),
+            InjectionResolver.class.getName(), "Jsr330Inject");
 
         // make the habitat itself available
         Inhabitant<Habitat> habitatInh = new ExistingSingletonInhabitant<Habitat>(Habitat.class, this);
