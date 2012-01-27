@@ -1,7 +1,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2008-2012 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -95,7 +95,7 @@ btnpanel_bgcolor=e8e9ed
 button_font=Sans-Serif-BOLD-14
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~W E L C O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Benvenuti nell'installazione di ${PRODUCT_NAME}.&lt;BR&gt;Questo \u00E8 lo strumento di installazione di ${PRODUCT_NAME}. &lt;BR&gt;&lt;BR&gt;GlassFish Server \u00E8 un'Application Server pronto per la produzione e conforme agli standard Java EE 6, &lt;BR&gt;sviluppato con una licenza open source. Offre numerosi vantaggi, tra i quali &lt;BR&gt; una fase di esecuzione modulare che ottimizza l'utilizzo delle risorse, una console di amministrazione &lt;BR&gt;di facile uso, uno strumento da riga di comando con funzioni complete, &lt;BR&gt;amministrazione centralizzata e configurazione cluster ad alta disponibilit\u00E0. GlassFish Server \u00E8 inoltre &lt;BR&gt;l'Application Server open source pi\u00F9 veloce disponibile sul mercato.&lt;BR&gt;&lt;BR&gt;Per ulteriori informazioni, visitare la &lt;a href=https://glassfish.dev.java.net&gt; pagina del progetto GlassFish&lt;/a&gt;. &lt;BR&gt;&lt;BR&gt;Fare clic su Successivo per continuare. &lt;BR&gt;&lt;BR&gt; &lt;/BODY&gt;&lt;/HTML&gt;
+Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Benvenuti nell'installazione di ${PRODUCT_NAME}.&lt;BR&gt;Questo \u00E8 lo strumento di installazione di ${PRODUCT_NAME}. &lt;BR&gt;&lt;BR&gt;GlassFish Server \u00E8 un'Application Server pronto per la produzione e conforme agli standard Java EE 6, &lt;BR&gt;sviluppato con una licenza open source. Offre numerosi vantaggi, tra i quali &lt;BR&gt; una fase di esecuzione modulare che ottimizza l'utilizzo delle risorse, una console di amministrazione &lt;BR&gt;di facile uso, uno strumento da riga di comando con funzioni complete, &lt;BR&gt;amministrazione centralizzata e configurazione cluster ad alta disponibilit\u00E0. GlassFish Server \u00E8 inoltre &lt;BR&gt;l'Application Server open source pi\u00F9 veloce disponibile sul mercato.&lt;BR&gt;&lt;BR&gt;Per ulteriori informazioni, visitare la &lt;a href=http://glassfish.java.net&gt; pagina del progetto GlassFish&lt;/a&gt;. &lt;BR&gt;&lt;BR&gt;Fare clic su Successivo per continuare. &lt;BR&gt;&lt;BR&gt; &lt;/BODY&gt;&lt;/HTML&gt;
 
 
 
@@ -131,7 +131,7 @@ ALTERNATE_JDK=Posizione SDK Java(TM) alternativo
 UPDATETOOL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt; Lo strumento di aggiornamento verifica periodicamente la disponibilit\u00E0 degli&lt;BR&gt;aggiornamenti di GlassFish Server e consente agli utenti di mantenersi aggiornati con le build pi\u00F9 recenti.&lt;BODY&gt;&lt;HTML&gt;
 
 
-UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt; Lo strumento di aggiornamento verifica periodicamente la disponibilit\u00E0 degli aggiornamenti &lt;BR&gt; e raccoglie alcuni dati del sistema. Per ulteriori informazioni, vedere la pagina &lt;a href=http://wikis.sun.com/display/glassfish/UsageMetricsV3&gt; Metriche d'uso di GlassFish&lt;/a&gt; &lt;BR&gt;all'indirizzo http://wikis.sun.com/display/GlassFish/UsageMetricsV3.&lt;BODY&gt;&lt;HTML&gt;
+UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt; Lo strumento di aggiornamento verifica periodicamente la disponibilit\u00E0 degli aggiornamenti &lt;BR&gt; e raccoglie alcuni dati del sistema. Per ulteriori informazioni, vedere la pagina &lt;a href=https://wikis.oracle.com/display/GlassFish/UsageMetricsV3&gt; Metriche d'uso di GlassFish&lt;/a&gt; &lt;BR&gt;all'indirizzo https://wikis.oracle.com/display/GlassFish/UsageMetricsV3.&lt;BODY&gt;&lt;HTML&gt;
 
 
 ADMINISTRATION_SERVICE_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Fornire il nome del servizio Windows o di un servizio SMF Solaris.&lt;BODY&gt;&lt;HTML&gt;
@@ -194,7 +194,7 @@ LASTNAME=Cognome
 COUNTRY=Paese
 COMPANYNAME=Nome societ\u00E0
 ACCOUNT_CREATION_HEADER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Fornire le informazioni seguenti per creare un account Sun in linea. Tutti i valori&lt;BR&gt;di campo sono obbligatori.&lt;BODY&gt;&lt;HTML&gt;
-ACCOUNT_CREATION_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;&lt;a href=http://www.sun.com/privacy/&gt;Norme sulla privacy Oracle&lt;BODY&gt;&lt;HTML&gt;
+ACCOUNT_CREATION_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;&lt;a href=http://www.oracle.com/us/legal/privacy/index.html&gt;Norme sulla privacy Oracle&lt;BODY&gt;&lt;HTML&gt;
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~USER TYPE OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 INSTALLUSERTYPE_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Scegliere il tipo di installazione desiderato.&lt;BODY&gt;&lt;HTML&gt;
