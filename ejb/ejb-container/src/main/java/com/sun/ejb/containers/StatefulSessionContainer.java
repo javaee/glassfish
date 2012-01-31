@@ -179,6 +179,7 @@ public final class StatefulSessionContainer
     private Method beforeCompletionMethod;
     private Method afterCompletionMethod;
 
+    private String sfsbHaPersistenceStoreType = "file";
     /*
      * Cache for keeping ref count for shared extended entity manager.
      * The key in this map is the physical entity manager
@@ -1803,7 +1804,7 @@ public final class StatefulSessionContainer
                 cSync = ejbContainerUtilImpl.
                         getContainerSync(context.getTransaction());
                 cSync.registerForTxCheckpoint(
-                        (SessionContextImpl) context);
+                        (SessionContextImpl) context, sfsbHaPersistenceStoreType);
             } catch (javax.transaction.RollbackException rollEx) {
                 _logger.log(Level.WARNING, "Cannot register bean for "
                         + "checkpointing", rollEx);
@@ -2536,7 +2537,10 @@ public final class StatefulSessionContainer
         };
     }
 
-    ;
+    public void setSfsbHaPersistenceType(String val) {
+        this.sfsbHaPersistenceStoreType = val;
+    }
+    
 
     /*********************************************************************/
     /***********  END SFSBContainerCallback methods    *******************/

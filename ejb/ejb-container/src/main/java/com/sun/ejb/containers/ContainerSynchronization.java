@@ -237,15 +237,10 @@ final class ContainerSynchronization implements Synchronization
         ejbContainerUtilImpl.removeContainerSync(tx);
     }
 
-    void registerForTxCheckpoint(SessionContextImpl sessionCtx) {
+    void registerForTxCheckpoint(SessionContextImpl sessionCtx, String haStoreType) {
         //No need to synchronize
         if (sfsbTxCoordinator == null) {
-            EjbDescriptor desc = sessionCtx.getContainer().getEjbDescriptor();
-            EJBServerConfigLookup ejbLookup = ejbContainerUtilImpl.getDefaultHabitat().
-                    getComponent(EJBServerConfigLookup.class);
-            ejbLookup.initWithEjbDescriptor(desc);
-            sfsbTxCoordinator = new SFSBTxCheckpointCoordinator(
-                    ejbLookup.getSfsbHaPersistenceTypeFromConfig());
+            sfsbTxCoordinator = new SFSBTxCheckpointCoordinator(haStoreType);
         }
 
         sfsbTxCoordinator.registerContext(sessionCtx);

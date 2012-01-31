@@ -236,6 +236,19 @@ public class StatefulContainerBuilder
         }
 
 
+        BackingStoreFactory factory = null;
+        try {
+            factory = habitat.getComponent(BackingStoreFactory.class, persistenceStoreType);
+        } catch (Exception ex) {
+            _logger.log(Level.WARNING, "Could not instantiate backing store factory for type: " + persistenceStoreType, ex);
+            persistenceStoreType = "noop";
+            try {
+                factory = habitat.getComponent(BackingStoreFactory.class, persistenceStoreType);
+            } catch (Exception ex2) {
+                _logger.log(Level.WARNING, "Could not instantiate backing store factory for type: " + persistenceStoreType, ex2);
+                throw new BackingStoreException("Could not instantiate BackingStore Factory for persistence type: " + persistenceStoreType, ex);
+            }
+        }
 
         BackingStoreConfiguration<Serializable, SimpleMetadata> conf = new BackingStoreConfiguration<Serializable, SimpleMetadata>();
         String storeName = ejbDescriptor.getName() + "-" + ejbDescriptor.getUniqueId() + "-BackingStore";
@@ -243,17 +256,6 @@ public class StatefulContainerBuilder
         _logger.log(Level.INFO, "StatefulContainerBuilder.buildStoreManager() storeName: " + storeName);
         
         String subDirName = "";
-
-/*        if (ejbDescriptor.getApplication().isVirtual()) {
-            String archURI = ejbDescriptor.getEjbBundleDescriptor().
-                    getModuleDescriptor().getArchiveUri();
-            subDirName += FileUtils.makeFriendlyFilename(archURI);
-            subDirName += "_" + FileUtils.makeFriendlyFilename(ejbDescriptor.getName());
-        } else {
-            subDirName += FileUtils.makeFriendlyFilename(ejbDescriptor.getApplication().getRegistrationName());
-            subDirName += "_" + FileUtils.makeFriendlyFilename(ejbDescriptor.getEjbBundleDescriptor().getName());
-            subDirName += "_" + FileUtils.makeFriendlyFilename(ejbDescriptor.getName());
-        }*/
 
         subDirName += ejbDescriptor.getName() + "-" + ejbDescriptor.getUniqueId();
         
@@ -280,18 +282,10 @@ public class StatefulContainerBuilder
                 conf.setInstanceName(gmsAdapter.getModule().getInstanceName());
             }
         }
-        
-        BackingStoreFactory factory = null;
-        try {
-            factory = habitat.getComponent(BackingStoreFactory.class, persistenceStoreType);
-        } catch (Exception ex) {
-            _logger.log(Level.WARNING, "Could not instantiate backing store for type: " + persistenceStoreType, ex);
-        }
+
 
         try {
-            if (factory == null) {
-                factory = habitat.getComponent(BackingStoreFactory.class, "noop");
-            }
+            sfsbContainer.setSfsbHaPersistenceType(persistenceStoreType);
             this.backingStore = factory.createBackingStore(conf);
         } catch (Exception ex) {
             _logger.log(Level.WARNING, "Could not instantiate BackingStore for persistence type: " + persistenceStoreType, ex);
