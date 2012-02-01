@@ -55,6 +55,7 @@ import org.glassfish.hk2.tests.basic.annotations.*;
 import org.glassfish.hk2.tests.basic.arbitrary.*;
 import org.glassfish.hk2.tests.basic.contracts.*;
 import org.glassfish.hk2.tests.basic.injected.*;
+import org.glassfish.hk2.tests.basic.resolving.injected.GenericFactoryProvidedContractFactory;
 import org.glassfish.hk2.tests.basic.scopes.*;
 import org.glassfish.hk2.tests.basic.services.*;
 import static org.glassfish.hk2.tests.basic.AssertionUtils.assertInjectedFactory;
@@ -65,7 +66,6 @@ import static org.glassfish.hk2.tests.basic.AssertionUtils.assertQualifierInject
 import org.jvnet.hk2.annotations.Inject;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -144,6 +144,8 @@ public class BasicInjectionTest {
                     return new FactoryProvidedContractCBImpl();
                 }
             });
+
+            binderFactory.bind(new TypeLiteral<GenericFactoryProvidedContract<String>>() {}).toFactory(new TypeLiteral<GenericFactoryProvidedContractFactory<String>>(){});
 
             // injected test class bindings
             binderFactory.bind().to(FieldInjectedTypeBindingTestClass.class);
@@ -352,7 +354,7 @@ public class BasicInjectionTest {
 
     @Test
     public void testTypeLiteralBoundToFactory() {
-        final List<String> expected = Arrays.asList(new String[]{"test"});
+        final List<String> expected = Arrays.asList("test");
         Services s = HK2.get().create(null, new Module() {
 
             @Override
@@ -386,7 +388,7 @@ public class BasicInjectionTest {
         customScope.leave();
 
         try {
-            customScopeInjectedClass = services.forContract(CustomScopeInjectedClass.class).get();
+            services.forContract(CustomScopeInjectedClass.class).get();
         } catch (IllegalStateException ex) {
             assertEquals(ex.getMessage(), CustomScope.OUT_OF_SCOPE_MESSAGE);
             return;

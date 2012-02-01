@@ -39,7 +39,6 @@
  */
 package org.glassfish.hk2.tests.basic.resolving;
 
-import org.junit.Ignore;
 import org.glassfish.hk2.tests.basic.resolving.injected.*;
 import org.glassfish.hk2.BinderFactory;
 import org.glassfish.hk2.ComponentException;
@@ -126,6 +125,7 @@ public class CustomInjectionTest {
                     return new FactoryProvidedContractCBImpl();
                 }
             });
+            binderFactory.bind(new TypeLiteral<GenericFactoryProvidedContract<String>>() {}).toFactory(new TypeLiteral<GenericFactoryProvidedContractFactory<String>>(){});
 
             // injected test class bindings
             binderFactory.bind().to(FieldInjectedTypeBinidngTestClass.class);
@@ -151,7 +151,6 @@ public class CustomInjectionTest {
     }
 
     @Test
-    @Ignore
     public void testAllContractBindingsRetrieval() {
         assertEquals(3, services.forContract(MultiBoundContract.class).all().size());
 
@@ -298,7 +297,7 @@ public class CustomInjectionTest {
         customScope.leave();
 
         try {
-            customScopeInjectedClass = services.forContract(CustomScopeInjectedClass.class).get();
+            services.forContract(CustomScopeInjectedClass.class).get();
         } catch (IllegalStateException ex) {
             assertEquals(ex.getMessage(), CustomScope.OUT_OF_SCOPE_MESSAGE);
             return;
