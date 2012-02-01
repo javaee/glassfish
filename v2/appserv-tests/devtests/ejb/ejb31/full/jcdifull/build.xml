@@ -20,11 +20,9 @@
  
     <target name="compile" depends="clean">
       <mkdir dir="${build.classes.dir}"/>
-      <javac classpath="${env.S1AS_HOME}/modules/weld-osgi-bundle.jar:${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar" srcdir="ejb" destdir="${build.classes.dir}" debug="on" failonerror="true">
+      <javac classpath="${env.S1AS_HOME}/modules/weld-osgi-bundle.jar:${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar" srcdir="ejb" destdir="${build.classes.dir}" debug="on" failonerror="true" includeantruntime="false" >
           <compilerarg line="-endorseddirs ${env.S1AS_HOME}/modules/endorsed${path.separator}${env.S1AS_HOME}/modules"/>
-
         </javac>
-
     </target>
 
     <target name="build" depends="compile">
