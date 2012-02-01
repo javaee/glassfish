@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,23 +40,26 @@
 package org.jvnet.hk2.component;
 
 import com.sun.hk2.component.AbstractCreatorImpl;
-import com.sun.hk2.component.ConstructorCreator;
-import com.sun.hk2.component.InhabitantsFile;
-import org.glassfish.hk2.*;
+import org.glassfish.hk2.Binder;
 import org.glassfish.hk2.Factory;
+import org.glassfish.hk2.NamedBinder;
+import org.glassfish.hk2.ResolvedBinder;
 import org.glassfish.hk2.Scope;
+import org.glassfish.hk2.TypeLiteral;
 
 import java.lang.annotation.Annotation;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 5/31/11
- * Time: 11:06 AM
- * To change this template use File | Settings | File Templates.
+ * Implementation of the {@link org.glassfish.hk2.Binder} interface.
+ *
+ * @author Jerome Dochez
  */
 class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
 
@@ -155,7 +158,7 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
     }
 
     @Override
-    public <T extends V> ResolvedBinder<T> toFactory(final Class<? extends org.glassfish.hk2.Factory<? extends T>> factoryType) {
+    public <T extends V> ResolvedBinder<T> toFactory(final Class<? extends Factory<? extends T>> factoryType) {
         AbstractResolvedBinder<T> resolvedBinder = new AbstractResolvedBinder<T>(this) {
 
             @Override
@@ -174,7 +177,7 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
 
                     @Override
                     public T create(Inhabitant onBehalfOf) throws ComponentException {
-                        Inhabitant<? extends org.glassfish.hk2.Factory<? extends T>> factoryInhabitant =
+                        Inhabitant<? extends Factory<? extends T>> factoryInhabitant =
                                 habitat.getInhabitantByType(factoryType);
                         if (factoryInhabitant == null) {
                             factoryInhabitant = Creators.create(factoryType, habitat, null);
@@ -196,8 +199,8 @@ class BinderImpl<V> implements Binder<V>, ResolvedBinder<V> {
     }
 
     @Override
-    public <T extends V> ResolvedBinder<T> toFactory(TypeLiteral<? extends org.glassfish.hk2.Factory<? extends T>> providerType) {
-        throw new UnsupportedOperationException();
+    public <T extends V> ResolvedBinder<T> toFactory(TypeLiteral<? extends Factory<? extends T>> providerType) {
+        return toFactory(providerType.getRawType());
     }
 
     @Override

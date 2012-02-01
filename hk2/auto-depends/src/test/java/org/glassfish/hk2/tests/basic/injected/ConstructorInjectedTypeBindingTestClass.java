@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,6 +47,7 @@ import org.glassfish.hk2.tests.basic.contracts.ContractA;
 import org.glassfish.hk2.tests.basic.contracts.ContractB;
 import org.glassfish.hk2.tests.basic.contracts.GenericContract;
 import org.glassfish.hk2.tests.basic.contracts.GenericContractStringImpl;
+import org.glassfish.hk2.tests.basic.contracts.GenericFactoryProvidedContract;
 import org.glassfish.hk2.tests.basic.services.ServiceA;
 import org.glassfish.hk2.tests.basic.services.ServiceB;
 import org.glassfish.hk2.tests.basic.services.ServiceC;
@@ -71,8 +72,9 @@ public class ConstructorInjectedTypeBindingTestClass {
     final Factory<ContractA> cap;
     final Factory<GenericContract<String>> gcp;
     final Factory<GenericContract<String>> gcpm;
+    final GenericFactoryProvidedContract<String> gfpc;
 
-    public ConstructorInjectedTypeBindingTestClass(@Inject ServiceC sc, @Inject ClassX cx, @Inject ContractB cb, @Inject ContractA ca, @Inject GenericContract<String> gc, @Inject @MarkerA GenericContract<String> gcm, @Inject Factory<ServiceC> scp, @Inject Factory<ClassX> cxp, @Inject Factory<ContractB> cbp, @Inject Factory<ContractA> cap, @Inject Factory<GenericContract<String>> gcp, @Inject @MarkerA Factory<GenericContract<String>> gcpm) {
+    public ConstructorInjectedTypeBindingTestClass(@Inject ServiceC sc, @Inject ClassX cx, @Inject ContractB cb, @Inject ContractA ca, @Inject GenericContract<String> gc, @Inject @MarkerA GenericContract<String> gcm, @Inject Factory<ServiceC> scp, @Inject Factory<ClassX> cxp, @Inject Factory<ContractB> cbp, @Inject Factory<ContractA> cap, @Inject Factory<GenericContract<String>> gcp, @Inject @MarkerA Factory<GenericContract<String>> gcpm, @Inject GenericFactoryProvidedContract<String> gfpc) {
         this.sc = sc;
         this.cx = cx;
         this.cb = cb;
@@ -85,6 +87,7 @@ public class ConstructorInjectedTypeBindingTestClass {
         this.cap = cap;
         this.gcp = gcp;
         this.gcpm = gcpm;
+        this.gfpc = gfpc;
     }
 
     public void assertInjection() {
