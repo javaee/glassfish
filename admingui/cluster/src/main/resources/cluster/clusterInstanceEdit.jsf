@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -53,10 +53,13 @@
     <event>
     <!beforeCreate
         setSessionAttribute(key="clusterInstanceTabs" value="general");
-        getRequestValue(key="clusterName" value="#{pageSession.clusterName}");
-        urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
         getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
         urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
+        getRequestValue(key="clusterName" value="#{pageSession.clusterName}");
+        if("!#{pageSession.clusterName}"){
+            gf.getClusterNameForInstance(instanceName="#{pageSession.instanceName}", clusterName="#{pageSession.clusterName}");
+        }
+        urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/cluster/cluster/clusterInstanceEdit.jsf?clusterName=#{pageSession.encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
         gfr.getStatusString();
         gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/servers/server/#{pageSession.encodedInstanceName}", valueMap="#{pageSession.vMap}");
@@ -70,18 +73,6 @@
         if ("#{pageSession.status}=REQUIRES_RESTART"){
             setAttribute(key="isRestartRequired" value="#{true}");
         }
-        gf.restRequest( endpoint="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.encodedClusterName}/get-health" , method="GET"   result="#{pageSession.health}");
-        setAttribute(key="healthList" value="#{pageSession.health.data.extraProperties.instances}" );
-        //println("================= #{requestScope.healthList}");
-        foreach(var="oneI" list="#{requestScope.healthList}"){
-            if (#{requestScope.oneI.name}=#{pageSession.encodedInstanceName}){
-                println("======found #{pageSession.encodedInstanceName}");
-                setPageSessionAttribute(key="healthStatus" value="#{requestScope.oneI.status}");
-                setPageSessionAttribute(key="healthTime" value="#{requestScope.oneI.time}");
-            }
-            //println("----------- No #{pageSession.encodedInstanceName}");
-        }
-        //mapGet(Map="#{pageSession.health.data.properties}" Key="#{pageSession.encodedInstanceName}" Value="#{pageSession.healthInfo}");
     />
     </event>
     <sun:form id="propertyForm">
@@ -182,11 +173,6 @@
             <sun:property id="statusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
                 <sun:staticText id="status" text="#{pageSession.statusString}" />
             </sun:property>
-            <!--
-            <sun:property id="healthProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.clusterInstance.healthStatus}">
-                <sun:staticText id="healthProp" text="$resource{i18ncs.health.status.#{pageSession.healthStatus}}" />
-            </sun:property>
-            -->
         <sun:property id="jvmProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.JVMLabel}">
             <sun:hyperlink id="jvmlink" text="$resource{i18nc.inst.jvmReport}"
                 onClick="javascript:
