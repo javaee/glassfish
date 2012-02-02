@@ -179,7 +179,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
             return;
         } catch (Exception e) {
             String msg = localStrings.getLocalString("rest.adapter.server.exception",
-                    "An occurred while processing the request. Please see the server logs for details.");
+                    "An error occurred while processing the request. Please see the server logs for details.");
             reportError(req, res, HttpURLConnection.HTTP_UNAVAILABLE, msg); //service unavailable
             return;
         }
