@@ -46,8 +46,6 @@ import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.grizzly.util.http.Cookie;
 import com.sun.logging.LogDomains;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.util.List;
@@ -80,7 +78,7 @@ import org.jvnet.hk2.component.PostConstruct;
  */
 public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, PostStartup, PostConstruct {
 
-    public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(RestAdapter.class);
+    public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(RestService.class);
 
     @Inject
     protected volatile AdminService as = null;
@@ -180,11 +178,8 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
             reportError(req, res, HttpURLConnection.HTTP_UNAUTHORIZED, msg); //authentication error
             return;
         } catch (Exception e) {
-            StringWriter result = new StringWriter();
-            PrintWriter printWriter = new PrintWriter(result);
-            e.printStackTrace(printWriter);
             String msg = localStrings.getLocalString("rest.adapter.server.exception",
-                    "REST:  Exception " + result.toString());
+                    "An occurred while processing the request. Please see the server logs for details.");
             reportError(req, res, HttpURLConnection.HTTP_UNAVAILABLE, msg); //service unavailable
             return;
         }
