@@ -53,6 +53,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Qualifier;
 
+import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Constants;
 import org.jvnet.hk2.component.Habitat;
@@ -86,6 +87,7 @@ public class Jsr330InjectionResolver extends
     this.habitat = h;
   }
 
+  
   @Override
   public <V> V getValue(Object component,
         Inhabitant<?> onBehalfOf,
@@ -148,10 +150,6 @@ public class Jsr330InjectionResolver extends
     if (null == result) {
       result = habitat.getInhabitantByType(type);
     }
-
-    if (null == result) {
-      throw new ComponentException("unable to resolve %s", type.toString(), onBehalfOf);
-    }
     
     return result;
   }
@@ -186,10 +184,6 @@ public class Jsr330InjectionResolver extends
       if (null == name && null == annotations) {
         result = getServiceInjectValue(habitat, type, (String)null);
       }
-    }
-    
-    if (null == result) {
-      throw new ComponentException("unable to resolve %s for %s", type.toString(), onBehalfOf);
     }
     
     return result;
@@ -250,6 +244,11 @@ public class Jsr330InjectionResolver extends
       Class<V> type) throws ComponentException {
     V result = habitat.getByType(type);
     return result;
+  }
+
+  @Override
+  public boolean isOptional(AnnotatedElement annotated, Inject annotation) {
+    return annotated.isAnnotationPresent(Optional.class);
   }
 
 }

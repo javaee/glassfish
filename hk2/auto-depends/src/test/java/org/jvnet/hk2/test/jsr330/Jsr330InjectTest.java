@@ -52,6 +52,7 @@ import javax.inject.Qualifier;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.junit.Hk2Runner;
@@ -120,6 +121,68 @@ public class Jsr330InjectTest {
 		assertTrue(qual2 instanceof Q2Impl);
 		assertTrue(qual3 instanceof Q3Impl);
 	}
+	
+	@Inject
+	@Optional
+	OptionalContract1 optionalWithServiceAvailable;
+	
+	@Inject
+	@Optional
+	OptionalContract2 optionalWithNoServiceAvailable;
+	
+	@Inject
+	@Optional
+	Provider<OptionalContract1> optionalProviderService;
+	
+	@Inject
+	@Optional
+	Provider<OptionalContract2> optionalProviderWithNoServiceAvailable;
+	
+	// another way to do optional injection in jsr-330
+	// is by injecting a Provider
+	@Inject
+    Provider<OptionalContract2> injectedProviderWithNoServiceAvailable;
+    
+	static int callsToSetterMethods=0;
+	
+	@Inject
+	void setOptionalProvider(Provider<OptionalContract1> ops) {
+	    callsToSetterMethods++;
+	    assertNotNull(ops.get());
+	}
+
+	@Inject
+	void setOptionalProviderWithNoServiceAvailable(Provider<OptionalContract2> ops) {
+	    callsToSetterMethods++;
+	    assertNull(ops.get());
+	}
+	   
+	@Test 
+	public void testOptional() {
+		assertNotNull(optionalWithServiceAvailable);
+		assertNull(optionalWithNoServiceAvailable);
+		
+		assertNotNull(optionalProviderService.get());
+		
+		assertNull(optionalProviderWithNoServiceAvailable.get());
+
+        assertNull(injectedProviderWithNoServiceAvailable.get());
+        
+        assertEquals("Expecting all injects on methods to be called", 2, callsToSetterMethods);
+	}
+	
+	@Contract
+	public interface OptionalContract1 {
+		
+	}
+	
+	@Contract
+	public interface OptionalContract2 {
+		
+	}
+	
+	@Service
+	public static class OptionalService implements OptionalContract1 {}
 	
 	@Service
 	public static class TestService1 implements ITestService1 {
