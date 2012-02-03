@@ -60,7 +60,7 @@ public class BasicProviderImpl<T> implements Provider<T> {
   
   @Override
   public T get() {
-    return inhabitant.get();
+    return inhabitant != null ? inhabitant.get() : null;
   }
 
 }
