@@ -47,11 +47,8 @@ import com.sun.enterprise.util.cluster.windows.io.WindowsRemoteFileCopyProgress;
 import com.sun.enterprise.util.cluster.windows.io.WindowsRemoteFileSystem;
 import com.sun.enterprise.util.net.NetUtils;
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandException;
 import org.jvnet.hk2.annotations.*;
@@ -68,7 +65,7 @@ public class InstallNodeDcomCommand extends InstallNodeBaseCommand {
     private String user;
     @Param(name = "windowsdomain", shortName = "d", optional = true, defaultValue = "")
     private String windowsDomain;
-    private final List<HostAndPassword> passwords = new ArrayList<HostAndPassword>();
+    private final List<HostAndCredentials> credentials = new ArrayList<HostAndCredentials>();
     private String remoteInstallDirString;
 
     /**
@@ -84,6 +81,13 @@ public class InstallNodeDcomCommand extends InstallNodeBaseCommand {
             if (NetUtils.isThisHostLocal(host))
                 throw new CommandException(Strings.get("install.node.nolocal", host));
         }
+        // Everything gets **so** complicated because we are allowing multiple hosts.
+        // It's impossible to allow multiple domains with the commandline.  So either
+        // every host is assumed to be in the same user-secified domain -- OR --
+        // each host is its own domain.
+        // Here I make it very clear by making the (later) test null or not-null
+        if(windowsDomain != null && windowsDomain.isEmpty())
+            windowsDomain = null;
     }
 
     @Override
@@ -130,10 +134,12 @@ public class InstallNodeDcomCommand extends InstallNodeBaseCommand {
         try {
             for (String host : hosts) {
                 String remotePassword = getWindowsPassword(host);
-                passwords.add(new HostAndPassword(host, remotePassword));
+                final String domain = (!ok(windowsDomain)) ? host : windowsDomain;
+                WindowsCredentials creds =  new WindowsCredentials(host, domain, user, remotePassword);
+                credentials.add(new HostAndCredentials(host, creds));
 
                 if (!getForce()) {
-                    WindowsRemoteFileSystem wrfs = new WindowsRemoteFileSystem(host, getRemoteUser(), remotePassword);
+                    WindowsRemoteFileSystem wrfs = new WindowsRemoteFileSystem(creds);
                     WindowsRemoteFile remoteInstallDir = new WindowsRemoteFile(wrfs, remoteInstallDirString);
 
                     if (remoteInstallDir.exists())
@@ -152,8 +158,8 @@ public class InstallNodeDcomCommand extends InstallNodeBaseCommand {
         final String unpackScriptName = "unpack.bat";
 
         for (String host : hosts) {
-            String remotePassword = getPassword(host);
-            WindowsRemoteFileSystem wrfs = new WindowsRemoteFileSystem(host, getRemoteUser(), remotePassword);
+            WindowsCredentials creds = getCredentials(host);
+            WindowsRemoteFileSystem wrfs = new WindowsRemoteFileSystem(creds);
             WindowsRemoteFile remoteInstallDir = new WindowsRemoteFile(wrfs, remoteInstallDirString);
             remoteInstallDir.mkdirs(getForce());
             WindowsRemoteFile remoteZip = new WindowsRemoteFile(remoteInstallDir, zipFileName);
@@ -176,7 +182,7 @@ public class InstallNodeDcomCommand extends InstallNodeBaseCommand {
             String fullUnpackScriptPath = remoteInstallDirString + "\\" + unpackScriptName;
             unpackScript.copyFrom(makeScriptString(remoteInstallDirString, zipFileName));
             logger.fine("WROTE FILE TO REMOTE SYSTEM: " + fullZipFileName + " and " + fullUnpackScriptPath);
-            unpackOnHosts(host, remotePassword, fullUnpackScriptPath.replace('/', '\\'));
+            unpackOnHosts(creds, fullUnpackScriptPath.replace('/', '\\'));
         }
     }
 
@@ -189,15 +195,9 @@ public class InstallNodeDcomCommand extends InstallNodeBaseCommand {
         return scriptString.toString();
     }
 
-    private void unpackOnHosts(String host, String remotePassword,
-            String unpackScript) throws WindowsException, CommandException {
-        String domain = windowsDomain;
-
-        if (!ok(domain))
-            domain = host;
-
-        WindowsCredentials bonafides = new WindowsCredentials(host, domain, getRemoteUser(), remotePassword);
-        WindowsRemoteScripter scripter = new WindowsRemoteScripter(bonafides);
+    private void unpackOnHosts(WindowsCredentials creds, String unpackScript)
+            throws WindowsException, CommandException {
+        WindowsRemoteScripter scripter = new WindowsRemoteScripter(creds);
         String out = scripter.run(unpackScript);
 
         if (out == null || out.length() < 50)
@@ -206,25 +206,25 @@ public class InstallNodeDcomCommand extends InstallNodeBaseCommand {
         logger.fine("Output from Windows Unpacker:\n" + out);
     }
 
-    private String getPassword(String host) {
+    private WindowsCredentials getCredentials(String host) {
         if (!ok(host))
             return null;
 
-        for (HostAndPassword hap : passwords) {
-            if (host.equals(hap.host))
-                return hap.password;
+        for (HostAndCredentials hac : credentials) {
+            if (host.equals(hac.host))
+                return hac.creds;
         }
 
         return null;
     }
 
-    private static class HostAndPassword {
+    private class HostAndCredentials {
         private final String host;
-        private final String password;
+        private final WindowsCredentials creds;
 
-        public HostAndPassword(String host, String password) {
+        public HostAndCredentials(String host, WindowsCredentials creds) {
             this.host = host;
-            this.password = password;
+            this.creds = creds;
         }
     }
 }
