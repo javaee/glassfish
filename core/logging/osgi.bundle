@@ -46,4 +46,7 @@
 DynamicImport-Package: \
 					org.glassfish.cluster.ssh.launcher, \
                                         org.glassfish.cluster.ssh.sftp, \
-					com.trilead.ssh2
+					com.trilead.ssh2, \
+					com.sun.enterprise.util.cluster.windows.io, \
+					com.sun.enterprise.util.cluster.windows.process, \
+					org.glassfish.cluster.ssh.util

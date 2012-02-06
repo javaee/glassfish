@@ -47,7 +47,6 @@ import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.util.cluster.windows.process.WindowsException;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -310,13 +309,8 @@ public class LogFilter {
                 // if remote then need to download log file on DAS and returning that log file for view
                 String logFileName = logFileDetailsForInstance.substring(logFileDetailsForInstance.lastIndexOf(File.separator) + 1, logFileDetailsForInstance.length());
                 File instanceFile = null;
-                try {
-                    instanceFile = new LogFilterForInstance().downloadGivenInstanceLogFile(habitat, targetServer, domain, logger,
-                            targetServerName, env.getDomainRoot().getAbsolutePath(), logFileName, logFileDetailsForInstance);
-                } catch (WindowsException we) {
-                    throw new IOException("File not found for the given instance");
-                }
-
+                instanceFile = new LogFilterForInstance().downloadGivenInstanceLogFile(habitat, targetServer, domain, logger,
+                        targetServerName, env.getDomainRoot().getAbsolutePath(), logFileName, logFileDetailsForInstance);
                 return instanceFile.getAbsolutePath();
             }
 
