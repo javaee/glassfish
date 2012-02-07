@@ -352,7 +352,8 @@
             
 	      // Add all the defaults.
               List theActiveModesList = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
-              theActiveModesList.add("DO_NOT_SHOW_UPGRADE");
+              	theActiveModesList.add("DO_NOT_SHOW_UPGRADE");
+              if (!theActiveModesList.contains("CREATE_DOMAIN"))
               theActiveModesList.add("CREATE_DOMAIN");
    		BusRequest modeReq = new BusRequest("ConfigRequest",
 		new EngineConfigCommand(EngineConfigCommand.COMMAND.GET_CONFIG, EngineConfigItem.DISPLAY_MODE));
