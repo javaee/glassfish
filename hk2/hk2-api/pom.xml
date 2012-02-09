@@ -108,5 +108,11 @@
             <artifactId>osgi-resource-locator</artifactId>
             <version>1.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
+        </dependency>
+
     </dependencies>
 </project>
