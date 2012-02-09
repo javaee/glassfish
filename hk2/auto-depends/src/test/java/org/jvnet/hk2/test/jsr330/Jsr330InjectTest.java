@@ -93,6 +93,9 @@ public class Jsr330InjectTest {
 	@Q3
 	IQualified qual3;
 	
+    @javax.inject.Inject
+    @Optional
+    java.util.logging.Formatter optionalAbstractClassWithNoImpl;
 	
 	@Test
 	public void testHabitat() {
@@ -169,6 +172,8 @@ public class Jsr330InjectTest {
         assertNull(injectedProviderWithNoServiceAvailable.get());
         
         assertEquals("Expecting all injects on methods to be called", 2, callsToSetterMethods);
+        
+        assertNull("No Impl should have been found", optionalAbstractClassWithNoImpl);
 	}
 	
 	@Contract
