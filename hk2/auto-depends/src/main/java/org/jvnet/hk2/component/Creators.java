@@ -42,6 +42,7 @@ package org.jvnet.hk2.component;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -72,16 +73,22 @@ public class Creators {
             return new FactoryCreator<T>(c,factory,habitat,metadata);
         }
 
-        Reference<Constructor<T>> defaultCtorRef = new Reference();
-        Reference<Constructor<T>> noArgCtorRef = new Reference();
-        qualifyingConstructors(c, null, getInjectionAnnotations(habitat), defaultCtorRef, noArgCtorRef);
-        if (defaultCtorRef.get() != null) {
+        // A constructor invoked on an abstract class will fail,
+        // so only return constructors for concrete classes
+        boolean isAbstract = Modifier.isAbstract(c.getModifiers());
+        
+        if (!isAbstract) {
+          Reference<Constructor<T>> defaultCtorRef = new Reference();
+          Reference<Constructor<T>> noArgCtorRef = new Reference();
+          qualifyingConstructors(c, null, getInjectionAnnotations(habitat), defaultCtorRef, noArgCtorRef);
+          if (defaultCtorRef.get() != null) {
             return new InjectableParametizedConstructorCreator<T>(c, defaultCtorRef.get(), habitat, metadata);
-        }
-        if (noArgCtorRef.get() != null) {
+          }
+          if (noArgCtorRef.get() != null) {
             return new ConstructorCreator<T>(c,habitat,metadata);
+          }
         }
-
+        
         return null;
     }
 
