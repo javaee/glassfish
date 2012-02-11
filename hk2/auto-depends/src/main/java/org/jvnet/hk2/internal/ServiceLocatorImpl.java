@@ -40,8 +40,10 @@
 package org.jvnet.hk2.internal;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.glassfish.hk2.api.Configurator;
 import org.glassfish.hk2.api.Descriptor;
@@ -49,7 +51,10 @@ import org.glassfish.hk2.api.DescriptorFilter;
 import org.glassfish.hk2.api.OrFilter;
 import org.glassfish.hk2.api.ExtendedProvider;
 import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.Scope;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.scopes.PerLookup;
+import org.glassfish.hk2.api.scopes.Singleton;
 import org.glassfish.hk2.internal.DescriptorImpl;
 import org.glassfish.hk2.utilities.BuilderHelper;
 
@@ -299,9 +304,63 @@ public class ServiceLocatorImpl implements ServiceLocator, Configurator {
 		// bummer, linear search through the entire DB
 		return noShortcutSearch(searchCriteria);
 	}
+	
+	/* (non-Javadoc)
+   * @see org.glassfish.hk2.api.Configurator#bind(org.glassfish.hk2.api.Descriptor, java.lang.Object)
+   */
+  @Override
+  public Descriptor bind(Descriptor keys, Object instance) {
+    if (keys == null || instance == null) {
+      throw new IllegalArgumentException();
+    }
+    
+    String descriptorScope = Utilities.getFirstElement(keys.getScopes());
+    if (descriptorScope != null) {
+      if (!descriptorScope.equals(Singleton.class.getName())) {
+        throw new IllegalArgumentException();
+      }
+    }
+    
+    String theImplClass = Utilities.getFirstElement(keys.getImplementations());
+    if (theImplClass != null) {
+      if (!theImplClass.equals(instance.getClass().getName())) {
+        throw new IllegalArgumentException();
+      }
+    }
+    
+    Set<String> impls = new HashSet<String>();
+    impls.add(instance.getClass().getName());
+    
+    Set<String> scopes = new HashSet<String>();
+    scopes.add(Singleton.class.getName());
+    
+    keys = new DescriptorImpl(
+        keys.getContracts(),
+        keys.getNames(),
+        scopes,
+        impls,
+        keys.getMetadata(),
+        keys.getQualifiers(),
+        null);
+    
+    return internalBind(keys, instance);
+  }
+  
+  @Override
+  public Descriptor bind(Descriptor keys) {
+    return internalBind(keys, null);
+  }
+  
+  private static Set<String> defaultScopes(Set<String> keyScopes) {
+    String theScope = Utilities.getFirstElement(keyScopes);
+    if (theScope != null) return keyScopes;
+    
+    HashSet<String> retVal = new HashSet<String>();
+    retVal.add(PerLookup.class.getName());
+    return retVal;
+  }
 
-	@Override
-	public Descriptor bind(Descriptor keys) {
+	private Descriptor internalBind(Descriptor keys, Object instance) {
 		if (keys == null || keys.getImplementations().isEmpty()) {
 			throw new IllegalArgumentException();
 		}
@@ -311,7 +370,7 @@ public class ServiceLocatorImpl implements ServiceLocator, Configurator {
 		Descriptor systemKey = new DescriptorImpl(
 		    keys.getContracts(),
 		    keys.getNames(),
-		    keys.getScopes(),
+		    defaultScopes(keys.getScopes()),
 		    keys.getImplementations(),
 		    keys.getMetadata(),
 		    keys.getQualifiers(),
@@ -319,7 +378,7 @@ public class ServiceLocatorImpl implements ServiceLocator, Configurator {
 		
 		LocatorData ld = new LocatorData();
 		ld.setDescriptor(systemKey);
-		ld.setProvider(new ExtendedProviderImpl<Object>(systemKey));
+		ld.setProvider(new ExtendedProviderImpl<Object>(systemKey, instance));
 		
 		LinkedList<String> implOrContractList = new LinkedList<String>(systemKey.getImplementations());
     implOrContractList.addAll(systemKey.getContracts());
@@ -364,4 +423,18 @@ public class ServiceLocatorImpl implements ServiceLocator, Configurator {
     
   }
 
+  /* (non-Javadoc)
+   * @see org.glassfish.hk2.api.Configurator#bindScope(org.glassfish.hk2.api.Scope)
+   */
+  @Override
+  public void bindScope(Scope scope) {
+    if (scope == null) throw new IllegalArgumentException();
+    
+    Descriptor d = BuilderHelper.link(scope.getClass()).
+        withContract(Scope.class).
+        in(Singleton.class).
+        build();
+    
+    bind(d, scope);
+  }
 }

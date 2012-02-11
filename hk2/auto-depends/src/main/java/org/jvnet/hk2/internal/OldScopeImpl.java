@@ -39,44 +39,28 @@
  */
 package org.jvnet.hk2.internal;
 
-import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.Scope;
+import org.glassfish.hk2.ScopeInstance;
 
 /**
- * This is a class representing the data found in the
- * ServiceLocator registry
+ * When doing scopes from the new API this will be the implementation of every
+ * scope
  * 
  * @author jwells
  */
-public class LocatorData {
-  private Descriptor descriptor;
-  private ExtendedProviderImpl<?> provider;
-
-  /**
-   * @return the provider
-   */
-  public ExtendedProviderImpl<?> getProvider() {
-    return provider;
+public class OldScopeImpl implements Scope {
+  private final OldScopeInstanceImpl current;
+  
+  /* package */ OldScopeImpl(org.glassfish.hk2.api.Scope newScope) {
+    current = new OldScopeInstanceImpl(newScope);
   }
 
-  /**
-   * @param provider the provider to set
+  /* (non-Javadoc)
+   * @see org.glassfish.hk2.Scope#current()
    */
-  public void setProvider(ExtendedProviderImpl<?> provider) {
-    this.provider = provider;
-  }
-
-  /**
-   * @return the descriptor
-   */
-  public Descriptor getDescriptor() {
-    return descriptor;
-  }
-
-  /**
-   * @param descriptor the descriptor to set
-   */
-  public void setDescriptor(Descriptor descriptor) {
-    this.descriptor = descriptor;
+  @Override
+  public ScopeInstance current() {
+    return current;
   }
 
 }

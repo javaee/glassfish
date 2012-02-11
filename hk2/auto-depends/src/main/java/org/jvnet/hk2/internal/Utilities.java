@@ -41,6 +41,14 @@ package org.jvnet.hk2.internal;
 
 import java.util.Set;
 
+import org.glassfish.hk2.Provider;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.ExtendedProvider;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DescriptorBuilder;
+import org.jvnet.hk2.component.Creator;
+import org.jvnet.hk2.component.Inhabitant;
+
 /**
  * This class represents static utilities used in various
  * parts of the implementation
@@ -84,6 +92,36 @@ public class Utilities {
       // TODO: Is there a debug logger?
       return null;
     }
+  }
+  
+  /**
+   * This returns an ExtendedProvider based on the old provider class (and an optional scope)
+   * <p>
+   * Note that the descriptor returned here will be partial.  Several fields will NOT be filled
+   * in, in particular things like id and the contracts implemented will NOT be there.  This
+   * is an interim step until a native new API implementation can be made
+   * 
+   * @param provider The old style provider to generate
+   * @param scopeClass An optional scope class that should be used in the returned provider
+   * @return An extended provider
+   */
+  public static <T> ExtendedProvider<T> getUnscopedProvider(Inhabitant<T> onBehalfOf, Creator<T> creator, Provider<T> provider) {
+    // Unfortunately, only *some* of the information is available here.  So this implementation
+    // will only be able to return a partial ExtendedProvider.  It'll have to do
+    
+    DescriptorBuilder db = BuilderHelper.link(provider.type());
+    
+    //TODO:  Annotations do not work with the old-style providers
+    // for (Annotation hardAnno : provider.getAnnotations()) {
+    //  db = db.annotatedBy(hardAnno.getClass());
+    // }
+    
+    // Loss of fidelity, all the contracts, metadata, etc are not here
+    
+    Descriptor desc = db.build();
+    UnscopedProviderImpl<T> retVal = new UnscopedProviderImpl<T>(desc, onBehalfOf, creator);
+    
+    return retVal;
   }
 
 }

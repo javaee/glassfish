@@ -41,7 +41,6 @@ package com.sun.hk2.component;
 
 import org.glassfish.hk2.Descriptor;
 import org.jvnet.hk2.component.Creator;
-import org.jvnet.hk2.component.DescriptorImpl;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
 
@@ -54,7 +53,7 @@ import org.jvnet.hk2.component.MultiMap;
  *
  * @author Kohsuke Kawaguchi
  */
-abstract class AbstractCreatorInhabitantImpl<T> extends AbstractInhabitantImpl<T> {
+public abstract class AbstractCreatorInhabitantImpl<T> extends AbstractInhabitantImpl<T> {
 //    private static final Logger logger = Logger.getLogger(AbstractCreatorInhabitantImpl.class.getName());
 
     protected final Creator<T> creator;
@@ -78,6 +77,10 @@ abstract class AbstractCreatorInhabitantImpl<T> extends AbstractInhabitantImpl<T
 
     public MultiMap<String, String> metadata() {
         return creator.metadata();
+    }
+    
+    public Creator<T> getCreator() {
+        return creator;
     }
 
 }

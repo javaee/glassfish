@@ -37,46 +37,29 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.api.scopes;
 
-import org.glassfish.hk2.api.Descriptor;
+import javax.inject.Provider;
+
+import org.glassfish.hk2.api.ExtendedProvider;
+import org.glassfish.hk2.api.InjectionTarget;
+import org.glassfish.hk2.api.Scope;
 
 /**
- * This is a class representing the data found in the
- * ServiceLocator registry
+ * A simple implementation for PerLookup scope
  * 
  * @author jwells
  */
-public class LocatorData {
-  private Descriptor descriptor;
-  private ExtendedProviderImpl<?> provider;
+public class PerLookup implements Scope {
 
-  /**
-   * @return the provider
+  /* (non-Javadoc)
+   * @see org.glassfish.hk2.api.Scope#scope(org.glassfish.hk2.api.InjectionTarget, org.glassfish.hk2.api.ExtendedProvider)
    */
-  public ExtendedProviderImpl<?> getProvider() {
-    return provider;
-  }
-
-  /**
-   * @param provider the provider to set
-   */
-  public void setProvider(ExtendedProviderImpl<?> provider) {
-    this.provider = provider;
-  }
-
-  /**
-   * @return the descriptor
-   */
-  public Descriptor getDescriptor() {
-    return descriptor;
-  }
-
-  /**
-   * @param descriptor the descriptor to set
-   */
-  public void setDescriptor(Descriptor descriptor) {
-    this.descriptor = descriptor;
+  @Override
+  public <T> Provider<T> scope(InjectionTarget<T> target,
+      ExtendedProvider<T> unscopedProvider) {
+    // This returns a new value every time
+    return unscopedProvider;
   }
 
 }

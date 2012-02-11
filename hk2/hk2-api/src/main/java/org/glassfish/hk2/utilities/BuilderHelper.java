@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.utilities;
 
+import javax.inject.Provider;
+
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.OrFilter;
 import org.glassfish.hk2.api.Filter;
@@ -126,5 +128,26 @@ public class BuilderHelper {
 	 */
 	public static Filter<Descriptor> allFilter() {
 	  return StarFilter.getDescriptorFilter();
+	}
+	
+	/**
+	 * This creates a constant provider that can be used in Singleton scopes, and
+	 * which will always return the given instance in the get method
+	 * 
+	 * @param ofType The type to be used for the returned provider
+	 * @param instance An instance of a JSR-330 provider
+	 * @return
+	 */
+	public static <T> Provider<T> createConstantProvider(Class<T> ofType, final T instance) {
+	  return new Provider<T>() {
+
+      @Override
+      public T get() {
+        return instance;
+      }
+	    
+	  };
+	  
+	  
 	}
 }

@@ -45,6 +45,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Provider;
+
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.ExtendedProvider;
 import org.glassfish.hk2.api.Filter;
@@ -120,11 +122,11 @@ public class FilterBuilderTest {
 		multiValue.add(VALUE_B1);
 		multiValue.add(VALUE_B2);
 		
-		Scope<?> localScope = new Scope<Object>() {
+		Scope localScope = new Scope() {
 
       @Override
-      public ExtendedProvider<Object> scope(InjectionTarget<Object> target,
-          ExtendedProvider<Object> unscopedProvider) {
+      public <T> Provider<T> scope(InjectionTarget<T> target,
+          ExtendedProvider<T> unscopedProvider) {
         // TODO Auto-generated method stub
         return null;
       }

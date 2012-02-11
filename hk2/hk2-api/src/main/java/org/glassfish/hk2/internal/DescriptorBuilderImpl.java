@@ -112,7 +112,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 	 * @see org.glassfish.hk2.utilities.DescriptorBuilder#in(org.glassfish.hk2.Scope)
 	 */
 	@Override
-	public DescriptorBuilder in(Class<? extends Scope<?>> scope) throws IllegalArgumentException {
+	public DescriptorBuilder in(Class<? extends Scope> scope) throws IllegalArgumentException {
 		if (scope == null || scopes.size() >= 1) {
 			throw new IllegalArgumentException();
 		}

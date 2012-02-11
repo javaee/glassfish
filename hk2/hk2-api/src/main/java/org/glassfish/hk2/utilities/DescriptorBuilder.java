@@ -94,7 +94,7 @@ public interface DescriptorBuilder {
 	 * @return A DescriptorBuilder with the given scope
 	 * @throws IllegalArgumentException If in is called more than once
 	 */
-	public DescriptorBuilder in(Class<? extends Scope<?>> scope) throws IllegalArgumentException;
+	public DescriptorBuilder in(Class<? extends Scope> scope) throws IllegalArgumentException;
 	
 	/**
    * A scope to be associated with this descriptor object. Note that at the current time a
