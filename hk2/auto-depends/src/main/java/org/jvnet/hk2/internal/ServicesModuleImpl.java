@@ -40,6 +40,10 @@
 package org.jvnet.hk2.internal;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -48,9 +52,12 @@ import org.glassfish.hk2.BinderFactory;
 import org.glassfish.hk2.Module;
 import org.glassfish.hk2.NamedBinder;
 import org.glassfish.hk2.ResolvedBinder;
-import org.glassfish.hk2.Scope;
+import org.glassfish.hk2.api.Scope;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.ExtendedProvider;
+import org.glassfish.hk2.api.scopes.PerLookup;
+import org.glassfish.hk2.scopes.Singleton;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * This implementation of the {@link Module} interface
@@ -61,15 +68,50 @@ import org.glassfish.hk2.api.ExtendedProvider;
  *
  */
 public class ServicesModuleImpl implements Module {
-  private final List<ExtendedProvider<Object>> allProviders;
+  private final ServiceLocatorImpl locator;
+  private final List<ExtendedProviderImpl<?>> allProviders;
+  private final HashMap<String, org.glassfish.hk2.Scope> proxyMap = new HashMap<String, org.glassfish.hk2.Scope>();
   
-  /* package */ ServicesModuleImpl(List<ExtendedProvider<Object>> allProviders) {
+  /* package */ ServicesModuleImpl(
+      ServiceLocatorImpl sli,
+      List<ExtendedProviderImpl<?>> allProviders) {
+    locator = sli;
     this.allProviders = allProviders;
+  }
+  
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  private void bindScope(BinderFactory binder, Scope scope) {
+    final OldScopeImpl osi = new OldScopeImpl(scope);
     
+    org.glassfish.hk2.Scope retVal = (org.glassfish.hk2.Scope) Proxy.newProxyInstance(scope.getClass().getClassLoader(),
+        new Class<?>[] { org.glassfish.hk2.Scope.class },
+        new InvocationHandler() {
+
+          @Override
+          public Object invoke(Object proxy, Method method, Object[] args)
+              throws Throwable {
+            if (method.getName().equals("current")) {
+              return osi.current();
+            }
+            else if (method.getName().equals("toString")) {
+              return "Scope proxy backed by: " + osi.toString();
+            }
+            
+            throw new AssertionError("Method " + method + " not implemented");
+          }
+      
+    });
+    
+    proxyMap.put(scope.getClass().getName(), retVal);
+    
+    // Must also register this guy with the binder
+    binder.bind((Class) retVal.getClass()).toInstance(retVal);
   }
 
-  @SuppressWarnings("unchecked")
-  private static void addOneDescriptor(BinderFactory binderFactory, Descriptor newDescriptor) {
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  private void addOneDescriptor(BinderFactory binderFactory, ExtendedProviderImpl<?> epi) {
+    Descriptor newDescriptor = epi.getDescriptor();
+    
     Set<String> contracts = newDescriptor.getContracts();
     
     NamedBinder<?> namedBinder;
@@ -94,15 +136,53 @@ public class ServicesModuleImpl implements Module {
       namedBinder = namedBinder.annotatedWith(myAnno);
     }
     
-    // It is assumed that we are binding to specific implementation
-    ResolvedBinder<?> rb = namedBinder.to(Utilities.getFirstElement(newDescriptor.getImplementations()));
+    if (epi.getSingleton() != null) {
+      Object singleton = epi.getSingleton();
+      
+      ((NamedBinder<Object>) namedBinder).toInstance(singleton);
+      
+      return;
+    }
     
+    boolean hasScope = false;
     if (!newDescriptor.getScopes().isEmpty()) {
+      hasScope = true;
+    }
+    
+    ResolvedBinder rb;
+    String implementationClass = Utilities.getFirstElement(newDescriptor.getImplementations());
+    if (hasScope) {
+      // Due to a... uh... "shortcoming" in hk2 if you have a scope you MUST use the class version of
+      // the "to" method, rather than the string version.  Weird, but true
+      
+      rb = namedBinder.to((Class) Utilities.loadMyClass(implementationClass));
+    }
+    else {
+      // It is assumed that we are binding to specific implementation
+      rb = namedBinder.to(Utilities.getFirstElement(newDescriptor.getImplementations()));
+    }
+    
+    if (hasScope) {
       String addScope = Utilities.getFirstElement(newDescriptor.getScopes());
       
-      Class<? extends Scope> myScope = (Class<? extends Scope>) Utilities.loadMyClass(addScope);
+      org.glassfish.hk2.Scope oldScope = proxyMap.get(addScope);
+      if (oldScope == null) {
+          if (addScope.equals(PerLookup.class.getName())) {
+              // PerLookup handled as special case
+              rb.in(org.glassfish.hk2.scopes.PerLookup.class);
+              return;
+          }
+          
+          if (addScope.equals(Singleton.class.getName())) {
+              // Singleton handled as special case
+              rb.in(org.glassfish.hk2.scopes.Singleton.class);
+              return;
+              
+          }
+        throw new AssertionError("Did not find a registered scope of type " + addScope);
+      }
       
-      rb.in(myScope);
+      rb.in(oldScope.getClass());
     }
 
   }
@@ -112,9 +192,18 @@ public class ServicesModuleImpl implements Module {
    */
   @Override
   public void configure(BinderFactory binderFactory) {
-    for (ExtendedProvider<Object> newDescriptor : allProviders) {
-      addOneDescriptor(binderFactory, newDescriptor.getDescriptor());
+    // We need to generate the proxy scopes prior to others
+    // doing their binds, so we do the bindings of all the
+    // scopes first
+    List<ExtendedProvider<Object>> allScopes = locator.getAllServiceProviders(BuilderHelper.link().withContract(Scope.class).build());
+    for (ExtendedProvider<Object> scope : allScopes) {
+      ExtendedProviderImpl<Object> epi = (ExtendedProviderImpl<Object>) scope;
       
+      bindScope(binderFactory, (Scope) epi.getSingleton());
+    }
+    
+    for (ExtendedProviderImpl<?> newProvider : allProviders) {
+      addOneDescriptor(binderFactory, newProvider);
     }
   }
 

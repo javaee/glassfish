@@ -37,46 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
-
-import org.glassfish.hk2.api.Descriptor;
+package org.glassfish.hk2.tests.basic.servicelocator.extensions;
 
 /**
- * This is a class representing the data found in the
- * ServiceLocator registry
- * 
+ * This service is scoped
  * @author jwells
  */
-public class LocatorData {
-  private Descriptor descriptor;
-  private ExtendedProviderImpl<?> provider;
-
-  /**
-   * @return the provider
-   */
-  public ExtendedProviderImpl<?> getProvider() {
-    return provider;
-  }
-
-  /**
-   * @param provider the provider to set
-   */
-  public void setProvider(ExtendedProviderImpl<?> provider) {
-    this.provider = provider;
-  }
-
-  /**
-   * @return the descriptor
-   */
-  public Descriptor getDescriptor() {
-    return descriptor;
-  }
-
-  /**
-   * @param descriptor the descriptor to set
-   */
-  public void setDescriptor(Descriptor descriptor) {
-    this.descriptor = descriptor;
-  }
+public class ServiceA {
 
 }

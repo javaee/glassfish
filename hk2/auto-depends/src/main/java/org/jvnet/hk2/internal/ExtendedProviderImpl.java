@@ -50,12 +50,15 @@ import org.glassfish.hk2.api.ExtendedProvider;
  * @author jwells
  */
 public class ExtendedProviderImpl<T> implements ExtendedProvider<T> {
-  private final Descriptor descriptor;
-  private org.glassfish.hk2.Provider<?> delegate;
+    private final Descriptor descriptor;
+    private final Object singleton;
   
-  /* package */ ExtendedProviderImpl(Descriptor d) {
-    descriptor = d;
-  }
+    private org.glassfish.hk2.Provider<?> delegate;
+  
+    /* package */ ExtendedProviderImpl(Descriptor d, Object singleton) {
+        descriptor = d;
+        this.singleton = singleton;
+    }
 
   /* (non-Javadoc)
    * @see javax.inject.Provider#get()
@@ -100,5 +103,11 @@ public class ExtendedProviderImpl<T> implements ExtendedProvider<T> {
     delegate = hk2Provider;
     
   }
-
+  
+  /**
+   * @return the singleton
+   */
+  /* package */ Object getSingleton() {
+    return singleton;
+  }
 }

@@ -40,43 +40,58 @@
 package org.jvnet.hk2.internal;
 
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.ExtendedProvider;
+import org.jvnet.hk2.component.Creator;
+import org.jvnet.hk2.component.Inhabitant;
 
 /**
- * This is a class representing the data found in the
- * ServiceLocator registry
- * 
  * @author jwells
+ *
  */
-public class LocatorData {
-  private Descriptor descriptor;
-  private ExtendedProviderImpl<?> provider;
+public class UnscopedProviderImpl<T> implements ExtendedProvider<T> {
+    private final Descriptor descriptor;
+    private final Inhabitant<T> onBehalfOf;
+    private final Creator<T> creator;
+    
+    public UnscopedProviderImpl(Descriptor descriptor, Inhabitant<T> inhabitant, Creator<T> creator) {
+        this.descriptor = descriptor;
+        this.onBehalfOf = inhabitant;
+        this.creator = creator;
+    }
 
-  /**
-   * @return the provider
-   */
-  public ExtendedProviderImpl<?> getProvider() {
-    return provider;
-  }
+    /* (non-Javadoc)
+     * @see javax.inject.Provider#get()
+     */
+    @Override
+    public T get() {
+        T retVal = creator.create(onBehalfOf);
+        creator.initialize(retVal, onBehalfOf);
+        
+        return retVal;
+    }
 
-  /**
-   * @param provider the provider to set
-   */
-  public void setProvider(ExtendedProviderImpl<?> provider) {
-    this.provider = provider;
-  }
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ExtendedProvider#getDescriptor()
+     */
+    @Override
+    public Descriptor getDescriptor() {
+        return descriptor;
+    }
 
-  /**
-   * @return the descriptor
-   */
-  public Descriptor getDescriptor() {
-    return descriptor;
-  }
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ExtendedProvider#getByType(java.lang.Class)
+     */
+    @Override
+    public <U> U getByType(Class<U> type) {
+        throw new AssertionError("getByType in UnscopedProviderImpl is not implemented");
+    }
 
-  /**
-   * @param descriptor the descriptor to set
-   */
-  public void setDescriptor(Descriptor descriptor) {
-    this.descriptor = descriptor;
-  }
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ExtendedProvider#isActive()
+     */
+    @Override
+    public boolean isActive() {
+        throw new AssertionError("isActive in UnscopedProviderImpl is not implemented");
+    }
 
 }

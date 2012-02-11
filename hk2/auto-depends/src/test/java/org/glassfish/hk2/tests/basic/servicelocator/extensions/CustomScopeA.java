@@ -37,46 +37,72 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.basic.servicelocator.extensions;
 
-import org.glassfish.hk2.api.Descriptor;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Provider;
+
+import org.glassfish.hk2.api.ExtendedProvider;
+import org.glassfish.hk2.api.InjectionTarget;
+import org.glassfish.hk2.api.Scope;
 
 /**
- * This is a class representing the data found in the
- * ServiceLocator registry
+ * A very simple scope
  * 
  * @author jwells
  */
-public class LocatorData {
-  private Descriptor descriptor;
-  private ExtendedProviderImpl<?> provider;
+public class CustomScopeA implements Scope {
+    public static final String ERROR_MESSAGE = "CustomScopeA Error Message";
+    
+  private final Map<InjectionTarget<?>, Object> scopeInstances = new HashMap<InjectionTarget<?>, Object>();
+  private boolean inScope = false;
 
-  /**
-   * @return the provider
+  /* (non-Javadoc)
+   * @see org.glassfish.hk2.api.Scope#scope(org.glassfish.hk2.api.InjectionTarget, org.glassfish.hk2.api.ExtendedProvider)
    */
-  public ExtendedProviderImpl<?> getProvider() {
-    return provider;
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> Provider<T> scope(InjectionTarget<T> target,
+      ExtendedProvider<T> unscopedProvider) {
+    synchronized (scopeInstances) {
+      if (!inScope) throw new IllegalStateException(ERROR_MESSAGE);
+     
+      T retVal = (T) scopeInstances.get(target);
+      if (retVal == null) {
+        retVal = unscopedProvider.get();
+        if (retVal != null) {
+          scopeInstances.put(target, retVal);
+        }
+      }
+      
+      final T fVal = retVal;
+      
+      return new Provider<T>() {
+
+        @Override
+        public T get() {
+          return fVal;
+        }
+        
+      };
+    }
   }
-
-  /**
-   * @param provider the provider to set
-   */
-  public void setProvider(ExtendedProviderImpl<?> provider) {
-    this.provider = provider;
+  
+  public void startMe() {
+    synchronized (scopeInstances) {
+      inScope = true;
+    }
   }
-
-  /**
-   * @return the descriptor
-   */
-  public Descriptor getDescriptor() {
-    return descriptor;
-  }
-
-  /**
-   * @param descriptor the descriptor to set
-   */
-  public void setDescriptor(Descriptor descriptor) {
-    this.descriptor = descriptor;
+  
+  public void stopMe() {
+    synchronized (scopeInstances) {
+      scopeInstances.clear();
+      
+      inScope = false;
+    }
+    
   }
 
 }

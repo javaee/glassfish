@@ -39,12 +39,14 @@
  */
 package org.glassfish.hk2.api;
 
+import javax.inject.Provider;
+
 /**
  * A scope is a level of visibility that instances provided may have.
  * 
  * @author jwells
  */
-public interface Scope<T> {
+public interface Scope {
   /**
    * Scopes a provider. The returned provider returns objects from this scope. If an object does not
    * exist in this scope, the provider can use the given unscoped provider to retrieve one. 
@@ -55,9 +57,7 @@ public interface Scope<T> {
    * @return A provider that only retrieves a new value from the unscopedProvider when that value
    * has not already been provided.  All the other fields of the provider should be delegated to
    * the unscopedProvider
-   * TODO JRW sounds like too many rules.  Should we perhaps just return a "jsr-330 Provider and we
-   * do all the delegating in the implementation?
    */
-  public ExtendedProvider<T> scope(InjectionTarget<T> target, ExtendedProvider<T> unscopedProvider);
+  public <T> Provider<T> scope(InjectionTarget<T> target, ExtendedProvider<T> unscopedProvider);
 
 }

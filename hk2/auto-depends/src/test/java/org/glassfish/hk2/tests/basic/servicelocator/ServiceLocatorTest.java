@@ -41,7 +41,6 @@ package org.glassfish.hk2.tests.basic.servicelocator;
 
 import java.util.List;
 
-import org.glassfish.hk2.TypeLiteral;
 import org.glassfish.hk2.api.Configurator;
 import org.glassfish.hk2.api.Module;
 import org.glassfish.hk2.api.ServiceLocator;

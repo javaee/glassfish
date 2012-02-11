@@ -37,46 +37,48 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.api.scopes;
 
-import org.glassfish.hk2.api.Descriptor;
+import java.util.HashMap;
+
+import javax.inject.Provider;
+
+import org.glassfish.hk2.api.ExtendedProvider;
+import org.glassfish.hk2.api.InjectionTarget;
+import org.glassfish.hk2.api.Scope;
 
 /**
- * This is a class representing the data found in the
- * ServiceLocator registry
+ * An implementation of the Singleton scope
  * 
  * @author jwells
  */
-public class LocatorData {
-  private Descriptor descriptor;
-  private ExtendedProviderImpl<?> provider;
+public class Singleton implements Scope {
+  private final HashMap<InjectionTarget<?>, Provider<?>> instanceMap = new HashMap<InjectionTarget<?>, Provider<?>>();
 
-  /**
-   * @return the provider
+  /* (non-Javadoc)
+   * @see org.glassfish.hk2.api.Scope#scope(org.glassfish.hk2.api.InjectionTarget, org.glassfish.hk2.api.ExtendedProvider)
    */
-  public ExtendedProviderImpl<?> getProvider() {
-    return provider;
-  }
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> Provider<T> scope(InjectionTarget<T> target,
+      ExtendedProvider<T> unscopedProvider) {
+    synchronized (instanceMap) {
+      Provider<T> retVal = (Provider<T>) instanceMap.get(target);
+      if (retVal != null) return retVal;
+      
+      final T instance = unscopedProvider.get();
+      retVal = new Provider<T>() {
 
-  /**
-   * @param provider the provider to set
-   */
-  public void setProvider(ExtendedProviderImpl<?> provider) {
-    this.provider = provider;
-  }
-
-  /**
-   * @return the descriptor
-   */
-  public Descriptor getDescriptor() {
-    return descriptor;
-  }
-
-  /**
-   * @param descriptor the descriptor to set
-   */
-  public void setDescriptor(Descriptor descriptor) {
-    this.descriptor = descriptor;
+        @Override
+        public T get() {
+          return instance;
+        }
+        
+      };
+      
+      instanceMap.put(target, retVal);
+      return retVal;
+    }
   }
 
 }

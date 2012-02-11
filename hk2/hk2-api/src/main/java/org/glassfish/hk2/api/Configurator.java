@@ -52,13 +52,11 @@ import java.util.List;
  */
 public interface Configurator {
 	/**
-	 * This method will bind the given Provider to the given key
-	 * in the database.  The Descriptor in the
-	 * BoundEntry will not directly use the passed in Descriptor,
-	 * and will have the id field filled in.  If this provider
-	 * is not an instanceof ExtendedProvider then this provider
-	 * will be wrapped in an ExtendedProvider and put into the
-	 * BoundEntry.
+	 * This method will use the given unscoped Provider to the given key
+	 * in the database
+	 * <p>
+	 * This is most often used to generate a "Constant" provider, that always
+	 * returns a particular implementation
 	 * 
 	 * @param keys May not be null.  Will be used to derive the various
 	 * key fields associated with the given provider.
@@ -67,14 +65,28 @@ public interface Configurator {
 	 * of the Descriptor filled in by the system as appropriate
 	 * @throws IllegalArgumentException if there is an error in the key or
 	 * the provider
+	 * 
+	 * JRW This may be a nice API to have once we are native
 	 *
-	 * JRW after thinking about this, allowing the user to have his own provider
-	 * here may be a new feature.  I am removing this API until there is
-	 * a call for it.  On the other hand, it is a nice way to do the "constant"
-	 * provider.  In other words, you can use this to bind to a specific class
-	 *
-	public <T> BoundEntry<T> bind(Descriptor keys, Provider<T> provider);
+	public Descriptor bind(Descriptor keys, Provider<?> provider);
 	 */
+  
+  /**
+   * This method will bind the particular instance to the given
+   * descriptor.  The given descriptor must either have no scope
+   * or have Singleton scope.  If it has no scope the then the
+   * Singleton scope will be automatically filled in.
+   * 
+   * @param keys The keys describing this service entry.  This
+   * descriptor must have no scope or a scope of Singleton
+   * @param instance The non-null instance that is to always
+   * be used with this key
+   * @return A descriptor with fields filled in by the system
+   * as appropriate
+   * @throws IllegalArgumentException if keys has any scope other
+   * than Singleton
+   */
+  public Descriptor bind(Descriptor keys, Object instance);
 	
 	/**
 	 * This method will bind the given descriptor to this Module
@@ -97,4 +109,15 @@ public interface Configurator {
 	 * filter
 	 */
 	public List<Descriptor> unbind(Filter<Descriptor> key);
+	
+	/**
+	 * Creates a scope that is available in this {@link Module}.
+	 * Classes that are in this scope must use the fully qualified
+	 * class name of the passed in class to indicate that they
+	 * should use this scope
+	 *
+	 * @param scope A scope instance that can be used to scope
+	 * instances returned from this {@link Module}
+	 */
+	public void bindScope(Scope scope);
 }

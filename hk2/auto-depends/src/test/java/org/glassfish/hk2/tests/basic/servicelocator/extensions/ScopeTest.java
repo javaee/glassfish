@@ -37,66 +37,84 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.basic.servicelocator.extensions;
 
-import java.util.LinkedList;
-import java.util.List;
+import junit.framework.Assert;
 
-import org.glassfish.hk2.HK2;
-import org.glassfish.hk2.Services;
-import org.glassfish.hk2.api.ExtendedProvider;
+import org.glassfish.hk2.api.Configurator;
 import org.glassfish.hk2.api.Module;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.extension.ServiceLocatorGenerator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
- * This is the default {@link ServiceLocatorGenerator}, which will likely be used
- * in about 99.5% of the cases out there.
- * <p>
- * This implementation creates a new habitat and uses it for all the heavy lifting
- * 
  * @author jwells
+ *
  */
-public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.extension.ServiceLocatorGenerator#create(java.lang.String, org.glassfish.hk2.api.Module)
-   */
-  @Override
-  public ServiceLocator create(String name, Module module) {
-    if (name == null) throw new IllegalArgumentException();
+public class ScopeTest {
+  private final static String SERVICE_LOCATOR_NAME = "testScopeModule";
+  private ServiceLocator locator;
+  
+  @Before
+  public void setup() {
+    if (locator != null) return;
+    
+    locator = ServiceLocatorFactory.getInstance().create(SERVICE_LOCATOR_NAME, new Module() {
+
+      @Override
+      public void configure(Configurator configurator) {
+        configurator.bindScope(new CustomScopeA());
+        
+        configurator.bind(BuilderHelper.link(ServiceA.class).in(CustomScopeA.class).build());
+      }
+      
+    });
+    
+  }
+  
+  @After
+  public void after() {
+    ServiceLocatorFactory.getInstance().destroy(SERVICE_LOCATOR_NAME);
+    locator = null;
+  }
+  
+  @Test
+  public void testGetSameObjectFromSameScope() {
+    CustomScopeA scopeA = locator.getService(CustomScopeA.class);
+    Assert.assertNotNull(scopeA);
+    
+    scopeA.startMe();
+    
+    ServiceA a1 = locator.getService(ServiceA.class);
+    Assert.assertNotNull(a1);
+    
+    ServiceA a2 = locator.getService(ServiceA.class);
+    Assert.assertNotNull(a2);
+    
+    Assert.assertEquals(a1, a2);
+    
+    scopeA.stopMe();
+  }
+  
+  @Test
+  public void testNotInScopeFails() {
+    CustomScopeA scopeA = locator.getService(CustomScopeA.class);
+    Assert.assertNotNull(scopeA);
     
     try {
-      ServiceLocatorImpl sli = new ServiceLocatorImpl(name);
-      
-      if (module != null) {
-        module.configure(sli);
-      }
-      
-      List<ExtendedProvider<Object>> allProviders = sli.getAllServiceProviders(BuilderHelper.allFilter());
-      List<ExtendedProviderImpl<?>> allProviderImpls = new LinkedList<ExtendedProviderImpl<?>>();
-      for (ExtendedProvider<Object> prov : allProviders) {
-        allProviderImpls.add((ExtendedProviderImpl<?>) prov);
-      }
-      
-      // Got all bindings, now give all bindings to good ole hk2
-      Services services = HK2.get().create(null, new ServicesModuleImpl(sli, allProviderImpls));
-      
-      for (ExtendedProviderImpl<?> provider : allProviderImpls) {
-        String implClassName = Utilities.getFirstElement(provider.getDescriptor().getImplementations());
-        
-        org.glassfish.hk2.ServiceLocator<?> sl = services.byType(implClassName);
-        
-        org.glassfish.hk2.Provider<?> allMe = sl.getProvider();
-        
-        provider.setServicesProvider(allMe);
-      }
-      
-      return sli;
+      locator.getService(ServiceA.class);
     }
-    catch (Throwable th) {
-      throw new IllegalStateException(th);
+    catch (IllegalStateException ise) {
+        String message = ise.getMessage();
+        Assert.assertNotNull("IllegalStateException has no error message", message);
+        Assert.assertEquals("Got invalid error string " + message, message, CustomScopeA.ERROR_MESSAGE);
+        return;
     }
+    
+    Assert.fail("getService should have failed, not in scope");
   }
 
 }
