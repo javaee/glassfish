@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-20120-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -73,7 +73,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This clas is responsible for configuring Grizzly {@link SelectorThread}.
+ * This class is responsible for configuring Grizzly {@link SelectorThread}.
  *
  * @author Jerome Dochez
  * @author Jeanfrancois Arcand
@@ -137,10 +137,22 @@ public class GrizzlyProxy implements NetworkProxy {
         V3Mapper mapper = null;
         // mapper initialization now happens *before* the GrizzlyListener
         // is configured.  This is necessary for WebSocket support (if enabled).
+        ContainerMapper adapter = null;
         if (httpProtocol != null) {
+            
+            // A bit dirty fix for issue GLASSFISH-18211
+            // We have to initialize Mapper before adding it to Habitat
+            // @TODO rework the fix.
             mapper = new V3Mapper(logger);
             mapper.setPort(portNumber);
             mapper.setId(networkListener.getName());
+            
+            adapter = new ContainerMapper(
+                    grizzlyService, networkListener);
+            adapter.setMapper(mapper);
+            adapter.setDefaultHost(httpProtocol.getHttp().getDefaultVirtualServer() /*grizzlyListener.getDefaultVirtualServer()*/);
+            adapter.configureMapper();
+            
             Inhabitant<Mapper> onePortMapper = new ExistingSingletonInhabitant<Mapper>(mapper);
             grizzlyService.getHabitat().addIndex(onePortMapper,
                                                  Mapper.class.getName(),
@@ -153,10 +165,7 @@ public class GrizzlyProxy implements NetworkProxy {
             final GrizzlyEmbeddedHttp embeddedHttp = grizzlyListener.getEmbeddedHttp();
 
             if (httpProtocol != null) {
-                final ContainerMapper adapter = new ContainerMapper(grizzlyService, embeddedHttp);
-                adapter.setMapper(mapper);
-                adapter.setDefaultHost(grizzlyListener.getDefaultVirtualServer());
-                adapter.configureMapper();
+                adapter.setEmbeddedHttp(embeddedHttp);
                 embeddedHttp.setAdapter(adapter);
 
                 String ct = httpProtocol.getHttp().getDefaultResponseType();
@@ -230,6 +239,7 @@ public class GrizzlyProxy implements NetworkProxy {
     @Override
     public void stop() {
         grizzlyListener.stop();
+        grizzlyService.removeMapperLock(networkListener.getName());
     }
 
     @Override

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,6 +50,7 @@ import com.sun.grizzly.ProtocolFilter;
 import com.sun.grizzly.config.GrizzlyEmbeddedHttp;
 import com.sun.grizzly.config.ContextRootInfo;
 import com.sun.grizzly.config.FileCacheAware;
+import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.tcp.Response;
@@ -65,6 +66,9 @@ import com.sun.grizzly.util.http.mapper.MappingData;
 import com.sun.grizzly.util.http.MimeType;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.ApplicationContainer;
@@ -84,13 +88,15 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
     private final static String ROOT = "";
     private Mapper mapper;
     private GrizzlyEmbeddedHttp grizzlyEmbeddedHttp;
+    private UDecoder urlDecoder;
     private String defaultHostName = "server";
-    private final UDecoder urlDecoder;
     private final Habitat habitat;
     private final GrizzlyService grizzlyService;
     protected final static int MAPPING_DATA = 12;
     protected final static int MAPPED_ADAPTER = 13;
-            
+
+    private final ReentrantReadWriteLock mapperLock;
+    
     // Make sure this value is always aligned with {@link org.apache.catalina.connector.CoyoteAdapter}
     // (@see org.apache.catalina.connector.CoyoteAdapter)
     private final static int MESSAGE_BYTES = 17;
@@ -104,10 +110,12 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
      */
     private boolean mapMultipleAdapter = false;
 
-    public ContainerMapper(GrizzlyService service, GrizzlyEmbeddedHttp embeddedHttp) {
-        grizzlyEmbeddedHttp = embeddedHttp;
-        urlDecoder = embeddedHttp.getUrlDecoder();
+    public ContainerMapper(GrizzlyService service,
+            /*GrizzlyEmbeddedHttp embeddedHttp,*/ NetworkListener networkListener) {
+//        grizzlyEmbeddedHttp = embeddedHttp;
+//        urlDecoder = embeddedHttp.getUrlDecoder();
         grizzlyService = service;
+        mapperLock = service.obtainMapperLock(networkListener.getName());
         habitat = service.habitat;
         logger = GrizzlyEmbeddedHttp.logger();
 
@@ -117,13 +125,24 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
         }
     }
 
+    public void setEmbeddedHttp(GrizzlyEmbeddedHttp embeddedHttp) {
+        this.grizzlyEmbeddedHttp = embeddedHttp;
+        this.urlDecoder = embeddedHttp.getUrlDecoder();
+    }
+
+    
     /**
      * Set the default host that will be used when we map.
      *
      * @param defaultHost
      */
     protected void setDefaultHost(String defaultHost) {
-        defaultHostName = defaultHost;
+        mapperLock.writeLock().lock();
+        try {
+            defaultHostName = defaultHost;
+        } finally {
+            mapperLock.writeLock().unlock();
+        }
     }
 
     /**
@@ -138,14 +157,20 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
     /**
      * Configure the {@link V3Mapper}.
      */
-    protected synchronized void configureMapper() {
-        mapper.setDefaultHostName(defaultHostName);
-        mapper.addHost(defaultHostName,new String[]{},null);
-        mapper.addContext(defaultHostName,ROOT,
-                new ContextRootInfo(this,null),
-                new String[]{"index.html","index.htm"},null);
-        // Container deployed have the right to override the default setting.
-        Mapper.setAllowReplacement(true);
+    protected void configureMapper() {
+        mapperLock.writeLock().lock();
+
+        try {
+            mapper.setDefaultHostName(defaultHostName);
+            mapper.addHost(defaultHostName,new String[]{},null);
+            mapper.addContext(defaultHostName,ROOT,
+                    new ContextRootInfo(this,null),
+                    new String[]{"index.html","index.htm"},null);
+            // Container deployed have the right to override the default setting.
+            Mapper.setAllowReplacement(true);
+        } finally {
+            mapperLock.writeLock().unlock();
+        }
     }
 
     /**
@@ -157,10 +182,38 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
      * @throws IOException
      */
     @Override
-    public void service(Request req, Response res) throws Exception{
-        MappingData mappingData = null;
-        try{
-             
+    public void service(Request req, Response res) throws Exception {
+        long transactionTimeout = grizzlyEmbeddedHttp.getTransactionTimeout();
+        if (transactionTimeout < 0) {
+            transactionTimeout = Long.MAX_VALUE;
+        }
+        
+        grizzlyService.getServerReadyFuture().get(transactionTimeout, TimeUnit.MILLISECONDS);
+        
+        try {
+            final Callable handler = lookupHandler(req, res);
+            handler.call();
+        } catch (Exception ex) {
+            try {
+                res.setStatus(500);
+                if (logger.isLoggable(Level.WARNING)) {
+                    logger.log(Level.WARNING, "Internal Server error: " + req.decodedURI(), ex);
+                }
+                customizedErrorPage(req, res);
+            } catch (Exception ex2) {
+                if (logger.isLoggable(Level.WARNING)) {
+                    logger.log(Level.WARNING, "Unable to error page", ex2);
+                }
+            }
+        } 
+    }
+
+    private Callable lookupHandler(final Request req, final Response res) throws Exception {
+        MappingData mappingData;
+
+        mapperLock.readLock().lock();
+        
+        try {
             // If we have only one Adapter deployed, invoke that Adapter
             // directly.
             // TODO: Not sure that will works with JRuby.
@@ -169,10 +222,11 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
                 // to be serviced directly by the WebContainer
                 req.setNote(MAPPING_DATA, null);
                 Adapter a = ((V3Mapper)mapper).getAdapter();
-                if (a != null){
+                if (a != null) {
                     req.setNote(MAPPED_ADAPTER, a);
-                    a.service(req, res);
-                    return;
+                    return new AdapterCallable(a, req, res);
+//                    a.service(req, res);
+//                    return;
                 }
             }
 
@@ -183,7 +237,7 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
                 mappingData = new MappingData();
                 req.setNote(MAPPING_DATA, mappingData);
             } 
-            Adapter adapter = null;
+            Adapter adapter;
             
             String uriEncoding = (String) grizzlyEmbeddedHttp.getProperty("uriEncoding");
             HttpRequestURIDecoder.decode(decodedURI, urlDecoder, uriEncoding, null);
@@ -206,8 +260,9 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
                     mappingData.recycle();
                     adapter = mapUriWithSemicolon(req, decodedURI, semicolon, mappingData);
                 } else {
-                    super.service(req, res);
-                    return;
+//                    super.service(req, res);
+//                    return;
+                    return new SuperCallable(req, res);
                 }
             }
 
@@ -219,7 +274,8 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
             // The Adapter used for servicing static pages doesn't decode the
             // request by default, hence do not pass the undecoded request.
             if (adapter == null || adapter instanceof ContainerMapper) {
-                super.service(req, res);
+//                super.service(req, res);
+                return new SuperCallable(req, res);
             } else {
                 req.setNote(MAPPED_ADAPTER, adapter);
 
@@ -228,32 +284,79 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
                     contextRootInfo = (ContextRootInfo) mappingData.context;
                 }
 
-                if (contextRootInfo == null){
-                    adapter.service(req, res);
+                if (contextRootInfo == null) {
+//                    adapter.service(req, res);
+                    return new AdapterCallable(adapter, req, res);
                 } else {
                     ClassLoader cl = null;
                     if (contextRootInfo.getContainer() instanceof ApplicationContainer){
                         cl = ((ApplicationContainer)contextRootInfo.getContainer()).getClassLoader();
                     }
-                    hk2Dispatcher.dispath(adapter, cl, req, res);
+//                    hk2Dispatcher.dispath(adapter, cl, req, res);
+                    return new Hk2DispatcherCallable(adapter, cl, req, res);
                 }
             }
-        } catch (Exception ex) {
-            try {
-                res.setStatus(500);
-                if (logger.isLoggable(Level.WARNING)) {
-                    logger.log(Level.WARNING, "Internal Server error: " + req.decodedURI(), ex);
-                }
-                customizedErrorPage(req, res);
-            } catch (Exception ex2) {
-                if (logger.isLoggable(Level.WARNING)) {
-                    logger.log(Level.WARNING, "Unable to error page", ex2);
-                }
-            }
-        } 
+        } finally {
+            mapperLock.readLock().unlock();
+        }         
+    }
+    
+    private final static class AdapterCallable implements Callable {
+        final Adapter adapter;
+        final Request req;
+        final Response res;
+
+        public AdapterCallable(Adapter a, Request req, Response res) {
+            this.adapter = a;
+            this.req = req;
+            this.res = res;
+        }
+
+        @Override
+        public Object call() throws Exception {
+            adapter.service(req, res);
+            return null;
+        }
     }
 
-    public synchronized void initializeFileURLPattern(String ext) {
+    private final class SuperCallable implements Callable {
+        final Request req;
+        final Response res;
+
+        public SuperCallable(Request req, Response res) {
+            this.req = req;
+            this.res = res;
+        }
+
+        @Override
+        public Object call() throws Exception {
+            ContainerMapper.super.service(req, res);
+            return null;
+        }
+    }
+    
+    private final class Hk2DispatcherCallable implements Callable {
+        final Adapter adapter;
+        final ClassLoader classloader;
+        final Request req;
+        final Response res;
+
+        public Hk2DispatcherCallable(Adapter adapter, ClassLoader classloader,
+                Request req, Response res) {
+            this.adapter = adapter;
+            this.classloader = classloader;
+            this.req = req;
+            this.res = res;
+        }
+
+        @Override
+        public Object call() throws Exception {
+            hk2Dispatcher.dispath(adapter, classloader, req, res);
+            return null;
+        }
+    }
+
+    private void initializeFileURLPattern(String ext) {
         for (Sniffer sniffer : grizzlyService.habitat.getAllByContract(Sniffer.class)) {
             boolean match = false;
             if (sniffer.getURLPatterns() != null) {
@@ -264,19 +367,27 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
                         break;
                     }
                 }
-                
+
                 Adapter adapter = this;
                 if (match) {
                     adapter = grizzlyService.habitat.getComponent(SnifferAdapter.class);
-                    ((SnifferAdapter)adapter).initialize(sniffer, this);
-                    ContextRootInfo c= new ContextRootInfo(adapter, null);
-   
-                    for (String pattern : sniffer.getURLPatterns()) {
-                        for (String host: grizzlyService.hosts ){
-                            mapper.addWrapper(host,ROOT, pattern,c,
-                                "*.jsp".equals(pattern) || "*.jspx".equals(pattern));
+                    ((SnifferAdapter) adapter).initialize(sniffer, this);
+                    ContextRootInfo c = new ContextRootInfo(adapter, null);
+
+                    mapperLock.readLock().unlock();
+                    mapperLock.writeLock().lock();
+                    try {
+                        for (String pattern : sniffer.getURLPatterns()) {
+                            for (String host : grizzlyService.hosts) {
+                                mapper.addWrapper(host, ROOT, pattern, c,
+                                        "*.jsp".equals(pattern) || "*.jspx".equals(pattern));
+                            }
                         }
+                    } finally {
+                        mapperLock.writeLock().unlock();
+                        mapperLock.readLock().lock();
                     }
+                    
                     return;
                 }
             }
@@ -298,31 +409,37 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
     final Adapter mapUriWithSemicolon(final Request req, final MessageBytes decodedURI,
             int semicolonPos, final MappingData mappingData) throws Exception {
         
-        final CharChunk charChunk = decodedURI.getCharChunk();
-        final int oldEnd = charChunk.getEnd();
-
-        if (semicolonPos == 0) {
-            semicolonPos = decodedURI.indexOf(';');
-        }
-
-        MessageBytes localDecodedURI = decodedURI;
-        if (semicolonPos >= 0) {
-            charChunk.setEnd(semicolonPos);
-            // duplicate the URI path, because Mapper may corrupt the attributes,
-            // which follow the path
-            localDecodedURI = (MessageBytes) req.getNote(MESSAGE_BYTES);
-            if (localDecodedURI == null) {
-                localDecodedURI = MessageBytes.newInstance();
-                req.setNote(MESSAGE_BYTES, localDecodedURI);
-            }
-            localDecodedURI.duplicate(decodedURI);
-        }
-
-
+        mapperLock.readLock().lock();
+        
         try {
-            return map(req, localDecodedURI, mappingData);
+            final CharChunk charChunk = decodedURI.getCharChunk();
+            final int oldEnd = charChunk.getEnd();
+
+            if (semicolonPos == 0) {
+                semicolonPos = decodedURI.indexOf(';');
+            }
+
+            MessageBytes localDecodedURI = decodedURI;
+            if (semicolonPos >= 0) {
+                charChunk.setEnd(semicolonPos);
+                // duplicate the URI path, because Mapper may corrupt the attributes,
+                // which follow the path
+                localDecodedURI = (MessageBytes) req.getNote(MESSAGE_BYTES);
+                if (localDecodedURI == null) {
+                    localDecodedURI = MessageBytes.newInstance();
+                    req.setNote(MESSAGE_BYTES, localDecodedURI);
+                }
+                localDecodedURI.duplicate(decodedURI);
+            }
+
+
+            try {
+                return map(req, localDecodedURI, mappingData);
+            } finally {
+                charChunk.setEnd(oldEnd);
+            }
         } finally {
-            charChunk.setEnd(oldEnd);
+            mapperLock.readLock().unlock();
         }
     }
 
