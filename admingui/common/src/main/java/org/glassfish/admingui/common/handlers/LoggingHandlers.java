@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -132,12 +132,18 @@ public class LoggingHandlers {
         String config = (String)handlerCtx.getInputValue("config");
         Map<String, Object> props = new HashMap();
         try{
+            StringBuilder sb = new StringBuilder();
+            String sep = "";
             for(Map<String, Object> oneRow : allRows){
-                props.put("id", oneRow.get("loggerName") + "=" + oneRow.get("level"));
-                props.put("target", config);
-                RestUtil.restRequest((String)GuiUtil.getSessionValue("REST_URL") + "/set-log-levels.json",
-                    props, "POST", null, false, true);
+                if ( !GuiUtil.isEmpty((String) oneRow.get("loggerName"))){
+                    sb.append(sep).append(oneRow.get("loggerName")).append("=").append(oneRow.get("level"));
+                    sep=":";
+                }
             }
+            props.put("id", sb.toString());
+            props.put("target", config);
+            RestUtil.restRequest((String)GuiUtil.getSessionValue("REST_URL") + "/set-log-levels",
+                    props, "POST", null, false, true);
             // after saving logger levels remove the deleted loggers
             deleteLoggers(allRows, config);
         }catch(Exception ex){
@@ -153,21 +159,26 @@ public class LoggingHandlers {
         ArrayList<String> newLoggers = new ArrayList<String>();
         HashMap attrs = new HashMap();
         attrs.put("target", configName);
-        Map result = RestUtil.restRequest((String)GuiUtil.getSessionValue("REST_URL") + "/list-log-levels.json",
+        Map result = RestUtil.restRequest((String)GuiUtil.getSessionValue("REST_URL") + "/list-log-levels",
                     attrs, "GET", null, false);
         List<String> oldLoggers = (List<String>)((HashMap)((HashMap) result.get("data")).get("extraProperties")).get("loggers");
         for(Map<String, Object> oneRow : allRows){
             newLoggers.add((String)oneRow.get("loggerName"));
         }
         // delete the removed loggers
-        attrs = new HashMap();
+        StringBuilder sb = new StringBuilder();
+        String sep = "";
         for (String logger : oldLoggers) {
             if (!newLoggers.contains(logger)) {
-                attrs.put("id", logger);
-                attrs.put("target", configName);
-                RestUtil.restRequest((String)GuiUtil.getSessionValue("REST_URL") + "/delete-log-levels",
-                    attrs, "POST", null, false);
+                sb.append(sep).append(logger);
+                sep=":";
             }
+        }
+        if (sb.length() > 0){
+            attrs = new HashMap();
+            attrs.put("id", sb.toString());
+            attrs.put("target", configName);
+            RestUtil.restRequest((String)GuiUtil.getSessionValue("REST_URL") + "/delete-log-levels", attrs, "POST", null, false);
         }
     }
     
