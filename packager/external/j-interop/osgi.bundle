@@ -37,16 +37,10 @@
 # only if the new code is made subject to such option by the copyright
 # holder.
 #
-Import-Package: \
-jcifs.smb;password=GlassFish,\
-org.jinterop.dcom.common;password=GlassFish,\
-org.jinterop.dcom.core;password=GlassFish,\
-org.jinterop.dcom.impls;password=GlassFish,\
-org.jinterop.dcom.impls.automation;password=GlassFish,\
-*
 
--exportcontents: \
-                   com.sun.enterprise.util.cluster.windows.process; \
-                   com.sun.enterprise.util.cluster; \
-                   com.sun.enterprise.util.cluster.windows.io; version=${project.osgi.version}
-
+Export-Package: \
+jcifs.smb; password="GlassFish"; mandatory:=password,\
+org.jinterop.dcom.common; password="GlassFish"; mandatory:=password,\
+org.jinterop.dcom.core; password="GlassFish"; mandatory:=password,\
+org.jinterop.dcom.impls; password="GlassFish"; mandatory:=password,\
+org.jinterop.dcom.impls.automation; password="GlassFish"; mandatory:=password
