@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -46,7 +46,7 @@
 />
 <!-- applications/webDDEdit.jsf -->
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.enterpriseApplications.descriptorPageTitle}"
-    guiOnLoad="admingui.nav.selectTreeNodeWithURL('#{request.contextPath}/common/applications/applicationEdit.jsf?appName=#{pageSession.appName}');"
+    guiOnLoad="admingui.nav.selectTreeNodeWithURL('#{request.contextPath}/common/applications/applicationEdit.jsf?appName=#{pageSession.encodedAppName}');"
 >
 <!define name="content">
 #include "/common/applications/applicationHandlers.inc"

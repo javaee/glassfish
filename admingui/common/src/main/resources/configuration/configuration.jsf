@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -46,11 +46,12 @@
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.configuration.pageTitle}"
-    guiOnLoad="admingui.nav.selectTreeNodeWithURL('#{request.contextPath}/common/configuration/configuration.jsf?configName=#{pageSession.configName}');" >
+    guiOnLoad="admingui.nav.selectTreeNodeWithURL('#{request.contextPath}/common/configuration/configuration.jsf?configName=#{pageSession.encodedConfigName}');" >
 <!define name="content">
     <event>
         <!beforeCreate
             getRequestValue(key="configName" value="#{pageSession.configName}");
+            urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
         />
     </event>
     <sun:form id="configForm">
