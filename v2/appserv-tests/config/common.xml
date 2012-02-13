@@ -312,6 +312,7 @@ Variables Used:
     ${appclientjar.files}    
     ${build.classes.dir}
     ${application-client.xml}    
+    ${glassfish-application-client.xml}    
     ${sun-application-client.xml}    
 -->
 <!-- ================================================================ -->
@@ -323,6 +324,8 @@ Variables Used:
   <copy file="${application-client.xml}"
         tofile="${build.classes.dir}/META-INF/application-client.xml" 
         failonerror="false"/>
+  <copy file="${glassfish-application-client.xml}" tofile="${build.classes.dir}/META-INF/glassfish-application-client.xml"
+        failonerror="false"/>
   <copy file="${sun-application-client.xml}" tofile="${build.classes.dir}/META-INF/sun-application-client.xml"
         failonerror="false"/>
   <jar jarfile="${appclient.jar}" basedir="${appclientjar.files}" 
@@ -330,6 +333,7 @@ Variables Used:
     manifest="./client/MANIFEST.MF">         
     <metainf dir="${build.classes.dir}/META-INF">
       <include name="application-client.xml"/>
+      <include name="glassfish-application-client.xml"/>
       <include name="sun-application-client.xml"/>
     </metainf>
   </jar>       
