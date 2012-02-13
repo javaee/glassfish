@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ejb-jar xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd">
+<ejb-jar xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.1" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd">
   <display-name>Ejb1</display-name>
   <enterprise-beans>
     <message-driven>
@@ -61,11 +61,20 @@
       <description>description 1</description>
       <display-name>msg destination display name</display-name>
       <message-destination-name>MsgBeanInQueue</message-destination-name>
+      <!-- either one should work
+      <mapped-name>jms/ejb_ejb30_hello_mdb2_InQueue</mapped-name>
+      -->
+      <lookup-name>jms/ejb_ejb30_hello_mdb2_InQueue</lookup-name>
+      
     </message-destination>
     <message-destination>
       <description>description 1</description>
       <display-name>msg destination display name</display-name>
       <message-destination-name>MsgBeanOutQueue</message-destination-name>
+      <mapped-name>jms/ejb_ejb30_hello_mdb2_OutQueue</mapped-name>
+      <!--
+      <lookup-name>jms/ejb_ejb30_hello_mdb2_OutQueue</lookup-name>
+      -->
     </message-destination>
   </assembly-descriptor>
 </ejb-jar>
