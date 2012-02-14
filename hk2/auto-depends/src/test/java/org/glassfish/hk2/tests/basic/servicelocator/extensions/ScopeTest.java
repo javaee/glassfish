@@ -48,6 +48,7 @@ import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -66,9 +67,11 @@ public class ScopeTest {
 
       @Override
       public void configure(Configurator configurator) {
-        configurator.bindScope(new CustomScopeA());
+        configurator.bindScope(null, new CustomScopeA());
+        configurator.bindScope(null, new CustomScopeB());
         
         configurator.bind(BuilderHelper.link(ServiceA.class).in(CustomScopeA.class).build());
+        configurator.bind(BuilderHelper.link(ServiceB.class).in(CustomScopeB.class).build());
       }
       
     });
@@ -99,6 +102,25 @@ public class ScopeTest {
     scopeA.stopMe();
   }
   
+  @Test @Ignore
+  public void testCanHaveMoreThanOneCustomScope() {
+    CustomScopeB scopeB = locator.getService(CustomScopeB.class);
+    Assert.assertNotNull(scopeB);
+    
+    scopeB.startMe();
+    System.out.println("JRW(10) scopeB is " + scopeB);
+    
+    ServiceB b1 = locator.getService(ServiceB.class);
+    Assert.assertNotNull(b1);
+    
+    ServiceB b2 = locator.getService(ServiceB.class);
+    Assert.assertNotNull(b2);
+    
+    Assert.assertEquals(b1, b2);
+    
+    scopeB.stopMe();
+  }
+  
   @Test
   public void testNotInScopeFails() {
     CustomScopeA scopeA = locator.getService(CustomScopeA.class);
@@ -115,6 +137,36 @@ public class ScopeTest {
     }
     
     Assert.fail("getService should have failed, not in scope");
+  }
+  
+  /**
+   * Leave one scope started, the other stopped, makes sure it works
+   */
+  @Test @Ignore
+  public void testTwoScopesAreIndependent() {
+    CustomScopeA scopeA = locator.getService(CustomScopeA.class);
+    CustomScopeB scopeB = locator.getService(CustomScopeB.class);
+    Assert.assertNotNull(scopeA);
+    Assert.assertNotNull(scopeB);
+    
+    scopeB.startMe();
+    
+    try {
+      locator.getService(ServiceA.class);
+      
+      Assert.fail("getService should have failed, not in scope");
+    }
+    catch (IllegalStateException ise) {
+        String message = ise.getMessage();
+        Assert.assertNotNull("IllegalStateException has no error message", message);
+        Assert.assertEquals("Got invalid error string " + message, message, CustomScopeA.ERROR_MESSAGE);
+        return;
+    }
+    
+    ServiceB b1 = locator.getService(ServiceB.class);
+    Assert.assertNotNull(b1);
+    
+    scopeB.stopMe();
   }
 
 }

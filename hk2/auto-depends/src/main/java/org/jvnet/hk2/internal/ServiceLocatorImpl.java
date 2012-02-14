@@ -39,12 +39,14 @@
  */
 package org.jvnet.hk2.internal;
 
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.glassfish.hk2.TypeLiteral;
 import org.glassfish.hk2.api.Configurator;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorFilter;
@@ -53,6 +55,7 @@ import org.glassfish.hk2.api.ExtendedProvider;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.Scope;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.TypeListener;
 import org.glassfish.hk2.api.scopes.PerLookup;
 import org.glassfish.hk2.api.scopes.Singleton;
 import org.glassfish.hk2.internal.DescriptorImpl;
@@ -427,9 +430,10 @@ public class ServiceLocatorImpl implements ServiceLocator, Configurator {
    * @see org.glassfish.hk2.api.Configurator#bindScope(org.glassfish.hk2.api.Scope)
    */
   @Override
-  public void bindScope(Scope scope) {
+  public void bindScope(Class<? extends Annotation> scopeAnno, Scope scope) {
     if (scope == null) throw new IllegalArgumentException();
     
+    // In the implemenation over hk2 the scopeAnno gets sadly lost
     Descriptor d = BuilderHelper.link(scope.getClass()).
         withContract(Scope.class).
         in(Singleton.class).
@@ -437,4 +441,14 @@ public class ServiceLocatorImpl implements ServiceLocator, Configurator {
     
     bind(d, scope);
   }
+
+/* (non-Javadoc)
+ * @see org.glassfish.hk2.api.Configurator#bindListener(org.glassfish.hk2.api.Filter, org.glassfish.hk2.api.TypeListener)
+ */
+@Override
+public void bindListener(Filter<? super TypeLiteral<?>> matcher,
+        TypeListener listener) {
+    // TODO Auto-generated method stub
+    
+}
 }

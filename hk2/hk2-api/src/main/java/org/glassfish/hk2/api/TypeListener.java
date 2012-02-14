@@ -37,74 +37,27 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.basic.servicelocator.extensions;
+package org.glassfish.hk2.api;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.inject.Provider;
-
-import org.glassfish.hk2.api.ExtendedProvider;
-import org.glassfish.hk2.api.InjectionTarget;
-import org.glassfish.hk2.api.Scope;
+import org.glassfish.hk2.TypeLiteral;
 
 /**
- * A very simple scope
+ * Listens for Hk2 to encounter injectable types. If a given type has its constructor
+ * injected in one situation but only its methods and fields injected in another, Hk2 will notify
+ * this listener once.
  * 
  * @author jwells
  */
-public class CustomScopeA implements Scope {
-    public static final String ERROR_MESSAGE = "CustomScope Error Message";
+public interface TypeListener {
     
-  private final Map<InjectionTarget<?>, Object> scopeInstances = new HashMap<InjectionTarget<?>, Object>();
-  private boolean inScope = false;
-
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.api.Scope#scope(org.glassfish.hk2.api.InjectionTarget, org.glassfish.hk2.api.ExtendedProvider)
-   */
-  @SuppressWarnings("unchecked")
-  @Override
-  public <T> Provider<T> scope(InjectionTarget<T> target,
-      ExtendedProvider<T> unscopedProvider) {
-    synchronized (scopeInstances) {
-      if (!inScope) {
-          throw new IllegalStateException(ERROR_MESSAGE);
-      }
-     
-      T retVal = (T) scopeInstances.get(target);
-      if (retVal == null) {
-        retVal = unscopedProvider.get();
-        if (retVal != null) {
-          scopeInstances.put(target, retVal);
-        }
-      }
-      
-      final T fVal = retVal;
-      
-      return new Provider<T>() {
-
-        @Override
-        public T get() {
-          return fVal;
-        }
-        
-      };
-    }
-  }
-  
-  public void startMe() {
-    synchronized (scopeInstances) {
-      inScope = true;
-    }
-  }
-  
-  public void stopMe() {
-    synchronized (scopeInstances) {
-      scopeInstances.clear();
-      
-      inScope = false;
-    }
-    
-  }
+    /**
+     * Invoked when Hk2 encounters a new type eligible for constructor or members injection. Called
+     * during injector creation (or afterwords if Hk2 encounters a type at run time and creates
+     * a JIT binding).
+     * 
+     * @param type The type Hk2 has encountered
+     * @param encounter The encounter for that particular type
+     */
+    <I> void hear(TypeLiteral<I> type, TypeEncounter<I> encounter);
 
 }
