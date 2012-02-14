@@ -39,72 +39,12 @@
  */
 package org.glassfish.hk2.tests.basic.servicelocator.extensions;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.inject.Provider;
-
-import org.glassfish.hk2.api.ExtendedProvider;
-import org.glassfish.hk2.api.InjectionTarget;
-import org.glassfish.hk2.api.Scope;
-
 /**
- * A very simple scope
+ * ServiceB is in B scope
  * 
  * @author jwells
+ *
  */
-public class CustomScopeA implements Scope {
-    public static final String ERROR_MESSAGE = "CustomScope Error Message";
-    
-  private final Map<InjectionTarget<?>, Object> scopeInstances = new HashMap<InjectionTarget<?>, Object>();
-  private boolean inScope = false;
-
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.api.Scope#scope(org.glassfish.hk2.api.InjectionTarget, org.glassfish.hk2.api.ExtendedProvider)
-   */
-  @SuppressWarnings("unchecked")
-  @Override
-  public <T> Provider<T> scope(InjectionTarget<T> target,
-      ExtendedProvider<T> unscopedProvider) {
-    synchronized (scopeInstances) {
-      if (!inScope) {
-          throw new IllegalStateException(ERROR_MESSAGE);
-      }
-     
-      T retVal = (T) scopeInstances.get(target);
-      if (retVal == null) {
-        retVal = unscopedProvider.get();
-        if (retVal != null) {
-          scopeInstances.put(target, retVal);
-        }
-      }
-      
-      final T fVal = retVal;
-      
-      return new Provider<T>() {
-
-        @Override
-        public T get() {
-          return fVal;
-        }
-        
-      };
-    }
-  }
-  
-  public void startMe() {
-    synchronized (scopeInstances) {
-      inScope = true;
-    }
-  }
-  
-  public void stopMe() {
-    synchronized (scopeInstances) {
-      scopeInstances.clear();
-      
-      inScope = false;
-    }
-    
-  }
+public class ServiceB {
 
 }

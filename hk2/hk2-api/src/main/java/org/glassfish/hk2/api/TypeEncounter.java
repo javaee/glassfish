@@ -37,74 +37,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.basic.servicelocator.extensions;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.inject.Provider;
-
-import org.glassfish.hk2.api.ExtendedProvider;
-import org.glassfish.hk2.api.InjectionTarget;
-import org.glassfish.hk2.api.Scope;
+package org.glassfish.hk2.api;
 
 /**
- * A very simple scope
+ * Context of an injectable type encounter. Enables reporting errors, registering
+ * injection listeners and binding method interceptors for injectable type I. It is
+ * an error to use an encounter after the hear() method has returned.
  * 
  * @author jwells
+ *
  */
-public class CustomScopeA implements Scope {
-    public static final String ERROR_MESSAGE = "CustomScope Error Message";
+public interface TypeEncounter<I> {
     
-  private final Map<InjectionTarget<?>, Object> scopeInstances = new HashMap<InjectionTarget<?>, Object>();
-  private boolean inScope = false;
-
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.api.Scope#scope(org.glassfish.hk2.api.InjectionTarget, org.glassfish.hk2.api.ExtendedProvider)
-   */
-  @SuppressWarnings("unchecked")
-  @Override
-  public <T> Provider<T> scope(InjectionTarget<T> target,
-      ExtendedProvider<T> unscopedProvider) {
-    synchronized (scopeInstances) {
-      if (!inScope) {
-          throw new IllegalStateException(ERROR_MESSAGE);
-      }
-     
-      T retVal = (T) scopeInstances.get(target);
-      if (retVal == null) {
-        retVal = unscopedProvider.get();
-        if (retVal != null) {
-          scopeInstances.put(target, retVal);
-        }
-      }
-      
-      final T fVal = retVal;
-      
-      return new Provider<T>() {
-
-        @Override
-        public T get() {
-          return fVal;
-        }
-        
-      };
-    }
-  }
-  
-  public void startMe() {
-    synchronized (scopeInstances) {
-      inScope = true;
-    }
-  }
-  
-  public void stopMe() {
-    synchronized (scopeInstances) {
-      scopeInstances.clear();
-      
-      inScope = false;
-    }
-    
-  }
+    /**
+     * Registers a members injector for type I. Hk2 will use the members injector after its
+     * performed its own injections on an instance of I. 
+     * @param injector
+     */
+    public void register(MembersInjector<? super I> injector);
 
 }

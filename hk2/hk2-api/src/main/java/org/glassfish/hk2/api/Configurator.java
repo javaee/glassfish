@@ -39,7 +39,10 @@
  */
 package org.glassfish.hk2.api;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
+
+import org.glassfish.hk2.TypeLiteral;
 
 /**
  * An instance of this class is given to the {@link Module} configure
@@ -119,5 +122,13 @@ public interface Configurator {
 	 * @param scope A scope instance that can be used to scope
 	 * instances returned from this {@link Module}
 	 */
-	public void bindScope(Scope scope);
+	public void bindScope(Class<? extends Annotation> scopeAnno, Scope scope);
+	
+	/**
+	 * Binds a listener to be used for custom injection points
+	 * 
+	 * @param matcher A filter that matches types to be passed to the listener
+	 * @param listener a listener that can be used to do custom injection points
+	 */
+	public void bindListener(Filter<? super TypeLiteral<?>> matcher, TypeListener listener);
 }
