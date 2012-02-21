@@ -155,7 +155,7 @@
         </antcall>
     </target>
 
-    <target name="runclient" depends="setOrbPort">
+    <target name="runclient" depends="init,setOrbPort">
         <javac srcdir="../../ejb/statelesshello/standaloneclient" destdir="${build}">
            <classpath>
                 <path refid="gfv3.classpath"/>
