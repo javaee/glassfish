@@ -591,7 +591,7 @@ public class ConfigSupport {
                         // type will not work.
                         for (Method m : parentProxyType.getMethods()) {
                             final Class returnType = m.getReturnType();
-                            if (Collection.class.isAssignableFrom(returnType)) {
+                            if (Collection.class.isAssignableFrom(returnType) && (m.getParameterTypes().length == 0)) {
                                 // this could be it...
                                 if (!(m.getGenericReturnType() instanceof ParameterizedType))
                                     throw new IllegalArgumentException("List needs to be parameterized");
@@ -787,7 +787,7 @@ public class ConfigSupport {
                         // type will not work.
                         for (Method m : parentProxyType.getMethods()) {
                             final Class returnType = m.getReturnType();
-                            if (Collection.class.isAssignableFrom(returnType)) {
+                            if (Collection.class.isAssignableFrom(returnType) && (m.getParameterTypes().length == 0)) {
                                 // this could be it...
                                 if (!(m.getGenericReturnType() instanceof ParameterizedType))
                                     throw new IllegalArgumentException("List needs to be parameterized");
