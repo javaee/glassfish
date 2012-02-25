@@ -143,26 +143,7 @@
       <developerConnection>scm:svn:https://svn.java.net/svn/hk2~svn/trunk/hk2</developerConnection>
       <url>https://svn.java.net/svn/hk2~svn/trunk/hk2</url>
     </scm>
-    <repositories>
-        <repository>
-            <id>glassfish-maven-repository</id>
-            <name>Glassfish repository</name>
-            <url>http://maven.glassfish.org/content/groups/glassfish-group/</url>
-            <snapshots>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>glassfish-maven-repository</id>
-            <name>Glassfish repository</name>
-            <url>http://maven.glassfish.org/content/groups/glassfish-group/</url>
-            <snapshots>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
+
     <build>
         <sourceDirectory>src/java</sourceDirectory>
         <testSourceDirectory>test/java</testSourceDirectory>
