@@ -139,7 +139,7 @@ public class Jsr330ConstructorWomb<T> extends ConstructorWomb<T> {
 
       Object val;
       if (Types.isSubClassOf(paramClass, Provider.class)) {
-        val = Jsr330InjectionResolver.getHolderInjectValue(habitat, ctor, paramType);
+        val = Jsr330InjectionResolver.getHolderInjectValue(habitat, ctor, null, paramType);
       } else {
         val = Jsr330InjectionResolver.get(habitat, ctor, ctor, paramClass);
       }
