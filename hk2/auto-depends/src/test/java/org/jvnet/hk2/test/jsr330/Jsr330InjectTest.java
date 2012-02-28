@@ -49,7 +49,6 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Qualifier;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Contract;
@@ -108,7 +107,6 @@ public class Jsr330InjectTest {
 	}
 
 	@Test
-    @Ignore
 	public void testTestService() {
 		assertNotNull(testService1_Provider.get());
 		assertNotNull(testService1);
@@ -121,7 +119,7 @@ public class Jsr330InjectTest {
 
         ITestService2 newTestService2 = iTestService2Provider.get();
 
-        assertNotNull(newTestService2);   // Fails here.
+        assertNotNull(newTestService2);
 
         assertTrue("Instances should be distinguished by name", testService1.getITestService2() != newTestService2);
 	}
@@ -152,6 +150,12 @@ public class Jsr330InjectTest {
 	@Inject
 	@Optional
 	Provider<OptionalContract2> optionalProviderWithNoServiceAvailable;
+	
+	@Inject
+	IQualified[] arrayOfServices;
+	
+    @Inject
+    Provider<IQualified>[] arrayOfServiceProviders;
 	
 	// another way to do optional injection in jsr-330
 	// is by injecting a Provider
@@ -187,6 +191,23 @@ public class Jsr330InjectTest {
         
         assertNull("No Impl should have been found", optionalAbstractClassWithNoImpl);
 	}
+	
+    @Test
+    public void testArrays() {
+        assertNotNull(arrayOfServices);
+        assertNotNull(arrayOfServiceProviders);
+
+        assertEquals(3, arrayOfServices.length);
+        assertEquals(3, arrayOfServiceProviders.length);
+
+        for (IQualified i : arrayOfServices) {
+            assertNotNull(i);
+        }
+
+        for (Provider<IQualified> i : arrayOfServiceProviders) {
+            assertNotNull(i.get());
+        }
+    }
 	
 	@Contract
 	public interface OptionalContract1 {

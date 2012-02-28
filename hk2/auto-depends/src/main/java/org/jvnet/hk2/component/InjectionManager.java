@@ -41,11 +41,7 @@ package org.jvnet.hk2.component;
 
 import com.sun.hk2.component.InjectionResolver;
 
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.lang.annotation.Annotation;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -185,6 +181,7 @@ public class InjectionManager {
 
                         Type genericType = field.getGenericType();
                         Class fieldType = field.getType();
+
                         try {
                             Object value = target.getValue(component, onBehalfOf, field, genericType, fieldType);
                             if (value != null) {
@@ -204,6 +201,8 @@ public class InjectionManager {
                             error_injectionException(target, inject, field, e);
                         } catch (RuntimeException e) {
                             error_injectionException(target, inject, field, e);
+                        } catch (Exception ex) {
+                            error_injectionException(target, inject, field, ex);
                         }
                     }
                     // exhausted all injection managers,
@@ -542,7 +541,7 @@ public class InjectionManager {
     
     
     protected void error_injectionException(InjectionResolver target, Annotation inject, AnnotatedElement injectionPoint, Throwable e) {
-      Logger.getAnonymousLogger().log(Level.FINE, "injection failure", e);
+      Logger.getAnonymousLogger().log(Level.FINE, "** Injection failure **", e);
       
       if (UnsatisfiedDependencyException.class.isInstance(e)) {
         if (injectionPoint == ((UnsatisfiedDependencyException)e).getUnsatisfiedElement()) {

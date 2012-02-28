@@ -40,11 +40,7 @@
 package com.sun.hk2.jsr330.spi.internal;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -87,24 +83,76 @@ public class Jsr330InjectionResolver extends
     this.habitat = h;
   }
 
-  
-  @Override
-  public <V> V getValue(Object component,
-        Inhabitant<?> onBehalfOf,
-        AnnotatedElement target,
-        Type gtype,
-        Class<V> type) throws ComponentException {
-    Object result;
+    @Override
+    public <V> V getValue(Object component, Inhabitant<?> onBehalfOf,
+            AnnotatedElement target, Type gtype, Class<V> type)
+            throws ComponentException {
+        Object result;
+        if (type.isArray()) {
+            result = getValueForInjectedArray(onBehalfOf, gtype, type);
+        }
+        else if (Types.isSubClassOf(type, Provider.class)) {
+            gtype = getGenericType(gtype, target);
+            result = getHolderInjectValue(habitat, onBehalfOf, target,gtype);
+        }
+        else {
+            result = get(habitat, onBehalfOf, target, type);
+        }
 
-    if (Types.isSubClassOf(type, Provider.class)) {
-      gtype = getGenericType(gtype, target);
-      result = getHolderInjectValue(habitat, onBehalfOf, gtype);
-    } else {
-      result = get(habitat, onBehalfOf, target, type);
+        return (V) result;
     }
 
-    return (V)result;
-  }
+    private <V> Object getValueForInjectedArray(Inhabitant<?> onBehalfOf,
+            Type gtype, Class<V> type) {
+        Object result;
+        Class<V> baseType = (Class<V>) type.getComponentType();
+        
+        if (Types.isSubClassOf(baseType, Provider.class)) {
+
+            if (!GenericArrayType.class.isInstance(gtype)) {
+                throw new ComponentException("unknown type: "
+                        + gtype.toString());
+            }
+
+            Type baseComponentType = ((GenericArrayType) gtype)
+                    .getGenericComponentType();
+            if (null == baseComponentType) {
+                throw new ComponentException(gtype.toString() + " on "
+                        + onBehalfOf);
+            }
+            if (!ParameterizedType.class.isInstance(baseComponentType)) {
+                throw new ComponentException("unknown type: "
+                        + baseComponentType.toString());
+            }
+
+            Type[] types = ((ParameterizedType) baseComponentType)
+                    .getActualTypeArguments();
+            if (null == types || 1 != types.length) {
+                throw new ComponentException(baseComponentType.toString()
+                        + " on " + onBehalfOf);
+            }
+
+            Class<V> paramClass = Types.erasure(types[0]);
+            Collection<Inhabitant<? extends V>> answer = habitat
+                    .getInhabitants(paramClass);
+
+            Collection providers = new ArrayList();
+            for (Inhabitant<? extends V> inh : answer) {
+                providers.add(new BasicProviderImpl(inh));
+            }
+
+            result = providers.toArray(new Provider[0]);
+        }
+        else { // Not a Provider.
+            Collection<V> answer = (habitat.isContract(baseType)) ? habitat
+                    .getAllByContract(baseType) : habitat
+                    .getAllByType(baseType);
+
+            result = type.cast(answer.toArray((V[]) Array.newInstance(
+                    type.getComponentType(), answer.size())));
+        }
+        return result;
+    }
 
   protected Type getGenericType(Type gtype, AnnotatedElement target) {
     if (null != gtype) {
@@ -126,7 +174,7 @@ public class Jsr330InjectionResolver extends
   protected static <V> Provider<V> getHolderInjectValue(
       Habitat habitat,
       Object onBehalfOf,
-      Type paramType) throws ComponentException {
+      AnnotatedElement target, Type paramType) throws ComponentException {
     if (!ParameterizedType.class.isInstance(paramType)) {
       throw new ComponentException("unknown type: " + paramType.toString());
     }
@@ -135,18 +183,27 @@ public class Jsr330InjectionResolver extends
     if (null == types || 1 != types.length) {
       throw new ComponentException(paramType.toString() + " on " + onBehalfOf);
     }
+ 
+    Named named = target != null ? target.getAnnotation(Named.class) : null;
+    String name = (null == named) ? null : named.value();
+ 
     
     Class<V> paramClass = Types.erasure(types[0]);
-    final Inhabitant<V> inhabitant = getInhabitant(habitat, onBehalfOf, paramClass);
+    final Inhabitant<V> inhabitant = getInhabitant(habitat, onBehalfOf, paramClass, name);
     
     return new BasicProviderImpl(inhabitant);
   }
+
+    protected static <V> Inhabitant<V> getInhabitant(Habitat habitat,
+            Object onBehalfOf, Class<V> type) {
+        return getInhabitant(habitat, onBehalfOf, type, null);
+    }
   
   protected static <V> Inhabitant<V> getInhabitant(
       Habitat habitat,
       Object onBehalfOf,
-      Class<V> type) {
-    Inhabitant<V> result = habitat.getInhabitant(type, null);
+      Class<V> type, String name) {
+    Inhabitant<V> result = habitat.getInhabitant(type, name);
     if (null == result) {
       result = habitat.getInhabitantByType(type);
     }
