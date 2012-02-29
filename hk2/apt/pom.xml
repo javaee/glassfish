@@ -52,6 +52,9 @@
     <packaging>jar</packaging>
     <name>Inhabitants' index generator</name>
     <description>Index generator for auto-depends</description>    
+    <properties>
+        <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
+    </properties>
     <build>
         <sourceDirectory>src/java</sourceDirectory>  
         <testSourceDirectory>src/test/java</testSourceDirectory>

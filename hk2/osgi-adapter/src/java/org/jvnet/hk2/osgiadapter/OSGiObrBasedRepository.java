@@ -49,7 +49,6 @@ import org.osgi.framework.Version;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,7 +100,7 @@ public class OSGiObrBasedRepository implements Repository {
             if (name != null) {
                 final String rsn = resource.getSymbolicName();
                 final Version rv = resource.getVersion();
-                boolean versionMatching = (version == null) || version.equals(rv);
+                boolean versionMatching = (version == null) || version.equals(rv.toString());
                 boolean nameMatching = name.equals(rsn);
                 if (nameMatching && versionMatching) {
                     try {
