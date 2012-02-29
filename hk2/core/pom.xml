@@ -52,6 +52,10 @@
     <artifactId>hk2-core</artifactId>
     <name>HK2 core module</name>
 
+    <properties>
+        <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
+    </properties>
+ 
     <build>
         <plugins>
             <plugin>

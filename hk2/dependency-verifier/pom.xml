@@ -53,6 +53,10 @@
     <artifactId>hk2-dependency-verifier</artifactId>
     <name>Static Analyser for verifying module dependency</name>
     <description>${project.name}</description>
+    <properties>
+        <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
+    </properties>
+ 
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
         <plugins>

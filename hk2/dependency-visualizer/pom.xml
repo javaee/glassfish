@@ -75,6 +75,10 @@
         </developer>
     </developers>
 
+    <properties>
+        <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
+    </properties>
+
 	<build>
         <!-- parent HK2 pom uses src/java and hence need to override here -->
         <sourceDirectory>src/main/java</sourceDirectory>

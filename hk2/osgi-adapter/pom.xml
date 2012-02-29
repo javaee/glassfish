@@ -55,6 +55,11 @@
          set extension=true for bundle-plugin and that in turn interfers
          with hk2-jar packaging type -->
     <packaging>jar</packaging>
+
+    <properties>
+        <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
