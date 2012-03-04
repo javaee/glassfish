@@ -180,4 +180,9 @@ setWebContextParam
 weblogicDD
 jspTagHandlerPreDestroyAnnotation
 broken_webapp
-
+virtualServerDefaultWebModuleRequestPath
+multiServletRequests
+wrongTransportTarget # Grizzly 2.1
+virtualServerAlternateDocrootRestart # Grizzly 2.1
+programmaticLogin # different class in the trunk
+testFormAuthenticator # need Grizzly 2.x
