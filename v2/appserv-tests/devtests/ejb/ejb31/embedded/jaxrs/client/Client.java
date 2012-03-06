@@ -60,16 +60,24 @@ public class Client {
         appName = s[0];
         stat.addDescription(appName);
         Client t = new Client();
-        try {
-            t.testEJB(s);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (s[1].equals("ejb")) {
+            try {
+                System.out.println("Running test via EJB....");
+                t.testEJB(s);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (s[1].equals("rest")) {
+            try {
+                System.out.println("Running test via REST....");
+                t.testREST(s);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("WRONG TEST TYPE: " + s[1]);
         }
-        try {
-            t.testREST(s);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
         stat.printSummary(appName + "ID");
     }
 

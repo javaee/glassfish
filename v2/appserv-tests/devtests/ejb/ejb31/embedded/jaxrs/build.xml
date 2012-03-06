@@ -60,37 +60,47 @@
     </target> 
     
     <target name="run" depends="init-common">
-        <antcall target="run_war"/>
-        <antcall target="run_dir"/>
+        <antcall target="run_war_ejb"/>
+        <antcall target="run_war_rest"/>
+        <antcall target="run_dir_ejb"/>
+        <antcall target="run_dir_rest"/>
     </target>
  
-    <target name="run_war" depends="init-common">
+    <target name="run_war_ejb" depends="init-common">
+        <antcall target="run_test">
+            <param name="test-path" value="${assemble.dir}/${appname}-web.war"/>
+            <param name="test" value="ejb"/>
+        </antcall>
+    </target>
+ 
+    <target name="run_war_rest" depends="init-common">
+        <antcall target="run_test">
+            <param name="test-path" value="${assemble.dir}/${appname}-web.war"/>
+            <param name="test" value="rest"/>
+        </antcall>
+    </target>
+ 
+    <target name="run_dir_ejb" depends="init-common">
+        <antcall target="run_test">
+            <param name="test-path" value="${assemble.dir}/tmp"/>
+            <param name="test" value="ejb"/>
+        </antcall>
+    </target>
+ 
+    <target name="run_dir_rest" depends="init-common">
+        <antcall target="run_test">
+            <param name="test-path" value="${assemble.dir}/tmp"/>
+            <param name="test" value="rest"/>
+        </antcall>
+    </target>
+ 
+    <target name="run_test" depends="init-common">
        <java  fork="on" 
               failonerror="true"
-              classpath="${assemble.dir}/${appname}-web.war:${assemble.dir}/${appname}-pu.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classpath="${test-path}:${assemble.dir}/${appname}-pu.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
               classname="${se.client}">
            <arg line="${appname}"/>
-        </java>
-    </target>
-
-    <target name="run_war_installed_instance" depends="init-common">
-       <antcall  target="start-database"/>
-       <java  fork="on" 
-              failonerror="true"
-              classpath="${assemble.dir}/${appname}-web.war:${assemble.dir}/${appname}-pu.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
-              classname="${se.client}">
-           <arg line="${jndiroot}"/>
-           <arg line="installed_instance"/>
-        </java>
-       <antcall  target="stop-database"/>
-    </target>
-
-    <target name="run_dir" depends="init-common">
-       <java  fork="on" 
-              failonerror="true"
-              classpath="${assemble.dir}/tmp:${assemble.dir}/${appname}-pu.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
-              classname="${se.client}">
-           <arg line="${jndiroot}"/>
+           <arg line="${test}"/>
         </java>
     </target>
 
